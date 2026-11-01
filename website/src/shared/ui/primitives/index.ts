@@ -1,7 +1,7 @@
 export {ActionGroup, Button, ButtonLink, PlainButton, PlainLink, TextActionButton} from "./actions";
 export type {EventActionCardModel, ProcessStatusAction} from "./actions";
 export {ClaimResultButton, DataTable} from "./actions2";
-export {AuthStatusRow, BadgeRow, EmptyState, LiveStatus, MarketingConsentBannerShell, ProcessStatusPanel, RouteLoadingState} from "./feedback";
+export {BadgeRow, EmptyState, LiveStatus, MarketingConsentBannerShell, ProcessStatusPanel, RouteLoadingState} from "./feedback";
 export {CheckboxField, ClaimRequestForm, Form, FormStatus, SelectedListingCard} from "./forms";
 export {SearchFormShell, StepRail} from "./forms2";
 export {OperationalNote, ProfileStrength} from "./foundation";

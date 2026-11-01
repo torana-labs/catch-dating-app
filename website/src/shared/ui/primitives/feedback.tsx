@@ -4,7 +4,6 @@ import type {AppDownloadCtaItem, ProcessStatusAction} from "./actions";
 import {ButtonLink} from "./actionControls";
 import {UiLabel} from "./layout";
 
-export type AuthStatusRowVariant = "default" | "flow";
 
 export type EmptyStateVariant =
   | "claim"
@@ -193,25 +192,6 @@ export function RouteLoadingState({
       className={classNames("route-loading", className)}
       role="status"
     />
-  );
-}
-
-export function AuthStatusRow({
-  action,
-  children,
-  className,
-  variant = "default",
-}: {
-  action: ReactNode;
-  children: ReactNode;
-  className?: string;
-  variant?: AuthStatusRowVariant;
-}) {
-  return (
-    <div className={classNames("claim-auth-row", variant === "flow" && "claim-auth-row--flow", className)}>
-      <span>{children}</span>
-      {action}
-    </div>
   );
 }
 

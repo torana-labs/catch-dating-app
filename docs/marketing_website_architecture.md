@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.18.0
-updated: 2026-10-30
+version: 0.19.0
+updated: 2026-11-01
 owner: marketing_website
 status: active
 ---
@@ -840,9 +840,10 @@ website/src/
       ClaimPage.tsx
       claimModel.ts
       useClaimFlowController.ts
-      useListingClaimController.ts
+      useInstantClaimController.ts
       sections/
         ClaimPageSections.tsx
+        InstantClaimSection.tsx
     reviews/
       reviewModel.ts
       useListingReviewsController.ts
@@ -995,12 +996,15 @@ website/src/
 
    - `ClaimHeroSection`
    - `ClaimUrlStateSection`
-   - `ClaimWorkspaceSection`
+   - `ClaimSearchSection`
 
-   Storybook section coverage should use a mock controller for
-   `ClaimWorkspaceSection` so auth and Firebase side effects stay out of the
-   section workbench. Keep mutation, auth, validation, and query invalidation in
-   `useClaimFlowController`.
+   and the claim itself in `InstantClaimSection.tsx` (`InstantClaimPanel`):
+   one phone sign-in, then a code from the listing's Instagram or Luma, with
+   a staff review request (proof links and an optional note) as the fallback.
+   Storybook section coverage should use mock controllers so auth and Firebase
+   side effects stay out of the section workbench. `useClaimFlowController`
+   owns finding the page; `useInstantClaimController` owns sign-in, the code
+   checks, the review request and query invalidation.
 
 7. Keep the component-first workbench route-linked.
 

@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-11-01",
   "id": "feature.organizer_claim",
   "name": "Organizer Claim",
   "owner": "marketing_website",
@@ -11,11 +11,14 @@
     {
       "id": "marketing_claim",
       "runtime": "react_marketing",
-      "authority": {"registry": "marketing_routes", "id": "claim"},
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "claim"
+      },
       "actionScope": {
-        "included": "Selecting an eligible organizer, moving through role and verification stages, choosing verification, claim authentication, submitting the typed organizer claim, and following state-specific recovery routes.",
+        "included": "Finding an eligible organizer, signing in with a phone, proving ownership with an Instagram or Luma code, requesting a staff review when no code check works, and following state-specific recovery routes.",
         "excluded": [
-          "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions.",
+          "Search query, account name and phone, proof link, and note edits remain validated form data rather than separate feature actions.",
           "Claim URL state is derived from canonical organizer authority and cannot be forged by query parameters."
         ]
       },
@@ -32,24 +35,31 @@
             "symbol": "useClaimFlowController"
           },
           {
-            "id": "auth_controller",
-            "language": "typescript",
-            "file": "website/src/features/claims/useClaimRequestMutation.ts",
-            "symbol": "useClaimAuthController"
-          },
-          {
             "id": "claim_sections",
             "language": "typescript",
             "file": "website/src/features/claims/sections/ClaimPageSections.tsx",
-            "symbol": "ClaimWorkspaceSection"
+            "symbol": "ClaimSearchSection"
+          },
+          {
+            "id": "instant_claim_controller",
+            "language": "typescript",
+            "file": "website/src/features/claims/useInstantClaimController.ts",
+            "symbol": "useInstantClaimController"
+          },
+          {
+            "id": "account_controller",
+            "language": "typescript",
+            "file": "website/src/features/account/useWebsiteAccountController.ts",
+            "symbol": "useWebsiteAccountController"
           }
         ],
         "componentContracts": [
           "route_claim",
           "claim_hero_section",
           "claim_url_state_section",
-          "claim_workspace_section",
-          "shared_process_status_panel"
+          "claim_search_section",
+          "shared_process_status_panel",
+          "claim_instant_check_panel"
         ],
         "dataContracts": [
           "contracts/callables/request_organizer_claim_payload.schema.json",
@@ -61,23 +71,63 @@
           "default": [
             "website/src/features/claims/claimRouting.test.ts",
             "website/src/features/claims/useClaimFlowController.test.tsx",
-            "website/src/features/claims/useClaimRequestMutation.test.tsx"
+            "website/src/features/claims/useClaimRequestMutation.test.tsx",
+            "website/src/features/claims/sections/InstantClaimSection.test.tsx"
           ],
-          "not-found": ["website/src/features/claims/claimRouting.test.ts"],
-          "pending-claim": ["website/src/features/claims/claimRouting.test.ts"],
-          "already-claimed": ["website/src/features/claims/claimRouting.test.ts"],
-          "claim-unavailable": [
+          "not-found": [
+            "website/src/features/claims/claimRouting.test.ts"
+          ],
+          "pending-claim": [
             "website/src/features/claims/claimRouting.test.ts",
-            "website/src/features/claims/useClaimRequestMutation.test.tsx"
+            "website/src/features/claims/sections/InstantClaimSection.test.tsx"
+          ],
+          "already-claimed": [
+            "website/src/features/claims/claimRouting.test.ts"
+          ],
+          "claim-unavailable": [
+            "website/src/features/claims/claimRouting.test.ts"
           ]
         }
       },
       "dimensions": {
-        "route_state": {"default": "workspace", "values": ["workspace", "not_found", "pending_claim", "already_claimed", "claim_unavailable"]},
-        "step": {"default": "listing", "values": ["listing", "role", "verify", "submitted"]},
-        "listing": {"default": "none", "values": ["none", "selected"]},
-        "auth": {"default": "checking", "values": ["checking", "signed_out", "signing_in", "signed_in"]},
-        "mutation": {"default": "idle", "values": ["idle", "pending", "failed", "success"]}
+        "route_state": {
+          "default": "workspace",
+          "values": [
+            "workspace",
+            "not_found",
+            "pending_claim",
+            "already_claimed",
+            "claim_unavailable"
+          ]
+        },
+        "listing": {
+          "default": "none",
+          "values": [
+            "none",
+            "selected"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        },
+        "phase": {
+          "default": "account",
+          "values": [
+            "account",
+            "loading",
+            "choose",
+            "code",
+            "review",
+            "requested",
+            "done"
+          ]
+        }
       },
       "actions": [
         {
@@ -85,83 +135,220 @@
           "owner": "claim_controller",
           "codeValue": "selectListing",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "organizerId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
           "description": "Selects one policy-eligible public organizer from the source-backed claim lookup results."
         },
         {
-          "id": "go_to_claim_role",
+          "id": "change_claim_listing",
           "owner": "claim_controller",
-          "codeValue": "setStep",
+          "codeValue": "clearListing",
           "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "organizerId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Advances a selected organizer into claimant role and contact proof."
-        },
-        {
-          "id": "go_to_claim_verification",
-          "owner": "claim_controller",
-          "codeValue": "setStep",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "draftVersion"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Advances a minimally valid claimant packet into verification and authentication."
-        },
-        {
-          "id": "back_claim_step",
-          "owner": "claim_controller",
-          "codeValue": "setStep",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "stepId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Returns to role or listing selection while no claim submission is pending."
-        },
-        {
-          "id": "select_verification_method",
-          "owner": "claim_controller",
-          "codeValue": "setVerificationMethod",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "verificationMethod", "draftVersion"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Chooses one bounded claim verification method for the review message."
-        },
-        {
-          "id": "sign_in_for_claim",
-          "owner": "auth_controller",
-          "codeValue": "handleSignIn",
-          "cardinality": "singleton",
-          "scopeKeys": ["browserProfileId", "organizerId", "authAttempt"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Starts Google claim authentication with pending and actionable failure feedback."
-        },
-        {
-          "id": "sign_out_claim_user",
-          "owner": "auth_controller",
-          "codeValue": "handleSignOut",
-          "cardinality": "singleton",
-          "scopeKeys": ["browserProfileId", "authSessionVersion"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Signs the current website claim user out while no claim submission is pending."
-        },
-        {
-          "id": "submit_organizer_claim",
-          "owner": "claim_controller",
-          "codeValue": "handleClaimSubmit",
-          "cardinality": "singleton",
-          "scopeKeys": ["requesterUid", "organizerId", "claimDraftVersion"],
-          "outcomes": [
-            {"kind": "surface_state", "stateIds": ["default", "pending-claim"]},
-            {"kind": "side_effect", "id": "organizer.claim_request_submitted"}
+          "scopeKeys": [
+            "routeInstanceId",
+            "organizerId"
           ],
-          "description": "Validates capability, runtime, auth, contact, and proof before submitting one typed organizer claim request."
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Returns a searched organizer to the lookup so another can be chosen."
+        },
+        {
+          "id": "sign_in_with_phone",
+          "owner": "account_controller",
+          "codeValue": "handleSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "browserProfileId",
+            "authAttempt"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Signs in with a name and a verified phone; the account supplies the claimant's name and phone to every later step."
+        },
+        {
+          "id": "choose_claim_check",
+          "owner": "instant_claim_controller",
+          "codeValue": "setMethod",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "flowInstanceId",
+            "verificationMethod"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Chooses between the listing's Instagram message and Luma calendar checks."
+        },
+        {
+          "id": "show_claim_code",
+          "owner": "instant_claim_controller",
+          "codeValue": "showCode",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "requesterUid",
+            "organizerId",
+            "verificationMethod"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "organizer.claim_verification_started"
+            }
+          ],
+          "description": "Starts one claim attempt and shows its 30-minute code."
+        },
+        {
+          "id": "check_luma_code",
+          "owner": "instant_claim_controller",
+          "codeValue": "checkLuma",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "requesterUid",
+            "attemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "organizer.claim_verified"
+            }
+          ],
+          "description": "Asks the backend to read the public Luma calendar for the code; a match claims the listing."
+        },
+        {
+          "id": "copy_claim_code",
+          "owner": "instant_claim_controller",
+          "codeValue": "copyCode",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "attemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Copies the code to the clipboard, best effort."
+        },
+        {
+          "id": "choose_claim_check_again",
+          "owner": "instant_claim_controller",
+          "codeValue": "chooseAgain",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "flowInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Leaves the code or review step for the check choice."
+        },
+        {
+          "id": "open_claim_review",
+          "owner": "instant_claim_controller",
+          "codeValue": "openReview",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "flowInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Opens the staff review request when no code check suits the organiser."
+        },
+        {
+          "id": "request_claim_review",
+          "owner": "instant_claim_controller",
+          "codeValue": "requestReview",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "requesterUid",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "pending-claim"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "organizer.claim_request_submitted"
+            }
+          ],
+          "description": "Submits one typed claim request with proof links and an optional note; the account supplies name and phone."
         },
         {
           "id": "open_claim_listing",
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "organizerId"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "organizer_listing_canonical"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
           "description": "Opens the canonical organizer listing from a claim status or submitted state."
         },
         {
@@ -169,8 +356,19 @@
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "claimState"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "host"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "claimState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "host"
+              }
+            }
+          ],
           "description": "Opens Host acquisition from claim recovery or submission guidance."
         },
         {
@@ -178,8 +376,19 @@
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "claimState"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "claim"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "claimState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "claim"
+              }
+            }
+          ],
           "description": "Returns a terminal URL-state projection to the canonical Claim workspace."
         },
         {
@@ -187,8 +396,19 @@
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "claimState"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "organizer_search"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "claimState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            }
+          ],
           "description": "Opens Organizer Search when a dynamic claim lookup cannot resolve a public listing."
         }
       ],
@@ -198,55 +418,189 @@
           "stateId": "default",
           "dimensions": {},
           "actionCases": [
-            {"id": "listing_search", "enabledActions": ["select_claim_listing", "open_host_from_claim"]},
-            {"id": "listing_selected", "dimensions": {"listing": "selected"}, "enabledActions": ["select_claim_listing", "go_to_claim_role", "open_host_from_claim"]},
-            {"id": "role_incomplete", "dimensions": {"listing": "selected", "step": "role"}, "enabledActions": ["back_claim_step"]},
-            {"id": "role_complete", "dimensions": {"listing": "selected", "step": "role"}, "enabledActions": ["back_claim_step", "go_to_claim_verification"]},
-            {"id": "auth_checking", "dimensions": {"listing": "selected", "step": "verify", "auth": "checking"}, "enabledActions": ["back_claim_step", "select_verification_method"]},
-            {"id": "signed_out", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_out"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim"]},
-            {"id": "signing_in", "dimensions": {"listing": "selected", "step": "verify", "auth": "signing_in"}, "enabledActions": ["back_claim_step", "select_verification_method"], "disabledActions": ["sign_in_for_claim"]},
-            {"id": "ready_to_submit", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submission_pending_frozen_snapshot", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in", "mutation": "pending"}, "disabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submission_failed", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in", "mutation": "failed"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submitted", "dimensions": {"listing": "selected", "step": "submitted", "mutation": "success"}, "enabledActions": ["open_claim_listing", "open_host_from_claim"]}
+            {
+              "id": "listing_search",
+              "enabledActions": [
+                "select_claim_listing",
+                "open_host_from_claim"
+              ]
+            },
+            {
+              "id": "listing_selected_signed_out",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "account"
+              },
+              "enabledActions": [
+                "change_claim_listing",
+                "sign_in_with_phone"
+              ]
+            },
+            {
+              "id": "loading_checks",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "loading"
+              },
+              "enabledActions": []
+            },
+            {
+              "id": "choose_check",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "choose"
+              },
+              "enabledActions": [
+                "choose_claim_check",
+                "show_claim_code",
+                "open_claim_review"
+              ]
+            },
+            {
+              "id": "code_shown",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "code"
+              },
+              "enabledActions": [
+                "show_claim_code",
+                "check_luma_code",
+                "copy_claim_code",
+                "choose_claim_check_again"
+              ]
+            },
+            {
+              "id": "review_request",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "review"
+              },
+              "enabledActions": [
+                "request_claim_review",
+                "choose_claim_check_again"
+              ]
+            },
+            {
+              "id": "review_pending",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "review",
+                "mutation": "pending"
+              },
+              "disabledActions": [
+                "request_claim_review"
+              ]
+            },
+            {
+              "id": "review_requested",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "requested",
+                "mutation": "success"
+              },
+              "enabledActions": []
+            },
+            {
+              "id": "claimed",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "done"
+              },
+              "enabledActions": []
+            }
           ]
         },
         {
           "id": "not_found",
           "stateId": "not-found",
-          "dimensions": {"route_state": "not_found"},
-          "actionCases": [{"id": "missing_lookup", "enabledActions": ["restart_claim", "browse_organizers_from_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "not_found"
+          },
+          "actionCases": [
+            {
+              "id": "missing_lookup",
+              "enabledActions": [
+                "restart_claim",
+                "browse_organizers_from_claim",
+                "open_host_from_claim"
+              ]
+            }
+          ]
         },
         {
           "id": "pending_claim",
           "stateId": "pending-claim",
-          "dimensions": {"route_state": "pending_claim"},
-          "actionCases": [{"id": "authority_pending", "enabledActions": ["open_claim_listing", "restart_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "pending_claim"
+          },
+          "actionCases": [
+            {
+              "id": "prove_while_pending",
+              "dimensions": {
+                "listing": "selected",
+                "phase": "choose"
+              },
+              "enabledActions": [
+                "choose_claim_check",
+                "show_claim_code",
+                "open_claim_review"
+              ]
+            }
+          ]
         },
         {
           "id": "already_claimed",
           "stateId": "already-claimed",
-          "dimensions": {"route_state": "already_claimed"},
-          "actionCases": [{"id": "authority_owned", "enabledActions": ["open_claim_listing", "restart_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "already_claimed"
+          },
+          "actionCases": [
+            {
+              "id": "authority_owned",
+              "enabledActions": [
+                "open_claim_listing",
+                "restart_claim",
+                "open_host_from_claim"
+              ]
+            }
+          ]
         },
         {
           "id": "claim_unavailable",
           "stateId": "claim-unavailable",
-          "dimensions": {"route_state": "claim_unavailable"},
-          "actionCases": [{"id": "capability_disabled", "enabledActions": ["open_claim_listing", "restart_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "claim_unavailable"
+          },
+          "actionCases": [
+            {
+              "id": "capability_disabled",
+              "enabledActions": [
+                "open_claim_listing",
+                "restart_claim",
+                "open_host_from_claim"
+              ]
+            }
+          ]
         }
       ],
-      "requiredEvidence": {"captures": false, "previews": true, "tests": true}
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      }
     },
     {
       "id": "marketing_claim_lookup",
       "runtime": "react_marketing",
-      "authority": {"registry": "marketing_routes", "id": "claim_lookup"},
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "claim_lookup"
+      },
       "actionScope": {
-        "included": "The same Claim controller actions projected from a dynamic organizer id, slug, canonical path, or legacy path lookup.",
+        "included": "The same claim actions projected from a dynamic organizer id, slug, canonical path, or legacy path lookup, which arrives with the organizer chosen.",
         "excluded": [
           "Route lookup parsing and authority-derived terminal state selection are read-model behavior rather than user actions.",
-          "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions."
+          "Search query, account name and phone, proof link, and note edits remain validated form data rather than separate feature actions."
         ]
       },
       "bindings": {
@@ -262,24 +616,30 @@
             "symbol": "useClaimFlowController"
           },
           {
-            "id": "auth_controller",
-            "language": "typescript",
-            "file": "website/src/features/claims/useClaimRequestMutation.ts",
-            "symbol": "useClaimAuthController"
-          },
-          {
             "id": "claim_sections",
             "language": "typescript",
             "file": "website/src/features/claims/sections/ClaimPageSections.tsx",
-            "symbol": "ClaimWorkspaceSection"
+            "symbol": "ClaimSearchSection"
+          },
+          {
+            "id": "instant_claim_controller",
+            "language": "typescript",
+            "file": "website/src/features/claims/useInstantClaimController.ts",
+            "symbol": "useInstantClaimController"
+          },
+          {
+            "id": "account_controller",
+            "language": "typescript",
+            "file": "website/src/features/account/useWebsiteAccountController.ts",
+            "symbol": "useWebsiteAccountController"
           }
         ],
         "componentContracts": [
           "route_claim",
           "claim_hero_section",
           "claim_url_state_section",
-          "claim_workspace_section",
-          "shared_process_status_panel"
+          "shared_process_status_panel",
+          "claim_instant_check_panel"
         ],
         "dataContracts": [
           "contracts/callables/request_organizer_claim_payload.schema.json",
@@ -290,111 +650,241 @@
         "previewEvidence": {
           "known-listing": [
             "claim_hero_section/ClaimHero",
-            "claim_workspace_section/ClaimWorkspace"
+            "claim_instant_check_panel/InstantClaimChoose"
           ]
         },
         "testEvidence": {
           "known-listing": [
             "website/src/features/claims/claimRouting.test.ts",
-            "website/src/features/claims/useClaimFlowController.test.tsx"
+            "website/src/features/claims/useClaimFlowController.test.tsx",
+            "website/src/features/claims/sections/InstantClaimSection.test.tsx"
           ],
-          "not-found": ["website/src/features/claims/claimRouting.test.ts"],
-          "pending-claim": ["website/src/features/claims/claimRouting.test.ts"],
-          "claim-unavailable": [
+          "not-found": [
+            "website/src/features/claims/claimRouting.test.ts"
+          ],
+          "pending-claim": [
             "website/src/features/claims/claimRouting.test.ts",
-            "website/src/features/claims/useClaimRequestMutation.test.tsx"
+            "website/src/features/claims/sections/InstantClaimSection.test.tsx"
+          ],
+          "claim-unavailable": [
+            "website/src/features/claims/claimRouting.test.ts"
           ]
         }
       },
       "dimensions": {
-        "route_state": {"default": "known_listing", "values": ["known_listing", "not_found", "pending_claim", "claim_unavailable"]},
-        "step": {"default": "role", "values": ["listing", "role", "verify", "submitted"]},
-        "auth": {"default": "checking", "values": ["checking", "signed_out", "signing_in", "signed_in"]},
-        "mutation": {"default": "idle", "values": ["idle", "pending", "failed", "success"]}
+        "route_state": {
+          "default": "known_listing",
+          "values": [
+            "known_listing",
+            "not_found",
+            "pending_claim",
+            "claim_unavailable"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        },
+        "phase": {
+          "default": "account",
+          "values": [
+            "account",
+            "loading",
+            "choose",
+            "code",
+            "review",
+            "requested",
+            "done"
+          ]
+        }
       },
       "actions": [
         {
-          "id": "select_claim_listing",
-          "owner": "claim_controller",
-          "codeValue": "selectListing",
-          "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "organizerId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Changes the selected eligible organizer within the dynamic Claim workspace."
-        },
-        {
-          "id": "go_to_claim_role",
-          "owner": "claim_controller",
-          "codeValue": "setStep",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "organizerId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Returns the dynamic Claim workspace to claimant role and contact proof."
-        },
-        {
-          "id": "go_to_claim_verification",
-          "owner": "claim_controller",
-          "codeValue": "setStep",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "draftVersion"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Advances a minimally valid claimant packet into verification and authentication."
-        },
-        {
-          "id": "back_claim_step",
-          "owner": "claim_controller",
-          "codeValue": "setStep",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "stepId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Returns to role or listing selection while no claim submission is pending."
-        },
-        {
-          "id": "select_verification_method",
-          "owner": "claim_controller",
-          "codeValue": "setVerificationMethod",
-          "cardinality": "unbounded",
-          "scopeKeys": ["flowInstanceId", "verificationMethod", "draftVersion"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Chooses one bounded claim verification method for the review message."
-        },
-        {
-          "id": "sign_in_for_claim",
-          "owner": "auth_controller",
-          "codeValue": "handleSignIn",
+          "id": "sign_in_with_phone",
+          "owner": "account_controller",
+          "codeValue": "handleSubmit",
           "cardinality": "singleton",
-          "scopeKeys": ["browserProfileId", "organizerId", "authAttempt"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Starts Google claim authentication with pending and actionable failure feedback."
-        },
-        {
-          "id": "sign_out_claim_user",
-          "owner": "auth_controller",
-          "codeValue": "handleSignOut",
-          "cardinality": "singleton",
-          "scopeKeys": ["browserProfileId", "authSessionVersion"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Signs the current website claim user out while no claim submission is pending."
-        },
-        {
-          "id": "submit_organizer_claim",
-          "owner": "claim_controller",
-          "codeValue": "handleClaimSubmit",
-          "cardinality": "singleton",
-          "scopeKeys": ["requesterUid", "organizerId", "claimDraftVersion"],
-          "outcomes": [
-            {"kind": "surface_state", "stateIds": ["known-listing", "pending-claim"]},
-            {"kind": "side_effect", "id": "organizer.claim_request_submitted"}
+          "scopeKeys": [
+            "browserProfileId",
+            "authAttempt"
           ],
-          "description": "Validates capability, runtime, auth, contact, and proof before submitting one typed organizer claim request."
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            }
+          ],
+          "description": "Signs in with a name and a verified phone; the account supplies the claimant's name and phone to every later step."
+        },
+        {
+          "id": "choose_claim_check",
+          "owner": "instant_claim_controller",
+          "codeValue": "setMethod",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "flowInstanceId",
+            "verificationMethod"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            }
+          ],
+          "description": "Chooses between the listing's Instagram message and Luma calendar checks."
+        },
+        {
+          "id": "show_claim_code",
+          "owner": "instant_claim_controller",
+          "codeValue": "showCode",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "requesterUid",
+            "organizerId",
+            "verificationMethod"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "organizer.claim_verification_started"
+            }
+          ],
+          "description": "Starts one claim attempt and shows its 30-minute code."
+        },
+        {
+          "id": "check_luma_code",
+          "owner": "instant_claim_controller",
+          "codeValue": "checkLuma",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "requesterUid",
+            "attemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "organizer.claim_verified"
+            }
+          ],
+          "description": "Asks the backend to read the public Luma calendar for the code; a match claims the listing."
+        },
+        {
+          "id": "copy_claim_code",
+          "owner": "instant_claim_controller",
+          "codeValue": "copyCode",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "attemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            }
+          ],
+          "description": "Copies the code to the clipboard, best effort."
+        },
+        {
+          "id": "choose_claim_check_again",
+          "owner": "instant_claim_controller",
+          "codeValue": "chooseAgain",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "flowInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            }
+          ],
+          "description": "Leaves the code or review step for the check choice."
+        },
+        {
+          "id": "open_claim_review",
+          "owner": "instant_claim_controller",
+          "codeValue": "openReview",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "flowInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing"
+              ]
+            }
+          ],
+          "description": "Opens the staff review request when no code check suits the organiser."
+        },
+        {
+          "id": "request_claim_review",
+          "owner": "instant_claim_controller",
+          "codeValue": "requestReview",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "requesterUid",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "known-listing",
+                "pending-claim"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "organizer.claim_request_submitted"
+            }
+          ],
+          "description": "Submits one typed claim request with proof links and an optional note; the account supplies name and phone."
         },
         {
           "id": "open_claim_listing",
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "organizerId"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "organizer_listing_canonical"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
           "description": "Opens the canonical organizer listing from a dynamic claim status or submitted state."
         },
         {
@@ -402,8 +892,19 @@
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "claimState"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "host"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "claimState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "host"
+              }
+            }
+          ],
           "description": "Opens Host acquisition from dynamic claim recovery or submission guidance."
         },
         {
@@ -411,8 +912,19 @@
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "claimState"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "claim"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "claimState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "claim"
+              }
+            }
+          ],
           "description": "Returns a terminal dynamic Claim projection to the canonical Claim workspace."
         },
         {
@@ -420,8 +932,19 @@
           "owner": "claim_sections",
           "codeValue": "trackProcessStatusAction",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId", "claimState"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "marketing_routes", "id": "organizer_search"}}],
+          "scopeKeys": [
+            "routeInstanceId",
+            "claimState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            }
+          ],
           "description": "Opens Organizer Search when the dynamic claim lookup cannot resolve a public listing."
         }
       ],
@@ -431,38 +954,142 @@
           "stateId": "known-listing",
           "dimensions": {},
           "actionCases": [
-            {"id": "listing_search_after_back", "dimensions": {"step": "listing"}, "enabledActions": ["select_claim_listing", "go_to_claim_role", "open_host_from_claim"]},
-            {"id": "role_incomplete", "enabledActions": ["back_claim_step"]},
-            {"id": "role_complete", "enabledActions": ["back_claim_step", "go_to_claim_verification"]},
-            {"id": "auth_checking", "dimensions": {"step": "verify", "auth": "checking"}, "enabledActions": ["back_claim_step", "select_verification_method"]},
-            {"id": "signed_out", "dimensions": {"step": "verify", "auth": "signed_out"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim"]},
-            {"id": "signing_in", "dimensions": {"step": "verify", "auth": "signing_in"}, "enabledActions": ["back_claim_step", "select_verification_method"], "disabledActions": ["sign_in_for_claim"]},
-            {"id": "ready_to_submit", "dimensions": {"step": "verify", "auth": "signed_in"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submission_pending_frozen_snapshot", "dimensions": {"step": "verify", "auth": "signed_in", "mutation": "pending"}, "disabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submission_failed", "dimensions": {"step": "verify", "auth": "signed_in", "mutation": "failed"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submitted", "dimensions": {"step": "submitted", "mutation": "success"}, "enabledActions": ["open_claim_listing", "open_host_from_claim"]}
+            {
+              "id": "signed_out",
+              "dimensions": {
+                "phase": "account"
+              },
+              "enabledActions": [
+                "sign_in_with_phone"
+              ]
+            },
+            {
+              "id": "loading_checks",
+              "dimensions": {
+                "phase": "loading"
+              },
+              "enabledActions": []
+            },
+            {
+              "id": "choose_check",
+              "dimensions": {
+                "phase": "choose"
+              },
+              "enabledActions": [
+                "choose_claim_check",
+                "show_claim_code",
+                "open_claim_review"
+              ]
+            },
+            {
+              "id": "code_shown",
+              "dimensions": {
+                "phase": "code"
+              },
+              "enabledActions": [
+                "show_claim_code",
+                "check_luma_code",
+                "copy_claim_code",
+                "choose_claim_check_again"
+              ]
+            },
+            {
+              "id": "review_request",
+              "dimensions": {
+                "phase": "review"
+              },
+              "enabledActions": [
+                "request_claim_review",
+                "choose_claim_check_again"
+              ]
+            },
+            {
+              "id": "review_pending",
+              "dimensions": {
+                "phase": "review",
+                "mutation": "pending"
+              },
+              "disabledActions": [
+                "request_claim_review"
+              ]
+            },
+            {
+              "id": "review_requested",
+              "dimensions": {
+                "phase": "requested",
+                "mutation": "success"
+              },
+              "enabledActions": []
+            },
+            {
+              "id": "claimed",
+              "dimensions": {
+                "phase": "done"
+              },
+              "enabledActions": []
+            }
           ]
         },
         {
           "id": "not_found",
           "stateId": "not-found",
-          "dimensions": {"route_state": "not_found"},
-          "actionCases": [{"id": "missing_lookup", "enabledActions": ["restart_claim", "browse_organizers_from_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "not_found"
+          },
+          "actionCases": [
+            {
+              "id": "missing_lookup",
+              "enabledActions": [
+                "restart_claim",
+                "browse_organizers_from_claim",
+                "open_host_from_claim"
+              ]
+            }
+          ]
         },
         {
           "id": "pending_claim",
           "stateId": "pending-claim",
-          "dimensions": {"route_state": "pending_claim"},
-          "actionCases": [{"id": "authority_pending", "enabledActions": ["open_claim_listing", "restart_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "pending_claim"
+          },
+          "actionCases": [
+            {
+              "id": "prove_while_pending",
+              "dimensions": {
+                "phase": "choose"
+              },
+              "enabledActions": [
+                "choose_claim_check",
+                "show_claim_code",
+                "open_claim_review"
+              ]
+            }
+          ]
         },
         {
           "id": "claim_unavailable",
           "stateId": "claim-unavailable",
-          "dimensions": {"route_state": "claim_unavailable"},
-          "actionCases": [{"id": "capability_disabled", "enabledActions": ["open_claim_listing", "restart_claim", "open_host_from_claim"]}]
+          "dimensions": {
+            "route_state": "claim_unavailable"
+          },
+          "actionCases": [
+            {
+              "id": "capability_disabled",
+              "enabledActions": [
+                "open_claim_listing",
+                "restart_claim",
+                "open_host_from_claim"
+              ]
+            }
+          ]
         }
       ],
-      "requiredEvidence": {"captures": false, "previews": true, "tests": true}
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      }
     }
   ]
 }

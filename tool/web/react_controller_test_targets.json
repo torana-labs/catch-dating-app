@@ -215,11 +215,6 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/claims/useListingClaimController.ts",
-      "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
       "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
       "status": "required"

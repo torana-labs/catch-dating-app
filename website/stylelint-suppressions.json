@@ -102,7 +102,7 @@
   },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 56
+      "count": 55
     },
     "declaration-property-value-allowed-list": {
       "count": 21
