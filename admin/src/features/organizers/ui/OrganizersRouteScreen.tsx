@@ -1,6 +1,6 @@
 import {CatchWorkspaceHeader} from "@catch/web-ui";
 import {brand} from "@catch/brand";
-import {OrganizerEventsRouteWorkspace} from "../../events/ui/EventsRouteScreen";
+import type {ReactNode} from "react";
 import {useOrganizerDirectoryController} from "../controllers/useOrganizerDirectoryController";
 import {useOrganizerOverviewController} from "../controllers/useOrganizerOverviewController";
 import {OrganizerDirectoryScreen} from "./OrganizerDirectoryScreen";
@@ -22,9 +22,10 @@ function DirectoryRoute({onNavigate}: {onNavigate: (path: string) => void}) {
   );
 }
 
-function PageRoute({onNavigate, organizerId, tab}: {
+function PageRoute({onNavigate, organizerId, renderEvents, tab}: {
   onNavigate: (path: string) => void;
   organizerId: string;
+  renderEvents: (organizerId: string) => ReactNode;
   tab: OrganizerPageTab;
 }) {
   const controller = useOrganizerOverviewController(organizerId);
@@ -32,8 +33,7 @@ function PageRoute({onNavigate, organizerId, tab}: {
   return (
     <OrganizerPageScreen
       links={{
-        eventsTab: tab === "events" ?
-          <OrganizerEventsRouteWorkspace onNavigate={onNavigate} organizerId={organizerId} /> : null,
+        eventsTab: tab === "events" ? renderEvents(organizerId) : null,
         onBack: () => onNavigate("/organizers"),
         onTabChanged: (next) => onNavigate(next === "overview" ? base : `${base}/${next}`),
         onOpenEvent: (source, eventId) => onNavigate(source === "catch" ?
@@ -61,12 +61,15 @@ export function OrganizersRouteScreen({
   claimRequestId,
   onNavigate,
   organizerId,
+  renderEvents,
   tab,
   workspace,
 }: {
   claimRequestId: string | null;
   onNavigate: (path: string) => void;
   organizerId: string | null;
+  /** The Events tab: one organizer's events, which the Events area owns. */
+  renderEvents: (organizerId: string) => ReactNode;
   tab: OrganizerPageTab;
   workspace: "directory" | "claims";
 }) {
@@ -85,7 +88,10 @@ export function OrganizersRouteScreen({
     );
   }
   if (organizerId) {
-    return <PageRoute key={organizerId} onNavigate={onNavigate} organizerId={organizerId} tab={tab} />;
+    return (
+      <PageRoute key={organizerId} onNavigate={onNavigate} organizerId={organizerId} renderEvents={renderEvents}
+        tab={tab} />
+    );
   }
   return <DirectoryRoute onNavigate={onNavigate} />;
 }
