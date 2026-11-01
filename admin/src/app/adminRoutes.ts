@@ -83,7 +83,7 @@ export const adminRoutes: AdminRoute[] = [
   route("/money/bills/*", "money", {moneyView: "bills", title: "Bills"}),
   route("/money/bills/:billId", "money", {moneyView: "bills", title: "Bill"}),
   // The older payment setup screens moved off /finance; old links keep working.
-  route("/finance/*", "payment-setup", {redirect: "/money"}),
+  route("/finance/*", "money", {redirect: "/money"}),
   route("/finance/commercial-terms/*", "payment-setup", {redirect: "/payment-setup/commercial-terms"}),
   route("/finance/payment-routing/*", "payment-setup", {redirect: "/payment-setup/payment-routing"}),
   route("/payment-setup/issues/:financeIssueId", "payment-setup", {title: "Finance issue"}),
