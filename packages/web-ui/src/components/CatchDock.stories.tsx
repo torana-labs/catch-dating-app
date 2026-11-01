@@ -51,6 +51,17 @@ function States() {
           secondary={{label: "Snooze", onPressed: noop}}
         />
       </State>
+      <State label="pane on a phone">
+        <div style={{maxWidth: 343}}>
+          <CatchDock
+            danger={{label: "Write off", onPressed: noop}}
+            next="Then: Meher gets it on WhatsApp · then Lantern Lane Social"
+            primary={{label: "Send a reminder", onPressed: noop}}
+            recipe="pane"
+            secondary={{label: "Mark as paid", onPressed: noop}}
+          />
+        </div>
+      </State>
       <State label="custom">
         <CatchDock>
           <div style={{alignItems: "center", display: "flex", justifyContent: "space-between"}}>

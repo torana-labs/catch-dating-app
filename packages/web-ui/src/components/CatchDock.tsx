@@ -151,8 +151,9 @@ function PaneDock({primary, secondary, danger, note, next, summary}: CatchDockPa
           />
         </label>
       ) : null}
+      {next ? <p className={styles.next}>{next}</p> : null}
       <div className={styles.paneRow}>
-        {next ? <span className={styles.next}>{next}</span> : summary ? <div className={styles.summary}>{summary}</div> : <span />}
+        {summary && !next ? <div className={styles.summary}>{summary}</div> : null}
         <span className={styles.paneActions}>
           {danger ? (
             <CatchButton label={danger.label} onPressed={danger.isLoading ? null : danger.onPressed} recipe="text" tone="danger" />
