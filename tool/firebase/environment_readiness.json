@@ -127,6 +127,7 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
+          "functions:adminManageOrganizerBills",
           "functions:cancelEventSignUp",
           "functions:createRazorpayHostPaymentAccount",
           "functions:createRazorpayOrder",
