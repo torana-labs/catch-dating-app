@@ -108,6 +108,7 @@ import {requireAuth} from "../shared/auth";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {answersForSubmission, reachableFormSections}
   from "./organizerFormLogic";
@@ -1094,7 +1095,7 @@ export async function getOrganizerFormShareAssetsHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerFormShareAssets", {
+  checkInstanceRateLimit(actorUid, "getOrganizerFormShareAssets", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});

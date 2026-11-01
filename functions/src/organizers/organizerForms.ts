@@ -100,6 +100,7 @@ import {normalizePayloadStrings} from
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 
 type FormDefinition = OrganizerFormDraftDocument["definition"];
@@ -418,7 +419,7 @@ export async function getOrganizerFormEditorHandler(
     normalizeFormIdentityPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerFormEditor", {
+  checkInstanceRateLimit(actorUid, "getOrganizerFormEditor", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
@@ -933,7 +934,7 @@ export async function listOrganizerFormTemplatesHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerFormTemplates", {
+  checkInstanceRateLimit(actorUid, "listOrganizerFormTemplates", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});

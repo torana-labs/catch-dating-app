@@ -4,7 +4,7 @@ import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validateGetEventViewerStateCallablePayload} from
   "../shared/generated/validators/getEventViewerStateInput";
@@ -16,12 +16,11 @@ import {readEventViewerStateSource} from "./eventViewerStateSource";
 
 interface Deps {
   db: () => FirebaseFirestore.Firestore;
-  rateLimit: typeof checkRateLimit;
   nowMillis: () => number;
   read: typeof readEventViewerStateSource;
   readGuest?: typeof readGuestEventViewerState;
 }
-const defaults: Deps = {db: () => admin.firestore(), rateLimit: checkRateLimit,
+const defaults: Deps = {db: () => admin.firestore(),
   nowMillis: Date.now, read: readEventViewerStateSource};
 
 export async function getEventViewerStateHandler(
@@ -31,7 +30,7 @@ export async function getEventViewerStateHandler(
   const payload = validateCallableWithAjv(request,
     validateGetEventViewerStateCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventViewerState", {
+  checkInstanceRateLimit(uid, "getEventViewerState", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   const phoneE164 = request.auth?.token.phone_number;

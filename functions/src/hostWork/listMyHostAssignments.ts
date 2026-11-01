@@ -12,7 +12,7 @@ import * as admin from "firebase-admin";
 import {CallableRequest, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {activeProgramDuties, programOwnerAuthorizationDeadline,
@@ -48,13 +48,11 @@ type GrantedDutyDto = AssignmentDto["duties"][number];
 
 interface HostWorkDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: typeof checkRateLimit;
   now: () => FirebaseFirestore.Timestamp;
 }
 
 const defaultDeps: HostWorkDeps = {
   firestore: () => admin.firestore(),
-  checkRateLimit,
   now: () => admin.firestore.Timestamp.now(),
 };
 
@@ -73,7 +71,7 @@ export async function listMyHostAssignmentsHandler(
   const data = validateCallableWithAjv<ListMyHostAssignmentsCallablePayload>(
     request, validateListMyHostAssignmentsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listMyHostAssignments", {
+  checkInstanceRateLimit(actorUid, "listMyHostAssignments", {
     maxRequests: 30, windowMs: 60 * 1000,
   });
   return db.runTransaction(async (tx) => {
