@@ -15,11 +15,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
-      "test": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/catch-support/controllers/useCatchWhatsappAvailabilityController.ts",
       "test": "admin/src/features/catch-support/controllers/useCatchWhatsappAvailabilityController.test.tsx",
       "status": "required"
@@ -407,6 +402,11 @@
     {
       "source": "admin/src/features/money/controllers/useMoneyIssuesController.ts",
       "test": "admin/src/features/money/controllers/useMoneyIssuesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/settings/controllers/useTeamController.ts",
+      "test": "admin/src/features/settings/controllers/useTeamController.test.tsx",
       "status": "required"
     }
   ]

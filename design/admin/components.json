@@ -11,8 +11,13 @@
   "coverage": {
     "strategy": "route-workspace-plus-shared-primitives",
     "currentFocus": [
-      "route_admin_role_management",
-      "workspace_admin_role_management",
+      "route_people",
+      "route_people_live_controller",
+      "route_settings",
+      "route_settings_live_controller",
+      "workspace_team_settings",
+      "workspace_safety_settings",
+      "route_safety_settings_live_controller",
       "route_admin_action_executions",
       "workspace_admin_action_executions",
       "route_data_quality",
@@ -174,42 +179,123 @@
       "notes": "Shared admin feedback provider. Preview coverage is not required because it wraps the app context rather than rendering a standalone surface."
     },
     {
-      "id": "route_admin_role_management",
+      "id": "route_people",
       "kind": "route",
-      "owner": "features/admin-roles",
-      "source": "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
-      "exportName": "AdminRoleManagementScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "owner": "features/people",
+      "source": "admin/src/features/people/ui/PeopleScreen.tsx",
+      "exportName": "PeopleScreen",
+      "css": [],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AdminRoleManagementRouteStory",
+        "exportName": "PeopleRouteStory",
         "states": [
-          "role-assignment-detail"
+          "search-results",
+          "person"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query assignment register fetches and role mutation behavior; preview renders the registered AdminRoleManagementWorkspace with deterministic assignment/role fixtures in AdminRoutes.stories.tsx."
+      "notes": "People (board AdminPeople) in the quiet register: search by name, phone or user id, run only when submitted because each search is logged, results in a CatchTable on the queue pattern and the person beside them."
     },
     {
-      "id": "workspace_admin_role_management",
-      "kind": "workspace",
-      "owner": "features/admin-roles",
-      "source": "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
-      "exportName": "AdminRoleManagementWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "id": "route_people_live_controller",
+      "kind": "route",
+      "owner": "features/people",
+      "source": "admin/src/features/people/ui/PeopleRouteScreen.tsx",
+      "exportName": "PeopleRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the People search controller; deterministic prop-driven visual coverage remains on route_people."
+    },
+    {
+      "id": "route_settings",
+      "kind": "route",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/SettingsScreen.tsx",
+      "exportName": "SettingsScreen",
+      "css": [],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AdminRoleManagementWorkspaceStory",
+        "exportName": "SettingsRouteStory",
         "states": [
-          "role-assignment-detail"
+          "team",
+          "role-change"
         ]
       },
-      "notes": "Prop-driven Admin Roles workspace surface used by the route wrapper and deterministic Storybook previews; query, register fetch, and mutation logic stay in AdminRoleManagementScreen."
+      "notes": "Settings (boards AdminSettings*) on the list-detail pattern: settings pages as navigation and the open page beside them. Areas add their own pages through the app; Team and roles is drawn here. It replaces the Admin roles screen."
+    },
+    {
+      "id": "route_settings_live_controller",
+      "kind": "route",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/SettingsRouteScreen.tsx",
+      "exportName": "SettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Team controller and the settings URL seam; deterministic prop-driven visual coverage remains on route_settings."
+    },
+    {
+      "id": "workspace_team_settings",
+      "kind": "workspace",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/TeamSettingsWorkspace.tsx",
+      "exportName": "TeamSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "TeamSettingsWorkspaceStory",
+        "states": [
+          "team",
+          "role-change"
+        ]
+      },
+      "notes": "Team and roles (board AdminSettingsTeam): the people with an Admin job, what each of the three jobs can do, inviting by user id, and a sheet to change someone's job with a review note."
+    },
+    {
+      "id": "workspace_safety_settings",
+      "kind": "workspace",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetySettingsWorkspace.tsx",
+      "exportName": "SafetySettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SafetySettingsWorkspaceStory",
+        "states": [
+          "owner-edits",
+          "ops-reads"
+        ]
+      },
+      "notes": "Settings → Safety (board AdminSettingsSafety): the steps and who may take them, the rules, the deadlines, the report reasons, the grievance officer and record keeping; only the owner edits."
+    },
+    {
+      "id": "route_safety_settings_live_controller",
+      "kind": "route",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetySettingsRouteScreen.tsx",
+      "exportName": "SafetySettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the safety settings controller for the Settings → Safety page; deterministic visual coverage remains on workspace_safety_settings."
     },
     {
       "id": "route_admin_action_executions",

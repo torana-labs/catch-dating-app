@@ -24,12 +24,13 @@ export const adminAreaRoles: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   events: opsAndOwner,
   growth: owner,
   marketplace: owner,
+  people: ["admin", "adminOwner", "safetyReviewer", "support"],
   users: owner,
   "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
   "marketing-ops": opsAndOwner,
   quality: owner,
   operations: opsAndOwner,
-  "admin-roles": owner,
+  settings: ["admin", "adminOwner", "safetyReviewer", "support"],
 };
 
 export interface AdminNavigationEntry {
@@ -50,11 +51,12 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
     {nav: "organizer-intake", section: "Work", pinned: true}, {nav: "safety", section: "Work"}, {nav: "support", section: "Work"},
     {nav: "sales", section: "Work", pinned: true}, {nav: "money", section: "Work"},
     {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
+    {nav: "people", section: "Records"},
     {nav: "growth", section: "Insights"}, {nav: "marketplace", section: "Insights"},
+    {nav: "settings", section: "Setup"},
     {nav: "payment-setup", section: "Older pages"}, {nav: "users", section: "Older pages"},
     {nav: "cross-paths", section: "Older pages"}, {nav: "marketing-ops", section: "Older pages"},
     {nav: "quality", section: "Older pages"}, {nav: "operations", section: "Older pages"},
-    {nav: "admin-roles", section: "Older pages"},
   ],
   sales: [
     {nav: "sales", section: "Sales", pinned: true},
@@ -65,6 +67,8 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
     {nav: "organizer-intake", section: "Work", pinned: true}, {nav: "safety", section: "Work", pinned: true},
     {nav: "support", section: "Work"},
     {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
+    {nav: "people", section: "Records"},
+    {nav: "settings", section: "Setup"},
     {nav: "cross-paths", section: "Older pages"},
     {nav: "marketing-ops", section: "Older pages"}, {nav: "operations", section: "Older pages"},
   ],
