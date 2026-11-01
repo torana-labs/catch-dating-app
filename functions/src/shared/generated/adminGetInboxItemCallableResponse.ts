@@ -35,6 +35,10 @@ export interface AdminGetInboxItemCallableResponse {
       at: string;
       note: string;
     } | null;
+    listingEvent: {
+      intakeRequestId: string;
+      eventWorkItemId: string;
+    } | null;
   };
   /**
    * @maxItems 200

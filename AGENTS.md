@@ -64,7 +64,7 @@ accountable owner and next action.
 | Data contracts, Firestore, Functions | `docs/data_contracts.md`, `docs/backend_operation_catalog.md` | `./tool/check_data_contract.sh` when behavior changes |
 | Durable operations workflows | `docs/operations_platform.md`, `contracts/operations/README.md` | Operations tests/checks plus focused Functions/admin checks |
 | Release, deploy, CI, environments | `docs/release_operations.md`, `docs/web_surface_architecture.md` | Local CI-equivalent checks and exact workflow/deploy-state verification |
-| React website/admin architecture | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md` | Registered React boundary, primitive, component, test, typecheck, and build checks |
+| React website/admin architecture | `docs/web_surface_architecture.md`, `docs/agent_skills/catch-react-surface-refactor.md` | Registered React boundary, primitive, component, test, typecheck, and build checks; before pushing Admin work, `npm run check:admin` runs CI's Admin lane locally |
 | Marketing routes/components/SEO | `docs/marketing_website_architecture.md`, `design/website/routes.json`, `design/website/components.json` | Route/component/import checks and marketing typecheck/build |
 | Widget consolidation or dedupe | `docs/design_parity/widget_consolidation/consolidation_rules.md`, `docs/design_parity/widget_consolidation/decisions.json` | Apply only exact K/R/D rules; escalate unmatched identity or visual trade-offs; keep the decision ledger current |
 | Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | `node tool/run.mjs check --manifest-only` plus focused tool tests |

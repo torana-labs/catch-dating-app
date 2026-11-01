@@ -27,6 +27,7 @@
       "tool:runner"
     ],
     "manifestCheckIds": [
+      "meta:ci-tool-category-coverage",
       "tool:runner"
     ]
   },
@@ -4232,7 +4233,7 @@
     },
     {
       "id": "web:verify-admin-hosting",
-      "category": "web",
+      "category": "lint",
       "path": "tool/web/verify_admin_hosting.mjs",
       "command": "node tool/web/verify_admin_hosting.mjs",
       "safety": "remote-read",
@@ -6375,6 +6376,24 @@
           "__KnownMissingWebsiteSymbol__"
         ]
       }
+    },
+    {
+      "id": "admin:check-ci",
+      "category": "test",
+      "path": "admin/scripts/checkAdminCi.mjs",
+      "command": "npm run check:admin",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "description": "Runs CI's Admin lane locally, reading its steps from the React surface workflow. Its checks here cover only the step reader; the steps themselves run in the Admin lane.",
+      "impactPaths": [
+        "admin/scripts/checkAdminCi.test.mjs",
+        ".github/workflows/react-surface-validation.yml"
+      ],
+      "checks": [
+        "node --check admin/scripts/checkAdminCi.mjs",
+        "node --test admin/scripts/checkAdminCi.test.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "web:admin-bundle-budget",

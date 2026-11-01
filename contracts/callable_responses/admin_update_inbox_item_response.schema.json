@@ -28,7 +28,8 @@
         "doneAt",
         "assigneeUid",
         "snoozedUntil",
-        "recommendation"
+        "recommendation",
+        "listingEvent"
       ],
       "properties": {
         "itemId": {
@@ -222,6 +223,33 @@
                 "note": {
                   "type": "string",
                   "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "listingEvent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "intakeRequestId",
+                "eventWorkItemId"
+              ],
+              "properties": {
+                "intakeRequestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "eventWorkItemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
                 }
               }
             },

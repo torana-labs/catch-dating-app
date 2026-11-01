@@ -95,12 +95,16 @@ export async function updateInboxItem(input: InboxUpdate): Promise<AdminUpdateIn
   if (dataMode() !== "sample") return call("adminUpdateInboxItem", input);
   const before = sampleState.get(input.itemId);
   if (!before) throw new Error("This inbox item was not found.");
+  const dismissed = input.action === "dismiss";
   const item: InboxItem = {...before,
+    ...(dismissed ? {status: "done" as const, state: {code: "dismissed", label: "Dismissed", tone: "neutral" as const},
+      doneAt: new Date().toISOString()} : {}),
     assigneeUid: input.action === "assign" ? input.assigneeUid : input.action === "unassign" ? null : before.assigneeUid,
-    status: input.action === "snooze" ? "snoozed" : input.action === "wake" ? "waiting" : before.status,
+    status: dismissed ? "done" : input.action === "snooze" ? "snoozed" : input.action === "wake" || input.action === "reopen" ? "waiting" : before.status,
     snoozedUntil: input.action === "snooze" ? input.snoozedUntil : input.action === "wake" ? null : before.snoozedUntil};
   sampleState.set(item.itemId, item);
-  const titles = {assign: "Assigned", unassign: "Unassigned", snooze: "Snoozed", wake: "Back in the inbox"};
+  const titles = {assign: "Assigned", unassign: "Unassigned", snooze: "Snoozed", wake: "Back in the inbox",
+    dismiss: "Dismissed", reopen: "Back in the inbox"};
   sampleUpdates.set(item.itemId, [...(sampleUpdates.get(item.itemId) ?? []), {stepId: `staff-${Date.now()}`,
     occurredAt: new Date().toISOString(), title: titles[input.action], detail: input.note, actorUid: "sample-owner", tone: "ink"}]);
   return {item};

@@ -15,6 +15,7 @@
     "nx:graph": "nx graph",
     "repo:hygiene": "node tool/repository_hygiene.mjs --json",
     "repo:hygiene:check": "node tool/check_repository_root_hygiene.mjs",
+    "check:admin": "node admin/scripts/checkAdminCi.mjs",
     "web:admin:dev": "npm --workspace catch-admin run dev",
     "web:admin:build": "npm --workspace catch-admin run build",
     "web:admin:check:boundaries": "npm --workspace catch-admin run check:boundaries",
