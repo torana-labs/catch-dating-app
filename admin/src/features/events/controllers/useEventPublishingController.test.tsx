@@ -180,7 +180,7 @@ describe("useEventPublishingController", () => {
       const controller = useEventPublishingController({
         activeWorkspace: "external", selectedExternalEventId: row.eventId, onError, onNotice,
       });
-      return <eventPublishingDirectoryPanels.ExternalEventInventoryView controller={controller} />;
+      return <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />;
     }
     render(<Inventory />, {wrapper: createWrapper(client)});
     await screen.findByRole("button", {name: "Remove external event"});
@@ -225,7 +225,7 @@ describe("useEventPublishingController", () => {
       controller = useEventPublishingController({
         activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
       });
-      return <eventPublishingDirectoryPanels.ExternalEventInventoryView controller={controller} />;
+      return <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />;
     }
     const {rerender} = render(<Inventory selectedId={null} />, {wrapper: createWrapper()});
     await waitFor(() => expect(controller.externalRows).toEqual([row]));
@@ -369,7 +369,7 @@ describe("useEventPublishingController", () => {
       const controller = useEventPublishingController({
         activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
       });
-      return <eventPublishingDirectoryPanels.ExternalEventInventoryView controller={controller} />;
+      return <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />;
     }
     const {rerender} = render(<Inventory selectedId={row.eventId} />, {wrapper: createWrapper(client)});
     const note = await screen.findByLabelText("Takedown review note");
