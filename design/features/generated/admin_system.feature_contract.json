@@ -1,0 +1,502 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_system.feature.json",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:f2eff43e140f637b77813c5f6d0c4f973645fbd8438b4d4b8dc01551d53e61d3",
+  "resolvedDigest": "sha256:a303ebd79af444c2bd17257926792338d935819f41cfe8daf08f899f017851b9",
+  "feature": {
+    "id": "feature.admin_system",
+    "name": "Admin System",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "One activity log of what people and agents did in Admin, filtered by who acted and by problems and searchable, beside the health of each data source."
+  },
+  "coverage": {
+    "surfaces": 2,
+    "states": 5,
+    "scenarios": 5,
+    "actionCases": 5,
+    "actions": 4,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 1,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_system",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_system"
+      },
+      "actionScope": {
+        "included": "Filtering and searching the activity log, and refreshing activity and health.",
+        "excluded": [
+          "System is read-only: it does not retry or undo actions.",
+          "Data-quality drill-down stays on the Data quality page until it is folded in."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/system/controllers/useSystemController.ts",
+            "symbol": "useSystemController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/system/ui/SystemScreen.tsx",
+            "symbol": "SystemScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_system"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListActionExecutions",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "activity": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ],
+          "filters": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ],
+          "health": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 3,
+        "scenarios": 3,
+        "actionCases": 3,
+        "actions": 3,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "activity_source": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "failed"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "filter_system_activity",
+          "owner": "screen",
+          "codeValue": "onFilterChanged",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "filter"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "filters"
+              ]
+            }
+          ],
+          "description": "Shows everyone's actions, people's, automatic ones, or only problems.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "search_system_activity",
+          "owner": "screen",
+          "codeValue": "onQueryChanged",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "query"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "activity",
+                "filters"
+              ]
+            }
+          ],
+          "description": "Searches who acted, what and the result.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_system",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "activity",
+                "health"
+              ]
+            }
+          ],
+          "description": "Refetches activity and health.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "activity",
+          "stateId": "activity",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "activity_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_system/SystemRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/system/controllers/useSystemController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "activity_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_system",
+                  "search_system_activity"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "filter_system_activity"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "filters",
+          "stateId": "filters",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "activity_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_system/SystemRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/system/controllers/useSystemController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "activity_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "filter_system_activity",
+                  "search_system_activity"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "refresh_system"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "health",
+          "stateId": "health",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "activity_source": "ready"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_system/SystemRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/system/controllers/useSystemController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "activity_source": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_system"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "filter_system_activity",
+                  "search_system_activity"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_system",
+          "source": "admin/src/features/system/ui/SystemScreen.tsx",
+          "exportName": "SystemScreen"
+        },
+        "components": [
+          {
+            "id": "route_system",
+            "kind": "route",
+            "source": "admin/src/features/system/ui/SystemScreen.tsx",
+            "exportName": "SystemScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "SystemRouteStory",
+              "states": [
+                "activity",
+                "filters",
+                "health"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_system/SystemRouteStory"
+        ]
+      }
+    },
+    {
+      "id": "admin_system_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_system_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query seam for the prop-driven System actions.",
+        "excluded": [
+          "Deterministic visual state remains on route_system."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/system/controllers/useSystemController.ts",
+            "symbol": "useSystemController"
+          },
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/system/ui/SystemRouteScreen.tsx",
+            "symbol": "SystemRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_system_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListActionExecutions",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 2,
+        "actions": 1,
+        "captures": 0,
+        "previews": 0,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_system",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Refetches live activity and health.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "resolved"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/system/controllers/useSystemController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "resolved",
+              "dimensions": {
+                "boundary": "resolved"
+              },
+              "actions": {
+                "enabled": [
+                  "refresh_system"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/system/controllers/useSystemController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading",
+              "dimensions": {
+                "boundary": "loading"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "refresh_system"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_system_live_controller",
+          "source": "admin/src/features/system/ui/SystemRouteScreen.tsx",
+          "exportName": "SystemRouteScreen"
+        },
+        "components": [
+          {
+            "id": "route_system_live_controller",
+            "kind": "route",
+            "source": "admin/src/features/system/ui/SystemRouteScreen.tsx",
+            "exportName": "SystemRouteScreen",
+            "storybook": {
+              "status": "not-required",
+              "states": [
+                "live-query-wrapper",
+                "route-lazy-boundary"
+              ]
+            }
+          }
+        ],
+        "previews": []
+      }
+    }
+  ]
+}

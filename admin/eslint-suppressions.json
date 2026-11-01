@@ -238,10 +238,10 @@
       "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 9
+      "count": 8
     },
     "react/forbid-elements": {
-      "count": 9
+      "count": 8
     }
   },
   "src/shared/ui/AdminPrimitives/metrics.tsx": {

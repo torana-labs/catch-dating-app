@@ -1,0 +1,315 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-11-01",
+  "id": "feature.admin_system",
+  "name": "Admin System",
+  "owner": "admin_console",
+  "status": "pilot",
+  "description": "One activity log of what people and agents did in Admin, filtered by who acted and by problems and searchable, beside the health of each data source.",
+  "surfaces": [
+    {
+      "id": "admin_system",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_system"
+      },
+      "actionScope": {
+        "included": "Filtering and searching the activity log, and refreshing activity and health.",
+        "excluded": [
+          "System is read-only: it does not retry or undo actions.",
+          "Data-quality drill-down stays on the Data quality page until it is folded in."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/system/controllers/useSystemController.ts",
+            "symbol": "useSystemController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/system/ui/SystemScreen.tsx",
+            "symbol": "SystemScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_system"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListActionExecutions",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "activity": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ],
+          "filters": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ],
+          "health": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {
+        "activity_source": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "failed"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "filter_system_activity",
+          "owner": "screen",
+          "codeValue": "onFilterChanged",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "filter"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "filters"
+              ]
+            }
+          ],
+          "description": "Shows everyone's actions, people's, automatic ones, or only problems."
+        },
+        {
+          "id": "search_system_activity",
+          "owner": "screen",
+          "codeValue": "onQueryChanged",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "query"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "activity",
+                "filters"
+              ]
+            }
+          ],
+          "description": "Searches who acted, what and the result."
+        },
+        {
+          "id": "refresh_system",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "activity",
+                "health"
+              ]
+            }
+          ],
+          "description": "Refetches activity and health."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "activity",
+          "stateId": "activity",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "ready",
+              "enabledActions": [
+                "refresh_system",
+                "search_system_activity"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "filters",
+          "stateId": "filters",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "ready",
+              "enabledActions": [
+                "filter_system_activity",
+                "search_system_activity"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "health",
+          "stateId": "health",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "ready",
+              "enabledActions": [
+                "refresh_system"
+              ]
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      }
+    },
+    {
+      "id": "admin_system_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_system_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query seam for the prop-driven System actions.",
+        "excluded": [
+          "Deterministic visual state remains on route_system."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/system/controllers/useSystemController.ts",
+            "symbol": "useSystemController"
+          },
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/system/ui/SystemRouteScreen.tsx",
+            "symbol": "SystemRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_system_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListActionExecutions",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/system/controllers/useSystemController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_system",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Refetches live activity and health."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "resolved",
+              "enabledActions": [
+                "refresh_system"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading"
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": false,
+        "tests": true
+      }
+    }
+  ]
+}

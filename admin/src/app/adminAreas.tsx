@@ -28,7 +28,7 @@ const EventsRouteScreen = lazy(() => import("../features/events/ui/EventsRouteSc
 const OrganizerEventsRouteWorkspace = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.OrganizerEventsRouteWorkspace})));
 const UserAnalyticsScreen = lazy(() => import("../features/users/ui/UserAnalyticsScreen").then((m) => ({default: m.UserAnalyticsScreen})));
 const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteScreen").then((m) => ({default: m.PeopleRouteScreen})));
-const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
+const SystemRouteScreen = lazy(() => import("../features/system/ui/SystemRouteScreen").then((m) => ({default: m.SystemRouteScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
 const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
 const IntakeSettingsRouteScreen = lazy(() => import("../features/intake/organizer/ui/IntakeSettingsRouteScreen").then((m) => ({default: m.IntakeSettingsRouteScreen})));
@@ -242,16 +242,6 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     label: "People", icon: "people", frame: "redrawn",
     render: ({navigate}) => <PeopleRouteScreen onOpenSafety={() => navigate("/safety/actions")} />,
   },
-  "cross-paths": {
-    label: "Cross Paths", icon: "like", frame: "legacy",
-    render: ({adminRoles, mode, setError, setNotice}) => (
-      <CrossPathsShowcaseScreen
-        canDecide={mode === "sample" || ["admin", "adminOwner", "safetyReviewer"].some((role) => adminRoles.includes(role))}
-        onError={setError}
-        onNotice={setNotice}
-      />
-    ),
-  },
   "marketing-ops": {
     label: "Marketing", icon: "announce", frame: "legacy",
     render: ({navigate, route, setError, setMarketingDirty, setNotice}) => (
@@ -286,6 +276,10 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
   operations: {
     label: "Agent activity", icon: "bot", frame: "legacy",
     render: ({setError}) => <AdminActionExecutionsScreen onError={setError} />,
+  },
+  system: {
+    label: "System", icon: "data", frame: "redrawn",
+    render: ({isSessionReady, mode}) => <SystemRouteScreen isSessionReady={isSessionReady} mode={mode} />,
   },
   settings: {
     label: "Settings", icon: "settings", frame: "redrawn",

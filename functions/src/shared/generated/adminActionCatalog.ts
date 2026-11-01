@@ -120,27 +120,6 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner"
     ]
   },
-  "cross-paths-showcase.list": {
-    "callable": "adminListCrossPathsShowcaseCandidates",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "safetyReviewer",
-      "support"
-    ]
-  },
-  "cross-paths-showcase.set-eligibility": {
-    "callable": "adminSetCrossPathsShowcaseEligibility",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "safetyReviewer"
-    ]
-  },
   "marketing.get": {
     "callable": "adminGetMarketingOpsDashboard",
     "controlPlane": false,

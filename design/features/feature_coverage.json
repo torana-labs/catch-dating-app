@@ -816,14 +816,6 @@
       "featureContract": "feature.admin_safety"
     },
     {
-      "authority": "admin_routes",
-      "authorityId": "route_cross_paths_showcase",
-      "status": "contracted",
-      "priority": "P1",
-      "reason": "Compiled Cross Paths showcase review covers score-free readiness, bounded queue inspection, role-gated decisions, and fingerprint invalidation.",
-      "featureContract": "feature.admin_cross_paths_showcase"
-    },
-    {
       "authority": "flutter_screens",
       "authorityId": "screen.programs.work",
       "status": "planned",
@@ -1074,6 +1066,22 @@
       "priority": "P1",
       "reason": "Consumer discovery preview and full event catalogue share public inventory and distinct route/filter states, with explicit empty, failure and participation-badge evidence.",
       "featureContract": "feature.marketing_home"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_system",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled System contract covers the activity log of Admin actions with its filters and search, and data-source health.",
+      "featureContract": "feature.admin_system"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_system_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
+      "featureContract": "feature.admin_system"
     }
   ]
 }

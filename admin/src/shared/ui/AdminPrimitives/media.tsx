@@ -42,27 +42,6 @@ import {
 
 import {FilePickerButton} from "./actions";
 
-export function AdminProfilePhotoGrid({
-  ariaLabel,
-  photos,
-}: {
-  ariaLabel: string;
-  photos: ReadonlyArray<{alt: string; url: string}>;
-}) {
-  return (
-    <div aria-label={ariaLabel} className="admin-profile-photo-grid">
-      {photos.map((photo) => (
-        <img
-          alt={photo.alt}
-          key={photo.url}
-          loading="lazy"
-          src={photo.url}
-        />
-      ))}
-    </div>
-  );
-}
-
 export function AdminMarketingImageEditor({
   children,
   className = "",
