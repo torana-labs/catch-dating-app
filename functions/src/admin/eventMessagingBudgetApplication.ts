@@ -64,7 +64,7 @@ import {setAdminAuditLogInTransaction} from "./adminAudit";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
 const receiptCollection = "eventMessagingBudgetApplicationReceipts";
-const allowedRoles = ["adminOwner", "finance"] as const;
+const allowedRoles = ["adminOwner"] as const;
 const effect =
   "budgets_staged_paused_no_spending_or_dispatch_authority" as const;
 

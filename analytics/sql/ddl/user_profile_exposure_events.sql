@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `%s.%s.user_profile_exposure_events` (
   viewer_uid STRING,
   subject_uid STRING NOT NULL,
   event_id STRING,
-  club_id STRING,
+  organizer_id STRING,
   event_name STRING NOT NULL,
   surface STRING,
   photo_id STRING,

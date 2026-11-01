@@ -3932,7 +3932,7 @@
         "tool/analytics/mart_refresh.test.mjs",
         "tool/analytics/host_analytics_contract.mjs",
         "tool/analytics/host_analytics_contract.test.mjs",
-        "extensions/bq-host-clubs.env"
+        "extensions/bq-host-organizers.env"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -3985,7 +3985,7 @@
         "type": "test",
         "path": "tool/analytics/host_analytics_contract.test.mjs",
         "contains": [
-          "ACTIVE legacy export is incomplete until both canonical parameters match",
+          "an export is incomplete until its collection and table both match",
           "failed, disabled, duplicate, missing and wrong-kind schedules are incomplete"
         ]
       }
@@ -4006,7 +4006,7 @@
         "tool/analytics/host_analytics_contract.mjs",
         "tool/analytics/host_analytics_contract.test.mjs",
         "analytics/sql/marts/refresh_mart_host_event_daily.sql",
-        "extensions/bq-host-clubs.env"
+        "extensions/bq-host-organizers.env"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6190,7 +6190,8 @@
           "organizer nomenclature gate rejects legacy authority and generic copy",
           "organizer nomenclature gate passes a canonical fixture",
           "organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names",
-          "organizer nomenclature gate rejects club in wire names but keeps the subtype and warehouse columns"
+          "organizer nomenclature gate rejects club in wire names but keeps the subtype and snake_case code keys",
+          "organizer nomenclature gate rejects club in the warehouse except the column migration"
         ]
       }
     },

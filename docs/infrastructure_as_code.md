@@ -1,7 +1,7 @@
 ---
 doc_id: infrastructure_as_code
-version: 1.2.0
-updated: 2026-10-31
+version: 1.3.0
+updated: 2026-11-01
 owner: backend_platform
 status: active
 ---
@@ -29,6 +29,7 @@ staging and prod.
 | `google_firebase_app_check_play_integrity_config` (google provider) | The same six apps | adopted as is; `token_ttl` keeps its live value |
 | `google_secret_manager_secret` and `google_secret_manager_secret_iam_member` (google provider) | `catchdates-dev` and `catch-dating-app-64e51` | Forms payment secret containers and their runtime grants, never values; see [Forms payment secrets](#forms-payment-secrets) |
 | `google_firestore_database` and `google_firestore_backup_schedule` (google provider) | The `(default)` database in `catch-dating-app-64e51` | Point-in-time recovery, delete protection and a daily 14-day backup; see [Firestore recovery](#firestore-recovery) |
+| `google_monitoring_alert_policy` and `google_monitoring_uptime_check_config` (google provider) | `catch-dating-app-64e51` | The Functions error and out-of-memory alerts, and the website-origin uptime check with its alert; see [Monitoring](#monitoring) |
 
 The Android inventory lives in `infra/firebase/terraform.tfvars`; the Forms
 payment inputs live in `infra/firebase/form_payments.auto.tfvars`. Everything in it is
@@ -50,8 +51,8 @@ Guards, from first to last:
   `google_secret_manager_secret_version`, so no secret value can enter state),
   or grant a secret role other than the two the runtime needs, or to a
   `github-actions` identity. It also fails any plan that would create a
-  Firestore database instead of importing it, or turn off its delete
-  protection or point-in-time recovery.
+  Firestore database instead of importing it, turn off its delete
+  protection or point-in-time recovery, or disable an alert policy.
   This also covers a resource block deleted from the configuration, which
   takes its `prevent_destroy` with it.
 - The committed inventory has blank display names and fingerprint lists until
@@ -125,9 +126,9 @@ environment claim and is rejected.
 
 | Identity | Trusted by | Roles | Why |
 |---|---|---|---|
-| `github-actions-platform-plan@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:platform-plan` | Custom `catchPlatformPlanReader` in each of the three projects: `firebase.clients.get`, `firebase.clients.list`, `firebase.projects.get`, `firebaseappcheck.playIntegrityConfig.get`, `datastore.databases.get`, `datastore.databases.getMetadata`, `datastore.backupSchedules.get`, `datastore.backupSchedules.list` | Read the apps Terraform imports, their Play Integrity configs, and Firestore database settings and backup schedules. `roles/firebase.viewer` was rejected: it includes Firestore data reads (`datastore.entities.get`), and pull-request jobs use this identity. No `datastore.entities.*` permission is granted. |
+| `github-actions-platform-plan@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:platform-plan` | Custom `catchPlatformPlanReader` in each of the three projects: `firebase.clients.get`, `firebase.clients.list`, `firebase.projects.get`, `firebaseappcheck.playIntegrityConfig.get`, `datastore.databases.get`, `datastore.databases.getMetadata`, `datastore.backupSchedules.get`, `datastore.backupSchedules.list`, `monitoring.alertPolicies.get`/`list`, `monitoring.uptimeCheckConfigs.get`/`list`, `monitoring.notificationChannels.get`/`list` | Read the apps Terraform imports, their Play Integrity configs, Firestore database settings and backup schedules, and the alerting setup. `roles/firebase.viewer` was rejected: it includes Firestore data reads (`datastore.entities.get`), and pull-request jobs use this identity. No `datastore.entities.*` permission is granted. |
 | | | `roles/storage.objectViewer` on the state bucket only | Read state. Plans run with `-lock=false`, so this identity never writes the bucket. |
-| `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update`, `firebaseappcheck.playIntegrityConfig.update`, `datastore.databases.update`, `datastore.backupSchedules.create` and `datastore.backupSchedules.update` | Update an existing app's fingerprints and its Play Integrity config; change a Firestore database's recovery settings and add or change its backup schedule. No `firebase.clients.create` or `delete`, no `firebaseappcheck.services.update` (enforcement), no `datastore.databases.create` or `delete` and no `datastore.backupSchedules.delete`. The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
+| `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update`, `firebaseappcheck.playIntegrityConfig.update`, `datastore.databases.update`, `datastore.backupSchedules.create`, `datastore.backupSchedules.update`, `monitoring.alertPolicies.create`/`update` and `monitoring.uptimeCheckConfigs.create`/`update` | Update an existing app's fingerprints and its Play Integrity config; change a Firestore database's recovery settings and add or change its backup schedule; add or change alert policies and uptime checks. No `monitoring.*.delete`, and notification channels are only read. No `firebase.clients.create` or `delete`, no `firebaseappcheck.services.update` (enforcement), no `datastore.databases.create` or `delete` and no `datastore.backupSchedules.delete`. The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
 | | | `roles/storage.objectUser` on the state bucket only | Write state and take the state lock. No bucket IAM. |
 | Both platform identities, dev and prod only | As above | Custom `catchPlatformSecretsReader` (plan: `secretmanager.secrets.get`, `secretmanager.secrets.getIamPolicy`) and `catchPlatformSecretsAdmin` (apply: those plus `secretmanager.secrets.setIamPolicy`, `secretmanager.secrets.update`), each with the IAM condition `resource.name.startsWith('projects/<number>/secrets/FORM_RAZORPAY_')`; apply also has `catchPlatformSecretCreator` (`secretmanager.secrets.create`) unconditionally, because creation is checked on the project | Manage the Forms payment secret containers and their IAM. Neither identity holds any `secretmanager.versions.*` permission, so neither can read, add or disable a value. |
 | `github-actions-play-publisher@catch-dating-app-64e51` (existing) | `prod-mobile`, `prod-mobile-release` | Unchanged | The fingerprints workflow reads generated APKs with it. |
@@ -290,6 +291,34 @@ gcloud firestore backups list --project=catch-dating-app-64e51 --location=asia-s
 gcloud firestore databases restore --project=catch-dating-app-64e51 \
   --source-backup=<backup name> --destination-database=restore-<date>
 ```
+
+## Monitoring
+
+`infra/firebase/monitoring.tf` holds production alerting. Every alert emails
+the existing "Catch production Functions alerts" channel. Terraform reads that
+channel through a data source and does not manage it, so its address stays out
+of this public repository.
+
+- **Functions errors** and **Functions OOM**: log-match alerts on any
+  production Function (gen 1 or gen 2) that logs at `ERROR` or reports running
+  out of memory. The errors alert leaves out memory events, so one event
+  alerts once. At most one email an hour per alert; each closes itself after
+  30 minutes. Both were made by hand in the console and are adopted with
+  `import` blocks.
+- **Website origin uptime**: Google checks
+  `https://catch-dating-app-64e51.web.app/api/public-catalog` every five
+  minutes from several regions. If two or more regions fail for ten minutes,
+  an email goes out. The check reads the Hosting origin because Cloudflare's
+  bot protection refuses Google's checkers on the public domain (see
+  [release checks behind the edge](release_operations.md#release-and-monitoring-checks-behind-the-edge)).
+
+Cost: none. Uptime checks get one million runs free per project each month,
+and this check uses about 52,000. Google has not started billing alert
+policies; when it does (no sooner than September 2027), log-match alerts cost
+$0.35 a month each.
+
+The plan guard refuses a plan that disables or deletes an alert policy or the
+uptime check.
 
 ## What stays elsewhere
 

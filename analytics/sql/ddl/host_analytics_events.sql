@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `%s.%s.host_analytics_events` (
   occurred_at TIMESTAMP NOT NULL,
   event_date DATE NOT NULL,
   event_name STRING NOT NULL,
-  club_id STRING NOT NULL,
+  organizer_id STRING NOT NULL,
   target_event_id STRING,
   page_path STRING NOT NULL,
   source STRING,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `%s.%s.host_analytics_events` (
   ingested_at TIMESTAMP NOT NULL
 )
 PARTITION BY event_date
-CLUSTER BY club_id, target_event_id, event_name
+CLUSTER BY organizer_id, target_event_id, event_name
 OPTIONS(
   description = 'Aggregate-safe host discovery event stream. Firestore is not the source of truth for these counters.'
 )

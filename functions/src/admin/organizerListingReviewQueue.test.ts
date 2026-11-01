@@ -106,14 +106,14 @@ test("each row shows how its listing compares with the organizers Catch already 
   assert.ok(afterfly.listing.gaps.includes("possible_duplicate_organizer"));
   assert.equal(afterfly.duplicateCheck?.verdict, "match");
   assert.deepEqual([afterfly.duplicateCheck?.citySlug, afterfly.duplicateCheck?.truncated,
-    afterfly.duplicateCheck?.organizersCompared], ["mumbai", false, 1]);
+    afterfly.duplicateCheck?.organizersCompared], [null, false, 1]);
   assert.deepEqual(afterfly.duplicateCheck?.candidates.map((candidate) => [candidate.organizerId, candidate.name, candidate.band]),
     [["org-afterfly", "Afterfly", "match"]]);
   assert.match(afterfly.duplicateCheck?.candidates[0].rationale ?? "", /exact_name/);
   assert.equal(bhag.duplicateCheck?.verdict, "none");
   assert.ok(!bhag.listing.gaps.includes("possible_duplicate_organizer"));
-  // Bengaluru lists no organizer, so its listing was compared with none.
-  assert.deepEqual([sketchers.duplicateCheck?.verdict, sketchers.duplicateCheck?.organizersCompared], ["none", 0]);
+  // Every city is compared: the Bengaluru listing meets Afterfly in Mumbai and is not alike.
+  assert.deepEqual([sketchers.duplicateCheck?.verdict, sketchers.duplicateCheck?.organizersCompared], ["none", 1]);
 
   // A check recorded for another build of the listing, or before listings
   // were compared, is not shown.
@@ -145,9 +145,9 @@ test("approved, unfinished and unreadable listings are not offered for review", 
   assert.deepEqual([response.rows, response.unavailableCount], [[], 1]);
 });
 
-test("support can read the queue but not approve; others cannot read it", async () => {
+test("ops (support) and the owner can read and approve; others cannot read it", async () => {
   const h = await harness();
-  assert.equal((await h.call({limit: 5, cursor: null}, {support: true})).canApprove, false);
+  assert.equal((await h.call({limit: 5, cursor: null}, {support: true})).canApprove, true);
   assert.equal((await h.call({limit: 5, cursor: null}, {adminOwner: true})).canApprove, true);
   for (const token of [{salesStaff: true}, {}]) {
     await assert.rejects(h.call({limit: 5, cursor: null}, token), /permission|role|admin/i);

@@ -414,6 +414,44 @@ for (const [label, change] of [
   });
 }
 
+// --- Monitoring ----------------------------------------------------------------
+
+const alertAdoption = {
+  address: "google_monitoring_alert_policy.functions_errors", mode: "managed",
+  type: "google_monitoring_alert_policy",
+  change: {actions: ["no-op"], importing: {id: "projects/catch-dating-app-64e51/alertPolicies/82753548912916789"},
+    before: {enabled: true}, after: {enabled: true}},
+};
+const uptimeCheck = {
+  address: "google_monitoring_uptime_check_config.website_origin", mode: "managed",
+  type: "google_monitoring_uptime_check_config",
+  change: {actions: ["create"], before: null, after: {period: "300s"}},
+};
+const uptimeAlert = {
+  address: "google_monitoring_alert_policy.website_origin_down", mode: "managed",
+  type: "google_monitoring_alert_policy",
+  change: {actions: ["create"], before: null, after: {enabled: true}},
+};
+
+test("plan guard lets Terraform adopt the alerts and add an uptime check with its alert", (t) => {
+  const result = guard(t, planWith([alertAdoption, uptimeCheck, uptimeAlert]));
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /Plan guard: passed/u);
+});
+
+for (const [label, change] of [
+  ["disabling an alert policy", {...alertAdoption, change: {...alertAdoption.change,
+    actions: ["update"], after: {enabled: false}}}],
+  ["deleting an alert policy", {...alertAdoption, change: {actions: ["delete"], before: {enabled: true}, after: null}}],
+  ["deleting the uptime check", {...uptimeCheck, change: {actions: ["delete"], before: {period: "300s"}, after: null}}],
+]) {
+  test(`plan guard refuses ${label}`, (t) => {
+    const result = guard(t, planWith([change]));
+    assert.equal(result.status, 1, result.stdout);
+    assert.match(result.stdout, /Plan guard: \*\*refused\*\*/u);
+  });
+}
+
 function storePartner(t, args, input) {
   const root = sandbox(t);
   const log = path.join(root, "calls.log");

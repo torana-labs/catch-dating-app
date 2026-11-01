@@ -2651,6 +2651,68 @@ export interface SupportSavedReplyDocument {
 }
 
 /**
+ * Server-only growth facts for one organizer: the one acquisition channel set when its listing was made, the first person who nominated it, and the dated steps it reached (listed, claim asked, claimed, first event, first paid booking). Each step is set once, to the earliest time observed, and never edited by hand, so organizer cohorts can be counted from it. Every step is also streamed to BigQuery as an organizer growth event.
+ */
+export interface OrganizerGrowthFactsDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  marketId: string | null;
+  /**
+   * Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.
+   */
+  channel:
+    | "imported"
+    | "sales_associate"
+    | "partner"
+    | "guest"
+    | "organizer"
+    | "came_to_us"
+    | "ads";
+  /**
+   * What decided the channel: the Supply Intake request the listing came from, or, for an organizer created any other way, its provenance.
+   */
+  channelSource: {
+    kind: "supply_intake" | "provenance";
+    requestId: string | null;
+    originKind: string | null;
+    campaign: string | null;
+  };
+  /**
+   * The first person who nominated the organizer, kept for nominator credit (partners, guests and organizers earn it; sales associates do not). Null when nobody nominated it.
+   */
+  nominator: null | {
+    uid: string;
+    role: "associate" | "partner" | "guest" | "organizer";
+    nominatedAt: FirebaseFirestore.Timestamp;
+  };
+  milestones: {
+    /**
+     * The day the page was published, claimed or not.
+     */
+    listedAt: FirebaseFirestore.Timestamp | null;
+    /**
+     * The first claim request for the page.
+     */
+    claimRequestedAt: FirebaseFirestore.Timestamp | null;
+    /**
+     * The day an owner was approved (or set the organizer up themselves).
+     */
+    claimedAt: FirebaseFirestore.Timestamp | null;
+    /**
+     * The start of the earliest event on Catch with at least one paid or free booking.
+     */
+    firstEventAt: FirebaseFirestore.Timestamp | null;
+    /**
+     * The capture time of the organizer's first paid booking.
+     */
+    firstPaidBookingAt: FirebaseFirestore.Timestamp | null;
+  };
+  firstEventId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.
  */
 export interface SalesOutreachJobsDocument {
@@ -4446,6 +4508,13 @@ export interface PublicEventPaymentDocument {
   providerPaymentId: string | null;
   providerRefundId: string | null;
   refundedAmountPaise: number;
+  /**
+   * What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.
+   */
+  providerFees?: {
+    feePaise: number;
+    taxPaise: number;
+  };
   admissionReceiptId: string | null;
   reservationReleased: boolean;
   leaseUntil: FirebaseFirestore.Timestamp | null;
@@ -4713,6 +4782,13 @@ export interface OrganizerEventOfferPaymentDocument {
   providerPaymentId: string | null;
   providerRefundId: string | null;
   refundedAmountPaise: number;
+  /**
+   * What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.
+   */
+  providerFees?: {
+    feePaise: number;
+    taxPaise: number;
+  };
   admissionReceiptId: string | null;
   reservationReleased: boolean;
   leaseUntil: FirebaseFirestore.Timestamp | null;
@@ -11735,6 +11811,13 @@ export interface OrganizerFormPaymentDocument {
   providerPaymentId: string | null;
   providerRefundId: string | null;
   refundedAmountPaise: number;
+  /**
+   * What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.
+   */
+  providerFees?: {
+    feePaise: number;
+    taxPaise: number;
+  };
   responseId: string | null;
   reservationReleased: boolean;
   leaseUntil: FirebaseFirestore.Timestamp | null;
@@ -13556,6 +13639,15 @@ export interface OrganizerClaimRequestDocument {
   decidedByUid: string | null;
   decisionReason: string | null;
   previousRequestId: string | null;
+  /**
+   * What ops recommend for a pending claim, set by adminRecommendOrganizerClaim. The owner decides the claim; a later recommendation replaces this one. Absent until someone recommends.
+   */
+  recommendation?: null | {
+    decision: "approve" | "reject";
+    byUid: string;
+    at: string;
+    note: string;
+  };
 }
 
 /**
@@ -20085,6 +20177,13 @@ export interface PaymentDocument {
   completedAt?: FirebaseFirestore.Timestamp;
   cancellationRefund?: LegacyPaymentRefundIntent;
   updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.
+   */
+  providerFees?: {
+    feePaise: number;
+    taxPaise: number;
+  };
   /**
    * Frozen server-origin context for a new native Razorpay booking. Missing legacy context is unresolved, never automatic ownership adoption.
    */

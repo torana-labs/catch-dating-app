@@ -131,7 +131,7 @@ const defaultDeps: HostAnalyticsDeps = {
 };
 
 /**
- * Returns aggregate analytics for clubs hosted by the signed-in user.
+ * Returns aggregate analytics for organizers hosted by the signed-in user.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {HostAnalyticsDeps} deps Injectable dependencies.
  * @return {Promise<HostAnalyticsCallableResponse>} Host analytics payload.
@@ -161,7 +161,7 @@ export async function adminGetHostAnalyticsHandler(
 ): Promise<HostAnalyticsCallableResponse> {
   const adminContext = requireAdminRole(
     request,
-    ["adminOwner", "analyticsViewer"]
+    ["adminOwner"]
   );
   const payload = validateAnalyticsPayload(request);
   const db = deps.firestore();
@@ -579,12 +579,12 @@ async function loadHostAnalytics(
 
 /**
  * Returns the stable uid-scoped Firestore document id for a host query.
- * Resolved club ids and absolute range bounds prevent stale authorization or
- * a local-midnight rollover from reusing a snapshot for a different scope.
+ * Resolved organizer ids and absolute range bounds prevent stale authorization
+ * or a local-midnight rollover from reusing a snapshot for a different scope.
  * @param {string} uid Authenticated host uid.
  * @param {HostAnalyticsQueryCallablePayload} payload Normalized query.
  * @param {AnalyticsRange} range Resolved absolute range.
- * @param {OrganizerRecord[]} clubs Currently authorized clubs.
+ * @param {OrganizerRecord[]} organizers Currently authorized organizers.
  * @return {string} Snapshot document id.
  */
 export function hostAnalyticsSnapshotId(
@@ -844,7 +844,7 @@ async function getOrganizerRecord(
   const organizerSnap = await db.collection("organizers").doc(
     organizerId).get();
   if (!organizerSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
+    throw new HttpsError("not-found", "Organizer not found.");
   }
   return {id: organizerSnap.id,
     data: organizerSnap.data() as OrganizerDocument};
@@ -859,7 +859,7 @@ function assertCanReadOrganizer(
   if (isOrganizerManager(organizer.data, uid)) return;
   throw new HttpsError(
     "permission-denied",
-    "Only this club's host team can read host analytics."
+    "Only this organizer's host team can read host analytics."
   );
 }
 
@@ -1165,7 +1165,7 @@ const linkClicksUnavailable:
 /**
  * Owner link clicks (CAT-254): each link's total, most clicked first, with
  * its current label, and the clicks by where visitors came from.
- * @param {OrganizerRecord[]} clubs Organizers in scope, for current link
+ * @param {OrganizerRecord[]} organizers Organizers in scope, for current link
  *     labels.
  * @param {HostAnalyticsLinkRow[]} rows Clicks by link and traffic source.
  * @return {HostAnalyticsCallableResponse["linkSummary"]} The roll-up.

@@ -29,20 +29,19 @@ const schedule = (override = {}) => ({
 });
 const inspectSchedule = (configs) => inspectHostSchedule(configs, "Fixture refresh", "SELECT 1;\n");
 
-test("canonical export reuses one instance and retains historical view inventory", () => {
+test("one export per host collection, each with its own latest view", () => {
   assert.equal(Object.keys(hostExports).length, 8);
-  assert.deepEqual(hostExports["bq-host-clubs"], {
+  assert.deepEqual(hostExports["bq-host-organizers"], {
     collectionPath: "organizers", tableId: "organizers", requiredInMart: true,
   });
-  assert.equal(hostRawViews.filter((view) => view === "organizers_raw_latest").length, 1);
-  assert.equal(hostRawViews.filter((view) => view === "clubs_raw_latest").length, 1);
+  assert.deepEqual(hostRawViews, Object.values(hostExports).map(({tableId}) => `${tableId}_raw_latest`).sort());
   assert.ok(inspect(extensions()).every(({ok}) => ok));
 });
 
-test("ACTIVE legacy export is incomplete until both canonical parameters match", () => {
+test("an export is incomplete until its collection and table both match", () => {
   const instances = extensions();
-  instances[0].params.COLLECTION_PATH = "clubs";
-  instances[0].params.TABLE_ID = "clubs";
+  instances[0].params.COLLECTION_PATH = "other";
+  instances[0].params.TABLE_ID = "other";
   assert.deepEqual(inspect(instances)[0].mismatches.map(({field}) => field), ["COLLECTION_PATH", "TABLE_ID"]);
   instances[0].params.COLLECTION_PATH = "organizers";
   assert.deepEqual(inspect(instances)[0].mismatches.map(({field}) => field), ["TABLE_ID"]);
@@ -60,7 +59,7 @@ test("extension checks reject missing, duplicate, wrong-source, inactive and mis
   }
   assert.equal(inspect(extensions().slice(1))[0].ok, false);
   assert.equal(inspect([...extensions(), extensions()[0]])[0].ok, false);
-  const duplicateExporter = {...extensions()[0], instanceId: "bq-host-organizers"};
+  const duplicateExporter = {...extensions()[0], instanceId: "bq-host-organizers-copy"};
   assert.equal(inspect([...extensions(), duplicateExporter]).at(-1).ok, false);
   assert.ok(inspect([...extensions(), {instanceId: "other-unrelated-extension"}]).every(({ok}) => ok));
 });

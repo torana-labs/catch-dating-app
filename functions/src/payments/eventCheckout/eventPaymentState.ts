@@ -25,6 +25,7 @@ export interface EventPaymentState {
   lastErrorCode: string | null;
   cancellation?: {refundAmountPaise: number};
   settlement?: EventPaymentSettlement;
+  providerFees?: {feePaise: number; taxPaise: number};
 }
 
 /** Trusted source adapter. These callbacks own the transactional source,

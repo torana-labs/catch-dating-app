@@ -308,8 +308,6 @@ export const adminRoleClaimKeys = [
   "adminOwner",
   "safetyReviewer",
   "support",
-  "finance",
-  "analyticsViewer",
   "salesStaff",
 ] as const;
 

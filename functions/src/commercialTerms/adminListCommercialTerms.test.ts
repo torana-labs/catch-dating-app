@@ -9,7 +9,7 @@ import {manageCommercialTermsHandler as manage} from "./manageCommercialTerms";
 import {organizerCommercialTermsId} from "./terms";
 import {testCommercialTerms} from "./testFixture";
 
-function request(data: unknown, role = "finance"): CallableRequest<unknown> {
+function request(data: unknown, role = "adminOwner"): CallableRequest<unknown> {
   return {data, auth: {uid: "operator", token: {[role]: true}}} as
     unknown as CallableRequest<unknown>;
 }
@@ -42,7 +42,7 @@ test("only Finance and Admin Owner can list commercial terms", async () => {
   const deps = {...fixture().listDeps, db: () => {
     throw new Error("DB accessed");
   }};
-  for (const role of ["admin", "support", "analyticsViewer", "salesStaff"]) {
+  for (const role of ["admin", "support", "salesStaff", "finance"]) {
     await assert.rejects(list(request(listPlatform, role), deps),
       /not authorized/);
   }

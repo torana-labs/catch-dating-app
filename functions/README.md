@@ -326,6 +326,13 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
 | `adminListOrganizerListingReviews` | `src/admin/organizerListingReviewQueue.ts` | Admin, owner or support read the pages of Supply Intake listings awaiting approval, newest first, with each listing's evidence-backed fields, links, gaps, pages read and content hash, and whether the caller may approve |
+| `adminListInboxItems` | `src/admin/inbox/callables.ts` | Admin, owner or support read one page of the Admin inbox (listings, imported events, claims, enquiries, launch access, stuck intake) by scope, type and city, oldest first, with real totals per scope and type |
+| `adminGetInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support (or the sales associate who nominated it) read one inbox item and its journey, every step it took |
+| `adminUpdateInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support assign, unassign, snooze or wake one inbox item; audited and recorded in its journey |
+| `adminRebuildInbox` | `src/admin/inbox/callables.ts` | Admin or owner re-project one page of an inbox source collection, or of users into the people index |
+| `adminRecommendOrganizerClaim` | `src/admin/organizerClaimRecommendation.ts` | Admin, owner or support recommend approving or rejecting a pending organizer claim; audited; only the owner decides it |
+| `adminSearchPeople` | `src/admin/peopleSearch.ts` | Admin, owner, support or safety reviewers search people by name, phone or uid in `adminPeopleIndex`; every search and its query is written to `adminAuditLogs` |
+| `adminListActivityLog` | `src/admin/activityLog.ts` | Admin or owner read the activity log newest first: audited decisions merged with agent execution receipts, filterable to problems |
 | `adminListListingEventImports` | `src/admin/listingEventImports.ts` | Admin, owner or support read approved Supply Intake listings, newest first, with each imported event's state (published by the policy or staff, withdrawn, ready, needs a check, blocked) and the reasons |
 | `adminPublishListingEvents` | `src/admin/listingEventImports.ts` | Admin, owner or support dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events; full checklist, per-event resolutions, one transaction and receipt per event |
 | `adminListSupplyIntakePolicies` | `src/admin/supplyIntakePolicies.ts` | Admin, owner or support read the Supply Intake capabilities that wait for the owner's decision, with the decision and whether the policy file switches each on |
@@ -364,6 +371,12 @@ enter previews.
 | `syncExternalEventVisibility` | `src/organizers/externalEventVisibility.ts` | `organizers/{organizerId}` onWrite — when the organizer's app visibility changes (or it is deleted), sets `discovery.appVisibility` on its `externalEvents` to match, so app discovery never shows an event whose organizer is hidden |
 | `onPublicPageOrganizerWritten` / `onPublicPageEventWritten` / `onPublicPageExternalEventWritten` / `onPublicPageReviewWritten` | `src/publicPages/triggers.ts` | `organizers`, `events`, `externalEvents` and `reviews` onWrite — when the changed document's public projection differs, rebuilds its organizer's `organizerPublicPage` and `eventPublicPage` read models (CAT-250); follower-only changes wait for the batched refresh |
 | `onCityPlansOrganizerPageWritten` | `src/cityPlans/triggers.ts` | `organizerPublicPage` onWrite — rebuilds the `cityPlans` read model of the city the page left and the city it is in (CAT-260) |
+| `onSupplyIntakeRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `supplyIntakeRequests` onWrite — projects the request's listing or stuck item and journey steps into `adminInboxItems` and `adminInboxJourney` |
+| `onOrganizerClaimRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `organizerClaimRequests` onWrite — projects the claim's inbox item and journey steps |
+| `onSalesInboundIntentWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `salesInboundIntents` onWrite — projects the enquiry's inbox item and journey steps |
+| `onAccessApplicationWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `accessApplications` onWrite — projects the launch access item and journey steps |
+| `onExternalEventWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `externalEvents` onWrite — projects the imported event's inbox item and journey steps |
+| `onUserWrittenIndexPeople` | `src/admin/peopleSearch.ts` | `users` onWrite — keeps `adminPeopleIndex/{uid}` (name prefixes, phone digits) for logged people search |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
@@ -412,6 +425,7 @@ enter previews.
 | `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
+| `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
 | `reconcilePublicPages` | `src/publicPages/triggers.ts` | Daily, rebuilds every organizer's public page read models, so ended events move to past moments and missed changes heal |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
@@ -435,6 +449,7 @@ enter previews.
 |----------|------|---------|
 | `joinWaitlist` | `src/waitlist/` | Public marketing waitlist endpoint |
 | `onHostPilotCheckIn` | `src/acquisition/` | Canonical roster check-in creates one private organiser activation after staff real-event review; no vendor export |
+| `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthPublicPaymentWritten`, `onOrganizerGrowthOfferPaymentWritten`, `onOrganizerGrowthNativePaymentWritten` | `src/growth/` | Record each organizer's dated steps (listed, claim asked, claimed, first event, first paid booking) in `organizerGrowthFacts`, keeping the earliest time, and stream them with paid bookings and refunds to BigQuery `organizer_growth_events` |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |

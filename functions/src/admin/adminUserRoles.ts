@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
   ADMIN_ROLE_CLAIMS,
+  RETIRED_ADMIN_ROLE_CLAIMS,
   AdminRoleClaim,
   adminRolesFromToken,
   requireAdminRole,
@@ -333,7 +334,7 @@ function customClaimsWithAdminRoles(
   roles: AdminRoleClaim[]
 ): Record<string, unknown> {
   const next = {...(existing ?? {})};
-  for (const role of ADMIN_ROLE_CLAIMS) {
+  for (const role of [...ADMIN_ROLE_CLAIMS, ...RETIRED_ADMIN_ROLE_CLAIMS]) {
     delete next[role];
   }
   for (const role of roles) {

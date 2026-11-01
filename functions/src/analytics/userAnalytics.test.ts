@@ -96,7 +96,7 @@ test("adminGetUserAnalyticsHandler scopes by selected user id", async () => {
     callableRequest("admin-1", {
       userId: "user-1",
       rangePreset: "7d",
-    }, {analyticsViewer: true}),
+    }, {adminOwner: true}),
     {
       firestore: () => fakeAuditFirestore(auditLogs),
       now: () => new Date("2026-06-18T12:00:00.000Z"),
@@ -130,7 +130,7 @@ test("adminGetUserAnalyticsHandler scopes by selected user id", async () => {
 test("adminGetUserAnalyticsHandler requires selected user id", async () => {
   await assert.rejects(
     () => adminGetUserAnalyticsHandler(
-      callableRequest("admin-1", {rangePreset: "7d"}, {analyticsViewer: true}),
+      callableRequest("admin-1", {rangePreset: "7d"}, {adminOwner: true}),
       {
         firestore: () => fakeAuditFirestore([]),
         now: () => new Date("2026-06-18T12:00:00.000Z"),

@@ -460,7 +460,7 @@ test("adminSetOrganizerIndexStatusHandler blocks viewer-only admins",
           organizerId: "afterfly-run-club-indore",
           indexStatus: "noindex",
           checklist: completeChecklist(),
-        }, {analyticsViewer: true}),
+        }, {salesStaff: true}),
         h.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")

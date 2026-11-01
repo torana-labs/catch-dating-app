@@ -6,7 +6,8 @@ import {paymentRoutingSnapshotsMatch, type PaymentRoutingSnapshot} from
 import type {FormPaymentMerchant} from
   "../formPayments/formPaymentProcessor";
 import {FormPaymentProviderError, type FormProviderPayment,
-  type RazorpayPaymentProvider} from "../formPayments/razorpayPaymentProvider";
+  providerFeesUpdate, type RazorpayPaymentProvider} from
+  "../formPayments/razorpayPaymentProvider";
 import {decideFormPaymentObservation} from "../formPayments/formPaymentState";
 
 export interface EventPaymentAuthority {
@@ -205,6 +206,7 @@ export class EventPaymentProcessor<P extends EventPaymentState> {
           decision.status === "refunded" ? {settlement: {...ledger.settlement,
             state: "reversed"}} : {}),
         capturedAt: ledger.capturedAt ?? (observation.captured ? now : null),
+        ...providerFeesUpdate(observation, ledger.providerFees),
         lastErrorCode: action === "review" ? "paymentNeedsReview" :
           ledger.lastErrorCode});
     });

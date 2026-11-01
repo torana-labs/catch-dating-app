@@ -22,7 +22,7 @@ type FakeData = Record<string, unknown>;
 
 function callableRequest(
   data: FakeData,
-  token: Record<string, unknown> = {finance: true},
+  token: Record<string, unknown> = {adminOwner: true},
   uid = "finance-1"
 ): CallableRequest<unknown> {
   return {
@@ -205,7 +205,7 @@ test("a new reviewed decision advances the deterministic scope revision",
     assert.equal(oldReplay.decisionStatus, "approved");
   });
 
-test("only finance and admin owner roles can record budget decisions",
+test("only the admin owner role can record budget decisions",
   async () => {
     const x = await setup();
     await assert.rejects(
