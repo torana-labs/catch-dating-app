@@ -5,7 +5,6 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import {OperationsError} from "../platform/errors.mjs";
 import {collectSchema} from "../platform/schema-dependencies.mjs";
-import {readAdminActionCatalog} from "../../../tool/lib/admin_registries.mjs";
 
 const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(moduleDirectory, "..", "..", "..");
@@ -16,11 +15,32 @@ const defaultCatalogPath = path.join(
   "admin_action_catalog.json"
 );
 
+// The catalog is one file per workflow under actions/ beside its index. A catalog that is already
+// one document (a test fixture) is used as it is. Operations may not import tool code, so
+// tool/lib/admin_registries.mjs holds the other copy of this.
+async function readCatalog(catalogPath) {
+  const index = JSON.parse(await fs.readFile(catalogPath, "utf8"));
+  if (index.actions) return index;
+  const directory = path.join(path.dirname(catalogPath), "actions");
+  const names = (await fs.readdir(directory)).filter((name) => name.endsWith(".json")).sort();
+  const fragments = await Promise.all(names.map(async (name) =>
+    JSON.parse(await fs.readFile(path.join(directory, name), "utf8"))));
+  const actions = fragments.flatMap((fragment) => fragment.actions)
+    .sort((a, b) => (a.actionId < b.actionId ? -1 : 1));
+  const workflows = fragments.flatMap((fragment) => fragment.workflow ? [fragment.workflow] : [])
+    .map((workflow) => ({
+      ...workflow,
+      actions: actions.filter((action) => action.workflowIds.includes(workflow.workflowId))
+        .map((action) => action.actionId),
+    }));
+  return {...index, actions, workflows};
+}
+
 export async function loadAdminActionCatalog({
   repoRoot = defaultRepoRoot,
   catalogPath = defaultCatalogPath,
 } = {}) {
-  const catalog = readAdminActionCatalog(catalogPath);
+  const catalog = await readCatalog(catalogPath);
   const validators = await requestValidators(catalog, repoRoot);
   const actionsById = new Map(catalog.actions.map((action) => [
     action.actionId,
