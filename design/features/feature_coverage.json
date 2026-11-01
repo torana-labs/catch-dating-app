@@ -568,11 +568,21 @@
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_growth_kpi",
-      "status": "contracted",
+      "authorityId": "route_growth",
+      "status": "planned",
       "priority": "P2",
-      "reason": "Compiled Growth KPI contract covers source-labelled signal detail, ranged analytics, and independent source recovery.",
-      "featureContract": "feature.admin_growth_kpi"
+      "reason": "Read-only Growth views and nominator credit approval are governed by the adminGetGrowth and adminManageNominatorCredits callable contracts, owner-only roles and focused controller and screen tests. A compiled Growth feature contract remains planned.",
+      "targetFeature": "feature.admin_growth",
+      "debtId": "FEATURE-ADMIN-GROWTH-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_growth_live_controller",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Live route wrapper of route_growth; its query and lazy-boundary states follow the planned Growth feature contract.",
+      "targetFeature": "feature.admin_growth",
+      "debtId": "FEATURE-ADMIN-GROWTH-001"
     },
     {
       "authority": "admin_routes",

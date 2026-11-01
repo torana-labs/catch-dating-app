@@ -5,6 +5,7 @@ import type {DataMode} from "../shared/types/adminTypes";
 import {
   adminPathForNav,
   commercialTermsPathForOrganizer,
+  growthPath,
   marketingPathForTab,
   resolveAdminRoute,
   type AdminNavId,
@@ -15,7 +16,7 @@ const MarketplaceRouteScreen = lazy(() => import("../features/marketplace/ui/Mar
 const MarketingOpsScreen = lazy(() => import("../features/marketing/ui/MarketingOpsScreen").then((m) => ({default: m.MarketingOpsScreen})));
 const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWorkspaceScreen").then((m) => ({default: m.IntakeWorkspaceScreen})));
 const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
-const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
+const GrowthRouteScreen = lazy(() => import("../features/growth/ui/GrowthRouteScreen").then((m) => ({default: m.GrowthRouteScreen})));
 const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
 const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
 const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
@@ -176,13 +177,12 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   growth: {
-    label: "Growth", icon: "trend", frame: "legacy",
-    render: ({navigate, route, setError}) => (
-      <GrowthKpiScreen
-        onBackToList={() => navigate(adminPathForNav("growth"))}
-        onError={setError}
-        onSelectSignalId={(signalId) => navigate(`/growth/signals/${encodeURIComponent(signalId)}`)}
-        selectedSignalId={route.params.growthSignalId ?? null}
+    label: "Growth", icon: "trend", frame: "redrawn",
+    render: ({navigate, route}) => (
+      <GrowthRouteScreen
+        onOpen={(view, nominatorUid) => navigate(growthPath(view, nominatorUid))}
+        selectedNominatorUid={route.params.nominatorUid ?? null}
+        view={route.growthView}
       />
     ),
   },

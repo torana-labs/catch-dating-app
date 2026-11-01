@@ -41,6 +41,14 @@ describe("useNowController", () => {
     expect(model.sources[0]).toMatchObject({tone: "warning", detail: "Late. Next: Rerun."});
   });
 
+  it("carries the signups and completed profiles from the overview", () => {
+    const model = buildNowModel({...overview(), metrics: [
+      {id: "signupsThisWeek", label: "Signups this week", value: 41},
+      {id: "completedProfiles", label: "Completed profiles", value: 980},
+    ]}, now);
+    expect(model).toMatchObject({signupsThisWeek: 41, completedProfiles: 980, completedPayments: null});
+  });
+
   it("words waiting time in minutes, hours and days", () => {
     expect(waitingLabel(hoursAgo(0.5), now)).toBe("30 minutes");
     expect(waitingLabel(hoursAgo(5), now)).toBe("5 hours");

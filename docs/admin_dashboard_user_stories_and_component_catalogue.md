@@ -63,9 +63,9 @@ Files inspected:
 - `admin/src/features/safety/ui/SafetyRouteScreen.tsx`
 - `admin/src/features/safety/ui/SafetyScreen.tsx`
 - `admin/src/features/safety/ui/SafetyActionSheetWorkspace.tsx`
-- `admin/src/features/growth/api/growthKpiRepository.ts`
-- `admin/src/features/growth/controllers/useGrowthKpiController.ts`
-- `admin/src/features/growth/ui/GrowthKpiScreen.tsx`
+- `admin/src/features/growth/api/growthRepository.ts`
+- `admin/src/features/growth/controllers/useGrowthController.ts`
+- `admin/src/features/growth/ui/GrowthScreen.tsx`
 - `admin/src/features/finance/api/financeOpsRepository.ts`
 - `admin/src/features/finance/controllers/useFinanceOpsController.ts`
 - `admin/src/features/finance/ui/FinanceOpsScreen.tsx`
@@ -150,7 +150,7 @@ placeholder screen structure.
 | Overview | `features/overview` repository, controller, and UI | `loadOverview`, `loadHostAnalytics`, local-preview fallbacks | refresh scoped analytics and route each queue row to its owning workflow | Good read-only command center; metric drilldown, saved filters, and pagination remain |
 | Safety | `features/safety` | aggregate overview safety counts, capped queue previews, plus `adminGetSafetyTriageDetails` detail reads | inspect aggregate queue health and explicitly scoped preview analytics, filter/select triage rows, inspect normalized detail, assignment/SLA/evidence, assign owner, mark an explicitly selected row reviewed/dismissed with required notes | Partial triage workflow; honest queue-health analytics, assignment, and status-only decisions are wired, while full-backlog aging, escalation, restrictions, and resolution actions still need backend contracts |
 | Launch access | `features/access`; Overview provides route-only queue previews | `adminGetOverview` capped access queue; direct `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | URL-owned list/detail review, inspect source evidence, enter a required note/cohort, choose exact backed outcomes, receive completion feedback | Real launch-gate review workflow; full directory, cohort catalogue, invitation, notification, and durable history still need contracts |
-| Growth | `features/growth` | independently loaded overview metrics and host analytics | inspect four backed outcomes, apply endpoint-owned range, filter URL-owned signals, inspect accessible trend/table and source basis | Complete approved read-only KPI workflow; cohort conversion, attribution, referral, paid ROI, and retention claims remain absent |
+| Growth | `features/growth` | `adminGetGrowth` over organizer growth facts, bills, credit and ad spend; `adminManageNominatorCredits` | read cohorts, channels and ads, nominators and best organizers over a range; approve nominator credit and record it paid | Per-campaign ad tables and export remain absent |
 | Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
 | Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake and Automation read canonical operations records through `adminListIntakeOperations`; reviewed organizer candidates create fail-closed drafts through `adminCreateOrganizerDraftFromCandidate`; typed synthetic records support sample/Storybook views without operational snapshots | review event and organizer intake, create an unclaimed hidden organizer draft, inspect persisted shadow runs and human exceptions | Strong but dense; candidate handoffs persist through curation receipts, while Automation remains read-only and publication/crawling/ownership stay separately gated |
 | Organizers | `features/organizers` | canonical `organizers/{id}` plus `clubs/{id}` compatibility list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, receive an Intake draft handoff, inspect one record, edit governed enum and launch-market fields, follow field-targeted blockers and evidence-checklist tasks, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake can scaffold a hidden draft but cannot publish, index, crawl, or assign ownership |
@@ -363,27 +363,27 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Growth is feature-owned under `features/growth` and has a dedicated
-  read-only KPI workspace.
-- Good: it combines overview metrics and host analytics into acquisition,
-  supply, conversion, and marketplace stages with range and stage filters plus
-  booking trend buckets, and labels the combined dashboard timestamp as load
-  time rather than source-generated attribution.
-- Good: the KPI table now has explicit signal selection and a detail panel for
-  metric value, stage, status, source, and source-specific detail.
-- Good: the route wrapper now delegates its rendered body to registered
-  `GrowthKpiWorkspace`, giving Storybook deterministic route/workspace coverage
-  for signal filters, selected detail, and booking trend buckets without
-  running live query fetches in previews.
-- Weak: no channel attribution, referral graph, cohort analysis, campaign
-  action workflow, export workflow, or linked anomaly drilldown exists yet.
+- Good: Growth (`features/growth`, Admin redesign PR 13) reads organizer growth
+  facts through `adminGetGrowth`. It has four views:
+  - Cohorts: listed, claimed and ran an event by listing month, with median
+    days and ticket sales per organizer by month on Catch.
+  - Channels and ads: one first-touch channel per organizer, with what each
+    channel costs, cost per claim and cost per paying organizer.
+  - Nominators: nominator credit approved and recorded as paid through
+    `adminManageNominatorCredits`.
+  - Best organizers: ranked by what Catch earned in the last 90 days.
+- Good: the range is 90 days, 12 months or all. The view and nominator are in
+  the address (`/growth/channels`, `/growth/nominators/:uid`).
+- Weak: ad spend waits for the Meta token (GitHub issue #1364), Google Ads is
+  not connected, and there is no per-campaign table or export yet.
+- Retired: the Growth KPI signal directory. Signups this week and completed
+  profiles moved to Needs you, and its host analytics stay on Marketplace and
+  Data quality.
 
 Recommended next work:
 
-- Add channel/cohort/referral dimensions to the analytics contracts and
-  BigQuery marts before adding campaign workflows.
-- Keep campaign tasking and export actions out of Growth until attribution
-  contracts exist.
+- Per-campaign spend and claims once Meta spend is flowing.
+- An export for the four views.
 
 ### Marketing
 

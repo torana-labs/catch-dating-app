@@ -60,13 +60,6 @@ export const adminQueryKeys = {
     paymentRoutingReplace: () =>
       [...adminQueryKeys.all, "finance", "payment-routing-replace"] as const,
   },
-  growth: {
-    overview: () => [...adminQueryKeys.all, "growth", "overview"] as const,
-    hostAnalytics: (rangePreset: string, granularity: string) =>
-      [...adminQueryKeys.all, "growth", "host-analytics", rangePreset, granularity] as const,
-    kpis: (rangePreset: string, granularity: string) =>
-      [...adminQueryKeys.all, "growth", "kpis", rangePreset, granularity] as const,
-  },
   marketing: {
     opsBridge: () => [...adminQueryKeys.all, "marketing", "ops-bridge"] as const,
     createDraft: () => [...adminQueryKeys.all, "marketing", "create-draft"] as const,

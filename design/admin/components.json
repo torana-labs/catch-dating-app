@@ -25,8 +25,7 @@
       "workspace_commercial_terms",
       "route_payment_routing",
       "workspace_payment_routing",
-      "route_growth_kpi",
-      "workspace_growth_kpi",
+      "route_growth",
       "route_intake_workspace",
       "workspace_intake_workspace",
       "workspace_intake_operations",
@@ -442,42 +441,40 @@
       "notes": "Prop-driven payment routing workspace: route and test/live mode per purpose, a preview against the saved revision, and typed confirmations before any purpose goes live, switches to the Route split, or turns off."
     },
     {
-      "id": "route_growth_kpi",
+      "id": "route_growth",
       "kind": "route",
       "owner": "features/growth",
-      "source": "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
-      "exportName": "GrowthKpiScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "source": "admin/src/features/growth/ui/GrowthScreen.tsx",
+      "exportName": "GrowthScreen",
+      "css": [],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "GrowthRouteStory",
         "states": [
-          "signal-directory"
+          "cohorts",
+          "channels-and-ads",
+          "nominators",
+          "best-organizers"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered GrowthKpiWorkspace with deterministic signal/trend fixtures in AdminRoutes.stories.tsx."
+      "notes": "Growth: organizer cohorts by listing month, channels and what they cost, nominators with credit approval on the CatchDock pane, and the best organizers, on CatchWorkspaceHeader views and CatchPaneLayout feed, queue and wide-table. It replaces the Growth KPI signal directory, whose signups and completed profiles moved to Needs you, and whose host analytics stay on Marketplace and Data quality. Backed by admin/src/features/growth/api/growthSamples.ts."
     },
     {
-      "id": "workspace_growth_kpi",
-      "kind": "workspace",
+      "id": "route_growth_live_controller",
+      "kind": "route",
       "owner": "features/growth",
-      "source": "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
-      "exportName": "GrowthKpiWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "source": "admin/src/features/growth/ui/GrowthRouteScreen.tsx",
+      "exportName": "GrowthRouteScreen",
+      "css": [],
       "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "GrowthWorkspaceStory",
+        "status": "not-required",
         "states": [
-          "signal-directory"
+          "live-query-wrapper",
+          "route-lazy-boundary"
         ]
       },
-      "notes": "Prop-driven Growth KPI workspace surface used by the route wrapper and deterministic Storybook previews; controller-owned query logic stays in GrowthKpiScreen."
+      "notes": "Lazy live route wrapper owns the Growth controller and the address; deterministic prop-driven visual coverage remains on route_growth."
     },
     {
       "id": "route_intake_workspace",
