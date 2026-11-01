@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updated": "2026-11-01",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
@@ -7,8 +7,7 @@
     "tokens": "design/tokens/catch.tokens.json",
     "figmaSnapshot": "design/sync/figma_library_snapshot.json",
     "figmaSnapshotImporter": "tool/design/import_figma_library_snapshot.mjs",
-    "claudeContext": "design_context_pack/design_system/components.json",
-    "claudeHandoffRequest": "design_context_pack/design_system/claude_design_handoff_request.json",
+    "claudeHandoffRequest": "node tool/design/build_design_sync_manifest.mjs --claude-handoff",
     "claudeDesignReceipt": "design/sync/claude_design_receipt.json",
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
@@ -39,14 +38,9 @@
       }
     ]
   },
-  "claudeContext": {
-    "status": "current",
-    "digest": "1a159ebb02b97c41f046d583ed2d5b6863bf543c498c1a014a455f2d27ab8754",
-    "contractDigest": "1a159ebb02b97c41f046d583ed2d5b6863bf543c498c1a014a455f2d27ab8754"
-  },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "c3075a975ef237a059def22e6fd1d4ae7889749f730f298016e171c7d06e1cde",
+    "handoffRequestDigest": "4a59949bbb9fab2f5c93deb22de2e321a0ad9073c6f1de5127d2348f64fa4149",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -464,7 +458,6 @@
       "headless-control": 4,
       "styled": 38
     },
-    "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
   },
@@ -482,7 +475,6 @@
       "registry componentName resolves to exactly one captured component node",
       "Figma property definitions match the generated design projection; governed review states remain evidence unless the projection explicitly makes them variants",
       "the live gate requires Figma publish status CURRENT in addition to a current mapping",
-      "contract digest matches the generated Claude context",
       "Claude Design returns a current receipt for the same concept ids and supported-state digests",
       "Code Connect is mapped only when the account tier supports publication",
       "a deliberately stale or incomplete mapping fails the gate"

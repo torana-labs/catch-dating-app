@@ -5079,7 +5079,7 @@
       "command": "node tool/design/build_design_sync_manifest.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Builds and validates generated current/stale/missing Figma mappings, property drift, Code Connect readiness, Claude context parity, and a referenced Claude Design receipt for the Badge + Field live spike.",
+      "description": "Builds and validates generated current/stale/missing Figma mappings, property drift, Code Connect readiness, and a referenced Claude Design receipt for the Badge + Field live spike.",
       "checks": [
         "node --check tool/design/claude_design_handoff.mjs",
         "node --check tool/design/build_design_sync_manifest.mjs",
@@ -5095,7 +5095,7 @@
           "live spike gate stays red when Figma and Code Connect are unavailable",
           "snapshot names generate current mappings without hand-edited URLs",
           "known-bad Figma property drift is deterministic",
-          "known-bad stale Claude context fails",
+          "known-bad stale Claude handoff request fails",
           "known-bad Claude Design state receipt fails",
           "require-live rejects missing visual proof and unpublished templates",
           "fully evidenced Badge and Field spike passes the live gate",
@@ -5108,8 +5108,6 @@
         "design/sync/figma_library_snapshot.json",
         "design/sync/claude_design_receipt.json",
         "design/sync/catch.design-sync.json",
-        "design_context_pack/design_system/components.json",
-        "design_context_pack/design_system/claude_design_handoff_request.json",
         "tool/design/component_concepts.mjs",
         "tool/design/claude_design_handoff.mjs",
         "tool/design/build_design_sync_manifest.test.mjs"
@@ -5940,60 +5938,6 @@
       "role": "finder",
       "impactPaths": [
         "tool/design/check_design_parity.test.mjs"
-      ]
-    },
-    {
-      "id": "design:context-pack",
-      "category": "design",
-      "path": "tool/design/build_context_pack.mjs",
-      "command": "node tool/design/build_context_pack.mjs",
-      "safety": "local-writes-generated",
-      "status": "active",
-      "description": "Checks the portable design handoff export against its theme/token/component/catalog inputs; this is export freshness, not proof of rendered app parity.",
-      "checks": [
-        "node --check tool/design/build_context_pack.mjs",
-        "node tool/design/build_context_pack.mjs --check"
-      ],
-      "role": "finder",
-      "impactPaths": [
-        "design_context_pack/**",
-        "tool/design/build_context_pack.mjs",
-        "tool/design/context_pack_builder_test.dart",
-        "tool/design/claude_design_handoff.mjs",
-        "tool/design/component_concepts.mjs",
-        "docs/design_language.md",
-        "design/components/catch.components.json",
-        "lib/platform/theme/**",
-        "lib/kernel/activity_taxonomy.dart",
-        "packages/catch_tokens/**",
-        "packages/catch_ui/**",
-        "test/ui_captures/**",
-        "tool/ui_capture/capture_coverage.json",
-        "pubspec.yaml",
-        "pubspec.lock",
-        ".github/actions/setup-flutter/**",
-        "tool/ci/toolchain.env",
-        "assets/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "flutter",
-          "flutter-pub"
-        ]
-      }
-    },
-    {
-      "id": "design:context-pack-builder",
-      "category": "design",
-      "path": "tool/design/context_pack_builder_test.dart",
-      "command": "flutter test tool/design/context_pack_builder_test.dart",
-      "safety": "local-writes-generated",
-      "status": "support",
-      "description": "Flutter-test-bound generator used by design:context-pack.",
-      "checks": [
-        "flutter analyze tool/design/context_pack_builder_test.dart"
       ]
     },
     {

@@ -1,6 +1,6 @@
 {
-  "version": 147,
-  "updated": "2026-10-25",
+  "version": 148,
+  "updated": "2026-11-02",
   "owner": "agent_operating_model",
   "skills": [
     {
@@ -236,7 +236,6 @@
         "design/components/**",
         "design/screens/**",
         "design/tokens/**",
-        "design_context_pack/**",
         "widgetbook/**",
         "lib/contexts/*/parts/**"
       ],
@@ -248,8 +247,7 @@
         "docs/widget_catalog.md"
       ],
       "required_tools": [
-        "design:parity-gate",
-        "design:context-pack"
+        "design:parity-gate"
       ],
       "required_commands": [
         "node tool/run.mjs check --category design"
@@ -261,7 +259,7 @@
       "known_failure_modes": [
         "Aliases or feature-only buckets survive as final state.",
         "Widgetbook route or generated directory state is stale.",
-        "Design context pack and component contracts drift independently."
+        "Design sync mappings and component contracts drift independently."
       ]
     },
     {

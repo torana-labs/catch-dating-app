@@ -237,14 +237,11 @@ test("design authority ledgers select their exact consuming checks", () => {
   ]);
 });
 
-test("feature coverage and context manifests select executable owners without full fanout", () => {
+test("feature coverage inputs select executable owners without full fanout", () => {
   const owners = new Map([
     ["design/features/feature_coverage.json", "design:feature-coverage"],
     ["design/features/feature_coverage.schema.json", "design:feature-coverage"],
     ["tool/design/check_feature_coverage.test.mjs", "design:feature-coverage"],
-    ["design_context_pack/MANIFEST.json", "design:context-pack"],
-    ["design_context_pack/gallery/manifest.json", "design:context-pack"],
-    ["tool/design/context_pack_builder_test.dart", "design:context-pack"],
   ]);
   const mixedPaths = [...owners.keys(),
     "design/screens/catch.screens.json",
@@ -260,8 +257,7 @@ test("feature coverage and context manifests select executable owners without fu
       assert.equal(plan.mode, "affected", `${mode}: ${changedPath}`);
       assert.ok(plan.toolIds.includes(owner), changedPath);
       assert.equal(plan.repositoryView, "full", changedPath);
-      assert.deepEqual(plan.setupRequirements, owner === "design:context-pack"
-        ? ["node", "flutter", "flutter-pub"] : ["node", "root-npm"]);
+      assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
     }
     const plan = planAffectedToolChecks({
       changedPaths: mixedPaths, manifest: productionManifest,
@@ -450,9 +446,9 @@ test("combined layout inputs preserve all owner checks and mixed runtime require
   }
   assert.deepEqual(layoutPlan(layoutPaths, unannotated).toolIds, combined.toolIds);
   for (const [paths, setup] of [
-    [["tool/design/context_pack_builder_test.dart"], ["node", "flutter", "flutter-pub"]],
+    [["tool/design/check_component_lexicon.mjs"], ["node", "flutter", "flutter-pub"]],
     [["tool/design/check_feature_coverage.test.mjs"], ["node", "root-npm"]],
-    [["tool/design/context_pack_builder_test.dart", "tool/design/check_feature_coverage.test.mjs"],
+    [["tool/design/check_component_lexicon.mjs", "tool/design/check_feature_coverage.test.mjs"],
       ["node", "flutter", "flutter-pub", "root-npm"]],
   ]) {
     const companion = layoutPlan(paths);
