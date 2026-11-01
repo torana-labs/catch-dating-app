@@ -766,7 +766,7 @@
           "money"
         ]
       },
-      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview. Facts and the journey use interim local rows until CatchMetaRow and the CatchSection timeline land; the Page tab hosts the Organizer Publishing editor for this organizer."
+      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview, with CatchMetaRow facts and the CatchSection timeline journey; the Page tab hosts the Organizer Publishing editor for this organizer."
     },
     {
       "id": "route_organizer_records_live_controller",
