@@ -4,9 +4,9 @@ import {
   type AdminCallableValidators,
   adminCallableValidationCoverage,
   loadAdminCallableValidators,
-} from "./adminCallableValidators";
-import {missingAdminCallableValidators} from "./adminCallableValidation";
-import {sampleOverview} from "../../shared/api/sampleData";
+} from "../../generated/validators/adminCallableValidators";
+import {missingAdminCallableValidators} from "../../generated/validators/adminCallableValidation";
+import {sampleOverview} from "./sampleData";
 
 // Each area's validators load lazily; the tests load every area up front.
 const loaded = new Map<string, AdminCallableValidators>(await Promise.all(

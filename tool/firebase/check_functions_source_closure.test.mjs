@@ -26,6 +26,16 @@ test("resolves TypeScript, runtime-extension and directory imports", () => {
   assert.deepEqual(result, {modules: 4, relativeImports: 3});
 });
 
+test("the catalog module the Functions build generates counts as resolved", () => {
+  const result = checkFunctionsSourceClosure(new Map([
+    ["functions/src/admin/actions.ts", 'import {ADMIN_ACTION_CATALOG} from "../shared/generated/adminActionCatalog";'],
+  ]));
+  assert.deepEqual(result, {modules: 1, relativeImports: 1});
+  assert.throws(() => checkFunctionsSourceClosure(new Map([
+    ["functions/src/admin/actions.ts", 'import {other} from "../shared/generated/otherGeneratedModule";'],
+  ])), FunctionsSourceClosureError);
+});
+
 test("reports every unresolved production and test import", () => {
   assert.throws(() => checkFunctionsSourceClosure(new Map([
     ["functions/src/index.ts", 'import "./missing-runtime";'],

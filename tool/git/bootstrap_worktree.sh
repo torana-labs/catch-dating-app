@@ -55,6 +55,7 @@ if [[ $target == all || $target == root ]]; then
   (
     cd "$repo_root"
     npm ci
+    npm --workspace catch-admin run generate
   )
 fi
 
@@ -63,6 +64,7 @@ if [[ $target == all || $target == functions ]]; then
   (
     cd "$repo_root/functions"
     npm ci
+    npm run generate
   )
 fi
 

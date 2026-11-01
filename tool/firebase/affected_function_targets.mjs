@@ -4,6 +4,11 @@ import {createRequire, isBuiltin} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
+import {
+  functionsCatalogInputs,
+  functionsCatalogModule,
+  renderFunctions,
+} from "../admin/generate_admin_action_catalog.mjs";
 import {listFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const require = createRequire(import.meta.url);
@@ -41,6 +46,17 @@ function sourceTree(root, sha) {
     }
     tree.set(name, bytes.subarray(end + 1, end + 1 + size).toString("utf8"));
     offset = end + 1 + size + 1;
+  }
+  return tree;
+}
+
+// The Functions build generates the action catalog from the contract, so a
+// commit holds its input rather than the module. Rebuild the bytes that commit
+// would deploy, unless it predates untracking and still holds them.
+function withBuiltCatalog(root, sha, tree) {
+  if (!tree.has(functionsCatalogModule)) {
+    const catalog = readJson(root, sha, functionsCatalogInputs[0]);
+    if (catalog) tree.set(functionsCatalogModule, renderFunctions(catalog));
   }
   return tree;
 }
@@ -364,8 +380,16 @@ export function affectedFunctionTargets({
         options.rootDir && options.rootDir !== "src") {
       return all("Compiler module resolution requires a full deployment");
     }
-    const before = sourceTree(sourceRoot, baseSha);
-    const after = sourceTree(sourceRoot, sourceSha);
+    const before = withBuiltCatalog(sourceRoot, baseSha, sourceTree(sourceRoot, baseSha));
+    const after = withBuiltCatalog(sourceRoot, sourceSha, sourceTree(sourceRoot, sourceSha));
+    // Git reports the tracked copy's removal and every contract edit. Only
+    // different deployed bytes, or a different renderer, change these Functions.
+    const catalogBytesChanged = before.get(functionsCatalogModule) !== after.get(functionsCatalogModule);
+    changed.delete(functionsCatalogModule);
+    if (after.has(functionsCatalogModule) &&
+        (catalogBytesChanged || changed.has(functionsCatalogInputs[1]))) {
+      changed.add(functionsCatalogModule);
+    }
     const oldIndex = indexExports(ts, before);
     const newIndex = indexExports(ts, after);
     if (oldIndex.bootstrap !== newIndex.bootstrap) return all("Global Functions initialization changed");

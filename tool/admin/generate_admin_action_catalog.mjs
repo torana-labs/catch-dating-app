@@ -11,29 +11,25 @@ const sourcePath = path.join(
   "admin",
   "admin_action_catalog.json"
 );
+
+/** Where the Functions view lands. It is built on demand, never tracked. */
+export const functionsCatalogModule =
+  "functions/src/shared/generated/adminActionCatalog.ts";
+/** Source inputs of the generated Functions view, from the repository root. */
+export const functionsCatalogInputs = [
+  "contracts/admin/admin_action_catalog.json",
+  "tool/admin/generate_admin_action_catalog.mjs",
+];
+
 const outputs = new Map([
   [
     path.join(repoRoot, "admin", "src", "generated", "adminActionCatalog.ts"),
     renderAdmin,
   ],
-  [
-    path.join(
-      repoRoot,
-      "functions",
-      "src",
-      "shared",
-      "generated",
-      "adminActionCatalog.ts"
-    ),
-    renderFunctions,
-  ],
+  [path.join(repoRoot, ...functionsCatalogModule.split("/")), renderFunctions],
 ]);
-const checkOnly = process.argv.includes("--check");
-const selfTest = process.argv.includes("--self-test");
-const catalog = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
-validateCatalog(catalog);
 
-if (selfTest) {
+function selfTest(catalog) {
   const changed = structuredClone(catalog);
   changed.actions[0].summary = "simulated drift";
   if (renderAdmin(changed) === renderAdmin(catalog)) {
@@ -58,28 +54,31 @@ if (selfTest) {
     if (!String(error).includes("does not list action")) throw error;
   }
   console.log("Admin action catalog generator self-test detected drift.");
-  process.exit(0);
 }
 
-let stale = false;
-for (const [outputPath, render] of outputs) {
-  const output = render(catalog);
-  if (checkOnly) {
-    const current = fs.existsSync(outputPath) ?
-      fs.readFileSync(outputPath, "utf8") : "";
-    if (current !== output) {
-      stale = true;
-      console.error(`${path.relative(repoRoot, outputPath)} is stale.`);
-    }
-    continue;
+function main() {
+  const catalog = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+  validateCatalog(catalog);
+  if (process.argv.includes("--self-test")) {
+    selfTest(catalog);
+    return;
   }
-  fs.mkdirSync(path.dirname(outputPath), {recursive: true});
-  fs.writeFileSync(outputPath, output);
+  // --validate checks the catalog's own links without writing anything.
+  if (process.argv.includes("--validate")) {
+    console.log(`Admin action catalog is valid (${catalog.actions.length} actions).`);
+    return;
+  }
+  for (const [outputPath, render] of outputs) {
+    const output = render(catalog);
+    // Rewriting identical bytes would invalidate every compiler and bundler cache.
+    if (fs.existsSync(outputPath) && fs.readFileSync(outputPath, "utf8") === output) continue;
+    fs.mkdirSync(path.dirname(outputPath), {recursive: true});
+    fs.writeFileSync(outputPath, output);
+  }
+  console.log(`Generated admin action catalog outputs (${catalog.actions.length} actions).`);
 }
-if (stale) process.exitCode = 1;
-else console.log(checkOnly ?
-  `Admin action catalog outputs are current (${catalog.actions.length} actions).` :
-  `Generated admin action catalog outputs (${catalog.actions.length} actions).`);
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) main();
 
 function renderAdmin(value) {
   const publicCatalog = {
@@ -103,7 +102,7 @@ function renderAdmin(value) {
     "export type AdminActionId = typeof adminActionCatalog.actions[number][\"actionId\"];\n";
 }
 
-function renderFunctions(value) {
+export function renderFunctions(value) {
   const actions = Object.fromEntries(value.actions.map((action) => [
     action.actionId,
     {

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.185.1
-updated: 2026-11-01
+version: 1.185.2
+updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -1685,7 +1685,8 @@ High-risk Admin overview, access-decision, role, safety, and marketing mutation
 requests/responses use dedicated schemas under `contracts/callables/` and
 `contracts/callable_responses/`. The generator emits Functions and Admin types,
 and `admin/scripts/generateCallableValidators.mjs` compiles the same schema
-sources into the browser runtime validator registry.
+sources into the browser runtime validator registry, which Admin's npm lifecycle
+builds on demand and Git ignores.
 
 ## Organizer Authority
 

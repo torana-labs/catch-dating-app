@@ -2878,12 +2878,11 @@
       },
       "applies_to": [
         "admin/src/shared/api/adminApi.ts",
-        "admin/src/generated/validators/**",
         "admin/scripts/generateCallableValidators.mjs",
         "contracts/callables/**",
         "contracts/callable_responses/**"
       ],
-      "instruction": "Every callable used by adminApi must have a generated top-level validator; schema-backed requests validate on every live call and schema-backed responses validate in development or when VITE_ADMIN_VALIDATE_RESPONSES is enabled. Generator drift must fail pretypecheck.",
+      "instruction": "Every callable used by adminApi must have a generated top-level validator; schema-backed requests validate on every live call and schema-backed responses validate in development or when VITE_ADMIN_VALIDATE_RESPONSES is enabled. pretypecheck regenerates the validators from their sources, so they cannot be stale.",
       "sunset_when": [
         "Admin no longer calls Firebase callable functions directly"
       ],

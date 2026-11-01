@@ -17,8 +17,6 @@ const adminActionCatalogPath = path.join(
   "admin",
   "admin_action_catalog.json"
 );
-const checkOnly = process.argv.includes("--check");
-const selfTest = process.argv.includes("--self-test");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -233,7 +231,7 @@ function renderSchemaPool(schemas) {
   return {declarations: declarations.join("\n"), expression};
 }
 
-const header = "// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators\n";
+const header = "// GENERATED FILE. Run: npm --workspace catch-admin run generate\n";
 
 function renderValidation() {
   return header +
@@ -382,9 +380,15 @@ function staleGroupFiles(files) {
     .filter((filePath) => !files.has(filePath));
 }
 
-const model = buildModel();
-const output = render(model);
-if (selfTest) {
+/**
+ * The registry source for readers that compare against its coverage, so a
+ * check needs neither a generated file on disk nor a generate step of its own.
+ */
+export function adminCallableValidatorRegistrySource() {
+  return render(buildModel()).get(facadePath);
+}
+
+function selfTest(model, output) {
   assert.deepEqual(withoutAnnotations({
     title: "Event", description: "Words", "x-callable-aliases": ["a"],
     properties: {description: {type: "string", description: "A field named description stays."}},
@@ -413,27 +417,26 @@ if (selfTest) {
   };
   const changedFile = path.join(groupsDir, `${changed.groupModels[0].group}.ts`);
   assert.notEqual(render(changed).get(changedFile), output.get(changedFile));
-  console.log("Admin callable validator drift self-test passed.");
-  process.exit(0);
+  console.log("Admin callable validator self-test passed.");
 }
-const summary = `${model.names.length} callables in ${model.groupModels.length} groups, ` +
-  `${model.strictRequests.length} strict request schemas, ` +
-  `${model.strictResponses.length} strict response schemas`;
-if (checkOnly) {
-  const stale = [...output].filter(([filePath, source]) =>
-    !fs.existsSync(filePath) || fs.readFileSync(filePath, "utf8") !== source)
-    .map(([filePath]) => filePath);
-  stale.push(...staleGroupFiles(output));
-  if (stale.length > 0) {
-    console.error("Admin callable validators are stale: " +
-      stale.map((filePath) => path.relative(adminRoot, filePath)).join(", ") +
-      ". Run npm --workspace catch-admin run generate:callable-validators.");
-    process.exit(1);
+
+function main() {
+  const model = buildModel();
+  const output = render(model);
+  if (process.argv.includes("--self-test")) {
+    selfTest(model, output);
+    return;
   }
-  console.log(`Admin callable validators are current (${summary}).`);
-  process.exit(0);
+  fs.mkdirSync(groupsDir, {recursive: true});
+  for (const filePath of staleGroupFiles(output)) fs.rmSync(filePath);
+  for (const [filePath, source] of output) {
+    // Rewriting identical bytes would invalidate every compiler and bundler cache.
+    if (fs.existsSync(filePath) && fs.readFileSync(filePath, "utf8") === source) continue;
+    fs.writeFileSync(filePath, source);
+  }
+  console.log(`Generated admin callable validators (${model.names.length} callables in ` +
+    `${model.groupModels.length} groups, ${model.strictRequests.length} strict request schemas, ` +
+    `${model.strictResponses.length} strict response schemas).`);
 }
-fs.mkdirSync(groupsDir, {recursive: true});
-for (const filePath of staleGroupFiles(output)) fs.rmSync(filePath);
-for (const [filePath, source] of output) fs.writeFileSync(filePath, source);
-console.log(`Generated admin callable validators (${summary}).`);
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) main();

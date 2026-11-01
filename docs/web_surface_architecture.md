@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.48.1
-updated: 2026-11-01
+version: 0.48.2
+updated: 2026-11-02
 owner: web_platform
 status: active
 ---
@@ -1046,7 +1046,8 @@ forms or authority decisions.
 `contracts/admin/admin_action_catalog.json` binds every admin API callable to a
 stable CLI action id, request schema, roles, workflow, GUI path, and
 confirmation policy. `tool/admin/generate_admin_action_catalog.mjs` produces
-the typed browser and Functions views; the operations parity checker rejects
+the typed browser and Functions views at build time, and Git ignores both; the
+operations parity checker rejects
 drift among the catalog, admin API, strict request validators, Functions
 exports, and workflow membership.
 
@@ -1065,7 +1066,9 @@ The module cache shares subsequent loads without bypassing per-request checks.
 `admin/scripts/generateCallableValidators.mjs` discovers every callable name in
 that API module, compiles the applicable `contracts/callables/**` and
 `contracts/callable_responses/**` schemas plus their references, and writes the
-committed typed registry under `admin/src/generated/validators/`. Callables
+typed registry under `admin/src/generated/validators/`. Git ignores that
+directory: Admin's npm lifecycle (`npm --workspace catch-admin run generate`)
+builds it before every dev server, typecheck, test and build. Callables
 without a dedicated JSON contract receive an explicit top-level object
 validator and remain listed separately from strict schema coverage; they must
 not disappear from the registry or be described as strictly validated.
@@ -1082,9 +1085,9 @@ use dedicated strict schemas. Other callables remain explicitly structural
 where no field-level contract exists, so the registry still reports their
 weaker boundary honestly.
 
-Run `node tool/run.mjs check web:admin-callable-validators`. Admin
-`pretypecheck` runs the same drift check, so a callable or schema change cannot
-ship with stale validators. Validation failures use
+Run `node tool/run.mjs check web:admin-callable-validators` to test the
+generator. Admin `pretypecheck` regenerates the validators, so a callable or
+schema change cannot ship with stale ones. Validation failures use
 `AdminCallableValidationError` and include callable name, direction, and the
 first failing JSON instance path.
 

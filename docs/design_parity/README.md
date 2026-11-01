@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.3.0
-updated: 2026-10-18
+version: 0.3.1
+updated: 2026-11-02
 owner: product_design_parity
 status: active
 ---
@@ -460,7 +460,7 @@ An Admin callable binding must also state validation strength rather than
 treating every generated validator as equivalent. `bindings.runtimeContracts`
 names the callable and declares request and response validation separately as
 `strict_schema` or `structural_object`. The compiler compares those values with
-`admin/src/generated/validators/adminCallableValidators.ts` and rejects both
+the registry `admin/scripts/generateCallableValidators.mjs` builds and rejects both
 overclaiming and stale underclaiming. Structural validation is real boundary
 protection, but it is not a field-level request/response schema. The prioritized
 overview, access-decision, role, safety, and marketing mutation directions now

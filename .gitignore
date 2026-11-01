@@ -82,6 +82,11 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Built from contracts/ by the Admin and Functions npm lifecycle scripts.
+/admin/src/generated/adminActionCatalog.ts
+/admin/src/generated/validators/
+/functions/src/shared/generated/adminActionCatalog.ts
+
 # Generated audit/report bundles
 codex_audit/*.zip
 codex_audit/**/logs

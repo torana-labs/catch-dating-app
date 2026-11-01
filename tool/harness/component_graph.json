@@ -1102,20 +1102,6 @@
       "checkRequirements": {"executables": ["node"], "packages": [{"kind": "node", "name": "json-schema-to-typescript", "from": "functions/package.json"}]}
     },
     {
-      "id": "admin.callable-validators",
-      "owner": "web_platform",
-      "inputs": ["contracts/**/*.json", "admin/scripts/generateCallableValidators.mjs", "tool/admin/callable_inventory.mjs", "admin/src/**/*.ts", "admin/src/**/*.tsx", "package.json", "admin/package.json"],
-      "outputs": ["admin/src/generated/validators/adminCallableValidators.ts"],
-      "checkCommand": "npm --workspace catch-admin run check:callable-validators",
-      "writeCommand": "npm --workspace catch-admin run generate:callable-validators",
-      "platforms": ["darwin", "linux"],
-      "deterministic": true,
-      "network": false,
-      "timeoutSeconds": 60,
-      "checkRequirements": {"executables": ["node", "npm"], "packages": []},
-      "inputExcludes": ["admin/src/**/generated/**", "admin/src/**/*.test.*", "admin/src/**/*.stories.*"]
-    },
-    {
       "id": "flutter.l10n",
       "owner": "app_platform",
       "inputs": ["lib/l10n/app_en.arb", "l10n.yaml", "pubspec.yaml", "tool/ci/toolchain.env", "tool/harness/lib/check_flutter_l10n_generated.mjs"],

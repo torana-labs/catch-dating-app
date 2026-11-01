@@ -73,6 +73,10 @@ jobs:
 
       - run: npm ci
 
+      # The checks below read Admin's import graph without an npm lifecycle.
+      - name: Generate Admin modules
+        run: npm --workspace catch-admin run generate
+
       - name: Check unused code and undeclared imports (Knip ratchet)
         run: >-
           node tool/audit/check_unused_code.mjs --check
