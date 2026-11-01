@@ -968,8 +968,11 @@ A story that provably drifts a few tenths of a percent between identical
 builds can take a scoped waiver instead of forcing a global threshold raise.
 `tool/web/storybook_visual_thresholds.json` maps a built story id to its own
 changed-pixel ratio with a required `surface`, evidence `reason`, and valid
-`expires` date; the check fails on unknown story ids, malformed entries, and
-expired overrides so waivers cannot rot silently.
+`expires` date; the check fails on malformed entries and expired overrides so
+waivers cannot rot silently. An override whose story is gone or no longer
+registry-ready cannot fail anyone's PR: every mode ignores it with a notice that
+names it, and a full `--update` removes it. A renamed story needs its override
+re-keyed in the same PR, because the old key stops applying.
 
 The Admin Website and Marketing Website workflows pin the blocking Linux
 capture to Ubuntu 24.04. Their manual `workflow_dispatch` input
