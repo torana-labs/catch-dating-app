@@ -368,6 +368,11 @@
       "source": "website/src/features/home/useLaunchNoticeController.ts",
       "test": "website/src/features/home/useLaunchNoticeController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/support/controllers/useSupportInboxController.ts",
+      "test": "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+      "status": "required"
     }
   ]
 }

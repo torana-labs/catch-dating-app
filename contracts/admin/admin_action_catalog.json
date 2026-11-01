@@ -3643,6 +3643,156 @@
         "note": null
       },
       "controlPlane": true
+    },
+    {
+      "actionId": "support.conversations.list",
+      "callable": "adminListSupportConversations",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_support_conversations_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_support_conversations_response.schema.json",
+      "summary": "List support conversations by view, longest waiting first.",
+      "example": {
+        "view": "open",
+        "audience": null,
+        "limit": 50
+      }
+    },
+    {
+      "actionId": "support.conversations.get",
+      "callable": "adminGetSupportConversation",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_support_conversation_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_support_conversation_response.schema.json",
+      "summary": "Open one support conversation with its messages and links.",
+      "example": {
+        "conversationId": "whatsapp-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "actionId": "support.conversations.update",
+      "callable": "adminUpdateSupportConversation",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "conversationId",
+      "requestSchema": "contracts/callables/admin_update_support_conversation_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_update_support_conversation_response.schema.json",
+      "summary": "Set a conversation's owner, status and links.",
+      "example": {
+        "conversationId": "whatsapp-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownerUid": "example-ops",
+        "status": "open",
+        "links": []
+      }
+    },
+    {
+      "actionId": "support.messages.record",
+      "callable": "adminRecordSupportMessage",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "conversationId",
+      "requestSchema": "contracts/callables/admin_record_support_message_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_record_support_message_response.schema.json",
+      "summary": "Record a reply, a logged email or an internal note in a conversation.",
+      "example": {
+        "conversationId": "whatsapp-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "channel": "whatsapp",
+        "contactAddress": null,
+        "displayName": null,
+        "direction": "note",
+        "text": "Checked the payment; confirming the booking.",
+        "savedReplyId": null
+      }
+    },
+    {
+      "actionId": "support.replies.list",
+      "callable": "adminListSupportSavedReplies",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_support_saved_replies_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_support_saved_replies_response.schema.json",
+      "summary": "List saved replies.",
+      "example": {}
+    },
+    {
+      "actionId": "support.replies.upsert",
+      "callable": "adminUpsertSupportSavedReply",
+      "workflowIds": [
+        "support"
+      ],
+      "guiPath": "/support",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "title",
+      "requestSchema": "contracts/callables/admin_upsert_support_saved_reply_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_upsert_support_saved_reply_response.schema.json",
+      "summary": "Add or edit a saved reply.",
+      "example": {
+        "replyId": null,
+        "title": "Refund timing",
+        "body": "Refunds reach your account in 5 to 7 working days.",
+        "active": true
+      }
     }
   ],
   "workflows": [
@@ -3939,6 +4089,19 @@
         "sales.demo.GetSalesDemoPartnerReview",
         "sales.demo.ShareSalesDemoPartnerReview",
         "sales.partners.offer"
+      ]
+    },
+    {
+      "workflowId": "support",
+      "label": "Support inbox",
+      "guiPath": "/support",
+      "actions": [
+        "support.conversations.list",
+        "support.conversations.get",
+        "support.conversations.update",
+        "support.messages.record",
+        "support.replies.list",
+        "support.replies.upsert"
       ]
     }
   ]
