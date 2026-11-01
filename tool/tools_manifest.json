@@ -1526,19 +1526,18 @@
       "command": "bash tool/widget_cleanup_scan.sh",
       "safety": "local",
       "status": "active",
-      "description": "Ratchets live widget/design-system cleanup candidates against checked maximum counts.",
+      "description": "Fails on any live widget/design-system cleanup candidate.",
       "checks": [
         "bash -n tool/widget_cleanup_scan.sh",
-        "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
+        "node --test tool/lib/widget_cleanup_gate.test.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
-      "role": "ratchet",
-      "baseline": "tool/audit/widget_cleanup_baseline.json",
+      "role": "gate",
       "vacuityProof": {
         "type": "test",
-        "path": "tool/lib/widget_cleanup_ratchet.test.mjs",
+        "path": "tool/lib/widget_cleanup_gate.test.mjs",
         "contains": [
-          "ratchet flags increases, missing categories, and new categories"
+          "gate flags any candidate, missing categories, and unknown categories"
         ]
       }
     },
@@ -1636,7 +1635,7 @@
       "command": "node tool/web/check_website_copy_ownership.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
+      "description": "Fails on user-visible marketing website strings outside website/src/content and the reasoned allowlist.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -1652,7 +1651,7 @@
       "impactPaths": [
         "tool/web/website_copy_allowlist.json"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "WEB-COPY-001"
       ],
@@ -1702,7 +1701,6 @@
       "rules": [
         "APP-COPY-001"
       ],
-      "baseline": "tool/copy/mobile_copy_baseline.json",
       "vacuityProof": {
         "type": "self-test",
         "command": "dart run tool/copy/check_mobile_copy_ownership.dart --self-test"
@@ -1714,7 +1712,6 @@
       "path": "tool/copy/check_l10n_key_usage.mjs",
       "impactPaths": [
         "tool/copy/check_l10n_key_usage.test.mjs",
-        "tool/copy/l10n_orphan_baseline.json",
         "tool/copy/fixtures/l10n_key_usage/**"
       ],
       "command": "node tool/copy/check_l10n_key_usage.mjs --check",
@@ -1726,27 +1723,26 @@
           "node"
         ]
       },
-      "description": "Derives exact handwritten Flutter localization-key usage live and fails on missing catalog getters or any new zero-use catalog key; complete JSON evidence is ephemeral.",
+      "description": "Derives exact handwritten Flutter localization-key usage live and fails on missing catalog getters or any zero-use catalog key; complete JSON evidence is ephemeral.",
       "checks": [
         "node --check tool/copy/check_l10n_key_usage.mjs",
         "node --test tool/copy/check_l10n_key_usage.test.mjs",
         "node tool/copy/check_l10n_key_usage.mjs --check"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "APP-COPY-001"
       ],
-      "baseline": "tool/copy/l10n_orphan_baseline.json",
       "vacuityProof": {
         "type": "test",
         "path": "tool/copy/check_l10n_key_usage.test.mjs",
         "contains": [
-          "known-bad fixture reports only the newly orphaned key",
+          "known-bad fixture reports every orphaned key",
+          "CLI fails on any orphan and passes when there are none",
           "inventory generation is deterministic JSON",
           "JSON review records missing getters but exits unsuccessfully",
-          "baseline refresh refuses to bless a newly orphaned key",
           "retired tracked inventory and legacy CLI modes stay absent",
-          "CLI help exposes only live evidence and baseline modes"
+          "CLI help exposes only live evidence modes"
         ]
       }
     },
@@ -2092,12 +2088,11 @@
       "command": "node tool/web/check_react_query_state.mjs",
       "safety": "local",
       "status": "active",
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "WEB-QUERY-STATE-001"
       ],
-      "baseline": "tool/web/react_query_state_baseline.json",
-      "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
+      "description": "Fails on React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [

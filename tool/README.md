@@ -391,8 +391,8 @@ needs a reusable drift snapshot artifact with analyzer completion status.
 The drift helper parses the machine analyzer diagnostic-code field; it must not
 count `catch_*` text from filenames, symbol names, or diagnostic messages.
 
-`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
-Only the eight remaining regex-only categories live there. Promoted categories
+`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup gate:
+any candidate in its eight regex-only categories fails. Promoted categories
 are analyzer rules with seeded fixture parity, and every Catch analyzer
 diagnostic must remain at zero.
 
@@ -894,11 +894,8 @@ inline allow markers. After resolving debt, prune with
 
 The React website/admin surfaces share scanners for route ownership, UI
 primitive ownership, governed component families, and server-state ownership.
-The query-state scanner is a baseline-backed ratchet: current manual async
-state candidates are listed in `tool/web/react_query_state_baseline.json`, and
-new feature controller or `use*` hook loading/saving/submitting/in-flight state
-fails the check unless the owning baseline is deliberately updated in the same
-reviewed change with a source-level rationale.
+The query-state scanner is a plain gate: any feature controller or `use*` hook
+loading/saving/submitting/in-flight state fails the check.
 
 ```sh
 node tool/run.mjs check web:react-architecture-boundaries
@@ -923,7 +920,12 @@ into `build/` when a temporary artifact is useful.
 `web:shared-ui-adoption` reconciles the cross-surface decision tracker with
 website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
 through both surface adapters. The same gate also preserves the shared focus,
-accessible table/field/button contracts, and package CI path coverage.
+accessible table/field/button contracts, and package CI path coverage, and it
+caps consolidation debt: only growth fails, so a PR that reduces debt passes
+with no baseline edit. Page CSS caps come from the merge base, so a merged
+reduction lowers them by itself. Identity allowances in
+`tool/web/react_consolidation_baseline.json` are ceilings; the check prints how
+many are fixed, and `--update-consolidation-baseline` drops those when convenient.
 
 `web:react-controller-test-targets` keeps every feature controller and mutation
 hook classified in `tool/web/react_controller_test_targets.json`. Promoted
@@ -1225,8 +1227,8 @@ questionnaires:
 widget arguments, copy-shaped constructor defaults and initializers,
 presentation-state members, validator/share/status helpers, and Event Success
 display enums. Its self-test seeds each supported AST shape plus technical and
-diagnostic counterexamples. The product-copy baseline stays empty; the narrow
-allowlist is reserved for proven technical identifiers.
+diagnostic counterexamples. It has no baseline: any finding fails, and the
+narrow allowlist is reserved for proven technical identifiers.
 
 `tool/copy/check_mobile_copy_catalog.mjs` also rejects new ARB identifiers that
 contain the generated `Visiblecopy` marker. Reviewed legacy exceptions live in
@@ -1240,10 +1242,9 @@ node --test tool/copy/check_l10n_key_usage.test.mjs
 ```
 
 The live key-usage scan reports exact handwritten Dart references, excludes
-generated Dart, comments, and string contents, and fails on any new orphan or
+generated Dart, comments, and string contents, and fails on any orphan or
 missing catalog getter. Use `--json` for ephemeral review evidence; do not
-commit a generated usage snapshot. Baseline reductions pass; baseline growth
-is rejected.
+commit a generated usage snapshot.
 
 ```sh
 node tool/copy/sync_event_success_questionnaires.mjs --write
