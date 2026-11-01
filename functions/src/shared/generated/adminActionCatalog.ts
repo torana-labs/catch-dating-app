@@ -1390,6 +1390,72 @@ export const ADMIN_ACTION_CATALOG = {
       "safetyReviewer",
       "support"
     ]
+  },
+  "support.conversations.list": {
+    "callable": "adminListSupportConversations",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "support.conversations.get": {
+    "callable": "adminGetSupportConversation",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "support.conversations.update": {
+    "callable": "adminUpdateSupportConversation",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "support.messages.record": {
+    "callable": "adminRecordSupportMessage",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "support.replies.list": {
+    "callable": "adminListSupportSavedReplies",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "support.replies.upsert": {
+    "callable": "adminUpsertSupportSavedReply",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
   }
 } as const;
 

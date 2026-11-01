@@ -1,4 +1,28 @@
 import {httpsCallable as firebaseHttpsCallable} from "firebase/functions";
+import type {AdminListSupportConversationsCallablePayload} from
+  "../../generated/contracts/adminListSupportConversationsCallablePayload";
+import type {AdminListSupportConversationsCallableResponse} from
+  "../../generated/contracts/adminListSupportConversationsCallableResponse";
+import type {AdminGetSupportConversationCallablePayload} from
+  "../../generated/contracts/adminGetSupportConversationCallablePayload";
+import type {AdminGetSupportConversationCallableResponse} from
+  "../../generated/contracts/adminGetSupportConversationCallableResponse";
+import type {AdminUpdateSupportConversationCallablePayload} from
+  "../../generated/contracts/adminUpdateSupportConversationCallablePayload";
+import type {AdminUpdateSupportConversationCallableResponse} from
+  "../../generated/contracts/adminUpdateSupportConversationCallableResponse";
+import type {AdminRecordSupportMessageCallablePayload} from
+  "../../generated/contracts/adminRecordSupportMessageCallablePayload";
+import type {AdminRecordSupportMessageCallableResponse} from
+  "../../generated/contracts/adminRecordSupportMessageCallableResponse";
+import type {AdminListSupportSavedRepliesCallablePayload} from
+  "../../generated/contracts/adminListSupportSavedRepliesCallablePayload";
+import type {AdminListSupportSavedRepliesCallableResponse} from
+  "../../generated/contracts/adminListSupportSavedRepliesCallableResponse";
+import type {AdminUpsertSupportSavedReplyCallablePayload} from
+  "../../generated/contracts/adminUpsertSupportSavedReplyCallablePayload";
+import type {AdminUpsertSupportSavedReplyCallableResponse} from
+  "../../generated/contracts/adminUpsertSupportSavedReplyCallableResponse";
 import type {AdminListAccountSafetyActionsCallablePayload} from
   "../../generated/contracts/adminListAccountSafetyActionsCallablePayload";
 import type {AdminListAccountSafetyActionsCallableResponse} from
@@ -2769,5 +2793,90 @@ export async function searchPeople(
     AdminSearchPeopleCallablePayload,
     AdminSearchPeopleCallableResponse
   >(functions, "adminSearchPeople");
+  return (await callable(payload)).data;
+}
+
+// Support inbox: conversations, replies and saved replies.
+
+export async function listSupportConversations(
+  payload: AdminListSupportConversationsCallablePayload
+): Promise<AdminListSupportConversationsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSupport")).sampleListSupportConversations(payload);
+  }
+  const callable = httpsCallable<
+    AdminListSupportConversationsCallablePayload,
+    AdminListSupportConversationsCallableResponse
+  >(functions, "adminListSupportConversations");
+  return (await callable(payload)).data;
+}
+
+export async function getSupportConversation(
+  payload: AdminGetSupportConversationCallablePayload
+): Promise<AdminGetSupportConversationCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSupport")).sampleGetSupportConversation(payload);
+  }
+  const callable = httpsCallable<
+    AdminGetSupportConversationCallablePayload,
+    AdminGetSupportConversationCallableResponse
+  >(functions, "adminGetSupportConversation");
+  return (await callable(payload)).data;
+}
+
+export async function updateSupportConversation(
+  payload: AdminUpdateSupportConversationCallablePayload
+): Promise<AdminUpdateSupportConversationCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSupport")).sampleUpdateSupportConversation(payload);
+  }
+  const callable = httpsCallable<
+    AdminUpdateSupportConversationCallablePayload,
+    AdminUpdateSupportConversationCallableResponse
+  >(functions, "adminUpdateSupportConversation");
+  return (await callable(payload)).data;
+}
+
+export async function recordSupportMessage(
+  payload: AdminRecordSupportMessageCallablePayload
+): Promise<AdminRecordSupportMessageCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSupport")).sampleRecordSupportMessage(payload);
+  }
+  const callable = httpsCallable<
+    AdminRecordSupportMessageCallablePayload,
+    AdminRecordSupportMessageCallableResponse
+  >(functions, "adminRecordSupportMessage");
+  return (await callable(payload)).data;
+}
+
+export async function listSupportSavedReplies():
+  Promise<AdminListSupportSavedRepliesCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSupport")).sampleListSupportSavedReplies();
+  }
+  const callable = httpsCallable<
+    AdminListSupportSavedRepliesCallablePayload,
+    AdminListSupportSavedRepliesCallableResponse
+  >(functions, "adminListSupportSavedReplies");
+  return (await callable({})).data;
+}
+
+export async function upsertSupportSavedReply(
+  payload: AdminUpsertSupportSavedReplyCallablePayload
+): Promise<AdminUpsertSupportSavedReplyCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSupport")).sampleUpsertSupportSavedReply(payload);
+  }
+  const callable = httpsCallable<
+    AdminUpsertSupportSavedReplyCallablePayload,
+    AdminUpsertSupportSavedReplyCallableResponse
+  >(functions, "adminUpsertSupportSavedReply");
   return (await callable(payload)).data;
 }
