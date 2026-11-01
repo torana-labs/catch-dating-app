@@ -10,7 +10,7 @@ Options:
   --project-id <id>        Override the Firebase project alias in .firebaserc.
   --location <location>    BigQuery job location. Defaults to asia-south1.
   --refresh-only           Run only the mart refresh SQL.
-  --skip-refresh           Run DDL only.
+  --skip-refresh           Rename pre-organizer columns and run DDL only.
   --create-schedule        Create or update the BigQuery scheduled query.
   --schedule <cron text>   Scheduled-query cadence. Defaults to "every day 22:30".
   --display-name <name>    Scheduled-query display name.
@@ -23,8 +23,8 @@ warehouse DDL, the Firestore-to-BigQuery extension instances, then the refresh:
 
   node tool/run.mjs check analytics:check-host-bigquery
   tool/analytics/deploy_host_analytics_bigquery.sh <env> --skip-refresh
-  # Complete the export installation/import or existing-instance cutover in
-  # analytics/sql/README.md before refreshing. Preserve old club export tables.
+  # Complete the export installation and import in analytics/sql/README.md
+  # before refreshing.
   ./tool/deploy_firebase_targets.sh <env> functions
   tool/analytics/deploy_host_analytics_bigquery.sh <env> --refresh-only --create-schedule
 
@@ -148,6 +148,79 @@ query_file() {
   echo "::endgroup::"
 }
 
+run_step() {
+  if [[ "$dry_run" == true ]]; then
+    printf 'Would run:'
+    printf ' %q' "$@"
+    echo
+  else
+    "$@"
+  fi
+}
+
+# Tables created before the organizer rename (2026-10-31) name the organizer
+# column the old way. rename_to_organizer renames such a table's columns in
+# place and keeps its rows. Clustering moves off the old column first, so the
+# rename never touches a clustering column, then onto the DDL's CLUSTER BY.
+# An absent or already renamed table is left alone; the DDL creates or
+# matches it. --dry-run reads the table and prints the commands it would run.
+rename_to_organizer() {
+  local table="$1"
+  local renames="$2"
+  local interim_clustering="${3:-}"
+  local clustering="${4:-}"
+  local description="${5:-}"
+  local table_ref="$project_id:$dataset.$table"
+  local old_column="${renames#RENAME COLUMN }"
+  old_column="${old_column%% *}"
+  # bq writes the table JSON and its own errors to stdout and CLI warnings to
+  # stderr, so only stdout is parsed. Unreadable metadata stops the script
+  # rather than passing for an already renamed table.
+  local metadata
+  if ! metadata="$(bq --project_id="$project_id" --format=json show "$table_ref")"; then
+    if [[ "$metadata" == *"Not found"* ]]; then
+      return 0
+    fi
+    echo "$metadata" >&2
+    exit 1
+  fi
+  local column_state=0
+  node -e '
+    const [column, metadata] = process.argv.slice(1);
+    let fields;
+    try {
+      fields = JSON.parse(metadata).schema?.fields;
+    } catch {
+      process.exit(2);
+    }
+    if (!Array.isArray(fields)) process.exit(2);
+    process.exit(fields.some((field) => field.name === column) ? 0 : 1);
+  ' "$old_column" "$metadata" || column_state=$?
+  if [[ "$column_state" == 1 ]]; then
+    return 0
+  fi
+  if [[ "$column_state" != 0 ]]; then
+    echo "Unreadable BigQuery metadata for $table_ref." >&2
+    exit 1
+  fi
+  echo "::group::BigQuery $table organizer columns"
+  if [[ -n "$interim_clustering" ]]; then
+    run_step bq --project_id="$project_id" update \
+      --clustering_fields="$interim_clustering" "$table_ref"
+  fi
+  run_step bq --project_id="$project_id" --location="$location" query \
+    --use_legacy_sql=false "ALTER TABLE \`$project_id.$dataset.$table\` $renames"
+  if [[ -n "$clustering" ]]; then
+    run_step bq --project_id="$project_id" update \
+      --clustering_fields="$clustering" "$table_ref"
+  fi
+  if [[ -n "$description" ]]; then
+    run_step bq --project_id="$project_id" update \
+      --description="$description" "$table_ref"
+  fi
+  echo "::endgroup::"
+}
+
 find_existing_schedule_config() {
   local configs_file
   configs_file="$(mktemp "${TMPDIR:-/tmp}/host-analytics-schedules.XXXXXX.json")"
@@ -183,11 +256,20 @@ find_existing_schedule_config() {
   rm -f "$configs_file"
 }
 
+dataset="catch_analytics"
 ddl_events="$repo_root/analytics/sql/ddl/host_analytics_events.sql"
 ddl_mart="$repo_root/analytics/sql/ddl/mart_host_event_daily.sql"
 refresh_sql="$repo_root/analytics/sql/marts/refresh_mart_host_event_daily.sql"
 
 if [[ "$refresh_only" != true ]]; then
+  rename_to_organizer host_analytics_events "RENAME COLUMN club_id TO organizer_id" \
+    "target_event_id,event_name" "organizer_id,target_event_id,event_name"
+  rename_to_organizer mart_host_event_daily \
+    "RENAME COLUMN club_id TO organizer_id, RENAME COLUMN club_name TO organizer_name" \
+    "event_id" "organizer_id,event_id" \
+    "Host/admin analytics mart at daily organizer/event grain, derived from BigQuery exports and raw host analytics events."
+  rename_to_organizer mart_host_link_daily "RENAME COLUMN club_id TO organizer_id" \
+    "link_id" "organizer_id,link_id"
   query_file "$ddl_events" "host_analytics_events DDL"
   query_file "$ddl_mart" "mart_host_event_daily DDL"
 fi

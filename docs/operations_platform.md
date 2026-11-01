@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.39.0
-updated: 2026-10-30
+version: 1.40.0
+updated: 2026-11-01
 owner: operations_platform
 status: active
 ---
@@ -369,9 +369,14 @@ and a different approval of the same listing is refused. Indexing and app
 discovery remain later decisions, after the organizer is verified.
 
 Supply Intake compares each new listing with the organizers Catch already lists
-(`organizer-matching/`). The Functions worker reads published organizers in the
-request's city (every city for an unassigned one), at most 1,000, projected to
-their identity fields. It records an advisory `duplicateCheck` on the listing
+(`organizer-matching/`). The Functions worker reads every organizer Catch keeps,
+in every city and whatever its page's publication state, skipping archived
+ones: a QA or draft listing, or an organizer created in the app with no page,
+is still the same organizer when someone nominates it again. The read is at
+most 1,000 organizers, projected to their identity fields. Each organizer's
+city is normalized to its market slug (a page's `delhi` and a record's
+`in-dl-delhi-ncr` are both `delhi-ncr`), so the matcher never counts the same
+city as a different one. It records an advisory `duplicateCheck` on the listing
 and the request, and a `possible_duplicate_organizer` gap for a likely or
 ambiguous match. The listing review shows each match with a link. The check
 never blocks a staff approval, though anything but a clear result keeps a
@@ -392,8 +397,7 @@ publishes only when all of these hold:
   from the WhatsApp receipt's number or the Instagram receipt's nominator id);
 - the build recorded no gaps (a missing image doesn't count, since listing
   images are never published) and needs no research;
-- the duplicate check compared the market's whole inventory and found nothing
-  alike;
+- the duplicate check compared the whole inventory and found nothing alike;
 - the market is open, and the slug from the organizer's name is free.
 
 It then runs the approval transaction above, with organizer type `community`,

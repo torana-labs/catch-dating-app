@@ -161,6 +161,8 @@ import {
   bannedIdentityDocumentSchema,
   blockedSignupAttemptDocumentSchema,
   organizerGuestBlockDocumentSchema,
+  organizerGrowthFactsDocumentSchema,
+  organizerGrowthEventSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
   salesOutreachJobsDocumentSchema,
   outreachDraftSchema,
@@ -1494,6 +1496,8 @@ export const validateSafetySettingsDocument = ajv.compile(safetySettingsDocument
 export const validateBannedIdentityDocument = ajv.compile(bannedIdentityDocumentSchema);
 export const validateBlockedSignupAttemptDocument = ajv.compile(blockedSignupAttemptDocumentSchema);
 export const validateOrganizerGuestBlockDocument = ajv.compile(organizerGuestBlockDocumentSchema);
+export const validateOrganizerGrowthFactsDocument = ajv.compile(organizerGrowthFactsDocumentSchema);
+export const validateOrganizerGrowthEvent = ajv.compile(organizerGrowthEventSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
 export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
 export const validateOutreachDraft = ajv.compile(outreachDraftSchema);

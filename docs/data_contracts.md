@@ -4475,6 +4475,26 @@ host locks:
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
 
+## Organizer Growth Facts
+
+`organizerGrowthFacts/{organizerId}` is server-only. `adminApproveOrganizerListing`
+creates it in the approval transaction with the organizer's one acquisition
+channel, decided from the Supply Intake request (associate, partner, discovery,
+the organizer's own submission, a partner or website enquiry, and paid campaign
+attribution on a website enquiry), and the first nominator. Organizers made any
+other way get a channel from provenance (`came_to_us` for user-created, else
+`imported`) when their first step is recorded. The channel is never edited.
+The `onOrganizerGrowth*` triggers set the dated steps (`listedAt`,
+`claimRequestedAt`, `claimedAt`, `firstEventAt`, `firstPaidBookingAt`), each to
+the earliest time observed, and stream them, with paid bookings and refunds, to
+BigQuery `catch_analytics.organizer_growth_events`.
+
+Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
+including tax, and `taxPaise`, the GST within it) from the provider's payment
+entity on `payments`, `publicEventPayments`, `organizerEventOfferPayments` and
+`organizerFormPayments`. It is written once, when the capture is first observed
+with a reported fee; refunds stay in each record's existing refund fields.
+
 `organizerTeamMemberships` owns active owner and manager seats. Legacy
 `organizerHostClaims` remains only long enough to support released club callables;
 it is not organizer claim authority.

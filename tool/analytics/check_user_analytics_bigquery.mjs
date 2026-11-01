@@ -50,6 +50,7 @@ requireText(
 );
 requireText(ddlEvents, "PARTITION BY event_date");
 requireText(ddlEvents, "CLUSTER BY subject_uid, viewer_uid, event_id, event_name");
+requireText(ddlEvents, "  organizer_id STRING,");
 
 requireText(ddlMart, "CREATE TABLE IF NOT EXISTS `%s.%s.mart_user_analytics_daily`");
 requireText(ddlMart, "PARTITION BY date");
@@ -72,6 +73,8 @@ requireText(refresh, "analytics_526484083");
 requireText(deploy, "ddl/user_profile_exposure_events.sql");
 requireText(deploy, "ddl/mart_user_analytics_daily.sql");
 requireText(deploy, "marts/refresh_mart_user_analytics_daily.sql");
+// A pre-organizer exposure table is renamed in place before the DDL runs.
+requireText(deploy, 'rename_to_organizer user_profile_exposure_events \\\n    "RENAME COLUMN club_id TO organizer_id"');
 requireText(deploy, "--service-account <email>");
 requireText(deploy, "--service_account_name=");
 requireText(deploy, "--update_credentials");

@@ -26,6 +26,7 @@ import {reserveOrganizerCanonicalRoute} from "./organizerPublishingGuards";
 import {assertOrganizerVisibilityDecisionAllowed} from "./supplyVisibilityPolicy";
 import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
+import {growthFactsCollection, listingChannel, newGrowthFacts} from "../growth/organizerGrowthFacts";
 
 // Approving creates Sales records, which only admins and admin owners own.
 export const listingApprovalRoles = ["admin", "adminOwner"] as const;
@@ -62,7 +63,7 @@ interface ReviewedListing {
 interface StoredRequest {
   status: string;
   approval: unknown;
-  request: {origin: {kind: string; id: string} | null};
+  request: {origin: {kind: string; id: string} | null; submittedAt?: string};
 }
 
 /** One approval per listing, whoever approves it and however often. */
@@ -203,6 +204,12 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     });
 
     tx.create(organizerRef, organizer);
+    // The listing fixes the organizer's one acquisition channel and its first nominator.
+    const channel = listingChannel({requestId: listing.requestId, kind: listing.kind,
+      submittedBy: listing.submittedBy, submittedAt: new Date(stored.request.submittedAt ?? now),
+      originKind: origin?.kind ?? null, intent: intentSnap?.data() ?? null});
+    tx.create(db.collection(growthFactsCollection).doc(organizerId),
+      newGrowthFacts(organizerId, market.marketId, channel, admin.firestore.Timestamp.fromDate(new Date(now))));
     const receipt: OrganizerIntakeCurationDecisionDocument = {
       schemaVersion: 1, operationId: approvalId, operationType: "create_entity_draft", operationStatus: "active",
       entityId: organizerId, sourceCandidateId: listing.listingId, sourceWorkItemId: data.listingWorkItemId,

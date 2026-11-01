@@ -102,7 +102,7 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
       occurred_at: "2026-06-18T10:00:00.000Z",
       event_date: "2026-06-18",
       event_name: "eventView",
-      club_id: "club-1",
+      organizer_id: "club-1",
       target_event_id: "event-1",
       page_path: "/organizers/saket-run-club/",
       source: "catch_event_card",

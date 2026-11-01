@@ -232,6 +232,8 @@ const schemaSpecs = [
   {"name": "BannedIdentityDocument", "source": "firestore/banned_identities.schema.json", "typeOutput": "functions/src/shared/generated/bannedIdentityDocument.ts"},
   {"name": "BlockedSignupAttemptDocument", "source": "firestore/blocked_signup_attempts.schema.json", "typeOutput": "functions/src/shared/generated/blockedSignupAttemptDocument.ts"},
   {"name": "OrganizerGuestBlockDocument", "source": "firestore/organizer_guest_blocks.schema.json", "typeOutput": "functions/src/shared/generated/organizerGuestBlockDocument.ts"},
+  {"name": "OrganizerGrowthFactsDocument", "source": "firestore/organizer_growth_facts.schema.json", "typeOutput": "functions/src/shared/generated/organizerGrowthFactsDocument.ts"},
+  {"name": "OrganizerGrowthEvent", "source": "bigquery/organizer_growth_event.schema.json", "typeOutput": "functions/src/shared/generated/organizerGrowthEvent.ts"},
 
   {"name": "AdminSalesIntelligenceGenerateCallablePayload", "source": "callables/admin_sales_intelligence_generate_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts"},
   {"name": "SalesOutreachJobsDocument", "source": "firestore/sales_outreach_jobs.schema.json", "typeOutput": "functions/src/shared/generated/salesOutreachJobsDocument.ts"},

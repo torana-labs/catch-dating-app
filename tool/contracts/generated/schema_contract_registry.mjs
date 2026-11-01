@@ -33808,6 +33808,540 @@ export const organizerGuestBlockDocumentSchema = {
   }
 };
 
+export const organizerGrowthFactsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_growth_facts.schema.json",
+  "title": "OrganizerGrowthFactsDocument",
+  "description": "Server-only growth facts for one organizer: the one acquisition channel set when its listing was made, the first person who nominated it, and the dated steps it reached (listed, claim asked, claimed, first event, first paid booking). Each step is set once, to the earliest time observed, and never edited by hand, so organizer cohorts can be counted from it. Every step is also streamed to BigQuery as an organizer growth event.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerGrowthFacts",
+  "x-firestore-path": "organizerGrowthFacts/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Functions growth facts writers (listing approval and organizer, claim, booking and payment triggers)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "marketId",
+    "channel",
+    "channelSource",
+    "nominator",
+    "milestones",
+    "firstEventId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "channel": {
+      "type": "string",
+      "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+      "enum": [
+        "imported",
+        "sales_associate",
+        "partner",
+        "guest",
+        "organizer",
+        "came_to_us",
+        "ads"
+      ]
+    },
+    "milestone": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "marketId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "channel": {
+      "type": "string",
+      "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+      "enum": [
+        "imported",
+        "sales_associate",
+        "partner",
+        "guest",
+        "organizer",
+        "came_to_us",
+        "ads"
+      ]
+    },
+    "channelSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What decided the channel: the Supply Intake request the listing came from, or, for an organizer created any other way, its provenance.",
+      "required": [
+        "kind",
+        "requestId",
+        "originKind",
+        "campaign"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "supply_intake",
+            "provenance"
+          ]
+        },
+        "requestId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "originKind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 60
+        },
+        "campaign": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        }
+      }
+    },
+    "nominator": {
+      "description": "The first person who nominated the organizer, kept for nominator credit (partners, guests and organizers earn it; sales associates do not). Null when nobody nominated it.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uid",
+            "role",
+            "nominatedAt"
+          ],
+          "properties": {
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "associate",
+                "partner",
+                "guest",
+                "organizer"
+              ]
+            },
+            "nominatedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "milestones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "listedAt",
+        "claimRequestedAt",
+        "claimedAt",
+        "firstEventAt",
+        "firstPaidBookingAt"
+      ],
+      "properties": {
+        "listedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The day the page was published, claimed or not."
+        },
+        "claimRequestedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The first claim request for the page."
+        },
+        "claimedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The day an owner was approved (or set the organizer up themselves)."
+        },
+        "firstEventAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The start of the earliest event on Catch with at least one paid or free booking."
+        },
+        "firstPaidBookingAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The capture time of the organizer's first paid booking."
+        }
+      }
+    },
+    "firstEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const organizerGrowthEventSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/bigquery/organizer_growth_event.schema.json",
+  "title": "OrganizerGrowthEvent",
+  "description": "One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment. The insert id is the growth event id, and readers count distinct ids, so a retried insert never counts twice.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "growth_event_id",
+    "organizer_id",
+    "event_name",
+    "occurred_at",
+    "event_date",
+    "channel",
+    "market_id",
+    "ingested_at"
+  ],
+  "properties": {
+    "growth_event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "organizer_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "event_name": {
+      "type": "string",
+      "enum": [
+        "listed",
+        "claim_requested",
+        "claimed",
+        "first_event",
+        "first_paid_booking",
+        "paid_booking",
+        "refund"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "channel": {
+      "type": "string",
+      "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+      "enum": [
+        "imported",
+        "sales_associate",
+        "partner",
+        "guest",
+        "organizer",
+        "came_to_us",
+        "ads"
+      ]
+    },
+    "market_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 50
+    },
+    "nominator_role": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "associate",
+        "partner",
+        "guest",
+        "organizer",
+        null
+      ]
+    },
+    "booking_event_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "payment_source": {
+      "description": "The payment record collection a paid_booking or refund came from.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "payments",
+        "publicEventPayments",
+        "organizerEventOfferPayments",
+        null
+      ]
+    },
+    "payment_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 3
+    },
+    "amount_minor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "provider_fee_minor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "provider_tax_minor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+};
+
 export const adminSalesIntelligenceGenerateCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
@@ -49874,6 +50408,27 @@ export const publicEventPaymentDocumentSchema = {
       "minimum": 0,
       "maximum": 100000000
     },
+    "providerFees": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.",
+      "required": [
+        "feePaise",
+        "taxPaise"
+      ],
+      "properties": {
+        "feePaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "taxPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
+    },
     "admissionReceiptId": {
       "anyOf": [
         {
@@ -51987,6 +52542,27 @@ export const organizerEventOfferPaymentDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100000000
+    },
+    "providerFees": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.",
+      "required": [
+        "feePaise",
+        "taxPaise"
+      ],
+      "properties": {
+        "feePaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "taxPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
     },
     "admissionReceiptId": {
       "anyOf": [
@@ -182245,6 +182821,27 @@ export const organizerFormPaymentDocumentSchema = {
       "minimum": 0,
       "maximum": 10000000
     },
+    "providerFees": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.",
+      "required": [
+        "feePaise",
+        "taxPaise"
+      ],
+      "properties": {
+        "feePaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "taxPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
+    },
     "responseId": {
       "anyOf": [
         {
@@ -253541,7 +254138,7 @@ export const hostAnalyticsEventSchema = {
     "occurred_at",
     "event_date",
     "event_name",
-    "club_id",
+    "organizer_id",
     "page_path",
     "ingested_at"
   ],
@@ -253573,7 +254170,7 @@ export const hostAnalyticsEventSchema = {
         "linkClick"
       ]
     },
-    "club_id": {
+    "organizer_id": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -253712,7 +254309,7 @@ export const userProfileExposureEventSchema = {
         }
       ]
     },
-    "club_id": {
+    "organizer_id": {
       "anyOf": [
         {
           "type": "string",
@@ -254220,6 +254817,28 @@ export const paymentDocumentSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "providerFees": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the payment provider charged for a captured payment, read from its payment entity: fee is the whole charge including tax, tax is the GST within it. Both in minor units. Absent until the payment is captured or when the provider did not report them.",
+      "required": [
+        "feePaise",
+        "taxPaise"
+      ],
+      "properties": {
+        "feePaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "taxPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
         }
       },
       "x-catch-ownership": "callable-owned"

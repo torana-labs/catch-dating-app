@@ -62,8 +62,6 @@ test("canonical eligibility fails closed for missing, legacy and contradictory s
     (document) => {document.data.archived = true;},
     (document) => {document.data.claim.state = "suppressed";},
     (document) => {document.data.publicPage.publishStatus = "draft";},
-    (document) => {document.data.publicPage.indexStatus = "noindex";},
-    (document) => {document.data.publicPage.robots = "noindex, follow";},
     (document) => {document.data.publicPage.canonicalPath = "/wrong-route/";},
     (document) => {document.data.supplyCapabilities = {bookable: true};},
   ]) {
@@ -72,6 +70,22 @@ test("canonical eligibility fails closed for missing, legacy and contradictory s
     const readiness = organizerListingReadiness(document);
     assert.equal(readiness.publicApi.state, "disabled");
     assert.equal(readiness.publicReviewTarget.state, "disabled");
+  }
+});
+
+test("an approved noindex listing can be claimed before it is indexed", () => {
+  for (const change of [
+    (data) => {data.publicPage.indexStatus = "noindex";},
+    (data) => {data.publicPage.robots = "noindex, follow";},
+  ]) {
+    const document = organizer();
+    change(document.data);
+    const readiness = organizerListingReadiness(document);
+    assert.equal(readiness.publicApi.state, "enabled");
+    assert.equal(readiness.publicApi.claimTargetSyncStatus, "in_sync");
+    assert.equal(readiness.publicReviewTarget.state, "disabled",
+      "public reviews still wait for an index-ready page");
+    assert.equal(listingFromFirestoreOrganizer(document).capabilities.claimRequest.state, "enabled");
   }
 });
 

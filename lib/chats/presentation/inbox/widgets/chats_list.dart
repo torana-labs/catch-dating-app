@@ -12,6 +12,7 @@ import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,10 @@ class ChatsList extends ConsumerWidget {
           onRetry: () {
             switch (retryIntent) {
               case ChatsListRetryIntent.reloadViewModel:
-                ref.invalidate(chatsListViewModelProvider);
+                ref.retryFailedReads(
+                  error,
+                  composition: chatsListViewModelProvider,
+                );
             }
           },
         ),

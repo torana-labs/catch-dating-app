@@ -13,6 +13,7 @@ import 'package:catch_dating_app/platform/errors/provider_retry_policy.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/push/fcm_service.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_dating_app/platform/startup/native_splash.dart';
 import 'package:catch_dating_app/platform/startup/startup_animation_scope.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -124,7 +125,7 @@ ProviderContainer createCatchAppContainer({
   List<Override> overrides = const [],
 }) => ProviderContainer(
   overrides: overrides,
-  observers: [_asyncErrorLogger()],
+  observers: [_asyncErrorLogger(), const FailedReadRecorder()],
   retry: catchProviderRetry,
 );
 

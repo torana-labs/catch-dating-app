@@ -10,7 +10,7 @@
     "occurred_at",
     "event_date",
     "event_name",
-    "club_id",
+    "organizer_id",
     "page_path",
     "ingested_at"
   ],
@@ -42,7 +42,7 @@
         "linkClick"
       ]
     },
-    "club_id": {
+    "organizer_id": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
     "target_event_id": {

@@ -79,6 +79,8 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `functions/src/shared/generated/outreachDraftingSelection.ts` | no |
 | SupplyIntakeRequest | `operations/supply_intake_request.schema.json` | `functions/src/shared/generated/supplyIntakeRequest.ts` | yes |
 | SupplyNominatorDocument | `firestore/supply_nominators.schema.json` | `functions/src/shared/generated/supplyNominatorDocument.ts` | yes |
+| OrganizerGrowthFactsDocument | `firestore/organizer_growth_facts.schema.json` | `functions/src/shared/generated/organizerGrowthFactsDocument.ts` | no |
+| OrganizerGrowthEvent | `bigquery/organizer_growth_event.schema.json` | `functions/src/shared/generated/organizerGrowthEvent.ts` | no |
 | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `functions/src/shared/generated/salesOutreachJobsDocument.ts` | yes |
 | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `functions/src/shared/generated/outreachDraft.ts` | no |
 | AdminBuildSalesOutreachInputPayload | `callables/admin_sales_intelligence_draft_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceDraftCallablePayload.ts` | no |

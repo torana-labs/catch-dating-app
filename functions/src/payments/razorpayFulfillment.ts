@@ -90,6 +90,7 @@ export async function fulfillRazorpayPayment({
     ...(booking.inviteSource ? {inviteSource: booking.inviteSource} : {}),
     ...(booking.crossPathsPairHoldId ?
       {crossPathsPairHoldId: booking.crossPathsPairHoldId} : {}),
+    ...(booking.providerFees ? {providerFees: booking.providerFees} : {}),
   };
   try {
     const participationSnap = await db

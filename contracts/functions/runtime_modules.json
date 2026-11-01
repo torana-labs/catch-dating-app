@@ -834,6 +834,8 @@
     "OrganizerContactNoteCallableResponse",
     "OrganizerContactOutreachCallableResponse",
     "OrganizerFormDraftDocument",
+    "OrganizerGrowthEvent",
+    "OrganizerGrowthFactsDocument",
     "OrganizerIntakeCurationDecisionDocument",
     "OrganizerIntakeReviewDecisionDocument",
     "OrganizerManualSendTaskCallableResponse",

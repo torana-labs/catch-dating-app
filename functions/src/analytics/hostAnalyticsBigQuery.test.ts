@@ -61,7 +61,7 @@ test("optional-column SQL serializes the row " +
   assert.ok(sql.includes("ELSE NULL END AS outboundBookingClicks"));
   assert.doesNotMatch(sql, /SUM\(outbound_booking_clicks\)/);
   assert.ok(sql.includes("SUM(booked_count) AS bookedCount"));
-  assert.ok(sql.includes("club_id IN UNNEST(@organizerIds)"));
+  assert.ok(sql.includes("organizer_id IN UNNEST(@organizerIds)"));
 });
 
 test("link clicks read the additive column as zero before it exists", () => {
@@ -87,9 +87,9 @@ test("owner link rows come from the link mart for the organizers in scope",
         linkClicks: 3},
     ]);
     assert.ok(queries[0].sql.includes("FROM `project.dataset.links`"));
-    assert.ok(queries[0].sql.includes("club_id IN UNNEST(@organizerIds)"));
+    assert.ok(queries[0].sql.includes("organizer_id IN UNNEST(@organizerIds)"));
     assert.deepEqual(await source.loadLinkRows(range, []), []);
     assert.equal(queries.length, 1);
     assert.match(hostAnalyticsLinkRowsSql("t"),
-      /GROUP BY club_id, link_id, traffic_source/u);
+      /GROUP BY organizer_id, link_id, traffic_source/u);
   });

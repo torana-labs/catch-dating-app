@@ -621,9 +621,9 @@
         "label": "Claim this listing"
       },
       "publicApi": {
-        "state": "disabled",
-        "reason": "A published, index-ready organizer page is required.",
-        "claimTargetSyncStatus": "unknown"
+        "state": "enabled",
+        "reason": "The canonical organizer target was verified in this Firestore snapshot.",
+        "claimTargetSyncStatus": "in_sync"
       },
       "authority": {
         "ownershipState": "programmatic",
@@ -637,8 +637,8 @@
       },
       "capabilities": {
         "claimRequest": {
-          "state": "disabled",
-          "reason": "A published, index-ready organizer page is required."
+          "state": "enabled",
+          "reason": "The canonical organizer target was verified in this Firestore snapshot."
         },
         "publicReviews": {
           "targetState": "disabled",
