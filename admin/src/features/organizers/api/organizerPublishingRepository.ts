@@ -1,17 +1,10 @@
 import {
-  decideOrganizerClaim as decideOrganizerClaimRequest,
-  getOrganizerClaimRequestDetails as getOrganizerClaimRequest,
-  listOrganizerClaimRequests as listOrganizerClaimRequestRows,
   listOrganizerDetails,
   loadOrganizerDetails,
   saveOrganizerDetails,
   setOrganizerIndexStatus as setOrganizerIndexStatusRequest,
 } from "../../../shared/api/adminApi";
 import type {
-  AdminDecideOrganizerClaimPayload,
-  AdminDecideOrganizerClaimResponse,
-  AdminGetOrganizerClaimRequestDetailsPayload,
-  AdminGetOrganizerClaimRequestDetailsResponse,
   AdminGetOrganizerDetailsPayload,
   AdminGetOrganizerDetailsResponse,
   AdminListOrganizerDetailsPayload,
@@ -21,22 +14,6 @@ import type {
   AdminUpdateOrganizerDetailsPayload,
   AdminUpdateOrganizerDetailsResponse,
 } from "../../../shared/types/adminTypes";
-
-export function listOrganizerClaimRequests() {
-  return listOrganizerClaimRequestRows();
-}
-
-export function loadOrganizerClaimRequest(
-  payload: AdminGetOrganizerClaimRequestDetailsPayload
-): Promise<AdminGetOrganizerClaimRequestDetailsResponse> {
-  return getOrganizerClaimRequest(payload);
-}
-
-export function decideOrganizerClaim(
-  payload: AdminDecideOrganizerClaimPayload
-): Promise<AdminDecideOrganizerClaimResponse> {
-  return decideOrganizerClaimRequest(payload);
-}
 
 export function listOrganizerProfiles(
   payload: AdminListOrganizerDetailsPayload = {}

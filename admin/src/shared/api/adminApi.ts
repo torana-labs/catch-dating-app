@@ -156,7 +156,6 @@ import {
   AdminDecideOrganizerClaimResponse,
   AdminGetOrganizerClaimRequestDetailsPayload,
   AdminGetOrganizerClaimRequestDetailsResponse,
-  AdminListOrganizerClaimRequestsResponse,
   AdminDecideOrganizerIntakePayload,
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
@@ -1406,67 +1405,9 @@ export async function decideOrganizerClaim(
   return result.data;
 }
 
-export async function listOrganizerClaimRequests():
-Promise<AdminListOrganizerClaimRequestsResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return {
-      generatedAt: sampleOverview.generatedAt,
-      rows: sampleOverview.queues.organizerClaimRequests.map((row, index) => ({
-        requestId: row.targetPath.split("/").at(-1) ?? row.id,
-        targetPath: row.targetPath,
-        organizerId: index === 0 ? "afterfly" : "bhag",
-        requesterUid: index === 0 ? "local-preview-afterfly-owner" : "local-preview-bhag-manager",
-        requesterName: row.title,
-        requesterRole: index === 0 ? "founder" : "manager",
-        contact: index === 0 ? "hello@afterfly.in" : null,
-        proofCount: index === 0 ? 2 : 1,
-        status: row.status,
-        createdAt: row.createdAt,
-      })),
-    };
-  }
-
-  const callable = httpsCallable<unknown, AdminListOrganizerClaimRequestsResponse>(
-    functions,
-    "adminListOrganizerClaimRequests"
-  );
-  const result = await callable({});
-  return result.data;
-}
-
 export async function getOrganizerClaimRequestDetails(
   payload: AdminGetOrganizerClaimRequestDetailsPayload
 ): Promise<AdminGetOrganizerClaimRequestDetailsResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 140));
-    const list = await listOrganizerClaimRequests();
-    const row = list.rows.find((item) => item.requestId === payload.requestId);
-    if (!row) throw new Error("Organizer claim request not found.");
-    return {
-      request: {
-        ...row,
-        businessEmail: row.contact?.includes("@") ? row.contact : null,
-        businessPhone: row.contact && !row.contact.includes("@") ? row.contact : null,
-        proofUrls: row.organizerId === "afterfly" ? [
-          "https://www.instagram.com/afterfly.in/",
-          "https://luma.com/pxgmph3b",
-        ] : ["https://thebhag.in/"],
-        message: "Please verify this claim against the listed public sources.",
-        updatedAt: row.createdAt,
-        requesterProfile: {exists: true, profileComplete: row.organizerId === "afterfly"},
-        organizer: {
-          exists: true,
-          name: row.organizerId === "afterfly" ? "AFTER FLY" : "Bhag Club",
-          claimState: "claimPending",
-          ownershipState: "programmatic",
-          ownerUserId: null,
-          canonicalPath: `/organizers/${row.organizerId}/`,
-        },
-      },
-    };
-  }
-
   const callable = httpsCallable<
     AdminGetOrganizerClaimRequestDetailsPayload,
     AdminGetOrganizerClaimRequestDetailsResponse

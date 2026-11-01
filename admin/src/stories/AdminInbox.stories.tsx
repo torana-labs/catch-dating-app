@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {sampleEventReviews, sampleInboxItems, sampleInboxJourneys, sampleNow} from "../features/inbox/api/inboxSampleData";
+import {sampleClaimEvidence, sampleEventReviews, sampleInboxItems, sampleInboxJourneys, sampleNow} from "../features/inbox/api/inboxSampleData";
 import {InboxScreen, type InboxScreenModel} from "../features/inbox/ui/InboxScreen";
 
 const meta = {
@@ -43,6 +43,7 @@ function model(selectedItemId: string | null, canDecideClaim = false, eventSheet
     previousItem: index > 0 ? items[index - 1] ?? null : null,
     selectNext: noop, selectPrevious: noop,
     openListingReview: noop, listingReview: null, listingReviewFailed: false, approveListing: done, isApproving: false,
+    claimEvidence: selectedItemId === "claim-bhag" ? sampleClaimEvidence.bhag : null, claimEvidenceFailed: false,
     openEventReview: noop, eventReview: eventSheet ? sampleEventReviews["work-rooftop"] : null, eventReviewFailed: false,
     publishEvent: done, isPublishingEvent: false,
     updateItem: done, recommendClaim: done, decideClaim: done, decideAccess: done, linkEnquiry: done,

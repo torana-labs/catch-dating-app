@@ -125,10 +125,10 @@ organizer collection grows.
 Organizer public-page previews use `VITE_ADMIN_PUBLIC_SITE_ORIGIN` plus
 `clubs/{id}.publicPage.canonicalPath`; if the env var is omitted, the admin
 console falls back to `https://catchdates.com`.
-The same Organizers workspace lists pending organizer claims through
-`adminListOrganizerClaimRequests`, loads bounded requester/profile/club evidence
-through `adminGetOrganizerClaimRequestDetails`, and sends approve/reject decisions
-through `adminDecideOrganizerClaim`. Approval stays disabled when the requester
+Pending organizer claims are items in the Inbox, which loads bounded
+requester/profile/club evidence through `adminGetOrganizerClaimRequestDetails`
+and sends approve/reject decisions through `adminDecideOrganizerClaim`. Approval
+stays disabled when the requester
 profile is incomplete or the claim target is missing, and every decision
 requires an operator note. The backend rejects competing active claims and
 stale decisions; rejected applicants receive a deterministic activity

@@ -89,9 +89,6 @@ export const adminQueryKeys = {
     list: (query: string) => [...adminQueryKeys.all, "organizers", "list", query] as const,
     detail: (organizerId: string) =>
       [...adminQueryKeys.all, "organizers", "detail", organizerId] as const,
-    claims: () => [...adminQueryKeys.all, "organizers", "claims"] as const,
-    claimDetail: (requestId: string) =>
-      [...adminQueryKeys.all, "organizers", "claims", requestId] as const,
     directory: (payloadKey: string) =>
       [...adminQueryKeys.all, "organizers", "directory", payloadKey] as const,
     overview: (organizerId: string) =>

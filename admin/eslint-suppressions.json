@@ -84,11 +84,6 @@
       "count": 9
     }
   },
-  "src/features/organizers/ui/organizerDirectoryPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 3
-    }
-  },
   "src/features/partners/ui/PartnerDemoReviewWorkspace.tsx": {
     "react/forbid-elements": {
       "count": 2

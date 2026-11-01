@@ -1,4 +1,3 @@
-import {CatchWorkspaceHeader} from "@catch/web-ui";
 import {brand} from "@catch/brand";
 import type {ReactNode} from "react";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
@@ -48,7 +47,7 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
         onOpenSales: () => onNavigate(`/sales/hosts/${encodeURIComponent(organizerId)}`),
         onOpenTerms: canChangeTerms ?
           () => onNavigate(`/payment-setup/commercial-terms/organizers/${encodeURIComponent(organizerId)}`) : null,
-        onOpenClaim: (requestId) => onNavigate(`/organizers/claims/${encodeURIComponent(requestId)}`),
+        onOpenClaim: (requestId) => onNavigate(`/inbox/claim-${encodeURIComponent(requestId)}`),
         publicPageUrl: (canonicalPath) => `${publicSiteOrigin}${canonicalPath}`,
       }}
       loadError={controller.loadError}
@@ -61,22 +60,16 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
   );
 }
 
-/**
- * The Organizers area: the directory, or one organizer's page and its tabs. Claims keep their
- * review screen here until the Inbox decides them.
- */
+/** The Organizers area: the directory, or one organizer's page and its tabs. Claims are decided in the Inbox. */
 export function OrganizersRouteScreen({
   canChangeTerms,
-  claimRequestId,
   onNavigate,
   organizerId,
   renderBills,
   renderEvents,
   tab,
-  workspace,
 }: {
   canChangeTerms: boolean;
-  claimRequestId: string | null;
   onNavigate: (path: string) => void;
   organizerId: string | null;
   /** The Money tab's bills, which the Money area owns; null for those who cannot open Money. */
@@ -84,22 +77,7 @@ export function OrganizersRouteScreen({
   /** The Events tab: one organizer's events, which the Events area owns. */
   renderEvents: (organizerId: string) => ReactNode;
   tab: OrganizerPageTab;
-  workspace: "directory" | "claims";
 }) {
-  if (workspace === "claims") {
-    return (
-      <>
-        <CatchWorkspaceHeader title="Claims" />
-        <OrganizerPublishingScreen
-          activeWorkspace="claims"
-          onBackToClaims={() => onNavigate("/organizers/claims")}
-          onSelectClaimRequestId={(requestId) => onNavigate(`/organizers/claims/${encodeURIComponent(requestId)}`)}
-          onWorkspaceChange={(next) => onNavigate(next === "claims" ? "/organizers/claims" : "/organizers")}
-          selectedClaimRequestId={claimRequestId}
-        />
-      </>
-    );
-  }
   if (organizerId) {
     return (
       <PageRoute canChangeTerms={canChangeTerms} key={organizerId} onNavigate={onNavigate} organizerId={organizerId}

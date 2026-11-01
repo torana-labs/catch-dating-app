@@ -4,6 +4,7 @@ import {
   approveListing,
   decideAccess,
   decideClaim,
+  getClaimEvidence,
   getInboxItem,
   getListingEventReview,
   getListingReview,
@@ -57,6 +58,12 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     queryKey: [...inboxKey, "item", selectedItemId],
     queryFn: () => getInboxItem(selectedItemId as string),
     enabled: selectedItemId !== null,
+  });
+  const claimRequestId = detail.data?.item.type === "claim" ? detail.data.item.sourceId : null;
+  const claimEvidence = useQuery({
+    queryKey: [...inboxKey, "claim-evidence", claimRequestId],
+    queryFn: () => getClaimEvidence(claimRequestId as string),
+    enabled: claimRequestId !== null,
   });
   const update = useMutation({mutationFn: updateInboxItem});
   const recommend = useMutation({mutationFn: recommendOrganizerClaim});
@@ -126,6 +133,8 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     nextPage: () => { if (page.data?.nextCursor) setCursors((stack) => [...stack, page.data?.nextCursor ?? null]); },
     previousPage: () => setCursors((stack) => stack.length > 1 ? stack.slice(0, -1) : stack),
     detail,
+    claimEvidence: claimRequestId !== null ? claimEvidence.data ?? null : null,
+    claimEvidenceFailed: claimRequestId !== null && claimEvidence.isError,
     position: index >= 0 ? {index: index + 1, of: page.data?.totals.types.all ?? items.length} : null,
     nextItem,
     previousItem,
