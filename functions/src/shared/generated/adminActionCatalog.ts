@@ -1498,7 +1498,7 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
-  "sales.list-my-nominations": {
+  "nominations.list": {
     "callable": "adminListMyNominations",
     "controlPlane": false,
     "kind": "read",

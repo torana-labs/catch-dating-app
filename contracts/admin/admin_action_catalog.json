@@ -4075,7 +4075,7 @@
       }
     },
     {
-      "actionId": "sales.list-my-nominations",
+      "actionId": "nominations.list",
       "callable": "adminListMyNominations",
       "workflowIds": [
         "sales"
@@ -4400,7 +4400,7 @@
         "sales.demo.GetSalesDemoPartnerReview",
         "sales.demo.ShareSalesDemoPartnerReview",
         "sales.partners.offer",
-        "sales.list-my-nominations"
+        "nominations.list"
       ]
     },
     {

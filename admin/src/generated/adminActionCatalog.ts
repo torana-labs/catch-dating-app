@@ -2646,7 +2646,7 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
-      "actionId": "sales.list-my-nominations",
+      "actionId": "nominations.list",
       "callable": "adminListMyNominations",
       "workflowIds": [
         "sales"
@@ -2966,7 +2966,7 @@ export const adminActionCatalog = {
         "sales.demo.GetSalesDemoPartnerReview",
         "sales.demo.ShareSalesDemoPartnerReview",
         "sales.partners.offer",
-        "sales.list-my-nominations"
+        "nominations.list"
       ]
     },
     {
