@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/explore/presentation/explore_organizer_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';

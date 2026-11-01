@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.97.0
+version: 1.98.0
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -140,8 +140,8 @@ in the shared package. Connectivity and rehearsal state remain app callers.
 5. The catalog moves with code: Widgetbook cases, goldens, and registry rows
    for touched shared components update in the same PR.
 
-An `aligned` claim in `tool/architecture/pattern_adoption.json` must name its
-machine check or carry an explicit manual-review line with reviewer and date.
+A claim that code conforms to a pattern must name its machine check or carry
+an explicit manual-review line with reviewer and date.
 
 ## Canonical Decisions And Overrides
 
@@ -537,7 +537,7 @@ remain the explicit entrypoints for a full selected-device pass. Do not use
 Do not add an asynchronous localization delegate when the requested behavior is
 already the component's nonlocalized fallback.
 
-<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 owner=recursive_audit_loop -->
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,
@@ -845,7 +845,7 @@ lazy slivers.
 
 ### Exhibit ARCH-SCREEN-COMPOSITION-001: Semantic Screen Composition
 
-<!-- exhibit-freshness: ARCH-SCREEN-COMPOSITION-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-SCREEN-COMPOSITION-001 owner=app_architecture -->
 
 Screen composition is a closed family, not a per-feature assembly exercise:
 
@@ -1096,7 +1096,7 @@ navigation remains available.
 
 ### Exhibit ARCH-SHELL-SCROLL-001: Adaptive Root-Screen Scroll Clearance
 
-<!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 owner=app_architecture -->
 
 `AdaptiveTabScaffold` is the single shell placement boundary. Consumer
 destinations and compact Host destinations keep the existing platform-aware
@@ -2471,7 +2471,7 @@ implementation.
 
 ### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity
 
-<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2687,7 +2687,7 @@ section models when that removes business logic from widgets.
 
 ### Exhibit ARCH-PROVIDER-CODEGEN-001: Generated Auto-Dispose Provider Family
 
-<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -3250,7 +3250,7 @@ must remain bundled and release-reviewed.
 
 ### Exhibit ARCH-COPY-001: Product Copy Boundary
 
-<!-- exhibit-freshness: ARCH-COPY-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-COPY-001 owner=recursive_audit_loop -->
 
 Reference implementation:
 
@@ -3742,7 +3742,7 @@ code.
 
 ### Exhibit ARCH-APP-TARGET-001: Installable App Target Resolution
 
-<!-- exhibit-freshness: ARCH-APP-TARGET-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-APP-TARGET-001 owner=recursive_audit_loop -->
 
 The build wrapper resolves entrypoint and native identity from the target
 contract before it activates Firebase or invokes Flutter:
@@ -3879,6 +3879,11 @@ exception:
 final programEventsControllerProvider = Provider.autoDispose
 ```
 
+A display-state adapter (`*_state.dart`), a context `parts/` widget and any file
+whose first lines say `// architecture: provider-free` stay free of Riverpod,
+routing, data-layer and repository APIs: `catch_arch_provider_free_boundary`.
+The promise lives in the file, so it moves with the file.
+
 `catch_arch_invalid_ignore` rejects an exception that applies to the whole file,
 gives no reason after `--`, no longer matches a finding, names a rule that holds
 everywhere (barrel exports, parts stay provider-free, the public API rule,
@@ -3916,7 +3921,7 @@ away; only deliberately declared search/filter/tab controls may pin.
 
 ### Exhibit ARCH-ROUTE-CHROME-001: Pushed Route Chrome
 
-<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 owner=recursive_audit_loop -->
 
 `CatchRouteScaffold` is the reference boundary for pushed Consumer and Host
 routes. The route supplies a `CatchTopBar` builder and body; the shell alone
@@ -4044,16 +4049,16 @@ specific, keep the rule and migrate the call sites.
 
 Architecture migration must proceed from a reference implementation, not from
 abstract prose alone. Before rolling a pattern across many files, create one
-high-quality prototype, copy the relevant code excerpt into this document as an
-exhibit, and record adopters in
-`tool/architecture/pattern_adoption.json`.
+high-quality prototype and copy the relevant code excerpt into this document as
+an exhibit. A pattern that must hold everywhere becomes a lint, not a list of
+adopters.
 
 The workflow is:
 
 1. Pick one concrete pattern id before editing the batch.
    - Use ids such as `ARCH-UI-STATE-001` or `ARCH-CONTROLLER-001`.
-   - Record the prototype file, tests, Widgetbook/catalog surfaces if any, and
-     intended adopters in the tracker.
+   - Name the prototype file, tests and Widgetbook/catalog surfaces if any in
+     the task issue.
 
 2. Build one reference prototype first.
    - The prototype should be better than the average migration target: clear
@@ -4075,25 +4080,23 @@ The workflow is:
    - `exception`: intentionally different, with a debt id or override.
 
 5. When a candidate reveals a better pattern, update the exhibit first.
-   - Then revisit every file already marked as an adopter of the previous
-     exhibit and either update it or record why it remains a variant/exception.
+   - Then revisit every file that follows the previous exhibit and either update
+     it or record why it remains a variant/exception.
    - A migration batch is not complete if earlier adopters silently lag behind
      an edited exhibit.
 
 6. Preserve pattern evidence in source and checks.
-   - Include the pattern id, prototype path, and adopter paths in the authored
-     owner contract; preserve verification in the commit and CI checks.
+   - Include the pattern id and prototype path in the exhibit; preserve
+     verification in the commit and CI checks.
 
-Exhibit freshness is owned by this doc plus
-`tool/architecture/pattern_adoption.json`. Every exhibit block
-must carry an `exhibit-freshness` marker naming its tracker source and owner.
+Exhibit freshness is owned by this doc. Every exhibit block must carry an
+`exhibit-freshness` marker naming the exhibit and its owner.
 `node tool/architecture/check_app_architecture_exhibits.mjs` checks those
-markers, verifies the tracker points back to the current doc anchor, and rejects
-known stale snippets from prior reference shapes.
+markers and rejects known stale snippets from prior reference shapes.
 
 ### Exhibit ARCH-COMMUNICATION-PLAN-001: Intent-Aware Communication Plan
 
-<!-- exhibit-freshness: ARCH-COMMUNICATION-PLAN-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-COMMUNICATION-PLAN-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4151,7 +4154,7 @@ Catch delivery receipt until a later verified receipt workflow exists.
 
 ### Exhibit ARCH-MANUAL-HANDOFF-001: Durable External Handoff Task
 
-<!-- exhibit-freshness: ARCH-MANUAL-HANDOFF-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-MANUAL-HANDOFF-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4214,7 +4217,7 @@ the organizer is deciding what to do.
 
 ### Exhibit ARCH-SAVED-AUDIENCE-001: Customers-Owned Saved Audiences
 
-<!-- exhibit-freshness: ARCH-SAVED-AUDIENCE-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-SAVED-AUDIENCE-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4272,7 +4275,7 @@ but new campaign writes cannot submit legacy segment ids.
 
 ### Exhibit ARCH-CRM-AUTHORITY-001: Provenance And Permission Authority
 
-<!-- exhibit-freshness: ARCH-CRM-AUTHORITY-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-CRM-AUTHORITY-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4317,7 +4320,7 @@ missing canonical evidence, and records zero inferred grants.
 
 ### Exhibit ARCH-ENTITY-MATERIAL-001: Entity Material Composition
 
-<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4398,7 +4401,7 @@ still require a sanitized server-owned suggestion response.
 
 ### Exhibit ARCH-CROSS-PATHS-CONSENT-001: Fail-Closed Layered Consent
 
-<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4521,7 +4524,7 @@ Preserve these boundaries in later adopters:
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 
-<!-- exhibit-freshness: ARCH-SCREEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-SCREEN-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4823,7 +4826,7 @@ Widget build(BuildContext context) {
 
 ### Exhibit ARCH-SCREEN-CHROME-001: Root Screen Header Chrome
 
-<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4876,7 +4879,7 @@ CatchTopBar.route(
 
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model
 
-<!-- exhibit-freshness: ARCH-UI-STATE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-UI-STATE-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -5037,7 +5040,7 @@ class CalendarEventSummary {
 
 ### Exhibit ARCH-FORM-DESCRIPTOR-001: Typed Form Row Orchestration
 
-<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -5139,7 +5142,7 @@ CatchFormList<UpdateUserProfilePatch>(
 
 ### Exhibit ARCH-DATA-CURSOR-001: Bounded Cursor Read Window
 
-<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 owner=recursive_audit_loop -->
 
 Reference implementation:
 
@@ -5187,7 +5190,7 @@ architecture cleanup within a feature or context:
 
 2. Inventory the current surface.
    - `node tool/ci/check_flutter_workspace_analysis.mjs` for the `catch_arch_*` lints
-   - `node tool/run.mjs check audit:adopted-architecture-boundaries audit:mutation-error-surfaces`
+   - `node tool/run.mjs check audit:mutation-error-surfaces`
    - `bash tool/widget_cleanup_scan.sh --summary`
    - `dart tool/audit/backend_error_candidates.dart`
    - `dart tool/audit/frontend_error_candidates.dart`

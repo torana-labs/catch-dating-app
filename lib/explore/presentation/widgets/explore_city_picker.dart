@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/kernel/city_data.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

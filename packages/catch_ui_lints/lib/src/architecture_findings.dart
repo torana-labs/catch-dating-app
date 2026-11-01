@@ -36,6 +36,7 @@ abstract final class ArchitectureCodes {
   static const unmappedFile = 'catch_arch_unmapped_file';
   static const unknownContext = 'catch_arch_unknown_context';
   static const legacyContextFile = 'catch_arch_legacy_context_file';
+  static const providerFreeBoundary = 'catch_arch_provider_free_boundary';
   static const invalidIgnore = 'catch_arch_invalid_ignore';
 
   static const all = <String>[
@@ -60,6 +61,7 @@ abstract final class ArchitectureCodes {
     unmappedFile,
     unknownContext,
     legacyContextFile,
+    providerFreeBoundary,
     invalidIgnore,
   ];
 
@@ -228,7 +230,7 @@ List<DirectiveUri> _namespaceUris(NamespaceDirective directive) => [
 ];
 
 // Compare relative imports using the same app identity as package imports.
-String _resolveAppImport(String relativePath, String uri) {
+String resolveAppImport(String relativePath, String uri) {
   if (RegExp(r'^[A-Za-z][A-Za-z0-9+.-]*:').hasMatch(uri)) return uri;
   final resolved = _resolvedPath(relativePath, uri);
   return resolved.startsWith('/lib/')
@@ -301,7 +303,7 @@ List<ArchitectureFinding> dependencyDirectionFindings({
       layer == 'presentation' && fileName.endsWith('_state.dart');
 
   for (final (:uri, :node) in importUris(unit)) {
-    final target = _resolveAppImport(relativePath, uri);
+    final target = resolveAppImport(relativePath, uri);
     if (layer == 'domain' &&
         target.startsWith('package:') &&
         !_allowedDomainPackages.contains(_packageName(target))) {

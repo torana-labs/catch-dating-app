@@ -5,8 +5,6 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const defaultDocPath = "docs/app_architecture.md";
-const defaultPatternTracker =
-  "tool/architecture/pattern_adoption.json";
 
 const stalePatternsByExhibit = {
   "ARCH-SCREEN-001": [
@@ -52,7 +50,6 @@ if (isCliEntrypoint) {
 export function checkAppArchitectureExhibits({
   root,
   docPath = defaultDocPath,
-  patternTrackerPath = defaultPatternTracker,
 }) {
   const errors = [];
   const absoluteDocPath = path.join(root, docPath);
@@ -62,17 +59,9 @@ export function checkAppArchitectureExhibits({
   }
 
   const exhibits = extractExhibits(source, docPath);
-  const tracker = readJsonIfExists(path.join(root, patternTrackerPath));
-  const patterns = Array.isArray(tracker?.patterns) ? tracker.patterns : [];
-  const patternsById = new Map(patterns.map((pattern) => [pattern.id, pattern]));
 
   for (const exhibit of exhibits) {
-    validateFreshnessMarker({exhibit, root, errors});
-    validatePatternTrackerLink({
-      exhibit,
-      pattern: patternsById.get(exhibit.id),
-      errors,
-    });
+    validateFreshnessMarker({exhibit, errors});
     validateTokens({exhibit, errors});
   }
 
@@ -107,18 +96,17 @@ function extractExhibits(source, docPath) {
 
 function parseFreshnessMarker(block) {
   const match =
-    /<!--\s*exhibit-freshness:\s*([A-Z0-9-]+)\s+source=([^\s]+)\s+owner=([^\s]+)\s*-->/u.exec(
+    /<!--\s*exhibit-freshness:\s*([A-Z0-9-]+)\s+owner=([^\s]+)\s*-->/u.exec(
       block,
     );
   if (!match) return null;
   return {
     id: match[1],
-    source: match[2],
-    owner: match[3],
+    owner: match[2],
   };
 }
 
-function validateFreshnessMarker({exhibit, root, errors}) {
+function validateFreshnessMarker({exhibit, errors}) {
   if (exhibit.marker == null) {
     errors.push(`${exhibit.id}: exhibit is missing an exhibit-freshness marker.`);
     return;
@@ -128,25 +116,8 @@ function validateFreshnessMarker({exhibit, root, errors}) {
       `${exhibit.id}: exhibit-freshness marker references ${exhibit.marker.id}.`,
     );
   }
-  if (!fs.existsSync(path.join(root, exhibit.marker.source))) {
-    errors.push(
-      `${exhibit.id}: exhibit-freshness source does not exist: ${exhibit.marker.source}.`,
-    );
-  }
   if (!exhibit.marker.owner) {
     errors.push(`${exhibit.id}: exhibit-freshness marker is missing owner.`);
-  }
-}
-
-function validatePatternTrackerLink({exhibit, pattern, errors}) {
-  if (pattern == null) {
-    errors.push(`${exhibit.id}: no matching pattern in architecture tracker.`);
-    return;
-  }
-  if (pattern.architectureExhibit !== exhibit.anchor) {
-    errors.push(
-      `${exhibit.id}: tracker architectureExhibit is ${pattern.architectureExhibit}, expected ${exhibit.anchor}.`,
-    );
   }
 }
 
@@ -170,11 +141,6 @@ function slugifyHeading(heading) {
     .replace(/`([^`]+)`/gu, "$1")
     .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
     .replace(/\s+/gu, "-");
-}
-
-function readJsonIfExists(filePath) {
-  if (!fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function readTextIfExists(filePath) {

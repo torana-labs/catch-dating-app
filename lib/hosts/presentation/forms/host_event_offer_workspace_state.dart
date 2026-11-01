@@ -18,6 +18,7 @@ typedef HostEventOfferWorkspaceScope = ({
 });
 @Riverpod(dependencies: [])
 HostEventOfferWorkspaceDependencies hostEventOfferWorkspaceDependencies(
+  // ignore: catch_ui_lints/catch_arch_provider_free_boundary -- route-scoped dependency seam; it only throws until the route overrides it
   Ref ref,
   HostEventOfferWorkspaceScope scope,
 ) => throw StateError(

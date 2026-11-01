@@ -1166,40 +1166,6 @@
       }
     },
     {
-      "id": "audit:adopted-architecture-boundaries",
-      "category": "audit",
-      "path": "tool/architecture/check_adopted_architecture_boundaries.mjs",
-      "command": "node tool/architecture/check_adopted_architecture_boundaries.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Enforces provider/routing-free imports and API usage for aligned provider-free adopters tracked in the architecture pattern registry.",
-      "checks": [
-        "node --test tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "node --check tool/architecture/check_adopted_architecture_boundaries.mjs",
-        "node tool/architecture/check_adopted_architecture_boundaries.mjs"
-      ],
-      "role": "gate",
-      "rules": [
-        "DEPENDENCY-DIRECTION-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "contains": [
-          "scanBoundaryFile flags provider, routing, data, and repository access"
-        ]
-      },
-      "impactPaths": [
-        "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "tool/architecture/check_adopted_architecture_boundaries.mjs",
-        "tool/architecture/pattern_adoption.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node"]
-      }
-    },
-    {
       "id": "audit:app-architecture-exhibits",
       "category": "audit",
       "path": "tool/architecture/check_app_architecture_exhibits.mjs",
@@ -1210,22 +1176,21 @@
       "rules": [
         "EXHIBIT-FRESHNESS-001"
       ],
-      "description": "Checks app architecture reference exhibits for freshness markers, tracker anchor drift, and stale code snippets.",
+      "description": "Checks app architecture reference exhibits for freshness markers and stale code snippets.",
       "checks": [
         "node --check tool/architecture/check_app_architecture_exhibits.mjs",
         "node --test tool/architecture/check_app_architecture_exhibits.test.mjs",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "impactPaths": [
-        "tool/architecture/check_app_architecture_exhibits.test.mjs",
-        "tool/architecture/pattern_adoption.json"
+        "tool/architecture/check_app_architecture_exhibits.test.mjs"
       ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/architecture/check_app_architecture_exhibits.test.mjs",
         "contains": [
           "flags stale event-detail snippets in screen exhibit",
-          "flags tracker anchor drift"
+          "flags a marker that names another exhibit"
         ]
       },
       "ciRequirements": {
@@ -2168,6 +2133,7 @@
           "catch_no_local_design_constant",
         "catch_arch_cross_feature_presentation_import",
         "catch_arch_context_order_import",
+        "catch_arch_provider_free_boundary",
         "catch_arch_invalid_ignore"
         ]
       }
@@ -5576,7 +5542,6 @@
       ],
       "impactPaths": [
         "tool/design/check_screen_top_bar_contracts.test.mjs",
-        "tool/architecture/pattern_adoption.json",
         "tool/design/root_screen_composition_contracts.json"
       ],
       "role": "gate",
