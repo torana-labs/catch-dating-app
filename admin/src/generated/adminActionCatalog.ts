@@ -163,6 +163,21 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "analytics.user",
+      "callable": "adminGetUserAnalytics",
+      "workflowIds": [
+        "users"
+      ],
+      "guiPath": "/users",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Load the bounded analytics report for one exact user id.",
+      "controlPlane": false
+    },
+    {
       "actionId": "finance.review-event-messaging-budget",
       "callable": "adminReviewEventMessagingBudget",
       "workflowIds": [
@@ -2663,6 +2678,14 @@ export const adminActionCatalog = {
       "actions": [
         "external-events.list",
         "external-events.takedown"
+      ]
+    },
+    {
+      "workflowId": "users",
+      "label": "Users",
+      "guiPath": "/users",
+      "actions": [
+        "analytics.user"
       ]
     },
     {

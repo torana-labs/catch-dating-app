@@ -1,0 +1,269 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-11-01",
+  "id": "feature.admin_people",
+  "name": "Admin People",
+  "owner": "admin_console",
+  "status": "pilot",
+  "description": "Searches people by name, phone or user id for ops, with every search logged, and shows the person beside the results with a way into their account actions.",
+  "surfaces": [
+    {
+      "id": "admin_people",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_people"
+      },
+      "actionScope": {
+        "included": "Typing a search, running it, opening a result and going to the person's account actions in Safety.",
+        "excluded": [
+          "People never edits an account; account actions live in Safety."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/people/controllers/usePeopleSearchController.ts",
+            "symbol": "usePeopleSearchController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/people/ui/PeopleScreen.tsx",
+            "symbol": "PeopleScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_people"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminSearchPeople",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "search-results": [
+            "admin/src/features/people/controllers/usePeopleSearchController.test.tsx"
+          ],
+          "person": [
+            "admin/src/features/people/controllers/usePeopleSearchController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {},
+      "actions": [
+        {
+          "id": "run_people_search",
+          "owner": "controller",
+          "codeValue": "search",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "query"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "search-results"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.people_search_logged"
+            }
+          ],
+          "description": "Runs the typed search once; the server logs it."
+        },
+        {
+          "id": "open_person",
+          "owner": "controller",
+          "codeValue": "select",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "uid"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "person"
+              ]
+            }
+          ],
+          "description": "Opens a result beside the list."
+        },
+        {
+          "id": "open_person_safety",
+          "owner": "screen",
+          "codeValue": "onOpenSafety",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "uid"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.safety_opened"
+            }
+          ],
+          "description": "Opens Safety's account actions."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "search_results",
+          "stateId": "search-results",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "ready",
+              "enabledActions": [
+                "run_people_search",
+                "open_person"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "person",
+          "stateId": "person",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "ready",
+              "enabledActions": [
+                "open_person_safety"
+              ]
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      }
+    },
+    {
+      "id": "admin_people_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_people_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query and URL seam for the prop-driven actions.",
+        "excluded": [
+          "Deterministic visual state remains on the prop-driven surface."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/people/ui/PeopleRouteScreen.tsx",
+            "symbol": "PeopleRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_people_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminSearchPeople",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/people/controllers/usePeopleSearchController.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/people/controllers/usePeopleSearchController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "render_live_route",
+          "owner": "route",
+          "codeValue": "PeopleRouteScreen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Renders the prop-driven screen from its live controller."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "resolved",
+              "enabledActions": [
+                "render_live_route"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading"
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": false,
+        "tests": true
+      }
+    }
+  ]
+}

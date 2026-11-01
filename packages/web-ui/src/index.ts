@@ -8,8 +8,8 @@ export type {
   CatchAdminIntakeDecisionActionsProps,
   CatchAdminIntakeDecisionStateProps,
 } from "./components/CatchAdminIntakeDecision";
-export {CatchAdminIntakeSection} from "./components/CatchAdminIntakeSection";
-export type {CatchAdminIntakeSectionProps} from "./components/CatchAdminIntakeSection";
+export {CatchAdminIntakeSectionTitle} from "./components/CatchAdminIntakeSectionTitle";
+export type {CatchAdminIntakeSectionTitleProps} from "./components/CatchAdminIntakeSectionTitle";
 export {CatchAdminIntakeSourceList} from "./components/CatchAdminIntakeSourceList";
 export type {CatchAdminIntakeSourceListProps} from "./components/CatchAdminIntakeSourceList";
 export {CatchAdminSearchCandidateHeader} from "./components/CatchAdminSearchCandidateHeader";

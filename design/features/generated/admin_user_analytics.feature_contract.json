@@ -1,0 +1,298 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_user_analytics.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:64bd114747cce275bf6e045e85d9602336f3a4d57b0cb6ec930d5f3ad5f756fc",
+  "resolvedDigest": "sha256:73c0df7ab17b288462d94d9d48029937234a390370efa22ba560ab7ae41bc857",
+  "feature": {
+    "id": "feature.admin_user_analytics",
+    "name": "Admin User Analytics",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Orchestrates exact-uid aggregate member analytics lookup with validated time scope, honest empty and partial reports, and actionable retry states."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 1,
+    "scenarios": 1,
+    "actionCases": 9,
+    "actions": 1,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 2,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_web",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_user_analytics"
+      },
+      "actionScope": {
+        "included": "Submitting one normalized uid and analytics range, retrying the same read after a missing, forbidden, or failed result, and freezing the complete Admin workspace while that submitted query is pending.",
+        "excluded": [
+          "Uid, range, date, and granularity edits remain validated query form data.",
+          "The report is aggregate and read-only; it does not expose event-member detail or mutate member state."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+            "symbol": "useUserAnalyticsController"
+          }
+        ],
+        "componentContracts": [
+          "route_user_analytics"
+        ],
+        "dataContracts": [
+          "contracts/callables/user_analytics_query_payload.schema.json",
+          "contracts/callable_responses/user_analytics_response.schema.json"
+        ],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetUserAnalytics",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "aggregate-report": [
+            "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 1,
+        "scenarios": 1,
+        "actionCases": 9,
+        "actions": 1,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 2,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "view": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "invalid",
+            "loading",
+            "ready",
+            "partial",
+            "empty",
+            "missing",
+            "forbidden",
+            "error"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "load_user_analytics",
+          "owner": "controller",
+          "codeValue": "load",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "targetUid",
+            "queryPayloadVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "aggregate-report"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.user_analytics_loaded"
+            }
+          ],
+          "description": "Validates and loads one aggregate user-analytics report for the submitted uid and range snapshot.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "aggregate_report",
+          "stateId": "aggregate-report",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_user_analytics/UserAnalyticsRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle_valid",
+              "dimensions": {
+                "view": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "invalid_scope",
+              "dimensions": {
+                "view": "invalid"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "load_user_analytics"
+                ],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "loading_frozen_query",
+              "dimensions": {
+                "view": "loading"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "load_user_analytics"
+                ],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "ready"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "partial",
+              "dimensions": {
+                "view": "partial"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "empty",
+              "dimensions": {
+                "view": "empty"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "missing",
+              "dimensions": {
+                "view": "missing"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "forbidden",
+              "dimensions": {
+                "view": "forbidden"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "error",
+              "dimensions": {
+                "view": "error"
+              },
+              "actions": {
+                "enabled": [
+                  "load_user_analytics"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_user_analytics",
+          "source": "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
+          "exportName": "UserAnalyticsScreen"
+        },
+        "components": [
+          {
+            "id": "route_user_analytics",
+            "kind": "route",
+            "source": "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
+            "exportName": "UserAnalyticsScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "UserAnalyticsRouteStory",
+              "states": [
+                "aggregate-report"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_user_analytics/UserAnalyticsRouteStory"
+        ]
+      }
+    }
+  ]
+}

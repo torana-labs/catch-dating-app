@@ -1,10 +1,11 @@
-import {CatchAdminIntakeSection, CatchBadge, CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {launchMarkets} from "../../../../shared/config/launchMarkets";
 import {
   AdminButton,
   AdminFieldGrid,
   AdminForm,
+  AdminIntakeSection,
   AdminOrganizerIntakeCheckboxField,
   AdminToolbar,
   Panel,
@@ -55,7 +56,7 @@ function SupplyNominators({controller}: {controller: SupplyNominatorController})
       Nominators could not be loaded. Try again.</CatchText> : null}
     {!controller.page.isPending && !controller.page.error && controller.nominators.length === 0 ?
       <CatchText as="p" variant="supporting">Nobody can nominate by message yet.</CatchText> : null}
-    {controller.nominators.map((nominator) => <CatchAdminIntakeSection key={nominator.nominatorId}>
+    {controller.nominators.map((nominator) => <AdminIntakeSection key={nominator.nominatorId}>
       <StateRow label={`${nominator.displayName} · ${nominatorSender(nominator).replace(/^the /u, "")}`} value={
         <CatchBadge recipe="status" tone={nominator.active ? "success" : "neutral"}
           label={nominator.active ? "Can nominate" : "Switched off"} />} />
@@ -63,7 +64,7 @@ function SupplyNominators({controller}: {controller: SupplyNominatorController})
         {nominator.role === "associate" ? "Sales associate" : "Partner"}
         {nominator.defaultMarket ? ` · ${cityLabel(nominator.defaultMarket)} by default` : ""}
       </CatchText>
-    </CatchAdminIntakeSection>)}
+    </AdminIntakeSection>)}
     {adding ? <NominatorForm controller={controller} onClose={() => setAdding(false)} /> :
       <AdminToolbar><AdminButton onClick={() => setAdding(true)}>Add or change a nominator</AdminButton></AdminToolbar>}
   </Panel>;

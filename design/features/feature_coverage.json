@@ -520,11 +520,43 @@
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_admin_role_management",
+      "authorityId": "route_people",
       "status": "contracted",
-      "priority": "P2",
-      "reason": "Compiled Role Management contract covers exact-uid lookup, bounded assignments, high-risk confirmation, and before/after save receipts.",
-      "featureContract": "feature.admin_role_management"
+      "priority": "P1",
+      "reason": "Compiled People contract covers logged search by name, phone or user id and the person beside the results.",
+      "featureContract": "feature.admin_people"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_people_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_people"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_settings",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Settings contract covers the settings pages and Team and roles: three jobs, inviting by user id and audited role changes.",
+      "featureContract": "feature.admin_settings"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_settings_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_settings"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_safety_settings_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Settings → Safety projection: owner edits of rules and reasons, ops reads.",
+      "featureContract": "feature.admin_settings"
     },
     {
       "authority": "admin_routes",
@@ -708,6 +740,14 @@
       "priority": "P1",
       "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
       "featureContract": "feature.admin_marketplace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_user_analytics",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled User Analytics contract covers exact-uid aggregate reporting, validated scope, partial/empty states, and retry.",
+      "featureContract": "feature.admin_user_analytics"
     },
     {
       "authority": "admin_routes",

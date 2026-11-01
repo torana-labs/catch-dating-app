@@ -94,6 +94,12 @@
       ]
     },
     {
+      "routeId": "users",
+      "navId": "users",
+      "paths": ["/users"],
+      "liveReads": ["adminGetUserAnalytics"]
+    },
+    {
       "routeId": "finance",
       "navId": "finance",
       "paths": ["/finance"],

@@ -88,6 +88,14 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner"
     ]
   },
+  "analytics.user": {
+    "callable": "adminGetUserAnalytics",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner"
+    ]
+  },
   "finance.review-event-messaging-budget": {
     "callable": "adminReviewEventMessagingBudget",
     "controlPlane": false,

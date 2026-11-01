@@ -61,6 +61,7 @@ const model = {
     "adminGetSalesOutreachDraftJob",
     "adminGetSalesPrivacyCase",
     "adminGetSupportConversation",
+    "adminGetUserAnalytics",
     "adminGrantOrganizerEntitlement",
     "adminIssueSalesDemoInvitation",
     "adminLiftAccountSafetyAction",
@@ -201,6 +202,7 @@ const model = {
     "adminGetSalesOutreachDraftJob",
     "adminGetSalesPrivacyCase",
     "adminGetSupportConversation",
+    "adminGetUserAnalytics",
     "adminGrantOrganizerEntitlement",
     "adminIssueSalesDemoInvitation",
     "adminLiftAccountSafetyAction",
@@ -383,6 +385,7 @@ const model = {
     "adminGetAccessApplicationDetails": "access",
     "adminDecideAccessApplication": "access",
     "adminGetHostAnalytics": "growth",
+    "adminGetUserAnalytics": "users",
     "adminReviewEventMessagingBudget": "finance",
     "adminDecideEventMessagingBudget": "finance",
     "adminApplyEventMessagingBudget": "finance",
@@ -532,6 +535,7 @@ const loaders: Record<string, () => Promise<AdminCallableValidators>> = {
   "sales": () => import("./groups/sales"),
   "settings": () => import("./groups/settings"),
   "support": () => import("./groups/support"),
+  "users": () => import("./groups/users"),
 };
 
 export const adminCallableValidationCoverage = {

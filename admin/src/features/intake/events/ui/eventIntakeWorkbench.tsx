@@ -1,4 +1,4 @@
-import {CatchAdminIntakeSection, CatchField} from "@catch/web-ui";
+import {CatchField} from "@catch/web-ui";
 import {RefreshCw, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
@@ -7,6 +7,7 @@ import {
   type AdminIntakeBulkAction,
   type AdminIntakeQueueColumn,
   AdminIntakeReviewWorkbench,
+  AdminIntakeSection,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminLinkButton,
@@ -623,7 +624,7 @@ function detailForRecord({
     candidate?.attribution?.organizerEvidence.name ?? candidate?.title ?? ""
   );
   const editableSection = (
-    <CatchAdminIntakeSection variant="event-editor">
+    <AdminIntakeSection variant="event-editor">
       <CatchField
         recipe="input"
         title="Title"
@@ -671,7 +672,7 @@ function detailForRecord({
             value={draft.publicDescription ?? candidate.publicDescription}
             onChanged={(value) => onEditField("publicDescription", value)}
           />
-          <CatchAdminIntakeSection variant="event-ceiling">
+          <AdminIntakeSection variant="event-ceiling">
             <CatchField
               recipe="select"
               inputMode="inactive"
@@ -684,7 +685,7 @@ function detailForRecord({
                 "discoverable" :
                 "hidden"}
             />
-          </CatchAdminIntakeSection>
+          </AdminIntakeSection>
         </>
       ) : (
         <>
@@ -704,11 +705,11 @@ function detailForRecord({
           />
         </>
       )}
-    </CatchAdminIntakeSection>
+    </AdminIntakeSection>
   );
 
   const duplicateSection = candidate && duplicateIds.length > 0 ? (
-    <CatchAdminIntakeSection variant="duplicate-comparison">
+    <AdminIntakeSection variant="duplicate-comparison">
       <article>
         <strong>Keep: {candidate.title}</strong>
         <span>{eventWhenLabel(candidate, now)}</span>
@@ -734,7 +735,7 @@ function detailForRecord({
         {duplicateIds.length === 1 ? "" : "s"}
       </AdminButton>
       {duplicateMessage ? <span aria-live="polite">{duplicateMessage}</span> : null}
-    </CatchAdminIntakeSection>
+    </AdminIntakeSection>
   ) : null;
 
   const evidenceRows = candidate ? (
@@ -898,7 +899,7 @@ function detailForRecord({
       },
       {
         content: (
-          <CatchAdminIntakeSection>
+          <AdminIntakeSection>
             <CatchField
               recipe="input"
               title="Decision note"
@@ -907,7 +908,7 @@ function detailForRecord({
               value={note}
               onChanged={onNoteChange}
             />
-          </CatchAdminIntakeSection>
+          </AdminIntakeSection>
         ),
         id: "note",
         kind: "content" as const,

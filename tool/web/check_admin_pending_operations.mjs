@@ -9,7 +9,7 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 const debtId = "ADMIN-MUTATION-SNAPSHOT-001";
 const expectedControllerFiles = new Set([
   "admin/src/features/safety/controllers/useAccessReviewController.ts",
-  "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+  "admin/src/features/settings/controllers/useTeamController.ts",
   "admin/src/features/events/controllers/useEventPublishingController.ts",
   "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
   "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
@@ -17,6 +17,7 @@ const expectedControllerFiles = new Set([
   "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
   "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
   "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+  "admin/src/features/users/controllers/useUserAnalyticsController.ts",
 ]);
 
 const args = parseArgs(process.argv.slice(2));
@@ -116,7 +117,10 @@ function inspectContract({contract, onController, onViolation}) {
           const absolutePath = fromRepo(owner.file);
           if (!fs.existsSync(absolutePath)) continue;
           const source = fs.readFileSync(absolutePath, "utf8");
-          if (source.includes(".mutateAsync(")) {
+          if (
+            source.includes(".mutateAsync(") ||
+            owner.file.endsWith("useUserAnalyticsController.ts")
+          ) {
             onController(owner.file);
           }
         }
@@ -148,6 +152,10 @@ function inspectControllerSource({controllerPath, source, onViolation}) {
   if (source.includes(".mutateAsync(") &&
       occurrences(source, ".mutateAsync(") > beginCount) {
     onViolation("has more mutation dispatch sites than operation lease sites");
+  }
+  if (controllerPath.endsWith("useUserAnalyticsController.ts") &&
+      !source.includes("sampleAutoLoadStarted")) {
+    onViolation("does not bound the sample analytics auto-load");
   }
 }
 
@@ -287,7 +295,7 @@ function runSelfTest() {
         bindings: {
           actionOwners: [{
             id: "controller",
-            file: "admin/src/features/system/controllers/useSystemController.ts",
+            file: "admin/src/features/users/controllers/useUserAnalyticsController.ts",
           }],
         },
         scenarios: [{

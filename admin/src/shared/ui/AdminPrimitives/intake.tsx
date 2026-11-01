@@ -41,6 +41,32 @@ import {
   type PanelProps,
 } from "./shared";
 
+export function AdminIntakeSection({
+  children,
+  className = "",
+  variant,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
+  children: ReactNode;
+  variant?: "duplicate-comparison" | "event-ceiling" | "event-editor";
+}) {
+  return (
+    <div
+      {...props}
+      className={classNames(
+        "intake-section",
+        variant ? `intake-${variant}` : "",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+
+
+
 export function AdminDecisionFooterShell({
   children,
   className = "",

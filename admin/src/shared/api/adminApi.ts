@@ -113,6 +113,7 @@ import {
   sampleExternalEventRows,
   sampleHostAnalytics,
   sampleOverview,
+  sampleUserAnalyticsReport,
 } from "./sampleData";
 import {
   sampleEventIntakeBridge,
@@ -197,6 +198,8 @@ import {
   MarketingOpsBridge,
   EventIntakeBridge,
   MarketingContentDraft,
+  UserAnalyticsQueryPayload,
+  UserAnalyticsResponse,
 } from "../types/adminTypes";
 
 const sampleGeneratedAt = "2026-06-25T08:30:00.000Z";
@@ -1022,6 +1025,22 @@ export async function loadHostAnalytics(
     HostAnalyticsQueryPayload,
     HostAnalyticsResponse
   >(functions, "adminGetHostAnalytics");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function loadUserAnalytics(
+  payload: UserAnalyticsQueryPayload
+): Promise<UserAnalyticsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+    return sampleUserAnalyticsReport(payload);
+  }
+
+  const callable = httpsCallable<
+    UserAnalyticsQueryPayload,
+    UserAnalyticsResponse
+  >(functions, "adminGetUserAnalytics");
   const result = await callable(payload);
   return result.data;
 }

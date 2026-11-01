@@ -5,6 +5,10 @@ import {
   AdminExternalEventListRow,
   AdminOverviewResponse,
   HostAnalyticsResponse,
+  UserAnalyticsGranularity,
+  UserAnalyticsQueryPayload,
+  UserAnalyticsRangePreset,
+  UserAnalyticsResponse,
 } from "../types/adminTypes";
 
 export const sampleAdminActionExecutionRows: AdminActionExecutionRecord[] = [
@@ -484,6 +488,82 @@ export const sampleHostAnalytics: HostAnalyticsResponse = {
   ],
 };
 
+export function sampleUserAnalyticsReport(
+  payload: UserAnalyticsQueryPayload
+): UserAnalyticsResponse {
+  const range = sampleUserAnalyticsRange(payload);
+  const userId = payload.userId?.trim() || "user-1";
+  return {
+    generatedAt: "2026-06-25T00:00:00.000Z",
+    timezone: "UTC",
+    range,
+    scope: {userId},
+    summaryCards: [
+      metric("profileViews", "Profile views", 42, "count", "ready",
+        "Post-event profile views captured by Catch."),
+      metric("caughtYou", "Caught you", 18, "count", "ready",
+        "People who showed interest after an event."),
+      metric("mutualCatches", "Mutual catches", 7, "count", "ready"),
+      metric("chatsStarted", "Chats started", 5, "count", "ready"),
+      metric("eventsAttended", "Events attended", 3, "count", "ready"),
+      metric("followThroughRate", "Follow-through", 71, "percent", "partial"),
+    ],
+    trend: sampleUserAnalyticsTrend(range.granularity),
+    connectionSummary: {
+      outgoingLikes: 23,
+      incomingLikes: 15,
+      privateInterestReceived: 3,
+      mutualCatches: 7,
+      chatsStarted: 5,
+      chatMessagesSent: 31,
+      followThroughRate: 71,
+      eventsAttended: 3,
+    },
+    profileSummary: {
+      profileViews: 42,
+      uniqueViewers: 27,
+      profileDwellSeconds: 384,
+      photoImpressions: 96,
+      topPhotoId: "photo-hero-2",
+      activeMinutes: 218,
+    },
+    coachingTipRefs: [
+      {
+        id: "keepShowingUp",
+        copyKey: "keepShowingUp",
+        priority: 3,
+        metricIds: ["eventsAttended", "mutualCatches"],
+      },
+      {
+        id: "startFirstChat",
+        copyKey: "startFirstChat",
+        priority: 2,
+        metricIds: ["mutualCatches", "chatsStarted"],
+      },
+    ],
+    dataQuality: [
+      {
+        id: "participant-signals",
+        state: "ok",
+        detail:
+          "Likes, matches, chats, attendance, and feedback use participant signal facts.",
+      },
+      {
+        id: "profile-exposure",
+        state: "ok",
+        detail:
+          "Profile view and photo performance events are aggregate-only warehouse events.",
+      },
+      {
+        id: "app-engagement",
+        state: "partial",
+        detail:
+          "App active minutes depend on GA4 export rows with Firebase user IDs.",
+      },
+    ],
+  };
+}
+
 export const sampleOrganizerDetails: Record<string, AdminOrganizerDetails> =
   Object.fromEntries([
     sampleOrganizer({
@@ -807,6 +887,87 @@ function sampleCanonicalEvent(
       maxAge: 45,
     },
     searchIndexStatus: config.searchIndexStatus,
+  };
+}
+
+function sampleUserAnalyticsRange(
+  payload: UserAnalyticsQueryPayload
+): UserAnalyticsResponse["range"] {
+  const preset: UserAnalyticsRangePreset = payload.rangePreset ?? "30d";
+  const granularity = payload.granularity ?? sampleGranularityForPreset(preset);
+  if (preset === "custom" && payload.startDate && payload.endDate) {
+    return {
+      startDate: `${payload.startDate}T00:00:00.000Z`,
+      endDate: `${payload.endDate}T23:59:59.999Z`,
+      granularity,
+      preset,
+    };
+  }
+  const startDate = preset === "7d" ? "2026-06-19" :
+    preset === "90d" ? "2026-03-28" :
+    preset === "month" ? "2026-06-01" :
+    "2026-05-27";
+  return {
+    startDate: `${startDate}T00:00:00.000Z`,
+    endDate: "2026-06-25T23:59:59.999Z",
+    granularity,
+    preset,
+  };
+}
+
+function sampleGranularityForPreset(
+  preset: UserAnalyticsRangePreset
+): UserAnalyticsGranularity {
+  if (preset === "90d") return "week";
+  if (preset === "month") return "week";
+  return "day";
+}
+
+function sampleUserAnalyticsTrend(
+  granularity: UserAnalyticsGranularity
+): UserAnalyticsResponse["trend"] {
+  const dates = granularity === "month" ?
+    ["2026-04-01", "2026-05-01", "2026-06-01"] :
+    granularity === "week" ?
+    ["2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22"] :
+    ["2026-06-19", "2026-06-20", "2026-06-21", "2026-06-22"];
+  return dates.map((date, index) => ({
+    periodStart: `${date}T00:00:00.000Z`,
+    periodEnd: addAnalyticsPeriod(date, granularity),
+    metrics: {
+      profileViews: [6, 8, 13, 15][index] ?? 4,
+      caughtYou: [2, 4, 5, 7][index] ?? 1,
+      mutualCatches: [1, 1, 2, 3][index] ?? 0,
+      chatsStarted: [0, 1, 2, 2][index] ?? 0,
+      eventsAttended: [0, 1, 1, 1][index] ?? 0,
+    },
+  }));
+}
+
+function addAnalyticsPeriod(
+  date: string,
+  granularity: UserAnalyticsGranularity
+): string {
+  const parsed = new Date(`${date}T00:00:00.000Z`);
+  const days = granularity === "month" ? 31 : granularity === "week" ? 7 : 1;
+  return new Date(parsed.getTime() + days * 86400000).toISOString();
+}
+
+function metric(
+  id: string,
+  label: string,
+  value: number,
+  unit: UserAnalyticsResponse["summaryCards"][number]["unit"],
+  status: UserAnalyticsResponse["summaryCards"][number]["status"],
+  caption?: string
+): UserAnalyticsResponse["summaryCards"][number] {
+  return {
+    id,
+    label,
+    value,
+    unit,
+    status,
+    ...(caption ? {caption} : {}),
   };
 }
 

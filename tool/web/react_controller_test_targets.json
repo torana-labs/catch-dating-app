@@ -15,11 +15,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
-      "test": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/catch-support/controllers/useCatchWhatsappAvailabilityController.ts",
       "test": "admin/src/features/catch-support/controllers/useCatchWhatsappAvailabilityController.test.tsx",
       "status": "required"
@@ -145,11 +140,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/system/controllers/useSystemController.ts",
-      "test": "admin/src/features/system/controllers/useSystemController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/now/controllers/useNowController.ts",
       "test": "admin/src/features/now/controllers/useNowController.test.tsx",
       "status": "required"
@@ -197,6 +187,16 @@
     {
       "source": "admin/src/features/sales/controllers/useSalesWorkspaceController.ts",
       "test": "admin/src/features/sales/controllers/useSalesWorkspaceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/system/controllers/useSystemController.ts",
+      "test": "admin/src/features/system/controllers/useSystemController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+      "test": "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
       "status": "required"
     },
     {
@@ -392,6 +392,11 @@
     {
       "source": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
       "test": "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/settings/controllers/useTeamController.ts",
+      "test": "admin/src/features/settings/controllers/useTeamController.test.tsx",
       "status": "required"
     }
   ]

@@ -125,4 +125,8 @@ export const adminQueryKeys = {
     savedReplies: () =>
       [...adminQueryKeys.all, "support", "saved-replies"] as const,
   },
+  users: {
+    analytics: (payloadKey: string) =>
+      [...adminQueryKeys.all, "users", "analytics", payloadKey] as const,
+  },
 };

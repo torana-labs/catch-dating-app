@@ -15,10 +15,12 @@ export const adminSections = {
   "organizer-intake": {path: "/intake/organizers", title: "Intake"},
   organizers: {path: "/organizers", title: "Organizers"},
   events: {path: "/events", title: "Events"},
+  people: {path: "/people", title: "People"},
+  users: {path: "/users", title: "User analytics"},
   finance: {path: "/finance", title: "Finance"},
   quality: {path: "/quality", title: "Data quality"},
   operations: {path: "/operations", title: "Agent activity"},
-  "admin-roles": {path: "/admin-roles", title: "Admin roles"},
+  settings: {path: "/settings", title: "Settings"},
 } as const;
 
 export type AdminNavId = keyof typeof adminSections;
@@ -55,8 +57,7 @@ export const adminRoutes: AdminRoute[] = [
   route("/", "now", {redirect: "/now"}),
   // Overview split in two: its queues are Needs you, its analytics Marketplace.
   route("/overview/*", "now", {redirect: "/now"}),
-  // Retired pages keep their links working.
-  route("/users/*", "now", {redirect: "/now"}),
+  // The Cross Paths page is retired; old links land on Needs you.
   route("/cross-paths/*", "now", {redirect: "/now"}),
   ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
@@ -94,7 +95,10 @@ export const adminRoutes: AdminRoute[] = [
   }),
   route("/finance/payment-routing/*", "finance", {financeWorkspace: "payment-routing", title: "Payment routing"}),
   route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
-  route("/admin-roles/:adminRoleTargetUid", "admin-roles", {title: "Admin role assignment"}),
+  route("/settings/:settingsPage", "settings"),
+  route("/settings/team/:teamMemberUid", "settings", {title: "Team and roles"}),
+  // Admin roles became Settings → Team and roles.
+  route("/admin-roles/*", "settings", {redirect: "/settings/team"}),
   ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
     .map((salesArea) => route(`/sales/${salesArea}/*`, "sales", {salesArea})),
   route("/sales/hosts/:salesOrganizerId", "sales", {salesArea: "hosts"}),

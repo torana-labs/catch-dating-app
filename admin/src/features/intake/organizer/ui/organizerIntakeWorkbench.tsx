@@ -1,4 +1,4 @@
-import {CatchAdminIntakeSection, CatchField, CatchText} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {ExternalLink, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
@@ -6,6 +6,7 @@ import {
   AdminButton,
   AdminFieldGrid,
   AdminIntakeReviewWorkbench,
+  AdminIntakeSection,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminLinkButton,
@@ -406,7 +407,7 @@ function OrganizerTaskWorkbench({
             },
             {
               content: (
-                <CatchAdminIntakeSection>
+                <AdminIntakeSection>
                   {visibilityForm && surfaceChecklist ? (
                     <organizerIntakeVisibilityControls.OrganizerVisibilityControls
                       checklist={surfaceChecklist}
@@ -437,7 +438,7 @@ function OrganizerTaskWorkbench({
                       }))}
                     />
                   ) : null}
-                </CatchAdminIntakeSection>
+                </AdminIntakeSection>
               ),
               id: "decision-note",
               kind: "content" as const,
@@ -571,7 +572,7 @@ function OrganizerTaskWorkbench({
             },
             {
               content: (
-                <CatchAdminIntakeSection>
+                <AdminIntakeSection>
                   <CatchText as="p" variant="supporting">
                     {candidate.reviewContext?.reviewNotes ??
                       candidate.snippet ??
@@ -586,7 +587,7 @@ function OrganizerTaskWorkbench({
                   {candidate.existingEntityMatches.length === 0 &&
                     !candidateDraft &&
                     candidateDraftForm ? (
-                      <CatchAdminIntakeSection>
+                      <AdminIntakeSection>
                         <AdminFieldGrid columns={2}>
                           <CatchField
                             recipe="input"
@@ -645,9 +646,9 @@ function OrganizerTaskWorkbench({
                               },
                             }))}
                         />
-                      </CatchAdminIntakeSection>
+                      </AdminIntakeSection>
                     ) : null}
-                </CatchAdminIntakeSection>
+                </AdminIntakeSection>
               ),
               id: "context",
               kind: "content" as const,

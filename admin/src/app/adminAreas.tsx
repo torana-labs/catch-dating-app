@@ -22,12 +22,15 @@ const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/P
 const OrganizersRouteScreen = lazy(() => import("../features/organizers/ui/OrganizersRouteScreen").then((m) => ({default: m.OrganizersRouteScreen})));
 const EventsRouteScreen = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.EventsRouteScreen})));
 const OrganizerEventsRouteWorkspace = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.OrganizerEventsRouteWorkspace})));
+const UserAnalyticsScreen = lazy(() => import("../features/users/ui/UserAnalyticsScreen").then((m) => ({default: m.UserAnalyticsScreen})));
+const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteScreen").then((m) => ({default: m.PeopleRouteScreen})));
+const SystemRouteScreen = lazy(() => import("../features/system/ui/SystemRouteScreen").then((m) => ({default: m.SystemRouteScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
-const AdminRoleManagementScreen = lazy(() => import("../features/admin-roles/ui/AdminRoleManagementScreen").then((m) => ({default: m.AdminRoleManagementScreen})));
+const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
+const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
-const SystemRouteScreen = lazy(() => import("../features/system/ui/SystemRouteScreen").then((m) => ({default: m.SystemRouteScreen})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
 
 /** What the shell hands every area's screen. */
@@ -100,9 +103,9 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
   },
   safety: {
     label: "Safety", icon: "safety", frame: "redrawn",
-    render: ({adminRoles, navigate, route, setError, setNotice}) => (
+    render: ({adminRoles, mode, navigate, route, setError, setNotice}) => (
       <SafetyRouteScreen
-        adminRoles={adminRoles}
+        adminRoles={mode === "sample" ? ["adminOwner"] : adminRoles}
         onError={setError}
         onNavigate={navigate}
         onNotice={setNotice}
@@ -191,6 +194,16 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
       <MarketplaceRouteScreen adminRoles={adminRoles} isSessionReady={isSessionReady} mode={mode} onError={setError} onNotice={setNotice} />
     ),
   },
+  users: {
+    label: "User analytics", icon: "insights", frame: "legacy",
+    render: ({setError, setNotice}) => (
+      <UserAnalyticsScreen handoffRequestId={null} handoffUserId={null} onError={setError} onNotice={setNotice} />
+    ),
+  },
+  people: {
+    label: "People", icon: "people", frame: "redrawn",
+    render: ({navigate}) => <PeopleRouteScreen onOpenSafety={() => navigate("/safety/actions")} />,
+  },
   "marketing-ops": {
     label: "Marketing", icon: "announce", frame: "legacy",
     render: ({navigate, route, setError, setMarketingDirty, setNotice}) => (
@@ -230,18 +243,27 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     label: "System", icon: "data", frame: "redrawn",
     render: ({isSessionReady, mode}) => <SystemRouteScreen isSessionReady={isSessionReady} mode={mode} />,
   },
-  "admin-roles": {
-    label: "Admin roles", icon: "admin", frame: "legacy",
-    render: ({navigate, route, setError, setNotice, userUid}) => (
-      <AdminRoleManagementScreen
-        currentUserUid={userUid}
-        onBackToRegister={() => navigate(adminPathForNav("admin-roles"))}
+  settings: {
+    label: "Settings", icon: "settings", frame: "redrawn",
+    render: ({adminRoles: claims, canOpen, mode, navigate, route, setError, setNotice, userUid}) => {
+      // Sample data signs in as the sample owner, who holds no claims.
+      const adminRoles = mode === "sample" ? ["adminOwner"] : claims;
+      return (
+      <SettingsRouteScreen
+        canManageTeam={adminRoles.includes("adminOwner")}
+        currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
         onError={setError}
+        onNavigate={navigate}
         onNotice={setNotice}
-        onSelectTargetUid={(targetUid) => navigate(`/admin-roles/${encodeURIComponent(targetUid)}`)}
-        selectedTargetUid={route.params.adminRoleTargetUid ?? null}
+        otherPages={canOpen("safety") ? [{
+          id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
+          render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
+        }] : []}
+        selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
+        teamMemberUid={route.params.teamMemberUid ?? null}
       />
-    ),
+      );
+    },
   },
 };
 

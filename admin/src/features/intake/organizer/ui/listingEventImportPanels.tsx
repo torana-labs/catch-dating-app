@@ -1,8 +1,9 @@
-import {CatchAdminIntakeSection, CatchBadge, type CatchBadgeTone, CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {
   AdminButton,
   AdminForm,
+  AdminIntakeSection,
   AdminLinkButton,
   AdminOrganizerIntakeCheckboxField,
   AdminToolbar,
@@ -193,7 +194,7 @@ function ListingEvents({row, controller, onClose}: {
     {row.events.map((event) => {
       const [label, tone] = stateLabels[event.state];
       const reasons = event.blockers.map((code) => blockerLabels[code] ?? code);
-      return <CatchAdminIntakeSection key={event.eventWorkItemId}>
+      return <AdminIntakeSection key={event.eventWorkItemId}>
         <StateRow label={event.title ?? "Untitled event"} value={<>
           <CatchBadge recipe="status" tone={tone} label={`${label}${event.publishedBy === "policy" ? " by policy" :
             event.publishedBy === "staff" && event.state === "published" ? " by staff" : ""}`} />{" "}
@@ -245,7 +246,7 @@ function ListingEvents({row, controller, onClose}: {
             setWithdrawNote("");
             setWithdrawing(event.eventId);
           }}>Withdraw</AdminButton> : null}
-      </CatchAdminIntakeSection>;
+      </AdminIntakeSection>;
     })}
     {picked.length > 0 ? <AdminForm onSubmit={(submitted) => {
       submitted.preventDefault();

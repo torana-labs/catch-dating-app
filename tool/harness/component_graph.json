@@ -745,14 +745,15 @@
         "admin/src/shared/ui/AdminPrimitives/actions.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.tsx",
         "admin/src/features/safety/controllers/useAccessReviewController.ts",
-        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/settings/controllers/useTeamController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
-        "admin/src/features/safety/controllers/useSafetyTriageController.ts"
+        "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+        "admin/src/features/users/controllers/useUserAnalyticsController.ts"
       ]},
       "components": ["web.admin-pending-input"],
         "terminal": true
