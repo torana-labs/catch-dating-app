@@ -20,6 +20,8 @@ export interface SystemActivityRow {
   what: string;
   when: string;
   result: {text: string; tone?: "danger" | "warning"};
+  /** The machine error code: not shown, but ops can search for it. */
+  errorCode: string | null;
   automatic: boolean;
   problem: boolean;
 }
@@ -67,9 +69,9 @@ export function activityRow(record: AdminActionExecutionRecord): SystemActivityR
     },
     what: actionSummaries.get(record.actionId) ?? record.actionId,
     when: formatWhen(record.startedAt),
-    result: record.status === "failed" ?
-      {text: record.errorCode ?? "Failed", tone: "danger"} :
+    result: record.status === "failed" ? {text: "Failed", tone: "danger"} :
       record.status === "started" ? {text: "Running", tone: "warning"} : {text: "Done"},
+    errorCode: record.errorCode,
     automatic,
     problem,
   };
@@ -100,7 +102,7 @@ export function filterActivity(rows: SystemActivityRow[], filter: SystemActivity
     if (filter === "automatic" && !row.automatic) return false;
     if (filter === "problems" && !row.problem) return false;
     if (!needle) return true;
-    return [row.who.title, row.who.subtitle, row.what, row.result.text]
+    return [row.who.title, row.who.subtitle, row.what, row.result.text, row.errorCode ?? ""]
       .some((text) => text.toLowerCase().includes(needle));
   });
 }

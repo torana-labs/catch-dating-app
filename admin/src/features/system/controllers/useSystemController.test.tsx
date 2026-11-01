@@ -22,15 +22,16 @@ describe("useSystemController", () => {
     expect(person).toMatchObject({who: {title: "Owner", subtitle: "owner-1"}, automatic: false, result: {text: "Done"}});
     expect(person.what).toContain("overview");
     const agent = activityRow(record({executionId: "e2", cliVersion: "1.2.0", status: "failed", errorCode: "permission-denied"}));
-    expect(agent).toMatchObject({who: {title: "Agent"}, automatic: true, problem: true, result: {text: "permission-denied", tone: "danger"}});
+    expect(agent).toMatchObject({who: {title: "Agent"}, automatic: true, problem: true, result: {text: "Failed", tone: "danger"}, errorCode: "permission-denied"});
   });
 
   it("filters by who acted and by problems, and searches", () => {
-    const rows = [activityRow(record({})), activityRow(record({executionId: "e2", cliVersion: "1.2.0", status: "failed"}))];
+    const rows = [activityRow(record({})), activityRow(record({executionId: "e2", cliVersion: "1.2.0", status: "failed", errorCode: "permission-denied"}))];
     expect(filterActivity(rows, "people", "")).toHaveLength(1);
     expect(filterActivity(rows, "automatic", "")).toHaveLength(1);
     expect(filterActivity(rows, "problems", "")[0]?.key).toBe("e2");
     expect(filterActivity(rows, "everyone", "agent")).toHaveLength(1);
+    expect(filterActivity(rows, "everyone", "permission-denied")[0]?.key).toBe("e2");
   });
 
   it("loads sample activity and health, and narrows to problems", async () => {
