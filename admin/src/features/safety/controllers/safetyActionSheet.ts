@@ -1,6 +1,5 @@
 import type {
   AccountActionKind,
-  SafetyReason,
   TakeAccountAction,
 } from "../api/accountSafetyRepository";
 
@@ -47,14 +46,6 @@ export function canTakeStep(job: SafetyJob, kind: AccountActionKind):
   boolean {
   const step = ACTION_STEPS.find((item) => item.kind === kind);
   return Boolean(step) && (!step!.ownerOnly || job === "owner");
-}
-
-export function durationLabel(duration: ActionDuration): string {
-  return duration === null ? "Until we lift it" : `${duration} days`;
-}
-
-export function activeReasons(reasons: SafetyReason[]): SafetyReason[] {
-  return reasons.filter((reason) => reason.active);
 }
 
 /** The plain-words message the person sees; never names a reporter. */

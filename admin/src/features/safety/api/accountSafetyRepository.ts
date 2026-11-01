@@ -38,8 +38,6 @@ export type AppealDecision = AdminDecideSafetyAppealCallablePayload;
 export type AppealDecisionResult = AdminDecideSafetyAppealCallableResponse;
 export type SafetySettingsSnapshot = AdminGetSafetySettingsCallableResponse;
 export type SafetySettingsUpdate = AdminUpdateSafetySettingsCallablePayload;
-export type SafetyReason = SafetySettingsSnapshot["settings"]["reasons"][
-  number];
 
 /** Account actions in force, with an appeal waiting, or most recent. */
 export function loadAccountActions(
