@@ -185,10 +185,10 @@
       "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 10
+      "count": 9
     },
     "react/forbid-elements": {
-      "count": 19
+      "count": 17
     }
   },
   "src/shared/ui/primitives/forms.tsx": {

@@ -1676,31 +1676,6 @@
       "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
     },
     {
-      "id": "shared_auth_status_row",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/feedback.tsx",
-      "exportName": "AuthStatusRow",
-      "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/organizers.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "flow"
-        ]
-      },
-      "notes": "Shared website component; Sign-in state sentence with an inline action; not passive metadata and not navigation."
-    },
-    {
       "id": "shared_checkbox_field",
       "kind": "supporting-component",
       "routeIds": [

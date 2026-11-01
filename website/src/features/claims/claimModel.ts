@@ -39,12 +39,6 @@ export function claimWhileYouWaitItems(listing: HostListing | null) {
   ];
 }
 
-export function nullableString(value: FormDataEntryValue | null): string | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
 export function parseProofUrls(value: FormDataEntryValue | null): string[] {
   if (typeof value !== "string") return [];
   const urls = value

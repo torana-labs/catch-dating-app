@@ -147,12 +147,3 @@ export const activityMeta: Record<string, ActivityMeta> = {
     short: "OP",
   },
 };
-
-export const claimUnlocks = [
-  "Reply to reviews",
-  "Correct facts and contact details",
-  "Add official photos",
-  "Publish bookable events with check-in",
-  "Show verified guest reviews",
-  "See page views and search stats",
-];
