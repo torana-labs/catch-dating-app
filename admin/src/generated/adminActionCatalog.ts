@@ -2199,6 +2199,150 @@ export const adminActionCatalog = {
       ],
       "summary": "Offer a reviewed organizer lead to an exact active referral partner with a bounded next action, review time and expiry.",
       "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-organizer-bills",
+      "callable": "adminManageOrganizerBills",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read a month's organizer bills, make them from its bookings, or send, remind, mark paid or write off one bill against the reviewed revision.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-money-settings",
+      "callable": "adminManageMoneySettings",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read or replace Catch's money settings: GST registered, bill due day and the nominator credit rule.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-nominator-credits",
+      "callable": "adminManageNominatorCredits",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read the nominator credit ledger, approve one nominator's owed credit at or above the minimum payout, or record it paid.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-platform-costs",
+      "callable": "adminManagePlatformCosts",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read one month's costs, enter one kind of cost by hand (AI, Cloud, SMS, a WhatsApp invoice total) or clear it.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.export-money-ledger",
+      "callable": "adminExportMoneyLedger",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Download one month's ledger (invoices, bill payments, nominator credit paid, costs) as CSV for Zoho Books.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "growth.get",
+      "callable": "adminGetGrowth",
+      "workflowIds": [
+        "growth"
+      ],
+      "guiPath": "/growth",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read Growth for a range: organizer cohorts, channels and ad spend, nominators and their credit, and the best organizers.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "marketplace.get",
+      "callable": "adminGetMarketplace",
+      "workflowIds": [
+        "growth"
+      ],
+      "guiPath": "/marketplace",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read the Marketplace from the analytics warehouse: cities, guests coming back, bookings each week and organizers going quiet.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.get-month",
+      "callable": "adminGetFinanceMonth",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read one month of Finance line by line: ticket sales, what Catch earned, costs and what is not Catch's money.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-payment-issues",
+      "callable": "adminManagePaymentIssues",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/money",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read Money's open or resolved issues, re-check a captured website or offer payment with no booking with Razorpay, or close an issue handled elsewhere.",
+      "controlPlane": true
     }
   ],
   "workflows": [
@@ -2240,7 +2384,9 @@ export const adminActionCatalog = {
       "guiPath": "/growth",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "growth.get",
+        "marketplace.get"
       ]
     },
     {
@@ -2362,7 +2508,14 @@ export const adminActionCatalog = {
         "finance.revoke-organizer-entitlement-grant",
         "finance.list-commercial-terms",
         "finance.manage-commercial-terms",
-        "finance.manage-payment-routing"
+        "finance.manage-payment-routing",
+        "finance.manage-organizer-bills",
+        "finance.manage-money-settings",
+        "finance.manage-nominator-credits",
+        "finance.manage-platform-costs",
+        "finance.export-money-ledger",
+        "finance.get-month",
+        "finance.manage-payment-issues"
       ],
       "blockedCapabilities": [
         "retry_payment",
