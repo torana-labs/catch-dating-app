@@ -439,7 +439,7 @@
         "contains": [
           "every catalogued committed compile generator has a staged-source trigger",
           "partially staged Dart fails before formatting can stage unrelated work",
-          "contract drift reports both exact regeneration commands"
+          "contract drift reports the exact regeneration command"
         ]
       }
     },

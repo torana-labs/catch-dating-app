@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.10.0
-updated: 2026-10-31
+version: 3.10.1
+updated: 2026-11-02
 owner: agent_operating_model
 status: active
 ---
@@ -264,7 +264,8 @@ bash tool/git/bootstrap_worktree.sh --target flutter    # Flutter checks
 ```
 
 The command checks the selected committed manifests and lockfiles, then runs
-their `npm ci` or `flutter pub get` in that worktree. Keep installs local to the
+their `npm ci` or `flutter pub get` in that worktree. The root and Functions
+targets also generate the modules their builds need, which Git ignores. Keep installs local to the
 worktree; do not symlink another checkout's `node_modules` or invent `NODE_PATH`
 overrides. A docs-only worktree with dependency-free checks needs no install.
 
