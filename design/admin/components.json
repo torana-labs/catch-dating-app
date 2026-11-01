@@ -682,6 +682,42 @@
       "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage includes a 30-item independently scrollable candidate queue and fail-closed organizer draft creation."
     },
     {
+      "id": "route_settings_intake",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsWorkspace.tsx",
+      "exportName": "IntakeSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSettingsIntake.stories.tsx",
+        "exportName": "IntakeSettingsStory",
+        "states": [
+          "policies",
+          "limits",
+          "nominators",
+          "launch-cities"
+        ]
+      },
+      "notes": "Settings → Intake: what Intake does on its own (each decision recorded in a dialog with its checklist, switched on only by a reviewed change), limits, who can nominate by message (the add-someone sheet) and launch cities, replacing the Supply Intake policy and nominator panels."
+    },
+    {
+      "id": "route_settings_intake_live_controller",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsRouteScreen.tsx",
+      "exportName": "IntakeSettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the policy and nominator controllers; deterministic visual coverage remains on route_settings_intake."
+    },
+    {
       "id": "workspace_organizer_intake",
       "kind": "workspace",
       "owner": "features/intake/organizer",

@@ -28,6 +28,7 @@ const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteSc
 const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
 const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
+const IntakeSettingsRouteScreen = lazy(() => import("../features/intake/organizer/ui/IntakeSettingsRouteScreen").then((m) => ({default: m.IntakeSettingsRouteScreen})));
 const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
@@ -277,10 +278,16 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
         onError={setError}
         onNavigate={navigate}
         onNotice={setNotice}
-        otherPages={canOpen("safety") ? [{
-          id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
-          render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
-        }] : []}
+        otherPages={[
+          ...(canOpen("organizer-intake") ? [{
+            id: "intake", title: "Intake", subtitle: "Nominations, what runs on its own, launch cities",
+            render: () => <IntakeSettingsRouteScreen onError={setError} onNotice={setNotice} />,
+          }] : []),
+          ...(canOpen("safety") ? [{
+            id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
+            render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
+          }] : []),
+        ]}
         selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
         teamMemberUid={route.params.teamMemberUid ?? null}
       />
