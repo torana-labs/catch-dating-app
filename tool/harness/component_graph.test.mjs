@@ -1073,6 +1073,14 @@ test("graph validation rejects unknown tool check ids when the manifest is suppl
   assert.ok(errors.some((error) => error.includes('unknown tool check id "missing:check"')));
 });
 
+test("the build-time catalog generator validates every surface that compiles its output", () => {
+  const result = plan("tool/admin/generate_admin_action_catalog.mjs");
+  assert.equal(result.complete, true);
+  for (const target of ["admin", "functions", "tools"]) {
+    assert.ok(result.operations.ciTargets.includes(target), target);
+  }
+});
+
 test("generator scripts and generated outputs select their declared freshness checks", () => {
   const schemaScript = plan("tool/contracts/generate_schema_contracts.mjs");
   assert.deepEqual(schemaScript.operations.codegenIds, ["contracts.schema-projections"]);

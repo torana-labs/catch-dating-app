@@ -828,6 +828,12 @@
       "terminal": true
     },
     {
+      "id": "admin-module-generators",
+      "paths": {"include": ["tool/admin/generate_admin_action_catalog.mjs"]},
+      "components": ["backend.admin-module-generators"],
+      "terminal": true
+    },
+    {
       "id": "generated-admin-contract-binding",
       "paths": {"include": ["admin/src/generated/**"]},
       "components": ["contracts.generated.admin"],
@@ -1009,6 +1015,7 @@
     {"id": "content.structured", "owner": "content_system", "risk": "standard", "operationProfile": "content-shared", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Structured domain-copy catalog, templates, and deterministic Flutter projections."},
     {"id": "backend.organizer-authority", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "terminal", "dependsOn": ["contracts.source"], "alsoAffects": ["backend.firestore-rules"], "description": "Organizer authority, form conversions, profile projection sync, and their test command retain Functions ownership and additionally validate real Firestore authorization races."},
     {"id": "backend.functions", "owner": "backend_platform", "risk": "high", "operationProfile": "functions-source", "pathType": "component", "ownedPaths": {"include": ["functions/**"], "exclude": ["functions/README.md", "functions/src/shared/generated/**"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Handwritten Cloud Functions source."},
+    {"id": "backend.admin-module-generators", "owner": "backend_platform", "risk": "high", "operationProfile": "repo-tooling", "pathType": "terminal", "dependsOn": [], "alsoAffects": ["web.admin", "backend.functions"], "description": "Generator of the Admin and Functions catalog modules their builds produce; no tracked output shows its effect in a diff."},
     {"id": "backend.functions-doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "functions-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Functions export inventory contract."},
     {"id": "backend.firestore-indexes", "owner": "backend_platform", "risk": "high", "operationProfile": "firestore-indexes-source", "pathType": "component", "ownedPaths": {"include": ["firestore.indexes.json"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore composite-index configuration."},
     {"id": "backend.firestore-rules", "owner": "backend_platform", "risk": "high", "operationProfile": "firestore-rules-source", "pathType": "component", "ownedPaths": {"include": ["firestore.rules"]}, "dependsOn": ["contracts.source"], "alsoAffects": [], "description": "Firestore authorization policy."},

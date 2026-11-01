@@ -110,6 +110,16 @@ async function checkTools(args) {
   await runChecks(tools, {marketingChecksInReact, marketingCapturesImported, generatedInventoriesMaterialized});
 }
 
+// Checks read the Admin and Functions import graphs, which include modules their
+// builds generate. A sparse checkout has no sources, and no check that needs them.
+function generateBuildModules() {
+  const generators = ["tool/admin/generate_admin_action_catalog.mjs", "admin/scripts/generateCallableValidators.mjs"];
+  if (!fs.existsSync(path.join(repoRoot, "contracts/admin/admin_action_catalog.json")) ||
+      !fs.existsSync(path.join(repoRoot, generators[1]))) return true;
+  return generators.every((script) => spawnSync(process.execPath, [script],
+    {cwd: repoRoot, stdio: "inherit"}).status === 0);
+}
+
 function reactOwnsMarketingCheck({toolId, command}) {
   return ((toolId === "marketing:website-build" &&
         command === "npm --prefix website run build") ||
@@ -185,6 +195,10 @@ async function runChecks(tools, {marketingChecksInReact = false, marketingCaptur
   };
   try { await verifyProducerProofs(); } catch (error) {
     console.error(`Cannot reuse CI producer checks: ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
+  if (!generateBuildModules()) {
     process.exitCode = 1;
     return;
   }
@@ -359,6 +373,7 @@ function runTool(args) {
     process.exit(64);
   }
 
+  if (!generateBuildModules()) process.exit(1);
   const forwarded = args.slice(1).map(shellQuote).join(" ");
   const commandLine = forwarded ? `${tool.command} ${forwarded}` : tool.command;
   const result = spawnSync(commandLine, {

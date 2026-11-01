@@ -5,21 +5,13 @@ import {fileURLToPath} from "node:url";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDirectory, "..", "..");
-const sourcePath = path.join(
-  repoRoot,
-  "contracts",
-  "admin",
-  "admin_action_catalog.json"
-);
-
 /** Where the Functions view lands. It is built on demand, never tracked. */
 export const functionsCatalogModule =
   "functions/src/shared/generated/adminActionCatalog.ts";
-/** Source inputs of the generated Functions view, from the repository root. */
-export const functionsCatalogInputs = [
-  "contracts/admin/admin_action_catalog.json",
-  "tool/admin/generate_admin_action_catalog.mjs",
-];
+/** The catalog the views are rendered from, relative to the repository root. */
+export const catalogSource = "contracts/admin/admin_action_catalog.json";
+/** This renderer, relative to the repository root. */
+export const catalogGenerator = "tool/admin/generate_admin_action_catalog.mjs";
 
 const outputs = new Map([
   [
@@ -57,7 +49,7 @@ function selfTest(catalog) {
 }
 
 function main() {
-  const catalog = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+  const catalog = JSON.parse(fs.readFileSync(path.join(repoRoot, catalogSource), "utf8"));
   validateCatalog(catalog);
   if (process.argv.includes("--self-test")) {
     selfTest(catalog);

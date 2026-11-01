@@ -158,7 +158,11 @@ test("admin and marketing callers share one exact build and promotion path", () 
   }
   const admin = caller("admin");
   for (const adminDependency of [
-    "contracts/admin/admin_live_data_sources.json",
+    // Admin's validators and catalog are generated at build time, so no Admin
+    // path changes in a diff when a contract or their generator does.
+    "contracts/**/*.json",
+    "tool/admin/callable_inventory.mjs",
+    "tool/admin/generate_admin_action_catalog.mjs",
     "tool/firebase/check_client_callable_dependencies.mjs",
     "tool/lib/firebase_project.mjs",
     "tool/web/check_admin_live_data_sources.mjs",

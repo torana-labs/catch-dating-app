@@ -5,7 +5,8 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 import {
-  functionsCatalogInputs,
+  catalogGenerator,
+  catalogSource,
   functionsCatalogModule,
   renderFunctions,
 } from "../admin/generate_admin_action_catalog.mjs";
@@ -55,7 +56,7 @@ function sourceTree(root, sha) {
 // would deploy, unless it predates untracking and still holds them.
 function withBuiltCatalog(root, sha, tree) {
   if (!tree.has(functionsCatalogModule)) {
-    const catalog = readJson(root, sha, functionsCatalogInputs[0]);
+    const catalog = readJson(root, sha, catalogSource);
     if (catalog) tree.set(functionsCatalogModule, renderFunctions(catalog));
   }
   return tree;
@@ -387,7 +388,7 @@ export function affectedFunctionTargets({
     const catalogBytesChanged = before.get(functionsCatalogModule) !== after.get(functionsCatalogModule);
     changed.delete(functionsCatalogModule);
     if (after.has(functionsCatalogModule) &&
-        (catalogBytesChanged || changed.has(functionsCatalogInputs[1]))) {
+        (catalogBytesChanged || changed.has(catalogGenerator))) {
       changed.add(functionsCatalogModule);
     }
     const oldIndex = indexExports(ts, before);
