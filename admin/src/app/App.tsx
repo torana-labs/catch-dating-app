@@ -26,7 +26,6 @@ import {
   AdminSignInMeta,
   AdminSignInPanel,
   AdminSignInScreen,
-  SegmentedControl,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
 import {
@@ -41,10 +40,8 @@ import {
   adminPathForNav,
   adminRoutes,
   adminSections,
-  financePathForWorkspace,
   resolveAdminRoute,
   type AdminNavId,
-  type FinanceWorkspace,
 } from "./adminRoutes";
 import {adminAreaRoles, adminNavigation} from "./adminAccess";
 import {adminJobFor, adminJobLabels} from "./adminJobs";
@@ -178,19 +175,6 @@ function AdminRouteApp() {
   // Commercial terms and payment routing are Admin Owner only.
   const canManageCommercialTerms = mode === "sample" ||
     hasAnyAdminRole(adminRoles, ["adminOwner"]);
-  const financeWorkspaceSwitch = canManageCommercialTerms ? (
-    <SegmentedControl<FinanceWorkspace>
-      ariaLabel="Finance workspaces"
-      mobileLayout="content"
-      options={[
-        {id: "issues", label: "Finance issues"},
-        {id: "commercial-terms", label: "Commercial terms"},
-        {id: "payment-routing", label: "Payment routing"},
-      ]}
-      onChange={(workspace) => navigate(financePathForWorkspace(workspace))}
-      value={route.financeWorkspace}
-    />
-  ) : null;
 
   useEffect(() => {
     if (!canResolveNavigation) return;
@@ -370,7 +354,6 @@ function AdminRouteApp() {
             session: {sessionKey, isCurrent: session.isCurrent, projectId: firebaseApp.options.projectId ?? ""},
             canOpen,
             canManageCommercialTerms,
-            financeWorkspaceSwitch,
             setError,
             setNotice,
             setMarketingDirty,

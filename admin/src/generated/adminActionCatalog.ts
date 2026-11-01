@@ -183,7 +183,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -198,7 +198,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "critical",
       "roles": [
@@ -213,7 +213,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "critical",
       "roles": [
@@ -2085,7 +2085,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -2100,7 +2100,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -2115,7 +2115,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance/commercial-terms",
+      "guiPath": "/settings/payments",
       "kind": "read",
       "risk": "read",
       "roles": [
@@ -2130,7 +2130,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance/commercial-terms",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -2145,7 +2145,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance/payment-routing",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -2222,7 +2222,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -2270,7 +2270,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/settings/payments",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [

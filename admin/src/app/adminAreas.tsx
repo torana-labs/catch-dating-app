@@ -4,9 +4,9 @@ import type {Location, NavigateFunction} from "react-router";
 import type {DataMode} from "../shared/types/adminTypes";
 import {
   adminPathForNav,
-  commercialTermsPathForOrganizer,
   marketingPathForTab,
   moneyPath,
+  paymentSettingsPath,
   resolveAdminRoute,
   type AdminNavId,
 } from "./adminRoutes";
@@ -19,9 +19,7 @@ const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWor
 const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
 const MoneyRouteScreen = lazy(() => import("../features/money/ui/MoneyRouteScreen").then((m) => ({default: m.MoneyRouteScreen})));
-const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
-const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
-const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
+const PaymentSettingsRouteScreen = lazy(() => import("../features/settings/ui/PaymentSettingsRouteScreen").then((m) => ({default: m.PaymentSettingsRouteScreen})));
 const OrganizersRouteScreen = lazy(() => import("../features/organizers/ui/OrganizersRouteScreen").then((m) => ({default: m.OrganizersRouteScreen})));
 const EventsRouteScreen = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.EventsRouteScreen})));
 const OrganizerEventsRouteWorkspace = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.OrganizerEventsRouteWorkspace})));
@@ -51,7 +49,6 @@ export interface AdminAreaContext {
   /** This person's navigation, for the phone's More page. */
   navigation: CatchTabBarItem[];
   canManageCommercialTerms: boolean;
-  financeWorkspaceSwitch: ReactNode;
   setError: (message: string | null) => void;
   setNotice: (message: string | null) => void;
   setMarketingDirty: (dirty: boolean) => void;
@@ -173,16 +170,13 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
       <MoneyRouteScreen
         onNotice={setNotice}
         onOpen={(view, id) => navigate(moneyPath(view, id))}
-        onOpenSettings={() => navigate(commercialTermsPathForOrganizer(null))}
+        onOpenSettings={() => navigate(paymentSettingsPath())}
         selectedId={route.params.billId ?? route.params.moneyIssueId ?? null}
         view={route.moneyView}
       />
     ),
   },
-  "payment-setup": {
-    label: "Payment setup", icon: "settings", frame: "legacy",
-    render: (context) => renderPaymentSetup(context),
-  },
+
   organizers: {
     label: "Organizers", icon: "organizer", frame: "redrawn",
     render: ({navigate, route}) => (
@@ -297,12 +291,27 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
             id: "intake", title: "Intake", subtitle: "Nominations, what runs on its own, launch cities",
             render: () => <IntakeSettingsRouteScreen onError={setError} onNotice={setNotice} />,
           }] : []),
+          ...(adminRoles.includes("adminOwner") ? [{
+            id: "payments", title: "Payments", subtitle: "Terms, partner credit, GST",
+            render: () => (
+              <PaymentSettingsRouteScreen
+                actorUid={userUid ?? (mode === "sample" ? "sample-owner" : "")}
+                canManage
+                edit={route.paymentsEdit}
+                onBackToSettings={() => navigate(adminPathForNav("settings"))}
+                onError={setError}
+                onNotice={setNotice}
+                onOpen={(edit, organizerId) => navigate(paymentSettingsPath(edit ?? null, organizerId ?? null))}
+                termsOrganizerId={route.params.termsOrganizerId ?? null}
+              />
+            ),
+          }] : []),
           ...(canOpen("safety") ? [{
             id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
             render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
           }] : []),
         ]}
-        selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
+        selectedPage={route.params.teamMemberUid ? "team" : route.settingsPage ?? route.params.settingsPage ?? null}
         teamMemberUid={route.params.teamMemberUid ?? null}
       />
       );
@@ -311,48 +320,6 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
 };
 
 /** The older payment setup screens, until Settings → Payments replaces them. */
-function renderPaymentSetup(context: AdminAreaContext) {
-  const {canManageCommercialTerms, financeWorkspaceSwitch, navigate, route, setError, setNotice, userUid, adminRoles} = context;
-  if (route.financeWorkspace === "commercial-terms") {
-    return (
-      <CommercialTermsScreen
-        canManage={canManageCommercialTerms}
-        key={userUid ?? "sample"}
-        onError={setError}
-        onNotice={setNotice}
-        onOpenOrganizer={(organizerId) => navigate(commercialTermsPathForOrganizer(organizerId))}
-        onOpenPlatform={() => navigate(commercialTermsPathForOrganizer(null))}
-        organizerId={route.params.termsOrganizerId ?? null}
-        workspaceSwitch={financeWorkspaceSwitch}
-      />
-    );
-  }
-  if (route.financeWorkspace === "payment-routing") {
-    return (
-      <PaymentRoutingScreen
-        canManage={canManageCommercialTerms}
-        key={userUid ?? "sample"}
-        onError={setError}
-        onNotice={setNotice}
-        workspaceSwitch={financeWorkspaceSwitch}
-      />
-    );
-  }
-  return (
-    <FinanceOpsScreen
-      actorUid={userUid ?? "sample"}
-      adminRoles={adminRoles}
-      key={userUid ?? "sample"}
-      onBackToList={() => navigate(adminPathForNav("payment-setup"))}
-      onError={setError}
-      onNotice={setNotice}
-      onSelectIssueId={(issueId) => navigate(`/payment-setup/issues/${encodeURIComponent(issueId)}`)}
-      selectedIssueId={route.params.financeIssueId ?? null}
-      workspaceSwitch={financeWorkspaceSwitch}
-    />
-  );
-}
-
 /** Opens a Needs you item in the area that owns it, at the record when the area has a record route. */
 function openQueueItem(
   context: AdminAreaContext,

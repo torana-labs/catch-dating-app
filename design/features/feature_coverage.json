@@ -552,6 +552,15 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_payment_settings_live_controller",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Settings → Payments keeps the commercial terms, payment routing, entitlement and messaging budget controllers (their revision, preview, typed-confirmation and exact-retry rules and tests) and adds money settings through adminManageMoneySettings. The compiled Commercial terms, Payment routing and Finance contracts retired with their workspaces; a Payments page in the Settings feature contract remains planned.",
+      "targetFeature": "feature.admin_settings",
+      "debtId": "FEATURE-ADMIN-SETTINGS-PAYMENTS-001"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_safety_settings_live_controller",
       "status": "contracted",
       "priority": "P1",
@@ -573,30 +582,6 @@
       "priority": "P1",
       "reason": "Compiled Event Publishing contract covers canonical editing, import readiness, external evidence review, and gated read-only publication.",
       "featureContract": "feature.admin_event_publishing"
-    },
-    {
-      "authority": "admin_routes",
-      "authorityId": "route_finance_ops",
-      "status": "contracted",
-      "priority": "P2",
-      "reason": "Compiled Finance Operations contract covers read-only issue derivation, exact detail, partial sources, and reconciliation guidance.",
-      "featureContract": "feature.admin_finance_ops"
-    },
-    {
-      "authority": "admin_routes",
-      "authorityId": "route_commercial_terms",
-      "status": "contracted",
-      "priority": "P1",
-      "reason": "Compiled Commercial Terms contract covers platform defaults with history, the owner-decision first revision, a reasoned field preview before save, exact retry and sparse organizer overrides.",
-      "featureContract": "feature.admin_commercial_terms"
-    },
-    {
-      "authority": "admin_routes",
-      "authorityId": "route_payment_routing",
-      "status": "contracted",
-      "priority": "P1",
-      "reason": "Compiled Payment Routing contract covers per-purpose route and test/live mode, a preview against the saved revision, and typed confirmation for live, Route and off changes.",
-      "featureContract": "feature.admin_payment_routing"
     },
     {
       "authority": "admin_routes",

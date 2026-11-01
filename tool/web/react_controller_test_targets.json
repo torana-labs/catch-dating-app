@@ -25,8 +25,8 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/commercial-terms/controllers/useCommercialTermsController.ts",
-      "test": "admin/src/features/commercial-terms/controllers/useCommercialTermsController.test.tsx",
+      "source": "admin/src/features/settings/controllers/useCommercialTermsController.ts",
+      "test": "admin/src/features/settings/controllers/useCommercialTermsController.test.tsx",
       "status": "required"
     },
     {
@@ -55,18 +55,13 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/finance/controllers/useFinanceOpsController.ts",
-      "test": "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
+      "source": "admin/src/features/settings/controllers/useMessagingBudgetController.ts",
+      "test": "admin/src/features/settings/controllers/useMessagingBudgetController.test.tsx",
       "status": "required"
     },
     {
-      "source": "admin/src/features/finance/controllers/useMessagingBudgetController.ts",
-      "test": "admin/src/features/finance/controllers/useMessagingBudgetController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "admin/src/features/finance/controllers/useOrganizerEntitlementController.ts",
-      "test": "admin/src/features/finance/controllers/useOrganizerEntitlementController.test.tsx",
+      "source": "admin/src/features/settings/controllers/useOrganizerEntitlementController.ts",
+      "test": "admin/src/features/settings/controllers/useOrganizerEntitlementController.test.tsx",
       "status": "required"
     },
     {
@@ -150,8 +145,8 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/payment-routing/controllers/usePaymentRoutingController.ts",
-      "test": "admin/src/features/payment-routing/controllers/usePaymentRoutingController.test.tsx",
+      "source": "admin/src/features/settings/controllers/usePaymentRoutingController.ts",
+      "test": "admin/src/features/settings/controllers/usePaymentRoutingController.test.tsx",
       "status": "required"
     },
     {
@@ -412,6 +407,11 @@
     {
       "source": "admin/src/features/inbox/controllers/useInboxController.ts",
       "test": "admin/src/features/inbox/controllers/useInboxController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/settings/controllers/usePaymentSettingsController.ts",
+      "test": "admin/src/features/settings/controllers/usePaymentSettingsController.test.tsx",
       "status": "required"
     }
   ]

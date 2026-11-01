@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => ({
   stageApprovedMessagingBudget: vi.fn(),
 }));
 
-vi.mock("../api/financeOpsRepository", () => mocks);
+vi.mock("../api/grantedPlansRepository", () => mocks);
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -2,8 +2,6 @@ import {
   decideEventMessagingBudget,
   getOrganizerEntitlement,
   grantOrganizerEntitlement as grantOrganizerEntitlementCallable,
-  loadHostAnalytics,
-  loadOverview,
   reviewEventMessagingBudget,
   revokeOrganizerEntitlementGrant as revokeOrganizerEntitlementGrantCallable,
   stageEventMessagingBudget,
@@ -30,18 +28,6 @@ import type {OrganizerEntitlementCallableResponse} from
   "../../../generated/contracts/organizerEntitlementCallableResponse";
 import type {OrganizerEntitlementMutationCallableResponse} from
   "../../../generated/contracts/organizerEntitlementMutationCallableResponse";
-import type {
-  AdminOverviewResponse,
-  HostAnalyticsResponse,
-} from "../../../shared/types/adminTypes";
-
-export function loadFinanceOverview(): Promise<AdminOverviewResponse> {
-  return loadOverview();
-}
-
-export function loadFinanceHostAnalytics(): Promise<HostAnalyticsResponse> {
-  return loadHostAnalytics({rangePreset: "30d", granularity: "week"});
-}
 
 export function loadMessagingBudgetReview(
   payload: AdminReviewEventMessagingBudgetCallablePayload

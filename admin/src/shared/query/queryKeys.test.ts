@@ -3,10 +3,10 @@ import {adminQueryKeys} from "./queryKeys";
 
 describe("adminQueryKeys", () => {
   it("keeps finance and mutation domains under the shared admin root", () => {
-    expect(adminQueryKeys.finance.overview()).toEqual([
+    expect(adminQueryKeys.finance.paymentRouting()).toEqual([
       "admin",
       "finance",
-      "overview",
+      "payment-routing",
     ]);
     expect(adminQueryKeys.organizerIntake.policyDecision()).toEqual([
       "admin",

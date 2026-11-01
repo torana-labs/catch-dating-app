@@ -13,7 +13,7 @@ import {
   grantOrganizerEntitlement,
   loadOrganizerEntitlement,
   revokeOrganizerEntitlementGrant,
-} from "../api/financeOpsRepository";
+} from "../api/grantedPlansRepository";
 
 export type OrganizerEntitlementSku =
   AdminGrantOrganizerEntitlementCallablePayload["sku"];
