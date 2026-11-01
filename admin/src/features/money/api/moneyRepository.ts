@@ -11,8 +11,8 @@ import type {AdminManagePaymentIssuesCallableResponse} from
   "../../../generated/contracts/adminManagePaymentIssuesCallableResponse";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
-import {sampleManageOrganizerBills, sampleManagePaymentIssues} from
-  "./moneySamples";
+import {moneySampleNowMillis, sampleManageOrganizerBills,
+  sampleManagePaymentIssues} from "./moneySamples";
 
 export type BillsMonth = AdminManageOrganizerBillsCallableResponse;
 export type Bill = BillsMonth["bills"][number];
@@ -20,6 +20,11 @@ export type BillAction = Exclude<AdminManageOrganizerBillsCallablePayload["actio
   "list" | "generate">;
 export type IssuesView = AdminManagePaymentIssuesCallableResponse;
 export type MoneyIssue = IssuesView["issues"][number];
+
+/** Money's clock: the sample clock in sample mode, so overdue bills stay overdue. */
+export function moneyNowMillis(): number {
+  return dataMode() === "sample" ? moneySampleNowMillis : Date.now();
+}
 
 async function call<Request, Response>(name: string, payload: Request,
   sample: (payload: Request) => Response): Promise<Response> {

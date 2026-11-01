@@ -20,6 +20,9 @@ const october = {start: ist("2026-10-01T00:00:00"),
   end: ist("2026-11-01T00:00:00")};
 const due = ist("2026-11-15T23:59:59.999");
 
+/** The sample clock: Money as it stands on 18 November 2026. */
+export const moneySampleNowMillis = ist("2026-11-18T12:00:00");
+
 function bill(input: {
   id: string; name: string; events: number; gross: number; refunded: number;
   rate: number; capped?: boolean; status: Bill["status"]; total: number;
@@ -121,7 +124,7 @@ function listBills(scope: {month: string} | {organizerId: string},
  */
 export function sampleManageOrganizerBills(
   payload: AdminManageOrganizerBillsCallablePayload,
-  nowMillis = ist("2026-11-18T12:00:00")):
+  nowMillis = moneySampleNowMillis):
   AdminManageOrganizerBillsCallableResponse {
   if (payload.action === "list" || payload.action === "generate") {
     return listBills(payload.organizerId ?
@@ -167,7 +170,7 @@ let issues: Issue[] = [
     title: "₹1,500 paid, booking not confirmed",
     subtitle: "Rhea Kapoor · Takeoff: Run + Rave",
     organizerId: "sample-afterfly", organizerName: "Afterfly",
-    amountMinor: 150_000, waitingSinceMillis: ist("2026-10-31T18:02:00"),
+    amountMinor: 150_000, waitingSinceMillis: ist("2026-11-16T18:02:00"),
     status: "captured", lastErrorCode: null,
     providerPaymentId: "pay_PZ81kqSample", eventId: "sample-takeoff",
     canConfirmBooking: true, resolution: null},
@@ -175,7 +178,7 @@ let issues: Issue[] = [
     source: "organizerEventOfferPayments", targetId: "sample-p2",
     title: "Refund asked, not sent", subtitle: "Kabir Shah · Padel mixer",
     organizerId: "sample-padel", organizerName: "Mumbai Padel Social",
-    amountMinor: 120_000, waitingSinceMillis: ist("2026-11-01T11:00:00"),
+    amountMinor: 120_000, waitingSinceMillis: ist("2026-11-17T11:00:00"),
     status: "refundPending", lastErrorCode: null,
     providerPaymentId: "pay_QK19sample", eventId: "sample-padel-mixer",
     canConfirmBooking: false, resolution: null},
@@ -183,7 +186,8 @@ let issues: Issue[] = [
     source: "organizerBills", targetId: "sample-lantern_2026-10",
     title: "Catch bill unpaid", subtitle: "2026-10 · ₹6,400 · 2026-27/031",
     organizerId: "sample-lantern", organizerName: "Lantern Lane Social",
-    amountMinor: 640_000, waitingSinceMillis: due, status: "overdue",
+    amountMinor: 640_000, waitingSinceMillis: ist("2026-11-18T07:00:00"),
+    status: "overdue",
     lastErrorCode: null, providerPaymentId: null, eventId: null,
     canConfirmBooking: false, resolution: null},
 ];
@@ -204,7 +208,7 @@ function issueCounts(list: Issue[]) {
  */
 export function sampleManagePaymentIssues(
   payload: AdminManagePaymentIssuesCallablePayload,
-  nowMillis = ist("2026-11-02T12:00:00")):
+  nowMillis = moneySampleNowMillis):
   AdminManagePaymentIssuesCallableResponse {
   let outcome: AdminManagePaymentIssuesCallableResponse["outcome"] = null;
   if (payload.action !== "list") {
@@ -226,7 +230,8 @@ export function sampleManagePaymentIssues(
       resolvedByUid: "sample-owner", title: issue.title,
       organizerName: issue.organizerName}}, ...resolved];
   }
-  const list = payload.view === "open" ? issues : resolved;
+  const list = payload.view === "open" ? [...issues].sort((a, b) =>
+    a.waitingSinceMillis - b.waitingSinceMillis) : resolved;
   return {view: payload.view, issues: list, counts: issueCounts(list),
     outcome};
 }

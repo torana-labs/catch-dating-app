@@ -16,7 +16,8 @@ export const adminSections = {
   organizers: {path: "/organizers", title: "Organizers"},
   events: {path: "/events", title: "Events"},
   users: {path: "/users", title: "Users"},
-  finance: {path: "/finance", title: "Finance"},
+  money: {path: "/money", title: "Money"},
+  finance: {path: "/finance", title: "Payment setup"},
   quality: {path: "/quality", title: "Data quality"},
   operations: {path: "/operations", title: "Agent activity"},
   "admin-roles": {path: "/admin-roles", title: "Admin roles"},
@@ -27,6 +28,7 @@ type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
   "diagnostics" | "draft";
 type MarketingStep = "source" | "copy" | "compliance" | "export";
 export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing";
+export type MoneyView = "issues" | "resolved" | "bills";
 
 interface RouteState {
   nav: AdminNavId | null;
@@ -38,6 +40,7 @@ interface RouteState {
   eventWorkspace?: "directory" | "external";
   financeWorkspace?: FinanceWorkspace;
   safetyView?: "open" | "actions" | "appeals";
+  moneyView?: MoneyView;
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -74,6 +77,11 @@ export const adminRoutes: AdminRoute[] = [
   // The retired readiness workspace: old links open the directory, not an event named "readiness".
   route("/events/readiness/*", "events"),
   route("/growth/signals/:growthSignalId", "growth", {title: "Growth signal"}),
+  route("/money/resolved/*", "money", {moneyView: "resolved"}),
+  route("/money/resolved/:moneyIssueId", "money", {moneyView: "resolved", title: "Resolved payment issue"}),
+  route("/money/issues/:moneyIssueId", "money", {title: "Payment issue"}),
+  route("/money/bills/*", "money", {moneyView: "bills", title: "Bills"}),
+  route("/money/bills/:billId", "money", {moneyView: "bills", title: "Bill"}),
   route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
   route("/finance/commercial-terms/*", "finance", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
   route("/finance/commercial-terms/organizers/:termsOrganizerId", "finance", {
@@ -121,6 +129,7 @@ export function resolveAdminRoute(pathname: string) {
     eventWorkspace: state?.eventWorkspace ?? "directory",
     financeWorkspace: state?.financeWorkspace ?? "issues",
     safetyView: state?.safetyView ?? "open",
+    moneyView: state?.moneyView ?? "issues",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };
@@ -136,6 +145,13 @@ export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string
 
 export function financePathForWorkspace(workspace: FinanceWorkspace): string {
   return workspace === "issues" ? adminSections.finance.path : `/finance/${workspace}`;
+}
+
+/** Money's view, and one issue or bill in it. */
+export function moneyPath(view: MoneyView, id: string | null = null): string {
+  const base = view === "issues" ? adminSections.money.path : `${adminSections.money.path}/${view}`;
+  if (id === null) return base;
+  return `${view === "issues" ? `${base}/issues` : base}/${encodeURIComponent(id)}`;
 }
 
 export function commercialTermsPathForOrganizer(organizerId: string | null): string {

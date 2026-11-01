@@ -393,6 +393,21 @@
       "source": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
       "test": "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/money/controllers/useBillsController.ts",
+      "test": "admin/src/features/money/controllers/useBillsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/money/controllers/useMoneyIssuesController.ts",
+      "test": "admin/src/features/money/controllers/useMoneyIssuesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/settings/controllers/usePaymentSettingsController.ts",
+      "test": "admin/src/features/settings/controllers/usePaymentSettingsController.test.tsx",
+      "status": "required"
     }
   ]
 }

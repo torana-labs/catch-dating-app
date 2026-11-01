@@ -35,13 +35,16 @@ const key = (view: IssuesView["view"]) =>
   ["admin", "money", "issues", view] as const;
 
 /** Money's issues queue: oldest first, one selected, with its decision. */
-export function useMoneyIssuesController({selectedIssueId = null,
-  onSelectIssueId}: {
+export function useMoneyIssuesController({view: routedView, selectedIssueId =
+  null, onSelectIssueId}: {
+  /** The view the address names; without it the controller keeps its own. */
+  view?: IssuesView["view"];
   selectedIssueId?: string | null;
   onSelectIssueId?: (issueId: string) => void;
 } = {}): MoneyIssuesController {
   const client = useQueryClient();
-  const [view, setView] = useState<IssuesView["view"]>("open");
+  const [localView, setView] = useState<IssuesView["view"]>("open");
+  const view = routedView ?? localView;
   const [kind, setKind] = useState<IssueKindFilter>("all");
   const [search, setSearch] = useState("");
   const [localSelection, setLocalSelection] = useState<string | null>(null);

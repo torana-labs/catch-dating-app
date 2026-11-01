@@ -3,6 +3,7 @@ import {useMemo, useState} from "react";
 import {
   actOnBill,
   loadBills,
+  moneyNowMillis,
   type Bill,
   type BillAction,
   type BillsMonth,
@@ -30,6 +31,12 @@ export interface BillsController {
   generate: () => Promise<boolean>;
 }
 
+/** Bills that need someone come first: overdue, to send, sent, then the closed ones. */
+function attentionRank(bill: Bill, nowMillis: number): number {
+  if (isOverdue(bill, nowMillis)) return 0;
+  return {toSend: 1, sent: 2, paid: 3, free: 4, writtenOff: 5}[bill.status];
+}
+
 const key = (month: string | null) =>
   ["admin", "money", "bills", month ?? "last"] as const;
 
@@ -49,7 +56,7 @@ export function isOverdue(bill: Bill, nowMillis: number): boolean {
  * with the owner's actions on it.
  */
 export function useBillsController({month = null, selectedBillId = null,
-  onSelectBillId, now = Date.now}: {
+  onSelectBillId, now = moneyNowMillis}: {
   month?: string | null;
   selectedBillId?: string | null;
   onSelectBillId?: (billId: string) => void;
@@ -69,7 +76,9 @@ export function useBillsController({month = null, selectedBillId = null,
       (filter === "all" || (filter === "overdue" ? isOverdue(bill, at) :
         bill.status === filter)) &&
       (!needle || bill.organizerName.toLowerCase().includes(needle) ||
-        (bill.invoiceNumber ?? "").includes(needle)));
+        (bill.invoiceNumber ?? "").includes(needle)))
+      .sort((a, b) => attentionRank(a, at) - attentionRank(b, at) ||
+        a.organizerName.localeCompare(b.organizerName));
   }, [query.data, filter, search, now]);
   const selected = rows.find((bill) => bill.billId === chosen) ??
     (chosen ? null : rows[0] ?? null);
