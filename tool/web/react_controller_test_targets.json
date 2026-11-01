@@ -368,6 +368,21 @@
       "source": "website/src/features/home/useLaunchNoticeController.ts",
       "test": "website/src/features/home/useLaunchNoticeController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/people/controllers/usePeopleSearchController.ts",
+      "test": "admin/src/features/people/controllers/usePeopleSearchController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/safety/controllers/useAccountSafetyController.ts",
+      "test": "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/safety/controllers/useSafetySettingsController.ts",
+      "test": "admin/src/features/safety/controllers/useSafetySettingsController.test.tsx",
+      "status": "required"
     }
   ]
 }

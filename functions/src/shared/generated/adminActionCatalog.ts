@@ -341,6 +341,39 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
+  "organizers.directory": {
+    "callable": "adminListOrganizerDirectory",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "organizers.overview": {
+    "callable": "adminGetOrganizerOverview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "events.directory": {
+    "callable": "adminListEventDirectory",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
   "organizers.get": {
     "callable": "adminGetOrganizerDetails",
     "controlPlane": false,
@@ -1201,6 +1234,161 @@ export const ADMIN_ACTION_CATALOG = {
     "roles": [
       "admin",
       "adminOwner"
+    ]
+  },
+  "finance.manage-organizer-bills": {
+    "callable": "adminManageOrganizerBills",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-money-settings": {
+    "callable": "adminManageMoneySettings",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-nominator-credits": {
+    "callable": "adminManageNominatorCredits",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-platform-costs": {
+    "callable": "adminManagePlatformCosts",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.export-money-ledger": {
+    "callable": "adminExportMoneyLedger",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "growth.get": {
+    "callable": "adminGetGrowth",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "marketplace.get": {
+    "callable": "adminGetMarketplace",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.get-month": {
+    "callable": "adminGetFinanceMonth",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-payment-issues": {
+    "callable": "adminManagePaymentIssues",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "safety.actions.take": {
+    "callable": "adminTakeAccountSafetyAction",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.actions.lift": {
+    "callable": "adminLiftAccountSafetyAction",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.actions.list": {
+    "callable": "adminListAccountSafetyActions",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.appeals.decide": {
+    "callable": "adminDecideSafetyAppeal",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.settings.get": {
+    "callable": "adminGetSafetySettings",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
+    ]
+  },
+  "safety.settings.update": {
+    "callable": "adminUpdateSafetySettings",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner"
+    ]
+  },
+  "people.search": {
+    "callable": "adminSearchPeople",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "safetyReviewer",
+      "support"
     ]
   }
 } as const;

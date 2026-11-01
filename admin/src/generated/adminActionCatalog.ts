@@ -601,6 +601,60 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "organizers.directory",
+      "callable": "adminListOrganizerDirectory",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List the Organizers directory with real totals per view and chip counts for city, kind, claim state and the caller's own organizers.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizers.overview",
+      "callable": "adminGetOrganizerOverview",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers/:organizerId",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "Read one organizer's overview: facts, Sales owner, terms, payments, journey from nomination to claim and upcoming events.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "events.directory",
+      "callable": "adminListEventDirectory",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List Catch and imported events as one table with a source, exact view totals and chip counts.",
+      "controlPlane": false
+    },
+    {
       "actionId": "organizers.get",
       "callable": "adminGetOrganizerDetails",
       "workflowIds": [
@@ -2145,6 +2199,273 @@ export const adminActionCatalog = {
       ],
       "summary": "Offer a reviewed organizer lead to an exact active referral partner with a bounded next action, review time and expiry.",
       "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-organizer-bills",
+      "callable": "adminManageOrganizerBills",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read a month's organizer bills, make them from its bookings, or send, remind, mark paid or write off one bill against the reviewed revision.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-money-settings",
+      "callable": "adminManageMoneySettings",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read or replace Catch's money settings: GST registered, bill due day and the nominator credit rule.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-nominator-credits",
+      "callable": "adminManageNominatorCredits",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read the nominator credit ledger, approve one nominator's owed credit at or above the minimum payout, or record it paid.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-platform-costs",
+      "callable": "adminManagePlatformCosts",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read one month's costs, enter one kind of cost by hand (AI, Cloud, SMS, a WhatsApp invoice total) or clear it.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.export-money-ledger",
+      "callable": "adminExportMoneyLedger",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Download one month's ledger (invoices, bill payments, nominator credit paid, costs) as CSV for Zoho Books.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "growth.get",
+      "callable": "adminGetGrowth",
+      "workflowIds": [
+        "growth"
+      ],
+      "guiPath": "/growth",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read Growth for a range: organizer cohorts, channels and ad spend, nominators and their credit, and the best organizers.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "marketplace.get",
+      "callable": "adminGetMarketplace",
+      "workflowIds": [
+        "growth"
+      ],
+      "guiPath": "/marketplace",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read the Marketplace from the analytics warehouse: cities, guests coming back, bookings each week and organizers going quiet.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.get-month",
+      "callable": "adminGetFinanceMonth",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read one month of Finance line by line: ticket sales, what Catch earned, costs and what is not Catch's money.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "finance.manage-payment-issues",
+      "callable": "adminManagePaymentIssues",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/money",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Read Money's open or resolved issues, re-check a captured website or offer payment with no booking with Razorpay, or close an issue handled elsewhere.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "safety.actions.take",
+      "callable": "adminTakeAccountSafetyAction",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Warn, restrict, suspend or ban one account. Ops may warn and restrict; suspend and ban are owner-only.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.actions.lift",
+      "callable": "adminLiftAccountSafetyAction",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Lift one account safety action early. Lifting a suspension or ban is owner-only.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.actions.list",
+      "callable": "adminListAccountSafetyActions",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "List account safety actions in force, with an appeal waiting, or most recent.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.appeals.decide",
+      "callable": "adminDecideSafetyAppeal",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Decide the one appeal on an account safety action; the reviewer must not be its decider.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.settings.get",
+      "callable": "adminGetSafetySettings",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/settings/safety",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Read the report reasons, safety rules, deadlines and who may take each step.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "safety.settings.update",
+      "callable": "adminUpdateSafetySettings",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/settings/safety",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "summary": "Owner-only: replace the report reasons and the safety rules.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "people.search",
+      "callable": "adminSearchPeople",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/people",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "summary": "Search people by name, phone or user id; every search is logged.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2167,7 +2488,14 @@ export const adminActionCatalog = {
         "overview.get",
         "safety.get",
         "safety.assign",
-        "safety.decide"
+        "safety.decide",
+        "safety.actions.take",
+        "safety.actions.lift",
+        "safety.actions.list",
+        "safety.appeals.decide",
+        "safety.settings.get",
+        "safety.settings.update",
+        "people.search"
       ]
     },
     {
@@ -2186,7 +2514,9 @@ export const adminActionCatalog = {
       "guiPath": "/growth",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "growth.get",
+        "marketplace.get"
       ]
     },
     {
@@ -2252,7 +2582,9 @@ export const adminActionCatalog = {
         "organizers.list",
         "organizers.get",
         "organizers.update",
-        "organizers.set-index-status"
+        "organizers.set-index-status",
+        "organizers.directory",
+        "organizers.overview"
       ]
     },
     {
@@ -2262,7 +2594,8 @@ export const adminActionCatalog = {
       "actions": [
         "events.list",
         "events.get",
-        "events.update"
+        "events.update",
+        "events.directory"
       ]
     },
     {
@@ -2305,7 +2638,14 @@ export const adminActionCatalog = {
         "finance.revoke-organizer-entitlement-grant",
         "finance.list-commercial-terms",
         "finance.manage-commercial-terms",
-        "finance.manage-payment-routing"
+        "finance.manage-payment-routing",
+        "finance.manage-organizer-bills",
+        "finance.manage-money-settings",
+        "finance.manage-nominator-credits",
+        "finance.manage-platform-costs",
+        "finance.export-money-ledger",
+        "finance.get-month",
+        "finance.manage-payment-issues"
       ],
       "blockedCapabilities": [
         "retry_payment",

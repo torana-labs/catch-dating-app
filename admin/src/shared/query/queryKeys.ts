@@ -105,6 +105,13 @@ export const adminQueryKeys = {
     queue: () => [...adminQueryKeys.all, "safety", "queue"] as const,
     detail: (targetPath: string) =>
       [...adminQueryKeys.all, "safety", "detail", targetPath] as const,
+    actions: (view: string, uid: string | null) =>
+      [...adminQueryKeys.all, "safety", "actions", view, uid] as const,
+    settings: () => [...adminQueryKeys.all, "safety", "settings"] as const,
+  },
+  people: {
+    search: (query: string) =>
+      [...adminQueryKeys.all, "people", "search", query] as const,
   },
   users: {
     analytics: (payloadKey: string) =>
