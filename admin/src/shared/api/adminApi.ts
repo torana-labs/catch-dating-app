@@ -23,6 +23,32 @@ import type {AdminUpsertSupportSavedReplyCallablePayload} from
   "../../generated/contracts/adminUpsertSupportSavedReplyCallablePayload";
 import type {AdminUpsertSupportSavedReplyCallableResponse} from
   "../../generated/contracts/adminUpsertSupportSavedReplyCallableResponse";
+import type {AdminListAccountSafetyActionsCallablePayload} from
+  "../../generated/contracts/adminListAccountSafetyActionsCallablePayload";
+import type {AdminListAccountSafetyActionsCallableResponse} from
+  "../../generated/contracts/adminListAccountSafetyActionsCallableResponse";
+import type {AdminTakeAccountSafetyActionCallablePayload} from
+  "../../generated/contracts/adminTakeAccountSafetyActionCallablePayload";
+import type {AdminTakeAccountSafetyActionCallableResponse} from
+  "../../generated/contracts/adminTakeAccountSafetyActionCallableResponse";
+import type {AdminLiftAccountSafetyActionCallablePayload} from
+  "../../generated/contracts/adminLiftAccountSafetyActionCallablePayload";
+import type {AdminLiftAccountSafetyActionCallableResponse} from
+  "../../generated/contracts/adminLiftAccountSafetyActionCallableResponse";
+import type {AdminDecideSafetyAppealCallablePayload} from
+  "../../generated/contracts/adminDecideSafetyAppealCallablePayload";
+import type {AdminDecideSafetyAppealCallableResponse} from
+  "../../generated/contracts/adminDecideSafetyAppealCallableResponse";
+import type {AdminGetSafetySettingsCallablePayload} from
+  "../../generated/contracts/adminGetSafetySettingsCallablePayload";
+import type {AdminGetSafetySettingsCallableResponse} from
+  "../../generated/contracts/adminGetSafetySettingsCallableResponse";
+import type {AdminUpdateSafetySettingsCallablePayload} from
+  "../../generated/contracts/adminUpdateSafetySettingsCallablePayload";
+import type {AdminSearchPeopleCallablePayload} from
+  "../../generated/contracts/adminSearchPeopleCallablePayload";
+import type {AdminSearchPeopleCallableResponse} from
+  "../../generated/contracts/adminSearchPeopleCallableResponse";
 import {functions} from "./firebaseFunctions";
 import {dataMode} from "./dataMode";
 import type {AdminListCrossPathsShowcaseCandidatesCallablePayload} from
@@ -2668,6 +2694,105 @@ export async function getOrganizerOverview(
     AdminGetOrganizerOverviewCallablePayload,
     AdminGetOrganizerOverviewCallableResponse
   >(functions, "adminGetOrganizerOverview");
+  return (await callable(payload)).data;
+}
+
+// Safety: account actions, appeals and Settings → Safety; People search.
+
+export async function listAccountSafetyActions(
+  payload: AdminListAccountSafetyActionsCallablePayload
+): Promise<AdminListAccountSafetyActionsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleListAccountSafetyActions(payload);
+  }
+  const callable = httpsCallable<
+    AdminListAccountSafetyActionsCallablePayload,
+    AdminListAccountSafetyActionsCallableResponse
+  >(functions, "adminListAccountSafetyActions");
+  return (await callable(payload)).data;
+}
+
+export async function takeAccountSafetyAction(
+  payload: AdminTakeAccountSafetyActionCallablePayload
+): Promise<AdminTakeAccountSafetyActionCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleTakeAccountSafetyAction(payload);
+  }
+  const callable = httpsCallable<
+    AdminTakeAccountSafetyActionCallablePayload,
+    AdminTakeAccountSafetyActionCallableResponse
+  >(functions, "adminTakeAccountSafetyAction");
+  return (await callable(payload)).data;
+}
+
+export async function liftAccountSafetyAction(
+  payload: AdminLiftAccountSafetyActionCallablePayload
+): Promise<AdminLiftAccountSafetyActionCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleLiftAccountSafetyAction(payload);
+  }
+  const callable = httpsCallable<
+    AdminLiftAccountSafetyActionCallablePayload,
+    AdminLiftAccountSafetyActionCallableResponse
+  >(functions, "adminLiftAccountSafetyAction");
+  return (await callable(payload)).data;
+}
+
+export async function decideSafetyAppeal(
+  payload: AdminDecideSafetyAppealCallablePayload
+): Promise<AdminDecideSafetyAppealCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleDecideSafetyAppeal(payload);
+  }
+  const callable = httpsCallable<
+    AdminDecideSafetyAppealCallablePayload,
+    AdminDecideSafetyAppealCallableResponse
+  >(functions, "adminDecideSafetyAppeal");
+  return (await callable(payload)).data;
+}
+
+export async function getSafetySettings():
+  Promise<AdminGetSafetySettingsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleGetSafetySettings();
+  }
+  const callable = httpsCallable<
+    AdminGetSafetySettingsCallablePayload,
+    AdminGetSafetySettingsCallableResponse
+  >(functions, "adminGetSafetySettings");
+  return (await callable({})).data;
+}
+
+export async function updateSafetySettings(
+  payload: AdminUpdateSafetySettingsCallablePayload
+): Promise<AdminGetSafetySettingsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleUpdateSafetySettings(payload);
+  }
+  const callable = httpsCallable<
+    AdminUpdateSafetySettingsCallablePayload,
+    AdminGetSafetySettingsCallableResponse
+  >(functions, "adminUpdateSafetySettings");
+  return (await callable(payload)).data;
+}
+
+export async function searchPeople(
+  payload: AdminSearchPeopleCallablePayload
+): Promise<AdminSearchPeopleCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleSafety")).sampleSearchPeople(payload);
+  }
+  const callable = httpsCallable<
+    AdminSearchPeopleCallablePayload,
+    AdminSearchPeopleCallableResponse
+  >(functions, "adminSearchPeople");
   return (await callable(payload)).data;
 }
 

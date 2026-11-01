@@ -127,6 +127,7 @@
       ],
       "requiredWhen": {
         "anyDeployTarget": [
+          "functions:adminManageOrganizerBills",
           "functions:cancelEventSignUp",
           "functions:createRazorpayHostPaymentAccount",
           "functions:createRazorpayOrder",
@@ -143,6 +144,7 @@
       ],
       "owner": "payments",
       "sourcePaths": [
+        "functions/src/money/organizerBills.ts",
         "functions/src/payments/razorpay.ts"
       ],
       "credentialClass": "provider-secret",
