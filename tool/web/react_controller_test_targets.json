@@ -383,11 +383,6 @@
       "source": "admin/src/features/safety/controllers/useSafetySettingsController.ts",
       "test": "admin/src/features/safety/controllers/useSafetySettingsController.test.tsx",
       "status": "required"
-    },
-    {
-      "source": "admin/src/features/support/controllers/useSupportInboxController.ts",
-      "test": "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
-      "status": "required"
     }
   ]
 }

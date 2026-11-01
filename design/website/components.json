@@ -4142,51 +4142,6 @@
       "comparisonReason": "Renders CatchChoiceTile for its described choices and CatchText for its legend; it is a choice group that arranges those parts, not an option card or a text style."
     },
     {
-      "id": "web_ui_catch_empty_state",
-      "kind": "supporting-component",
-      "routeIds": [
-        "home",
-        "visitor_discovery"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchEmptyState.tsx",
-      "exportName": "CatchEmptyState",
-      "css": [
-        "packages/web-ui/src/components/CatchEmptyState.module.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "The website's empty state: Explore's no-results and unavailable states, an icon tile over a title, a line and an optional action.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchText for its title and line; it is an empty-state layout with an icon tile and an action, not a text style, so it uses catch.text rather than implementing it."
-    },
-    {
-      "id": "web_ui_catch_icon_tile",
-      "kind": "supporting-component",
-      "routeIds": [
-        "visitor_discovery"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchIconTile.tsx",
-      "exportName": "CatchIconTile",
-      "css": [
-        "packages/web-ui/src/components/CatchIconTile.module.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "The icon on a tinted tile that heads Explore's empty states."
-    },
-    {
       "id": "web_ui_catch_search_field",
       "kind": "supporting-component",
       "routeIds": [

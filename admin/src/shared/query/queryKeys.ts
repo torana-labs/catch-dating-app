@@ -113,16 +113,6 @@ export const adminQueryKeys = {
     search: (query: string) =>
       [...adminQueryKeys.all, "people", "search", query] as const,
   },
-  support: {
-    conversations: (view: string, audience: string | null) =>
-      [...adminQueryKeys.all, "support", "conversations", view,
-        audience] as const,
-    conversation: (conversationId: string) =>
-      [...adminQueryKeys.all, "support", "conversation",
-        conversationId] as const,
-    savedReplies: () =>
-      [...adminQueryKeys.all, "support", "saved-replies"] as const,
-  },
   users: {
     analytics: (payloadKey: string) =>
       [...adminQueryKeys.all, "users", "analytics", payloadKey] as const,
