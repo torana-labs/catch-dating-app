@@ -1,7 +1,6 @@
 import {
   CatchButton,
   CatchGap,
-  CatchGrid,
   CatchIndexRow,
   CatchPageTabBar,
   CatchPaneLayout,
@@ -45,12 +44,18 @@ export interface OrganizerPageLinks {
 
 const toneColor = {success: "positiveText", warning: "attentionText", danger: "danger"} as const;
 
-// Facts as label over value in two columns; PR 3's CatchMetaRow replaces it.
+// Facts as label over value in one column; CatchMetaRow (#1389) replaces it with two.
 function Facts({items}: {items: readonly Fact[]}) {
   return (
-    <CatchGrid columns={2} compactColumns={1} gap="section">
-      {items.map((item) => (
-        <CatchGap key={item.label} size="headerTitleToSubtitle">
+    <CatchGap size="formField">
+      {items.map((item) => <Fact item={item} key={item.label} />)}
+    </CatchGap>
+  );
+}
+
+function Fact({item}: {item: Fact}) {
+  return (
+        <CatchGap size="headerTitleToSubtitle">
           <CatchText as="span" color="ink2" variant="supporting">{item.label}</CatchText>
           <CatchText
             as="span"
@@ -61,8 +66,6 @@ function Facts({items}: {items: readonly Fact[]}) {
             {item.value}
           </CatchText>
         </CatchGap>
-      ))}
-    </CatchGrid>
   );
 }
 
