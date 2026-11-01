@@ -113,7 +113,7 @@ normalized-member-set decision coverage, pattern-family decisions,
 focused similarity-generator tests, role-derived Widgetbook
 obligations, seeded dedupe probes, route
 inventory, capture coverage, Host shell coverage, screen coverage, screen
-contracts, screen-chrome ownership, state matrix, comprehensive todo summaries,
+contracts, screen-chrome ownership, comprehensive todo summaries,
 exhaustive cross-surface feature coverage, feature orchestration contracts, and
 Widgetbook references. These source and metadata checks do not prove live visual
 parity. --handoff checks Figma/Claude snapshot metadata and portable export

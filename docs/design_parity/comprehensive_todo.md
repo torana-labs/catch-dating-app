@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.331
+version: 0.2.332
 updated: 2026-11-02
 owner: product_design_parity
 status: active
@@ -14,7 +14,6 @@ ledgers as the source of truth when counts differ:
 
 - `design/screens/screen_coverage.json`
 - `design/screens/catch.screens.json`
-- `docs/design_parity/state_matrix.json`
 - `tool/ui_capture/capture_coverage.json`
 - `design/components/catch.components.json`
 
@@ -299,7 +298,7 @@ design-system migration goal is complete.
     still need exports, masks, captures, and advisory comparison proof.
   - Acceptance: every contracted screen state needed for review has a capture
     or intentional exclusion; every canonical visual reference has PNG, mask,
-    manifest, state-matrix, screen-contract, advisory comparison, and audit
+    manifest, screen-contract, advisory comparison, and audit
     proof.
 - [ ] `GOAL-DS-005` Finish Claude Design vs Flutter inventory reconciliation.
   - Status: inventory exists, reconciliation remains open.
@@ -334,7 +333,7 @@ design-system migration goal is complete.
 ### P0. Source-Of-Truth Control
 
 - [ ] Keep `design/screens/screen_coverage.json`,
-  `design/screens/catch.screens.json`, `docs/design_parity/state_matrix.json`,
+  `design/screens/catch.screens.json`,
   `tool/ui_capture/capture_coverage.json`, Widgetbook generated ids,
   `docs/widget_catalog.md`, `design/reference_screens/manifest.json`, and this
   tracker synchronized in every pass.
@@ -343,7 +342,7 @@ design-system migration goal is complete.
   social templates, and design-tool exports can share it.
 - [ ] Revisit alias and excluded routes quarterly, or immediately when a lab,
   manual-QA, or dev-only route becomes product-facing.
-- [ ] Close screen-registry and state-matrix gaps only when implementation,
+- [ ] Close screen-registry gaps only when implementation,
   capture or preview proof, tests, scanner proof, and Git/CI proof exist.
 
 ### P1. Reference Export And Pixel Baselines
@@ -362,7 +361,7 @@ design-system migration goal is complete.
   mutation states; Onboarding steps, photo gate, upload, and entry-mode states;
   Start animated reel, reduced-motion, text-scale, and alternate theme states.
 - [ ] For every exported reference, add the PNG, `masks.json`, manifest entry,
-  `catch.screens.json` design ref, state-matrix ref, advisory compare run, and
+  `catch.screens.json` design ref, advisory compare run, and
   exact-SHA Git/CI proof.
 - [ ] Keep pixel comparison advisory until repeated local and CI runs prove
   masks, thresholds, fixture clocks, dynamic image sources, and export
@@ -423,8 +422,8 @@ design-system migration goal is complete.
   unauthorized, mutation pending, mutation failure, missing route params,
   missing documents, deleted resources, partial data, long copy, text scale,
   reduced motion, and light/dark themes.
-- [ ] Keep every `previewId` in `design/components/catch.components.json`,
-  `catch.screens.json`, and `state_matrix.json` resolvable in generated
+- [ ] Keep every `previewId` in `design/components/catch.components.json`
+  and `catch.screens.json` resolvable in generated
   Widgetbook directories.
 - [ ] Regenerate Widgetbook after annotated use cases change, then run the
   Widgetbook contract-ref check before closing the pass.
@@ -497,9 +496,9 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
      shared Messaging-thread baseline; dedicated variants remain for all three.
      Host Create Event basics/location/schedule/policy/guide and Host Event
      Manage setup/guests/live/report now have scoped design-phone advisory
-     comparison proof recorded in `catch.screens.json` and `state_matrix.json`.
+     comparison proof recorded in `catch.screens.json`.
    - Acceptance: PNG, mask, manifest entry, `catch.screens.json` design ref,
-     `state_matrix.json` state ref, advisory comparison output, and exact-SHA
+     advisory comparison output, and exact-SHA
      Git/CI proof exist for every exported state.
 3. [ ] `TODO-NEXT-CAP-P1-001` Close highest-risk P1 capture and interaction
    gaps.
@@ -523,7 +522,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
      composer/safety sections.
    - Acceptance: previews reuse shared fixture builders, generated Widgetbook
      ids resolve, and component/section references are mirrored in the screen
-     contract or state matrix.
+     contract.
 6. [ ] `TODO-NEXT-REF-P2P3-001` Export remaining P2/P3 references once the P1
    reference baseline is moving.
    - Cover Auth OTP and mutation variants, deeper Onboarding steps, and Host
@@ -555,7 +554,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 ### Per-Pass Required Updates
 
 - [ ] `TODO-PASS-001` Update all affected ledgers together:
-  `screen_coverage.json`, `catch.screens.json`, `state_matrix.json`,
+  `screen_coverage.json`, `catch.screens.json`,
   `capture_coverage.json`, Widgetbook generated ids, `docs/widget_catalog.md`,
   design-reference manifests, and tracker docs.
 - [ ] `TODO-PASS-002` Run the relevant proof stack:
@@ -653,7 +652,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   work is variant coverage.
 - [ ] For every new reference: export PNGs, add masks, update
   `design/reference_screens/manifest.json`, wire the `designRefs` in
-  `catch.screens.json`, mirror state refs in `state_matrix.json`, run advisory
+  `catch.screens.json`, run advisory
   comparison, and keep the references, contracts, and review output in the same
   PR and CI run.
 
@@ -708,7 +707,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 ### Cross-Cutting Work
 
 - [ ] Keep the route inventory, screen coverage, capture coverage, screen
-  contracts, state matrix, component contracts, Widgetbook ids, widget catalog,
+  contracts, component contracts, Widgetbook ids, widget catalog,
   and this tracker synchronized in every pass.
 - [ ] Add provider-free Widgetbook previews for all meaningful contracted
   sections once their screen adapters exist.
@@ -810,15 +809,15 @@ tests, captures, Widgetbook, Git, and CI.
 ### 0. Ledger And Source-Of-Truth Hygiene
 
 - [ ] `TODO-MASTER-LEDGER-001` Keep route inventory, screen coverage, capture
-  coverage, screen contracts, state matrix, Widgetbook ids, component
+  coverage, screen contracts, Widgetbook ids, component
   contracts, widget catalog, and this tracker synchronized in the same pass.
 - [ ] `TODO-MASTER-LEDGER-002` When a route is added, removed, renamed, or
   aliased, update `tool/ui_capture/route_inventory.json`,
   `design/screens/screen_coverage.json`,
-  `tool/ui_capture/capture_coverage.json`, `design/screens/catch.screens.json`,
-  and `docs/design_parity/state_matrix.json` before visual work.
+  `tool/ui_capture/capture_coverage.json`, and `design/screens/catch.screens.json`
+  before visual work.
 - [ ] `TODO-MASTER-LEDGER-003` Keep gap closure explicit: close the gap in the
-  screen registry or state matrix only when implementation, preview/capture,
+  screen registry only when implementation, preview/capture,
   test, and scanner proof exist or the gap is intentionally excluded.
 - [ ] `TODO-MASTER-LEDGER-004` Do not create duplicate backlog docs. Add new
   design-parity work here or in the relevant JSON registry. This is the only
@@ -988,7 +987,7 @@ tests, captures, Widgetbook, Git, and CI.
    - Latest pass: Host Create Event basics/location/schedule/policy/guide and
      Host Event Manage setup/guests/live/report references were re-compared
      against design-phone captures and the advisory numbers were mirrored into
-     `catch.screens.json` and `state_matrix.json`.
+     `catch.screens.json`.
    - Catches Hub is now classified as blocked on missing canonical design
      source/export; the local Claude bundle only exposes the already-registered
      Catches Event Deck/post-run catch-window asset.
@@ -1002,7 +1001,7 @@ tests, captures, Widgetbook, Git, and CI.
      Host Create Event and Host Manage remaining variants where matching
      capture ids exist or can be added in the same pass.
    - For each export, add `design/reference_screens/<screen>/<state>.png`, a
-     `masks.json`, manifest entries, screen-registry refs, state-matrix refs,
+     `masks.json`, manifest entries, screen-registry refs,
      and an advisory `check_reference_screens.mjs --compare` run.
 2. [ ] `TODO-NEXT-002` Close remaining P1 deterministic capture and
    interaction-proof gaps.
@@ -1098,7 +1097,7 @@ tests, captures, Widgetbook, Git, and CI.
     ledgers so Flutter, Widgetbook, website/social templates, and design-tool
     exports can share the same contracts.
 - [ ] `TODO-SOT-008` Keep `screen_coverage.json`, `catch.screens.json`,
-  `state_matrix.json`, `capture_coverage.json`, generated Widgetbook ids,
+  `capture_coverage.json`, generated Widgetbook ids,
   `docs/widget_catalog.md`, and this tracker synchronized in
   every parity pass.
 - [ ] `TODO-SOT-009` Revisit alias and excluded routes quarterly, or whenever a
@@ -1384,7 +1383,7 @@ tests, captures, Widgetbook, Git, and CI.
 ## H. Drift Prevention And CI
 
 - [x] `TODO-DRIFT-001` Validate route inventory, capture coverage, screen
-  coverage, screen contracts, state matrix, Widgetbook refs, component
+  coverage, screen contracts, Widgetbook refs, component
   contracts, and advisory hygiene in one local gate.
 - [x] `TODO-DRIFT-002` Add scanners for screen-contract hygiene, Widgetbook ref
   resolution, and component-contract/Widgetbook parity.
@@ -1425,7 +1424,7 @@ tests, captures, Widgetbook, Git, and CI.
 - [ ] `TODO-CADENCE-002` Read route source, providers/controllers, tests,
   captures, Widgetbook entries, design references, and current contract gaps
   before editing visuals.
-- [ ] `TODO-CADENCE-003` Update coverage JSON, screen contracts, state matrix,
+- [ ] `TODO-CADENCE-003` Update coverage JSON, screen contracts,
   Widgetbook/capture entries, docs, and tests together.
 - [ ] `TODO-CADENCE-004` Run Widgetbook code generation whenever annotated
   Widgetbook use cases change.
@@ -1434,306 +1433,6 @@ tests, captures, Widgetbook, Git, and CI.
   checks where relevant, `git diff --check`, and relevant scanners. Preserve
   the result in Git and CI.
 - [ ] `TODO-CADENCE-006` Keep follow-up gaps in this tracker, not chat history.
-
-## J. Screen-By-Screen To-Do Index
-
-This index is generated from `docs/design_parity/state_matrix.json` and is the
-practical checklist for what remains per screen. `ready` states are omitted.
-`captured`, `tested`, and `implemented` states still need whatever final proof
-is missing before they can be promoted to ready: design reference, pixel
-comparison, interaction proof, adapter extraction, or scanner/test proof.
-
-### P2 start_auth_onboarding
-
-- [ ] `start.welcome` (6 state follow-ups, 1 open gap)
-  - planned: None
-  - implemented: None
-  - tested: None
-  - captured: `animated_reel`, `landed_direct`, `cta_navigation`, `reduced_motion`, `text_scale_2`, `light_dark`
-  - DP-START-001: Landed direct Start Welcome reference and masks are registered, and deterministic captures cover animated reel, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment. Export state-specific animated, reduced-motion, text-scale, or alternate-theme references only if strict visual comparison requires them.
-  - DP-START-002: Closed by Widgetbook states for animated reel, landed direct, reduced motion, text scale, CTA, and canonical fixed-dark theme treatment.
-- [ ] `auth.phone_entry` (8 state follow-ups, 0 open gaps; 1 blocked reference gap)
-  - implemented: None
-  - tested: `validation_error`
-  - captured: `phone_entry`, `country_selector`, `otp_entry`, `validation_error`, `send_code_mutation`, `verify_otp_mutation`, `text_scale_2`, `reduced_motion`
-  - DP-AUTH-001: Blocked after the 2026-07-03 phone/OTP reference refresh. Auth phone and OTP references are exported, masked, and registered. Widgetbook and deterministic captures cover OTP cooldown, validation error, country picker, send/verify/resend pending and failure, text scale, reduced motion, and light/dark. OTP compares within threshold at `12.20%` mismatch / `16.05` meanDelta, but phone entry remains above threshold at `11.09%` / `22.89` because the handoff uses top chrome/back plus a compact field row while production uses the vertically centered auth frame and current labeled field. Validation/country/mutation references remain unavailable.
-  - DP-AUTH-002: Closed by `auth_phone_validation_error`, which drives invalid phone input and submit through the capture harness.
-- [ ] `onboarding.flow` (13 state follow-ups, 1 open gap)
-  - planned: None
-  - implemented: `OnboardingFlowState`, `OnboardingTopBarState`, `OnboardingNameDobState`, `OnboardingNameDobStep`, `OnboardingGenderInterestState`, `OnboardingGenderInterestStep`, `OnboardingInstagramState`, `OnboardingInstagramStep`, `OnboardingPhotosState`, `OnboardingPhotosStep`, `OnboardingProfilePromptsState`, `OnboardingProfilePromptsStep`, `OnboardingRunningPrefsState`, `OnboardingRunningPrefsStep`
-  - tested: `required_field_errors`, `name_dob_step_adapter`, `gender_interest_step_adapter`, `instagram_step_adapter`, `profile_prompts_step_adapter`, `photos_upload_failure`, `photos_step_adapter`, `running_prefs_step_adapter`, `save_profile_mutation`, `complete_mutation`
-  - captured: `welcome_entry`, `name_dob_step`, `name_dob_validation_error`, `gender_interest_step`, `gender_interest_validation_error`, `instagram_step`, `instagram_filled`, `instagram_skipped`, `photos_photo_gate`, `photos_one_photo_disabled`, `photos_count_met`, `photos_upload_pending`, `photos_upload_failure`, `prompts_step`, `prompts_partial`, `prompts_complete`, `prompts_long_answer`, `running_prefs_step`, `save_profile_mutation`, `complete_mutation`, `saved_draft`, `text_scale_2`, `reduced_motion`
-  - DP-ONBOARDING-001: Onboarding welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running-preferences references and masks are exported and registered. Widgetbook now covers route entry modes, prefilled identity, selected gender/interest, Instagram filled/skipped, photo disabled/count-met/upload-pending, prompt empty/partial/complete/long-answer, save/complete pending and error, text scale, and reduced motion states through deterministic provider overrides. Route captures now cover each primary step, saved draft, name/DOB and gender validation errors, Instagram default/filled/skipped, photo disabled/count-met/upload-pending/upload-failure states, empty/partial/complete/long-answer prompts, save-profile pending/error, complete-run-preferences pending/error, step-family text scale, and reduced motion; focused widget tests cover the identity, prompt, photo, and running-preference adapters. `OnboardingNameDobState`/`OnboardingNameDobStep` own name/DOB display state, date policy, validation, and typed callbacks; `OnboardingGenderInterestState`/`OnboardingGenderInterestStep` own selected-chip display, validation, save pending/error display, submit intent, and typed callbacks; `OnboardingInstagramState`/`OnboardingInstagramStep` own optional-handle seed text, continue/skip intents, and typed callbacks; `OnboardingProfilePromptsState`/`OnboardingProfilePromptsStep` own prompt selection, answer projection, completion gating, footer/error display, and typed callbacks; `OnboardingPhotosState`/`OnboardingPhotosStep` own photo gate/upload display state and typed photo callbacks; `OnboardingRunningPrefsState`/`OnboardingRunningPrefsStep` own pace labels, run-preference selections, mode-specific copy, completion error display, and typed submit intent. Remaining interaction-specific references are blocked/reference-only until a canonical interaction source exists.
-  - DP-ONBOARDING-002: Catalogue repeated step layouts and promote only genuinely shared patterns to component contracts.
-- [ ] Feature-level drift/previews
-  - DP-LINT-002: Add an advisory rule/check that new shared primitives need a component contract and preview/story entry.
-  - DP-PREVIEW-002: Add Start/Auth/Onboarding screen-state Widgetbook use cases after the primitive catalog review.
-
-### P1 events_discovery_booking
-
-- [x] `event.detail` (21 state follow-ups, no open gaps)
-  - tested: `shared_snackbar_feedback`, full booking celebration route
-  - captured: `loading`, `not_found`, `fatal_error`, `member_default`, `member_ticket`, `member_spotlight_dark`, `guest`, `host_app`, `booking_signed_up`, `booking_pending`, `booking_success_snackbar`, `booking_failed`, `cancel_pending`, `cancel_success_snackbar`, `cancel_failed`, `waitlist_sold_out_cancelled_past`, `offline`, `text_scale_2`, `reduced_motion`
-  - DP-EVENT-DETAIL-001: Closed by `catch.event_detail_sections`, the canonical screen-contract registry entry for Event Detail compounds.
-  - DP-EVENT-DETAIL-002: Closed by provider-free EventDetailSectionVisibilityState and EventDetailSocialState, alongside existing booking dock, companion, and host display states.
-- [ ] Feature-level drift/previews
-  - DP-EVENT-LINT-001: Add an advisory scanner for feature screens that import raw Material controls or hand-roll visual values outside registered sections/components.
-
-### P1 explore_discovery
-
-- [ ] `explore.discovery` (21 state contracts, 1 open evidence gap)
-  - captured: `loading`, `club_source_error`, `event_feed_error`, `empty_city`, `no_search_results`, `discovery_feed`, `search_query`, `filters_active`, `anonymous_guest`, `unclaimed_host_projection`, `map_route`, `pins_ready`, `selected_pin`, `large_pan_scope`, `map_loading`, `map_error`, `offline`, `text_scale_2`, `reduced_motion`
-  - implemented/previewed: `no_exact_pins`, `zero_radius_results`
-  - DP-EXPLORE-001: Closed by the screen-local Explore section registry plus formal component mappings for `catch.cover_story`, `catch.count_pill`, `catch.club_cover`, `catch.index_row`, and `catch.event_card`; the unwired Cross Paths proposal is retired until a consent-safe relationship source exists, while OrganizerPolaroid remains section-local.
-  - DP-EXPLORE-002: Closed by deterministic captures for signed-in joined clubs, filter-empty/no-filter results, explicit offline copy, unclaimed host projection, selected-pin map, and distance-ring map variants. Map masks and provider-wave cleanup remain tracked separately.
-  - DP-EXPLORE-003: Closed by advisory comparison of `explore_search_query` against the Claude Explore discovery-feed reference; remaining visual divergence is tracked as reference/pixel follow-up, not as missing registry/capture coverage.
-  - DS-EXPLORE-004: Closed by `ExploreDiscoveryScreenState`, which maps route provider-wave inputs into map launcher, body branch, and empty-state display state before `ExploreScreen` renders visual slivers.
-  - DS-EXPLORE-005: Add deterministic captures for `no_exact_pins` and `zero_radius_results`, plus focused test evidence for `no_exact_pins`, `offline`, `text_scale_2`, and `reduced_motion`; the generated Explore feature contract carries these six explicit evidence exceptions until then.
-- [x] `club.detail` (13 state follow-ups, 0 open gaps)
-  - captured: `loading`, `not_found`, `fatal_error`, `member_default`, `visitor_not_member`, `guest_join`, `host_public_view`, `empty_schedule`, `join_leave_pending`, `join_leave_failed`, `offline`, `text_scale_2`, `reduced_motion`
-  - DP-CLUB-DETAIL-001: Closed by the consumer-only dock decision; shared public Club Detail sections are reused by Host Club Detail, while provider-backed `OrganizerMembershipDock` stays screen-local and `CatchOrganizerDock` promotion is deferred until another host/member action-dock contract exists.
-  - DP-CLUB-DETAIL-002: Closed by `OrganizerDetailBodyState`; route async/loading/error/not-found, initial-club fallback, next-event selection, host-message eligibility, contact actions, event-route target, review visibility, and membership dock state are derived outside visual sections.
-  - DS-CLUB-DETAIL-003: Closed by provider-free `OrganizerHostSection`, `OrganizerHostRow`, `OrganizerContactSection`, and `OrganizerPhotoRail` files plus direct Widgetbook states and widget catalog entries.
-  - DP-CLUB-DETAIL-003: Closed by `club_detail_loading`, `club_detail_initial_loading`, and `club_detail_empty_schedule` captures plus the existing exported/masked Club Detail member reference.
-  - DP-CLUB-DETAIL-004: Closed by advisory comparison of `club_detail_member` against the Claude Club Detail V2 member-default reference; divergence is concentrated in hero media/chrome, next-event/stat-strip treatment, and below-fold schedule/dock composition.
-- [x] `explore.map` (6 state follow-ups, 0 open gaps)
-  - captured: `pins_ready`, `selected_pin`, `large_pan_scope`, `no_exact_pins`, `map_loading`, `map_error`
-  - DP-EXPLORE-MAP-002: Closed by Widgetbook states for route, collapsed summary, selected event lead, nearby rail, loading/error, and text-scale map-sheet lead coverage.
-- [x] Feature-level drift/previews
-  - DP-EXPLORE-LINT-001: Closed by `tool/design/check_screen_coverage.mjs`, which blocks contracted routes from remaining uncontracted in screen coverage.
-  - DP-EXPLORE-PREVIEW-001: Closed by existing Widgetbook coverage for Explore screen/chrome, date/filter rail and sheet, CoverStory, mixed feed cards, veiled attendee proof, map launcher, empty/error states, activity index, and map route states.
-  - Product decisions resolved 2026-07-19: the cover is ranked independently while the feed stays chronological; Cross Paths is retired; attendee proof remains veiled and read-free; map/sheet distance shares one state. Future identified people, mutuals, follow-graph semantics, saved/for-you, and editorial lanes require their own product/data contract.
-
-### P1 dashboard_home
-
-- [ ] `dashboard.home` (19 registered states, 1 open evidence gap)
-  - tested: `self_check_in_mutation`, `after_event_swipe_review`
-  - captured: `loading`, `profile_error`, `memberships_error`, `booked_events_error`, `empty_start`, `full_dashboard`, `event_focus_upcoming`, `self_check_in_mutation`, `after_event_swipe_review`, `notifications_unread`, `joined_clubs_rail`, `weekly_activity_permission`, `recommendations_ready`, `recommendations_loading`, `recommendations_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-DASHBOARD-004: Closed by Dashboard full/empty reference PNG export and advisory comparison tooling.
-  - DS-DASHBOARD-005: Add focused state-level tests for `profile_error`, `memberships_error`, `offline`, `text_scale_2`, `reduced_motion`, and `light_dark`; `feature.dashboard_home` carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions.
-
-### P1 event_success_companion
-
-- [ ] `event_success.companion` (26 registered states, 1 open action gap, 1 blocked reference gap)
-  - planned: None
-  - tested: `auto_launch`
-  - captured: `route_loading`, `event_not_found`, `sign_in_required`, `no_booking`, `plan_missing`, `data_load_error`, `default_live_guide`, `pre_arrival_planning`, `self_check_in`, `first_hello_start`, `first_hello_assigned`, `compatibility_questionnaire`, `live_step_context`, `conversation_cues`, `micro_pod_assignment`, `rotation_schedule`, `live_reveal_countdown`, `live_reveal_unlocked`, `wingman_request`, `post_event_afterglow_feedback`, `opt_out_assignments`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-EVENT-SUCCESS-COMPANION-002: Closed; companion route loading/error/access/offline states, runtime moments, action pending states, text scale, reduced motion, and paired light/dark captures are registered and linked to first-pass Widgetbook previews. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior.
-  - DP-EVENT-SUCCESS-COMPANION-003: Closed for provider-free section APIs and `EventSuccessCompanionScreenState` ownership. First Hello, self-check-in, micro-pod, rotation, wingman, feedback, and questionnaire sections receive typed callbacks from `EventSuccessCompanionScreen`; the missing production route binding for questionnaire persistence is tracked separately by DP-EVENT-SUCCESS-COMPANION-005.
-  - DP-EVENT-SUCCESS-COMPANION-004: Blocked; default live-guide companion reference and masks are registered, but no local canonical exports exist for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, or theme variants.
-  - DS-EVENT-SUCCESS-COMPANION-005: Wire `EventSuccessCompanionRouteScreen` to `EventSuccessController.saveCompatibilityResponse` through `EventSuccessController.compatibilityResponseMutation`, add a route-level persistence test, and then remove `FEATURE-ACTION-WIRING-001` from `feature.event_success`. Add focused state-level tests for the nine registered test exceptions separately; auto-launch correctly remains launcher-policy evidence without a synthetic preview or capture.
-
-### P1 catches
-
-- [ ] `catches.event` (19 state follow-ups, 2 open gaps)
-  - tested: None
-  - captured: `queue_loading`, `queue_error`, `active_profile`, `empty_queue`, `event_missing`, `sign_in_required`, `event_in_progress`, `did_not_attend`, `window_closed`, `pass_mutation`, `reaction_mutation`, `duplicate_pending`, `write_failure`, `cached_offline`, `comment_sheet_empty_filled`, `offline`, `filters_action`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-CATCHES-EVENT-002: Blocked on keyboard-open capture automation and design-reference pixel comparison input. Pass/reaction pending, duplicate-pending disabled controls, write-failure snackbar feedback, cached-offline data preservation, comment-sheet regions, queue loading/error/offline, empty, missing event, signed-out, in-progress, did-not-attend, closed-window, text-scale, reduced-motion, and paired light/dark captures are already registered.
-  - DP-CATCHES-EVENT-003: Closed by `CatchesEventScreenState`, which maps queue/event/user/participation provider waves through provider-free `CatchAsyncState` before visual deck and empty/access sections receive display data plus typed callbacks.
-  - DP-CATCHES-EVENT-004: Blocked on external reference exports for dedicated mutation, keyboard/comment sheet, empty/offline, accessibility, and theme variants; first active-profile deck reference and masks are registered.
-
-### P1 matches_chat
-
-- [x] `matches.list` (15 state follow-ups, 0 open gaps)
-  - implemented: `chats_list_screen_state`, `chats_list_celebration_controller`, `chats_search_header_controller`, `visible_thread_derivation`, `search_affordance_state`, `display_retry_intent`
-  - tested: `chats_list_celebration_controller`, `chats_search_header_controller`
-  - captured: `uid_or_matches_loading`, `matches_error`, `populated_threads`, `new_matches`, `search_open`, `search_empty`, `no_matches_empty`, `duplicate_collapsed`, `unread_state`, `host_inbox_filter`, `match_celebration`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-MATCHES-LIST-002: Closed. List captures and the canonical Messaging inbox reference cover the populated baseline, and a fresh advisory comparison against `matches_list_context` is within threshold at 6.84% mismatch / 8.21 meanDelta, maxDelta 227, masked 77996. HostInboxScreenState, ChatsListDisplayState, ChatsListCelebrationController, and ChatsSearchHeaderController own the code seams. Additional search/filter/loading/empty reference variants are reference-only unless design exports distinct panels or the interaction state becomes external.
-  - DP-MATCHES-LIST-003: Closed. `HostInboxScreenState` and `ChatsListDisplayState` own host filter projection, unread count, search affordance, loading/error/content/empty mapping, unread filtering, visible row derivation, empty-state selection, and display-error retry intents before `ChatsList` renders sections. `ChatsListCelebrationController` owns new-match celebration target selection and dialog execution. `ChatsSearchHeaderController` owns search-open close policy, and `ChatsListScreen` passes `chatSearchQueryProvider` value/callback into the header. Reopen only if future product policy adds a new search, filter, or celebration interaction seam.
-  - DP-MATCHES-LIST-004: Closed. No `ChatNewMatchesRail` symbol exists in `lib`, `test`, or Widgetbook; new matches render through `ChatConversationsList` with row-level `CatchPersonRow` fresh treatment. Reopen only if product designs a dedicated new-match rail or section.
-- [x] `matches.chat` (23 state follow-ups, 0 open gaps)
-  - implemented: `chat_route_state`, `host_chat_screen_state`, `chat_thread_lookup_state`, `read_marker_controller`, `chat_scroll_coordinator`, `chat_thread_action_controller`, `chat_retry_controller`, `safety_report_block`
-  - tested: `send_message_mutation`, `send_failure`, `send_image_mutation`, `image_send_failure_cleanup`, `read_receipt_reset`, `report_success_feedback`, `report_failure_feedback`, `block_confirmation`, `keyboard_open_multiline`, `chat_route_state`, `chat_thread_lookup_state`, `chat_thread_action_controller`, `chat_retry_controller`
-  - captured: `messages_loading`, `messages_error`, `populated_thread`, `empty_thread`, `event_context_ready`, `event_context_fallback`, `chat_unavailable`, `blocked_chat`, `top_bar_actions`, `share_card`, `suvbot_controls`, `suvbot_action_mutation`, `keyboard_composer`, `keyboard_open_multiline`, `send_failure_snackbar`, `report_failure_snackbar`, `block_confirmation`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-MATCHES-CHAT-002: Closed. Deterministic captures cover loading, errors, empty, missing/blocked chat, send/report mutation failure snackbars, block confirmation, share card, Suvbot, offline, keyboard-open multiline, text scale, reduced motion, and light/dark. A fresh design-phone capture now compares within threshold against the registered Messaging thread reference after fixture and reference-safe-area alignment: mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692.
-  - DP-MATCHES-CHAT-003: Closed by shared `ChatScreen` adapters. `ChatRouteState` performs uid, match, messages, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before rendering. `HostChatScreenState` owns consumer match identity, action availability, retry intents, safety target copy, message peer name, and disabled composer copy. `ChatThreadLookupState` owns lookup keys; `ChatReadMarkerController` executes read-marker side effects; `ChatScrollCoordinator` owns auto-scroll; `ChatThreadActionController` executes profile/share/report/block typed actions; and `ChatRetryController` executes typed retry invalidation. Reopen only if consumer Match Chat splits from the shared chat adapter.
-  - DP-MATCHES-CHAT-004: Closed. Populated Messaging thread and `Messaging · New match (empty)` references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist.
-
-### P1 profiles
-
-- [ ] `profile.self` (16 state follow-ups, 0 open gaps; 1 blocked reference gap and 1 blocked owner/product/schema gap)
-  - tested: `photo_grid`, `inline_text_edit`, `inline_choice_edit`, `inline_save_pending`, `inline_save_error`, `settings_navigation`
-  - captured: `profile_loading`, `profile_error`, `profile_unavailable`, `edit_tab_default`, `photo_upload_mutation`, `inline_save_pending`, `inline_save_error`, `preview_tab_default`, `settings_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PROFILE-SELF-002: Blocked after the 2026-07-03 reference refresh and fixture alignment. Deterministic captures are registered for loading, error, offline, unavailable, edit tab, preview tab, upload pending, upload failure, inline save pending/error drawers, text scale, reduced motion, and paired light/dark. Settings navigation proof is covered by `profile_widgets_test`. Fresh edit/preview handoff exports still model a compact two-tab header and older edit field/photo-grid layout while production `ProfileScreen` intentionally renders Edit, Preview, and Insights plus current photo/editor rows. The refreshed advisory compare remains above threshold: preview 26.84% mismatch / 46.15 meanDelta, edit 13.67% mismatch / 20.03 meanDelta.
-  - DP-PROFILE-SELF-003: Closed by SelfProfileScreenState owning profile provider waves, preview projection, upload/save mutation modes, and retry intent; SelfProfileEditTabState owning photo-grid, prompt-slot, basics/about/running/lifestyle row descriptors; SelfProfilePhotoActionController owning photo editor/delete/reorder intents; and SelfProfileInlineEditPatchFactory owning inline edit patch creation.
-  - DP-PROFILE-SELF-004: Closed by exported self-profile edit and preview references plus masks in `design/reference_screens/screen.profile.self`.
-  - DP-PROFILE-SELF-005: Closed for the implementation-safe Field primitive tranche: exact footer/header metrics, caret and typography values, spinner/status/error anatomy, underline/disclosure motion, animated saving states, repeat timing, keyboard activation, focus-visible rings, dedicated content-row 2/3-line clamps, and unchanged legacy value-row 1/2-line defaults are implemented and tested. Existing semantic colors already match, so no palette values changed.
-  - DP-PROFILE-SELF-006: Blocked on explicit owner/product/schema approval for direct-input stable-label policy; single-choice persistence, clearability, deselection, and save behavior; DOB helper/mono formatting; pace visibility; lifestyle footer; enum-backed workout control; three prompts/300 characters versus six/140; and profile icon/row ordering.
-- [x] `profile.public` (14 state follow-ups, 0 open gaps)
-  - tested: `report_mutation`, `shared_snackbar_feedback`
-  - captured: `loading_without_initial_profile`, `loading_with_initial_profile`, `load_error`, `profile_unavailable`, `public_profile`, `viewer_context`, `report_sheet`, `block_confirmation`, `block_mutation`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PROFILE-PUBLIC-002: Closed. Deterministic captures are now registered for loading, initial-profile fallback, error, offline, unavailable, own profile, shared-event context, pending overlay, report sheet, block confirmation, text scale, reduced motion, and paired light/dark. Selected report reason, report success snackbar, and block failure snackbar now have focused widget-test proof. The refreshed public-profile reference now compares within advisory threshold against `public_profile_member` at 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.
-  - DP-PROFILE-PUBLIC-003: Closed by PublicProfileScreenState, which owns target-profile branches, initial-profile fallback, viewer context projection, safety action availability, retry intent, and report/block mutation mode.
-  - DP-PROFILE-PUBLIC-004: Closed by exported public-profile reference plus masks in `design/reference_screens/screen.profile.public`.
-
-### P1 host_operations
-
-- [ ] `host.home` (22 registered states, 4 open gaps)
-  - planned: `single_owned_only_if_distinct`, `callback_controller_seams`, `reference_variants`
-  - implemented: `create_event_action`, `manage_event_navigation`, `host_home_section_widgetbook_previews`, `today_compact_wide_visual_alignment`, `today_seven_day_horizon`, `today_creation_ownership_removal`
-  - tested: `create_event_action`, `manage_event_navigation`, `today_compact_wide_visual_alignment`, `today_seven_day_horizon`, `today_creation_ownership_removal`
-  - captured: `uid_missing`, `host_clubs_loading`, `host_clubs_error`, `host_clubs_offline`, `no_host_clubs`, `one_owned_club`, `multiple_clubs_switcher`, `club_events_loading`, `club_events_error`, `club_events_offline`, `cohost_role`, `empty_events`, `upcoming_events`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-HOST-HOME-002: Blocked/reference-only until approved separate Today and Events state exports or additional pixel-reference sources exist. Captured signed-out/access, organizer loading/error/offline, no organizers, populated Today at compact/wide widths, owner/co-host switching, long organizer-name pressure, co-host empty events, Events loading/error/offline, text-scale, reduced-motion, and light/dark.
-  - DP-HOST-HOME-003: Closed. `HostTodayScreen`, `HostTodayRouteState`, `HostTodayState`, `HostTodayFeedController`, and `HostAttentionPolicy` own the independent Today route, live-first spotlight, exhaustive attention work, and seven-day projection. `HostEventsScreen`, `HostEventsRouteState`, `HostEventsWorkspaceState`, and `HostEventsTimelineController` own the independent Events route and durable inventory under `lib/hosts/events/presentation/`.
-  - DP-HOST-HOME-004: Today and Events are separate canonical destinations. Historical sources remain ingredient evidence only; do not use either to collapse Today back into Events. Source-backed backend facts now cover the supported attention catalog, while unsupported kinds remain named coverage debt. Loading, quiet, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional lifecycle variants still need canonical source exports before strict comparison.
-  - DS-HOST-HOME-005: `feature.host_home` compiles all 22 states and 14 Today- or Events-owned actions. Add focused state tests for the 22 registered evidence exceptions, standalone captures for create/manage navigation, and one dedicated nested hosted-event offline Widgetbook scenario to retire its evidence exceptions.
-- [ ] `host.clubs` (49 registered states, 2 open gaps)
-  - planned: `blocked_reference_variants`
-  - implemented: `host_clubs_organizer_overview_default`, `host_clubs_compact_reference_alignment`, `host_clubs_reference_mask_calibration`, `inline_choice_edit`, `age_range_edit`, `host_team_add_sheet_widgetbook`, `host_team_confirm_dialog_widgetbook`, `host_club_insights_state`, `host_clubs_preview_route_callback`, `pixel_comparison_advisory_baseline`
-  - tested: `cohost_club_edit_limited`, `multiple_clubs_switcher`, `inline_text_edit`, `payouts_not_setup`, `host_team_add_sheet`, `host_team_confirm_dialogs`, `host_team_controller_mutations`, `host_club_insights_state`, `preview_route_callback`, `preview_tab`
-  - captured: `uid_missing`, `organizer_overview`, `host_clubs_loading`, `host_clubs_error`, `host_clubs_offline`, `no_host_clubs`, `cohost_club_edit_limited`, `inline_text_edit`, `update_club_pending`, `update_club_error`, `payouts_ready_or_restricted`, `payout_mutation`, `host_team`, `host_team_mutation`, `insights_loading`, `insights_report`, `insights_error`, `preview_tab`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DS-HOST-CLUBS-001: Closed. Signed-out, default organizer overview, co-host, empty, loading, generic/offline load errors, analytics loading/error/offline/report, payout provider loading/ready/restricted/error/offline, inline editor pending/error/offline, payout action pending/error/offline, host-team mutation pending/error/offline, text-scale, reduced-motion, light/dark, and preview tab variants are captured. Additional pixel variants depend on future Claude exports because the local bundle exposes only the organizer baseline for this screen.
-  - DS-HOST-CLUBS-002: Closed. `HostOrganizersScreenState` owns selected club, selected tab, owner/co-host role capability, and deterministic initial expanded editor state. `_HostOrganizersScaffold` defaults to the Organizer overview and routes its public preview, payout, settings, edit, and insights actions into existing typed callbacks/tabs. Inline edit and payout actions now have controller mutations; `HostTeamAddHostSheet` is public and Widgetbook covers ready, pending, error, and offline add-host states; `HostTeamHostActionDialog` is public and Widgetbook covers remove-host and transfer-ownership confirmations; `HostOrganizerInsightsState` owns analytics query derivation, custom date bounds, event scope, and retry target identity.
-  - DS-HOST-CLUBS-004: Reopened for the standalone-host workspace. Private-to-public publication coaching and cross-event CRM readiness move the deterministic 2026-08-10 `host_clubs_management` capture to mismatch 20.09%, mean delta 25.94, max delta 240, masked 260416. `HOST-STANDALONE-ORGANIZER-WORKSPACE-001` bounds that intentional expansion without changing canonical thresholds; close it after a reviewed standalone-host reference replaces or reconciles the older organizer composition. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports.
-  - DS-HOST-CLUBS-005: `feature.host_organizers` compiles all 49 states and 29 actions across one coordinated organizer workspace. Add focused tests for 31 registered states, deterministic captures for 14 preview-only states, and one dedicated `host_team_offline` Widgetbook scenario to retire its 46 evidence exceptions.
-- [x] `host.club.detail` (19 state follow-ups, 0 open gaps)
-  - watch: `distinct_hosted_schedule_rows_if_needed`, `host_control_reference_variants_if_design_changes`, `pixel_comparison`, `retry_intent_typing_optional`
-  - implemented: `HostOrganizerDetailScreenState`, `state_adapter_branching`, `retry_intent`, `reviews_authenticated`, `contact_links`, `share_action`, `host_controls_public_preview_policy`, `public_view_reference_alignment`
-  - tested: `event_navigation_host_route`, `loading_with_initial_club`, `load_error`, `club_not_found`, `host_public_view`, `host_schedule_hosted`, `membership_dock_suppressed`, `share_action`, `state_adapter_branching`
-  - captured: `host_public_view`, `loading_without_initial_club`, `loading_with_initial_club`, `load_error`, `offline`, `club_not_found`, `host_not_on_team`, `host_signed_out`, `host_schedule_empty`, `host_schedule_hosted`, `host_controls_missing`, `reviews_authenticated`, `contact_links`, `share_action`, `membership_dock_suppressed`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DS-HOST-CLUB-DETAIL-001: Closed for the current public-preview contract. Flutter captures cover public preview, initial fallback loading, full loading, generic error, offline, not-found, non-host-team preview, signed-out preview, empty schedule, text-scale, reduced-motion, and light/dark; the registered public-view reference comparison is within threshold. Reopen only if design adds distinct hosted schedule/share/contact/review or host-control variants.
-  - DS-HOST-CLUB-DETAIL-002: Closed. `HostOrganizerDetailScreenState` owns branch selection, initial data fallback, host ownership/public-preview mode, dock suppression, and load-error retry intent typing. `HostOrganizerDetailError` carries `HostOrganizerDetailRetryIntent.reloadDetail`, and `OrganizerDetailScreen` executes that typed retry through `_retryHostOrganizerDetail` before invalidating `organizerDetailViewModelProvider`. The screen also wires typed callbacks for schedule routing, host profile/message actions, contact launches, and share side effects.
-  - DS-HOST-CLUB-DETAIL-003: Closed for the current contract: Host Club Detail remains public-preview-only, while Edit club, Add event, payouts, and host-team controls remain in Host Home and Host Clubs. Reopen only if the design contract adds a dedicated host-controls variant.
-  - DS-HOST-CLUB-DETAIL-004: Closed. Host Club Detail owner/public-view reference and masks are exported and registered; Flutter state captures now exist for the main route variants. Public-view visual parity improved from 28.94% / 44.44 to 17.87% / 19.52 after fixture, hero, stats, section-order, capture-font, asset-prewarm, floating hero chrome, stat value fit, regular-weight About copy, and split generic-tag wrap work, then the hero-edge mask calibration moved the registered comparison within threshold at 15.82% mismatch / 15.22 meanDelta, maxDelta 240, masked 180280. Add host-control references only if the design contract moves operations onto this route.
-- [ ] `host.event.create` (31 registered states, 1 evidence gap, 2 reference-blocked gaps)
-  - planned: none
-  - implemented: `HostCreateEventRouteState`, `CreateEventWizardStep`, `CreateEventWizardValidationPlan`, `CreateEventWizardState`, `CreateEventSuccessNavigationEffect`, `CreateEventDraftSnapshot`, `CreateEventDraftActionState`, `CreateEventDraftRestoreState`, `CreateEventDraftSideEffectState`, `CreateEventScheduleState`, `CreateEventPhotoDraftState`, `CreateEventPolicyState`, `wizard_step_metadata`, `wizard_validation_plan`, `wizard_header_footer_state`, `wizard_mutation_error_state`, `wizard_success_state`, `wizard_action_intents`, `success_navigation_effect`, `draft_snapshot_serialization`, `draft_action_state`, `draft_restore_state`, `draft_side_effect_state`, `schedule_validation_state`, `duration_bounds_state`, `photo_draft_state`, `policy_state`, `unauthorized_host`, `same_day_time_error`, `invite_only_policy`, `dynamic_pricing_policy`
-  - tested: `route_state_adapter`, `wizard_step_metadata`, `wizard_validation_plan`, `wizard_state_adapter`, `wizard_action_intents`, `success_navigation_effect`, `route_authorization`, `draft_snapshot_serialization`, `draft_action_state`, `draft_restore_state`, `draft_restore_stale_values`, `draft_side_effect_state`, `draft_save_clock_state`, `schedule_validation_state`, `duration_bounds_state`, `photo_draft_state`, `policy_state`, `policy_age_validation`, `invite_only_policy`, `cohort_caps_policy`, `dynamic_pricing_policy`, `draft_delete`, `unsaved_changes`
-  - captured: `initial_club_extra`, `club_fetch_loading`, `club_fetch_error`, `club_not_found`, `unauthorized_host`, `basics_default`, `basics_validation`, `event_photos`, `custom_activity`, `where_step_default`, `location_picker_selected`, `when_step_default`, `same_day_time_error`, `policy_default`, `policy_age_validation`, `invite_only_policy`, `cohort_caps_policy`, `dynamic_pricing_policy`, `event_success_step`, `submit_pending`, `submit_error`, `success_manage`, `draft_picker_restore`, `draft_delete`, `unsaved_changes`, `draft_save_update`, `draft_save_offline`, `photo_upload_offline`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route initial-club-extra/loading/error/offline/missing/unauthorized, validation, custom activity, picked event photos, draft picker/restored, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, every wizard step, text scale, reduced motion, dark theme, and success screen.
-  - DS-HOST-EVENT-CREATE-001: Blocked on missing exported draft/validation/submit references and masks. Map-picker offline search is captured; remaining deterministic capture variants are reference-specific.
-  - DS-HOST-EVENT-CREATE-002: Closed. Route, wizard-step, validation-plan, wizard display/action, success-navigation effect, draft serialization/action/restore/side-effect, schedule, location, photo, and policy state are provider-free and covered by state/widget tests. `CreateEventScreen` only executes local form-controller assignment, page movement, platform picker calls, controller mutation triggers, and Navigator/context side effects.
-  - DS-HOST-EVENT-CREATE-004: Blocked on missing exported draft/validation/submit references and masks. Existing Host Create Event basics, location, schedule, policy, Event Success guide, and success/manage references are exported, masked, manifest-registered, compared, and within advisory thresholds.
-  - DS-HOST-EVENT-CREATE-005: Closed. `HostCreateEventRouteState` now watches signed-in uid state and renders a host-access error before `CreateEventScreen` for signed-out or non-host-team users, with state and widget coverage.
-  - DS-HOST-EVENT-CREATE-006: `feature.host_event_create` compiles all 31 states and 33 meaningful actions. Add focused tests for the nine registered test exceptions and one dedicated location-picker offline Widgetbook scenario to retire its ten evidence exceptions.
-- [ ] `host.event.manage` (58 state contracts, 4 open or blocked gaps)
-  - planned: None
-  - implemented: `HostEventManageScreenState`, `HostEventManageActionEffect`, `HostEventActionDisplayState`, `HostPrivateLinkActionState`, `HostPrivateAccessDisplayState`, `HostInviteLinksListDisplayState`, `HostInviteLinkRowDisplayState`, `HostRosterDisplayState`, `HostSetupRosterRowDisplayState`, `HostLiveRosterRowDisplayState`, `HostReportRosterRowDisplayState`, `HostParticipantsMutationDisplayState`, `HostParticipantLifecycleActions`, `HostReportSummaryDisplayState`, `HostParticipantProfilesLookupState`, `EventSuccessHostSectionState`, `selected_section_state`, `host_manage_chrome_state`, `host_manage_action_effect`, `host_actions_private_link_callback`, `host_action_display_state`, `private_link_action_state`, `private_access_card_state`, `invite_links_list_state`, `invite_link_row_state`, `roster_filter_display_state`, `roster_row_display_state`, `host_participants_mutation_display_state`, `host_participant_lifecycle_actions`, `host_report_summary_state`, `host_participant_profiles_lookup_state`, `event_success_provider_wave_state`, `shared_snackbar_feedback`, `shared_form_dialog`
-  - tested: `host_manage_screen_state`, `host_manage_action_effect`, `host_action_display_state`, `private_link_action_state`, `private_access_card_state`, `invite_links_list_state`, `invite_link_row_state`, `roster_filter_display_state`, `roster_row_display_state`, `host_participants_mutation_display_state`, `host_report_summary_state`, `host_participant_profiles_lookup_state`, `event_success_host_section_state`, `host_manage_widget_flows`, `host_event_manage_controller`
-  - captured: `uid_loading`, `club_fetch_loading`, `event_stream_loading`, `initial_event_extra`, `section_picker`, `route_error`, `event_or_club_not_found`, `unauthorized_host`, `setup_workspace`, `attendance_setup_roster`, `attendance_loading`, `attendance_error`, `attendance_empty`, `attendee_profiles_loading`, `attendee_profiles_error`, `filtered_roster_empty`, `attendance_mutation_pending`, `attendance_mutation_error`, `full_event_waitlist_apron`, `live_workspace`, `live_event_success_unavailable`, `live_event_success_plan_loading`, `live_event_success_plan_error`, `live_event_success_plan_offline`, `live_event_success_wingman_requests`, `live_event_success_micro_pods_assigned`, `live_event_success_guided_rotations_assigned`, `live_event_success_check_in_qr`, `live_event_success_conversation_cues`, `live_event_success_reveal_round_revealed`, `live_event_success_host_override_edited`, `live_event_success_ready`, `report_workspace`, `report_export`, `report_scorecard`, `report_scorecard_loading`, `report_scorecard_error`, `report_scorecard_offline`, `private_access_loading`, `private_access_error`, `private_access_offline`, `private_access_missing_code`, `invite_private_link`, `invite_links_loading`, `invite_links_error`, `invite_links_offline`, `invite_links_empty`, `invite_links_disabled`, `invite_links_long_label_source`, `invite_link_create_disable`, `edit_event_action`, `cancel_event_pending_error`, `delete_unused_event`, `cancelled_event`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route loading/error/offline/missing, initial event fallback, unauthorized user, setup/private access, section picker selected states, live, report, attendance loading/error/empty, attendee profile loading/error, filtered roster empty, attendance mutation pending/error, full/waitlist apron, private-access loading/error/offline/missing-code, private-link share pending/error, invite-link loading/error/offline/empty, invite-link mutation pending/error, edit/cancel/delete host actions, report export pending/error, live unavailable, live plan loading/error/offline, saved live guide, wingman requests, micro-pods, guided rotations, check-in QR, conversation cues, revealed round, host-edited override, report scorecard loading/error/ready/offline, cancelled, text scale, reduced motion, and dark theme.
-  - DP-HOST-EVENT-MANAGE-001: Add remaining deterministic Host Event Manage captures only for reference-specific variants, compact step-count semantics if product keeps them, and modal Event Success override editor sheets if that surface becomes contractual. Private-access missing-code, invite-link disabled-row, invite-link long-label/source, Event Success plan/scorecard offline, wingman request, micro-pod assignment, guided-rotation assignment, check-in QR, conversation cue, revealed-round, host-edited override, and route loading/access/error states are already captured under the ARCH-SCREEN-001C host workspace route shell or direct Host Manage Event Success section captures.
-  - DP-HOST-EVENT-MANAGE-002: Closed. HostEventManageScreenState now owns selected section, section labels, title copy, collapsed-header semantics, and section-change transitions; HostEventManageActionEffect owns edit/cancel/delete action destinations, edit route parameters, and event payload; HostEventActionDisplayState owns known-activity policy, cancel/delete pending copy, delete visibility, cancelled-event action rows, and shared host roster count helpers; HostPrivateLinkActionState owns share-private-link invite code/link derivation, loading/error/count detail copy, and share-enabled policy; HostPrivateAccessDisplayState owns private-access card missing-code/listed-copy policy and code/link row visibility; HostInviteLinksListDisplayState owns named invite-link mutation mode, create-loading flag, disabled-action policy, and empty copy; HostInviteLinkRowDisplayState owns row URL derivation, stat copy, disabled badge visibility, disable-action visibility, and actions-disabled policy; HostRosterDisplayState owns setup/live/report roster filter specs, active-filter fallback, searched row ids, empty-state copy, and waitlist bulk-offer eligibility; HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, and HostReportRosterRowDisplayState own row meta, signal, tone, payment copy, and row action policy flags; HostParticipantsMutationDisplayState owns attendance, approval/decline, waitlist-offer, ops-export, and revenue-export pending/error display policy; HostParticipantLifecycleActions owns profile, approval, decline, attendance, waitlist-offer, ops-export, and revenue-export callback injection for the provider-free roster board; HostReportSummaryDisplayState owns gross estimate, checked/no-show/waitlist counts, and report summary copy; HostParticipantProfilesLookupState owns attendee-profile lookup loading/error/ready branch policy and retry target identity; EventSuccessHostSectionState owns Event Success plan/roster/assignment/preference/wingman/scorecard provider-wave status and retry intents before Host Manage composes the provider-free Event Success panel. Route loading/access/error states stay in HostEventManageRouteScreen under ARCH-SCREEN-001C.
-  - DP-HOST-EVENT-MANAGE-004: Private invite-link create/copy/disable/share effects and cancel/delete writes plus invalidation now route through controller seams with mutation capture coverage. `HostEventManageActionEffect` owns edit/cancel/delete destinations and edit route params while `HostEventManageScreen` executes Navigator/dialog/controller side effects, shared Catch dialog/snackbar feedback, action mutation execution, and private-link share execution. `HostEventActionsSection` receives `HostPrivateLinkActionState` and a typed share callback instead of reading private-link providers directly. `HostParticipationLifecycleBoard` receives `HostParticipantLifecycleActions` instead of reading Riverpod mutations/routes directly, while `HostEventParticipantsList` remains the provider-bound adapter for profile navigation, approval/decline, attendance, waitlist offers, and report exports. Remaining side-effect work is Event Success callbacks if that surface keeps growing.
-  - DP-HOST-EVENT-MANAGE-005: Blocked/reference-only until canonical edge-state exports exist. Setup/private-access, full/waitlist apron, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures; base references are exported, masked, manifest-registered, and compared within advisory thresholds. Remaining work is masks for additional dynamic host data once canonical exports exist.
-  - DS-HOST-EVENT-MANAGE-006: Add focused tests for the 33 route, roster, private-access, invite-link, action-row, offline, accessibility, and theme states currently backed by deterministic captures and the restored `HostEventManageRouteScreen/Route and section states` Widgetbook use case; the generated Host Manage feature contract carries these exceptions until proof lands.
-- [ ] `host.inbox` / Messaging (32 registered states, live production proof, and blocked reference variants)
-  - implemented: global selected-organizer scope, first-class Inbox/Campaigns workspaces, explicit Event/General scope, compact shared-menu event selector, Booked/Prospective personal inquiry segments, roster-backed broadcast audience counts, authorized event composer/callable, WhatsApp sender setup, campaign lifecycle, deterministic relative row times, and route-owned navigation/mutation seams.
-  - tested: scope selection, audience switching, roster-without-threads behavior, General isolation, composer lifecycle/idempotency, view-model classification, backend authz/moderation/rate-limit/idempotency/delivery policy, repository contracts, and shared compact SegPill behavior.
-  - captured: populated Booked, Campaigns with connected sender, Prospective, General, roster-without-threads, composer, composer pending, composer error, plus existing loading/error/offline/search/text-scale/reduced-motion/light-dark states.
-  - DP-HOST-INBOX-001: Closed. The canonical full-shell populated comparison passes both unchanged thresholds at `7.34%` mismatch / `7.62` meanDelta after compact title, event-scope menu, mono SegPill, deterministic fixture copy, and relative timestamp alignment.
-  - DP-HOST-INBOX-002: Closed. `HostInboxViewModel` owns Event/General scope, Booked/Prospective classification, roster/thread count separation, search, lifecycle availability, and row status labels; `HostInboxScreen` owns providers, routing, and broadcast presentation.
-  - DP-HOST-INBOX-003: Closed. Widgetbook covers the production route, provider-free Inbox scope/audience/workspace/composer components, and the Campaigns sender workspace; deterministic full-shell captures cover both primary workspaces.
-  - DP-HOST-INBOX-004: In progress only for external release proof. Keep production sending disabled until the target-specific live callable/IAM preflight succeeds, then record Activity durability, preference-gated push, and no match/message fan-out. Long-count and keyboard reference variants remain blocked until canonical exports or product-backed fixtures exist.
-  - DP-HOST-INBOX-005: `feature.host_inbox` compiles all 32 states and 13 actions. Add the remaining sender/campaign lifecycle captures and focused tests while preserving the existing Inbox interaction evidence; 25 evidence obligations remain explicit.
-- [ ] `host.chat` (29 registered states, 1 evidence gap, 2 blocked gaps)
-  - blocked: provider-specific profile/club/event offline copy policy and dedicated pixel-reference variants
-  - implemented: `uid_loading`, `chat_route_state`, `typed_top_bar_actions`, `top_bar_action_intents`, `retry_intents`, `route_error_retry`, `shared_snackbar_feedback`, `read_marker_state`, `read_marker_controller`, `chat_scroll_coordinator`, `chat_thread_action_controller`, `chat_retry_controller`, `chat_thread_lookup_state`
-  - captured: `match_loading`, `match_error`, `match_not_found`, `host_inquiry_identity`, `event_context_fallback`, `messages_loading`, `messages_error`, `empty_thread`, `populated_thread`, `image_day_separator`, `composer_enabled`, `keyboard_composer`, `composer_disabled_loading`, `blocked_chat`, `send_message_pending`, `send_image_pending`, `top_bar_safety_actions`, `report_user_mutation`, `block_user_mutation`, `mutation_error_listener`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - tested: `host_profile_navigation_disabled`, `host_share_card_disabled`, `event_context_ready`, `auto_scroll_read_marker`, `read_marker_state`, `chat_thread_action_controller`, `chat_retry_controller`, `chat_thread_lookup_state`, `chat_route_state`, `send_failure`, `top_bar_typed_actions`, `top_bar_action_intents`, `disabled_top_bar_actions`, `share_empty_feedback`, `route_retry_intents`, `message_retry`, `suvbot_retry`, `blocked_host_chat`, `report_block_menu_success`, `report_block_failure_feedback`
-  - DP-HOST-CHAT-001: Blocked. Host Chat captures now cover match loading/error/missing, message loading/error/offline, empty, populated, event fallback, blocked, composer pending/disabled, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, safety pending menu, text-scale, reduced-motion, and light/dark states. Provider-specific profile/club/event offline copy still needs product policy, and pixel-reference variants still need dedicated Host Chat masks.
-  - DP-HOST-CHAT-002: Closed. `ChatRouteState` performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before `_ChatContent` renders. `HostChatScreenState` owns host inquiry identity, top-bar typed action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. `ChatReadMarkerState` owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks; `ChatReadMarkerController` executes `ConversationRepository.markRead` side effects; `ChatScrollCoordinator` owns initial/appended/send-success message list auto-scroll state; `ChatThreadActionController` executes profile/share/report/block typed action intents through injected UI and safety runners; `ChatRetryController` executes typed route/message/Suvbot retry invalidation; and `ChatThreadLookupState` owns other-participant, host-inquiry club, host profile, public-profile, and event lookup decisions before `ChatRouteState` performs the provider watches. Reopen only for future product-specific action policies.
-  - DP-HOST-CHAT-004: Closed. Host-specific tests now cover `ChatRouteState` provider composition, `HostChatScreenState` identity fallbacks, top-bar typed actions, disabled pending top-bar actions, route/message/Suvbot retry intents, match-route retry invalidation, message retry invalidation, Suvbot retry invalidation, blocked host chat composer behavior, profile navigation/share-card disabled behavior, report/block success behavior, and report/block failure feedback through the shared chat mutation listener.
-  - DP-HOST-CHAT-005: Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; the advisory comparison against `host_chat_inquiry` is within threshold at 12.71% mismatch, meanDelta 5.28, maxDelta 240, masked 228552. Dedicated Host Chat references are still needed for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states.
-  - DP-HOST-CHAT-006: `feature.member_chat` now binds Host Chat as a second projection of the same `ChatScreen` implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions.
-- [ ] Feature-level drift/previews
-  - DP-HOST-HOME-PREVIEW-001: Host Home section Widgetbook use cases now cover `HostOperationsTopBar`, `HostMetaRow`, `HostEventRow`, `HostEventsOrganizerCard`, owner/co-host switching, and long club-name pressure across content/loading/error/offline/empty/cancelled-filtered route states. Remaining hard-to-reach host-shell previews are keyboard/safe-area or pixel-reference variants design requires.
-
-### P2 host_secondary_operations
-
-- [ ] `host.club.create` (17 state follow-ups, 0 code-open gaps; 1 blocked reference gap)
-  - planned: None
-  - implemented: `route_entry`, `uid_missing_submit`, `initial_step_preview_knob`, `initial_draft_preview_knob`
-  - tested: `host_club_create_state_adapter`, `success_pop`, `shared_draft_feedback`
-  - captured: `basics_default`, `basics_validation`, `club_photos`, `draft_restore`, `details_step`, `host_defaults_step`, `event_success_defaults_step`, `save_draft_pending_error`, `submit_pending`, `submit_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route entry, basics validation, picked media, restored draft, basics, details, host defaults, Event Success defaults, save-draft pending/error, submit pending/error, offline submit failure, text scale, reduced motion, and dark theme.
-  - DP-HOST-CLUB-CREATE-001: Closed for app code. Widgetbook and deterministic captures now cover route entry, validation, picked media, restored draft, all wizard steps, save-draft pending/error, submit pending/error, offline submit failure, text-scale, reduced-motion, and dark theme. Remaining variants are reference-specific pixel states blocked on additional exports.
-  - DP-HOST-CLUB-CREATE-002: Closed for app code. Host Create Club basics reference and masks are exported and registered. `HostOrganizerCreateState` now owns header/footer display state, media/edit-scaffold enabled state, media display values, field/city display state, edit validation display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents while `HostOrganizerCreateRouteIntent` owns route callback dispatch and `HostOrganizerCreateDraftRequest` and `HostOrganizerCreateSubmitRequest` own draft/submit request construction.
-- [ ] `host.event.edit` (21 state follow-ups, 0 open gaps)
-  - planned: None
-  - implemented: None
-  - tested: `host_event_edit_state_adapter`, `schedule_locked`, `success_pop`, `shared_snackbar_feedback`
-  - captured: `uid_loading`, `route_loading`, `route_error`, `offline`, `event_not_found`, `unauthorized_host`, `prefilled_event`, `schedule_editable`, `schedule_locked`, `policy_editable`, `policy_locked`, `location_picker`, `validation_error`, `private_access_loading`, `submit_pending`, `submit_error`, `cancelled_event_disabled`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route loading/error/offline/not-found/unauthorized, editable prefilled form, schedule locked form, cancelled disabled form, private-access loading, validation errors, selected location, text scale, reduced motion, and dark theme.
-  - DP-HOST-EVENT-EDIT-001: Closed. Widgetbook and deterministic captures now cover route loading/error/offline/not-found, unauthorized host, prefilled editable form, schedule/policy locked form, private-access loading, validation, selected-location, submit pending/error, cancelled disabled form, text-scale, reduced-motion, and light/dark. Additional state-specific pixel states are reopen-only if design exports them.
-  - DP-HOST-EVENT-EDIT-002: Closed. Host Edit Event prefilled reference and masks are exported, registered, and compared within threshold at `9.25% / 10.93` after the reference refresh. `HostEventEditState` now owns route provider waves plus route access and schedule/policy lock rules, `HostEventEditScreenState` owns save feedback/pop policy, `HostEventEditSaveRequest` owns validated save payload construction, `HostEventEditPrivateAccessState` owns invite-only private-access watch and invite-code seed policy, `HostEventEditLocationState` owns selected-location display and picker initial-label state, `HostEventEditScheduleValidationState` owns invalid-start validation state, and `HostEventEditIntent` owns typed route callback payloads.
-- [ ] `host.settings` (18 state follow-ups, 0 code-open gaps; 2 blocked/reference gaps)
-  - implemented: `uid_missing`, `profile_loading`, `profile_error`, `no_profile`, `profile_fallback_adapter`, `settings_state_adapter`, `profile_controller_mutations`, `edit_preview_tabs`, `clubs_loading`, `clubs_error`, `clubs_section`
-  - tested: `fallback_profile_from_club`, `active_profile`, `create_profile_pending`, `create_profile_error`, `save_profile_error`, `sign_out_error`
-  - captured: `profile_offline`, `create_profile_mutation`, `save_profile_mutation`, `profile_editor_sheet`, `clubs_offline`, `sign_out_action`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route auth/profile/clubs states, profile summary rows including create-pending, clubs loading/error/empty/populated rows, Edit/Preview tab rail, text scale, reduced motion, and dark theme.
-  - DP-HOST-SETTINGS-001: Closed for app code. Deterministic captures now cover inline profile editing, create/save mutation pending/error/offline, sign-out error/offline, and profile/club offline provider states. Direct HostAccount.dc.html source is found, but the 2026-06-25 stable temp bundle, current runtime, CDP, and original-source Chrome attempts either produced placeholder boxes or hung before a valid PNG. Remaining reference work is blocked on source/runtime repair or an alternate export path, masks, and pixel comparison.
-  - DP-HOST-SETTINGS-002: Closed for app code. `HostSettingsState`, `HostSettingsProfileState`, and `HostSettingsOrganizersState` now adapt profile/club provider waves, club-backed fallback identity, loading, error, missing, empty, and content branches before `HostSettingsProfileSection` and `HostSettingsOrganizersSection` render. `HostProfileController` owns profile create/save mutations shared with Host Profile. Remaining payout/admin ownership is a product IA decision before code changes.
-- [ ] `host.profile` (15 state follow-ups, 2 open gaps)
-  - implemented: `uid_missing`, `profile_loading`, `profile_error`, `profile_edit_state_adapter`, `profile_controller_mutations`, `missing_profile`, `populated_profile`, `validation_error`, `save_success`, `status_variants`
-  - tested: `create_profile_mutation`, `create_profile_error`, `save_error`
-  - captured: `profile_offline`, `validation_error`, `create_profile_mutation`, `save_pending`, `save_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - previewed: route loading/error/auth/missing/populated, provider-free form status variants, validation, save pending, missing/create pending, text scale, reduced motion, and dark theme.
-  - DP-HOST-PROFILE-001: Deterministic captures now cover validation, create/save mutation pending/error/offline, profile offline, text-scale, reduced-motion, and light/dark states. Remaining: canonical reference export and pixel comparison.
-  - DP-HOST-PROFILE-002: `HostProfileEditState` now adapts direct Host Profile auth/loading/error/missing/content provider state before `HostProfileForm` and `HostProfileMissingState` render, `HostProfileController` owns create/save orchestration shared with the Host Settings inline form, and the route exposes a default-disabled validation mode for deterministic captures. Remaining: any host-specific offline copy decision and reference-backed comparison.
-- [ ] Feature-level drift/previews
-  - DP-HOST-SECONDARY-LINT-001: Promote stable host form composition invariants into scanner/lint rules after create/edit/profile adapter boundaries exist.
-  - [x] DP-HOST-SECONDARY-PREVIEW-001: Widgetbook entries now exist for host club create/edit, host event edit, Host Settings route/sections, and Host Profile route/form/field/missing states.
-
-### P2 secondary_consumer_surfaces
-
-- [ ] `calendar.home` (10 state follow-ups, 1 blocked gap)
-  - implemented: None
-  - tested: `event_detail_navigation`
-  - captured: `uid_missing`, `events_loading`, `events_error`, `club_names_loading_error`, `empty_calendar`, `expanded_month_header`, `planned_events`, `text_scale_2`, `reduced_motion`
-  - DP-CALENDAR-001: Closed by Calendar Widgetbook states covering collapsed/expanded header, stats, agenda rows, loading, empty, provider error, club-name loading/error, text scale, reduced motion, and dark theme variants under the canonical `screen.calendar.home` contract id.
-  - DP-CALENDAR-002: Closed by deterministic Calendar captures for uid-missing fallback, loading, empty, provider error, club-name loading/error, expanded month, selected day, text scale, reduced motion, and paired light/dark output.
-  - DP-CALENDAR-003: Closed by CalendarHomeState and CalendarAgendaSectionState owning event summary, selected date, header mode, club-id lookup input, agenda row display, and empty/loading/error section state while CalendarScreen retains provider waves, retry invalidation, scroll behavior, and route navigation.
-- [ ] `saved_events.list` (9 state follow-ups, 1 blocked gap)
-  - implemented: None
-  - tested: `detail_navigation`
-  - captured: `uid_missing`, `saved_events_loading`, `saved_events_error`, `empty_saved_events`, `populated_saved_events`, `club_names_loading_error`, `text_scale_2`, `light_dark`
-  - DP-SAVED-EVENTS-001: Closed by Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and dark theme variants.
-  - DP-SAVED-EVENTS-002: Closed by deterministic Saved Events captures for uid-missing fallback, empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output.
-  - DP-SAVED-EVENTS-003: Closed by SavedEventsHeaderSliver, SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsOrganizerNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries.
-- [x] `filters.preferences` (10 state follow-ups, 0 open gaps)
-  - planned: None
-  - implemented: None
-  - tested: `save_success_exit`
-  - captured: `profile_loading`, `profile_error`, `profile_missing`, `default_preferences`, `edited_preferences`, `reset_preferences`, `save_pending`, `save_error`, `text_scale_2`, `reduced_motion`
-  - DP-FILTERS-001: Closed by Filters Widgetbook route/content states covering default, dirty edits, reset-restored content, loading, profile error, offline profile error, missing profile, save pending, save-error snackbar seeding, text scale, reduced motion, and explicit dark-theme specimens.
-  - DP-FILTERS-002: Closed by deterministic Filters captures for loading, profile error, missing profile, dirty edit, reset-restored content, save pending, save error, text scale, reduced motion, and paired light/dark output.
-  - DP-FILTERS-003: Closed by FiltersPreferencesState owning saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields while FiltersScreen retains provider waves, mutation listening, route close/pop behavior, and controller execution.
-- [ ] `event.recap` (12 state follow-ups, 1 blocked gap)
-  - planned: None
-  - implemented: None
-  - tested: `open_catches_deck`
-  - captured: `recap_loading`, `recap_error`, `event_not_found`, `populated_attendees`, `empty_roster`, `profile_lookup_loading`, `profile_lookup_error`, `profile_lookup_fallback`, `vibe_selection`, `text_scale_2`, `reduced_motion`
-  - DP-EVENT-RECAP-001: Closed by Event Recap Widgetbook route states covering loading, view-model error, missing event, populated attendees, empty roster, profile-enrichment loading/error, partial profile fallback, selected vibe tile, closed/open catch-window copy, text scale, reduced motion, and dark theme.
-  - DP-EVENT-RECAP-002: Closed by deterministic Event Recap captures for loading, error, missing event, empty roster, profile-enrichment loading/error, partial profile fallback, selected tiles, text scale, reduced motion, and paired light/dark output. Keyboard/safe-area has no dedicated recap input state.
-  - DP-EVENT-RECAP-003: Closed by EventRecapScreenState owning async branch mapping, attendee/profile rows, selected ids, hero/window copy, retry intents, and open-deck intent data while EventRecapScreen retains provider invalidation, local selection mutation, and GoRouter execution at the route edge.
-- [ ] Feature-level drift/previews
-  - DP-SECONDARY-LINT-001: Add an advisory check that P2 captured routes cannot remain planned in screen_coverage.json after a contract exists.
-  - DP-SECONDARY-PREVIEW-001: Add Widgetbook states for Calendar, Saved Events, Filters, and Event Recap sections before visual parity edits.
-
-### P3 utility_surfaces
-
-- [ ] `event.location_map` (11 state follow-ups, 0 open gaps; 2 blocked reference gaps)
-  - planned: `map_masking`
-  - captured: `route_loading`, `route_error`, `event_not_found`, `no_exact_coordinate`, `pinned_location`, `directions_action`, `network_tiles_disabled_capture`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-EVENT-MAP-003: Blocked/reference-only. EventLocationMapState is implemented and route/state captures exist; exported map masks wait on a canonical standalone full-screen map reference.
-- [ ] `notifications.list` (14 state follow-ups, 0 open gaps)
-  - tested: `read_unread_rows`, `row_navigation_targets`
-  - captured: `uid_loading`, `uid_error`, `signed_out`, `activity_loading`, `activity_error`, `empty_activity`, `notifications_activity`, `mark_all_read`, `deep_link_failures`, `text_scale_2`, `reduced_motion`, `light_dark`
-- [ ] `reviews.history` (12 state follow-ups, 0 open gaps)
-  - tested: `edit_review_sheet`
-  - captured: `uid_missing`, `profile_loading`, `profile_error`, `reviews_loading`, `reviews_error`, `empty_reviews`, `reviews_history_list`, `event_context_missing`, `text_scale_2`, `reduced_motion`, `light_dark`
-- [ ] `settings.account` (19 state follow-ups, 0 open gaps)
-  - tested: `history_navigation_rows`
-  - captured: `profile_backed_account`, `profile_loading`, `profile_error`, `profile_missing`, `external_link_outcomes`, `notification_preferences`, `preference_save_error`, `privacy_safety_defaults`, `blocked_accounts_loading_error`, `blocked_accounts_empty`, `blocked_accounts_list`, `unblock_mutation`, `delete_account_flow`, `sign_out_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-SETTINGS-ACCOUNT-002: closed; Settings Account route captures now cover profile loading/error/offline/missing, blocked-user loading/error/offline/list, preference/delete/sign-out/unblock mutation pending/error/offline, external-link pending/failure, text scale, reduced motion, and light/dark. Unblock success feedback now uses the shared Catch snackbar helper. Settings intentionally uses the shared offline provider/mutation error copy instead of Settings-specific copy.
-- [ ] `payments.history` (17 state follow-ups, 0 open gaps; 2 blocked reference gaps)
-  - tested: `status_variants`
-  - captured: `uid_loading`, `uid_error`, `signed_out`, `payments_loading`, `payments_error`, `payment_history_empty`, `populated_payments`, `detail_sheet`, `failed_signup_help`, `event_title_loading`, `event_title_error`, `event_title_missing`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-PAYMENT-HISTORY-002: Blocked/reference-only. Payment History route captures now cover access, provider waves, empty, populated rows, receipt sheet, failed sign-up help sheet, support snackbar, event-title loading/error/missing states, offline provider errors, text scale, reduced motion, and light/dark. The support snackbar uses the shared Catch snackbar helper. Canonical reference export, receipt-id masks, and pixel comparison wait on a standalone Payment History design source.
-- [ ] Feature-level drift/previews
-  - DP-UTILITY-LINT-001: After adapter boundaries exist, extend contracted-screen hygiene checks for utility routes that add raw Material controls or one-off visual constants.
-  - DP-UTILITY-PREVIEW-001: Add Widgetbook states and deterministic captures for map, notifications, reviews, settings, and payments utility surfaces before pixel comparison.
 
 ## Definition Of Done
 

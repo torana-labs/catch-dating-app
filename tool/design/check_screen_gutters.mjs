@@ -6,7 +6,6 @@ import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const defaultScreenContractsPath = "design/screens/catch.screens.json";
-const defaultStateMatrixPath = "docs/design_parity/state_matrix.json";
 
 const edgeInsetsPattern =
   /\bEdgeInsets(?:Directional)?\.(?:all|only|symmetric|fromLTRB)\s*\(/gu;
@@ -36,12 +35,10 @@ if (isCliEntrypoint) runCli();
 export function scanScreenGutters({
   root = repoRoot,
   screenContractsPath = defaultScreenContractsPath,
-  stateMatrixPath = defaultStateMatrixPath,
 } = {}) {
   const contractedFiles = collectContractFiles({
     root,
     screenContractsPath,
-    stateMatrixPath,
   });
   const files = collectPresentationFiles(root);
   for (const file of contractedFiles) files.add(file);
@@ -153,21 +150,15 @@ function collectPresentationFiles(root) {
   return files;
 }
 
-function collectContractFiles({root, screenContractsPath, stateMatrixPath}) {
+function collectContractFiles({root, screenContractsPath}) {
   const files = new Set();
   const screenContracts = readJsonIfExists(path.join(root, screenContractsPath));
-  const stateMatrix = readJsonIfExists(path.join(root, stateMatrixPath));
 
   for (const screen of screenContracts?.screens ?? []) {
     addBinding(files, screen.source);
     for (const binding of screen.stateController?.files ?? []) addBinding(files, binding);
     for (const binding of screen.stateController?.mutationOwners ?? []) addBinding(files, binding);
     for (const section of screen.composition?.sections ?? []) addBinding(files, section.flutter);
-  }
-  for (const feature of stateMatrix?.features ?? []) {
-    for (const screen of feature.screens ?? []) {
-      for (const file of screen.implementationPaths ?? []) addBinding(files, file);
-    }
   }
   return files;
 }

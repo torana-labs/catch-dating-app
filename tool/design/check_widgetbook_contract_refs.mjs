@@ -5,7 +5,6 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
-const stateMatrixPath = fromRepo("docs/design_parity/state_matrix.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const widgetbookDirectoriesPath = fromRepo("widgetbook/lib/main.directories.g.dart");
 const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/contracts");
@@ -103,7 +102,6 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 
 function checkRefs({summary = false} = {}) {
   const componentRegistry = readJson(componentRegistryPath);
-  const stateMatrix = readJson(stateMatrixPath);
   const screenContracts = readJson(screenContractsPath);
   const widgetbookSource = fs.readFileSync(widgetbookDirectoriesPath, "utf8");
   const widgetbook = parseWidgetbookDirectories(widgetbookSource);
@@ -116,11 +114,7 @@ function checkRefs({summary = false} = {}) {
     ...validatePrimitiveContractUseCases(componentRegistry, primitiveContracts),
     ...validateFoundationSpecimens(widgetbook),
     ...validateGeometrySpecimens(widgetbook, widgetbookSources),
-    ...validatePreviewRefs({
-      stateMatrix,
-      screenContracts,
-      widgetbook,
-    }),
+    ...validatePreviewRefs({screenContracts, widgetbook}),
   ];
 
   if (summary || errors.length === 0) {
@@ -134,7 +128,7 @@ function checkRefs({summary = false} = {}) {
         `Formal primitive contract previews: ${primitiveContracts.contractIds.size}`,
         `Required foundation specimens: ${requiredFoundationSpecimens.length}`,
         `Required geometry specimens: ${requiredGeometrySpecimens.length}`,
-        `Referenced preview ids: ${collectPreviewRefs(stateMatrix, screenContracts).length}`,
+        `Referenced preview ids: ${collectPreviewRefs(screenContracts).length}`,
       ].join("\n")
     );
   }
@@ -315,9 +309,9 @@ export function validateGeometrySpecimens(widgetbook, widgetbookSources) {
   return errors;
 }
 
-function validatePreviewRefs({stateMatrix, screenContracts, widgetbook}) {
+function validatePreviewRefs({screenContracts, widgetbook}) {
   const errors = [];
-  for (const ref of collectPreviewRefs(stateMatrix, screenContracts)) {
+  for (const ref of collectPreviewRefs(screenContracts)) {
     if (!widgetbook.acceptedPreviewIds.has(ref.previewId)) {
       errors.push(`${ref.owner}: unknown Widgetbook previewId ${ref.previewId}.`);
     }
@@ -325,20 +319,8 @@ function validatePreviewRefs({stateMatrix, screenContracts, widgetbook}) {
   return errors;
 }
 
-function collectPreviewRefs(stateMatrix, screenContracts) {
+function collectPreviewRefs(screenContracts) {
   const refs = [];
-  for (const feature of stateMatrix.features ?? []) {
-    for (const screen of feature.screens ?? []) {
-      for (const state of screen.states ?? []) {
-        for (const previewId of state.previewIds ?? []) {
-          refs.push({
-            owner: `${feature.id}.${screen.id}.${state.id}`,
-            previewId,
-          });
-        }
-      }
-    }
-  }
   for (const screen of screenContracts.screens ?? []) {
     for (const state of screen.states ?? []) {
       for (const previewId of state.previewIds ?? []) {
