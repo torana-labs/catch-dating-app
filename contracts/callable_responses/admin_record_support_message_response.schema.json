@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_record_support_message_response.schema.json",
+  "title": "AdminRecordSupportMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "messageId"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "messageId": {
+      "type": "string",
+      "maxLength": 160
+    }
+  }
+}

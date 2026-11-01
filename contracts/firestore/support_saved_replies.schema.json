@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/support_saved_replies.schema.json",
+  "title": "SupportSavedReplyDocument",
+  "description": "A saved reply ops can drop into a support conversation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supportSavedReplies",
+  "x-firestore-path": "supportSavedReplies/{replyId}",
+  "x-document-id-field": "replyId",
+  "x-owner": "Admin support callables",
+  "required": [
+    "schemaVersion",
+    "replyId",
+    "title",
+    "body",
+    "active",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "replyId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+}

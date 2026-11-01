@@ -1235,6 +1235,87 @@ export const ADMIN_ACTION_CATALOG = {
       "admin",
       "adminOwner"
     ]
+  },
+  "finance.manage-organizer-bills": {
+    "callable": "adminManageOrganizerBills",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-money-settings": {
+    "callable": "adminManageMoneySettings",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-nominator-credits": {
+    "callable": "adminManageNominatorCredits",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-platform-costs": {
+    "callable": "adminManagePlatformCosts",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.export-money-ledger": {
+    "callable": "adminExportMoneyLedger",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "growth.get": {
+    "callable": "adminGetGrowth",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "marketplace.get": {
+    "callable": "adminGetMarketplace",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.get-month": {
+    "callable": "adminGetFinanceMonth",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "finance.manage-payment-issues": {
+    "callable": "adminManagePaymentIssues",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
   }
 } as const;
 
