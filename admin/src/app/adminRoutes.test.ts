@@ -26,8 +26,8 @@ describe("Admin route contract", () => {
     ["/money/issues/publicEventPayments%3Apay-1", "money", "moneyIssueId", "publicEventPayments:pay-1"],
     ["/money/resolved/payments%3Apay-2", "money", "moneyIssueId", "payments:pay-2"],
     ["/money/bills/org-1_2026-10", "money", "billId", "org-1_2026-10"],
-    ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
-    ["/finance/commercial-terms/organizers/org%2F1", "finance", "termsOrganizerId", "org/1"],
+    ["/payment-setup/issues/payments%2Fpayment-1", "payment-setup", "financeIssueId", "payments/payment-1"],
+    ["/payment-setup/commercial-terms/organizers/org%2F1", "payment-setup", "termsOrganizerId", "org/1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
     ["/admin-roles/user-1", "admin-roles", "adminRoleTargetUid", "user-1"],
     ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
@@ -49,9 +49,9 @@ describe("Admin route contract", () => {
     ["/organizers/claims", "organizerWorkspace", "claims", "organizerId"],
     ["/events/readiness/", "eventWorkspace", "directory", "eventId"],
     ["/events/external", "eventWorkspace", "external", "eventId"],
-    ["/finance/commercial-terms", "financeWorkspace", "commercial-terms", "financeIssueId"],
-    ["/finance/payment-routing", "financeWorkspace", "payment-routing", "financeIssueId"],
-    ["/finance", "financeWorkspace", "issues", "financeIssueId"],
+    ["/payment-setup/commercial-terms", "financeWorkspace", "commercial-terms", "financeIssueId"],
+    ["/payment-setup/payment-routing", "financeWorkspace", "payment-routing", "financeIssueId"],
+    ["/payment-setup", "financeWorkspace", "issues", "financeIssueId"],
     ["/money", "moneyView", "issues", "moneyIssueId"],
     ["/money/resolved", "moneyView", "resolved", "moneyIssueId"],
     ["/money/bills", "moneyView", "bills", "billId"],
@@ -68,6 +68,13 @@ describe("Admin route contract", () => {
       expect(route.params.billId ?? route.params.moneyIssueId).toBe(id);
       expect(resolveAdminRoute(moneyPath(view)).moneyView).toBe(view);
     }
+  });
+
+  it("sends old Finance links to Money and the payment setup screens", () => {
+    expect(resolveAdminRoute("/finance").redirect).toBe("/money");
+    expect(resolveAdminRoute("/finance/issues/x").redirect).toBe("/money");
+    expect(resolveAdminRoute("/finance/commercial-terms/organizers/o").redirect).toBe("/payment-setup/commercial-terms");
+    expect(resolveAdminRoute("/finance/payment-routing").redirect).toBe("/payment-setup/payment-routing");
   });
 
   it("builds finance workspace paths that resolve back to their workspace", () => {

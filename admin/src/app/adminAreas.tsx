@@ -150,7 +150,7 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
       />
     ),
   },
-  finance: {
+  "payment-setup": {
     label: "Payment setup", icon: "settings", frame: "legacy",
     render: (context) => renderPaymentSetup(context),
   },
@@ -301,10 +301,10 @@ function renderPaymentSetup(context: AdminAreaContext) {
       actorUid={userUid ?? "sample"}
       adminRoles={adminRoles}
       key={userUid ?? "sample"}
-      onBackToList={() => navigate(adminPathForNav("finance"))}
+      onBackToList={() => navigate(adminPathForNav("payment-setup"))}
       onError={setError}
       onNotice={setNotice}
-      onSelectIssueId={(issueId) => navigate(`/finance/issues/${encodeURIComponent(issueId)}`)}
+      onSelectIssueId={(issueId) => navigate(`/payment-setup/issues/${encodeURIComponent(issueId)}`)}
       selectedIssueId={route.params.financeIssueId ?? null}
       workspaceSwitch={financeWorkspaceSwitch}
     />

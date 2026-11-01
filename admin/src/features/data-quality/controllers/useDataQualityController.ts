@@ -481,7 +481,7 @@ function freshnessFor(value: string | null): DataQualityFreshness {
 function overviewWorkflowPath(id: string): string | null {
   const routes: Record<string, string> = {
     "signup-source": "/growth",
-    "finance-ledger": "/finance",
+    "finance-ledger": "/money",
   };
   return routes[id] ?? null;
 }

@@ -17,7 +17,7 @@ export const adminSections = {
   events: {path: "/events", title: "Events"},
   users: {path: "/users", title: "Users"},
   money: {path: "/money", title: "Money"},
-  finance: {path: "/finance", title: "Payment setup"},
+  "payment-setup": {path: "/payment-setup", title: "Payment setup"},
   quality: {path: "/quality", title: "Data quality"},
   operations: {path: "/operations", title: "Agent activity"},
   "admin-roles": {path: "/admin-roles", title: "Admin roles"},
@@ -82,12 +82,16 @@ export const adminRoutes: AdminRoute[] = [
   route("/money/issues/:moneyIssueId", "money", {title: "Payment issue"}),
   route("/money/bills/*", "money", {moneyView: "bills", title: "Bills"}),
   route("/money/bills/:billId", "money", {moneyView: "bills", title: "Bill"}),
-  route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
-  route("/finance/commercial-terms/*", "finance", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
-  route("/finance/commercial-terms/organizers/:termsOrganizerId", "finance", {
+  // The older payment setup screens moved off /finance; old links keep working.
+  route("/finance/*", "payment-setup", {redirect: "/money"}),
+  route("/finance/commercial-terms/*", "payment-setup", {redirect: "/payment-setup/commercial-terms"}),
+  route("/finance/payment-routing/*", "payment-setup", {redirect: "/payment-setup/payment-routing"}),
+  route("/payment-setup/issues/:financeIssueId", "payment-setup", {title: "Finance issue"}),
+  route("/payment-setup/commercial-terms/*", "payment-setup", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
+  route("/payment-setup/commercial-terms/organizers/:termsOrganizerId", "payment-setup", {
     financeWorkspace: "commercial-terms", title: "Organizer commercial terms",
   }),
-  route("/finance/payment-routing/*", "finance", {financeWorkspace: "payment-routing", title: "Payment routing"}),
+  route("/payment-setup/payment-routing/*", "payment-setup", {financeWorkspace: "payment-routing", title: "Payment routing"}),
   route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
   route("/admin-roles/:adminRoleTargetUid", "admin-roles", {title: "Admin role assignment"}),
   ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
@@ -144,7 +148,7 @@ export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string
 }
 
 export function financePathForWorkspace(workspace: FinanceWorkspace): string {
-  return workspace === "issues" ? adminSections.finance.path : `/finance/${workspace}`;
+  return workspace === "issues" ? adminSections["payment-setup"].path : `/payment-setup/${workspace}`;
 }
 
 /** Money's view, and one issue or bill in it. */
@@ -156,5 +160,5 @@ export function moneyPath(view: MoneyView, id: string | null = null): string {
 
 export function commercialTermsPathForOrganizer(organizerId: string | null): string {
   return organizerId === null ? financePathForWorkspace("commercial-terms") :
-    `/finance/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
+    `/payment-setup/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
 }
