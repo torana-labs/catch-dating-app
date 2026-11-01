@@ -5438,92 +5438,6 @@
       "role": "finder"
     },
     {
-      "id": "design:widgetbook-use-case-triage",
-      "category": "design",
-      "path": "tool/design/classify_widgetbook_use_cases.mjs",
-      "impactPaths": [
-        "widgetbook/test/support/screen_scope_dispositions.json",
-        "widgetbook/test/support/triage_inventory.dart",
-        "widgetbook/lib/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "flutter",
-          "flutter-pub"
-        ]
-      },
-      "command": "node tool/design/classify_widgetbook_use_cases.mjs",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Classifies every registered Widgetbook use case into four catalog roles and requires an authored disposition for every screen-scope case.",
-      "checks": [
-        "node --check tool/design/classify_widgetbook_use_cases.mjs",
-        "node tool/design/classify_widgetbook_use_cases.mjs --self-test",
-        "node tool/design/classify_widgetbook_use_cases.mjs --check"
-      ],
-      "role": "gate",
-      "rules": [
-        "WIDGET-CATALOG-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/classify_widgetbook_use_cases.mjs",
-        "contains": [
-          "Widgetbook-defined composition lacks explicit proposed marker",
-          "Duplicate registered id",
-          "screen-scope disposition requires an owner",
-          "expected exactly one screen-scope disposition"
-        ]
-      }
-    },
-    {
-      "id": "design:golden-coverage",
-      "category": "design",
-      "path": "tool/design/check_widgetbook_golden_coverage.mjs",
-      "impactPaths": [
-        "tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "widgetbook/test/support/golden_coverage_waivers.json",
-        "widgetbook/test/support/triage_inventory.dart",
-        "widgetbook/lib/**",
-        "lib/contexts/*/parts/**",
-        "lib/platform/media/**",
-        "lib/pages/startup/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "flutter",
-          "flutter-pub"
-        ]
-      },
-      "command": "node tool/design/check_widgetbook_golden_coverage.mjs --check",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Requires every public Catch* class in the shared UI homes and every public app-coupled shared widget (context parts, the media editor, the startup page) to map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with at most 20 waivers.",
-      "checks": [
-        "node --check tool/design/check_widgetbook_golden_coverage.mjs",
-        "node --test tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "node tool/design/check_widgetbook_golden_coverage.mjs --check"
-      ],
-      "role": "gate",
-      "rules": [
-        "WIDGET-CATALOG-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "contains": [
-          "fails when a public core class loses every registered golden id",
-          "rejects expired, ownerless, vague and stale waivers",
-          "rejects waiver counts above the Phase 1 ceiling",
-          "keeps generated public Catch classes in the denominator"
-        ]
-      }
-    },
-    {
       "id": "design:widgetbook-contract-refs",
       "category": "design",
       "path": "tool/design/check_widgetbook_contract_refs.mjs",
@@ -6849,41 +6763,6 @@
         "contains": [
           "callable steps fail when undeployed, denied, or outside main's contract"
         ]
-      }
-    },
-    {
-      "id": "design:flutter-field-surface-inventory",
-      "category": "design",
-      "path": "tool/design/generate_flutter_field_surface_inventory.mjs",
-      "command": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "description": "Validates the authored Flutter field-surface adoption ledger directly against current routes, screens, anchors, and legacy product callsites; an explicit non-check run writes only an ignored build report.",
-      "checks": [
-        "node --check tool/design/generate_flutter_field_surface_inventory.mjs",
-        "node --test tool/design/generate_flutter_field_surface_inventory.test.mjs",
-        "node tool/design/generate_flutter_field_surface_inventory.mjs --check"
-      ],
-      "impactPaths": [
-        "tool/design/generate_flutter_field_surface_inventory.test.mjs",
-        "design/components/flutter_field_surface_adoption.json"
-      ],
-      "role": "gate",
-      "rules": [
-        "DESIGN-PRIMITIVES-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/generate_flutter_field_surface_inventory.test.mjs",
-        "contains": [
-          "rejects an unclassified legacy callsite",
-          "rejects stale expected anchor counts",
-          "rejects duplicate callsite classifications"
-        ]
-      },
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node"]
       }
     },
     {

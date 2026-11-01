@@ -59,18 +59,10 @@ Run the same command with `--update-goldens` to regenerate and review the
 images. Every CI run renders the corpus once; the nightly full validation
 renders it a second time in sequence as a determinism check.
 
-From the repository root, `node tool/run.mjs check design:golden-coverage`
-compares public `Catch*` classes with designated golden ids and validates the
-small owner/expiry waiver file.
-
-From the repository root, run
-`node tool/design/classify_widgetbook_use_cases.mjs --json` for on-demand
-four-class triage and `--self-test` for its seeded policy probes. Its Dart
-syntax inventory follows local helper/scope references, reconciles generated
-registrations with annotations, and also reports stacked annotations omitted
-by the existing Widgetbook generator. `prototype` requires an explicit
-proposal marker and is excluded from production golden coverage. Neither
-triage output nor prototype dispositions are tracked here.
+The corpus runner selects its cases through
+`widgetbook/test/support/triage_inventory.dart`, a Dart syntax inventory that
+follows local helper and scope references and reconciles generated
+registrations with annotations.
 
 ## Adding a golden
 
