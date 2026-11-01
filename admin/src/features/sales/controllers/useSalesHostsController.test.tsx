@@ -4,7 +4,7 @@ import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {useSalesHostsController} from "./useSalesHostsController";
 
 const repository = vi.hoisted(() => ({listSalesAccounts: vi.fn(), getSalesAccount: vi.fn(), listSalesContacts: vi.fn(),
-  recordSalesActivity: vi.fn(), upsertSalesTask: vi.fn(), upsertSalesOpportunity: vi.fn()}));
+  recordSalesActivity: vi.fn(), upsertSalesTask: vi.fn(), upsertSalesOpportunity: vi.fn(), updateSalesAccount: vi.fn(), upsertSalesContact: vi.fn()}));
 vi.mock("../api/salesRepository", () => repository);
 
 describe("useSalesHostsController", () => {
@@ -63,6 +63,29 @@ describe("useSalesHostsController", () => {
       fields: {motion: "first_workflow_pilot", ownerUid: "riya"}});
     await waitFor(() => expect(repository.getSalesAccount.mock.calls.length).toBeGreaterThan(reads));
     expect(onError).not.toHaveBeenCalledWith(expect.any(String));
+  });
+
+  it("the team can edit research and owner; a sales associate edits only the summary and next action", async () => {
+    const {wrapper} = createQueryHarness();
+    const input = {researchStatus: "qualified" as const, assignedOwnerUid: "dev", summary: " Quiz nights ", nextAction: ""};
+    const team = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "dev", onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+    expect(team.result.current.canEditResearch).toBe(true);
+    await act(async () => { await team.result.current.saveHost(3, input); });
+    expect(repository.updateSalesAccount.mock.calls[0][0]).toMatchObject({organizerId: "harbor", expectedRevision: 3,
+      patch: {researchStatus: "qualified", assignedOwnerUid: "dev", summary: "Quiz nights", nextAction: null}});
+
+    const own = renderHook(() => useSalesHostsController({ownerUid: "riya", selectedOrganizerId: "harbor", uid: "riya", onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+    expect(own.result.current.canEditResearch).toBe(false);
+    await act(async () => { await own.result.current.saveHost(3, input); });
+    expect(repository.updateSalesAccount.mock.calls[1][0].patch).toEqual({summary: "Quiz nights", nextAction: null});
+  });
+
+  it("adds a person as a new contact", async () => {
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "dev", onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+    const person = {contact: {displayName: "Kavya"}, relationship: {role: "Founder", decisionInfluence: "decision_maker" as const, primary: true}};
+    await act(async () => { await result.current.addPerson(person); });
+    expect(repository.upsertSalesContact.mock.calls[0][0]).toMatchObject({...person, organizerId: "harbor", expectedRevision: 0});
   });
 
   it("reports a refused write and leaves the sheet open", async () => {

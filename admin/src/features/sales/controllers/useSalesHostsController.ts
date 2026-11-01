@@ -5,15 +5,30 @@ import {
   listSalesAccounts,
   listSalesContacts,
   recordSalesActivity,
+  updateSalesAccount,
+  upsertSalesContact,
   upsertSalesOpportunity,
   upsertSalesTask,
 } from "../api/salesRepository";
-import type {SalesOpportunity, SalesRecordActivityInput, SalesTask} from "../api/salesTypes";
+import type {
+  SalesContactInput,
+  SalesOpportunity,
+  SalesRecordActivityInput,
+  SalesResearchStatus,
+  SalesTask,
+} from "../api/salesTypes";
 
 export type HostTab = "overview" | "conversations" | "deals" | "notes";
 
 export type HostActivityInput = Pick<SalesRecordActivityInput, "type" | "note" | "channel" | "attestation">;
 export type NextStepInput = Pick<SalesTask, "kind" | "title" | "dueAt">;
+export interface HostEditInput {
+  researchStatus: SalesResearchStatus;
+  assignedOwnerUid: string | null;
+  summary: string;
+  nextAction: string;
+}
+export type PersonInput = Pick<SalesContactInput, "contact" | "relationship">;
 export type DealMoveInput = Pick<SalesOpportunity, "stage" | "nextStep" | "nextStepAt"> & {transitionReason?: string};
 
 /**
@@ -52,6 +67,8 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
   const logging = useMutation({mutationFn: recordSalesActivity});
   const savingTask = useMutation({mutationFn: upsertSalesTask});
   const savingDeal = useMutation({mutationFn: upsertSalesOpportunity});
+  const savingHost = useMutation({mutationFn: updateSalesAccount});
+  const savingPerson = useMutation({mutationFn: upsertSalesContact});
 
   const run = useCallback(async (action: () => Promise<unknown>, notice: string) => {
     onError(null);
@@ -94,7 +111,17 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
       ...(deal ? {opportunityId: deal.opportunityId} : {}), ...(transitionReason ? {transitionReason} : {}),
       fields: {motion: deal?.motion ?? "first_workflow_pilot", ownerUid: deal?.ownerUid ?? uid ?? "", ...fields},
     }), deal ? "Deal moved." : "Deal started."),
-    isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending,
+    /** Saves the host from what the person opened; a change someone else made comes back as an error to reload. */
+    saveHost: (expectedRevision: number, input: HostEditInput) => run(() => savingHost.mutateAsync({organizerId,
+      requestId: crypto.randomUUID(), expectedRevision, patch: {
+        // A sales associate works their own hosts: they can't reassign one or change its research status.
+        ...(ownerUid ? {} : {researchStatus: input.researchStatus, assignedOwnerUid: input.assignedOwnerUid}),
+        summary: input.summary.trim() || null, nextAction: input.nextAction.trim() || null,
+      }}), "Saved."),
+    addPerson: (input: PersonInput) => run(() => savingPerson.mutateAsync({...input, organizerId, requestId: crypto.randomUUID(),
+      expectedRevision: 0}), "Added."),
+    canEditResearch: ownerUid === null,
+    isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending || savingHost.isPending || savingPerson.isPending,
   };
 }
 

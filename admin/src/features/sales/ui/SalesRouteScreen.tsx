@@ -35,7 +35,7 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
 
 function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost, onError, onNotice}: Props) {
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
-  return <SalesHostsScreen model={controller} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
+  return <SalesHostsScreen model={{...controller, uid}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }
 
 function Deals({uid, onOpenHost}: Props) {
