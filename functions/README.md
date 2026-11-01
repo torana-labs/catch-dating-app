@@ -300,6 +300,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
+| `adminListSupportConversations` / `adminGetSupportConversation` / `adminUpdateSupportConversation` / `adminRecordSupportMessage` / `adminListSupportSavedReplies` / `adminUpsertSupportSavedReply` | `src/supportInbox/adminSupport.ts` | Support inbox for ops: WhatsApp and Instagram messages that are not nominations, and logged emails, as one conversation per person per channel with owner, waiting time, links and saved replies |
 | `reportUser` / `reportGuest` | `src/safety/reporting.ts` | File a safety report (guest, or organizer and team); acknowledged at once, deadlines attached, severe reasons restrict at once |
 | `adminTakeAccountSafetyAction` / `adminLiftAccountSafetyAction` / `adminListAccountSafetyActions` / `expireAccountSafetyActions` | `src/safety/accountActions.ts` | Warn and restrict (ops), suspend and ban (owner), enforced at sign-in, messaging and booking; suspensions and bans cancel future bookings; expiry every 15 minutes |
 | `submitSafetyAppeal` / `adminDecideSafetyAppeal` | `src/safety/safetyAppeals.ts` | One appeal per action, reviewed by someone who did not decide |
@@ -338,6 +339,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminGetInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support (or the sales associate who nominated it) read one inbox item and its journey, every step it took |
 | `adminUpdateInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support assign, unassign, snooze or wake one inbox item; audited and recorded in its journey |
 | `adminRebuildInbox` | `src/admin/inbox/callables.ts` | Admin or owner re-project one page of an inbox source collection, or of users into the people index |
+| `adminListMyNominations` | `src/admin/inbox/myNominations.ts` | A sales associate (or ops and the owner) read the organizers they nominated, newest first, published, waiting or stuck, with `count()` totals per filter |
 | `adminRecommendOrganizerClaim` | `src/admin/organizerClaimRecommendation.ts` | Admin, owner or support recommend approving or rejecting a pending organizer claim; audited; only the owner decides it |
 | `adminSearchPeople` | `src/admin/peopleSearch.ts` | Admin, owner, support or safety reviewers search people by name, phone or uid in `adminPeopleIndex`; every search and its query is written to `adminAuditLogs` |
 | `adminListActivityLog` | `src/admin/activityLog.ts` | Admin or owner read the activity log newest first: audited decisions merged with agent execution receipts, filterable to problems |

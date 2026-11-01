@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_update_support_conversation_response.schema.json",
+  "title": "AdminUpdateSupportConversationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversationId",
+    "status",
+    "ownerUid",
+    "linkCount"
+  ],
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "linkCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

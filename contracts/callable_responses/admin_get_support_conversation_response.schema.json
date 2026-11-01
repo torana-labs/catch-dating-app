@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_support_conversation_response.schema.json",
+  "title": "AdminGetSupportConversationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversation",
+    "messages"
+  ],
+  "properties": {
+    "conversation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conversationId",
+        "channel",
+        "contactLabel",
+        "displayName",
+        "audience",
+        "subject",
+        "status",
+        "ownerUid",
+        "waitingSinceMillis",
+        "lastMessageAtMillis",
+        "lastMessagePreview",
+        "linkCount",
+        "contactAddress",
+        "uid",
+        "organizerId",
+        "links"
+      ],
+      "properties": {
+        "conversationId": {
+          "type": "string",
+          "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "whatsapp",
+            "instagram",
+            "email"
+          ]
+        },
+        "contactLabel": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "guest",
+            "organizer",
+            "unknown"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "waitingOnThem",
+            "closed"
+          ]
+        },
+        "ownerUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "waitingSinceMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "lastMessageAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastMessagePreview": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "linkCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contactAddress": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "uid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "organizerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "links": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "path",
+              "label"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "booking",
+                  "payment",
+                  "safetyCase"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            }
+          }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "direction",
+          "text",
+          "authorUid",
+          "atMillis",
+          "deliveryState"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound",
+              "note"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "authorUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "atMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "deliveryState": {
+            "type": "string",
+            "enum": [
+              "received",
+              "recorded"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

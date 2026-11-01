@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_support_conversations_response.schema.json",
+  "title": "AdminListSupportConversationsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "counts"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conversationId",
+          "channel",
+          "contactLabel",
+          "displayName",
+          "audience",
+          "subject",
+          "status",
+          "ownerUid",
+          "waitingSinceMillis",
+          "lastMessageAtMillis",
+          "lastMessagePreview",
+          "linkCount"
+        ],
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "whatsapp",
+              "instagram",
+              "email"
+            ]
+          },
+          "contactLabel": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "audience": {
+            "type": "string",
+            "enum": [
+              "guest",
+              "organizer",
+              "unknown"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "waitingOnThem",
+              "closed"
+            ]
+          },
+          "ownerUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "waitingSinceMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "lastMessageAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lastMessagePreview": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "linkCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "open",
+        "mine",
+        "waitingOnThem"
+      ],
+      "properties": {
+        "open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mine": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "waitingOnThem": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

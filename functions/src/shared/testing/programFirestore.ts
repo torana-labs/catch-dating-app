@@ -107,6 +107,11 @@ class FakeCollectionRef extends FakeQuery {
     return new FakeDocRef(this.firestore,
       `${this.collectionPath}/${id ?? this.firestore.nextAutoId()}`);
   }
+  async add(data: FakeData) {
+    const ref = this.doc();
+    this.firestore.createDoc(ref.path, data);
+    return ref;
+  }
 }
 
 class FakeQuerySnapshot {

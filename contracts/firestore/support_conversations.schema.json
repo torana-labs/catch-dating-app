@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/support_conversations.schema.json",
+  "title": "SupportConversationDocument",
+  "description": "One person's support conversation with Catch on one channel (WhatsApp, Instagram or email). Inbound WhatsApp and Instagram messages that are not nominations land here; staff log emails by hand until inbound email exists. It has an owner, a status, how long the person has been waiting for a reply, and links to the booking, money issue or safety case it is about. Admin callables only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supportConversations",
+  "x-firestore-path": "supportConversations/{conversationId}",
+  "x-document-id-field": "conversationId",
+  "x-owner": "Support inbox service and Admin support callables",
+  "required": [
+    "schemaVersion",
+    "conversationId",
+    "channel",
+    "contactAddress",
+    "contactLabel",
+    "displayName",
+    "uid",
+    "audience",
+    "organizerId",
+    "subject",
+    "status",
+    "ownerUid",
+    "waitingSince",
+    "lastInboundAt",
+    "lastOutboundAt",
+    "lastMessageAt",
+    "lastMessagePreview",
+    "messageCount",
+    "links",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "conversationId": {
+      "type": "string",
+      "pattern": "^(whatsapp|instagram|email)-[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "instagram",
+        "email"
+      ]
+    },
+    "contactAddress": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200,
+      "description": "E.164 number, ig:<scoped id> or email address."
+    },
+    "contactLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Masked, for lists."
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "uid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "organizer",
+        "unknown"
+      ]
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitingOnThem",
+        "closed"
+      ]
+    },
+    "ownerUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "waitingSince": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "lastInboundAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "lastOutboundAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "lastMessageAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "lastMessagePreview": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "messageCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "links": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "booking",
+              "payment",
+              "safetyCase"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(eventParticipations|eventAttendees|payments|publicEventPayments|reports|moderationFlags|eventSafetyReports|accountSafetyActions)/[A-Za-z0-9_~-]{1,200}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

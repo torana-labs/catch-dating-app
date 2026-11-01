@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.115.0
+version: 1.116.0
 updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
@@ -404,6 +404,10 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `blockUser` | Callable | `SafetyRepository.blockUser` | `blocks/{blocker}__{target}`, `matches/{matchId}` status | Rate-limited before writes; backend-owned safety edge and match closure. |
 | `unblockUser` | Callable | `SafetyRepository.unblockUser` | `blocks/{blocker}__{target}` delete | Rate-limited before delete; removes directed block edge. |
 | `onBlockCreated` | Firestore trigger on `blocks/{blockId}` create | Backend | `matches/{matchId}` status | Secondary safety guard to close matches after block edge writes. |
+| `adminListSupportConversations` / `adminGetSupportConversation` | Callable | Admin Support | Read `supportConversations` and `.../messages` | Ops/support inbox: open (longest waiting first), mine, waiting on them, closed; guests and organizers told apart. Opening a conversation shows the full contact address and is audited. |
+| `adminUpdateSupportConversation` | Callable | Admin Support | `supportConversations/{id}` | Owner, status and links to a booking, payment or safety case (each must exist). Audited. |
+| `adminRecordSupportMessage` | Callable | Admin Support | `supportConversations/{id}`, `.../messages/{id}` | Records a reply (the conversation then waits on them), a logged email (starts a conversation) or an internal note. Replies are recorded, not sent: staff send from WhatsApp, Instagram or email until provider sending is on. |
+| `adminListSupportSavedReplies` / `adminUpsertSupportSavedReply` | Callable | Admin Support | `supportSavedReplies/{id}` | Saved replies. |
 | `reportUser` | Callable | `SafetyRepository.reportUser` | `reports/{autoId}`, `accountSafetyNotices/{reporter}/items/{id}` | Bounded report payload. Acknowledged at once with a notice; carries its deadlines (first look 24 h, resolve 15 days, intimate images down 24 h). A severe reason restricts the reported account at once, pending review (`fileSafetyReport`). |
 | `reportGuest` | Callable | Host app (follow-up) | `reports/{autoId}` with `source: organizer` | An organizer, their manager or the event's team (`viewRoster`) reports a guest; same filing as `reportUser`. Off when Settings → Safety switches organizer reports off. |
 | `adminTakeAccountSafetyAction` | Callable | Admin Safety | `accountSafetyActions/{id}`, `accountSafetyStates/{uid}`, notices, linked case, Auth `disabled`, `bannedIdentities/{hash}` | Warn or restrict (ops), suspend or ban (owner). Suspend and ban sign the person out and cancel future bookings through the guest's own cancel path; organizer-checkout bookings are listed for the organizer to refund. A ban hashes the phone and devices. Audited. |

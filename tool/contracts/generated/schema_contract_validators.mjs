@@ -154,6 +154,9 @@ import {
   supplyIntakeRequestsDocumentSchema,
   supplyIntakeUsageDocumentSchema,
   supplyNominatorDocumentSchema,
+  supportConversationDocumentSchema,
+  supportConversationMessageDocumentSchema,
+  supportSavedReplyDocumentSchema,
   accountSafetyActionDocumentSchema,
   accountSafetyStateDocumentSchema,
   accountSafetyNoticeDocumentSchema,
@@ -937,6 +940,8 @@ import {
   adminNominateOrganizerCallablePayloadSchema,
   adminNominateOrganizerCallableResponseSchema,
   adminApproveOrganizerListingCallablePayloadSchema,
+  adminListMyNominationsCallablePayloadSchema,
+  adminListMyNominationsCallableResponseSchema,
   adminListInboxItemsCallablePayloadSchema,
   adminListInboxItemsCallableResponseSchema,
   adminGetInboxItemCallablePayloadSchema,
@@ -1284,6 +1289,18 @@ import {
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
+  adminListSupportConversationsCallablePayloadSchema,
+  adminListSupportConversationsCallableResponseSchema,
+  adminGetSupportConversationCallablePayloadSchema,
+  adminGetSupportConversationCallableResponseSchema,
+  adminUpdateSupportConversationCallablePayloadSchema,
+  adminUpdateSupportConversationCallableResponseSchema,
+  adminRecordSupportMessageCallablePayloadSchema,
+  adminRecordSupportMessageCallableResponseSchema,
+  adminListSupportSavedRepliesCallablePayloadSchema,
+  adminListSupportSavedRepliesCallableResponseSchema,
+  adminUpsertSupportSavedReplyCallablePayloadSchema,
+  adminUpsertSupportSavedReplyCallableResponseSchema,
   adminTakeAccountSafetyActionCallablePayloadSchema,
   adminTakeAccountSafetyActionCallableResponseSchema,
   adminLiftAccountSafetyActionCallablePayloadSchema,
@@ -1533,6 +1550,9 @@ export const validateSupplyIntakeRequest = ajv.compile(supplyIntakeRequestSchema
 export const validateSupplyIntakeRequestsDocument = ajv.compile(supplyIntakeRequestsDocumentSchema);
 export const validateSupplyIntakeUsageDocument = ajv.compile(supplyIntakeUsageDocumentSchema);
 export const validateSupplyNominatorDocument = ajv.compile(supplyNominatorDocumentSchema);
+export const validateSupportConversationDocument = ajv.compile(supportConversationDocumentSchema);
+export const validateSupportConversationMessageDocument = ajv.compile(supportConversationMessageDocumentSchema);
+export const validateSupportSavedReplyDocument = ajv.compile(supportSavedReplyDocumentSchema);
 export const validateAccountSafetyActionDocument = ajv.compile(accountSafetyActionDocumentSchema);
 export const validateAccountSafetyStateDocument = ajv.compile(accountSafetyStateDocumentSchema);
 export const validateAccountSafetyNoticeDocument = ajv.compile(accountSafetyNoticeDocumentSchema);
@@ -2316,6 +2336,8 @@ export const validateAdminRecordActionExecutionCallablePayload = ajv.compile(adm
 export const validateAdminNominateOrganizerCallablePayload = ajv.compile(adminNominateOrganizerCallablePayloadSchema);
 export const validateAdminNominateOrganizerCallableResponse = ajv.compile(adminNominateOrganizerCallableResponseSchema);
 export const validateAdminApproveOrganizerListingCallablePayload = ajv.compile(adminApproveOrganizerListingCallablePayloadSchema);
+export const validateAdminListMyNominationsCallablePayload = ajv.compile(adminListMyNominationsCallablePayloadSchema);
+export const validateAdminListMyNominationsCallableResponse = ajv.compile(adminListMyNominationsCallableResponseSchema);
 export const validateAdminListInboxItemsCallablePayload = ajv.compile(adminListInboxItemsCallablePayloadSchema);
 export const validateAdminListInboxItemsCallableResponse = ajv.compile(adminListInboxItemsCallableResponseSchema);
 export const validateAdminGetInboxItemCallablePayload = ajv.compile(adminGetInboxItemCallablePayloadSchema);
@@ -2663,6 +2685,18 @@ export const validateSetReviewResponseCallablePayload = ajv.compile(setReviewRes
 export const validateBlockUserCallablePayload = ajv.compile(blockUserCallablePayloadSchema);
 export const validateUnblockUserCallablePayload = ajv.compile(unblockUserCallablePayloadSchema);
 export const validateReportUserCallablePayload = ajv.compile(reportUserCallablePayloadSchema);
+export const validateAdminListSupportConversationsCallablePayload = ajv.compile(adminListSupportConversationsCallablePayloadSchema);
+export const validateAdminListSupportConversationsCallableResponse = ajv.compile(adminListSupportConversationsCallableResponseSchema);
+export const validateAdminGetSupportConversationCallablePayload = ajv.compile(adminGetSupportConversationCallablePayloadSchema);
+export const validateAdminGetSupportConversationCallableResponse = ajv.compile(adminGetSupportConversationCallableResponseSchema);
+export const validateAdminUpdateSupportConversationCallablePayload = ajv.compile(adminUpdateSupportConversationCallablePayloadSchema);
+export const validateAdminUpdateSupportConversationCallableResponse = ajv.compile(adminUpdateSupportConversationCallableResponseSchema);
+export const validateAdminRecordSupportMessageCallablePayload = ajv.compile(adminRecordSupportMessageCallablePayloadSchema);
+export const validateAdminRecordSupportMessageCallableResponse = ajv.compile(adminRecordSupportMessageCallableResponseSchema);
+export const validateAdminListSupportSavedRepliesCallablePayload = ajv.compile(adminListSupportSavedRepliesCallablePayloadSchema);
+export const validateAdminListSupportSavedRepliesCallableResponse = ajv.compile(adminListSupportSavedRepliesCallableResponseSchema);
+export const validateAdminUpsertSupportSavedReplyCallablePayload = ajv.compile(adminUpsertSupportSavedReplyCallablePayloadSchema);
+export const validateAdminUpsertSupportSavedReplyCallableResponse = ajv.compile(adminUpsertSupportSavedReplyCallableResponseSchema);
 export const validateAdminTakeAccountSafetyActionCallablePayload = ajv.compile(adminTakeAccountSafetyActionCallablePayloadSchema);
 export const validateAdminTakeAccountSafetyActionCallableResponse = ajv.compile(adminTakeAccountSafetyActionCallableResponseSchema);
 export const validateAdminLiftAccountSafetyActionCallablePayload = ajv.compile(adminLiftAccountSafetyActionCallablePayloadSchema);

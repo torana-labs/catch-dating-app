@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_upsert_support_saved_reply_response.schema.json",
+  "title": "AdminUpsertSupportSavedReplyCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "replyId"
+  ],
+  "properties": {
+    "replyId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    }
+  }
+}
