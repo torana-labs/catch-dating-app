@@ -21,7 +21,7 @@
   },
   "src/features/claims/sections/ClaimPageSections.tsx": {
     "react/forbid-elements": {
-      "count": 19
+      "count": 8
     }
   },
   "src/features/eventAssistance/EventAssistancePage.tsx": {
