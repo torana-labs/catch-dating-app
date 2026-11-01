@@ -25,6 +25,7 @@ import {CallableRequest, HttpsError, onCall} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   activeProgramDuties,
@@ -110,7 +111,7 @@ export async function getProgramWorkAccessHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramWorkAccess", {
+  checkInstanceRateLimit(actorUid, "getProgramWorkAccess", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   const access = await requireProgramAccess({

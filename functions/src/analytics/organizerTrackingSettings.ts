@@ -3,6 +3,7 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkIpRateLimit, checkRateLimit} from "../shared/rateLimit";
+import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {assertPublicOrganizerPageEligible} from "../shared/publicOrganizerPage";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -75,7 +76,7 @@ export async function getOrganizerTrackingSettingsHandler(
   const {organizerId} = validateCallableWithAjv(request,
     validateGetOrganizerTrackingSettingsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerTrackingSettings", {
+  checkInstanceRateLimit(actorUid, "getOrganizerTrackingSettings", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   return db.runTransaction(async (transaction) => {

@@ -23,39 +23,6 @@ import {
 import {eventPublishingSupplyPanels} from "./eventPublishingSupplyPanels";
 import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
 
-function EventDirectoryView({
-  activeCount,
-  controller,
-  fullCount,
-  searchIssueCount,
-}: {
-  activeCount: number;
-  controller: EventPublishingController;
-  fullCount: number;
-  searchIssueCount: number;
-}) {
-  return (
-    <AdminDirectoryScreenStack>
-      <AdminMetricGrid ariaLabel="Event publishing state">
-        <AdminMetricCard label="Loaded events" value={controller.rows.length} />
-        <AdminMetricCard label="Active" value={activeCount} />
-        <AdminMetricCard
-          label="Full"
-          tone={fullCount > 0 ? "attention" : "normal"}
-          value={fullCount}
-        />
-        <AdminMetricCard
-          label="Search issues"
-          tone={searchIssueCount > 0 ? "attention" : "normal"}
-          value={searchIssueCount}
-        />
-      </AdminMetricGrid>
-
-      <EventDirectoryPanel controller={controller} />
-    </AdminDirectoryScreenStack>
-  );
-}
-
 function EventDetailView({
   controller,
 }: {
@@ -93,7 +60,7 @@ function EventDetailView({
   );
 }
 
-function ExternalEventInventoryView({
+function ExternalEventDetailView({
   controller,
 }: {
   controller: EventPublishingController;
@@ -107,7 +74,7 @@ function ExternalEventInventoryView({
               icon={<ArrowLeft size={15} strokeWidth={1.9} />}
               onClick={() => controller.selectExternalEvent(null)}
             >
-              External inventory
+              Events
             </AdminButton>
           }
           title={controller.selectedExternalEvent?.title ?? "External event"}
@@ -172,68 +139,7 @@ function ExternalEventInventoryView({
     );
   }
 
-  return (
-    <AdminDirectoryScreenStack>
-      <ExternalEventSupplyPanel controller={controller} />
-    </AdminDirectoryScreenStack>
-  );
-}
-
-function EventDirectoryPanel({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  return (
-    <Panel
-      span={2}
-      icon={<CalendarDays size={18} strokeWidth={1.9} />}
-      title="Canonical event directory"
-      action={
-        controller.isListLoading ?
-          "Loading" :
-          `${controller.filteredRows.length} shown`
-      }
-    >
-      <AdminToolbar>
-        <SegmentedControl<EventPublishingFilter>
-          ariaLabel="Event filters"
-          options={[
-            {id: "launchCities", label: "Indore + Mumbai"},
-            {id: "upcoming", label: "Upcoming"},
-            {id: "all", label: "All"},
-            {id: "active", label: "Active"},
-            {id: "cancelled", label: "Cancelled"},
-            {id: "full", label: "Full"},
-            {id: "searchIssues", label: "Search issues"},
-          ]}
-          value={controller.filter}
-          onChange={controller.setFilter}
-        />
-        <SearchField
-          ariaLabel="Search canonical events"
-          icon={<Search size={16} strokeWidth={1.8} />}
-          onChange={controller.setQuery}
-          placeholder="Search event, organizer, id, city, venue"
-          value={controller.query}
-        />
-        <AdminButton
-          disabled={controller.isListLoading}
-          icon={<RefreshCw size={15} strokeWidth={1.9} />}
-          onClick={() => {
-            void controller.refreshList();
-          }}
-        >
-          Refresh
-        </AdminButton>
-      </AdminToolbar>
-      <eventPublishingSupplyPanels.EventDirectoryTable
-        rows={controller.filteredRows}
-        selectedEventId={controller.event?.eventId ?? controller.eventId}
-        onSelect={controller.selectEvent}
-      />
-    </Panel>
-  );
+  return null;
 }
 
 function EventDetailSummary({
@@ -290,64 +196,7 @@ function EventDetailSummary({
   );
 }
 
-function ExternalEventSupplyPanel({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  return (
-    <Panel
-      span={2}
-      icon={<ExternalLink size={18} strokeWidth={1.9} />}
-      title="Read-only external event supply"
-      action={
-        controller.isExternalListLoading ?
-          "Loading" :
-          `${controller.filteredExternalRows.length} shown`
-      }
-    >
-      <AdminToolbar>
-        <SegmentedControl<ExternalEventSupplyFilter>
-          ariaLabel="External event supply filters"
-          options={[
-            {id: "public", label: "All public"},
-            {id: "launchCities", label: "Indore + Mumbai"},
-            {id: "upcoming", label: "Upcoming"},
-            {id: "active", label: "Active"},
-            {id: "cancelled", label: "Cancelled"},
-          ]}
-          value={controller.externalFilter}
-          onChange={controller.setExternalFilter}
-        />
-        <SearchField
-          ariaLabel="Search external event supply"
-          icon={<Search size={16} strokeWidth={1.8} />}
-          onChange={controller.setExternalQuery}
-          placeholder="Search source, organizer, candidate, venue"
-          value={controller.externalQuery}
-        />
-        <AdminButton
-          disabled={controller.isExternalListLoading}
-          icon={<RefreshCw size={15} strokeWidth={1.9} />}
-          onClick={() => void controller.refreshExternalList()}
-        >
-          Refresh
-        </AdminButton>
-      </AdminToolbar>
-      <eventPublishingSupplyPanels.ExternalEventSupplyTable
-        onSelect={controller.selectExternalEvent}
-        rows={controller.filteredExternalRows}
-        selectedEventId={controller.selectedExternalEventId}
-      />
-    </Panel>
-  );
-}
-
 export const eventPublishingDirectoryPanels = {
-  EventDirectoryView,
   EventDetailView,
-  ExternalEventInventoryView,
-  EventDirectoryPanel,
-  EventDetailSummary,
-  ExternalEventSupplyPanel,
+  ExternalEventDetailView,
 };

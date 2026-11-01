@@ -15,6 +15,7 @@ describe("Admin route contract", () => {
 
   it.each([
     ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
+    ["/support/whatsapp-abc", "support", "supportConversationId", "whatsapp-abc"],
     ["/safety/actions/action-1", "safety", "safetyActionId", "action-1"],
     ["/safety/appeals/action-2", "safety", "safetyActionId", "action-2"],
     ["/organizers/afterfly", "organizers", "organizerId", "afterfly"],
@@ -92,6 +93,11 @@ describe("Admin route contract", () => {
   it("keeps unknown nested paths in their workspace without borrowing a record", () => {
     expect(resolveAdminRoute("/events/unknown/extra")).toMatchObject({nav: "events", eventWorkspace: "directory"});
     expect(resolveAdminRoute("/events/unknown/extra").params.eventId).toBeUndefined();
+    expect(resolveAdminRoute("/events/trivia/page")).toMatchObject({nav: "events", eventTab: "page",
+      params: {eventId: "trivia"}});
+    expect(resolveAdminRoute("/organizers/afterfly/money")).toMatchObject({nav: "organizers",
+      organizerTab: "money", params: {organizerId: "afterfly"}});
+    expect(resolveAdminRoute("/organizers/afterfly/unknown").params.organizerId).toBeUndefined();
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
     expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});

@@ -1607,20 +1607,28 @@
         ]
       },
       "react": {
-        "symbol": "EmptyStateControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchEmptyState",
+        "file": "packages/web-ui/src/components/CatchEmptyState.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "EmptyStateControl"
+        ],
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Feedback",
+          "story": "packages/web-ui/src/components/CatchEmptyState.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "static",
-            "polite-announcement",
-            "surface-content-adapter"
+            "stacked",
+            "inline",
+            "surface",
+            "bubble-icon",
+            "with-action",
+            "title-only",
+            "message-only",
+            "done"
           ]
         },
-        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants. CatchEmptyState (packages/web-ui/src/components/CatchEmptyState.tsx) is the prepared styled twin with every contract state; this record moves to it when the Admin and website EmptyStateControl adapters migrate."
+        "notes": "Flutter's CatchEmptyState on the web, stacked or inline, with design system v15's kind=\"done\" for a cleared queue. Replaces the headless EmptyStateControl record; EmptyStateControl stays as an additional symbol until its adapters move. Promoted from the website's T4 entry because Admin renders it too."
       },
       "design": {
         "figma": {
@@ -1700,6 +1708,19 @@
               "stacked",
               "inline"
             ]
+          },
+          {
+            "name": "kind",
+            "type": "enum",
+            "required": false,
+            "default": "empty",
+            "dartType": "CatchEmptyStateKind",
+            "tsType": "CatchEmptyStateKind",
+            "values": [
+              "empty",
+              "done"
+            ],
+            "notes": "done: a queue the person has cleared, with a success mark when no icon is given."
           }
         ],
         "states": [
@@ -5391,6 +5412,73 @@
             "required": false,
             "dartType": "IconData?",
             "tsType": "ReactNode"
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "action",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchSectionAction?",
+            "tsType": "CatchSectionAction"
+          },
+          {
+            "name": "note",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "dividers",
+            "type": "enum",
+            "required": false,
+            "default": "between",
+            "dartType": "CatchSectionDividers",
+            "tsType": "CatchSectionDividers",
+            "values": [
+              "between",
+              "all",
+              "none"
+            ]
+          },
+          {
+            "name": "container",
+            "type": "enum",
+            "required": false,
+            "default": "plain",
+            "dartType": "CatchSectionContainer",
+            "tsType": "CatchSectionContainer",
+            "values": [
+              "plain",
+              "tile"
+            ]
+          },
+          {
+            "name": "timeline",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchSectionStep>?",
+            "tsType": "readonly CatchSectionStep[]"
+          },
+          {
+            "name": "empty",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "columns",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -5891,6 +5979,26 @@
       "roleNoun": "Section",
       "naming": {
         "useCase": ""
+      },
+      "react": {
+        "symbol": "CatchSection",
+        "file": "packages/web-ui/src/components/CatchSection.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSection.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "titled",
+            "collection-populated",
+            "collection-empty",
+            "pick-list",
+            "contained-section",
+            "timeline",
+            "columns"
+          ]
+        },
+        "notes": "Design system v15 Section: a titled group that owns the lines between its rows; a list with a chosen row drops its lines (rule 12); a tile container for settings groups; a journey drawn as joined markers from steps; columns that fold to one on phones."
       }
     },
     {
@@ -7038,6 +7146,36 @@
             "required": false,
             "dartType": "Color?",
             "tsType": "string"
+          },
+          {
+            "name": "recipe",
+            "type": "object",
+            "required": false,
+            "default": "default",
+            "dartType": "String",
+            "tsType": "\"default\" | \"chart\""
+          },
+          {
+            "name": "bars",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchBarIndicatorBar>?",
+            "tsType": "readonly CatchBarIndicatorBar[]"
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "height",
+            "type": "number",
+            "required": false,
+            "default": 120,
+            "dartType": "double",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -7100,6 +7238,22 @@
           "catch.page_dots"
         ],
         "reason": "Displays a known numerical observation against an explicit maximum. Loading and page indicators represent different state."
+      },
+      "react": {
+        "symbol": "CatchBarIndicator",
+        "file": "packages/web-ui/src/components/CatchBarIndicator.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchBarIndicator.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "chart",
+            "partial-period"
+          ]
+        },
+        "notes": "One bar against a maximum (a meter), or the chart recipe: weekly bars with values above and labels below, the running period outlined, read aloud as one image."
       }
     },
     {
@@ -7220,6 +7374,25 @@
             "dartType": "int?",
             "tsType": "number",
             "notes": "Optional visible prefix in the dataQuality recipe."
+          },
+          {
+            "name": "recipe",
+            "type": "enum",
+            "required": false,
+            "default": "tile",
+            "dartType": "CatchMetricSectionVariant",
+            "tsType": "CatchMetricSectionVariant",
+            "values": [
+              "tile",
+              "inline"
+            ]
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
@@ -7356,6 +7529,24 @@
           "catch.section"
         ],
         "reason": "Arranges typed metric values in a compact context rail or adaptive independent-measurement tiles. Generic Section owns headings and page gutters; MetricSection owns only the local metric collection."
+      },
+      "react": {
+        "symbol": "CatchMetricSection",
+        "file": "packages/web-ui/src/components/CatchMetricSection.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchMetricSection.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "four-items",
+            "tiles",
+            "inline",
+            "notes"
+          ]
+        },
+        "notes": "Design system v15 Stat strip: caller-formatted metrics with toned notes, as tiles or an inline strip; the quiet register sets values in plain type."
       }
     },
     {
@@ -8859,6 +9050,23 @@
           "catch.analytics_metric"
         ],
         "reason": "A decorative glyph container has no metric payload, title, navigation or tap contract. Empty and error glyph containers now use this canonical renderer through named constructors, rather than separate Widget identities."
+      },
+      "react": {
+        "symbol": "CatchIconTile",
+        "file": "packages/web-ui/src/components/CatchIconTile.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIconTile.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "empty",
+            "bubble",
+            "error"
+          ]
+        },
+        "notes": "Flutter's CatchIconTile on the web; the empty and error states render it. Exported with its contract once Admin rendered it through CatchEmptyState, which ended its website-only T4 entry."
       }
     },
     {
@@ -14963,6 +15171,34 @@
             "dartType": "String",
             "tsType": "string",
             "notes": "Required by confirmation; an empty message omits supporting copy and its gap."
+          },
+          {
+            "name": "open",
+            "type": "bool",
+            "required": true,
+            "dartType": "bool",
+            "tsType": "boolean"
+          },
+          {
+            "name": "onClose",
+            "type": "callback",
+            "required": true,
+            "dartType": "VoidCallback",
+            "tsType": "() => void"
+          },
+          {
+            "name": "confirm",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchDialogAction",
+            "tsType": "CatchDialogAction & {tone?: \"default\" | \"danger\"}"
+          },
+          {
+            "name": "cancel",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchDialogAction?",
+            "tsType": "CatchDialogAction"
           }
         ],
         "states": [
@@ -15060,6 +15296,20 @@
       "naming": {
         "useCase": "",
         "reason": "Confirmation choices and compact form content share one bounded modal frame. A named confirmation recipe preserves typed results, centered copy and equal or stacked actions; the default constructor retains slotted body and trailing actions."
+      },
+      "react": {
+        "symbol": "CatchDialog",
+        "file": "packages/web-ui/src/components/CatchDialog.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchDialog.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "destructive"
+          ]
+        },
+        "notes": "A native modal dialog for confirming a risky action: focus stays inside, Escape and the scrim close it, and the confirming action comes last."
       }
     },
     {
@@ -17760,6 +18010,27 @@
             "dartType": "double",
             "tsType": "number",
             "notes": "Available on primaryContent; its caller owns terminal clearance."
+          },
+          {
+            "name": "danger",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchDockPaneAction?",
+            "tsType": "CatchDockPaneAction"
+          },
+          {
+            "name": "note",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchDockNote?",
+            "tsType": "{label: string; placeholder?: string; value: string; onChanged: (value: string) => void; required?: boolean}"
+          },
+          {
+            "name": "next",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           }
         ],
         "states": [
@@ -17919,10 +18190,11 @@
             "rounded-button",
             "custom",
             "custom-no-safe-area",
-            "embedded"
+            "embedded",
+            "pane"
           ]
         },
-        "notes": "Recipes utility (Flutter's default constructor; children is Flutter's child), primary, pageAction and primaryContent. The web has no Cupertino floating chrome, so primary always draws the anchored recipe (ios-floating is Flutter-only), and the caller places the dock: CatchStickyAside fixes it to the bottom edge on phones. BottomActionOverlay (scroll-overlay) has no web member yet. buttonKey is a Flutter mechanism. The footnote is ink2 because Flutter's ink3 is under 4.5:1."
+        "notes": "Recipes utility (Flutter's default constructor; children is Flutter's child), primary, pageAction and primaryContent. The web has no Cupertino floating chrome, so primary always draws the anchored recipe (ios-floating is Flutter-only), and the caller places the dock: CatchStickyAside fixes it to the bottom edge on phones. BottomActionOverlay (scroll-overlay) has no web member yet. buttonKey is a Flutter mechanism. The footnote is ink2 because Flutter's ink3 is under 4.5:1. The pane recipe is design system v15's Dock placement=\"pane\": the decision bar at the foot of a detail pane with a note field, the next line, and danger, secondary and primary actions."
       },
       "level": "L3",
       "roleNoun": "Dock",
@@ -18209,6 +18481,26 @@
             "required": false,
             "default": false,
             "notes": "Entry emphasis; group trailing entries use this recipe."
+          },
+          {
+            "name": "recipe",
+            "type": "enum",
+            "required": false,
+            "default": "grid",
+            "dartType": "CatchMetaRowVariant",
+            "tsType": "CatchMetaRowVariant",
+            "values": [
+              "grid",
+              "flow"
+            ]
+          },
+          {
+            "name": "columns",
+            "type": "number",
+            "required": false,
+            "default": 2,
+            "dartType": "int",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -18276,6 +18568,24 @@
           "catch.field.row"
         ],
         "reason": "Passive compact facts may appear inside larger content. Field row anatomy owns ordinary interaction and perimeter geometry; RecordLayout supplies descriptive title, facts and prose within that Field."
+      },
+      "react": {
+        "symbol": "CatchMetaRow",
+        "file": "packages/web-ui/src/components/CatchMetaRow.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchMetaRow.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "grid",
+            "flow",
+            "tones",
+            "link",
+            "wide"
+          ]
+        },
+        "notes": "Design system v15 MetaRow: a record's facts as label over value in columns (folding to one on phones), or the flow recipe's dot-separated line. Entries carry tone, href and wide."
       }
     },
     {

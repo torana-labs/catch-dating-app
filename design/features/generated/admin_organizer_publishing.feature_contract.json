@@ -2,22 +2,22 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_organizer_publishing.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:74119968c6163af8d6a54d387de42d5321b827661068d5e1d54eeb3c5bef7b93",
-  "resolvedDigest": "sha256:eda9604ceca62d7ce6c41e743e1ebe7f68d808961d15342a7c2445c2e52ee0a7",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:f906bbaaafa4602e97e20ef6b9be559edafa66582e1d09a47e68c6d7160319cb",
+  "resolvedDigest": "sha256:081f2f03b69109993f9e33467d7a73eb7ace20eac36de72cfac7da9c05dbe22d",
   "feature": {
     "id": "feature.admin_organizer_publishing",
     "name": "Admin Organizer Publishing",
     "owner": "admin_console",
     "status": "pilot",
-    "description": "Orchestrates canonical organizer directory and editor work, publish-readiness gating, public index publication, and organizer claim review in one administrative supply workflow."
+    "description": "The editor the organizer page hosts on its Page tab, with publish-readiness gating and public index publication, and organizer claim review until the Inbox decides claims. The Organizers directory lists organizers."
   },
   "coverage": {
     "surfaces": 1,
     "states": 1,
     "scenarios": 1,
-    "actionCases": 8,
-    "actions": 12,
+    "actionCases": 7,
+    "actions": 10,
     "captures": 0,
     "previews": 1,
     "testFiles": 3,
@@ -32,9 +32,9 @@
         "id": "route_organizer_publishing"
       },
       "actionScope": {
-        "included": "Switching directory and claim workspaces, selecting and refreshing records, returning to registers, changing the publish checklist, saving canonical details, publishing index state, deciding organizer claims, and freezing the complete Admin workspace during any write.",
+        "included": "Loading a canonical organizer, selecting and refreshing claims, returning to the Organizers directory or the claim register, changing the publish checklist, saving canonical details, publishing index state, deciding organizer claims, and freezing the complete Admin workspace during any write.",
         "excluded": [
-          "Search, directory filter, canonical editor fields, and claim note edits remain query or form data.",
+          "Canonical editor fields and claim note edits remain form data.",
           "Publishing requires saved canonical data plus the full checklist; claim approval remains a separate authority transition."
         ]
       },
@@ -126,7 +126,7 @@
           }
         ],
         "testEvidence": {
-          "canonical-directory": [
+          "canonical-detail": [
             "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
             "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
             "admin/src/shared/pendingOperation.test.tsx"
@@ -136,8 +136,8 @@
       "coverage": {
         "states": 1,
         "scenarios": 1,
-        "actionCases": 8,
-        "actions": 12,
+        "actionCases": 7,
+        "actions": 10,
         "captures": 0,
         "previews": 1,
         "testFiles": 3,
@@ -145,9 +145,8 @@
       },
       "dimensions": {
         "workspace": {
-          "default": "directory",
+          "default": "organizer_detail",
           "values": [
-            "directory",
             "organizer_detail",
             "claims",
             "claim_detail",
@@ -168,26 +167,6 @@
       },
       "actions": [
         {
-          "id": "select_organizer_workspace",
-          "owner": "screen",
-          "codeValue": "onWorkspaceChange",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "workspaceId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Switches between canonical organizer directory and claim review.",
-          "implementationStatus": "implemented"
-        },
-        {
           "id": "select_organizer_profile",
           "owner": "publishing_controller",
           "codeValue": "selectOrganizer",
@@ -200,11 +179,11 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
-          "description": "Opens one canonical organizer profile for governed editing and publication.",
+          "description": "Loads one canonical organizer profile for governed editing and publication.",
           "implementationStatus": "implemented"
         },
         {
@@ -220,31 +199,11 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
-          "description": "Returns from organizer detail to the directory.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "refresh_organizer_directory",
-          "owner": "publishing_controller",
-          "codeValue": "refreshList",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "adminSessionId",
-            "directoryVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Refetches the canonical organizer directory.",
+          "description": "Returns from the editor to the Organizers directory.",
           "implementationStatus": "implemented"
         },
         {
@@ -262,7 +221,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
@@ -283,7 +242,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             },
             {
@@ -309,7 +268,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             },
             {
@@ -333,7 +292,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
@@ -353,7 +312,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
@@ -373,7 +332,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
@@ -393,7 +352,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
@@ -414,7 +373,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             },
             {
@@ -429,12 +388,12 @@
       "evidenceExceptions": [],
       "scenarios": [
         {
-          "id": "canonical_directory",
-          "stateId": "canonical-directory",
+          "id": "canonical_detail",
+          "stateId": "canonical-detail",
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "workspace": "directory",
+            "workspace": "organizer_detail",
             "mutation": "idle"
           },
           "evidence": {
@@ -450,32 +409,6 @@
           },
           "actionCases": [
             {
-              "id": "directory",
-              "dimensions": {
-                "workspace": "directory",
-                "mutation": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "select_organizer_workspace",
-                  "select_organizer_profile",
-                  "refresh_organizer_directory"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "back_to_organizer_directory",
-                  "toggle_organizer_publish_checklist",
-                  "save_organizer_profile",
-                  "publish_organizer_profile",
-                  "select_organizer_claim",
-                  "back_to_organizer_claims",
-                  "refresh_organizer_claims",
-                  "refresh_organizer_claim_detail",
-                  "decide_organizer_claim"
-                ]
-              }
-            },
-            {
               "id": "organizer_detail",
               "dimensions": {
                 "workspace": "organizer_detail",
@@ -483,7 +416,7 @@
               },
               "actions": {
                 "enabled": [
-                  "select_organizer_workspace",
+                  "select_organizer_profile",
                   "back_to_organizer_directory",
                   "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
@@ -491,8 +424,6 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "select_organizer_profile",
-                  "refresh_organizer_directory",
                   "select_organizer_claim",
                   "back_to_organizer_claims",
                   "refresh_organizer_claims",
@@ -510,7 +441,6 @@
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "select_organizer_workspace",
                   "back_to_organizer_directory",
                   "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
@@ -518,7 +448,6 @@
                 ],
                 "notAllowed": [
                   "select_organizer_profile",
-                  "refresh_organizer_directory",
                   "select_organizer_claim",
                   "back_to_organizer_claims",
                   "refresh_organizer_claims",
@@ -536,7 +465,6 @@
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "select_organizer_workspace",
                   "back_to_organizer_directory",
                   "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
@@ -544,7 +472,6 @@
                 ],
                 "notAllowed": [
                   "select_organizer_profile",
-                  "refresh_organizer_directory",
                   "select_organizer_claim",
                   "back_to_organizer_claims",
                   "refresh_organizer_claims",
@@ -561,7 +488,6 @@
               },
               "actions": {
                 "enabled": [
-                  "select_organizer_workspace",
                   "select_organizer_claim",
                   "refresh_organizer_claims"
                 ],
@@ -569,7 +495,6 @@
                 "notAllowed": [
                   "select_organizer_profile",
                   "back_to_organizer_directory",
-                  "refresh_organizer_directory",
                   "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
                   "publish_organizer_profile",
@@ -587,7 +512,6 @@
               },
               "actions": {
                 "enabled": [
-                  "select_organizer_workspace",
                   "back_to_organizer_claims",
                   "refresh_organizer_claim_detail",
                   "decide_organizer_claim"
@@ -596,7 +520,6 @@
                 "notAllowed": [
                   "select_organizer_profile",
                   "back_to_organizer_directory",
-                  "refresh_organizer_directory",
                   "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
                   "publish_organizer_profile",
@@ -614,7 +537,6 @@
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "select_organizer_workspace",
                   "back_to_organizer_claims",
                   "refresh_organizer_claim_detail",
                   "decide_organizer_claim"
@@ -622,7 +544,6 @@
                 "notAllowed": [
                   "select_organizer_profile",
                   "back_to_organizer_directory",
-                  "refresh_organizer_directory",
                   "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
                   "publish_organizer_profile",
@@ -639,10 +560,8 @@
               },
               "actions": {
                 "enabled": [
-                  "select_organizer_workspace",
                   "back_to_organizer_directory",
                   "back_to_organizer_claims",
-                  "refresh_organizer_directory",
                   "refresh_organizer_claim_detail"
                 ],
                 "disabled": [],
@@ -677,7 +596,7 @@
               "story": "admin/src/stories/AdminRoutes.stories.tsx",
               "exportName": "OrganizerPublishingRouteStory",
               "states": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           }

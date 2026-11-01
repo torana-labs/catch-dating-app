@@ -1689,7 +1689,7 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1,
           "maxLength": 160,
-          "pattern": "^[a-z0-9-]+(?:-[a-z0-9-]+)*$"
+          "pattern": "^[a-z0-9-]+$"
         },
         "updatedAt": {
           "type": "object",

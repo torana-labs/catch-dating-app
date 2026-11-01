@@ -60,3 +60,6 @@
 }
 
 .empty[data-variant="inline"] .actions { justify-content: flex-start; }
+
+/* A cleared queue: the success mark takes the positive ink. */
+.empty[data-kind="done"] :global(svg) { color: var(--catch-theme-positive-text); }

@@ -10,6 +10,7 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
+import {checkInstanceRateLimit} from "../../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {validateCreatePrivateEventSetupCallablePayload} from
   "../../shared/generated/validators/createPrivateEventSetupInput";
@@ -109,7 +110,7 @@ export async function getPrivateEventSetupHandler(
   const command = validateCallableWithAjv(request,
     validateGetPrivateEventSetupCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getPrivateEventSetup", {
+  checkInstanceRateLimit(actorUid, "getPrivateEventSetup", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
   return readSetup({actorUid, command, db});

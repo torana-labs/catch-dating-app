@@ -1,19 +1,19 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-10-29",
+  "updated": "2026-11-01",
   "id": "feature.admin_event_publishing",
   "name": "Admin Event Publishing",
   "owner": "admin_console",
   "status": "pilot",
-  "description": "Orchestrates canonical event directory and editor work and external-event inspection.",
+  "description": "The editors the event page hosts: canonical event editing on its Page tab and external-event inspection and takedown on its Takedown tab. The Events directory lists events.",
   "surfaces": [
     {
       "id": "admin_web",
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_event_publishing"},
       "actionScope": {
-        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, and freezing the complete Admin workspace during the write.",
+        "included": "Loading a canonical event or external evidence, returning to the Events directory, refreshing the external source, saving canonical edits, and freezing the complete Admin workspace during the write.",
         "excluded": [
           "Search, filter, editor field, checklist, and review-note changes remain query or form data."
         ]
@@ -40,40 +40,34 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminListExternalEventDetails", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
-          "canonical-directory": [
+          "canonical-detail": [
             "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
             "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
       "dimensions": {
-        "workspace": {"default": "directory", "values": ["directory", "canonical_detail", "external_list", "external_detail"]},
+        "workspace": {"default": "canonical_detail", "values": ["canonical_detail", "external_detail"]},
         "source": {"default": "ready", "values": ["ready", "loading", "failed", "unavailable"]},
         "mutation": {"default": "idle", "values": ["idle", "pending", "failed", "success"]}
       },
       "actions": [
-        {"id": "select_event_workspace", "owner": "screen", "codeValue": "onWorkspaceChange", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "workspaceId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Switches between the canonical directory and external inventory."},
-        {"id": "select_canonical_event", "owner": "controller", "codeValue": "selectEvent", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "eventId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Opens one exact canonical event for detail and governed editing."},
-        {"id": "back_to_event_list", "owner": "controller", "codeValue": "backToList", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "workspaceId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Returns from the selected event or external item to its owning list."},
-        {"id": "refresh_canonical_events", "owner": "controller", "codeValue": "refreshList", "cardinality": "singleton", "scopeKeys": ["adminSessionId", "canonicalSnapshotVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Refetches the canonical event directory."},
-        {"id": "save_canonical_event", "owner": "controller", "codeValue": "save", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "eventId", "editorDraftVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}, {"kind": "side_effect", "id": "admin.event_details_saved"}], "description": "Validates and persists the canonical event diff."},
-        {"id": "open_external_event_supply", "owner": "controller", "codeValue": "openExternalSupply", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "externalSnapshotVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Opens the external-event inventory workspace."},
-        {"id": "select_external_event", "owner": "controller", "codeValue": "selectExternalEvent", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "externalEventId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Opens one source-backed external event."},
-        {"id": "refresh_external_events", "owner": "controller", "codeValue": "refreshExternalList", "cardinality": "singleton", "scopeKeys": ["adminSessionId", "externalSnapshotVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-directory"]}], "description": "Refetches the external-event inventory."}
+        {"id": "select_canonical_event", "owner": "controller", "codeValue": "selectEvent", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "eventId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-detail"]}], "description": "Loads one exact canonical event for detail and governed editing."},
+        {"id": "back_to_event_list", "owner": "controller", "codeValue": "backToList", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "eventId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-detail"]}], "description": "Returns from the canonical editor to the Events directory."},
+        {"id": "save_canonical_event", "owner": "controller", "codeValue": "save", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "eventId", "editorDraftVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-detail"]}, {"kind": "side_effect", "id": "admin.event_details_saved"}], "description": "Validates and persists the canonical event diff."},
+        {"id": "select_external_event", "owner": "controller", "codeValue": "selectExternalEvent", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "externalEventId"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-detail"]}], "description": "Closes the source-backed external event and returns to the Events directory."},
+        {"id": "refresh_external_events", "owner": "controller", "codeValue": "refreshExternalList", "cardinality": "singleton", "scopeKeys": ["adminSessionId", "externalSnapshotVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["canonical-detail"]}], "description": "Refetches the external-event source after a failed read."}
       ],
       "scenarios": [
         {
-          "id": "canonical_directory",
-          "stateId": "canonical-directory",
+          "id": "canonical_detail",
+          "stateId": "canonical-detail",
           "dimensions": {},
           "actionCases": [
-            {"id": "canonical_directory", "enabledActions": ["select_event_workspace", "select_canonical_event", "refresh_canonical_events", "open_external_event_supply"]},
-            {"id": "canonical_loading", "dimensions": {"source": "loading"}, "enabledActions": ["select_event_workspace"], "disabledActions": ["select_canonical_event", "refresh_canonical_events"]},
-            {"id": "canonical_detail", "dimensions": {"workspace": "canonical_detail"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "save_canonical_event"]},
-            {"id": "canonical_save_pending_frozen_workspace", "dimensions": {"workspace": "canonical_detail", "mutation": "pending"}, "disabledActions": ["select_event_workspace", "back_to_event_list", "save_canonical_event"]},
-            {"id": "external_list", "dimensions": {"workspace": "external_list"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "select_external_event", "refresh_external_events"]},
-            {"id": "external_detail", "dimensions": {"workspace": "external_detail"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "refresh_external_events"]},
-            {"id": "source_failed", "dimensions": {"source": "failed"}, "enabledActions": ["select_event_workspace", "refresh_canonical_events", "refresh_external_events"]}
+            {"id": "canonical_detail", "enabledActions": ["select_canonical_event", "back_to_event_list", "save_canonical_event"]},
+            {"id": "canonical_save_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["back_to_event_list", "save_canonical_event"]},
+            {"id": "external_detail", "dimensions": {"workspace": "external_detail"}, "enabledActions": ["select_external_event"]},
+            {"id": "external_source_failed", "dimensions": {"workspace": "external_detail", "source": "failed"}, "enabledActions": ["select_external_event", "refresh_external_events"]}
           ]
         }
       ],

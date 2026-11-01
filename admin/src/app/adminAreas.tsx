@@ -19,8 +19,9 @@ const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen
 const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
 const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
 const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
-const OrganizerPublishingScreen = lazy(() => import("../features/organizers/ui/OrganizerPublishingScreen").then((m) => ({default: m.OrganizerPublishingScreen})));
-const EventPublishingScreen = lazy(() => import("../features/events/ui/EventPublishingScreen").then((m) => ({default: m.EventPublishingScreen})));
+const OrganizersRouteScreen = lazy(() => import("../features/organizers/ui/OrganizersRouteScreen").then((m) => ({default: m.OrganizersRouteScreen})));
+const EventsRouteScreen = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.EventsRouteScreen})));
+const OrganizerEventsRouteWorkspace = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.OrganizerEventsRouteWorkspace})));
 const UserAnalyticsScreen = lazy(() => import("../features/users/ui/UserAnalyticsScreen").then((m) => ({default: m.UserAnalyticsScreen})));
 const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteScreen").then((m) => ({default: m.PeopleRouteScreen})));
 const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
@@ -28,6 +29,7 @@ const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQua
 const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
 const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
+const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
 
@@ -114,10 +116,18 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   support: {
-    label: "Support", icon: "support", frame: "legacy",
-    render: ({session, userUid}) => (
+    label: "Support", icon: "support", frame: "redrawn",
+    render: ({mode, navigate, route, session, setError, setNotice, userUid}) => route.supportWorkspace === "trial" ? (
       <CatchWhatsappTrialWorkspace
         scope={{actorUid: userUid ?? "", projectId: session.projectId, sessionKey: session.sessionKey, isCurrent: session.isCurrent}}
+      />
+    ) : (
+      <SupportRouteScreen
+        conversationId={route.params.supportConversationId ?? null}
+        onError={setError}
+        onNavigate={navigate}
+        onNotice={setNotice}
+        userUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
       />
     ),
   },
@@ -143,33 +153,27 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     render: (context) => renderMoney(context),
   },
   organizers: {
-    label: "Organizers", icon: "organizer", frame: "legacy",
+    label: "Organizers", icon: "organizer", frame: "redrawn",
     render: ({navigate, route}) => (
-      <OrganizerPublishingScreen
-        activeWorkspace={route.organizerWorkspace}
-        onBackToClaims={() => navigate(`${adminPathForNav("organizers")}/claims`)}
-        onBackToList={() => navigate(adminPathForNav("organizers"))}
-        onSelectClaimRequestId={(requestId) => navigate(`${adminPathForNav("organizers")}/claims/${encodeURIComponent(requestId)}`)}
-        onSelectOrganizerId={(organizerId) => navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(organizerId)}`)}
-        onWorkspaceChange={(workspace) => navigate(workspace === "claims" ? `${adminPathForNav("organizers")}/claims` : adminPathForNav("organizers"))}
-        selectedClaimRequestId={route.params.claimRequestId ?? null}
-        selectedOrganizerId={route.params.organizerId ?? null}
+      <OrganizersRouteScreen
+        claimRequestId={route.params.claimRequestId ?? null}
+        onNavigate={navigate}
+        organizerId={route.params.organizerId ?? null}
+        renderEvents={(organizerId) => <OrganizerEventsRouteWorkspace onNavigate={navigate} organizerId={organizerId} />}
+        tab={route.organizerTab}
+        workspace={route.organizerWorkspace}
       />
     ),
   },
   events: {
-    label: "Events", icon: "event", frame: "legacy",
-    render: ({location, navigate, route}) => (
-      <EventPublishingScreen
-        activeWorkspace={route.eventWorkspace}
-        onBackToList={() => navigate(`${adminPathForNav("events")}${location.search}`)}
-        onSelectEventId={(eventId) => navigate(`${adminPathForNav("events")}/${encodeURIComponent(eventId)}${location.search}`)}
-        onSelectExternalEventId={(eventId) => navigate(eventId ?
-          `${adminPathForNav("events")}/external/${encodeURIComponent(eventId)}${location.search}` :
-          `${adminPathForNav("events")}/external${location.search}`)}
-        onWorkspaceChange={(workspace) => navigate(workspace === "directory" ? adminPathForNav("events") : `${adminPathForNav("events")}/${workspace}`)}
-        selectedEventId={route.params.eventId ?? null}
-        selectedExternalEventId={route.params.externalEventId ?? null}
+    label: "Events", icon: "event", frame: "redrawn",
+    render: ({navigate, route}) => (
+      <EventsRouteScreen
+        eventId={route.params.eventId ?? null}
+        externalEventId={route.params.externalEventId ?? null}
+        onNavigate={navigate}
+        tab={route.eventTab}
+        workspace={route.eventWorkspace}
       />
     ),
   },

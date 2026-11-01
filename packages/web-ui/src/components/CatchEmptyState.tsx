@@ -5,6 +5,8 @@ import styles from "./CatchEmptyState.module.css";
 
 export type CatchEmptyStateVariant = "stacked" | "inline";
 export type CatchEmptyStateAnnouncement = "off" | "polite" | "assertive";
+/** done: a queue the person has cleared. */
+export type CatchEmptyStateKind = "empty" | "done";
 
 export interface CatchEmptyStateProps {
   icon?: ReactNode;
@@ -17,7 +19,17 @@ export interface CatchEmptyStateProps {
   variant?: CatchEmptyStateVariant;
   /** Web only: announce the state as a status, such as after a search empties a list. */
   announce?: CatchEmptyStateAnnouncement;
+  /** done: a queue the person has cleared ("All caught up"), with a success mark when no icon is given. */
+  kind?: CatchEmptyStateKind;
 }
+
+// Lucide "circle-check" (ISC).
+const doneGlyph = (
+  <svg aria-hidden="true" fill="none" focusable="false" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24">
+    <circle cx="12" cy="12" r="10" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
 
 /**
  * Flutter's CatchEmptyState: successful-empty content, stacked and centred
@@ -33,13 +45,16 @@ export function CatchEmptyState({
   iconVariant = "plain",
   variant = "stacked",
   announce = "off",
+  kind = "empty",
 }: CatchEmptyStateProps) {
+  icon = icon ?? (kind === "done" ? doneGlyph : undefined);
   const actionList = Children.toArray(actions);
   const stacked = variant === "stacked";
   return (
     <div
       aria-live={announce === "off" ? undefined : announce}
       className={styles.empty}
+      data-kind={kind}
       data-surface={surface || undefined}
       data-variant={variant}
       role={announce === "off" ? undefined : "status"}

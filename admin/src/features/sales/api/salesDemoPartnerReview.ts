@@ -1,6 +1,7 @@
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
-import {validateAdminCallableRequest, validateAdminCallableResponse} from "../../../generated/validators/adminCallableValidators";
+import {loadAdminCallableValidators} from
+  "../../../generated/validators/adminCallableValidators";
 import type {DemoReviewPreview, DemoReviewWording} from "../../../shared/domain/salesDemoReview";
 export interface OwnerDemoReview {
   organizerId: string; blueprintId: string; blueprintRevision: number; partnerUid: string;
@@ -20,6 +21,8 @@ export interface SalesDemoPartnerReviewApi {
   share(input: OwnerDemoShareInput): Promise<OwnerDemoShareResult>;
 }
 async function call<T>(name: string, input: unknown): Promise<T> {
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(name);
   validateAdminCallableRequest(name, input);
   const value = (await httpsCallable<unknown, unknown>(functions, name)(input)).data;
   validateAdminCallableResponse(name, value); return value as T;

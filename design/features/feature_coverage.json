@@ -640,10 +640,74 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_organizer_directory",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Organizers records (directory, organizer page and its tabs, and the live route wrapper) are the front of Organizer Publishing: the Page tab hosts its canonical editor and claims stay in its review until the Inbox decides them, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_page",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Organizers records (directory, organizer page and its tabs, and the live route wrapper) are the front of Organizer Publishing: the Page tab hosts its canonical editor and claims stay in its review until the Inbox decides them, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_records_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Organizers records (directory, organizer page and its tabs, and the live route wrapper) are the front of Organizer Publishing: the Page tab hosts its canonical editor and claims stay in its review until the Inbox decides them, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_directory",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Events records (directory with Catch and imported events, event page, and the live route wrapper) are the front of Event Publishing: the Page tab hosts its canonical editor and the Takedown tab its external-event review, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_page",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Events records (directory with Catch and imported events, event page, and the live route wrapper) are the front of Event Publishing: the Page tab hosts its canonical editor and the Takedown tab its external-event review, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_records_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Events records (directory with Catch and imported events, event page, and the live route wrapper) are the front of Event Publishing: the Page tab hosts its canonical editor and the Takedown tab its external-event review, so its contract owns these states until the records get a contract of their own.",
+      "primaryAuthorityId": "route_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_operator_session",
       "status": "excluded",
       "priority": "P3",
       "reason": "Internal operator credential handoff is governed by exact-account and source-bound transport, protected local-file permissions, and synthetic security/route tests. It exports an existing session only; it adds no product or business mutation, role grant, sign-in, or shared cross-surface feature workflow."
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_support",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Support contract covers the conversation queue by view and audience, the conversation with its links, and recording replies, notes, owner and status.",
+      "featureContract": "feature.admin_support"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_support_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_support"
     },
     {
       "authority": "admin_routes",

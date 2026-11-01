@@ -41,6 +41,27 @@ function States() {
       <State label="loading"><CatchDock isLoading label="Book" onPressed={noop} recipe="primary" /></State>
       <State label="disabled"><CatchDock label="Sold out" onPressed={null} recipe="primary" /></State>
       <State label="rounded-button"><CatchDock buttonMode="rounded" label="Book" onPressed={noop} recipe="primary" /></State>
+      <State label="pane">
+        <CatchDock
+          danger={{label: "Reject", onPressed: noop}}
+          next="Then: Harbor Social · 3 left"
+          note={{label: "Why? Only your team sees this", value: "", onChanged: noop}}
+          primary={{label: "Approve", onPressed: noop}}
+          recipe="pane"
+          secondary={{label: "Snooze", onPressed: noop}}
+        />
+      </State>
+      <State label="pane on a phone">
+        <div style={{maxWidth: 343}}>
+          <CatchDock
+            danger={{label: "Write off", onPressed: noop}}
+            next="Then: Meher gets it on WhatsApp · then Lantern Lane Social"
+            primary={{label: "Send a reminder", onPressed: noop}}
+            recipe="pane"
+            secondary={{label: "Mark as paid", onPressed: noop}}
+          />
+        </div>
+      </State>
       <State label="custom">
         <CatchDock>
           <div style={{alignItems: "center", display: "flex", justifyContent: "space-between"}}>

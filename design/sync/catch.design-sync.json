@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "5845a5bdeed3771eb070151ad3028538a193c330dd3f6e5f412a69eaa7b646e7",
+  "sourceDigest": "1a159ebb02b97c41f046d583ed2d5b6863bf543c498c1a014a455f2d27ab8754",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "5845a5bdeed3771eb070151ad3028538a193c330dd3f6e5f412a69eaa7b646e7",
-    "contractDigest": "5845a5bdeed3771eb070151ad3028538a193c330dd3f6e5f412a69eaa7b646e7"
+    "digest": "1a159ebb02b97c41f046d583ed2d5b6863bf543c498c1a014a455f2d27ab8754",
+    "contractDigest": "1a159ebb02b97c41f046d583ed2d5b6863bf543c498c1a014a455f2d27ab8754"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "81e27d458cec67859efa8610d95031931524f589f53dd794e0d55ccc9f9840aa",
+    "handoffRequestDigest": "c3075a975ef237a059def22e6fd1d4ae7889749f730f298016e171c7d06e1cde",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,8 +461,8 @@
     },
     "claudeAllowed": 74,
     "reactImplementationStates": {
-      "headless-control": 5,
-      "styled": 31
+      "headless-control": 4,
+      "styled": 38
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -623,9 +623,9 @@
       "conceptId": "catch.empty_state",
       "dartSymbol": "CatchEmptyState",
       "dartFile": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
-      "reactSymbol": "EmptyStateControl",
-      "reactFile": "packages/web-ui/src/primitives.tsx",
-      "reactApi": "headless-control",
+      "reactSymbol": "CatchEmptyState",
+      "reactFile": "packages/web-ui/src/components/CatchEmptyState.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/EmptyState",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -641,8 +641,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "eafbf485b06627650b955f545bfc0dfbffdd0d5bcfb1e14fae74c614c1126743",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "6b57af637f495bfed72e62fc7386f48b604bd29cf979d4c3a736e4d4d4a1b8dc",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -650,7 +650,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "EmptyState",
       "claudeAllowed": true,
-      "contractDigest": "3e187322866bd3f04b8811f3c530e97e5569848830919bc6c07a91954eedd8d7"
+      "contractDigest": "259670876e40bec2fc24abb67b7aa383b5c2f9fcbc5a0d1290be6e9daaa7f12f"
     },
     {
       "contractId": "catch.error_state",
@@ -848,9 +848,9 @@
       "conceptId": "catch.section",
       "dartSymbol": "CatchSection",
       "dartFile": "packages/catch_ui/lib/src/components/catch_section.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchSection",
+      "reactFile": "packages/web-ui/src/components/CatchSection.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Section",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -866,8 +866,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 23,
-      "figmaExpectedPropertyDigest": "aa2bfc3201ed9a9c343065609b57fed6ef31108dd769981c864592a417d441fe",
+      "figmaExpectedPropertyCount": 28,
+      "figmaExpectedPropertyDigest": "3f369d63ac2470901308f9145d9bbb7b3086cf64caa0a4fb89fb7cc4b84d7c48",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -875,7 +875,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "1da985bd8b5a6dec952883462c085bb93e8f90c1cb67d430cc9a7f03ca87f657"
+      "contractDigest": "297e335f4d93979d741480840a2452a26b1b94544600b7c63737f1dc79f4104b"
     },
     {
       "contractId": "catch.skeleton",
@@ -1093,9 +1093,9 @@
       "conceptId": "catch.mini_bar_chart",
       "dartSymbol": "CatchBarIndicator",
       "dartFile": "packages/catch_ui/lib/src/components/catch_bar_indicator.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchBarIndicator",
+      "reactFile": "packages/web-ui/src/components/CatchBarIndicator.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/BarIndicator",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1111,8 +1111,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "220f42520985c239585d09414f8ed717bb44cddb2250b29f82fb9f304fcad81f",
+      "figmaExpectedPropertyCount": 8,
+      "figmaExpectedPropertyDigest": "2c55d576b265a4623966110f44799f411e0b0068ec01a121954762e54b9d50b2",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1120,7 +1120,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "BarIndicator",
       "claudeAllowed": true,
-      "contractDigest": "32812e6abefb8ada9597a44bafeb305cd7984fa192e899504aa43611a791b807"
+      "contractDigest": "e6e9ae78070081ef464b21066ac2be726fb62cbbcf745208a3ffa5f44fe7fc4f"
     },
     {
       "contractId": "catch.metric_strip",
@@ -1128,9 +1128,9 @@
       "conceptId": "catch.metric_strip",
       "dartSymbol": "CatchMetricSection",
       "dartFile": "packages/catch_ui/lib/src/components/catch_metric_section.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchMetricSection",
+      "reactFile": "packages/web-ui/src/components/CatchMetricSection.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/MetricSection",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1146,8 +1146,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 2,
-      "figmaExpectedPropertyDigest": "101ba75e40b4976f17ce73ca601859bd98cf1d9a3bc1c3ebe400c2ba7f9113da",
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "df4f51ba811eb88bf3d844df59d3e29f5c9c5fcb6ea0f611d3de4a58623bdf4d",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1155,7 +1155,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "MetricSection",
       "claudeAllowed": true,
-      "contractDigest": "f07bda20133f90df36476f4627526cc1a93a4fcb7aa636c260ba5bc19beee41a"
+      "contractDigest": "eadb61f1945cb298f2d1d5a13811aec3d96c5f1901adc9f522f010ea66802f49"
     },
     {
       "contractId": "catch.sheet",
@@ -1303,9 +1303,9 @@
       "conceptId": "catch.icon_tile",
       "dartSymbol": "CatchIconTile",
       "dartFile": "packages/catch_ui/lib/src/primitives/catch_icon_tile.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchIconTile",
+      "reactFile": "packages/web-ui/src/components/CatchIconTile.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/IconTile",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2178,9 +2178,9 @@
       "conceptId": "catch.confirm_dialog",
       "dartSymbol": "CatchDialog",
       "dartFile": "packages/catch_ui/lib/src/components/catch_dialog.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchDialog",
+      "reactFile": "packages/web-ui/src/components/CatchDialog.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Dialog",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2196,8 +2196,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 3,
-      "figmaExpectedPropertyDigest": "3cc0602696a368fd773eeb7f50e643c0693ea4dd0fb11a7f8cf73ec3794107de",
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "2125626afb68e73aedb48decfb1c1d9256c4a75da13d1879dd2e0b5fe5441c6d",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2205,7 +2205,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Dialog",
       "claudeAllowed": true,
-      "contractDigest": "747625dda08af5cb7046f3db438756a6c3bb61a96287791d99b1f34eeb718d9a"
+      "contractDigest": "dee277c4de712c32caab65461c890b677f95103492da92e8422fff1a254e7ab1"
     },
     {
       "contractId": "catch.page_dots",
@@ -2625,7 +2625,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "DockSurface",
       "claudeAllowed": true,
-      "contractDigest": "1562606d55c3623cb32954500d1d39231086a313542139ea5cb75894b64bc251"
+      "contractDigest": "15c20bd07454754f448938d2f50a790be9a091b0f2b030f87360ab684cb2e6af"
     },
     {
       "contractId": "catch.map_preview",
@@ -2668,9 +2668,9 @@
       "conceptId": "catch.meta_row",
       "dartSymbol": "CatchMetaRow",
       "dartFile": "packages/catch_ui/lib/src/components/catch_meta_row.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchMetaRow",
+      "reactFile": "packages/web-ui/src/components/CatchMetaRow.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Meta Row",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2686,8 +2686,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "c48725193551638c5b1e5517d59e30007ad7e0ca65612225a9f6fa6916d6a2ed",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "1292db852248bc4a13cc6ac7cfba7d2522b51c49f9845c46792544b51b0cc044",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2695,7 +2695,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "MetaRow",
       "claudeAllowed": true,
-      "contractDigest": "e4bd0e36d39b46af518f593d0e6b10e13343a9c75d3669b356969b3955bd0aa7"
+      "contractDigest": "5587fa698f26c76c807ab891bc23fb18c268f247a98cd9c680ba44e3145ac2e1"
     },
     {
       "contractId": "catch.index_row",

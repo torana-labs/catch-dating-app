@@ -45,6 +45,11 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/events/controllers/useEventPageController.ts",
+      "test": "admin/src/features/events/controllers/useEventPageController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/events/controllers/useEventPublishingController.ts",
       "test": "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
       "status": "required"
