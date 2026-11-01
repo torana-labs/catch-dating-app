@@ -16,6 +16,10 @@ package bound to Firebase project `catch-dating-app-64e51` and site
 
 ## Local Development
 
+Before pushing Admin work, run `npm run check:admin` from the repository root.
+It runs CI's Admin lane locally, including the checks `verify_local` and
+`typecheck` skip. See [TESTS.md](../TESTS.md).
+
 ```bash
 npm install
 npm run dev

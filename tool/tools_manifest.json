@@ -6378,6 +6378,24 @@
       }
     },
     {
+      "id": "admin:check-ci",
+      "category": "test",
+      "path": "admin/scripts/checkAdminCi.mjs",
+      "command": "npm run check:admin",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "description": "Runs CI's Admin lane locally, reading its steps from the React surface workflow. Its checks here cover only the step reader; the steps themselves run in the Admin lane.",
+      "impactPaths": [
+        "admin/scripts/checkAdminCi.test.mjs",
+        ".github/workflows/react-surface-validation.yml"
+      ],
+      "checks": [
+        "node --check admin/scripts/checkAdminCi.mjs",
+        "node --test admin/scripts/checkAdminCi.test.mjs"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "web:admin-bundle-budget",
       "category": "test",
       "path": "admin/scripts/checkBundleBudget.mjs",
