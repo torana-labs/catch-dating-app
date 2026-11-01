@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_guest_blocks.schema.json",
+  "title": "OrganizerGuestBlockDocument",
+  "description": "An organizer's own block list entry: this person cannot book that organizer's events. No reason or review is needed and it affects no other organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerGuestBlocks",
+  "x-firestore-path": "organizerGuestBlocks/{blockId}",
+  "x-document-id-field": "blockId",
+  "x-owner": "manageOrganizerGuestBlock callable",
+  "required": ["schemaVersion", "blockId", "organizerId", "uid", "blockedByUid", "createdAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "blockId": {"type": "string", "minLength": 3, "maxLength": 260},
+    "organizerId": {"type": "string", "minLength": 1, "maxLength": 128},
+    "uid": {"type": "string", "minLength": 1, "maxLength": 128},
+    "blockedByUid": {"type": "string", "minLength": 1, "maxLength": 128},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

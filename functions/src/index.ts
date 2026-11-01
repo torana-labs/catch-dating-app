@@ -526,7 +526,25 @@ export {
 } from "./acquisition/consentHttp";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";
-export {reportUser} from "./safety/reporting";
+export {reportGuest, reportUser} from "./safety/reporting";
+export {
+  adminLiftAccountSafetyAction,
+  adminListAccountSafetyActions,
+  adminTakeAccountSafetyAction,
+  expireAccountSafetyActions,
+} from "./safety/accountActions";
+export {adminDecideSafetyAppeal, submitSafetyAppeal} from
+  "./safety/safetyAppeals";
+export {adminGetSafetySettings, adminUpdateSafetySettings} from
+  "./safety/safetySettings";
+export {listOrganizerGuestBlocks, manageOrganizerGuestBlock} from
+  "./safety/organizerGuestBlocks";
+export {
+  onPushInstallationSafetyScreen,
+  onUserCreatedSafetyScreen,
+  reconcileBannedIdentityScreens,
+} from "./safety/bannedIdentities";
+export {purgeRetainedSafetyRecords} from "./safety/safetyRetention";
 export {moderatePhotoOnUpload} from "./moderation/moderatePhoto";
 export {moderateChatMessage} from "./moderation/moderateMessage";
 export {
