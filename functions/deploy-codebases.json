@@ -6,7 +6,7 @@
     "host": ["hostReadModels", "hostWork"],
     "offers": ["organizerEventOffers", "organizerEventOfferRecipients", "organizerFormAdmission", "organizerResponseQuery", "acquisition"],
     "organizers": ["organizers"],
-    "payments": ["payments", "hostMemberships", "commercialTerms", "memberships", "entitlements"],
+    "payments": ["payments", "money", "hostMemberships", "commercialTerms", "memberships", "entitlements"],
     "platform": ["analytics", "growth", "operations", "demoOps"],
     "programs": ["programs", "transport", "programRsvp"],
     "rehearsal": ["eventRehearsal", "doorJournal"],

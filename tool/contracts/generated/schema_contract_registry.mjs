@@ -34813,6 +34813,4007 @@ export const organizerGrowthEventSchema = {
   }
 };
 
+export const organizerBillDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_bills.schema.json",
+  "title": "OrganizerBillDocument",
+  "description": "Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerBills",
+  "x-firestore-path": "organizerBills/{billId}",
+  "x-document-id-field": "billId",
+  "x-owner": "Functions organizer billing (monthly generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+  "required": [
+    "schemaVersion",
+    "billId",
+    "organizerId",
+    "organizerName",
+    "month",
+    "periodStartMillis",
+    "periodEndMillis",
+    "revision",
+    "status",
+    "sales",
+    "commission",
+    "trialEndsAtMillis",
+    "terms",
+    "gst",
+    "totalMinor",
+    "invoiceNumber",
+    "dueAtMillis",
+    "paymentLink",
+    "sentAtMillis",
+    "reminders",
+    "paidAtMillis",
+    "paidMinor",
+    "paidVia",
+    "writtenOffAtMillis",
+    "history",
+    "generatedAtMillis",
+    "updatedAtMillis"
+  ],
+  "definitions": {
+    "millis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nullableMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "minor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "status": {
+      "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+      "enum": [
+        "toSend",
+        "sent",
+        "paid",
+        "writtenOff",
+        "free"
+      ]
+    },
+    "historyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "atMillis",
+        "action",
+        "byUid",
+        "note"
+      ],
+      "properties": {
+        "atMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "action": {
+          "enum": [
+            "generated",
+            "regenerated",
+            "sent",
+            "reminded",
+            "paid",
+            "writtenOff"
+          ]
+        },
+        "byUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "billId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}_[0-9]{4}-[0-9]{2}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerName": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "periodStartMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "periodEndMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+      "enum": [
+        "toSend",
+        "sent",
+        "paid",
+        "writtenOff",
+        "free"
+      ]
+    },
+    "sales": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentCount",
+        "eventCount",
+        "grossMinor",
+        "refundedMinor",
+        "baseMinor",
+        "providerFeeMinor",
+        "providerTaxMinor",
+        "unsnapshottedCount"
+      ],
+      "properties": {
+        "paymentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "grossMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "refundedMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "baseMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000,
+          "description": "What commission is charged on: gross or net of refunds, per the terms."
+        },
+        "providerFeeMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000,
+          "description": "Razorpay's fees on these sales, taken from the organizer's account; shown for their records."
+        },
+        "providerTaxMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "unsnapshottedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Payments that froze no terms and were charged on the organizer's current terms."
+        }
+      }
+    },
+    "commission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rateBasisPoints",
+        "uncappedMinor",
+        "capMinor",
+        "capped",
+        "trialWaivedMinor",
+        "amountMinor"
+      ],
+      "properties": {
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "The organizer's current rate; individual payments may have frozen another."
+        },
+        "uncappedMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "capMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capped": {
+          "type": "boolean"
+        },
+        "trialWaivedMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        }
+      }
+    },
+    "trialEndsAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platformRevision",
+        "organizerRevision",
+        "ownTerms"
+      ],
+      "properties": {
+        "platformRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownTerms": {
+          "type": "boolean"
+        }
+      }
+    },
+    "gst": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registered",
+        "rateBasisPoints",
+        "amountMinor"
+      ],
+      "properties": {
+        "registered": {
+          "type": "boolean"
+        },
+        "rateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        }
+      }
+    },
+    "totalMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "invoiceNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+    },
+    "dueAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "paymentLink": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "linkId",
+            "url"
+          ],
+          "properties": {
+            "linkId": {
+              "type": "string",
+              "pattern": "^plink_[A-Za-z0-9]{1,40}$"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://",
+              "maxLength": 300
+            }
+          }
+        }
+      ]
+    },
+    "sentAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reminders": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "paidAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "paidMinor": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "paidVia": {
+      "enum": [
+        "paymentLink",
+        "manual",
+        null
+      ]
+    },
+    "writtenOffAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "history": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "atMillis",
+          "action",
+          "byUid",
+          "note"
+        ],
+        "properties": {
+          "atMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "action": {
+            "enum": [
+              "generated",
+              "regenerated",
+              "sent",
+              "reminded",
+              "paid",
+              "writtenOff"
+            ]
+          },
+          "byUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const moneySettingsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_settings.schema.json",
+  "title": "MoneySettingsDocument",
+  "description": "Catch's money settings (Settings → Payments): whether Catch is GST registered (off until the accountant says so; bills carry no GST while off), when bills fall due, and the nominator credit rule. One document, moneySettings/platform; absent means the defaults the owner decided on 1 Nov 2026. Every write bumps revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneySettings",
+  "x-firestore-path": "moneySettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "adminManageMoneySettings",
+  "required": [
+    "schemaVersion",
+    "settingsId",
+    "revision",
+    "settings",
+    "updatedAtMillis",
+    "updatedByUid"
+  ],
+  "definitions": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gstRegistered",
+        "gstRateBasisPoints",
+        "billDueDayOfMonth",
+        "nominatorCredit"
+      ],
+      "properties": {
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstRateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "billDueDayOfMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Bills for a month fall due on this day of the next month."
+        },
+        "nominatorCredit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "months",
+            "lapseDays",
+            "minimumPayoutMinor",
+            "payoutDayOfMonth",
+            "earningRoles"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Share of what the organizer paid Catch, before GST."
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "description": "Months of credit, counted from the organizer's first paid bill."
+            },
+            "lapseDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366,
+              "description": "A nomination lapses when the organizer has not claimed within this many days."
+            },
+            "minimumPayoutMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000,
+              "description": "Credit below this rolls over to the next payout."
+            },
+            "payoutDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28
+            },
+            "earningRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "partner",
+                  "guest",
+                  "organizer",
+                  "associate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "settingsId": {
+      "const": "platform"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gstRegistered",
+        "gstRateBasisPoints",
+        "billDueDayOfMonth",
+        "nominatorCredit"
+      ],
+      "properties": {
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstRateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "billDueDayOfMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Bills for a month fall due on this day of the next month."
+        },
+        "nominatorCredit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "months",
+            "lapseDays",
+            "minimumPayoutMinor",
+            "payoutDayOfMonth",
+            "earningRoles"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Share of what the organizer paid Catch, before GST."
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "description": "Months of credit, counted from the organizer's first paid bill."
+            },
+            "lapseDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366,
+              "description": "A nomination lapses when the organizer has not claimed within this many days."
+            },
+            "minimumPayoutMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000,
+              "description": "Credit below this rolls over to the next payout."
+            },
+            "payoutDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28
+            },
+            "earningRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "partner",
+                  "guest",
+                  "organizer",
+                  "associate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+};
+
+export const nominatorCreditDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/nominator_credits.schema.json",
+  "title": "NominatorCreditDocument",
+  "description": "One credit a nominator earned from one paid organizer bill, keyed by the bill. Written when a bill is paid, under the nominator credit rule in moneySettings: the first nominator of the organizer, if their role earns credit and the organizer claimed within the lapse window, earns the rate on what the organizer paid Catch before GST, for the set number of months from the organizer's first paid bill. Owed credit is approved monthly per nominator once it reaches the minimum (less rolls over), then marked paid with partner payouts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "nominatorCredits",
+  "x-firestore-path": "nominatorCredits/{creditId}",
+  "x-document-id-field": "creditId",
+  "x-owner": "Functions organizer billing (bill paid) and adminManageNominatorCredits",
+  "required": [
+    "schemaVersion",
+    "creditId",
+    "billId",
+    "organizerId",
+    "organizerName",
+    "nominatorUid",
+    "nominatorRole",
+    "billMonth",
+    "monthIndex",
+    "billPaidMinor",
+    "rateBasisPoints",
+    "creditMinor",
+    "status",
+    "approvedAtMillis",
+    "approvedByUid",
+    "paidAtMillis",
+    "paidByUid",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "creditId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "billId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerName": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "nominatorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "nominatorRole": {
+      "enum": [
+        "associate",
+        "partner",
+        "guest",
+        "organizer"
+      ]
+    },
+    "billMonth": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "monthIndex": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60,
+      "description": "Which month of credit this is, counted from the organizer's first paid bill."
+    },
+    "billPaidMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "rateBasisPoints": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "creditMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "status": {
+      "enum": [
+        "owed",
+        "approved",
+        "paid"
+      ]
+    },
+    "approvedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "approvedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "paidAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "paidByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const moneyInvoiceCounterDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_invoice_counters.schema.json",
+  "title": "MoneyInvoiceCounterDocument",
+  "description": "The unbroken invoice number sequence for one Indian financial year (April to March), moneyInvoiceCounters/2026-27. lastNumber is the last number issued; the next bill sent takes lastNumber + 1, as 2026-27/032.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneyInvoiceCounters",
+  "x-firestore-path": "moneyInvoiceCounters/{financialYear}",
+  "x-document-id-field": "financialYear",
+  "x-owner": "Functions organizer billing (sending a bill)",
+  "required": [
+    "schemaVersion",
+    "financialYear",
+    "lastNumber",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "financialYear": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$"
+    },
+    "lastNumber": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const platformCostDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/platform_costs.schema.json",
+  "title": "PlatformCostDocument",
+  "description": "What one kind of cost came to in one India-time calendar month, platformCosts/{YYYY-MM}_{category}. The owner enters AI, Cloud, SMS and any invoice total by hand; WhatsApp falls back to an estimate from reserved dispatch costs while no invoice total is entered; ad spend arrives from the ad platform once its account is connected.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "platformCosts",
+  "x-firestore-path": "platformCosts/{costId}",
+  "x-document-id-field": "costId",
+  "x-owner": "adminManagePlatformCosts and ad spend imports",
+  "required": [
+    "schemaVersion",
+    "costId",
+    "month",
+    "category",
+    "amountMinor",
+    "source",
+    "note",
+    "updatedAtMillis",
+    "updatedByUid"
+  ],
+  "definitions": {
+    "category": {
+      "enum": [
+        "whatsapp",
+        "ai",
+        "cloud",
+        "sms",
+        "ads_meta",
+        "ads_google",
+        "other"
+      ]
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "costId": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])_[a-z_]+$"
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "category": {
+      "enum": [
+        "whatsapp",
+        "ai",
+        "cloud",
+        "sms",
+        "ads_meta",
+        "ads_google",
+        "other"
+      ]
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "source": {
+      "enum": [
+        "manual",
+        "meta_api",
+        "google_ads_api"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    }
+  }
+};
+
+export const moneyIssueResolutionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_issue_resolutions.schema.json",
+  "title": "MoneyIssueResolutionDocument",
+  "description": "How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneyIssueResolutions",
+  "x-firestore-path": "moneyIssueResolutions/{resolutionId}",
+  "x-document-id-field": "resolutionId",
+  "x-owner": "adminManagePaymentIssues",
+  "required": [
+    "schemaVersion",
+    "resolutionId",
+    "issueId",
+    "kind",
+    "statusAtResolution",
+    "action",
+    "note",
+    "resolvedAtMillis",
+    "resolvedByUid",
+    "title",
+    "organizerName"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "resolutionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,240}$"
+    },
+    "issueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "kind": {
+      "enum": [
+        "payment",
+        "refund",
+        "review",
+        "bill"
+      ]
+    },
+    "statusAtResolution": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "action": {
+      "enum": [
+        "confirmedBooking",
+        "closed"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "resolvedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resolvedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "organizerName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    }
+  }
+};
+
+export const adminManagePaymentIssuesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_payment_issues_payload.schema.json",
+  "title": "AdminManagePaymentIssuesCallablePayload",
+  "description": "Owner reads Money's open or resolved issues (payments with no booking, refunds not sent, payments needing review, overdue bills) or acts on one. confirmBooking re-checks a website or offer checkout with Razorpay now and admits the guest when there is still room. close records that the issue was handled outside Admin.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "view",
+    "issueId",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "confirmBooking",
+        "close"
+      ]
+    },
+    "view": {
+      "enum": [
+        "open",
+        "resolved"
+      ]
+    },
+    "issueId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManagePaymentIssuesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_payment_issues_response.schema.json",
+  "title": "AdminManagePaymentIssuesCallableResponse",
+  "description": "Money issues for one view, oldest first, with counts per kind, and the outcome of the action just taken.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "view",
+    "issues",
+    "counts",
+    "outcome"
+  ],
+  "properties": {
+    "view": {
+      "enum": [
+        "open",
+        "resolved"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issueId",
+          "kind",
+          "source",
+          "targetId",
+          "title",
+          "subtitle",
+          "organizerId",
+          "organizerName",
+          "amountMinor",
+          "waitingSinceMillis",
+          "status",
+          "lastErrorCode",
+          "providerPaymentId",
+          "eventId",
+          "canConfirmBooking",
+          "resolution"
+        ],
+        "properties": {
+          "issueId": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "kind": {
+            "enum": [
+              "payment",
+              "refund",
+              "review",
+              "bill"
+            ]
+          },
+          "source": {
+            "enum": [
+              "publicEventPayments",
+              "organizerEventOfferPayments",
+              "payments",
+              "organizerBills"
+            ]
+          },
+          "targetId": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "subtitle": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "organizerId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "waitingSinceMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "lastErrorCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "providerPaymentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "eventId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "canConfirmBooking": {
+            "type": "boolean"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "title": "MoneyIssueResolutionDocument",
+                "description": "How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.",
+                "type": "object",
+                "additionalProperties": false,
+                "x-firestore-collection": "moneyIssueResolutions",
+                "x-firestore-path": "moneyIssueResolutions/{resolutionId}",
+                "x-document-id-field": "resolutionId",
+                "x-owner": "adminManagePaymentIssues",
+                "required": [
+                  "schemaVersion",
+                  "resolutionId",
+                  "issueId",
+                  "kind",
+                  "statusAtResolution",
+                  "action",
+                  "note",
+                  "resolvedAtMillis",
+                  "resolvedByUid",
+                  "title",
+                  "organizerName"
+                ],
+                "properties": {
+                  "schemaVersion": {
+                    "const": 1
+                  },
+                  "resolutionId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,240}$"
+                  },
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "kind": {
+                    "enum": [
+                      "payment",
+                      "refund",
+                      "review",
+                      "bill"
+                    ]
+                  },
+                  "statusAtResolution": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "action": {
+                    "enum": [
+                      "confirmedBooking",
+                      "closed"
+                    ]
+                  },
+                  "note": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 500
+                  },
+                  "resolvedAtMillis": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "resolvedByUid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "title": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "organizerName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 160
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "payment",
+        "refund",
+        "review",
+        "bill"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payment": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "refund": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "review": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bill": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "issueId",
+            "result",
+            "statusAfter"
+          ],
+          "properties": {
+            "issueId": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "result": {
+              "enum": [
+                "admitted",
+                "stillWaiting",
+                "refunding",
+                "closed"
+              ]
+            },
+            "statusAfter": {
+              "type": "string",
+              "maxLength": 40
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
+export const adminGetFinanceMonthCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_finance_month_payload.schema.json",
+  "title": "AdminGetFinanceMonthCallablePayload",
+  "description": "Owner reads one India-time month of Finance, line by line: ticket sales through Catch, what Catch earned, what it cost and what is not Catch's money, with the six months before for the charts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "month"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    }
+  }
+};
+
+export const adminGetFinanceMonthCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_finance_month_response.schema.json",
+  "title": "AdminGetFinanceMonthCallableResponse",
+  "description": "One month of Finance from organizer bills (ticket sales paid into organizers' own accounts and Catch's commission), costs and nominator credit paid. leftOverMinor is earned less costs, before salaries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "sales",
+    "earned",
+    "costs",
+    "notCatch",
+    "leftOverMinor",
+    "series"
+  ],
+  "definitions": {
+    "minor": {
+      "type": "integer"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "sales": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grossMinor",
+        "refundedMinor",
+        "netMinor",
+        "events",
+        "organizers",
+        "payments"
+      ],
+      "properties": {
+        "grossMinor": {
+          "type": "integer"
+        },
+        "refundedMinor": {
+          "type": "integer"
+        },
+        "netMinor": {
+          "type": "integer"
+        },
+        "events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payments": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "earned": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uncappedMinor",
+        "capsAndTermsMinor",
+        "trialWaivedMinor",
+        "billedMinor",
+        "billedOrganizers",
+        "cappedOrganizers",
+        "ownTermsOrganizers",
+        "freeOrganizers",
+        "paidMinor",
+        "writtenOffMinor"
+      ],
+      "properties": {
+        "uncappedMinor": {
+          "type": "integer",
+          "description": "Commission before caps, for organizers past their free trial."
+        },
+        "capsAndTermsMinor": {
+          "type": "integer",
+          "description": "What caps took off (a positive number)."
+        },
+        "trialWaivedMinor": {
+          "type": "integer"
+        },
+        "billedMinor": {
+          "type": "integer"
+        },
+        "billedOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cappedOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownTermsOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "freeOrganizers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paidMinor": {
+          "type": "integer"
+        },
+        "writtenOffMinor": {
+          "type": "integer"
+        }
+      }
+    },
+    "costs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lines",
+        "nominatorCreditPaidMinor",
+        "totalMinor",
+        "whatsappIsEstimate",
+        "whatsappMessages"
+      ],
+      "properties": {
+        "lines": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "category",
+              "amountMinor",
+              "source",
+              "note"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "whatsapp",
+                  "ai",
+                  "cloud",
+                  "sms",
+                  "ads_meta",
+                  "ads_google",
+                  "other"
+                ]
+              },
+              "amountMinor": {
+                "type": "integer"
+              },
+              "source": {
+                "enum": [
+                  "manual",
+                  "meta_api",
+                  "google_ads_api",
+                  "estimate"
+                ]
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              }
+            }
+          }
+        },
+        "nominatorCreditPaidMinor": {
+          "type": "integer"
+        },
+        "totalMinor": {
+          "type": "integer"
+        },
+        "whatsappIsEstimate": {
+          "type": "boolean"
+        },
+        "whatsappMessages": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "notCatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "providerFeeMinor",
+        "providerTaxMinor",
+        "gstRegistered",
+        "gstMinor"
+      ],
+      "properties": {
+        "providerFeeMinor": {
+          "type": "integer"
+        },
+        "providerTaxMinor": {
+          "type": "integer"
+        },
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstMinor": {
+          "type": "integer"
+        }
+      }
+    },
+    "leftOverMinor": {
+      "type": "integer"
+    },
+    "series": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "salesMinor",
+          "earnedMinor",
+          "partial"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "salesMinor": {
+            "type": "integer"
+          },
+          "earnedMinor": {
+            "type": "integer"
+          },
+          "partial": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminGetMarketplaceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_marketplace_payload.schema.json",
+  "title": "AdminGetMarketplaceCallablePayload",
+  "description": "Owner reads the Marketplace: events, places filled, no-shows and waitlists by city over the last 7, 30 or 90 days; guests by the month they first booked and whether they came back; bookings each week; organizers going quiet. marketId narrows to one city.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "rangeDays",
+    "marketId"
+  ],
+  "properties": {
+    "rangeDays": {
+      "enum": [
+        7,
+        30,
+        90
+      ]
+    },
+    "marketId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    }
+  }
+};
+
+export const adminGetMarketplaceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_marketplace_response.schema.json",
+  "title": "AdminGetMarketplaceCallableResponse",
+  "description": "The Marketplace from the analytics warehouse's Firestore exports. available is false (with a reason) when the warehouse could not be read; every list is then empty. Rates are whole percentages; null where nothing can be measured (no-shows only count events that checked anyone in).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rangeDays",
+    "marketId",
+    "available",
+    "unavailableReason",
+    "generatedAtMillis",
+    "stats",
+    "cities",
+    "guestCohorts",
+    "bookingsByWeek",
+    "goingQuiet"
+  ],
+  "definitions": {
+    "percent": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "properties": {
+    "rangeDays": {
+      "enum": [
+        7,
+        30,
+        90
+      ]
+    },
+    "marketId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 50
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "unavailableReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventsThisWeek",
+        "eventsLastWeek",
+        "filledPercent",
+        "noShowPercent",
+        "cameBackPercent"
+      ],
+      "properties": {
+        "eventsThisWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventsLastWeek": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "filledPercent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "noShowPercent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "cameBackPercent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "cities": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "marketId",
+          "organizersLive",
+          "eventsPerWeek",
+          "filledPercent",
+          "noShowPercent",
+          "waitlisted"
+        ],
+        "properties": {
+          "marketId": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "organizersLive": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "eventsPerWeek": {
+            "type": "number",
+            "minimum": 0
+          },
+          "filledPercent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "noShowPercent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "waitlisted": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "guestCohorts": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "guests",
+          "again30Percent",
+          "again60Percent",
+          "again90Percent"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "guests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "again30Percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "again60Percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "again90Percent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "bookingsByWeek": {
+      "type": "array",
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "weekStart",
+          "bookings",
+          "partial"
+        ],
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "bookings": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "partial": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "goingQuiet": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "marketId",
+          "daysSinceLastEvent",
+          "eventsPerMonthBefore",
+          "salesOwnerUid",
+          "salesOwnerName"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "marketId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          },
+          "daysSinceLastEvent": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "eventsPerMonthBefore": {
+            "type": "number",
+            "minimum": 0
+          },
+          "salesOwnerUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "salesOwnerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminGetGrowthCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_growth_payload.schema.json",
+  "title": "AdminGetGrowthCallablePayload",
+  "description": "Owner reads Growth for a range: organizer cohorts by the month they were listed, channels and ad spend, nominators and their credit, and the best organizers.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "range"
+  ],
+  "properties": {
+    "range": {
+      "enum": [
+        "90d",
+        "12m",
+        "all"
+      ]
+    }
+  }
+};
+
+export const adminGetGrowthCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_growth_response.schema.json",
+  "title": "AdminGetGrowthCallableResponse",
+  "description": "Growth for one range, computed from organizerGrowthFacts, organizer bills, nominator credit and costs. Cohorts group organizers by the India-time month they were listed; days are medians counted from listing. Ticket sales are what organizers sold into their own accounts, from their monthly bills. Catch earned is what organizers' bills came to (paid or not, excluding free months).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "range",
+    "generatedAtMillis",
+    "summary",
+    "cohorts",
+    "claimDays",
+    "salesByMonthOnCatch",
+    "channels",
+    "claimsByMonth",
+    "adSpend",
+    "nominators",
+    "best"
+  ],
+  "definitions": {
+    "channel": {
+      "type": "string",
+      "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+      "enum": [
+        "imported",
+        "sales_associate",
+        "partner",
+        "guest",
+        "organizer",
+        "came_to_us",
+        "ads"
+      ]
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "minor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "days": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    }
+  },
+  "properties": {
+    "range": {
+      "enum": [
+        "90d",
+        "12m",
+        "all"
+      ]
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "listed",
+        "claimed",
+        "claimMedianDays",
+        "ranEvent",
+        "ranEventMedianDays",
+        "paying",
+        "sinceMonth"
+      ],
+      "properties": {
+        "listed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "claimed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "claimMedianDays": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ranEvent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ranEventMedianDays": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "paying": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sinceMonth": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "cohorts": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "listed",
+          "claimed",
+          "claimMedianDays",
+          "ranEvent",
+          "ranEventMedianDays",
+          "tooEarly"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "listed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimMedianDays": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "ranEvent": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ranEventMedianDays": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "tooEarly": {
+            "type": "boolean",
+            "description": "Listed under 30 days ago, so most of its organizers have not had time to run an event."
+          }
+        }
+      }
+    },
+    "claimDays": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "count"
+        ],
+        "properties": {
+          "label": {
+            "enum": [
+              "0–3",
+              "4–7",
+              "8–14",
+              "15–30",
+              "31+"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "salesByMonthOnCatch": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "organizers",
+          "salesPerOrganizerMinor"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "organizers": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "salesPerOrganizerMinor": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "description": "Average ticket sales per organizer in their 1st to 6th month on Catch, counted from the month of their first event; null where the month has not come yet."
+          }
+        }
+      }
+    },
+    "channels": {
+      "type": "array",
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "channel",
+          "listed",
+          "claimed",
+          "paying",
+          "earnedMinor",
+          "costMinor",
+          "costKind",
+          "detail"
+        ],
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+            "enum": [
+              "imported",
+              "sales_associate",
+              "partner",
+              "guest",
+              "organizer",
+              "came_to_us",
+              "ads"
+            ]
+          },
+          "listed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paying": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "earnedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "costMinor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "costKind": {
+            "enum": [
+              "ads",
+              "credit",
+              "salaries",
+              "none"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "claimsByMonth": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "month",
+          "count"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "adSpend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "month",
+        "metaMinor",
+        "metaConnected",
+        "googleConnected",
+        "adClaims"
+      ],
+      "properties": {
+        "month": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+        },
+        "metaMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "metaConnected": {
+          "type": "boolean"
+        },
+        "googleConnected": {
+          "type": "boolean"
+        },
+        "adClaims": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "nominators": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "name",
+          "role",
+          "nominated",
+          "claimed",
+          "paying",
+          "paidToCatchMinor",
+          "creditOwedMinor",
+          "creditApprovedMinor",
+          "creditPaidMinor",
+          "firstNominatedAtMillis",
+          "organizers"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "role": {
+            "enum": [
+              "associate",
+              "partner",
+              "guest",
+              "organizer"
+            ]
+          },
+          "nominated": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paying": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paidToCatchMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "creditOwedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "creditApprovedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "creditPaidMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "firstNominatedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "organizers": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerId",
+                "name",
+                "claimed",
+                "latestBill",
+                "creditMonthIndex"
+              ],
+              "properties": {
+                "organizerId": {
+                  "type": "string",
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "claimed": {
+                  "type": "boolean"
+                },
+                "latestBill": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "billId",
+                        "month",
+                        "totalMinor",
+                        "status",
+                        "creditMinor"
+                      ],
+                      "properties": {
+                        "billId": {
+                          "type": "string",
+                          "maxLength": 200
+                        },
+                        "month": {
+                          "type": "string",
+                          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+                        },
+                        "totalMinor": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "status": {
+                          "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+                          "enum": [
+                            "toSend",
+                            "sent",
+                            "paid",
+                            "writtenOff",
+                            "free"
+                          ]
+                        },
+                        "creditMinor": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  ]
+                },
+                "creditMonthIndex": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "best": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "marketId",
+          "salesMinor",
+          "earnedMinor",
+          "events",
+          "trendPercent",
+          "channel",
+          "payingSinceMonth",
+          "inTrial",
+          "ownTerms"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "marketId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          },
+          "salesMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "earnedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "events": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "trendPercent": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Ticket sales in the last three billed months against the three before; null when there is nothing to compare."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Where the organizer first came from. imported: Catch found it (discovery or an import). sales_associate: a Catch sales associate nominated it. partner, guest, organizer: someone outside Catch nominated it. came_to_us: the organizer applied or set itself up. ads: the organizer applied after a paid campaign.",
+            "enum": [
+              "imported",
+              "sales_associate",
+              "partner",
+              "guest",
+              "organizer",
+              "came_to_us",
+              "ads"
+            ]
+          },
+          "payingSinceMonth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "inTrial": {
+            "type": "boolean"
+          },
+          "ownTerms": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminManagePlatformCostsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_platform_costs_payload.schema.json",
+  "title": "AdminManagePlatformCostsCallablePayload",
+  "description": "Owner reads one month's costs, sets one kind of cost for the month by hand, or clears a hand-entered cost.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "month",
+    "category",
+    "amountMinor",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "set",
+        "clear"
+      ]
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "category": {
+      "anyOf": [
+        {
+          "enum": [
+            "whatsapp",
+            "ai",
+            "cloud",
+            "sms",
+            "ads_meta",
+            "ads_google",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "amountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManagePlatformCostsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_platform_costs_response.schema.json",
+  "title": "AdminManagePlatformCostsCallableResponse",
+  "description": "One month's costs: what is stored, the WhatsApp estimate used while no WhatsApp invoice total is stored, messages sent, and the month's total.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "costs",
+    "whatsapp",
+    "totalMinor",
+    "adSpend"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "costs": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "title": "PlatformCostDocument",
+        "description": "What one kind of cost came to in one India-time calendar month, platformCosts/{YYYY-MM}_{category}. The owner enters AI, Cloud, SMS and any invoice total by hand; WhatsApp falls back to an estimate from reserved dispatch costs while no invoice total is entered; ad spend arrives from the ad platform once its account is connected.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "platformCosts",
+        "x-firestore-path": "platformCosts/{costId}",
+        "x-document-id-field": "costId",
+        "x-owner": "adminManagePlatformCosts and ad spend imports",
+        "required": [
+          "schemaVersion",
+          "costId",
+          "month",
+          "category",
+          "amountMinor",
+          "source",
+          "note",
+          "updatedAtMillis",
+          "updatedByUid"
+        ],
+        "definitions": {
+          "category": {
+            "enum": [
+              "whatsapp",
+              "ai",
+              "cloud",
+              "sms",
+              "ads_meta",
+              "ads_google",
+              "other"
+            ]
+          }
+        },
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "costId": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])_[a-z_]+$"
+          },
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "category": {
+            "enum": [
+              "whatsapp",
+              "ai",
+              "cloud",
+              "sms",
+              "ads_meta",
+              "ads_google",
+              "other"
+            ]
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "source": {
+            "enum": [
+              "manual",
+              "meta_api",
+              "google_ads_api"
+            ]
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "updatedByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimateMinor",
+        "messageCount",
+        "usesEstimate"
+      ],
+      "properties": {
+        "estimateMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "messageCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "usesEstimate": {
+          "type": "boolean"
+        }
+      }
+    },
+    "totalMinor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "adSpend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metaConnected",
+        "googleConnected"
+      ],
+      "properties": {
+        "metaConnected": {
+          "type": "boolean"
+        },
+        "googleConnected": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
+export const adminExportMoneyLedgerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_export_money_ledger_payload.schema.json",
+  "title": "AdminExportMoneyLedgerCallablePayload",
+  "description": "Owner exports one India-time month of Catch's ledger for the accountant to import into Zoho Books: bills issued, bill payments received, nominator credit paid and costs.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "month"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    }
+  }
+};
+
+export const adminExportMoneyLedgerCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_export_money_ledger_response.schema.json",
+  "title": "AdminExportMoneyLedgerCallableResponse",
+  "description": "The month's ledger as CSV (Date, Type, Reference, Party, Description, Amount, GST, Status; amounts in rupees) with its file name and row count.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "fileName",
+    "csv",
+    "rowCount"
+  ],
+  "properties": {
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "fileName": {
+      "type": "string",
+      "pattern": "^catch-ledger-[0-9]{4}-[0-9]{2}\\.csv$"
+    },
+    "csv": {
+      "type": "string",
+      "maxLength": 5000000
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const adminManageOrganizerBillsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_organizer_bills_payload.schema.json",
+  "title": "AdminManageOrganizerBillsCallablePayload",
+  "description": "Owner reads one month's organizer bills or acts on them. list reads the month, or with organizerId every bill of one organizer (the organizer's Money tab). generate (re)makes the month's bills from its bookings; bills already sent or closed are kept. send takes the next invoice number, sets the due date and creates a Razorpay payment link. remind records a reminder. markPaid closes a bill paid outside its link and credits its nominator. writeOff closes a bill that will not be paid. Acting on one bill names the revision it reviewed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "month",
+    "organizerId",
+    "billId",
+    "expectedRevision",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "generate",
+        "send",
+        "remind",
+        "markPaid",
+        "writeOff"
+      ]
+    },
+    "month": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "billId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManageOrganizerBillsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_organizer_bills_response.schema.json",
+  "title": "AdminManageOrganizerBillsCallableResponse",
+  "description": "A month's bills, or one organizer's bills across months (month null, organizerId set), newest activity first, with totals and counts per state. overdue counts sent bills past their due date.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "month",
+    "organizerId",
+    "bills",
+    "totals",
+    "counts",
+    "nextInvoiceNumber",
+    "gstRegistered"
+  ],
+  "properties": {
+    "month": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "bills": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "title": "OrganizerBillDocument",
+        "description": "Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "organizerBills",
+        "x-firestore-path": "organizerBills/{billId}",
+        "x-document-id-field": "billId",
+        "x-owner": "Functions organizer billing (monthly generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+        "required": [
+          "schemaVersion",
+          "billId",
+          "organizerId",
+          "organizerName",
+          "month",
+          "periodStartMillis",
+          "periodEndMillis",
+          "revision",
+          "status",
+          "sales",
+          "commission",
+          "trialEndsAtMillis",
+          "terms",
+          "gst",
+          "totalMinor",
+          "invoiceNumber",
+          "dueAtMillis",
+          "paymentLink",
+          "sentAtMillis",
+          "reminders",
+          "paidAtMillis",
+          "paidMinor",
+          "paidVia",
+          "writtenOffAtMillis",
+          "history",
+          "generatedAtMillis",
+          "updatedAtMillis"
+        ],
+        "definitions": {
+          "millis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "nullableMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "minor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "status": {
+            "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+            "enum": [
+              "toSend",
+              "sent",
+              "paid",
+              "writtenOff",
+              "free"
+            ]
+          },
+          "historyEntry": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "atMillis",
+              "action",
+              "byUid",
+              "note"
+            ],
+            "properties": {
+              "atMillis": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "action": {
+                "enum": [
+                  "generated",
+                  "regenerated",
+                  "sent",
+                  "reminded",
+                  "paid",
+                  "writtenOff"
+                ]
+              },
+              "byUid": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 128
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              }
+            }
+          }
+        },
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "billId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}_[0-9]{4}-[0-9]{2}$"
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "periodStartMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "periodEndMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "description": "toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.",
+            "enum": [
+              "toSend",
+              "sent",
+              "paid",
+              "writtenOff",
+              "free"
+            ]
+          },
+          "sales": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "paymentCount",
+              "eventCount",
+              "grossMinor",
+              "refundedMinor",
+              "baseMinor",
+              "providerFeeMinor",
+              "providerTaxMinor",
+              "unsnapshottedCount"
+            ],
+            "properties": {
+              "paymentCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "eventCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "grossMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "refundedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "baseMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000,
+                "description": "What commission is charged on: gross or net of refunds, per the terms."
+              },
+              "providerFeeMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000,
+                "description": "Razorpay's fees on these sales, taken from the organizer's account; shown for their records."
+              },
+              "providerTaxMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "unsnapshottedCount": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Payments that froze no terms and were charged on the organizer's current terms."
+              }
+            }
+          },
+          "commission": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rateBasisPoints",
+              "uncappedMinor",
+              "capMinor",
+              "capped",
+              "trialWaivedMinor",
+              "amountMinor"
+            ],
+            "properties": {
+              "rateBasisPoints": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000,
+                "description": "The organizer's current rate; individual payments may have frozen another."
+              },
+              "uncappedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "capMinor": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capped": {
+                "type": "boolean"
+              },
+              "trialWaivedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              }
+            }
+          },
+          "trialEndsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "platformRevision",
+              "organizerRevision",
+              "ownTerms"
+            ],
+            "properties": {
+              "platformRevision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "organizerRevision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "ownTerms": {
+                "type": "boolean"
+              }
+            }
+          },
+          "gst": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "registered",
+              "rateBasisPoints",
+              "amountMinor"
+            ],
+            "properties": {
+              "registered": {
+                "type": "boolean"
+              },
+              "rateBasisPoints": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              }
+            }
+          },
+          "totalMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "invoiceNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+          },
+          "dueAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paymentLink": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "linkId",
+                  "url"
+                ],
+                "properties": {
+                  "linkId": {
+                    "type": "string",
+                    "pattern": "^plink_[A-Za-z0-9]{1,40}$"
+                  },
+                  "url": {
+                    "type": "string",
+                    "pattern": "^https://",
+                    "maxLength": 300
+                  }
+                }
+              }
+            ]
+          },
+          "sentAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "reminders": {
+            "type": "array",
+            "maxItems": 24,
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "paidAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paidMinor": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paidVia": {
+            "enum": [
+              "paymentLink",
+              "manual",
+              null
+            ]
+          },
+          "writtenOffAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "atMillis",
+                "action",
+                "byUid",
+                "note"
+              ],
+              "properties": {
+                "atMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "action": {
+                  "enum": [
+                    "generated",
+                    "regenerated",
+                    "sent",
+                    "reminded",
+                    "paid",
+                    "writtenOff"
+                  ]
+                },
+                "byUid": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 128
+                },
+                "note": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            }
+          },
+          "generatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "salesMinor",
+        "billedMinor",
+        "paidMinor"
+      ],
+      "properties": {
+        "salesMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "billedMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paidMinor": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all",
+        "toSend",
+        "sent",
+        "overdue",
+        "paid",
+        "writtenOff",
+        "free"
+      ],
+      "properties": {
+        "all": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "toSend": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overdue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "writtenOff": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "free": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "nextInvoiceNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+    },
+    "gstRegistered": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminManageMoneySettingsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_money_settings_payload.schema.json",
+  "title": "AdminManageMoneySettingsCallablePayload",
+  "description": "Owner reads or replaces Catch's money settings (GST registered, bill due day, nominator credit rule). A replacement names the revision it reviewed (0 when none is stored yet).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "expectedRevision",
+    "settings"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "read",
+        "replace"
+      ]
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "settings": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "gstRegistered",
+            "gstRateBasisPoints",
+            "billDueDayOfMonth",
+            "nominatorCredit"
+          ],
+          "properties": {
+            "gstRegistered": {
+              "type": "boolean"
+            },
+            "gstRateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "billDueDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28,
+              "description": "Bills for a month fall due on this day of the next month."
+            },
+            "nominatorCredit": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rateBasisPoints",
+                "months",
+                "lapseDays",
+                "minimumPayoutMinor",
+                "payoutDayOfMonth",
+                "earningRoles"
+              ],
+              "properties": {
+                "rateBasisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000,
+                  "description": "Share of what the organizer paid Catch, before GST."
+                },
+                "months": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 60,
+                  "description": "Months of credit, counted from the organizer's first paid bill."
+                },
+                "lapseDays": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 366,
+                  "description": "A nomination lapses when the organizer has not claimed within this many days."
+                },
+                "minimumPayoutMinor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000,
+                  "description": "Credit below this rolls over to the next payout."
+                },
+                "payoutDayOfMonth": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 28
+                },
+                "earningRoles": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "enum": [
+                      "partner",
+                      "guest",
+                      "organizer",
+                      "associate"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminManageMoneySettingsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_money_settings_response.schema.json",
+  "title": "AdminManageMoneySettingsCallableResponse",
+  "description": "The money settings in force (the defaults when none are stored, with revision 0) and the invoice number the next sent bill will take.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "settings",
+    "updatedAtMillis",
+    "updatedByUid",
+    "nextInvoiceNumber"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gstRegistered",
+        "gstRateBasisPoints",
+        "billDueDayOfMonth",
+        "nominatorCredit"
+      ],
+      "properties": {
+        "gstRegistered": {
+          "type": "boolean"
+        },
+        "gstRateBasisPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "billDueDayOfMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Bills for a month fall due on this day of the next month."
+        },
+        "nominatorCredit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rateBasisPoints",
+            "months",
+            "lapseDays",
+            "minimumPayoutMinor",
+            "payoutDayOfMonth",
+            "earningRoles"
+          ],
+          "properties": {
+            "rateBasisPoints": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Share of what the organizer paid Catch, before GST."
+            },
+            "months": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "description": "Months of credit, counted from the organizer's first paid bill."
+            },
+            "lapseDays": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366,
+              "description": "A nomination lapses when the organizer has not claimed within this many days."
+            },
+            "minimumPayoutMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000,
+              "description": "Credit below this rolls over to the next payout."
+            },
+            "payoutDayOfMonth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 28
+            },
+            "earningRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "partner",
+                  "guest",
+                  "organizer",
+                  "associate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "updatedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "updatedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "nextInvoiceNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}/[0-9]{3,}$"
+    }
+  }
+};
+
+export const adminManageNominatorCreditsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_nominator_credits_payload.schema.json",
+  "title": "AdminManageNominatorCreditsCallablePayload",
+  "description": "Owner reads the nominator credit ledger or acts for one nominator. approve approves all their owed credit when it reaches the minimum payout (less rolls over). markPaid records that their approved credit was paid with partner payouts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": [
+    "action",
+    "nominatorUid",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "list",
+        "approve",
+        "markPaid"
+      ]
+    },
+    "nominatorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminManageNominatorCreditsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_nominator_credits_response.schema.json",
+  "title": "AdminManageNominatorCreditsCallableResponse",
+  "description": "Every nominator with credit, their totals by state and whether their owed credit has reached the minimum payout, plus the newest credit entries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominators",
+    "credits",
+    "minimumPayoutMinor"
+  ],
+  "properties": {
+    "minimumPayoutMinor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nominators": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nominatorUid",
+          "nominatorRole",
+          "owedMinor",
+          "approvedMinor",
+          "paidMinor",
+          "payable",
+          "organizerCount"
+        ],
+        "properties": {
+          "nominatorUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "nominatorRole": {
+            "enum": [
+              "associate",
+              "partner",
+              "guest",
+              "organizer"
+            ]
+          },
+          "owedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "approvedMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "paidMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "payable": {
+            "type": "boolean"
+          },
+          "organizerCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "credits": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "title": "NominatorCreditDocument",
+        "description": "One credit a nominator earned from one paid organizer bill, keyed by the bill. Written when a bill is paid, under the nominator credit rule in moneySettings: the first nominator of the organizer, if their role earns credit and the organizer claimed within the lapse window, earns the rate on what the organizer paid Catch before GST, for the set number of months from the organizer's first paid bill. Owed credit is approved monthly per nominator once it reaches the minimum (less rolls over), then marked paid with partner payouts.",
+        "type": "object",
+        "additionalProperties": false,
+        "x-firestore-collection": "nominatorCredits",
+        "x-firestore-path": "nominatorCredits/{creditId}",
+        "x-document-id-field": "creditId",
+        "x-owner": "Functions organizer billing (bill paid) and adminManageNominatorCredits",
+        "required": [
+          "schemaVersion",
+          "creditId",
+          "billId",
+          "organizerId",
+          "organizerName",
+          "nominatorUid",
+          "nominatorRole",
+          "billMonth",
+          "monthIndex",
+          "billPaidMinor",
+          "rateBasisPoints",
+          "creditMinor",
+          "status",
+          "approvedAtMillis",
+          "approvedByUid",
+          "paidAtMillis",
+          "paidByUid",
+          "createdAtMillis",
+          "updatedAtMillis"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "creditId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "billId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "nominatorUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "nominatorRole": {
+            "enum": [
+              "associate",
+              "partner",
+              "guest",
+              "organizer"
+            ]
+          },
+          "billMonth": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "monthIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60,
+            "description": "Which month of credit this is, counted from the organizer's first paid bill."
+          },
+          "billPaidMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "rateBasisPoints": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "creditMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "status": {
+            "enum": [
+              "owed",
+              "approved",
+              "paid"
+            ]
+          },
+          "approvedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "approvedByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "paidAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "paidByUid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+};
+
 export const adminSalesIntelligenceGenerateCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
