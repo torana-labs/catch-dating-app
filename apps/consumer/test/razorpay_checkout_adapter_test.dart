@@ -1,19 +1,19 @@
 import 'dart:async';
 
 import 'package:catch_consumer_app/consumer_platform_app.dart';
+import 'package:catch_consumer_app/razorpay_checkout_adapter.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/contexts/payments/data/organizer_event_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart'
+    as catch_payment;
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_consumer_app/razorpay_checkout_adapter.dart';
-import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart'
-    as catch_payment;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -34,7 +34,7 @@ void main() {
       gateway.emitSuccess(
         PaymentSuccessResponse('payment-1', 'order-1', 'signature-1', const {}),
       );
-      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
 
       expect(result?.paymentId, 'payment-1');
       expect(result?.orderId, 'order-1');
@@ -182,7 +182,7 @@ void _nativeOwnershipTests() {
           onFailure: (_) => fail('Unexpected failure'),
         );
         checkout.open(options);
-        await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
         expect(calls.map((call) => call.method), ['open']);
         expect(calls.single.arguments, options);
         nativeResults.single.complete(success('order-a'));
@@ -206,7 +206,7 @@ void _nativeOwnershipTests() {
           onFailure: (_) => oldCallbacks++,
         );
         oldCheckout.open(options);
-        await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
         oldCheckout.clear();
         expect(
           () => PluginRazorpayGateway(coordinator: coordinator),
@@ -214,7 +214,7 @@ void _nativeOwnershipTests() {
         );
         expect(calls, hasLength(1));
         nativeResults.single.complete(failure());
-        await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
         expect(oldCallbacks, 0);
         final current = PluginRazorpayCheckout(
           gateway: PluginRazorpayGateway(coordinator: coordinator),
@@ -225,7 +225,7 @@ void _nativeOwnershipTests() {
           onFailure: (_) => fail('Old failure leaked'),
         );
         current.open({...options, 'order_id': 'order-b'});
-        await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
         expect(calls, hasLength(2));
         nativeResults.last.complete(success('order-b'));
         expect((await received.future).orderId, 'order-b');
@@ -245,7 +245,7 @@ void _nativeOwnershipTests() {
           onFailure: received.complete,
         );
         checkout.open(options);
-        await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
         nativeResults.single.complete(failure());
         expect((await received.future).isCancelled, isTrue);
         checkout.clear();
@@ -282,7 +282,7 @@ void _nativeOwnershipTests() {
           onFailure: received.complete,
         );
         checkout.open(options);
-        await Future<void>.delayed(Duration.zero);
+        await pumpEventQueue();
         nativeResults.single.complete(invalid.value);
         expect((await received.future).isCancelled, isFalse);
         checkout.clear();
@@ -301,7 +301,7 @@ void _nativeOwnershipTests() {
       final received = Completer<catch_payment.RazorpayFailureResponse>();
       checkout.configure(onSuccess: (_) async {}, onFailure: received.complete);
       checkout.open(options);
-      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
       nativeResults.single.completeError(
         PlatformException(code: 'unknown-native-outcome'),
       );

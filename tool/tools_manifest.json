@@ -1234,107 +1234,42 @@
       }
     },
     {
-      "id": "audit:dependency-direction",
-      "category": "audit",
-      "path": "tool/architecture/check_dependency_direction.mjs",
-      "command": "node tool/architecture/check_dependency_direction.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files, by layer placement across legacy features, the bounded-context roots and app packages.",
-      "checks": [
-        "node --test tool/architecture/check_dependency_direction.test.mjs",
-        "node --check tool/architecture/check_dependency_direction.mjs",
-        "node tool/architecture/check_dependency_direction.mjs"
-      ],
-      "role": "ratchet",
-      "rules": [
-        "DEPENDENCY-DIRECTION-001",
-        "INJECTED-CLOCK-001",
-        "STREAM-LIFECYCLE-001",
-        "EXTERNAL-SIDE-EFFECT-001",
-        "CONTROLLER-BOUNDARY-001"
-      ],
-      "baseline": "tool/architecture/dependency_direction_baseline.json",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_dependency_direction.test.mjs",
-        "contains": [
-          "scanFile flags domain framework imports",
-          "scanFile flags data/domain imports of feature presentation",
-          "scanFile flags sibling feature widget imports",
-          "scanFile flags domain DateTime.now access",
-          "scanFile honors stream timeout override comments",
-          "scanFile flags presentation plugin imports outside controllers and services",
-          "scanDependencyDirection ratchets baseline findings",
-          "scanFile flags WidgetRef parameters below route build methods",
-          "scanFile flags repository provider reads from presentation widgets",
-          "scanFile flags unannotated feature-root presentation barrel exports",
-          "scanFile flags provider-coupled presentation state files",
-          "scanFile flags undocumented keepAlive providers",
-          "scanFile flags manual provider declarations outside core",
-          "scanFile flags display state classes misplaced outside state files",
-          "scanFile flags presentation files with multiple route screens",
-          "scanDependencyDirection flags untracked state adapters as a hard gate",
-          "scanFile holds context domain and kernel files to the domain rules",
-          "scanFile flags context data and domain imports of actions, parts and screens",
-          "scanFile flags provider-coupled context parts as a hard gate",
-          "scanFile applies screen rules to app-package destinations and shared pages",
-          "scanDependencyDirection scans app packages and never baselines the context roots"
-        ]
-      },
-      "impactPaths": [
-        "tool/architecture/check_dependency_direction.test.mjs",
-        "tool/architecture/check_dependency_direction.mjs",
-        "tool/architecture/dependency_direction_baseline.json",
-        "tool/architecture/pattern_adoption.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node"]
-      }
-    },
-    {
       "id": "audit:context-map",
       "category": "audit",
       "path": "tool/architecture/check_context_map.mjs",
       "command": "node tool/architecture/check_context_map.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Places every handwritten lib Dart file in a bounded context or layer from tool/architecture/context_map.json and checks that layers and contexts import only downward, that new contexts cross through their public API file, that no new top-level folder goes undeclared, that no domain or data file returns to a legacy folder, and that the architecture spec's context table matches the map.",
+      "description": "Checks what one file cannot show: tool/architecture/context_map.json is well formed and the architecture spec's context table matches it. Placement and import order are catch_arch_* lints that read the same map.",
       "checks": [
         "node --test tool/architecture/check_context_map.test.mjs",
         "node --check tool/architecture/check_context_map.mjs",
         "node tool/architecture/check_context_map.mjs"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "CONTEXT-MAP-001"
       ],
-      "baseline": "tool/architecture/context_map_baseline.json",
       "vacuityProof": {
         "type": "test",
         "path": "tool/architecture/check_context_map.test.mjs",
         "contains": [
-          "scanFile flags a context importing a context declared after it",
-          "scanFile flags upward layer imports",
-          "scanFile flags new contexts that bypass the public API file",
-          "scanFile flags unmapped files and undeclared contexts",
-          "scanContextMap ratchets legacy debt but never baselines new roots",
-          "scanContextMap reports obsolete baseline allowances",
+          "loadContextMap rejects undeclared contexts and duplicate placements",
           "checkSpecTable fails when the spec's context table drifts from the map",
-          "legacyContextFileFinding keeps legacy folders to screens and barrels once forbidden"
+          "scanContextMap reports a spec table that drifts from the map"
         ]
       },
       "impactPaths": [
         "docs/app_architecture.md",
         "tool/architecture/check_context_map.test.mjs",
         "tool/architecture/check_context_map.mjs",
-        "tool/architecture/context_map.json",
-        "tool/architecture/context_map_baseline.json"
+        "tool/architecture/context_map.json"
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -2198,7 +2133,8 @@
         "tool/lib/lint_probe_batch.test.mjs",
         "tool/design/generated/enforcement_expectations.json",
         "widgetbook/lib/primitives/catalog/feedback.dart",
-        "widgetbook/lib/primitives/contracts/feedback.dart"
+        "widgetbook/lib/primitives/contracts/feedback.dart",
+        "tool/architecture/context_map.json"
       ],
       "alsoCheckIds": [
         "lint:probe-batch-protocol"
@@ -2213,7 +2149,13 @@
         "UI-LINT-001",
         "ASYNC-LOADING-PRESENTATION-001",
         "ERROR-UI-002",
-        "IMAGE-NETWORK-PRIMITIVE-001"
+        "IMAGE-NETWORK-PRIMITIVE-001",
+        "CONTEXT-MAP-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DEPENDENCY-DIRECTION-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "INJECTED-CLOCK-001",
+        "STREAM-LIFECYCLE-001"
       ],
       "vacuityProof": {
         "type": "probe-harness",
@@ -2223,7 +2165,10 @@
           "catch_async_requires_retry",
           "catch_error_state_requires_action",
           "catch_no_raw_content_dimension",
-          "catch_no_local_design_constant"
+          "catch_no_local_design_constant",
+        "catch_arch_cross_feature_presentation_import",
+        "catch_arch_context_order_import",
+        "catch_arch_invalid_ignore"
         ]
       }
     },
@@ -2244,7 +2189,13 @@
       "rules": [
         "UI-LINT-001",
         "DESIGN-TOKENS-001",
-        "RESPONSIVE-LAYOUT-001"
+        "RESPONSIVE-LAYOUT-001",
+        "CONTEXT-MAP-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DEPENDENCY-DIRECTION-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "INJECTED-CLOCK-001",
+        "STREAM-LIFECYCLE-001"
       ],
       "vacuityProof": {
         "type": "self-test",

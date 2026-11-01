@@ -1,6 +1,7 @@
 import 'package:analysis_server_plugin/plugin.dart';
 import 'package:analysis_server_plugin/registry.dart';
 
+import 'src/catch_architecture_rules.dart';
 import 'src/catch_row_ownership_rules.dart';
 import 'src/catch_ui_rules.dart';
 
@@ -15,5 +16,6 @@ class _CatchUiLintsPlugin extends Plugin {
     registry.registerWarningRule(CatchUiLayoutRules());
     registry.registerWarningRule(CatchFeedbackRules());
     registry.registerWarningRule(CatchRowOwnershipRules());
+    registry.registerWarningRule(CatchArchitectureRules());
   }
 }

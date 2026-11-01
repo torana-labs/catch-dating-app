@@ -313,7 +313,7 @@ const consumedInputs = new Map([
   ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
     "design:parity-matrix", "design:screen-contracts"]],
   ["tool/architecture/pattern_adoption.json", ["audit:adopted-architecture-boundaries",
-    "audit:app-architecture-exhibits", "audit:dependency-direction", "design:screen-top-bar-contracts"]],
+    "audit:app-architecture-exhibits", "design:screen-top-bar-contracts"]],
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
     "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
   ["tool/policy/rules.json", ["agent:context-pack", "agent:harness-v2"]],
