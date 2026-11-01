@@ -4000,6 +4000,24 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminGetListingEventReviewCallablePayload",
+    source: "callables/admin_get_listing_event_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetListingEventReviewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetListingEventReviewCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminGetListingEventReviewCallableResponse",
+    source: "callable_responses/admin_get_listing_event_review_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetListingEventReviewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetListingEventReviewCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminListListingEventImportsCallablePayload",
     source: "callables/admin_list_listing_event_imports_payload.schema.json",
     typeOutput:

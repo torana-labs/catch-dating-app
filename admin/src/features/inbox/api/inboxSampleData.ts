@@ -8,7 +8,7 @@ function sampleItem(item: Partial<InboxItem> & Pick<InboxItem, "itemId" | "type"
   hours: number): InboxItem {
   return {sourceKind: "supplyIntakeRequest", sourceId: item.itemId, sourcePath: `supplyIntakeRequests/${item.itemId}`,
     subtitle: null, nominatorUid: null, city: "mumbai", status: "waiting", waitingSince: hoursAgo(hours),
-    doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null, ...item};
+    doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null, listingEvent: null, ...item};
 }
 
 export const sampleInboxItems: InboxItem[] = [

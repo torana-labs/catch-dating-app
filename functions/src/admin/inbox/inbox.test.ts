@@ -7,8 +7,8 @@ import {contractValidator} from "../../shared/contractTestValidators";
 import {schemaErrorMessages} from "../../shared/generated/schemaValidationRuntime";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallableResponse} from "../../shared/generated/adminGetInboxItemCallableResponse";
-import {projectInboxSource} from "./model";
-import {syncInboxSource} from "./store";
+import {ListingEventFacts, projectInboxSource, projectListingEvent} from "./model";
+import {syncInboxProjection, syncInboxSource} from "./store";
 import {
   adminGetInboxItemHandler,
   adminListInboxItemsHandler,
@@ -119,6 +119,54 @@ test("claims, enquiries, access and imported events project to their own types",
   assert.equal(event?.cameFrom, "Luma");
   assert.equal(event?.state.code, "needs_review");
   assert.match(event?.subtitle ?? "", /^Afterfly · 14 Nov/u);
+});
+
+const listingEvent = (overrides: Partial<ListingEventFacts> = {}): ListingEventFacts => ({
+  intakeRequestId: "req-1", approvedAt: "2026-10-29T10:00:00.000Z", organizerName: "Afterfly", citySlug: "mumbai",
+  eventWorkItemId: "wi-event-1", eventId: "ext-afterfly-mixer", title: "Singles mixer night", startAt: "2026-11-07T14:00:00.000Z",
+  platform: "luma", sourceUrl: "https://lu.ma/afterfly-mixer", planState: "ready", blockers: [],
+  findings: [{check: "dating_framing", field: "title", match: "Singles"}], ...overrides,
+});
+
+test("an unpublished event of a listing waits in the inbox under the id its document will use", () => {
+  const waiting = projectListingEvent(listingEvent());
+  assert.equal(waiting.itemId, "event-ext-afterfly-mixer");
+  assert.equal(waiting.lifecycle, "open");
+  assert.deepEqual(waiting.state, {code: "needs_review", label: "1 check left", tone: "warning"});
+  assert.deepEqual(waiting.listingEvent, {intakeRequestId: "req-1", eventWorkItemId: "wi-event-1"});
+  assert.equal(waiting.cameFrom, "Luma");
+  assert.match(waiting.subtitle ?? "", /^Afterfly · 7 Nov/u);
+  assert.match(waiting.journey[1].detail ?? "", /title says "Singles"/u);
+
+  const ready = projectListingEvent(listingEvent({findings: []}));
+  assert.deepEqual(ready.state, {code: "ready", label: "Ready to publish", tone: "success"});
+  assert.equal(ready.journey.length, 1);
+  const blocked = projectListingEvent(listingEvent({planState: "blocked", blockers: ["platform_not_publishable"]}));
+  assert.deepEqual([blocked.lifecycle, blocked.state.code], ["open", "blocked"]);
+  const ended = projectListingEvent(listingEvent({planState: "blocked", blockers: ["event_already_ended"]}));
+  assert.deepEqual([ended.lifecycle, ended.state.code], ["closed", "ended"]);
+});
+
+test("a dismissal holds across source writes until someone reopens it, and only for events and stuck intake", async () => {
+  const h = harness();
+  const write = () => syncInboxProjection(h.firestore, projectListingEvent(listingEvent()), now);
+  await write();
+  const update = (data: Record<string, unknown>, itemId = "event-ext-afterfly-mixer") => adminUpdateInboxItemHandler(h.request({itemId,
+    assigneeUid: null, snoozedUntil: null, note: null, ...data}), h.deps);
+  await assert.rejects(update({action: "dismiss"}), /Say why/);
+  await assert.rejects(update({action: "reopen"}), /Only a dismissed item/);
+  const dismissed = await update({action: "dismiss", note: "A dating night, not for the page."});
+  assert.equal(dismissed.item.status, "done");
+  assert.equal(dismissed.item.state.code, "dismissed");
+  assert.deepEqual(dismissed.item.listingEvent, {intakeRequestId: "req-1", eventWorkItemId: "wi-event-1"});
+
+  await write();
+  assert.equal((h.db.read("adminInboxItems/event-ext-afterfly-mixer") as {status: string}).status, "done", "a later sync leaves it closed");
+  const reopened = await update({action: "reopen"});
+  assert.deepEqual([reopened.item.status, reopened.item.state.code, reopened.item.doneAt], ["waiting", "needs_review", null]);
+
+  await h.sync("supplyIntakeRequest", "req-1", nomination("req-1"));
+  await assert.rejects(update({action: "dismiss", note: "Not for us."}, "supply-req-1"), /Decide this item/);
 });
 
 test("the inbox lists oldest first with real totals, a page at a time", async () => {

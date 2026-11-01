@@ -49,6 +49,8 @@
     "AdminListExternalEventDetailsCallablePayload",
     "AdminListInboxItemsCallablePayload",
     "AdminListIntakeOperationsCallablePayload",
+    "AdminGetListingEventReviewCallablePayload",
+    "AdminGetListingEventReviewCallableResponse",
     "AdminListListingEventImportsCallablePayload",
     "AdminListMyNominationsCallablePayload",
     "AdminListOrganizerDetailsCallablePayload",

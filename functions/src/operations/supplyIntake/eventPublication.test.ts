@@ -10,9 +10,11 @@ import {importShadowProjection, type ProjectionImportWriter} from "../projection
 import {FakeFirestore} from "../testFirestore";
 import {adminApproveOrganizerListingHandler} from "../../admin/organizerListingApproval";
 import {
+  adminGetListingEventReviewHandler,
   adminListListingEventImportsHandler,
   adminPublishListingEventsHandler,
 } from "../../admin/listingEventImports";
+import {syncInboxDocument, syncListingEventItems} from "../../admin/inbox/listingEvents";
 import {packagedIntake, runSupplyIntake, type SupplyIntakeRequest} from "./runtime";
 import {publishApprovedListingEvents} from "./eventPublicationTrigger";
 import {packagedEventPublication, publishListingEvents, type EventPublicationPolicy} from "./eventPublication";
@@ -376,4 +378,44 @@ test("imported events page through approved listings, newest approval first", as
   assert.deepEqual([second.rows.map((row) => row.intakeRequestId), second.nextCursor], [["nom-older-1"], null]);
   await assert.rejects(h.call(adminListListingEventImportsHandler, {limit: 1, cursor: "bm90LWpzb24"}),
     /cursor is invalid/);
+});
+
+test("an approved listing's events wait in the inbox, and publishing closes the same item", async () => {
+  const h = await harness();
+  const firestore = h.db as unknown as FirebaseFirestore.Firestore;
+  const now = new Date(NOW);
+  const inboxEvents = () => h.db.entries().filter(([key, doc]) => key.startsWith("adminInboxItems/") &&
+    (doc as {type?: string}).type === "event").map(([, doc]) => doc as Record<string, never> & {
+      itemId: string; sourceId: string; status: string; state: {code: string};
+      listingEvent: {intakeRequestId: string; eventWorkItemId: string} | null;
+    });
+  assert.deepEqual(await syncListingEventItems(firestore, h.requestId, {...h.db.read(h.requestPath), approval: null}, now), [],
+    "nothing waits before the listing is approved");
+  const synced = await syncInboxDocument(firestore, "supplyIntakeRequest", h.requestId, h.db.read(h.requestPath), now);
+  assert.equal(synced.length, h.eventWorkItemIds.length + 1);
+  const waiting = inboxEvents();
+  assert.equal(waiting.length, h.eventWorkItemIds.length);
+  assert.ok(waiting.every((item) => item.status === "waiting" && item.listingEvent?.intakeRequestId === h.requestId));
+
+  const first = waiting.find((item) => item.state.code === "ready") ?? assert.fail("the saved calendar has a publishable event");
+  const workItem = first.listingEvent!.eventWorkItemId;
+  const review = await h.call(adminGetListingEventReviewHandler as never, {intakeRequestId: h.requestId, eventWorkItemId: workItem}) as
+    {event: {eventId: string}; organizer: {organizerId: string}; policy: {mode: string}};
+  assert.equal(review.event.eventId, first.sourceId);
+  assert.equal(review.organizer.organizerId, h.organizerId);
+  await assert.rejects(h.call(adminGetListingEventReviewHandler as never, {intakeRequestId: h.requestId, eventWorkItemId: "gone"}), /no longer part/);
+  await assert.rejects(h.call(adminGetListingEventReviewHandler as never, {intakeRequestId: h.requestId, eventWorkItemId: workItem}, {salesStaff: true}), /not authorized/i);
+
+  // The event publishes; its document's trigger closes the item, and a slower listing sync does not reopen it.
+  await h.call(adminPublishListingEventsHandler as never, staffPayload([workItem], {blockerResolutions: [], eventLocations: []}));
+  const eventPath = `externalEvents/${first.sourceId}`;
+  assert.ok(h.db.read(eventPath), "the staff publish wrote the event");
+  await syncInboxDocument(firestore, "supplyIntakeRequest", h.requestId, h.db.read(h.requestPath), now);
+  assert.equal(inboxEvents().find((item) => item.itemId === first.itemId)?.status, "waiting",
+    "the listing sync does not touch an event that has its own document");
+  await syncInboxDocument(firestore, "externalEvent", first.sourceId, h.db.read(eventPath), now);
+  const closed = inboxEvents().find((item) => item.itemId === first.itemId);
+  assert.equal(closed?.status, "done");
+  assert.equal(closed?.state.code, "published");
+  assert.equal(closed?.listingEvent, null);
 });

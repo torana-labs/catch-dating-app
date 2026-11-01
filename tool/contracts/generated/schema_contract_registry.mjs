@@ -272664,7 +272664,8 @@ export const adminListInboxItemsCallableResponseSchema = {
           "doneAt",
           "assigneeUid",
           "snoozedUntil",
-          "recommendation"
+          "recommendation",
+          "listingEvent"
         ],
         "properties": {
           "itemId": {
@@ -272865,6 +272866,33 @@ export const adminListInboxItemsCallableResponseSchema = {
                 "type": "null"
               }
             ]
+          },
+          "listingEvent": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "intakeRequestId",
+                  "eventWorkItemId"
+                ],
+                "properties": {
+                  "intakeRequestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "eventWorkItemId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       }
@@ -273032,7 +273060,8 @@ export const adminGetInboxItemCallableResponseSchema = {
         "doneAt",
         "assigneeUid",
         "snoozedUntil",
-        "recommendation"
+        "recommendation",
+        "listingEvent"
       ],
       "properties": {
         "itemId": {
@@ -273233,6 +273262,33 @@ export const adminGetInboxItemCallableResponseSchema = {
               "type": "null"
             }
           ]
+        },
+        "listingEvent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "intakeRequestId",
+                "eventWorkItemId"
+              ],
+              "properties": {
+                "intakeRequestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "eventWorkItemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -273314,7 +273370,7 @@ export const adminUpdateInboxItemCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_update_inbox_item_payload.schema.json",
   "title": "AdminUpdateInboxItemCallablePayload",
-  "description": "Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.",
+  "description": "Assign, unassign, snooze, wake, dismiss or reopen one Admin inbox item; audited and recorded in its journey.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -273337,7 +273393,9 @@ export const adminUpdateInboxItemCallablePayloadSchema = {
         "assign",
         "unassign",
         "snooze",
-        "wake"
+        "wake",
+        "dismiss",
+        "reopen"
       ]
     },
     "assigneeUid": {
@@ -273412,7 +273470,8 @@ export const adminUpdateInboxItemCallableResponseSchema = {
         "doneAt",
         "assigneeUid",
         "snoozedUntil",
-        "recommendation"
+        "recommendation",
+        "listingEvent"
       ],
       "properties": {
         "itemId": {
@@ -273606,6 +273665,33 @@ export const adminUpdateInboxItemCallableResponseSchema = {
                 "note": {
                   "type": "string",
                   "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "listingEvent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "intakeRequestId",
+                "eventWorkItemId"
+              ],
+              "properties": {
+                "intakeRequestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "eventWorkItemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
                 }
               }
             },
@@ -274500,6 +274586,267 @@ export const adminApproveOrganizerListingCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    }
+  }
+};
+
+export const adminGetListingEventReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_listing_event_review_payload.schema.json",
+  "title": "AdminGetListingEventReviewCallablePayload",
+  "description": "Reads one imported event of an approved listing for the inbox's publish sheet.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intakeRequestId",
+    "eventWorkItemId"
+  ],
+  "properties": {
+    "intakeRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "eventWorkItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const adminGetListingEventReviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_listing_event_review_response.schema.json",
+  "title": "AdminGetListingEventReviewCallableResponse",
+  "description": "One imported event of an approved listing, with what a staff member must check to publish it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy",
+    "organizer",
+    "event"
+  ],
+  "properties": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "policyVersion"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "staff_review",
+            "auto_publish_approved_organizers"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "organizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "canonicalPath",
+        "appVisibility",
+        "pagePublished"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "canonicalPath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "appVisibility": {
+          "enum": [
+            "hidden",
+            "discoverable"
+          ]
+        },
+        "pagePublished": {
+          "type": "boolean"
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventWorkItemId",
+        "eventId",
+        "title",
+        "startAt",
+        "endAt",
+        "venue",
+        "address",
+        "platform",
+        "sourceUrl",
+        "priceLabel",
+        "state",
+        "publishedBy",
+        "blockers",
+        "resolvableBlockers",
+        "automatedFindings"
+      ],
+      "properties": {
+        "eventWorkItemId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "startAt": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 40
+        },
+        "endAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "venue": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "sourceUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "priceLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "state": {
+          "enum": [
+            "published",
+            "withdrawn",
+            "ready",
+            "needs_resolution",
+            "blocked"
+          ],
+          "description": "published: live on the website. withdrawn: staff took it down. ready: a staff member can publish it with the checklist. needs_resolution: a staff member must resolve or waive resolvableBlockers first. blocked: it cannot publish (ended, cancelled, platform not supported, organizer page unpublished)."
+        },
+        "publishedBy": {
+          "enum": [
+            "policy",
+            "staff",
+            null
+          ]
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "resolvableBlockers": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "enum": [
+              "missing_exact_coordinates",
+              "missing_end_time",
+              "missing_location_detail",
+              "requires_event_defaults_policy",
+              "requires_owner_safe_copy_review",
+              "duplicate_normalized_event_key"
+            ]
+          }
+        },
+        "automatedFindings": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Why the publication policy left this event for staff, if it did.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "check",
+              "field",
+              "match"
+            ],
+            "properties": {
+              "check": {
+                "enum": [
+                  "dating_framing",
+                  "organizer_attribution",
+                  "price_missing"
+                ]
+              },
+              "field": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "match": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            }
+          }
+        }
+      }
     }
   }
 };

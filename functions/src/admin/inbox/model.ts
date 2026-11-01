@@ -36,6 +36,20 @@ export interface InboxRecommendation {
   note: string;
 }
 
+/** A person's decision to close an item whose source would keep it open. */
+export interface InboxDismissal {
+  byUid: string;
+  at: string;
+  note: string;
+  stateBefore: InboxState;
+}
+
+/** Where a listing's imported event is reviewed and published from. */
+export interface InboxListingEventRef {
+  intakeRequestId: string;
+  eventWorkItemId: string;
+}
+
 export interface InboxItemDocument {
   schemaVersion: 1;
   itemId: string;
@@ -56,6 +70,8 @@ export interface InboxItemDocument {
   assigneeUid: string | null;
   snoozedUntil: string | null;
   recommendation: InboxRecommendation | null;
+  listingEvent?: InboxListingEventRef | null;
+  dismissal?: InboxDismissal | null;
 }
 
 export interface JourneyStep {
@@ -91,6 +107,7 @@ export interface InboxProjection {
   waitingSince: string;
   closedAt: string | null;
   recommendation: InboxRecommendation | null;
+  listingEvent?: InboxListingEventRef | null;
   journey: JourneyStep[];
 }
 
@@ -468,16 +485,95 @@ function projectExternalEvent(sourceId: string, data: Data, context: InboxContex
   };
 }
 
+/** One event of an approved listing that has not published, as the import plan sees it now. */
+export interface ListingEventFacts {
+  intakeRequestId: string;
+  approvedAt: string;
+  organizerName: string | null;
+  citySlug: string | null;
+  eventWorkItemId: string;
+  eventId: string;
+  title: string | null;
+  startAt: string;
+  platform: string;
+  sourceUrl: string;
+  planState: "ready" | "needs_resolution" | "blocked";
+  blockers: string[];
+  findings: Array<{check: string; field: string; match: string}>;
+}
+
+const endedBlockers = ["event_already_ended", "event_cancelled"];
+
+function listingEventState(facts: ListingEventFacts): InboxState {
+  if (facts.planState === "blocked") {
+    return facts.blockers.some((code) => endedBlockers.includes(code)) ?
+      {code: "ended", label: "Already over", tone: "neutral"} :
+      {code: "blocked", label: "Cannot publish", tone: "danger"};
+  }
+  const checks = facts.findings.length + facts.blockers.length;
+  return checks > 0 ?
+    {code: "needs_review", label: `${checks} ${checks === 1 ? "check" : "checks"} left`, tone: "warning"} :
+    {code: "ready", label: "Ready to publish", tone: "success"};
+}
+
+function findingLabel(finding: ListingEventFacts["findings"][number]): string {
+  return finding.check === "dating_framing" ? `Its ${finding.field} says "${finding.match}"` :
+    finding.check === "price_missing" ? "Its page states no price" : `It names another organizer (${finding.match})`;
+}
+
+/**
+ * An imported event has no external event document until it publishes, so a
+ * waiting one projects from its listing. It shares the item its document would
+ * write, so publishing closes this same item, journey and all.
+ */
+export function projectListingEvent(facts: ListingEventFacts): InboxProjection {
+  const platform = platformLabels[facts.platform] ?? "an event site";
+  const state = listingEventState(facts);
+  const reasons = [...facts.findings.map(findingLabel), ...facts.blockers.map((code) => humanize(code) ?? code)];
+  const startsAt = iso(facts.startAt);
+  const closed = state.code === "ended";
+  return {
+    itemId: inboxItemId("externalEvent", facts.eventId),
+    type: "event",
+    sourceKind: "externalEvent",
+    sourceId: facts.eventId,
+    sourcePath: `${sourceCollections.externalEvent}/${facts.eventId}`,
+    title: facts.title?.trim() || "Imported event",
+    subtitle: [facts.organizerName, startsAt ? eventDateLabel(startsAt) : null].filter(Boolean).join(" · ") || null,
+    cameFrom: platform === "an event site" ? "Event import" : platform,
+    nominatorUid: null,
+    city: cityOf(facts.citySlug),
+    state,
+    lifecycle: closed ? "closed" : "open",
+    waitingSince: facts.approvedAt,
+    closedAt: closed ? startsAt : null,
+    recommendation: null,
+    listingEvent: {intakeRequestId: facts.intakeRequestId, eventWorkItemId: facts.eventWorkItemId},
+    journey: [
+      {stepId: "found", occurredAt: facts.approvedAt, title: `Found on ${platform}`, detail: facts.sourceUrl,
+        actorUid: null, tone: "ink"},
+      ...reasons.length && !closed ? [{stepId: "left-for-a-person", occurredAt: facts.approvedAt,
+        title: "Left for a person", detail: reasons.join("; "), actorUid: null,
+        tone: "warning" as const}] : [],
+    ],
+  };
+}
+
+const dismissedState: InboxState = {code: "dismissed", label: "Dismissed", tone: "neutral"};
+
 /**
  * The item a projection becomes, keeping who holds it. A snooze holds until it
- * ends; a decided item keeps the moment it was first done.
+ * ends; a decided item keeps the moment it was first done. A dismissal holds
+ * while the source stays open, so the next source write does not bring it back.
  */
 export function nextInboxItem(projection: InboxProjection, existing: InboxItemDocument | null,
   now: Date): InboxItemDocument {
   const nowIso = now.toISOString();
   const snoozed = existing?.status === "snoozed" && existing.snoozedUntil !== null &&
     existing.snoozedUntil > nowIso;
-  const status: InboxStatus = projection.lifecycle === "closed" ? "done" :
+  const dismissal = projection.lifecycle === "open" && existing?.dismissal ?
+    {...existing.dismissal, stateBefore: projection.state} : null;
+  const status: InboxStatus = dismissal || projection.lifecycle === "closed" ? "done" :
     projection.lifecycle === "working" ? "working" : snoozed ? "snoozed" : "waiting";
   return {
     schemaVersion: 1,
@@ -491,7 +587,7 @@ export function nextInboxItem(projection: InboxProjection, existing: InboxItemDo
     cameFrom: projection.cameFrom.slice(0, 120),
     nominatorUid: projection.nominatorUid,
     city: projection.city,
-    state: projection.state,
+    state: dismissal ? dismissedState : projection.state,
     status,
     waitingSince: projection.waitingSince,
     updatedAt: nowIso,
@@ -499,7 +595,22 @@ export function nextInboxItem(projection: InboxProjection, existing: InboxItemDo
     assigneeUid: status === "done" ? null : existing?.assigneeUid ?? null,
     snoozedUntil: status === "snoozed" ? existing?.snoozedUntil ?? null : null,
     recommendation: projection.recommendation,
+    listingEvent: projection.listingEvent ?? null,
+    dismissal,
   };
+}
+
+/** Closes an item a person decided needs nothing more, remembering what it said. */
+export function dismissedInboxItem(item: InboxItemDocument, byUid: string, note: string, now: Date): InboxItemDocument {
+  const at = now.toISOString();
+  return {...item, status: "done", state: dismissedState, doneAt: at, updatedAt: at, assigneeUid: null, snoozedUntil: null,
+    dismissal: {byUid, at, note, stateBefore: item.state}};
+}
+
+/** Undoes a dismissal: the item waits again, saying what it said before. */
+export function reopenedInboxItem(item: InboxItemDocument, now: Date): InboxItemDocument {
+  return {...item, status: "waiting", state: item.dismissal?.stateBefore ?? item.state, doneAt: null,
+    updatedAt: now.toISOString(), dismissal: null};
 }
 
 /** The item a source leaves behind when it is deleted. */
