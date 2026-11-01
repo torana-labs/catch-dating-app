@@ -29,6 +29,7 @@ describe("Admin route contract", () => {
     ["/settings/team/user-1", "settings", "teamMemberUid", "user-1"],
     ["/settings/safety", "settings", "settingsPage", "safety"],
     ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
+    ["/inbox/supply-req%3A1", "organizer-intake", "inboxItemId", "supply-req:1"],
     ["/marketing/drafts/draft%20one/copy", "marketing-ops", "draftId", "draft one"],
   ])("resolves %s", (path, nav, key, value) => {
     const route = resolveAdminRoute(path);
@@ -114,6 +115,13 @@ describe("Admin route contract", () => {
       expect(resolveAdminRoute("/events/record%invalid").params.eventId).toBe("record%invalid");
     } finally {
       warning.mockRestore();
+    }
+  });
+
+  it("puts the inbox on the Intake nav and keeps the old review addresses", () => {
+    expect(adminPathForNav("organizer-intake")).toBe("/inbox");
+    for (const path of ["/intake/organizers", "/intake/events", "/organizer-intake/listings"]) {
+      expect(resolveAdminRoute(path).nav).toBe("intake-review");
     }
   });
 
