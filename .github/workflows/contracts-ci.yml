@@ -41,6 +41,7 @@ jobs:
           node --check tool/contracts/generated/schema_contract_validators.mjs
           node tool/contracts/generate_domain_classes.mjs --check
           node --test tool/contracts/generate_domain_classes.test.mjs
+          node tool/admin/generate_admin_action_catalog.mjs --check
 
       - name: Check schema/type boundaries
         run: node tool/contracts/check_schema_type_boundaries.mjs
