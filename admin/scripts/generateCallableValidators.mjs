@@ -9,10 +9,9 @@ import {fileURLToPath} from "node:url";
 const adminRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(adminRoot, "..");
 const contractsRoot = path.join(repoRoot, "contracts");
-const outputPath = path.join(
-  adminRoot,
-  "src/generated/validators/adminCallableValidators.ts"
-);
+const validatorsDir = path.join(adminRoot, "src/generated/validators");
+const facadePath = path.join(validatorsDir, "adminCallableValidators.ts");
+const groupsDir = path.join(validatorsDir, "groups");
 const adminActionCatalogPath = path.join(
   contractsRoot,
   "admin",
@@ -51,6 +50,31 @@ function referencedSchemaFiles(filePath, schema) {
   return files;
 }
 
+// Words for people, not rules: the browser never needs them to validate, so the
+// runtime pools leave them out and each area's lazily loaded chunk stays small.
+const annotationKeywords = new Set(["description", "title", "examples", "$comment", "markdownDescription"]);
+// Keywords whose value is a map of names to schemas: the names are data.
+const schemaMapKeywords = new Set(["properties", "patternProperties", "$defs", "definitions", "dependentSchemas"]);
+// Keywords whose value is data, never a schema.
+const dataKeywords = new Set(["enum", "const", "default", "required"]);
+
+function withoutAnnotations(schema) {
+  if (Array.isArray(schema)) return schema.map(withoutAnnotations);
+  if (!schema || typeof schema !== "object") return schema;
+  const result = {};
+  for (const [key, value] of Object.entries(schema)) {
+    if (annotationKeywords.has(key) || key.startsWith("x-")) continue;
+    if (dataKeywords.has(key)) {
+      result[key] = value;
+    } else if (schemaMapKeywords.has(key) && value && typeof value === "object" && !Array.isArray(value)) {
+      result[key] = Object.fromEntries(Object.entries(value).map(([name, child]) => [name, withoutAnnotations(child)]));
+    } else {
+      result[key] = withoutAnnotations(value);
+    }
+  }
+  return result;
+}
+
 function collectSchemas(entryPaths) {
   const schemas = new Map();
   const visit = (filePath) => {
@@ -84,6 +108,12 @@ function buildModel() {
     }
   }
   const adminActions = readJson(adminActionCatalogPath).actions ?? [];
+  const groups = {};
+  for (const action of adminActions) {
+    if (!names.includes(action.callable) || groups[action.callable]) continue;
+    groups[action.callable] = groupFor(action.guiPath);
+  }
+  for (const name of names) groups[name] ??= "shared";
   for (const action of adminActions) {
     if (!names.includes(action.callable) || typeof action.requestSchema !== "string") {
       continue;
@@ -116,47 +146,56 @@ function buildModel() {
     path.join(responseDir, "user_analytics_response.schema.json")
   );
   const strictResponses = new Set(responsePaths.keys());
-  const entryPaths = [...requestPaths.values(), ...responsePaths.values()];
-  const schemas = collectSchemas(entryPaths);
-  const requestSchemaIds = {};
-  const responseSchemaIds = {};
-
+  const groupModels = new Map();
   for (const name of names) {
-    const requestPath = requestPaths.get(name);
-    if (requestPath) {
-      requestSchemaIds[name] = schemas.get(path.resolve(requestPath)).$id;
-    } else {
-      const schema = {
-        $id: `https://catch.app/contracts/admin_runtime/${name}_payload.schema.json`,
-        type: "object",
-        additionalProperties: true,
-      };
-      schemas.set(schema.$id, schema);
-      requestSchemaIds[name] = schema.$id;
+    const group = groups[name];
+    if (!groupModels.has(group)) {
+      groupModels.set(group, {entryPaths: [], runtimeSchemas: [],
+        requestSchemaIds: {}, responseSchemaIds: {}});
     }
-
-    const responsePath = responsePaths.get(name);
-    if (responsePath) {
-      responseSchemaIds[name] = schemas.get(path.resolve(responsePath)).$id;
-    } else {
-      const schema = {
-        $id: `https://catch.app/contracts/admin_runtime/${name}_response.schema.json`,
-        type: "object",
-        additionalProperties: true,
-      };
-      schemas.set(schema.$id, schema);
-      responseSchemaIds[name] = schema.$id;
+    const model = groupModels.get(group);
+    for (const [direction, paths, ids] of [
+      ["payload", requestPaths, model.requestSchemaIds],
+      ["response", responsePaths, model.responseSchemaIds],
+    ]) {
+      const schemaPath = paths.get(name);
+      if (schemaPath) {
+        model.entryPaths.push(schemaPath);
+        ids[name] = readJson(schemaPath).$id;
+      } else {
+        // Callables without an authored schema still accept only objects.
+        const schema = {
+          $id: `https://catch.app/contracts/admin_runtime/${name}_${direction}.schema.json`,
+          type: "object",
+          additionalProperties: true,
+        };
+        model.runtimeSchemas.push(schema);
+        ids[name] = schema.$id;
+      }
     }
   }
 
   return {
     names,
-    schemas: [...schemas.values()],
-    requestSchemaIds,
-    responseSchemaIds,
     strictRequests: [...strictRequests].sort(),
     strictResponses: [...strictResponses].sort(),
+    groups,
+    groupModels: [...groupModels.entries()].sort(([a], [b]) => a.localeCompare(b))
+      .map(([group, model]) => ({
+        group,
+        schemas: [...collectSchemas(model.entryPaths).values(), ...model.runtimeSchemas].map(withoutAnnotations),
+        requestSchemaIds: model.requestSchemaIds,
+        responseSchemaIds: model.responseSchemaIds,
+      })),
   };
+}
+
+// One validator module per Admin area, named by the first segment of its
+// catalog guiPath, so an area loads only the schemas its own callables use.
+function groupFor(guiPath) {
+  const segment = String(guiPath ?? "").split("/").find(Boolean) ?? "shared";
+  return segment.replace(/[^a-z0-9]+([a-z0-9])/giu,
+    (_, character) => character.toUpperCase()).replace(/[^A-Za-z0-9]/gu, "");
 }
 
 // Share identical immutable schema fragments without weakening validation or
@@ -194,32 +233,11 @@ function renderSchemaPool(schemas) {
   return {declarations: declarations.join("\n"), expression};
 }
 
-function render(model) {
-  const {schemas, ...metadata} = model;
-  const data = JSON.stringify(metadata, null, 2);
-  const pool = renderSchemaPool(schemas);
-  return `// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators\n` +
-`import Ajv, {type ErrorObject, type ValidateFunction} from "ajv";\n` +
-`import addFormats from "ajv-formats";\n\n` +
-`const model = ${data} as const;\n` +
-`${pool.declarations}\nconst schemas = ${pool.expression};\n` +
-`const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});\n` +
-`addFormats(ajv);\n` +
-`for (const schema of schemas) ajv.addSchema(schema);\n\n` +
-`function validators(ids: Record<string, string>): Record<string, ValidateFunction> {\n` +
-`  return Object.fromEntries(Object.entries(ids).map(([name, id]) => {\n` +
-`    const validate = ajv.getSchema(id);\n` +
-`    if (!validate) throw new Error(\`Missing generated validator for \${name}.\`);\n` +
-`    return [name, validate];\n` +
-`  }));\n` +
-`}\n\n` +
-`const requestValidators = validators(model.requestSchemaIds);\n` +
-`const responseValidators = validators(model.responseSchemaIds);\n\n` +
-`export const adminCallableValidationCoverage = {\n` +
-`  callables: model.names,\n` +
-`  strictRequests: model.strictRequests,\n` +
-`  strictResponses: model.strictResponses,\n` +
-`} as const;\n\n` +
+const header = "// GENERATED FILE. Run: npm --workspace catch-admin run generate:callable-validators\n";
+
+function renderValidation() {
+  return header +
+`import type {ErrorObject} from "ajv";\n\n` +
 `export class AdminCallableValidationError extends Error {\n` +
 `  constructor(\n` +
 `    readonly callable: string,\n` +
@@ -232,55 +250,190 @@ function render(model) {
 `    this.name = "AdminCallableValidationError";\n` +
 `  }\n` +
 `}\n\n` +
-`function validate(\n` +
-`  direction: "request" | "response",\n` +
+`export type AdminCallableValidators = {\n` +
+`  validateAdminCallableRequest(callable: string, value: unknown): void;\n` +
+`  validateAdminCallableResponse(callable: string, value: unknown): void;\n` +
+`};\n\n` +
+`export function missingAdminCallableValidator(\n` +
 `  callable: string,\n` +
-`  value: unknown\n` +
-`) {\n` +
-`  const validateFunction = direction === "request" ? requestValidators[callable] : responseValidators[callable];\n` +
-`  if (!validateFunction) {\n` +
-`    throw new AdminCallableValidationError(callable, direction, "/", [{\n` +
-`      instancePath: "", schemaPath: "", keyword: "missing-validator", params: {}, message: "validator is not generated",\n` +
-`    }]);\n` +
-`  }\n` +
-`  if (validateFunction(value)) return;\n` +
-`  const errors = validateFunction.errors ?? [];\n` +
-`  const instancePath = errors[0]?.instancePath || "/";\n` +
-`  throw new AdminCallableValidationError(callable, direction, instancePath, [...errors]);\n` +
+`  direction: "request" | "response"\n` +
+`): AdminCallableValidationError {\n` +
+`  return new AdminCallableValidationError(callable, direction, "/", [{\n` +
+`    instancePath: "", schemaPath: "", keyword: "missing-validator", params: {}, message: "validator is not generated",\n` +
+`  }]);\n` +
 `}\n\n` +
-`export function validateAdminCallableRequest(callable: string, value: unknown) {\n` +
-`  validate("request", callable, value);\n` +
-`}\n\n` +
-`export function validateAdminCallableResponse(callable: string, value: unknown) {\n` +
-`  validate("response", callable, value);\n` +
+`export const missingAdminCallableValidators: AdminCallableValidators = {\n` +
+`  validateAdminCallableRequest(callable) {\n` +
+`    throw missingAdminCallableValidator(callable, "request");\n` +
+`  },\n` +
+`  validateAdminCallableResponse(callable) {\n` +
+`    throw missingAdminCallableValidator(callable, "response");\n` +
+`  },\n` +
+`};\n`;
+}
+
+function renderRuntime() {
+  return header +
+`import Ajv, {type ValidateFunction} from "ajv";\n` +
+`import addFormats from "ajv-formats";\n` +
+`import {\n` +
+`  AdminCallableValidationError,\n` +
+`  type AdminCallableValidators,\n` +
+`  missingAdminCallableValidator,\n` +
+`} from "./adminCallableValidation";\n\n` +
+`export function createAdminCallableValidators(\n` +
+`  schemas: object[],\n` +
+`  requestSchemaIds: Record<string, string>,\n` +
+`  responseSchemaIds: Record<string, string>\n` +
+`): AdminCallableValidators {\n` +
+`  const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});\n` +
+`  addFormats(ajv);\n` +
+`  for (const schema of schemas) ajv.addSchema(schema);\n` +
+`  const validators = (ids: Record<string, string>): Record<string, ValidateFunction> =>\n` +
+`    Object.fromEntries(Object.entries(ids).map(([name, id]) => {\n` +
+`      const validate = ajv.getSchema(id);\n` +
+`      if (!validate) throw new Error(\`Missing generated validator for \${name}.\`);\n` +
+`      return [name, validate];\n` +
+`    }));\n` +
+`  const requestValidators = validators(requestSchemaIds);\n` +
+`  const responseValidators = validators(responseSchemaIds);\n` +
+`  const validate = (direction: "request" | "response", callable: string, value: unknown) => {\n` +
+`    const validateFunction = direction === "request" ?\n` +
+`      requestValidators[callable] : responseValidators[callable];\n` +
+`    if (!validateFunction) throw missingAdminCallableValidator(callable, direction);\n` +
+`    if (validateFunction(value)) return;\n` +
+`    const errors = validateFunction.errors ?? [];\n` +
+`    const instancePath = errors[0]?.instancePath || "/";\n` +
+`    throw new AdminCallableValidationError(callable, direction, instancePath, [...errors]);\n` +
+`  };\n` +
+`  return {\n` +
+`    validateAdminCallableRequest: (callable, value) => validate("request", callable, value),\n` +
+`    validateAdminCallableResponse: (callable, value) => validate("response", callable, value),\n` +
+`  };\n` +
 `}\n`;
+}
+
+function renderGroup(groupModel) {
+  const pool = renderSchemaPool(groupModel.schemas);
+  const ids = JSON.stringify({
+    requestSchemaIds: groupModel.requestSchemaIds,
+    responseSchemaIds: groupModel.responseSchemaIds,
+  }, null, 2);
+  return header +
+`import {createAdminCallableValidators} from "../adminCallableValidatorRuntime";\n\n` +
+`const ids = ${ids};\n` +
+`${pool.declarations}\nconst schemas = ${pool.expression};\n\n` +
+`export const {validateAdminCallableRequest, validateAdminCallableResponse} =\n` +
+`  createAdminCallableValidators(schemas, ids.requestSchemaIds, ids.responseSchemaIds);\n`;
+}
+
+function renderFacade(model) {
+  const data = JSON.stringify({
+    names: model.names,
+    strictRequests: model.strictRequests,
+    strictResponses: model.strictResponses,
+    groups: model.groups,
+  }, null, 2);
+  const loaders = model.groupModels.map(({group}) =>
+    `  ${JSON.stringify(group)}: () => import("./groups/${group}"),`).join("\n");
+  return header +
+`// Each Admin area's validators load on that area's first call, so no single\n` +
+`// chunk carries every callable's schemas.\n` +
+`import {\n` +
+`  type AdminCallableValidators,\n` +
+`  missingAdminCallableValidators,\n` +
+`} from "./adminCallableValidation";\n\n` +
+`export {\n` +
+`  AdminCallableValidationError,\n` +
+`  type AdminCallableValidators,\n` +
+`} from "./adminCallableValidation";\n\n` +
+`const model = ${data} as const;\n\n` +
+`const loaders: Record<string, () => Promise<AdminCallableValidators>> = {\n${loaders}\n};\n\n` +
+`export const adminCallableValidationCoverage = {\n` +
+`  callables: model.names,\n` +
+`  strictRequests: model.strictRequests,\n` +
+`  strictResponses: model.strictResponses,\n` +
+`} as const;\n\n` +
+`/** Loads the validators of the Admin area that owns this callable. */\n` +
+`export async function loadAdminCallableValidators(\n` +
+`  callable: string\n` +
+`): Promise<AdminCallableValidators> {\n` +
+`  const group = (model.groups as Record<string, string>)[callable];\n` +
+`  const load = group === undefined ? undefined : loaders[group];\n` +
+`  return load ? load() : missingAdminCallableValidators;\n` +
+`}\n`;
+}
+
+function render(model) {
+  const files = new Map([
+    [facadePath, renderFacade(model)],
+    [path.join(validatorsDir, "adminCallableValidation.ts"), renderValidation()],
+    [path.join(validatorsDir, "adminCallableValidatorRuntime.ts"), renderRuntime()],
+  ]);
+  for (const groupModel of model.groupModels) {
+    files.set(path.join(groupsDir, `${groupModel.group}.ts`), renderGroup(groupModel));
+  }
+  return files;
+}
+
+function staleGroupFiles(files) {
+  if (!fs.existsSync(groupsDir)) return [];
+  return fs.readdirSync(groupsDir).map((name) => path.join(groupsDir, name))
+    .filter((filePath) => !files.has(filePath));
 }
 
 const model = buildModel();
 const output = render(model);
 if (selfTest) {
-  const pool = renderSchemaPool(model.schemas);
-  const reconstructed = Function(`${pool.declarations}\nreturn ${pool.expression};`)();
-  assert.deepEqual(reconstructed, model.schemas,
-    "Pooling must preserve every schema keyword and value.");
+  assert.deepEqual(withoutAnnotations({
+    title: "Event", description: "Words", "x-callable-aliases": ["a"],
+    properties: {description: {type: "string", description: "A field named description stays."}},
+    enum: [{title: "data"}], required: ["description"],
+  }), {
+    properties: {description: {type: "string"}},
+    enum: [{title: "data"}], required: ["description"],
+  }, "Annotations go; rules, data and property names stay.");
+  for (const groupModel of model.groupModels) {
+    const pool = renderSchemaPool(groupModel.schemas);
+    const reconstructed = Function(`${pool.declarations}\nreturn ${pool.expression};`)();
+    assert.deepEqual(reconstructed, groupModel.schemas,
+      `Pooling must preserve every schema keyword and value (${groupModel.group}).`);
+  }
+  const largest = model.groupModels.reduce((a, b) =>
+    JSON.stringify(a.schemas).length > JSON.stringify(b.schemas).length ? a : b);
+  const pool = renderSchemaPool(largest.schemas);
   assert.ok(pool.declarations.length + pool.expression.length <
-    JSON.stringify(model.schemas).length,
+    JSON.stringify(largest.schemas).length,
   "Repeated schema fragments must reduce the generated payload.");
+  assert.deepEqual(Object.keys(model.groups).sort(), [...model.names].sort(),
+    "Every callable must belong to exactly one validator group.");
   const changed = structuredClone(model);
-  changed.schemas[0] = {...changed.schemas[0], title: "simulated schema drift"};
-  assert.notEqual(render(changed), output);
+  changed.groupModels[0].schemas[0] = {
+    ...changed.groupModels[0].schemas[0], title: "simulated schema drift",
+  };
+  const changedFile = path.join(groupsDir, `${changed.groupModels[0].group}.ts`);
+  assert.notEqual(render(changed).get(changedFile), output.get(changedFile));
   console.log("Admin callable validator drift self-test passed.");
   process.exit(0);
 }
+const summary = `${model.names.length} callables in ${model.groupModels.length} groups, ` +
+  `${model.strictRequests.length} strict request schemas, ` +
+  `${model.strictResponses.length} strict response schemas`;
 if (checkOnly) {
-  const current = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, "utf8") : "";
-  if (current !== output) {
-    console.error("Admin callable validators are stale. Run npm --workspace catch-admin run generate:callable-validators.");
+  const stale = [...output].filter(([filePath, source]) =>
+    !fs.existsSync(filePath) || fs.readFileSync(filePath, "utf8") !== source)
+    .map(([filePath]) => filePath);
+  stale.push(...staleGroupFiles(output));
+  if (stale.length > 0) {
+    console.error("Admin callable validators are stale: " +
+      stale.map((filePath) => path.relative(adminRoot, filePath)).join(", ") +
+      ". Run npm --workspace catch-admin run generate:callable-validators.");
     process.exit(1);
   }
-  console.log(`Admin callable validators are current (${model.names.length} callables, ${model.strictRequests.length} strict request schemas, ${model.strictResponses.length} strict response schemas).`);
+  console.log(`Admin callable validators are current (${summary}).`);
   process.exit(0);
 }
-fs.mkdirSync(path.dirname(outputPath), {recursive: true});
-fs.writeFileSync(outputPath, output);
-console.log(`Generated validators for ${model.names.length} admin callables (${model.strictRequests.length} strict requests, ${model.strictResponses.length} strict responses).`);
+fs.mkdirSync(groupsDir, {recursive: true});
+for (const filePath of staleGroupFiles(output)) fs.rmSync(filePath);
+for (const [filePath, source] of output) fs.writeFileSync(filePath, source);
+console.log(`Generated admin callable validators (${summary}).`);

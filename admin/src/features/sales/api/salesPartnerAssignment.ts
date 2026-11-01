@@ -1,7 +1,8 @@
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {dataMode} from "../../../shared/api/dataMode";
-import {validateAdminCallableRequest} from "../../../generated/validators/adminCallableValidators";
+import {loadAdminCallableValidators} from
+  "../../../generated/validators/adminCallableValidators";
 
 export interface PartnerOfferInput {
   requestId: string; organizerId: string; partnerUid: string;
@@ -10,6 +11,8 @@ export interface PartnerOfferInput {
 }
 export async function offerSalesPartner(input: PartnerOfferInput): Promise<void> {
   if (dataMode() === "sample") throw new Error("Partner offers require a live administrator session.");
+  const {validateAdminCallableRequest} =
+    await loadAdminCallableValidators("adminAssignSalesPartner");
   validateAdminCallableRequest("adminAssignSalesPartner", input);
   const {data} = await httpsCallable<PartnerOfferInput, unknown>(functions, "adminAssignSalesPartner")(input);
   if (!data || typeof data !== "object" || !("organizerId" in data) ||

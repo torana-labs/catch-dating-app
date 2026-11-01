@@ -37,7 +37,7 @@ describe("useNowController", () => {
     expect(model.items[0]).toMatchObject({destination: "organizers", targetPath: "path/c1", subtitle: "Claim · detail", waiting: "3 days"});
     expect(model.waiting).toBe(4);
     expect(model.overTwoDays).toBe(2);
-    expect(model.kinds.find((kind) => kind.destination === "safety")).toMatchObject({count: 1, summary: "1 safety report"});
+    expect(model.kinds.find((kind) => kind.destination === "safety")).toMatchObject({count: 2, summary: "1 safety report · 1 launch access"});
     expect(model.sources[0]).toMatchObject({tone: "warning", detail: "Late. Next: Rerun."});
   });
 

@@ -31,26 +31,6 @@
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {
-      "file": "website/src/stories/ClaimSections.stories.tsx",
-      "export": "ClaimWorkspace",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/ClaimSections.stories.tsx",
-      "export": "ClaimWorkspaceListingSearch",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/ClaimSections.stories.tsx",
-      "export": "ClaimWorkspaceRole",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/ClaimSections.stories.tsx",
-      "export": "ClaimWorkspaceSubmitted",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
       "file": "website/src/stories/HostSections.stories.tsx",
       "export": "HostApplicationFlowInitial",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."

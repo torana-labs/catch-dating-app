@@ -2,15 +2,7 @@ import {websiteCopy} from "@content/generated";
 import type {OrganizerClaimRole} from "../../firebase";
 import type {HostListing} from "../organizers/types";
 
-export type ClaimFlowStep = "listing" | "role" | "verify" | "submitted";
-export type ClaimVerificationMethodId = "publicProof" | "email" | "phone";
 export type ClaimRole = OrganizerClaimRole;
-
-export interface ClaimVerificationMethod {
-  id: ClaimVerificationMethodId;
-  title: string;
-  body: string;
-}
 
 export const claimRoleOptions: Array<{
   value: OrganizerClaimRole;
@@ -22,31 +14,6 @@ export const claimRoleOptions: Array<{
   {value: "marketer", label: websiteCopy["claimmodel_0010"]},
   {value: "venueManager", label: websiteCopy["claimmodel_0019"]},
   {value: "other", label: websiteCopy["claimmodel_0012"]},
-];
-
-export const claimFlowSteps: Array<{id: ClaimFlowStep; label: string}> = [
-  {id: "listing", label: websiteCopy["claimmodel_0004"]},
-  {id: "role", label: websiteCopy["claimmodel_0023"]},
-  {id: "verify", label: websiteCopy["claimmodel_0021"]},
-  {id: "submitted", label: websiteCopy["claimmodel_0015"]},
-];
-
-export const claimVerificationMethods: ClaimVerificationMethod[] = [
-  {
-    id: "publicProof",
-    title: websiteCopy["claimmodel_0014"],
-    body: websiteCopy["claimmodel_0016"],
-  },
-  {
-    id: "email",
-    title: websiteCopy["claimmodel_0011"],
-    body: websiteCopy["claimmodel_0017"],
-  },
-  {
-    id: "phone",
-    title: websiteCopy["claimmodel_0020"],
-    body: websiteCopy["claimmodel_0018"],
-  },
 ];
 
 export function claimWhileYouWaitItems(listing: HostListing | null) {
@@ -65,17 +32,7 @@ export function claimWhileYouWaitItems(listing: HostListing | null) {
       title: websiteCopy["claimmodel_0022"],
       body: websiteCopy["claimmodel_0001"],
     },
-    {
-      title: websiteCopy["claimmodel_0002"],
-      body: websiteCopy["claimmodel_0006"],
-    },
   ];
-}
-
-export function nullableString(value: FormDataEntryValue | null): string | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
 }
 
 export function parseProofUrls(value: FormDataEntryValue | null): string[] {

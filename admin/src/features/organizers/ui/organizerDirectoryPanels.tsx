@@ -52,43 +52,6 @@ const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? defaultPublicSiteOrigin
 ).replace(/\/+$/u, "");
 
-function OrganizerDirectoryView({
-  controller,
-  needsPublishCount,
-  publishedCount,
-  readinessIssueCount,
-}: {
-  controller: OrganizerPublishingController;
-  needsPublishCount: number;
-  publishedCount: number;
-  readinessIssueCount: number;
-}) {
-  return (
-    <AdminDirectoryScreenStack>
-      <AdminMetricGrid ariaLabel="Organizer publishing state">
-        <AdminMetricCard
-          caption="Current loaded result; not an all-time collection total."
-          label="Loaded organizers"
-          value={controller.rows.length}
-        />
-        <AdminMetricCard
-          label="Needs review work"
-          tone={needsPublishCount > 0 ? "attention" : "normal"}
-          value={needsPublishCount}
-        />
-        <AdminMetricCard label="Published" value={publishedCount} />
-        <AdminMetricCard
-          label="Readiness blockers"
-          tone={readinessIssueCount > 0 ? "attention" : "normal"}
-          value={readinessIssueCount}
-        />
-      </AdminMetricGrid>
-
-      <organizerDetailPanels.OrganizerDirectoryPanel controller={controller} />
-    </AdminDirectoryScreenStack>
-  );
-}
-
 function OrganizerClaimReviewWorkspace({
   controller,
   onBackToList = () => undefined,
@@ -398,7 +361,6 @@ function decisionLabel(
 }
 
 export const organizerDirectoryPanels = {
-  OrganizerDirectoryView,
   OrganizerClaimReviewWorkspace,
   OrganizerClaimTable,
   OrganizerClaimEvidencePanel,

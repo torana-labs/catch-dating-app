@@ -1,7 +1,7 @@
 {
   "$schema": "./public_surface_behavior.schema.json",
   "version": 1,
-  "updated": "2026-10-19",
+  "updated": "2026-11-01",
   "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
   "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the design-parity state matrix; event eligibility remains owned by the viewer availability resolver.",
   "inventorySources": {
@@ -6413,22 +6413,22 @@
         {
           "id": "claim.signIn",
           "kind": "action",
-          "description": "Authenticate the claimant on the website."
+          "description": "Sign in with name and a verified phone."
         },
         {
           "id": "claim.form",
           "kind": "content",
-          "description": "Claimant role, contact, and evidence form."
+          "description": "The ways this listing can be proved (an Instagram or Luma code), or the review request's proof links."
         },
         {
           "id": "claim.submit",
           "kind": "action",
-          "description": "Submit the typed claim request."
+          "description": "Show a code, or send the review request."
         },
         {
           "id": "claim.status",
           "kind": "content",
-          "description": "Pending, already claimed, or unavailable status."
+          "description": "Pending review, already claimed, unavailable, or claiming switched off."
         }
       ],
       "configurations": [
@@ -6447,10 +6447,10 @@
               "disposition": "visibleDisabled"
             },
             "claim.form": {
-              "disposition": "visibleReadOnly"
+              "disposition": "hidden"
             },
             "claim.submit": {
-              "disposition": "visibleDisabled"
+              "disposition": "hidden"
             },
             "claim.status": {
               "disposition": "hidden"
@@ -6476,10 +6476,10 @@
               "disposition": "visibleWeb"
             },
             "claim.form": {
-              "disposition": "visibleReadOnly"
+              "disposition": "hidden"
             },
             "claim.submit": {
-              "disposition": "visibleSignInGate"
+              "disposition": "hidden"
             },
             "claim.status": {
               "disposition": "hidden"
@@ -6531,13 +6531,13 @@
           },
           "expectations": {
             "claim.signIn": {
-              "disposition": "visibleDisabled"
+              "disposition": "hidden"
             },
             "claim.form": {
-              "disposition": "visibleReadOnly"
+              "disposition": "hidden"
             },
             "claim.submit": {
-              "disposition": "visibleDisabled"
+              "disposition": "hidden"
             },
             "claim.status": {
               "disposition": "visibleReadOnly",
@@ -6564,10 +6564,10 @@
               "disposition": "hidden"
             },
             "claim.form": {
-              "disposition": "hidden"
+              "disposition": "visibleReadOnly"
             },
             "claim.submit": {
-              "disposition": "hidden"
+              "disposition": "visibleWeb"
             },
             "claim.status": {
               "disposition": "visibleReadOnly",
@@ -6702,17 +6702,17 @@
       ],
       "evidence": [
         {
-          "path": "website/src/features/claims/useClaimFlowController.test.tsx",
+          "path": "website/src/features/claims/sections/InstantClaimSection.test.tsx",
           "contains": [
-            "returns an empty claim route to listing selection on submit",
-            "validates a preselected route before attempting an unconfigured write"
+            "asks for a phone account, without a birth date, before it offers any check",
+            "asks only for proof links in a review, taking name and phone from the account",
+            "still offers a code after a review request is pending"
           ]
         },
         {
           "path": "website/src/features/claims/useClaimRequestMutation.test.tsx",
           "contains": [
-            "submits the typed claim packet and refreshes both claim query families",
-            "blocks a listing claim before mutation when its public API is disabled"
+            "submits the typed claim packet and refreshes both claim query families"
           ]
         }
       ],

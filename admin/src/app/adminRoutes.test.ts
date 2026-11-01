@@ -15,7 +15,9 @@ describe("Admin route contract", () => {
 
   it.each([
     ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
-    ["/access/user-1/", "access", "applicationUid", "user-1"],
+    ["/support/whatsapp-abc", "support", "supportConversationId", "whatsapp-abc"],
+    ["/safety/actions/action-1", "safety", "safetyActionId", "action-1"],
+    ["/safety/appeals/action-2", "safety", "safetyActionId", "action-2"],
     ["/organizers/afterfly", "organizers", "organizerId", "afterfly"],
     ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
     ["/events/event-1", "events", "eventId", "event-1"],
@@ -24,13 +26,26 @@ describe("Admin route contract", () => {
     ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
     ["/finance/commercial-terms/organizers/org%2F1", "finance", "termsOrganizerId", "org/1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
-    ["/admin-roles/user-1", "admin-roles", "adminRoleTargetUid", "user-1"],
+    ["/settings/team/user-1", "settings", "teamMemberUid", "user-1"],
+    ["/settings/safety", "settings", "settingsPage", "safety"],
     ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
+    ["/inbox/supply-req%3A1", "organizer-intake", "inboxItemId", "supply-req:1"],
     ["/marketing/drafts/draft%20one/copy", "marketing-ops", "draftId", "draft one"],
   ])("resolves %s", (path, nav, key, value) => {
     const route = resolveAdminRoute(path);
     expect(route.nav).toBe(nav);
     expect(route.params[key]).toBe(value);
+  });
+
+  it("opens Safety's views and sends old launch access links to Safety", () => {
+    expect(resolveAdminRoute("/safety").safetyView).toBe("open");
+    expect(resolveAdminRoute("/safety/actions").safetyView).toBe("actions");
+    expect(resolveAdminRoute("/safety/appeals/a1").safetyView).toBe("appeals");
+    expect(resolveAdminRoute("/access/user-1").redirect).toBe("/safety");
+  });
+
+  it("sends old Admin roles links to Team and roles", () => {
+    expect(resolveAdminRoute("/admin-roles/user-1").redirect).toBe("/settings/team");
   });
 
   it.each([
@@ -79,6 +94,11 @@ describe("Admin route contract", () => {
   it("keeps unknown nested paths in their workspace without borrowing a record", () => {
     expect(resolveAdminRoute("/events/unknown/extra")).toMatchObject({nav: "events", eventWorkspace: "directory"});
     expect(resolveAdminRoute("/events/unknown/extra").params.eventId).toBeUndefined();
+    expect(resolveAdminRoute("/events/trivia/page")).toMatchObject({nav: "events", eventTab: "page",
+      params: {eventId: "trivia"}});
+    expect(resolveAdminRoute("/organizers/afterfly/money")).toMatchObject({nav: "organizers",
+      organizerTab: "money", params: {organizerId: "afterfly"}});
+    expect(resolveAdminRoute("/organizers/afterfly/unknown").params.organizerId).toBeUndefined();
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
     expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});
@@ -95,6 +115,13 @@ describe("Admin route contract", () => {
       expect(resolveAdminRoute("/events/record%invalid").params.eventId).toBe("record%invalid");
     } finally {
       warning.mockRestore();
+    }
+  });
+
+  it("puts the inbox on the Intake nav and keeps the old review addresses", () => {
+    expect(adminPathForNav("organizer-intake")).toBe("/inbox");
+    for (const path of ["/intake/organizers", "/intake/events", "/organizer-intake/listings"]) {
+      expect(resolveAdminRoute(path).nav).toBe("intake-review");
     }
   });
 

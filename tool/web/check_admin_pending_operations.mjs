@@ -8,8 +8,8 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 
 const debtId = "ADMIN-MUTATION-SNAPSHOT-001";
 const expectedControllerFiles = new Set([
-  "admin/src/features/access/controllers/useAccessReviewController.ts",
-  "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+  "admin/src/features/safety/controllers/useAccessReviewController.ts",
+  "admin/src/features/settings/controllers/useTeamController.ts",
   "admin/src/features/events/controllers/useEventPublishingController.ts",
   "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
   "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",

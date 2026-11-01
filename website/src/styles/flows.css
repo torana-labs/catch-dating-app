@@ -284,11 +284,6 @@
   line-height: 1.4;
 }
 
-.claim-auth-row--flow {
-  border-radius: var(--catch-radius-md);
-  background: var(--flow-raised);
-}
-
 .process-status-panel {
   display: grid;
   gap: 18px;

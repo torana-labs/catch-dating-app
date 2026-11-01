@@ -1952,8 +1952,8 @@
         "admin/src/shared/pendingOperation.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/actions.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-        "admin/src/features/access/controllers/useAccessReviewController.ts",
-        "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+        "admin/src/features/safety/controllers/useAccessReviewController.ts",
+        "admin/src/features/settings/controllers/useTeamController.ts",
         "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
@@ -2928,28 +2928,6 @@
       "role": "generator"
     },
     {
-      "id": "data:backfill-event-publication",
-      "category": "data",
-      "path": "tool/data/backfill_event_publication.mjs",
-      "command": "node tool/data/backfill_event_publication.mjs",
-      "safety": "remote-write-apply-guarded",
-      "checkSafety": "local-readonly",
-      "status": "active",
-      "description": "Annotates validated legacy public events before published-only queries; dry-run, bounded scan, reviewed target digest and transactional source-version checks.",
-      "checks": [
-        "node --check tool/data/backfill_event_publication.mjs",
-        "node --test tool/data/backfill_event_publication.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/contracts/generated/**"
-      ],
-      "role": "generator",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node", "root-npm"]
-      }
-    },
-    {
       "id": "data:backfill-event-discovery",
       "category": "data",
       "path": "tool/data/backfill_event_discovery_fields.mjs",
@@ -2992,104 +2970,6 @@
       "role": "generator"
     },
     {
-      "id": "data:backfill-organizer-audience",
-      "category": "data",
-      "path": "tool/data/backfill_organizer_audience.mjs",
-      "command": "node tool/data/backfill_organizer_audience.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Dry-run-first, resumable organizer contact/event/trait projection backfill that discovers attendee, manual-contact, and partial-summary organizers, including zero-attendee repairs, and switches to exact coverage only after every current attendee is processed.",
-      "checks": [
-        "node --check tool/data/backfill_organizer_audience.mjs",
-        "node --test tool/data/backfill_organizer_audience.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:audit-legacy-host-contact-projection",
-      "category": "data",
-      "path": "tool/data/audit_legacy_host_contact_projection.mjs",
-      "command": "node tool/data/audit_legacy_host_contact_projection.mjs",
-      "safety": "remote-readonly",
-      "status": "active",
-      "description": "Read-only, PII-redacted audit that separates high-confidence legacy private-profile contact projections from rows requiring human reconciliation.",
-      "checks": [
-        "node --check tool/data/audit_legacy_host_contact_projection.mjs",
-        "node --test tool/data/audit_legacy_host_contact_projection.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:backfill-organizer-crm-authority-v2",
-      "category": "data",
-      "path": "tool/data/backfill_organizer_crm_authority_v2.mjs",
-      "command": "node tool/data/backfill_organizer_crm_authority_v2.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Backfills contact origins from canonical attendee edges and reviewed Host Form CRM receipts, reports unresolved provenance, and classifies legacy communication decisions as incomplete without inferring permission.",
-      "checks": [
-        "node --check tool/data/backfill_organizer_crm_authority_v2.mjs",
-        "node --test tool/data/backfill_organizer_crm_authority_v2.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:repair-legacy-host-contact-projection",
-      "category": "data",
-      "path": "tool/data/repair_legacy_host_contact_projection.mjs",
-      "command": "node tool/data/repair_legacy_host_contact_projection.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Exact-count, one-organizer repair for approved legacy private-profile contact projections; relies on the deployed audience trigger to rebuild CRM edges, evidence, contacts, and summaries.",
-      "checks": [
-        "node --check tool/data/repair_legacy_host_contact_projection.mjs",
-        "node --test tool/data/repair_legacy_host_contact_projection.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:backfill-organizer-intake-visibility-decisions",
-      "category": "data",
-      "path": "tool/data/backfill_organizer_intake_visibility_decisions.mjs",
-      "command": "node tool/data/backfill_organizer_intake_visibility_decisions.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Backfills explicit publication and indexing controls on legacy organizer-intake review decisions.",
-      "checks": [
-        "node --check tool/data/backfill_organizer_intake_visibility_decisions.mjs",
-        "node --test tool/data/backfill_organizer_intake_visibility_decisions.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:backfill-organizer-supply-capabilities",
-      "category": "data",
-      "path": "tool/data/backfill_organizer_supply_capabilities.mjs",
-      "command": "node tool/data/backfill_organizer_supply_capabilities.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Backfills organizer and club member-affordance ceilings while auditing existing external-event provenance.",
-      "checks": [
-        "node --check tool/data/backfill_organizer_supply_capabilities.mjs",
-        "node --test tool/data/backfill_organizer_supply_capabilities.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:backfill-organizer-candidate-provenance",
-      "category": "data",
-      "path": "tool/data/backfill_organizer_candidate_provenance.mjs",
-      "command": "node tool/data/backfill_organizer_candidate_provenance.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Backfills artifact-bound field provenance on persisted Supply Intake organizer candidates without repository operational JSON.",
-      "checks": [
-        "node --check tool/data/backfill_organizer_candidate_provenance.mjs",
-        "node --test tool/data/backfill_organizer_candidate_provenance.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
       "id": "data:backfill-algolia-explore-search",
       "category": "data",
       "path": "tool/data/backfill_algolia_explore_search.mjs",
@@ -3102,24 +2982,6 @@
       ]
     },
     {
-      "id": "data:backfill-location-markets",
-      "category": "data",
-      "path": "tool/data/backfill_location_market_fields.mjs",
-      "command": "node tool/data/backfill_location_market_fields.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Audits and optionally backfills location, city, region, and market projection fields for clubs, users, public profiles, and config cities.",
-      "checks": [
-        "node --test tool/data/backfill_location_market_fields.test.mjs",
-        "node --check tool/data/backfill_location_market_fields.mjs"
-      ],
-      "impactPaths": [
-        "tool/data/backfill_location_market_fields.test.mjs",
-        "tool/data/backfill_location_market_fields.mjs"
-      ],
-      "checkSafety": "local-readonly"
-    },
-    {
       "id": "data:hygiene-media-paths",
       "category": "data",
       "path": "tool/data/hygiene_media_paths.mjs",
@@ -3129,53 +2991,6 @@
       "description": "Audits and repairs hosted media paths against Firestore and Storage contracts.",
       "checks": [
         "node --check tool/data/hygiene_media_paths.mjs"
-      ]
-    },
-    {
-      "id": "data:repair-future-attendance",
-      "category": "data",
-      "path": "tool/data/repair_future_event_attendance.mjs",
-      "command": "node tool/data/repair_future_event_attendance.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Downgrades invalid attended edges on future events.",
-      "checks": [
-        "node --check tool/data/repair_future_event_attendance.mjs",
-        "node --test tool/data/repair_future_event_attendance.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:backfill-profile-photos",
-      "category": "data",
-      "path": "tool/data/backfill_profile_photos.mjs",
-      "command": "node tool/data/backfill_profile_photos.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Backfills grouped profile photo fields.",
-      "checks": [
-        "node --check tool/data/backfill_profile_photos.mjs",
-        "node --test tool/data/backfill_profile_photos.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/contracts/generated/**"
-      ],
-      "role": "generator",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node", "root-npm"]
-      }
-    },
-    {
-      "id": "data:strip-profile-coordinates",
-      "category": "data",
-      "path": "tool/data/strip_public_profile_coordinates.mjs",
-      "command": "node tool/data/strip_public_profile_coordinates.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Removes public profile coordinate fields.",
-      "checks": [
-        "node --check tool/data/strip_public_profile_coordinates.mjs"
       ]
     },
     {
@@ -6904,51 +6719,6 @@
           "provider graph CLI rejects retired and conflicting output flags",
           "provider graph requires current architecture review decisions",
           "provider graph rejects planned reviews without stable debt ids"
-        ]
-      }
-    },
-    {
-      "id": "data:backfill-event-meeting-locations",
-      "category": "data",
-      "path": "tool/data/backfill_event_meeting_locations.mjs",
-      "command": "node tool/data/backfill_event_meeting_locations.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Promotes exact legacy event coordinates into required structured meeting locations and synchronizes compatibility mirrors.",
-      "checks": [
-        "node --check tool/data/backfill_event_meeting_locations.mjs",
-        "node --test tool/data/backfill_event_meeting_locations.test.mjs"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "data:migrate-clubs-to-organizers",
-      "category": "data",
-      "path": "tool/data/migrate_clubs_to_organizers.mjs",
-      "command": "node tool/data/migrate_clubs_to_organizers.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Copies legacy club data into canonical organizer authorities, splits team and follow edges, backfills organizerId references, and optionally copies organizer media without deleting legacy data.",
-      "checks": [
-        "node --check tool/data/migrate_clubs_to_organizers.mjs",
-        "node --test tool/data/migrate_clubs_to_organizers.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/contracts/generated/**"
-      ],
-      "role": "generator",
-      "rules": [
-        "MIGRATION-CONTRACT-001",
-        "DENORMALIZED-DATA-001",
-        "STORAGE-CONTRACT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/data/migrate_clubs_to_organizers.test.mjs",
-        "contains": [
-          "plan splits host/member edges and patches dependent references",
-          "plan blocks conflicting target authority instead of overwriting",
-          "plan is idempotent when canonical target and reference already match"
         ]
       }
     },

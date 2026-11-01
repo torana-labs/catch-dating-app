@@ -1,0 +1,931 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_safety.feature.json",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:485624e7759dc283716881bb820fbc85cfbfe81c93b078ff9198f4d7e6ac0e4e",
+  "resolvedDigest": "sha256:9b0700a6503088e08344c5f73291140fabdd422eafa0fdabde7a757bddd57fe9",
+  "feature": {
+    "id": "feature.admin_safety",
+    "name": "Admin Safety",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Lists open safety cases from every queue, launch access included, due soonest first; decides cases and launch access; acts on accounts (warn, restrict, suspend, ban) through the sheet; and shows account actions and appeals for review by someone who did not decide."
+  },
+  "coverage": {
+    "surfaces": 2,
+    "states": 7,
+    "scenarios": 7,
+    "actionCases": 9,
+    "actions": 9,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 5,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_safety",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_safety"
+      },
+      "actionScope": {
+        "included": "Filtering open cases from every queue with launch access, opening a case or application, resolving or dismissing a case, deciding launch access, acting on an account through the sheet, lifting an action and deciding an appeal.",
+        "excluded": [
+          "Assigning a case is not drawn yet; the existing assignment callable stays available to the controller.",
+          "Changing safety rules and reasons is Settings → Safety."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "triage",
+            "language": "typescript",
+            "file": "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+            "symbol": "useSafetyTriageController"
+          },
+          {
+            "id": "access",
+            "language": "typescript",
+            "file": "admin/src/features/safety/controllers/useAccessReviewController.ts",
+            "symbol": "useAccessReviewController"
+          },
+          {
+            "id": "actions",
+            "language": "typescript",
+            "file": "admin/src/features/safety/controllers/useAccountSafetyController.ts",
+            "symbol": "useAccountSafetyController"
+          },
+          {
+            "id": "sheet",
+            "language": "typescript",
+            "file": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
+            "symbol": "useSafetyActionSheetController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/safety/ui/SafetyScreen.tsx",
+            "symbol": "SafetyScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_safety",
+          "workspace_safety_action_sheet"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSafetyTriageDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideSafetyTriageItem",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetAccessApplicationDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideAccessApplication",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminTakeAccountSafetyAction",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminLiftAccountSafetyAction",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListAccountSafetyActions",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideSafetyAppeal",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSafetySettings",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "open-cases": [
+            "admin/src/features/safety/controllers/safetyCases.test.ts",
+            "admin/src/features/safety/ui/SafetyScreen.test.tsx"
+          ],
+          "case-detail": [
+            "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+            "admin/src/features/safety/ui/SafetyScreen.test.tsx",
+            "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx"
+          ],
+          "launch-access": [
+            "admin/src/features/safety/controllers/safetyCases.test.ts",
+            "admin/src/features/safety/ui/SafetyScreen.test.tsx"
+          ],
+          "account-actions": [
+            "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx",
+            "admin/src/features/safety/controllers/safetyCases.test.ts"
+          ],
+          "appeal": [
+            "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 7,
+        "actions": 8,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 5,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "view": {
+          "default": "open",
+          "values": [
+            "open",
+            "actions",
+            "appeals"
+          ]
+        },
+        "job": {
+          "default": "ops",
+          "values": [
+            "ops",
+            "owner"
+          ]
+        },
+        "decision": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "filter_safety_cases",
+          "owner": "screen",
+          "codeValue": "onCaseKind",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "caseKind"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "open-cases"
+              ]
+            }
+          ],
+          "description": "Shows one kind of case: reports, flags, events or launch access.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "switch_safety_view",
+          "owner": "screen",
+          "codeValue": "onViewChanged",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "view"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "open-cases",
+                "account-actions",
+                "appeal"
+              ]
+            }
+          ],
+          "description": "Switches between open cases, account actions and appeals.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_safety_case",
+          "owner": "screen",
+          "codeValue": "onSelectCase",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "targetPath"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "case-detail",
+                "launch-access"
+              ]
+            }
+          ],
+          "description": "Opens a case or launch access application beside the queue.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decide_safety_case",
+          "owner": "triage",
+          "codeValue": "decide",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "targetPath"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.safety_case_decided"
+            }
+          ],
+          "description": "Resolves or dismisses a case; the reporter hears it was handled.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decide_launch_access",
+          "owner": "access",
+          "codeValue": "decide",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "applicationUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.access_decided"
+            }
+          ],
+          "description": "Lets an applicant in or turns them down.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "act_on_account",
+          "owner": "sheet",
+          "codeValue": "submit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "uid",
+            "caseTargetPath"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.account_action_taken"
+            }
+          ],
+          "description": "Warns, restricts, suspends or bans an account from the sheet; suspend and ban are owner-only.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "lift_account_action",
+          "owner": "actions",
+          "codeValue": "lift",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "actionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.account_action_lifted"
+            }
+          ],
+          "description": "Lifts an action early within the job's authority.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decide_safety_appeal",
+          "owner": "actions",
+          "codeValue": "decide",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "actionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.safety_appeal_decided"
+            }
+          ],
+          "description": "Keeps, reduces or lifts an appealed action; the reviewer did not decide it.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "open_cases",
+          "stateId": "open-cases",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "open",
+            "job": "ops",
+            "decision": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_safety/SafetyRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/safety/controllers/safetyCases.test.ts",
+              "admin/src/features/safety/ui/SafetyScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "open",
+                "job": "ops",
+                "decision": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "filter_safety_cases",
+                  "switch_safety_view",
+                  "open_safety_case"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "decide_safety_case",
+                  "decide_launch_access",
+                  "act_on_account",
+                  "lift_account_action",
+                  "decide_safety_appeal"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "case_detail",
+          "stateId": "case-detail",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "open",
+            "job": "ops",
+            "decision": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_safety/SafetyRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+              "admin/src/features/safety/ui/SafetyScreen.test.tsx",
+              "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "open",
+                "job": "ops",
+                "decision": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "decide_safety_case",
+                  "act_on_account"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "filter_safety_cases",
+                  "switch_safety_view",
+                  "open_safety_case",
+                  "decide_launch_access",
+                  "lift_account_action",
+                  "decide_safety_appeal"
+                ]
+              }
+            },
+            {
+              "id": "decision_pending_frozen_workspace",
+              "dimensions": {
+                "view": "open",
+                "job": "ops",
+                "decision": "pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "decide_safety_case",
+                  "act_on_account"
+                ],
+                "notAllowed": [
+                  "filter_safety_cases",
+                  "switch_safety_view",
+                  "open_safety_case",
+                  "decide_launch_access",
+                  "lift_account_action",
+                  "decide_safety_appeal"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "launch_access",
+          "stateId": "launch-access",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "open",
+            "job": "ops",
+            "decision": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_safety/SafetyRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/safety/controllers/safetyCases.test.ts",
+              "admin/src/features/safety/ui/SafetyScreen.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "open",
+                "job": "ops",
+                "decision": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "decide_launch_access"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "filter_safety_cases",
+                  "switch_safety_view",
+                  "open_safety_case",
+                  "decide_safety_case",
+                  "act_on_account",
+                  "lift_account_action",
+                  "decide_safety_appeal"
+                ]
+              }
+            },
+            {
+              "id": "access_pending_frozen_workspace",
+              "dimensions": {
+                "view": "open",
+                "job": "ops",
+                "decision": "pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "decide_launch_access"
+                ],
+                "notAllowed": [
+                  "filter_safety_cases",
+                  "switch_safety_view",
+                  "open_safety_case",
+                  "decide_safety_case",
+                  "act_on_account",
+                  "lift_account_action",
+                  "decide_safety_appeal"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "account_actions",
+          "stateId": "account-actions",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "actions",
+            "job": "ops",
+            "decision": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_safety/SafetyRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx",
+              "admin/src/features/safety/controllers/safetyCases.test.ts"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "actions",
+                "job": "ops",
+                "decision": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_safety_view",
+                  "lift_account_action"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "filter_safety_cases",
+                  "open_safety_case",
+                  "decide_safety_case",
+                  "decide_launch_access",
+                  "act_on_account",
+                  "decide_safety_appeal"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "appeal",
+          "stateId": "appeal",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "appeals",
+            "job": "ops",
+            "decision": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_safety/SafetyRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "view": "appeals",
+                "job": "ops",
+                "decision": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "decide_safety_appeal"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "filter_safety_cases",
+                  "switch_safety_view",
+                  "open_safety_case",
+                  "decide_safety_case",
+                  "decide_launch_access",
+                  "act_on_account",
+                  "lift_account_action"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_safety",
+          "source": "admin/src/features/safety/ui/SafetyScreen.tsx",
+          "exportName": "SafetyScreen"
+        },
+        "components": [
+          {
+            "id": "route_safety",
+            "kind": "route",
+            "source": "admin/src/features/safety/ui/SafetyScreen.tsx",
+            "exportName": "SafetyScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "SafetyRouteStory",
+              "states": [
+                "open-cases",
+                "case-detail",
+                "launch-access",
+                "account-actions",
+                "appeal"
+              ]
+            }
+          },
+          {
+            "id": "workspace_safety_action_sheet",
+            "kind": "workspace",
+            "source": "admin/src/features/safety/ui/SafetyActionSheetWorkspace.tsx",
+            "exportName": "SafetyActionSheetWorkspace",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "SafetyActionSheetStory",
+              "states": [
+                "restrict",
+                "owner-only-steps"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_safety/SafetyRouteStory"
+        ]
+      }
+    },
+    {
+      "id": "admin_safety_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_safety_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query and URL seam for the prop-driven Safety actions.",
+        "excluded": [
+          "Deterministic visual state remains on route_safety."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/safety/ui/SafetyRouteScreen.tsx",
+            "symbol": "SafetyRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_safety_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSafetyTriageDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideSafetyTriageItem",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetAccessApplicationDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideAccessApplication",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminTakeAccountSafetyAction",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminLiftAccountSafetyAction",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListAccountSafetyActions",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideSafetyAppeal",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSafetySettings",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx",
+            "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 2,
+        "actions": 1,
+        "captures": 0,
+        "previews": 0,
+        "testFiles": 2,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "navigate_safety",
+          "owner": "route",
+          "codeValue": "onNavigate",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "path"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.safety_route_changed"
+            }
+          ],
+          "description": "Keeps the view, the open case and the open action in the URL.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "resolved"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx",
+              "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "resolved",
+              "dimensions": {
+                "boundary": "resolved"
+              },
+              "actions": {
+                "enabled": [
+                  "navigate_safety"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/safety/controllers/useAccountSafetyController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading",
+              "dimensions": {
+                "boundary": "loading"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "navigate_safety"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_safety_live_controller",
+          "source": "admin/src/features/safety/ui/SafetyRouteScreen.tsx",
+          "exportName": "SafetyRouteScreen"
+        },
+        "components": [
+          {
+            "id": "route_safety_live_controller",
+            "kind": "route",
+            "source": "admin/src/features/safety/ui/SafetyRouteScreen.tsx",
+            "exportName": "SafetyRouteScreen",
+            "storybook": {
+              "status": "not-required",
+              "states": [
+                "live-query-wrapper",
+                "route-lazy-boundary"
+              ]
+            }
+          }
+        ],
+        "previews": []
+      }
+    }
+  ]
+}

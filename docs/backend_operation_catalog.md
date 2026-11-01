@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.116.0
+version: 1.116.1
 updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
@@ -154,7 +154,7 @@ promotion command creates only a blocked review receipt; it does not create an
 | P2 | The machine-readable contract records operations by collection, but not the Dart initiator method for every operation. | This doc fills the human map; a later tooling pass can validate Dart initiators automatically. |
 | P2 | Notification fan-out has a durable backend-owned Activity timeline for matches and event updates; messages instead update the conversation preview/unread flag. | Implemented; use the Notification Timeline table for category-specific ownership. |
 | P1 | Edge documents were the source of truth, but event-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncOrganizerMemberStats` recomputes `memberCount` from active membership edges, and `syncOrganizerNextEvent` recomputes `nextEventAt` / `nextEventLabel` from active future event documents. Event callables also refresh the next-event projection before returning. |
-| P0 | Historical events split attendee-facing venue text and coordinates across nullable legacy fields, so enforcing a required structured location in every Dart read would make unrepaired records unreadable. | Strict on new and edited writes, discovery, and self-check-in; compatibility-deferred for Dart deserialization only. Dev is 146/146 structured. The refreshed 2026-07-16 production dry run found 272 events: 125 valid, 138 deterministically repairable, and 9 unresolved coordinate blockers with no warnings; no production writes were applied. Keep `Event.meetingLocation` nullable until the production repair and follow-up validation complete, as tracked in `contracts/migrations/event_meeting_location.json`. |
+| P0 | Historical events split attendee-facing venue text and coordinates across nullable legacy fields, so enforcing a required structured location in every Dart read would make unrepaired records unreadable. | Strict on new and edited writes, discovery, and self-check-in; compatibility-deferred for Dart deserialization only, so `Event.meetingLocation` stays nullable on reads. The historical-event repair is moot under wipe-and-reseed. |
 
 `getEventViewerState` exposes the private account-scoped
 `readEventViewerStateSource`. It shares policy, schedule, membership, inventory and
@@ -609,7 +609,7 @@ server-owned; clients write nothing.
 | `reviews/{reviewId}.reviewerName` | Reviewer `users/{reviewerUserId}` | `createEventReview` on create, then `syncPublicProfile` on profile writes | `tool/data/recompute_review_author_profiles.mjs`; validator emits `reviewer-name-drift`. |
 | `notifications/{uid}/items/{id}.actorName`, notification `title`/`body` with names | Event-time public profile at notification creation | Notification trigger/callable that created the event | Historical notification copy. Do not back-update unless product decides notifications should become live profile cards. |
 | `matches/{matchId}.lastMessagePreview` | Latest message content | `onMessageCreated` | Message-content preview snapshot, not a user profile projection. |
-| `eventParticipations/{eventId_uid}.genderAtSignup`, `events/{eventId}.genderCounts` | User profile at booking/attendance time | Booking/attendance callables and aggregate repair tools | Signup-time constraint snapshot; do not rewrite after profile edits. `tool/data/repair_future_event_attendance.mjs` downgrades stale future-event `attended` edges to `signedUp`, fixes affected aggregates, and deletes invalid swipe artifacts. |
+| `eventParticipations/{eventId_uid}.genderAtSignup`, `events/{eventId}.genderCounts` | User profile at booking/attendance time | Booking/attendance callables and aggregate repair tools | Signup-time constraint snapshot; do not rewrite after profile edits. |
 | `notifications/{uid}/items/{notificationId}` | Match/message triggers, create-event fan-out, host event update/cancellation/broadcast, and booking/cancellation callables now; remaining event producers should use the same backend-owned helper. | Owner can read own items and update only `readAt`; client create/delete/content edits are denied. |
 | `blocks/{blockId}` | Safety callables | Direct client writes denied. |
 | `reports/{reportId}` | Safety callable | Direct client writes denied. |

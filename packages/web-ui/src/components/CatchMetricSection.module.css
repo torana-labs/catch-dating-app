@@ -1,0 +1,41 @@
+/*
+ * Flutter CatchMetricSection on the web: equal columns at least 160px wide,
+ * 12px apart, wrapping on narrow screens. Each metric is a 13px ink2 label,
+ * a 28px tabular value and an optional toned note. Tiles sit on the tile
+ * with 16px insets; inline metrics have no box. The quiet register (Admin)
+ * sets values in 600-weight plain type.
+ */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--catch-space-s3);
+  margin: 0;
+}
+
+.metric { display: flex; flex-direction: column; gap: var(--catch-space-s1); min-width: 0; }
+
+.strip[data-recipe="tile"] .metric {
+  padding: var(--catch-space-s4);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-theme-bg);
+}
+
+.label { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 600; }
+
+.value {
+  margin: 0;
+  color: var(--catch-theme-ink);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.note { margin: 0; font-size: 13px; font-weight: 600; }
+.note[data-tone="secondary"] { color: var(--catch-theme-ink2); }
+.note[data-tone="success"] { color: var(--catch-theme-positive-text); }
+.note[data-tone="warning"] { color: var(--catch-theme-attention-text); }
+.note[data-tone="danger"] { color: var(--catch-theme-danger-text); }
+
+:global([data-register="quiet"]) .value { font-weight: 600; }

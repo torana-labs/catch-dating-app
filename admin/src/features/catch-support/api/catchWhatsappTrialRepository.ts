@@ -4,7 +4,7 @@ import {auth} from "../../../shared/api/firebase";
 import {adminAppCheck, firebaseApp} from "../../../shared/api/firebaseCore";
 import {catchWhatsappSupportAvailable, refreshCatchWhatsappAvailability} from
   "./catchWhatsappAvailability";
-import {validateAdminCallableRequest, validateAdminCallableResponse} from
+import {loadAdminCallableValidators} from
   "../../../generated/validators/adminCallableValidators";
 import type {CatchInboundReview, CatchReplyCommand, CatchReplyResult} from
   "../../../shared/contracts/catchWhatsappReplyContracts";
@@ -37,6 +37,8 @@ const prepared = new WeakMap<CatchTrialScope, Prepared>();
 async function call<Response>(name: string, payload: unknown,
   scope: CatchTrialScope): Promise<Response> {
   assertScope(scope);
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(name);
   validateAdminCallableRequest(name, payload);
   const session = prepared.get(scope);
   prepared.delete(scope);

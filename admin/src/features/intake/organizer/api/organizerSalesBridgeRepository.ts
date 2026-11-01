@@ -27,7 +27,8 @@ export async function linkOrganizerIntakeToSales(
   }
   const name = "adminLinkOrganizerIntakeToSales";
   const {validateAdminCallableRequest, validateAdminCallableResponse} =
-    await import("../../../../generated/validators/adminCallableValidators");
+    await import("../../../../generated/validators/adminCallableValidators")
+      .then((validators) => validators.loadAdminCallableValidators(name));
   validateAdminCallableRequest(name, input);
   const response = await httpsCallable<IntakeSalesLinkInput,
     IntakeSalesLinkResult>(functions, "adminLinkOrganizerIntakeToSales")(input);

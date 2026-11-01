@@ -1,0 +1,56 @@
+/*
+ * Flutter CatchBarIndicator on the web. One bar: a 6px pill track on the
+ * tile with an ink fill. Chart: equal columns 12px apart, each a 13px bold
+ * tabular value over an ink bar with rounded top corners; a running period
+ * is an outline on the tile; 13px ink2 labels sit under the plot.
+ */
+.track {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-bg);
+}
+
+.fill { display: block; height: 100%; border-radius: inherit; background: var(--catch-theme-ink); }
+.chart { display: flex; flex-direction: column; gap: var(--catch-space-s2); }
+.plot { display: flex; align-items: flex-end; gap: var(--catch-space-s3); }
+
+.column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--catch-space-s1);
+  min-width: 0;
+}
+
+.value { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.bar {
+  width: 100%;
+  border-radius: var(--catch-radius-sm) var(--catch-radius-sm) var(--catch-radius-xs) var(--catch-radius-xs);
+  background: var(--catch-theme-ink);
+}
+
+.bar[data-partial] {
+  box-sizing: border-box;
+  border: 1.5px solid var(--catch-theme-line2);
+  background: var(--catch-theme-bg);
+}
+
+.labels { display: flex; gap: var(--catch-space-s3); }
+
+.labels > span {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--catch-theme-ink2);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

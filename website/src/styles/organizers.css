@@ -240,23 +240,6 @@
   font-weight: 800;
 }
 
-.claim-auth-row {
-  margin: 0;
-  color: var(--website-copy-muted);
-  font-size: 14px;
-}
-
-.claim-auth-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--catch-space-s3);
-  padding: var(--catch-space-s3);
-  border: var(--catch-stroke-hairline) solid var(--website-line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--website-panel-bg-strong);
-}
-
 .claim-request-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

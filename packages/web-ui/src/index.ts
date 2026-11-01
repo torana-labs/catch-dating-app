@@ -107,12 +107,23 @@ export {ButtonControl} from "./components/ButtonControl";
 export type {ButtonControlProps} from "./components/ButtonControl";
 export {CatchDock} from "./components/CatchDock";
 export type {
+  CatchDockPaneAction,
+  CatchDockPaneProps,
   CatchDockPageActionProps,
   CatchDockPrimaryContentProps,
   CatchDockPrimaryProps,
   CatchDockProps,
   CatchDockUtilityProps,
 } from "./components/CatchDock";
+export {CatchBarIndicator} from "./components/CatchBarIndicator";
+export type {
+  CatchBarIndicatorBar,
+  CatchBarIndicatorChartProps,
+  CatchBarIndicatorDefaultProps,
+  CatchBarIndicatorProps,
+} from "./components/CatchBarIndicator";
+export {CatchDialog} from "./components/CatchDialog";
+export type {CatchDialogAction, CatchDialogProps} from "./components/CatchDialog";
 export {CatchBadge} from "./components/CatchBadge";
 export type {
   CatchBadgeEmphasis,
@@ -122,7 +133,14 @@ export type {
   CatchBadgeTone,
 } from "./components/CatchBadge";
 export {CatchEmptyState} from "./components/CatchEmptyState";
-export type {CatchEmptyStateAnnouncement, CatchEmptyStateProps, CatchEmptyStateVariant} from "./components/CatchEmptyState";
+export {EmptyStateControl} from "./components/EmptyStateControl";
+export type {EmptyStateAnnouncement, EmptyStateControlProps} from "./components/EmptyStateControl";
+export type {
+  CatchEmptyStateAnnouncement,
+  CatchEmptyStateKind,
+  CatchEmptyStateProps,
+  CatchEmptyStateVariant,
+} from "./components/CatchEmptyState";
 export {CatchErrorState} from "./components/CatchErrorState";
 export type {CatchErrorStateMode, CatchErrorStateProps} from "./components/CatchErrorState";
 export {CatchFactTile} from "./components/CatchFactTile";
@@ -166,6 +184,8 @@ export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs";
 export {catchIconNodes} from "./icons/catchIconNodes";
 export type {CatchIconNode, CatchIconNodeName} from "./icons/catchIconNodes";
 export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";
+export {CatchIconTile} from "./components/CatchIconTile";
+export type {CatchIconTileProps} from "./components/CatchIconTile";
 export {CatchIndexRow} from "./components/CatchIndexRow";
 export type {CatchIndexRowProps} from "./components/CatchIndexRow";
 export {CatchInset} from "./components/CatchInset";
@@ -183,6 +203,10 @@ export type {
   CatchMenuPanelProps,
   CatchMenuProps,
 } from "./components/CatchMenu";
+export {CatchMetaRow} from "./components/CatchMetaRow";
+export type {CatchMetaEntry, CatchMetaRowProps} from "./components/CatchMetaRow";
+export {CatchMetricSection} from "./components/CatchMetricSection";
+export type {CatchMetricData, CatchMetricSectionProps} from "./components/CatchMetricSection";
 export {CatchNotice} from "./components/CatchNotice";
 export type {CatchNoticeData, CatchNoticeProps, CatchNoticeTone} from "./components/CatchNotice";
 export {CatchNoticeRegion} from "./components/CatchNoticeRegion";
@@ -217,6 +241,8 @@ export type {
   CatchScrollerItemWidth,
   CatchScrollerProps,
 } from "./components/CatchScroller";
+export {CatchSection} from "./components/CatchSection";
+export type {CatchSectionAction, CatchSectionProps, CatchSectionStep} from "./components/CatchSection";
 export {CatchSectionList} from "./components/CatchSectionList";
 export type {
   CatchSectionListElement,
@@ -317,7 +343,6 @@ export type {
 } from "./components/CatchText";
 export {
   CheckboxControl,
-  EmptyStateControl,
   SelectControl,
   ToggleButtonControl,
   ToggleGroupControl,
@@ -326,8 +351,6 @@ export {
 } from "./primitives";
 export type {
   CheckboxControlProps,
-  EmptyStateAnnouncement,
-  EmptyStateControlProps,
   SelectControlProps,
   ToggleButtonControlProps,
   ToggleGroupControlProps,

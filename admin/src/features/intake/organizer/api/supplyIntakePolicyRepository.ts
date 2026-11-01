@@ -21,7 +21,8 @@ const samplePolicies: SupplyIntakePolicies = {policies: [{gapId: "on_demand_page
 export async function listSupplyIntakePolicies(): Promise<SupplyIntakePolicies> {
   if (dataMode() === "sample") return structuredClone(samplePolicies);
   const {validateAdminCallableRequest, validateAdminCallableResponse} =
-    await import("../../../../generated/validators/adminCallableValidators");
+    await import("../../../../generated/validators/adminCallableValidators")
+      .then((validators) => validators.loadAdminCallableValidators("adminListSupplyIntakePolicies"));
   validateAdminCallableRequest("adminListSupplyIntakePolicies", {});
   const result = await httpsCallable<Record<string, never>, SupplyIntakePolicies>(functions,
     "adminListSupplyIntakePolicies")({});

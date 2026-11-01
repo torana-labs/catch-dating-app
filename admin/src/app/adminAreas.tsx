@@ -13,20 +13,25 @@ import {
 const NowRouteScreen = lazy(() => import("../features/now/ui/NowRouteScreen").then((m) => ({default: m.NowRouteScreen})));
 const MarketplaceRouteScreen = lazy(() => import("../features/marketplace/ui/MarketplaceRouteScreen").then((m) => ({default: m.MarketplaceRouteScreen})));
 const MarketingOpsScreen = lazy(() => import("../features/marketing/ui/MarketingOpsScreen").then((m) => ({default: m.MarketingOpsScreen})));
+const InboxRouteScreen = lazy(() => import("../features/inbox/ui/InboxRouteScreen").then((m) => ({default: m.InboxRouteScreen})));
 const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWorkspaceScreen").then((m) => ({default: m.IntakeWorkspaceScreen})));
-const SafetyTriageScreen = lazy(() => import("../features/safety/ui/SafetyTriageScreen").then((m) => ({default: m.SafetyTriageScreen})));
-const AccessReviewScreen = lazy(() => import("../features/access/ui/AccessReviewScreen").then((m) => ({default: m.AccessReviewScreen})));
+const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
 const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
 const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
 const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
-const OrganizerPublishingScreen = lazy(() => import("../features/organizers/ui/OrganizerPublishingScreen").then((m) => ({default: m.OrganizerPublishingScreen})));
-const EventPublishingScreen = lazy(() => import("../features/events/ui/EventPublishingScreen").then((m) => ({default: m.EventPublishingScreen})));
+const OrganizersRouteScreen = lazy(() => import("../features/organizers/ui/OrganizersRouteScreen").then((m) => ({default: m.OrganizersRouteScreen})));
+const EventsRouteScreen = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.EventsRouteScreen})));
+const OrganizerEventsRouteWorkspace = lazy(() => import("../features/events/ui/EventsRouteScreen").then((m) => ({default: m.OrganizerEventsRouteWorkspace})));
 const UserAnalyticsScreen = lazy(() => import("../features/users/ui/UserAnalyticsScreen").then((m) => ({default: m.UserAnalyticsScreen})));
+const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteScreen").then((m) => ({default: m.PeopleRouteScreen})));
 const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
-const AdminRoleManagementScreen = lazy(() => import("../features/admin-roles/ui/AdminRoleManagementScreen").then((m) => ({default: m.AdminRoleManagementScreen})));
+const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
+const IntakeSettingsRouteScreen = lazy(() => import("../features/intake/organizer/ui/IntakeSettingsRouteScreen").then((m) => ({default: m.IntakeSettingsRouteScreen})));
+const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
+const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
 
@@ -95,26 +100,51 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   "organizer-intake": {
-    label: "Inbox", icon: "review", frame: "legacy-fill",
+    label: "Inbox", icon: "review", frame: "redrawn",
+    render: ({navigate, route, setError, setNotice, userUid, mode}) => (
+      <InboxRouteScreen
+        onError={setError}
+        onNotice={setNotice}
+        onOpenReview={() => navigate(adminPathForNav("intake-review"))}
+        onSelect={(itemId) => navigate(itemId ? `${adminPathForNav("organizer-intake")}/${encodeURIComponent(itemId)}` :
+          adminPathForNav("organizer-intake"))}
+        reviewHref={adminPathForNav("intake-review")}
+        selectedItemId={route.params.inboxItemId ?? null}
+        uid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
+      />
+    ),
+  },
+  "intake-review": {
+    label: "Intake review", icon: "review", frame: "legacy-fill",
     render: () => <IntakeWorkspaceScreen />,
   },
   safety: {
-    label: "Safety", icon: "safety", frame: "legacy",
-    render: ({navigate, route, setError, setNotice}) => (
-      <SafetyTriageScreen
-        onBackToList={() => navigate(adminPathForNav("safety"))}
+    label: "Safety", icon: "safety", frame: "redrawn",
+    render: ({adminRoles, mode, navigate, route, setError, setNotice}) => (
+      <SafetyRouteScreen
+        adminRoles={mode === "sample" ? ["adminOwner"] : adminRoles}
         onError={setError}
+        onNavigate={navigate}
         onNotice={setNotice}
-        onSelectTargetPath={(targetPath) => navigate(`${adminPathForNav("safety")}/${encodeURIComponent(targetPath)}`)}
+        selectedActionId={route.params.safetyActionId ?? null}
         selectedTargetPath={route.params.targetPath ?? null}
+        view={route.safetyView}
       />
     ),
   },
   support: {
-    label: "Support", icon: "support", frame: "legacy",
-    render: ({session, userUid}) => (
+    label: "Support", icon: "support", frame: "redrawn",
+    render: ({mode, navigate, route, session, setError, setNotice, userUid}) => route.supportWorkspace === "trial" ? (
       <CatchWhatsappTrialWorkspace
         scope={{actorUid: userUid ?? "", projectId: session.projectId, sessionKey: session.sessionKey, isCurrent: session.isCurrent}}
+      />
+    ) : (
+      <SupportRouteScreen
+        conversationId={route.params.supportConversationId ?? null}
+        onError={setError}
+        onNavigate={navigate}
+        onNotice={setNotice}
+        userUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
       />
     ),
   },
@@ -140,33 +170,27 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     render: (context) => renderMoney(context),
   },
   organizers: {
-    label: "Organizers", icon: "organizer", frame: "legacy",
+    label: "Organizers", icon: "organizer", frame: "redrawn",
     render: ({navigate, route}) => (
-      <OrganizerPublishingScreen
-        activeWorkspace={route.organizerWorkspace}
-        onBackToClaims={() => navigate(`${adminPathForNav("organizers")}/claims`)}
-        onBackToList={() => navigate(adminPathForNav("organizers"))}
-        onSelectClaimRequestId={(requestId) => navigate(`${adminPathForNav("organizers")}/claims/${encodeURIComponent(requestId)}`)}
-        onSelectOrganizerId={(organizerId) => navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(organizerId)}`)}
-        onWorkspaceChange={(workspace) => navigate(workspace === "claims" ? `${adminPathForNav("organizers")}/claims` : adminPathForNav("organizers"))}
-        selectedClaimRequestId={route.params.claimRequestId ?? null}
-        selectedOrganizerId={route.params.organizerId ?? null}
+      <OrganizersRouteScreen
+        claimRequestId={route.params.claimRequestId ?? null}
+        onNavigate={navigate}
+        organizerId={route.params.organizerId ?? null}
+        renderEvents={(organizerId) => <OrganizerEventsRouteWorkspace onNavigate={navigate} organizerId={organizerId} />}
+        tab={route.organizerTab}
+        workspace={route.organizerWorkspace}
       />
     ),
   },
   events: {
-    label: "Events", icon: "event", frame: "legacy",
-    render: ({location, navigate, route}) => (
-      <EventPublishingScreen
-        activeWorkspace={route.eventWorkspace}
-        onBackToList={() => navigate(`${adminPathForNav("events")}${location.search}`)}
-        onSelectEventId={(eventId) => navigate(`${adminPathForNav("events")}/${encodeURIComponent(eventId)}${location.search}`)}
-        onSelectExternalEventId={(eventId) => navigate(eventId ?
-          `${adminPathForNav("events")}/external/${encodeURIComponent(eventId)}${location.search}` :
-          `${adminPathForNav("events")}/external${location.search}`)}
-        onWorkspaceChange={(workspace) => navigate(workspace === "directory" ? adminPathForNav("events") : `${adminPathForNav("events")}/${workspace}`)}
-        selectedEventId={route.params.eventId ?? null}
-        selectedExternalEventId={route.params.externalEventId ?? null}
+    label: "Events", icon: "event", frame: "redrawn",
+    render: ({navigate, route}) => (
+      <EventsRouteScreen
+        eventId={route.params.eventId ?? null}
+        externalEventId={route.params.externalEventId ?? null}
+        onNavigate={navigate}
+        tab={route.eventTab}
+        workspace={route.eventWorkspace}
       />
     ),
   },
@@ -187,23 +211,15 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
       <MarketplaceRouteScreen adminRoles={adminRoles} isSessionReady={isSessionReady} mode={mode} onError={setError} onNotice={setNotice} />
     ),
   },
-  access: {
-    label: "Launch access", icon: "key", frame: "legacy",
-    render: ({navigate, route, setError, setNotice}) => (
-      <AccessReviewScreen
-        onBackToList={() => navigate(adminPathForNav("access"))}
-        onError={setError}
-        onNotice={setNotice}
-        onSelectApplicationUid={(applicationUid) => navigate(`${adminPathForNav("access")}/${encodeURIComponent(applicationUid)}`)}
-        selectedApplicationUid={route.params.applicationUid ?? null}
-      />
-    ),
-  },
   users: {
-    label: "Users", icon: "people", frame: "legacy",
+    label: "User analytics", icon: "insights", frame: "legacy",
     render: ({setError, setNotice}) => (
       <UserAnalyticsScreen handoffRequestId={null} handoffUserId={null} onError={setError} onNotice={setNotice} />
     ),
+  },
+  people: {
+    label: "People", icon: "people", frame: "redrawn",
+    render: ({navigate}) => <PeopleRouteScreen onOpenSafety={() => navigate("/safety/actions")} />,
   },
   "cross-paths": {
     label: "Cross Paths", icon: "like", frame: "legacy",
@@ -250,18 +266,33 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     label: "Agent activity", icon: "bot", frame: "legacy",
     render: ({setError}) => <AdminActionExecutionsScreen onError={setError} />,
   },
-  "admin-roles": {
-    label: "Admin roles", icon: "admin", frame: "legacy",
-    render: ({navigate, route, setError, setNotice, userUid}) => (
-      <AdminRoleManagementScreen
-        currentUserUid={userUid}
-        onBackToRegister={() => navigate(adminPathForNav("admin-roles"))}
+  settings: {
+    label: "Settings", icon: "settings", frame: "redrawn",
+    render: ({adminRoles: claims, canOpen, mode, navigate, route, setError, setNotice, userUid}) => {
+      // Sample data signs in as the sample owner, who holds no claims.
+      const adminRoles = mode === "sample" ? ["adminOwner"] : claims;
+      return (
+      <SettingsRouteScreen
+        canManageTeam={adminRoles.includes("adminOwner")}
+        currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
         onError={setError}
+        onNavigate={navigate}
         onNotice={setNotice}
-        onSelectTargetUid={(targetUid) => navigate(`/admin-roles/${encodeURIComponent(targetUid)}`)}
-        selectedTargetUid={route.params.adminRoleTargetUid ?? null}
+        otherPages={[
+          ...(canOpen("organizer-intake") ? [{
+            id: "intake", title: "Intake", subtitle: "Nominations, what runs on its own, launch cities",
+            render: () => <IntakeSettingsRouteScreen onError={setError} onNotice={setNotice} />,
+          }] : []),
+          ...(canOpen("safety") ? [{
+            id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
+            render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
+          }] : []),
+        ]}
+        selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
+        teamMemberUid={route.params.teamMemberUid ?? null}
       />
-    ),
+      );
+    },
   },
 };
 
@@ -315,7 +346,7 @@ function renderMoney(context: AdminAreaContext) {
 /** Opens a Needs you item in the area that owns it, at the record when the area has a record route. */
 function openQueueItem(
   context: AdminAreaContext,
-  destination: "safety" | "access" | "organizers" | "finance",
+  destination: "safety" | "organizers" | "finance",
   targetPath: string | null
 ) {
   const {navigate, setError, setNotice} = context;
@@ -329,8 +360,6 @@ function openQueueItem(
   const targetId = targetPath?.split("/").filter(Boolean).at(-1) ?? null;
   if (targetPath && destination === "safety") {
     navigate(`/safety/${encodeURIComponent(targetPath)}`);
-  } else if (targetId && destination === "access") {
-    navigate(`/access/${encodeURIComponent(targetId)}`);
   } else if (targetId && destination === "organizers") {
     navigate(targetPath?.startsWith("organizerClaimRequests/") ?
       `/organizers/claims/${encodeURIComponent(targetId)}` :

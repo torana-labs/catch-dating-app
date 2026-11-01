@@ -22,10 +22,6 @@ function fixture() {
       capacityRevision: null, migrationRevision: null}};
   const db = {} as FirebaseFirestore.Firestore;
   const deps = {db: () => db, nowMillis: () => 2000,
-    rateLimit: async (_db: FirebaseFirestore.Firestore, uid: string,
-      operation: string) => {
-      calls.push([uid, operation]);
-    },
     read: async (args: unknown) => {
       calls.push(args); return viewer;
     }};
@@ -51,7 +47,7 @@ test("scope and clock use the authenticated actor", async () => {
   const h = fixture();
   const result = await read(request({eventId: "event1", inviteCode: "invite1",
     publicPaymentId: "ownedPayment1"}), h.deps);
-  assert.deepEqual(h.calls, [["person", "getEventViewerState"],
+  assert.deepEqual(h.calls, [
     {db: h.db, uid: "person", eventId: "event1", inviteCode: "invite1",
       publicPaymentId: "ownedPayment1", nowMillis: 2000}]);
   assert.equal(result.viewer.admission, "nativeParticipation");
@@ -85,9 +81,9 @@ test("infrastructure and quota errors remain distinct", async () => {
       throw failure;
     }}), (error) => error === failure);
   h.calls.length = 0;
-  await assert.rejects(read(request({eventId: "event1"}), {...h.deps,
-    rateLimit: async () => {
-      throw new HttpsError("resource-exhausted", "Try later");
-    }}), code("resource-exhausted"));
+  const overLimit = request({eventId: "event1"}, "over-limit");
+  for (let call = 0; call < 60; call += 1) await read(overLimit, h.deps);
+  h.calls.length = 0;
+  await assert.rejects(read(overLimit, h.deps), code("resource-exhausted"));
   assert.deepEqual(h.calls, []);
 });

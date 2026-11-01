@@ -11,10 +11,13 @@
   "coverage": {
     "strategy": "route-workspace-plus-shared-primitives",
     "currentFocus": [
-      "route_access_review",
-      "workspace_access_review",
-      "route_admin_role_management",
-      "workspace_admin_role_management",
+      "route_people",
+      "route_people_live_controller",
+      "route_settings",
+      "route_settings_live_controller",
+      "workspace_team_settings",
+      "workspace_safety_settings",
+      "route_safety_settings_live_controller",
       "route_admin_action_executions",
       "workspace_admin_action_executions",
       "route_data_quality",
@@ -41,12 +44,15 @@
       "workspace_sales_records",
       "workspace_sales_import",
       "workspace_organizer_publishing",
+      "route_support",
+      "route_support_live_controller",
       "route_now",
       "route_marketplace",
-      "route_safety_triage",
-      "workspace_safety_triage",
       "route_user_analytics",
       "workspace_user_analytics",
+      "route_safety",
+      "workspace_safety_action_sheet",
+      "route_safety_live_controller",
       "route_cross_paths_showcase",
       "workspace_cross_paths_showcase",
       "shared_admin_profile_photo_grid",
@@ -172,80 +178,123 @@
       "notes": "Shared admin feedback provider. Preview coverage is not required because it wraps the app context rather than rendering a standalone surface."
     },
     {
-      "id": "route_access_review",
+      "id": "route_people",
       "kind": "route",
-      "owner": "features/access",
-      "source": "admin/src/features/access/ui/AccessReviewScreen.tsx",
-      "exportName": "AccessReviewScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "owner": "features/people",
+      "source": "admin/src/features/people/ui/PeopleScreen.tsx",
+      "exportName": "PeopleScreen",
+      "css": [],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AccessReviewRouteStory",
+        "exportName": "PeopleRouteStory",
         "states": [
-          "capped-directory"
+          "search-results",
+          "person"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query list/detail fetches and review mutations; preview renders the registered AccessReviewWorkspace with deterministic application/detail/decision fixtures in AdminRoutes.stories.tsx."
+      "notes": "People (board AdminPeople) in the quiet register: search by name, phone or user id, run only when submitted because each search is logged, results in a CatchTable on the queue pattern and the person beside them."
     },
     {
-      "id": "workspace_access_review",
-      "kind": "workspace",
-      "owner": "features/access",
-      "source": "admin/src/features/access/ui/AccessReviewScreen.tsx",
-      "exportName": "AccessReviewWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AccessReviewWorkspaceStory",
-        "states": [
-          "capped-directory"
-        ]
-      },
-      "notes": "Prop-driven Access Review workspace surface used by the route wrapper and deterministic Storybook previews; list/detail query and mutation logic stay in AccessReviewScreen."
-    },
-    {
-      "id": "route_admin_role_management",
+      "id": "route_people_live_controller",
       "kind": "route",
-      "owner": "features/admin-roles",
-      "source": "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
-      "exportName": "AdminRoleManagementScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "owner": "features/people",
+      "source": "admin/src/features/people/ui/PeopleRouteScreen.tsx",
+      "exportName": "PeopleRouteScreen",
+      "css": [],
       "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AdminRoleManagementRouteStory",
+        "status": "not-required",
         "states": [
-          "role-assignment-detail"
+          "live-query-wrapper",
+          "route-lazy-boundary"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query assignment register fetches and role mutation behavior; preview renders the registered AdminRoleManagementWorkspace with deterministic assignment/role fixtures in AdminRoutes.stories.tsx."
+      "notes": "Lazy live route wrapper owns the People search controller; deterministic prop-driven visual coverage remains on route_people."
     },
     {
-      "id": "workspace_admin_role_management",
-      "kind": "workspace",
-      "owner": "features/admin-roles",
-      "source": "admin/src/features/admin-roles/ui/AdminRoleManagementScreen.tsx",
-      "exportName": "AdminRoleManagementWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "id": "route_settings",
+      "kind": "route",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/SettingsScreen.tsx",
+      "exportName": "SettingsScreen",
+      "css": [],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "AdminRoleManagementWorkspaceStory",
+        "exportName": "SettingsRouteStory",
         "states": [
-          "role-assignment-detail"
+          "team",
+          "role-change"
         ]
       },
-      "notes": "Prop-driven Admin Roles workspace surface used by the route wrapper and deterministic Storybook previews; query, register fetch, and mutation logic stay in AdminRoleManagementScreen."
+      "notes": "Settings (boards AdminSettings*) on the list-detail pattern: settings pages as navigation and the open page beside them. Areas add their own pages through the app; Team and roles is drawn here. It replaces the Admin roles screen."
+    },
+    {
+      "id": "route_settings_live_controller",
+      "kind": "route",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/SettingsRouteScreen.tsx",
+      "exportName": "SettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Team controller and the settings URL seam; deterministic prop-driven visual coverage remains on route_settings."
+    },
+    {
+      "id": "workspace_team_settings",
+      "kind": "workspace",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/TeamSettingsWorkspace.tsx",
+      "exportName": "TeamSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "TeamSettingsWorkspaceStory",
+        "states": [
+          "team",
+          "role-change"
+        ]
+      },
+      "notes": "Team and roles (board AdminSettingsTeam): the people with an Admin job, what each of the three jobs can do, inviting by user id, and a sheet to change someone's job with a review note."
+    },
+    {
+      "id": "workspace_safety_settings",
+      "kind": "workspace",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetySettingsWorkspace.tsx",
+      "exportName": "SafetySettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SafetySettingsWorkspaceStory",
+        "states": [
+          "owner-edits",
+          "ops-reads"
+        ]
+      },
+      "notes": "Settings → Safety (board AdminSettingsSafety): the steps and who may take them, the rules, the deadlines, the report reasons, the grievance officer and record keeping; only the owner edits."
+    },
+    {
+      "id": "route_safety_settings_live_controller",
+      "kind": "route",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetySettingsRouteScreen.tsx",
+      "exportName": "SafetySettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the safety settings controller for the Settings → Safety page; deterministic visual coverage remains on workspace_safety_settings."
     },
     {
       "id": "route_admin_action_executions",
@@ -337,10 +386,10 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "EventPublishingRouteStory",
         "states": [
-          "canonical-directory"
+          "canonical-detail"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query canonical event, external event, and readiness fetches plus safe event/external publish mutations; preview renders the registered EventPublishingWorkspace with deterministic canonical directory and external supply fixtures in AdminRoutes.stories.tsx."
+      "notes": "The editors the event page's tabs host: a Catch event's canonical editor (Page) or an imported event's source record and takedown (Takedown). The Events directory replaced its directory and External inventory lists; preview renders the registered EventPublishingWorkspace editor in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_event_publishing",
@@ -356,7 +405,6 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "EventPublishingWorkspaceStory",
         "states": [
-          "canonical-directory",
           "canonical-detail"
         ]
       },
@@ -634,6 +682,42 @@
       "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage includes a 30-item independently scrollable candidate queue and fail-closed organizer draft creation."
     },
     {
+      "id": "route_settings_intake",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsWorkspace.tsx",
+      "exportName": "IntakeSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSettingsIntake.stories.tsx",
+        "exportName": "IntakeSettingsStory",
+        "states": [
+          "policies",
+          "limits",
+          "nominators",
+          "launch-cities"
+        ]
+      },
+      "notes": "Settings → Intake: what Intake does on its own (each decision recorded in a dialog with its checklist, switched on only by a reviewed change), limits, who can nominate by message (the add-someone sheet) and launch cities, replacing the Supply Intake policy and nominator panels."
+    },
+    {
+      "id": "route_settings_intake_live_controller",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsRouteScreen.tsx",
+      "exportName": "IntakeSettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the policy and nominator controllers; deterministic visual coverage remains on route_settings_intake."
+    },
+    {
       "id": "workspace_organizer_intake",
       "kind": "workspace",
       "owner": "features/intake/organizer",
@@ -708,10 +792,10 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "OrganizerPublishingRouteStory",
         "states": [
-          "canonical-directory"
+          "canonical-detail"
         ]
       },
-      "notes": "Organizer Publishing route wrapper delegates to OrganizerPublishingWorkspace with admin feedback providers; deterministic preview coverage uses shared sample organizer details in AdminRoutes.stories.tsx."
+      "notes": "The editor the organizer page's Page tab hosts, and the claims review kept under Organizers until the Inbox decides claims. The Organizers directory replaced its directory list; deterministic preview coverage uses shared sample organizer details in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_organizer_publishing",
@@ -727,11 +811,11 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "OrganizerPublishingWorkspaceStory",
         "states": [
-          "canonical-directory",
+          "canonical-detail",
           "blocked-draft"
         ]
       },
-      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; canonical directory rows, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
+      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; the canonical editor, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
     },
     {
       "id": "route_now",
@@ -768,6 +852,181 @@
         ]
       },
       "notes": "Lazy live route wrapper owns the Needs you controller/query seam; deterministic prop-driven visual coverage remains on route_now."
+    },
+    {
+      "id": "route_inbox",
+      "kind": "route",
+      "owner": "features/inbox",
+      "source": "admin/src/features/inbox/ui/InboxScreen.tsx",
+      "exportName": "InboxScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminInbox.stories.tsx",
+        "exportName": "InboxRouteStory",
+        "states": [
+          "oldest-first",
+          "type-chips",
+          "inspector",
+          "journey"
+        ]
+      },
+      "notes": "The Intake inbox: listings, imported events, claims, enquiries, launch access and stuck intake in one oldest-first queue with real totals per scope and type, on CatchWorkspaceHeader and CatchTable, with the selected item beside it on CatchPaneLayout queue: facts on CatchMetaRow, How it got here on the CatchSection timeline, and the decision on CatchDock pane. Ops recommend claims; the owner decides them."
+    },
+    {
+      "id": "route_inbox_live_controller",
+      "kind": "route",
+      "owner": "features/inbox",
+      "source": "admin/src/features/inbox/ui/InboxRouteScreen.tsx",
+      "exportName": "InboxRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the inbox controller/query seam; deterministic prop-driven visual coverage remains on route_inbox."
+    },
+    {
+      "id": "route_organizer_directory",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerDirectoryScreen.tsx",
+      "exportName": "OrganizerDirectoryScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerDirectoryRouteStory",
+        "states": [
+          "all",
+          "views",
+          "chips"
+        ]
+      },
+      "notes": "Organizers: every listed organizer in one CatchTable on CatchPaneLayout wide-table with real totals from adminListOrganizerDirectory; CatchWorkspaceHeader carries the views (all, live, unclaimed, hidden), the city, kind, claim-waiting and Mine chips and search. It replaces the Organizer Publishing directory."
+    },
+    {
+      "id": "route_organizer_page",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerPageScreen.tsx",
+      "exportName": "OrganizerPageScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerPageRouteStory",
+        "states": [
+          "overview",
+          "journey",
+          "upcoming",
+          "money"
+        ]
+      },
+      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview, with CatchMetaRow facts and the CatchSection timeline journey; the Page tab hosts the Organizer Publishing editor for this organizer."
+    },
+    {
+      "id": "route_organizer_records_live_controller",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizersRouteScreen.tsx",
+      "exportName": "OrganizersRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Organizers directory and organizer page controllers and keeps the claims review reachable until the Inbox decides claims; deterministic prop-driven coverage remains on route_organizer_directory and route_organizer_page."
+    },
+    {
+      "id": "route_event_directory",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventDirectoryScreen.tsx",
+      "exportName": "EventDirectoryScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "EventDirectoryRouteStory",
+        "states": [
+          "upcoming",
+          "catch-and-imported"
+        ]
+      },
+      "notes": "Events: Catch and imported events in one CatchTable on CatchPaneLayout wide-table with exact view totals from adminListEventDirectory; each row names its source. It replaces the Event Publishing directory and External inventory."
+    },
+    {
+      "id": "workspace_organizer_events",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventDirectoryScreen.tsx",
+      "exportName": "OrganizerEventsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerEventsWorkspaceStory",
+        "states": [
+          "upcoming"
+        ]
+      },
+      "notes": "One organizer's events, Catch and imported, for the Events tab of the organizer page."
+    },
+    {
+      "id": "route_event_page",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventPageScreen.tsx",
+      "exportName": "EventPageScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "EventPageRouteStory",
+        "states": [
+          "catch-event",
+          "imported-event"
+        ]
+      },
+      "notes": "One event in the CatchPaneLayout reading pattern: a Catch event's facts and bookings with a Page tab hosting the Event Publishing editor, or an imported event's facts, checks and source link."
+    },
+    {
+      "id": "route_event_records_live_controller",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventsRouteScreen.tsx",
+      "exportName": "EventsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Events directory and event page controllers; the old External inventory address opens the directory filtered to imported events."
+    },
+    {
+      "id": "workspace_organizer_events_live_controller",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventsRouteScreen.tsx",
+      "exportName": "OrganizerEventsRouteWorkspace",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live wrapper that reads one organizer's events for the organizer page's Events tab; coverage remains on workspace_organizer_events."
     },
     {
       "id": "route_marketplace",
@@ -809,50 +1068,6 @@
       "notes": "Lazy live route wrapper owns the Marketplace analytics controller/query seam; deterministic prop-driven visual coverage remains on route_marketplace."
     },
     {
-      "id": "route_safety_triage",
-      "kind": "route",
-      "owner": "features/safety",
-      "source": "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
-      "exportName": "SafetyTriageScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "SafetyTriageRouteStory",
-        "states": [
-          "directory",
-          "filters",
-          "open-action",
-          "queue-health",
-          "honest-preview-analytics"
-        ]
-      },
-      "notes": "URL-owned Safety list route backed by an explicit SafetyTriageController fixture. Metric cards use aggregate open counts and disclose returned preview row counts separately. Queue filtering and search apply only to the loaded preview; priority and age distributions are not implemented. Opening a row navigates to a separate encoded target-path route instead of stacking detail below the table."
-    },
-    {
-      "id": "workspace_safety_triage",
-      "kind": "workspace",
-      "owner": "features/safety",
-      "source": "admin/src/features/safety/ui/SafetyTriageScreen.tsx",
-      "exportName": "SafetyTriageWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "SafetyTriageWorkspaceStory",
-        "states": [
-          "case-detail",
-          "assignment",
-          "decision"
-        ]
-      },
-      "notes": "Prop-driven Safety case workspace renders one record at a time with back navigation, evidence, assignment, and existing audited reviewed/dismissed mutations; successful decisions return to the list route."
-    },
-    {
       "id": "route_cross_paths_showcase",
       "kind": "route",
       "owner": "features/cross-paths",
@@ -891,6 +1106,61 @@
         ]
       },
       "notes": "Prop-driven reviewer workspace shows public profile evidence, coarse objective blockers, fingerprint state, and audited approve, hold, or pause decisions."
+    },
+    {
+      "id": "route_safety",
+      "kind": "route",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetyScreen.tsx",
+      "exportName": "SafetyScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SafetyRouteStory",
+        "states": [
+          "open-cases",
+          "case-detail",
+          "launch-access",
+          "account-actions",
+          "appeal"
+        ]
+      },
+      "notes": "Safety in the quiet register (boards AdminSafety and AdminSafetyActions): open cases from every queue, launch access included, due soonest first in a CatchTable on the CatchPaneLayout queue pattern; account actions and appeals as views of the same workspace header. The case beside the queue carries its facts, evidence and the resolve or dismiss decision, and opens the act-on-an-account sheet. It replaces the Safety triage and Launch access screens."
+    },
+    {
+      "id": "workspace_safety_action_sheet",
+      "kind": "workspace",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetyActionSheetWorkspace.tsx",
+      "exportName": "SafetyActionSheetWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SafetyActionSheetStory",
+        "states": [
+          "restrict",
+          "owner-only-steps"
+        ]
+      },
+      "notes": "The act-on-an-account sheet (board AdminSafetyAction) on CatchSheet: warn, restrict, suspend and ban as CatchChoiceTile choices (suspend and ban owner-only), how long, the rule broken from Settings → Safety, the message the person sees, and whether the reporter hears it was handled and whether the person may appeal."
+    },
+    {
+      "id": "route_safety_live_controller",
+      "kind": "route",
+      "owner": "features/safety",
+      "source": "admin/src/features/safety/ui/SafetyRouteScreen.tsx",
+      "exportName": "SafetyRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Safety triage, launch access, account action, settings and action-sheet controllers and the URL seam; deterministic prop-driven visual coverage remains on route_safety."
     },
     {
       "id": "shared_admin_profile_photo_grid",
@@ -4441,6 +4711,40 @@
         ]
       },
       "notes": "Reviewed private scoring, grounded draft preparation and manual copy; no messaging provider."
+    },
+    {
+      "id": "route_support",
+      "kind": "route",
+      "owner": "features/support",
+      "source": "admin/src/features/support/ui/SupportScreen.tsx",
+      "exportName": "SupportScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SupportRouteStory",
+        "states": [
+          "open-conversations",
+          "conversation"
+        ]
+      },
+      "notes": "Support (board AdminSupport) in the quiet register: guest and organizer conversations from WhatsApp, Instagram and logged email, longest waiting first, in a CatchTable on the queue pattern with Open, Mine, Waiting on them and Closed views. The conversation beside it shows who it is, how long they have waited, its links to a booking, money issue or safety case, the messages, saved replies, and recording a reply or note. The WhatsApp reply trial stays reachable at /support/trial."
+    },
+    {
+      "id": "route_support_live_controller",
+      "kind": "route",
+      "owner": "features/support",
+      "source": "admin/src/features/support/ui/SupportRouteScreen.tsx",
+      "exportName": "SupportRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the support inbox controller and the conversation URL; deterministic prop-driven visual coverage remains on route_support."
     },
     {
       "id": "workspace_catch_whatsapp_trial",

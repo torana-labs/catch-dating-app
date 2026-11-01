@@ -10,13 +10,8 @@
   },
   "targets": [
     {
-      "source": "admin/src/features/access/controllers/useAccessReviewController.ts",
-      "test": "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
-      "test": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+      "source": "admin/src/features/safety/controllers/useAccessReviewController.ts",
+      "test": "admin/src/features/safety/controllers/useAccessReviewController.test.tsx",
       "status": "required"
     },
     {
@@ -47,6 +42,11 @@
     {
       "source": "admin/src/features/events/controllers/useEventDirectoryController.ts",
       "test": "admin/src/features/events/controllers/useEventDirectoryController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/events/controllers/useEventPageController.ts",
+      "test": "admin/src/features/events/controllers/useEventPageController.test.tsx",
       "status": "required"
     },
     {
@@ -212,11 +212,6 @@
     {
       "source": "website/src/features/claims/useInstantClaimController.ts",
       "test": "website/src/features/claims/sections/InstantClaimSection.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "website/src/features/claims/useListingClaimController.ts",
-      "test": "website/src/features/claims/useClaimRequestMutation.test.tsx",
       "status": "required"
     },
     {
@@ -392,6 +387,21 @@
     {
       "source": "admin/src/features/support/controllers/useSupportInboxController.ts",
       "test": "admin/src/features/support/controllers/useSupportInboxController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/safety/controllers/useSafetyActionSheetController.ts",
+      "test": "admin/src/features/safety/controllers/useSafetyActionSheetController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/settings/controllers/useTeamController.ts",
+      "test": "admin/src/features/settings/controllers/useTeamController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/inbox/controllers/useInboxController.ts",
+      "test": "admin/src/features/inbox/controllers/useInboxController.test.tsx",
       "status": "required"
     }
   ]

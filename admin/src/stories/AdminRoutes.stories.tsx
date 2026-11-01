@@ -8,15 +8,15 @@ import {
 import type {
   AccessReviewController,
   AccessReviewFormState,
-} from "../features/access/controllers/useAccessReviewController";
-import {AccessReviewWorkspace} from "../features/access/ui/AccessReviewScreen";
-import {
-  buildAdminRoleScopeContract,
-  type AdminRoleAssignmentStatusFilter,
-  type AdminRoleManagementController,
-} from "../features/admin-roles/controllers/useAdminRoleManagementController";
-import {AdminRoleManagementWorkspace} from "../features/admin-roles/ui/AdminRoleManagementScreen";
-import {adminRolePolicyList} from "../features/admin-roles/controllers/adminRolePolicies";
+} from "../features/safety/controllers/useAccessReviewController";
+import {PeopleScreen} from "../features/people/ui/PeopleScreen";
+import {SettingsScreen} from "../features/settings/ui/SettingsScreen";
+import {TeamSettingsWorkspace} from "../features/settings/ui/TeamSettingsWorkspace";
+import type {TeamController} from "../features/settings/controllers/useTeamController";
+import {SafetySettingsWorkspace} from "../features/safety/ui/SafetySettingsWorkspace";
+import type {SafetySettingsController} from "../features/safety/controllers/useSafetySettingsController";
+import {SupportScreen} from "../features/support/ui/SupportScreen";
+import type {SupportInboxController} from "../features/support/controllers/useSupportInboxController";
 import type {AdminActionExecutionsController} from
   "../features/operations/controllers/useAdminActionExecutionsController";
 import {AdminActionExecutionsWorkspace} from
@@ -86,7 +86,10 @@ import {
 import {buildNowModel} from "../features/now/controllers/useNowController";
 import {NowScreen} from "../features/now/ui/NowScreen";
 import type {SafetyTriageController} from "../features/safety/controllers/useSafetyTriageController";
-import {SafetyTriageWorkspace} from "../features/safety/ui/SafetyTriageScreen";
+import {SafetyScreen} from "../features/safety/ui/SafetyScreen";
+import {SafetyActionSheetWorkspace} from "../features/safety/ui/SafetyActionSheetWorkspace";
+import type {AccountSafetyController} from "../features/safety/controllers/useAccountSafetyController";
+import type {SafetyActionSheetController} from "../features/safety/controllers/useSafetyActionSheetController";
 import {
   type AccessApplicationDecision,
   type AdminOrganizerDetails,
@@ -796,62 +799,6 @@ const adminRoleAssignmentRows: AdminRoleAssignmentRow[] = [
     updatedByUid: "admin-owner",
   },
 ];
-const adminRoleController: AdminRoleManagementController = {
-  assignmentFilter: "active",
-  assignmentGeneratedAt: "2026-07-03T09:55:00.000Z",
-  assignmentRows: adminRoleAssignmentRows,
-  assignmentVisibleRows: adminRoleAssignmentRows,
-  assignmentQuery: "",
-  assignmentCapped: false,
-  highRiskConfirmed: false,
-  hasHighRiskChange: false,
-  isAssignmentListLoading: false,
-  isLoading: false,
-  isSaving: false,
-  note: "",
-  roleDiff: {added: [], removed: []},
-  rolePolicies: adminRolePolicyList,
-  saveReceipt: null,
-  refreshAssignments: async () => {
-    noop();
-  },
-  selectedRoles: ["adminOwner"],
-  selectedTargetUid: "admin-owner",
-  selectedUnavailable: false,
-  selectedUser: adminRoleSelectedUser,
-  scopeContract: buildAdminRoleScopeContract("admin-owner", "admin-owner"),
-  targetUid: "admin-owner",
-  validationIssue: "Change at least one admin role before saving.",
-  load: async (_nextTargetUid?: string) => {
-    noop();
-    return true;
-  },
-  save: async () => {
-    noop();
-    return false;
-  },
-  selectAssignment: (_row: AdminRoleAssignmentRow) => {
-    noop();
-  },
-  setAssignmentFilter: (_value: AdminRoleAssignmentStatusFilter) => {
-    noop();
-  },
-  setAssignmentQuery: (_value: string) => {
-    noop();
-  },
-  setHighRiskConfirmed: (_value: boolean) => {
-    noop();
-  },
-  setNote: (_value: string) => {
-    noop();
-  },
-  setTargetUid: (_value: string) => {
-    noop();
-  },
-  toggleRole: (_role: AdminRoleClaim, _checked: boolean) => {
-    noop();
-  },
-};
 const dataQualityRows: DataQualityRow[] = [
   {
     id: "overview-club-claims",
@@ -1302,6 +1249,40 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const storyPeople = [
+  {uid: "user_829", name: "Arjun M.", phone: "+91 ••••• 41120", city: "Mumbai", deleted: false},
+  {uid: "user_830", name: "Arjun K.", phone: "+91 ••••• 22301", city: "Pune", deleted: false},
+];
+const storyTeamMembers = [
+  {targetUid: "owner-1", email: "suvrat@catch.local", displayName: "Suvrat Garg", disabled: false,
+    roles: ["adminOwner" as const], assignmentPath: "adminRoleAssignments/owner-1", status: "active" as const,
+    updatedAt: null, updatedByUid: null},
+  {targetUid: "ops-1", email: "dev@catch.local", displayName: "Dev Iyer", disabled: false,
+    roles: ["support" as const], assignmentPath: "adminRoleAssignments/ops-1", status: "active" as const,
+    updatedAt: null, updatedByUid: null},
+];
+const storyTeam: TeamController = {
+  members: storyTeamMembers, selected: storyTeamMembers[1], selectedUid: "ops-1", job: "sales",
+  note: "Moving to sales from Monday.", loadState: "ready", isSaving: false, validationIssue: null,
+  setJob: () => undefined, setNote: () => undefined, save: async () => true,
+};
+const storySafetySettings: SafetySettingsController = {
+  snapshot: {
+    settings: {
+      reasons: [
+        {code: "harassment", label: "Harassment", severe: false, takedown: false, active: true},
+        {code: "intimate_images", label: "Sharing intimate images", severe: true, takedown: true, active: true},
+        {code: "spam", label: "Spam", severe: false, takedown: false, active: false},
+      ],
+      restrictOnSevereReport: true, organizerBlockLists: true, organizerReports: true,
+      updatedAtMillis: null, updatedByUid: null,
+    },
+    deadlines: {acknowledge: "immediately", firstLookHours: 24, resolveDays: 15, takedownHours: 24},
+    stepRoles: {warn: "ops", restrict: "ops", suspend: "owner", ban: "owner"},
+    retentionDaysAfterDeletion: 180,
+  },
+  loadState: "ready", isSaving: false, canEdit: true, save: async () => true,
+};
 const noop = () => {
   // Storybook preview only; route-state mutation is covered by app/controller tests.
 };
@@ -1395,17 +1376,6 @@ const renderAdminActionExecutionsWorkspace = () => (
   </AdminWorkspace>
 );
 
-const renderAccessReviewWorkspace = () => (
-  <AdminWorkspace>
-    <AccessReviewWorkspace controller={accessController} />
-  </AdminWorkspace>
-);
-
-const renderEventPublishingWorkspace = () => (
-  <AdminWorkspace>
-    <EventPublishingWorkspace controller={eventController} />
-  </AdminWorkspace>
-);
 
 const renderEventPublishingDetail = () => (
   <AdminWorkspace>
@@ -1446,7 +1416,7 @@ const renderMarketingOpsWorkspace = () => (
 
 const renderOrganizerPublishingWorkspace = () => (
   <AdminWorkspace>
-    <OrganizerPublishingWorkspace controller={organizerPublishingController} />
+    <OrganizerPublishingWorkspace controller={{...organizerPublishingController, view: "detail"}} />
   </AdminWorkspace>
 );
 
@@ -1523,36 +1493,6 @@ const renderCrossPathsShowcaseWorkspace = () => (
   </AdminWorkspace>
 );
 
-const renderAdminRoleWorkspace = () => (
-  <AdminWorkspace>
-    <AdminRoleManagementWorkspace controller={adminRoleController} />
-  </AdminWorkspace>
-);
-
-const safetyListController: SafetyTriageController = {
-  ...safetyController,
-  assignmentValidationIssue: "Select a safety queue item before assigning.",
-  decisionValidationIssue: "Select a safety queue item before deciding.",
-  selected: null,
-  selectedDetail: null,
-};
-
-const renderSafetyTriageList = () => (
-  <AdminWorkspace>
-    <SafetyTriageWorkspace controller={safetyListController} view="list" />
-  </AdminWorkspace>
-);
-
-const renderSafetyTriageWorkspace = () => (
-  <AdminWorkspace>
-    <SafetyTriageWorkspace
-      controller={safetyController}
-      onBackToList={noop}
-      view="detail"
-    />
-  </AdminWorkspace>
-);
-
 // Shared preview clock keeps queue ages at their reviewed capture date.
 const installReviewedQueueClock = () => {
   const realNow = Date.now;
@@ -1584,55 +1524,101 @@ const installIntakeBaselineClock = () => {
   };
 };
 
-export const SafetyTriageRouteStory: Story = {
+const storySafetyReasons: SafetyActionSheetController["reasons"] = [
+  {code: "harassment", label: "Harassment", severe: false, takedown: false,
+    active: true},
+  {code: "unwanted_contact", label: "Unwanted contact", severe: false,
+    takedown: false, active: true},
+  {code: "threats", label: "Threats of violence", severe: true,
+    takedown: false, active: true},
+];
+const storyAccountActions: AccountSafetyController["items"] = [
+  {actionId: "story-vikram", uid: "user_412", displayName: "Vikram S.",
+    kind: "ban", reasonCode: "unwanted_contact",
+    reasonLabel: "Unwanted contact",
+    messageToUser: "You kept contacting people after they asked you to stop.",
+    durationDays: null, startsAtMillis: Date.parse("2026-10-12T10:00:00Z"),
+    endsAtMillis: null, status: "active", decidedByUid: "sample-owner",
+    decidedByRole: "owner", automatic: false, appealable: true,
+    caseTargetPaths: ["reports/report-1"],
+    appeal: {status: "open", text: "I only messaged to return her jacket.",
+      submittedAtMillis: Date.parse("2026-10-30T11:02:00Z"),
+      reviewerUid: null, decidedAtMillis: null, decisionNote: null},
+    bookings: {cancelled: 1, needsOrganizer: 1, failed: 0},
+    blockedSignupAttempts: 1, canReviewAppeal: true},
+  {actionId: "story-arjun", uid: "user_829", displayName: "Arjun M.",
+    kind: "restrict", reasonCode: "harassment", reasonLabel: "Harassment",
+    messageToUser: "Two messages you sent broke our rule on harassment.",
+    durationDays: 7, startsAtMillis: Date.parse("2026-11-01T09:00:00Z"),
+    endsAtMillis: Date.parse("2026-11-08T09:00:00Z"), status: "active",
+    decidedByUid: "sample-ops", decidedByRole: "ops", automatic: false,
+    appealable: true, caseTargetPaths: [], appeal: null,
+    bookings: {cancelled: 0, needsOrganizer: 0, failed: 0},
+    blockedSignupAttempts: 0, canReviewAppeal: false},
+];
+const storyAccountSafety: AccountSafetyController = {
+  view: "active", kind: "all", items: storyAccountActions,
+  counts: {all: 2, warn: 0, restrict: 1, suspend: 0, ban: 1},
+  selected: storyAccountActions[0], loadState: "ready", isMutating: false,
+  setView: noop, setKind: noop, select: noop,
+  take: async () => true, lift: async () => true, decide: async () => true,
+  refresh: noop,
+};
+const storySheet = (open: boolean): SafetyActionSheetController => ({
+  target: open ? {uid: "user_829", displayName: "Arjun M.",
+    caseTargetPath: "reports/report-1", caseTitle: "Harassment in chat",
+    reasonCode: "harassment"} : null,
+  draft: {kind: "restrict", durationDays: 7, reasonCode: "harassment",
+    messageToUser: "Something you did broke our rule on harassment. You " +
+      "can't send messages or post in group chats for 7 days.",
+    notifyReporter: true, appealable: true,
+    note: "Two harassing messages in the Padel mixer group."},
+  reasons: storySafetyReasons, error: null,
+  open: noop, close: noop, setKind: noop, setDuration: noop,
+  setReason: noop, setMessage: noop, setNote: noop,
+  setNotifyReporter: noop, setAppealable: noop, submit: async () => true,
+});
+
+export const SafetyRouteStory: Story = {
   name: "Safety",
   beforeEach: installReviewedQueueClock,
   parameters: {
     catchComponent: {
-      id: "route_safety_triage",
-      states: [
-        "directory",
-        "filters",
-        "open-action",
-        "queue-health",
-        "honest-preview-analytics",
-      ],
+      id: "route_safety",
+      states: ["open-cases", "case-detail", "launch-access",
+        "account-actions", "appeal"],
     },
   },
-  render: renderSafetyTriageList,
+  render: () => (
+    <SafetyScreen
+      access={accessController}
+      actions={storyAccountSafety}
+      caseKind="all"
+      job="ops"
+      nowMs={Date.parse("2026-07-14T12:00:00.000Z")}
+      onCaseKind={noop}
+      onSelectAction={noop}
+      onSelectCase={noop}
+      onViewChanged={noop}
+      selectedCaseKey={safetySelected?.targetPath ?? null}
+      sheet={storySheet(false)}
+      triage={safetyController}
+      view="open"
+    />
+  ),
 };
 
-export const SafetyTriageWorkspaceStory: Story = {
-  name: "Safety Workspace",
+export const SafetyActionSheetStory: Story = {
+  name: "Safety action sheet",
   parameters: {
     catchComponent: {
-      id: "workspace_safety_triage",
-      states: ["case-detail", "assignment", "decision"],
+      id: "workspace_safety_action_sheet",
+      states: ["restrict", "owner-only-steps"],
     },
   },
-  render: renderSafetyTriageWorkspace,
-};
-
-export const AccessReviewRouteStory: Story = {
-  name: "Launch access",
-  parameters: {
-    catchComponent: {
-      id: "route_access_review",
-      states: ["capped-directory"],
-    },
-  },
-  render: renderAccessReviewWorkspace,
-};
-
-export const AccessReviewWorkspaceStory: Story = {
-  name: "Launch access workspace",
-  parameters: {
-    catchComponent: {
-      id: "workspace_access_review",
-      states: ["capped-directory"],
-    },
-  },
-  render: renderAccessReviewWorkspace,
+  render: () => (
+    <SafetyActionSheetWorkspace isSaving={false} job="ops" sheet={storySheet(true)} />
+  ),
 };
 
 export const DataQualityRouteStory: Story = {
@@ -1662,10 +1648,10 @@ export const EventPublishingRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_event_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
-  render: renderEventPublishingWorkspace,
+  render: renderEventPublishingDetail,
 };
 
 export const EventPublishingWorkspaceStory: Story = {
@@ -1673,10 +1659,10 @@ export const EventPublishingWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_event_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
-  render: renderEventPublishingWorkspace,
+  render: renderEventPublishingDetail,
 };
 
 export const EventPublishingDetailStory: Story = {
@@ -1799,7 +1785,7 @@ export const OrganizerPublishingRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_organizer_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
   render: renderOrganizerPublishingWorkspace,
@@ -1810,7 +1796,7 @@ export const OrganizerPublishingWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_organizer_publishing",
-      states: ["canonical-directory"],
+      states: ["canonical-detail"],
     },
   },
   render: renderOrganizerPublishingWorkspace,
@@ -1915,26 +1901,54 @@ export const CrossPathsShowcaseWorkspaceStory: Story = {
   render: renderCrossPathsShowcaseWorkspace,
 };
 
-export const AdminRoleManagementRouteStory: Story = {
-  name: "Admin Roles",
+export const PeopleRouteStory: Story = {
+  name: "People",
   parameters: {
-    catchComponent: {
-      id: "route_admin_role_management",
-      states: ["role-assignment-detail"],
-    },
+    catchComponent: {id: "route_people", states: ["search-results", "person"]},
   },
-  render: renderAdminRoleWorkspace,
+  render: () => (
+    <PeopleScreen
+      onOpenSafety={noop}
+      search={{
+        draft: "Arjun", submitted: "Arjun", loadState: "ready",
+        result: {kind: "name", rows: storyPeople}, rows: storyPeople,
+        selected: storyPeople[0], setDraft: noop, search: noop, select: noop,
+      }}
+    />
+  ),
 };
 
-export const AdminRoleManagementWorkspaceStory: Story = {
-  name: "Admin Roles Workspace",
+export const SettingsRouteStory: Story = {
+  name: "Settings · Team and roles",
   parameters: {
-    catchComponent: {
-      id: "workspace_admin_role_management",
-      states: ["role-assignment-detail"],
-    },
+    catchComponent: {id: "route_settings", states: ["team", "role-change"]},
   },
-  render: renderAdminRoleWorkspace,
+  render: () => (
+    <SettingsScreen
+      onSelectPage={noop}
+      pages={[{id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact"},
+        {id: "team", title: "Team and roles", subtitle: "Who has an Admin job"}]}
+      selectedPage="team"
+    >
+      <TeamSettingsWorkspace onClosePerson={noop} onOpenPerson={noop} team={storyTeam} />
+    </SettingsScreen>
+  ),
+};
+
+export const TeamSettingsWorkspaceStory: Story = {
+  name: "Team and roles",
+  parameters: {
+    catchComponent: {id: "workspace_team_settings", states: ["team", "role-change"]},
+  },
+  render: () => <TeamSettingsWorkspace onClosePerson={noop} onOpenPerson={noop} team={storyTeam} />,
+};
+
+export const SafetySettingsWorkspaceStory: Story = {
+  name: "Settings · Safety",
+  parameters: {
+    catchComponent: {id: "workspace_safety_settings", states: ["owner-edits", "ops-reads"]},
+  },
+  render: () => <SafetySettingsWorkspace settings={storySafetySettings} />,
 };
 
 export const AdminActionExecutionsRouteStory: Story = {
@@ -1957,6 +1971,48 @@ export const AdminActionExecutionsWorkspaceStory: Story = {
     },
   },
   render: renderAdminActionExecutionsWorkspace,
+};
+
+const storySupportInbox: SupportInboxController = {
+  view: "open", audience: null,
+  items: [
+    {conversationId: `whatsapp-${"a1".padEnd(64, "0")}`, channel: "whatsapp", contactLabel: "+91 ••••• 01234",
+      displayName: "Rhea Kapoor", audience: "guest", subject: "I paid but have no ticket", status: "open", ownerUid: null,
+      waitingSinceMillis: Date.parse("2026-11-01T10:00:00Z"), lastMessageAtMillis: Date.parse("2026-11-01T10:00:00Z"),
+      lastMessagePreview: "I paid but have no ticket", linkCount: 1},
+    {conversationId: `whatsapp-${"a4".padEnd(64, "0")}`, channel: "whatsapp", contactLabel: "+91 ••••• 99881",
+      displayName: "Meher Bhatt", audience: "organizer", subject: "A payout is not showing in Razorpay", status: "open",
+      ownerUid: "sample-owner", waitingSinceMillis: Date.parse("2026-10-31T10:00:00Z"),
+      lastMessageAtMillis: Date.parse("2026-10-31T10:00:00Z"), lastMessagePreview: "Last week's payout", linkCount: 0},
+  ],
+  counts: {open: 2, mine: 1, waitingOnThem: 1},
+  selectedId: `whatsapp-${"a1".padEnd(64, "0")}`,
+  detail: {
+    conversation: {conversationId: `whatsapp-${"a1".padEnd(64, "0")}`, channel: "whatsapp", contactLabel: "+91 ••••• 01234",
+      displayName: "Rhea Kapoor", audience: "guest", subject: "I paid but have no ticket", status: "open", ownerUid: null,
+      waitingSinceMillis: Date.parse("2026-11-01T10:00:00Z"), lastMessageAtMillis: Date.parse("2026-11-01T10:00:00Z"),
+      lastMessagePreview: "I paid but have no ticket", linkCount: 1, contactAddress: "+919800001234", uid: "user_204",
+      organizerId: null, links: [{kind: "payment", path: "publicEventPayments/sample-pay-rhea", label: "₹1,500 captured, no booking"}]},
+    messages: [{messageId: "m1", direction: "inbound", text: "Hi, I paid ₹1,500 for Takeoff on Saturday but I have no ticket.",
+      authorUid: null, atMillis: Date.parse("2026-11-01T10:00:00Z"), deliveryState: "received"}],
+  },
+  savedReplies: [{replyId: "sample-reply-looking", title: "Looking into it",
+    body: "Sorry about that. I'm looking at it now and will reply here.", active: true, updatedAtMillis: 0}],
+  loadState: "ready", detailState: "ready", isSaving: false,
+  setView: noop, setAudience: noop, select: noop,
+  reply: async () => true, addNote: async () => true, logEmail: async () => true,
+  assign: async () => true, setStatus: async () => true, setLinks: async () => true, saveReply: async () => true,
+};
+
+export const SupportRouteStory: Story = {
+  name: "Support",
+  parameters: {
+    catchComponent: {id: "route_support", states: ["open-conversations", "conversation"]},
+  },
+  render: () => (
+    <SupportScreen detailOpen inbox={storySupportInbox} nowMs={Date.parse("2026-11-01T12:00:00Z")}
+      onOpenTrial={noop} onSelect={noop} userUid="sample-owner" />
+  ),
 };
 
 export const NowRouteStory: Story = {

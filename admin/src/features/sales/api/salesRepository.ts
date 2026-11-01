@@ -1,4 +1,4 @@
-import {validateAdminCallableRequest, validateAdminCallableResponse} from
+import {loadAdminCallableValidators} from
   "../../../generated/validators/adminCallableValidators";
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
@@ -24,12 +24,14 @@ import type {
 
 type MutationReceipt = {requestId: string; revision: number};
 
-function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
+async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
   // Firebase encodes undefined object fields as null. Optional request fields
   // must remain absent; explicit null values still represent intentional clears.
   const request = Object.fromEntries(
     Object.entries(payload).filter(([, value]) => value !== undefined)
   ) as Request;
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(name);
   validateAdminCallableRequest(name, request);
   return httpsCallable<Request, Response>(functions, name)(request).then(
     (result) => {

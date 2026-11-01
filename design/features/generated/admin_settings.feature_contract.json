@@ -1,0 +1,641 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_settings.feature.json",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:65a805e7d76b79fc6aa33b5820e7f1e23df3c0967e5fc80618833ad5dd54964f",
+  "resolvedDigest": "sha256:9b8f0bc8e862e725f716f0f7dec0fd992ada54dcabbb4291c40da935b3aba0a2",
+  "feature": {
+    "id": "feature.admin_settings",
+    "name": "Admin Settings",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Lists the settings pages and opens one beside them: Team and roles (three jobs, invite by user id, audited role changes) and Settings → Safety (rules, reasons, deadlines; owner edits)."
+  },
+  "coverage": {
+    "surfaces": 3,
+    "states": 5,
+    "scenarios": 5,
+    "actionCases": 6,
+    "actions": 5,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 3,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_settings",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_settings"
+      },
+      "actionScope": {
+        "included": "Opening a settings page, opening a team member or inviting by user id, choosing their job and saving it with a review note.",
+        "excluded": [
+          "Other areas' settings pages are drawn by those areas."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "team",
+            "language": "typescript",
+            "file": "admin/src/features/settings/controllers/useTeamController.ts",
+            "symbol": "useTeamController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/settings/ui/SettingsScreen.tsx",
+            "symbol": "SettingsScreen"
+          },
+          {
+            "id": "workspace",
+            "language": "typescript",
+            "file": "admin/src/features/settings/ui/TeamSettingsWorkspace.tsx",
+            "symbol": "TeamSettingsWorkspace"
+          }
+        ],
+        "componentContracts": [
+          "route_settings",
+          "workspace_team_settings"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListAdminRoleAssignments",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetAdminUserRoles",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminSetAdminUserRoles",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "team": [
+            "admin/src/features/settings/controllers/useTeamController.test.tsx"
+          ],
+          "role-change": [
+            "admin/src/features/settings/controllers/useTeamController.test.tsx",
+            "admin/src/app/App.mutationSession.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 3,
+        "actions": 3,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 2,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "save": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "open_settings_page",
+          "owner": "screen",
+          "codeValue": "onSelectPage",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "page"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "team"
+              ]
+            }
+          ],
+          "description": "Opens a settings page beside the list.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_team_member",
+          "owner": "workspace",
+          "codeValue": "onOpenPerson",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "uid"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "role-change"
+              ]
+            }
+          ],
+          "description": "Opens someone's job, or invites them by user id.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_role_change",
+          "owner": "team",
+          "codeValue": "save",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "targetUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "admin.role_change_saved"
+            }
+          ],
+          "description": "Saves the chosen job with a review note.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "team",
+          "stateId": "team",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "save": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_settings/SettingsRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/settings/controllers/useTeamController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "save": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_settings_page",
+                  "open_team_member"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "save_role_change"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "role_change",
+          "stateId": "role-change",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "save": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_settings/SettingsRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/settings/controllers/useTeamController.test.tsx",
+              "admin/src/app/App.mutationSession.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "ready",
+              "dimensions": {
+                "save": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "save_role_change"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_settings_page",
+                  "open_team_member"
+                ]
+              }
+            },
+            {
+              "id": "save_pending_frozen_workspace",
+              "dimensions": {
+                "save": "pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "save_role_change",
+                  "open_team_member"
+                ],
+                "notAllowed": [
+                  "open_settings_page"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_settings",
+          "source": "admin/src/features/settings/ui/SettingsScreen.tsx",
+          "exportName": "SettingsScreen"
+        },
+        "components": [
+          {
+            "id": "route_settings",
+            "kind": "route",
+            "source": "admin/src/features/settings/ui/SettingsScreen.tsx",
+            "exportName": "SettingsScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "SettingsRouteStory",
+              "states": [
+                "team",
+                "role-change"
+              ]
+            }
+          },
+          {
+            "id": "workspace_team_settings",
+            "kind": "workspace",
+            "source": "admin/src/features/settings/ui/TeamSettingsWorkspace.tsx",
+            "exportName": "TeamSettingsWorkspace",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "TeamSettingsWorkspaceStory",
+              "states": [
+                "team",
+                "role-change"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_settings/SettingsRouteStory"
+        ]
+      }
+    },
+    {
+      "id": "admin_settings_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_settings_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query and URL seam for the prop-driven actions.",
+        "excluded": [
+          "Deterministic visual state remains on the prop-driven surface."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/settings/ui/SettingsRouteScreen.tsx",
+            "symbol": "SettingsRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_settings_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListAdminRoleAssignments",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/settings/controllers/useTeamController.test.tsx",
+            "admin/src/app/App.mutationSession.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/settings/controllers/useTeamController.test.tsx",
+            "admin/src/app/App.mutationSession.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 2,
+        "scenarios": 2,
+        "actionCases": 2,
+        "actions": 1,
+        "captures": 0,
+        "previews": 0,
+        "testFiles": 2,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "render_live_route",
+          "owner": "route",
+          "codeValue": "SettingsRouteScreen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Renders the prop-driven screen from its live controller.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "resolved"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/settings/controllers/useTeamController.test.tsx",
+              "admin/src/app/App.mutationSession.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "resolved",
+              "dimensions": {
+                "boundary": "resolved"
+              },
+              "actions": {
+                "enabled": [
+                  "render_live_route"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/settings/controllers/useTeamController.test.tsx",
+              "admin/src/app/App.mutationSession.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading",
+              "dimensions": {
+                "boundary": "loading"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "render_live_route"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_settings_live_controller",
+          "source": "admin/src/features/settings/ui/SettingsRouteScreen.tsx",
+          "exportName": "SettingsRouteScreen"
+        },
+        "components": [
+          {
+            "id": "route_settings_live_controller",
+            "kind": "route",
+            "source": "admin/src/features/settings/ui/SettingsRouteScreen.tsx",
+            "exportName": "SettingsRouteScreen",
+            "storybook": {
+              "status": "not-required",
+              "states": [
+                "live-query-wrapper",
+                "route-lazy-boundary"
+              ]
+            }
+          }
+        ],
+        "previews": []
+      }
+    },
+    {
+      "id": "admin_safety_settings_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_safety_settings_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query and URL seam for the prop-driven actions.",
+        "excluded": [
+          "Deterministic visual state remains on the prop-driven surface."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/safety/ui/SafetySettingsRouteScreen.tsx",
+            "symbol": "SafetySettingsRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_safety_settings_live_controller"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetSafetySettings",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminUpdateSafetySettings",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/safety/controllers/useSafetySettingsController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 1,
+        "scenarios": 1,
+        "actionCases": 1,
+        "actions": 1,
+        "captures": 0,
+        "previews": 0,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "render_live_route",
+          "owner": "route",
+          "codeValue": "SafetySettingsRouteScreen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Renders the prop-driven screen from its live controller.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "kind": "route_state",
+          "status": "not-required",
+          "dimensions": {
+            "boundary": "resolved"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "admin/src/features/safety/controllers/useSafetySettingsController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "resolved",
+              "dimensions": {
+                "boundary": "resolved"
+              },
+              "actions": {
+                "enabled": [
+                  "render_live_route"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_safety_settings_live_controller",
+          "source": "admin/src/features/safety/ui/SafetySettingsRouteScreen.tsx",
+          "exportName": "SafetySettingsRouteScreen"
+        },
+        "components": [
+          {
+            "id": "route_safety_settings_live_controller",
+            "kind": "route",
+            "source": "admin/src/features/safety/ui/SafetySettingsRouteScreen.tsx",
+            "exportName": "SafetySettingsRouteScreen",
+            "storybook": {
+              "status": "not-required",
+              "states": [
+                "live-query-wrapper"
+              ]
+            }
+          }
+        ],
+        "previews": []
+      }
+    }
+  ]
+}
