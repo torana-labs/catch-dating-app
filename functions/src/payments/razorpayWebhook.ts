@@ -14,6 +14,8 @@ import {
   razorpayWebhookSecret,
   verifyRazorpayWebhookSignature,
 } from "./razorpay";
+import {markBillPaidFromLink} from "../money/organizerBills";
+import {razorpayBillPaymentLinks} from "../money/billPaymentLinks";
 import {
   assertRazorpayOrderOwnership,
   razorpayRuntimeProject,
@@ -76,7 +78,32 @@ export async function razorpayWebhookHandler(
     return;
   }
 
+  if (event.event === "payment_link.paid") {
+    // An organizer paying Catch's bill; the bill is read back from Razorpay.
+    const linkId = paymentLinkId(event);
+    const projectId = (deps.runtimeProjectId ?? razorpayRuntimeProject)();
+    await markBillPaidFromLink({db: () => db, now: Date.now,
+      links: () => razorpayBillPaymentLinks(deps.createClient(), projectId)},
+    linkId, projectId);
+    return;
+  }
+
   // Other event types (e.g. order.paid, refund.*) are not acted on here.
+}
+
+/**
+ * Reads the payment link id from a payment_link.paid event.
+ * @param {RazorpayWebhookEvent} event Parsed webhook event.
+ * @return {string} Payment link id.
+ */
+function paymentLinkId(event: RazorpayWebhookEvent): string {
+  const entity = event.payload?.payment_link?.entity as
+    Record<string, unknown> | undefined;
+  const id = entity?.id;
+  if (typeof id !== "string" || !/^plink_[A-Za-z0-9]{1,40}$/u.test(id)) {
+    throw new Error("Razorpay webhook payment link id was missing.");
+  }
+  return id;
 }
 
 /**
@@ -234,6 +261,7 @@ interface RazorpayWebhookEvent {
   event: string;
   payload: {
     payment?: {entity?: unknown};
+    payment_link?: {entity?: unknown};
   };
 }
 

@@ -4459,6 +4459,40 @@ entity on `payments`, `publicEventPayments`, `organizerEventOfferPayments` and
 `organizerFormPayments`. It is written once, when the capture is first observed
 with a reported fee; refunds stay in each record's existing refund fields.
 
+## Organizer Bills And Nominator Credit
+
+`organizerBills/{organizerId}_{YYYY-MM}` is Catch's monthly bill to one
+organizer, made from payments into the organizer's own account (hostCollected)
+captured in that India-time calendar month. Commission uses each payment's
+frozen `routing.commercialTerms` (or the organizer's current terms when none was
+frozen), payments before the trial ends (trial days from the first event in
+`organizerGrowthFacts`) are free, and the month's total is capped by the current
+terms. GST is added only while `moneySettings/platform.settings.gstRegistered`
+is on. A bill is `toSend`, `sent` (overdue past `dueAtMillis`), `paid`,
+`writtenOff` or `free`; regeneration rewrites only `toSend` and `free` bills.
+Sending takes the next number of `moneyInvoiceCounters/{financialYear}`, one
+unbroken sequence per April–March year (`2026-27/031`). All are server-only and
+reached through `adminManageOrganizerBills` and `adminManageMoneySettings`.
+
+`nominatorCredits/{billId}` is written in the transaction that marks a bill
+paid: the organizer's first nominator earns the credit rate on what was paid
+before GST, when their role earns credit, the organizer claimed within the
+lapse window and the bill falls within the credit months from the organizer's
+first paid bill. Entries move `owed` → `approved` → `paid` through
+`adminManageNominatorCredits`.
+
+`platformCosts/{YYYY-MM}_{category}` holds one month's cost per category
+(`whatsapp`, `ai`, `cloud`, `sms`, `ads_meta`, `ads_google`, `other`). The owner
+enters `manual` rows through `adminManagePlatformCosts`; `meta_api` and
+`google_ads_api` rows come from the ad platforms and cannot be edited by hand.
+Without a `whatsapp` row, Finance uses the reserved cost of that month's
+`eventAssistanceWhatsappDispatches`, an upper bound rather than Meta's invoice.
+
+`moneyIssueResolutions/{base64url(issueId)}` records how Admin Money resolved
+an issue (confirmed booking or closed), with the record's status at that time;
+the issue reopens when the record moves to another status. Server-only, through
+`adminManagePaymentIssues`.
+
 `organizerTeamMemberships` owns active owner and manager seats. Legacy
 `organizerHostClaims` remains only long enough to support released club callables;
 it is not organizer claim authority.

@@ -156,6 +156,30 @@ import {
   supplyNominatorDocumentSchema,
   organizerGrowthFactsDocumentSchema,
   organizerGrowthEventSchema,
+  organizerBillDocumentSchema,
+  moneySettingsDocumentSchema,
+  nominatorCreditDocumentSchema,
+  moneyInvoiceCounterDocumentSchema,
+  platformCostDocumentSchema,
+  moneyIssueResolutionDocumentSchema,
+  adminManagePaymentIssuesCallablePayloadSchema,
+  adminManagePaymentIssuesCallableResponseSchema,
+  adminGetFinanceMonthCallablePayloadSchema,
+  adminGetFinanceMonthCallableResponseSchema,
+  adminGetMarketplaceCallablePayloadSchema,
+  adminGetMarketplaceCallableResponseSchema,
+  adminGetGrowthCallablePayloadSchema,
+  adminGetGrowthCallableResponseSchema,
+  adminManagePlatformCostsCallablePayloadSchema,
+  adminManagePlatformCostsCallableResponseSchema,
+  adminExportMoneyLedgerCallablePayloadSchema,
+  adminExportMoneyLedgerCallableResponseSchema,
+  adminManageOrganizerBillsCallablePayloadSchema,
+  adminManageOrganizerBillsCallableResponseSchema,
+  adminManageMoneySettingsCallablePayloadSchema,
+  adminManageMoneySettingsCallableResponseSchema,
+  adminManageNominatorCreditsCallablePayloadSchema,
+  adminManageNominatorCreditsCallableResponseSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
   salesOutreachJobsDocumentSchema,
   outreachDraftSchema,
@@ -1465,6 +1489,30 @@ export const validateSupplyIntakeUsageDocument = ajv.compile(supplyIntakeUsageDo
 export const validateSupplyNominatorDocument = ajv.compile(supplyNominatorDocumentSchema);
 export const validateOrganizerGrowthFactsDocument = ajv.compile(organizerGrowthFactsDocumentSchema);
 export const validateOrganizerGrowthEvent = ajv.compile(organizerGrowthEventSchema);
+export const validateOrganizerBillDocument = ajv.compile(organizerBillDocumentSchema);
+export const validateMoneySettingsDocument = ajv.compile(moneySettingsDocumentSchema);
+export const validateNominatorCreditDocument = ajv.compile(nominatorCreditDocumentSchema);
+export const validateMoneyInvoiceCounterDocument = ajv.compile(moneyInvoiceCounterDocumentSchema);
+export const validatePlatformCostDocument = ajv.compile(platformCostDocumentSchema);
+export const validateMoneyIssueResolutionDocument = ajv.compile(moneyIssueResolutionDocumentSchema);
+export const validateAdminManagePaymentIssuesCallablePayload = ajv.compile(adminManagePaymentIssuesCallablePayloadSchema);
+export const validateAdminManagePaymentIssuesCallableResponse = ajv.compile(adminManagePaymentIssuesCallableResponseSchema);
+export const validateAdminGetFinanceMonthCallablePayload = ajv.compile(adminGetFinanceMonthCallablePayloadSchema);
+export const validateAdminGetFinanceMonthCallableResponse = ajv.compile(adminGetFinanceMonthCallableResponseSchema);
+export const validateAdminGetMarketplaceCallablePayload = ajv.compile(adminGetMarketplaceCallablePayloadSchema);
+export const validateAdminGetMarketplaceCallableResponse = ajv.compile(adminGetMarketplaceCallableResponseSchema);
+export const validateAdminGetGrowthCallablePayload = ajv.compile(adminGetGrowthCallablePayloadSchema);
+export const validateAdminGetGrowthCallableResponse = ajv.compile(adminGetGrowthCallableResponseSchema);
+export const validateAdminManagePlatformCostsCallablePayload = ajv.compile(adminManagePlatformCostsCallablePayloadSchema);
+export const validateAdminManagePlatformCostsCallableResponse = ajv.compile(adminManagePlatformCostsCallableResponseSchema);
+export const validateAdminExportMoneyLedgerCallablePayload = ajv.compile(adminExportMoneyLedgerCallablePayloadSchema);
+export const validateAdminExportMoneyLedgerCallableResponse = ajv.compile(adminExportMoneyLedgerCallableResponseSchema);
+export const validateAdminManageOrganizerBillsCallablePayload = ajv.compile(adminManageOrganizerBillsCallablePayloadSchema);
+export const validateAdminManageOrganizerBillsCallableResponse = ajv.compile(adminManageOrganizerBillsCallableResponseSchema);
+export const validateAdminManageMoneySettingsCallablePayload = ajv.compile(adminManageMoneySettingsCallablePayloadSchema);
+export const validateAdminManageMoneySettingsCallableResponse = ajv.compile(adminManageMoneySettingsCallableResponseSchema);
+export const validateAdminManageNominatorCreditsCallablePayload = ajv.compile(adminManageNominatorCreditsCallablePayloadSchema);
+export const validateAdminManageNominatorCreditsCallableResponse = ajv.compile(adminManageNominatorCreditsCallableResponseSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
 export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
 export const validateOutreachDraft = ajv.compile(outreachDraftSchema);

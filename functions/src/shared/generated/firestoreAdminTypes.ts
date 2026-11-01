@@ -2644,6 +2644,217 @@ export interface OrganizerGrowthFactsDocument {
 }
 
 /**
+ * Catch's monthly bill to one organizer, made from the bookings paid into the organizer's own account (hostCollected) in one calendar month, India time. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the monthly cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.
+ */
+export interface OrganizerBillDocument {
+  schemaVersion: 1;
+  billId: string;
+  organizerId: string;
+  organizerName: string;
+  month: string;
+  periodStartMillis: number;
+  periodEndMillis: number;
+  revision: number;
+  /**
+   * toSend: made, not sent. sent: sent with its invoice number and due date; overdue is sent past its due date. paid, writtenOff: closed. free: nothing due because every sale fell in the free trial.
+   */
+  status: "toSend" | "sent" | "paid" | "writtenOff" | "free";
+  sales: {
+    paymentCount: number;
+    eventCount: number;
+    grossMinor: number;
+    refundedMinor: number;
+    /**
+     * What commission is charged on: gross or net of refunds, per the terms.
+     */
+    baseMinor: number;
+    /**
+     * Razorpay's fees on these sales, taken from the organizer's account; shown for their records.
+     */
+    providerFeeMinor: number;
+    providerTaxMinor: number;
+    /**
+     * Payments that froze no terms and were charged on the organizer's current terms.
+     */
+    unsnapshottedCount: number;
+  };
+  commission: {
+    /**
+     * The organizer's current rate; individual payments may have frozen another.
+     */
+    rateBasisPoints: number;
+    uncappedMinor: number;
+    capMinor: number | null;
+    capped: boolean;
+    trialWaivedMinor: number;
+    amountMinor: number;
+  };
+  trialEndsAtMillis: number | null;
+  terms: {
+    platformRevision: number;
+    organizerRevision: number;
+    ownTerms: boolean;
+  };
+  gst: {
+    registered: boolean;
+    rateBasisPoints: number;
+    amountMinor: number;
+  };
+  totalMinor: number;
+  invoiceNumber: string | null;
+  dueAtMillis: number | null;
+  paymentLink: null | {
+    linkId: string;
+    url: string;
+  };
+  sentAtMillis: number | null;
+  /**
+   * @maxItems 24
+   */
+  reminders: number[];
+  paidAtMillis: number | null;
+  paidMinor: number | null;
+  paidVia: "paymentLink" | "manual" | null;
+  writtenOffAtMillis: number | null;
+  /**
+   * @maxItems 60
+   */
+  history: {
+    atMillis: number;
+    action:
+      | "generated"
+      | "regenerated"
+      | "sent"
+      | "reminded"
+      | "paid"
+      | "writtenOff";
+    byUid: string | null;
+    note: string | null;
+  }[];
+  generatedAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Catch's money settings (Settings → Payments): whether Catch is GST registered (off until the accountant says so; bills carry no GST while off), when bills fall due, and the nominator credit rule. One document, moneySettings/platform; absent means the defaults the owner decided on 1 Nov 2026. Every write bumps revision.
+ */
+export interface MoneySettingsDocument {
+  schemaVersion: 1;
+  settingsId: "platform";
+  revision: number;
+  settings: {
+    gstRegistered: boolean;
+    gstRateBasisPoints: number;
+    /**
+     * Bills for a month fall due on this day of the next month.
+     */
+    billDueDayOfMonth: number;
+    nominatorCredit: {
+      /**
+       * Share of what the organizer paid Catch, before GST.
+       */
+      rateBasisPoints: number;
+      /**
+       * Months of credit, counted from the organizer's first paid bill.
+       */
+      months: number;
+      /**
+       * A nomination lapses when the organizer has not claimed within this many days.
+       */
+      lapseDays: number;
+      /**
+       * Credit below this rolls over to the next payout.
+       */
+      minimumPayoutMinor: number;
+      payoutDayOfMonth: number;
+      /**
+       * @maxItems 4
+       */
+      earningRoles: ("partner" | "guest" | "organizer" | "associate")[];
+    };
+  };
+  updatedAtMillis: number;
+  updatedByUid: string;
+}
+
+/**
+ * One credit a nominator earned from one paid organizer bill, keyed by the bill. Written when a bill is paid, under the nominator credit rule in moneySettings: the first nominator of the organizer, if their role earns credit and the organizer claimed within the lapse window, earns the rate on what the organizer paid Catch before GST, for the set number of months from the organizer's first paid bill. Owed credit is approved monthly per nominator once it reaches the minimum (less rolls over), then marked paid with partner payouts.
+ */
+export interface NominatorCreditDocument {
+  schemaVersion: 1;
+  creditId: string;
+  billId: string;
+  organizerId: string;
+  organizerName: string;
+  nominatorUid: string;
+  nominatorRole: "associate" | "partner" | "guest" | "organizer";
+  billMonth: string;
+  /**
+   * Which month of credit this is, counted from the organizer's first paid bill.
+   */
+  monthIndex: number;
+  billPaidMinor: number;
+  rateBasisPoints: number;
+  creditMinor: number;
+  status: "owed" | "approved" | "paid";
+  approvedAtMillis: number | null;
+  approvedByUid: string | null;
+  paidAtMillis: number | null;
+  paidByUid: string | null;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * The unbroken invoice number sequence for one Indian financial year (April to March), moneyInvoiceCounters/2026-27. lastNumber is the last number issued; the next bill sent takes lastNumber + 1, as 2026-27/032.
+ */
+export interface MoneyInvoiceCounterDocument {
+  schemaVersion: 1;
+  financialYear: string;
+  lastNumber: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * What one kind of cost came to in one India-time calendar month, platformCosts/{YYYY-MM}_{category}. The owner enters AI, Cloud, SMS and any invoice total by hand; WhatsApp falls back to an estimate from reserved dispatch costs while no invoice total is entered; ad spend arrives from the ad platform once its account is connected.
+ */
+export interface PlatformCostDocument {
+  schemaVersion: 1;
+  costId: string;
+  month: string;
+  category:
+    | "whatsapp"
+    | "ai"
+    | "cloud"
+    | "sms"
+    | "ads_meta"
+    | "ads_google"
+    | "other";
+  amountMinor: number;
+  source: "manual" | "meta_api" | "google_ads_api";
+  note: string | null;
+  updatedAtMillis: number;
+  updatedByUid: string | null;
+}
+
+/**
+ * How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.
+ */
+export interface MoneyIssueResolutionDocument {
+  schemaVersion: 1;
+  resolutionId: string;
+  issueId: string;
+  kind: "payment" | "refund" | "review" | "bill";
+  statusAtResolution: string;
+  action: "confirmedBooking" | "closed";
+  note: string | null;
+  resolvedAtMillis: number;
+  resolvedByUid: string;
+  title: string;
+  organizerName: string | null;
+}
+
+/**
  * Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.
  */
 export interface SalesOutreachJobsDocument {
