@@ -2,22 +2,22 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_event_publishing.feature.json",
-  "generatedFor": "2026-10-29",
-  "sourceDigest": "sha256:0eeaa91ea2c8f38b719633cd7a0261cae009b14178b13a459f2a3453886241f6",
-  "resolvedDigest": "sha256:ce5f08d4b4733addae89a020eaa857f18dfde22376cc4e12b41c35262e564a71",
+  "generatedFor": "2026-11-01",
+  "sourceDigest": "sha256:0df6ceedc081f6edcd9315a2bb823cf807a6dc8ae3a10b39bf7ba7500e3ff02c",
+  "resolvedDigest": "sha256:46c52141fc532790dfd66ea5d8396d84b74818dbe57c3ef48753e175ded445d8",
   "feature": {
     "id": "feature.admin_event_publishing",
     "name": "Admin Event Publishing",
     "owner": "admin_console",
     "status": "pilot",
-    "description": "Orchestrates canonical event directory and editor work and external-event inspection."
+    "description": "The editors the event page hosts: canonical event editing on its Page tab and external-event inspection and takedown on its Takedown tab. The Events directory lists events."
   },
   "coverage": {
     "surfaces": 1,
     "states": 1,
     "scenarios": 1,
-    "actionCases": 7,
-    "actions": 8,
+    "actionCases": 4,
+    "actions": 5,
     "captures": 0,
     "previews": 1,
     "testFiles": 2,
@@ -32,7 +32,7 @@
         "id": "route_event_publishing"
       },
       "actionScope": {
-        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, and freezing the complete Admin workspace during the write.",
+        "included": "Loading a canonical event or external evidence, returning to the Events directory, refreshing the external source, saving canonical edits, and freezing the complete Admin workspace during the write.",
         "excluded": [
           "Search, filter, editor field, checklist, and review-note changes remain query or form data."
         ]
@@ -97,7 +97,7 @@
           }
         ],
         "testEvidence": {
-          "canonical-directory": [
+          "canonical-detail": [
             "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
             "admin/src/shared/pendingOperation.test.tsx"
           ]
@@ -106,8 +106,8 @@
       "coverage": {
         "states": 1,
         "scenarios": 1,
-        "actionCases": 7,
-        "actions": 8,
+        "actionCases": 4,
+        "actions": 5,
         "captures": 0,
         "previews": 1,
         "testFiles": 2,
@@ -115,11 +115,9 @@
       },
       "dimensions": {
         "workspace": {
-          "default": "directory",
+          "default": "canonical_detail",
           "values": [
-            "directory",
             "canonical_detail",
-            "external_list",
             "external_detail"
           ]
         },
@@ -144,26 +142,6 @@
       },
       "actions": [
         {
-          "id": "select_event_workspace",
-          "owner": "screen",
-          "codeValue": "onWorkspaceChange",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "workspaceId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Switches between the canonical directory and external inventory.",
-          "implementationStatus": "implemented"
-        },
-        {
           "id": "select_canonical_event",
           "owner": "controller",
           "codeValue": "selectEvent",
@@ -176,11 +154,11 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
-          "description": "Opens one exact canonical event for detail and governed editing.",
+          "description": "Loads one exact canonical event for detail and governed editing.",
           "implementationStatus": "implemented"
         },
         {
@@ -190,37 +168,17 @@
           "cardinality": "unbounded",
           "scopeKeys": [
             "adminSessionId",
-            "workspaceId"
+            "eventId"
           ],
           "outcomes": [
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
-          "description": "Returns from the selected event or external item to its owning list.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "refresh_canonical_events",
-          "owner": "controller",
-          "codeValue": "refreshList",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "adminSessionId",
-            "canonicalSnapshotVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Refetches the canonical event directory.",
+          "description": "Returns from the canonical editor to the Events directory.",
           "implementationStatus": "implemented"
         },
         {
@@ -237,7 +195,7 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             },
             {
@@ -246,26 +204,6 @@
             }
           ],
           "description": "Validates and persists the canonical event diff.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_external_event_supply",
-          "owner": "controller",
-          "codeValue": "openExternalSupply",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "externalSnapshotVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Opens the external-event inventory workspace.",
           "implementationStatus": "implemented"
         },
         {
@@ -281,11 +219,11 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
-          "description": "Opens one source-backed external event.",
+          "description": "Closes the source-backed external event and returns to the Events directory.",
           "implementationStatus": "implemented"
         },
         {
@@ -301,23 +239,23 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           ],
-          "description": "Refetches the external-event inventory.",
+          "description": "Refetches the external-event source after a failed read.",
           "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [],
       "scenarios": [
         {
-          "id": "canonical_directory",
-          "stateId": "canonical-directory",
+          "id": "canonical_detail",
+          "stateId": "canonical-detail",
           "kind": "route_state",
           "status": "ready",
           "dimensions": {
-            "workspace": "directory",
+            "workspace": "canonical_detail",
             "source": "ready",
             "mutation": "idle"
           },
@@ -333,53 +271,6 @@
           },
           "actionCases": [
             {
-              "id": "canonical_directory",
-              "dimensions": {
-                "workspace": "directory",
-                "source": "ready",
-                "mutation": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "select_event_workspace",
-                  "select_canonical_event",
-                  "refresh_canonical_events",
-                  "open_external_event_supply"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "back_to_event_list",
-                  "save_canonical_event",
-                  "select_external_event",
-                  "refresh_external_events"
-                ]
-              }
-            },
-            {
-              "id": "canonical_loading",
-              "dimensions": {
-                "workspace": "directory",
-                "source": "loading",
-                "mutation": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "select_event_workspace"
-                ],
-                "disabled": [
-                  "select_canonical_event",
-                  "refresh_canonical_events"
-                ],
-                "notAllowed": [
-                  "back_to_event_list",
-                  "save_canonical_event",
-                  "open_external_event_supply",
-                  "select_external_event",
-                  "refresh_external_events"
-                ]
-              }
-            },
-            {
               "id": "canonical_detail",
               "dimensions": {
                 "workspace": "canonical_detail",
@@ -388,15 +279,12 @@
               },
               "actions": {
                 "enabled": [
-                  "select_event_workspace",
+                  "select_canonical_event",
                   "back_to_event_list",
                   "save_canonical_event"
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "select_canonical_event",
-                  "refresh_canonical_events",
-                  "open_external_event_supply",
                   "select_external_event",
                   "refresh_external_events"
                 ]
@@ -412,39 +300,13 @@
               "actions": {
                 "enabled": [],
                 "disabled": [
-                  "select_event_workspace",
                   "back_to_event_list",
                   "save_canonical_event"
                 ],
                 "notAllowed": [
                   "select_canonical_event",
-                  "refresh_canonical_events",
-                  "open_external_event_supply",
                   "select_external_event",
                   "refresh_external_events"
-                ]
-              }
-            },
-            {
-              "id": "external_list",
-              "dimensions": {
-                "workspace": "external_list",
-                "source": "ready",
-                "mutation": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "select_event_workspace",
-                  "back_to_event_list",
-                  "select_external_event",
-                  "refresh_external_events"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "select_canonical_event",
-                  "refresh_canonical_events",
-                  "save_canonical_event",
-                  "open_external_event_supply"
                 ]
               }
             },
@@ -457,40 +319,34 @@
               },
               "actions": {
                 "enabled": [
-                  "select_event_workspace",
-                  "back_to_event_list",
-                  "refresh_external_events"
+                  "select_external_event"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "select_canonical_event",
-                  "refresh_canonical_events",
+                  "back_to_event_list",
                   "save_canonical_event",
-                  "open_external_event_supply",
-                  "select_external_event"
+                  "refresh_external_events"
                 ]
               }
             },
             {
-              "id": "source_failed",
+              "id": "external_source_failed",
               "dimensions": {
-                "workspace": "directory",
+                "workspace": "external_detail",
                 "source": "failed",
                 "mutation": "idle"
               },
               "actions": {
                 "enabled": [
-                  "select_event_workspace",
-                  "refresh_canonical_events",
+                  "select_external_event",
                   "refresh_external_events"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "select_canonical_event",
                   "back_to_event_list",
-                  "save_canonical_event",
-                  "open_external_event_supply",
-                  "select_external_event"
+                  "save_canonical_event"
                 ]
               }
             }
@@ -514,7 +370,7 @@
               "story": "admin/src/stories/AdminRoutes.stories.tsx",
               "exportName": "EventPublishingRouteStory",
               "states": [
-                "canonical-directory"
+                "canonical-detail"
               ]
             }
           }

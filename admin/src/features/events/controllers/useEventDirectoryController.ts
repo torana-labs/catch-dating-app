@@ -1,5 +1,5 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   loadEventDirectory,
@@ -61,16 +61,22 @@ export function useEventDirectoryController({
   const [filters, setFilters] = useState<EventDirectoryFilters>({
     ...initialEventDirectoryFilters, ...initial,
   });
+  // The search box updates at once; the read waits for a pause in typing.
+  const [searchedText, setSearchedText] = useState(filters.query);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearchedText(filters.query), 300);
+    return () => window.clearTimeout(timer);
+  }, [filters.query]);
   const payload = useMemo<EventDirectoryQuery>(() => ({
     view: filters.view,
-    query: filters.query.trim() || null,
+    query: searchedText.trim() || null,
     citySlug: filters.citySlug,
     source: filters.source,
     organizerId,
     needsCheck: filters.needsCheck,
     thisWeek: filters.thisWeek,
     limit: pageSize,
-  }), [filters, organizerId]);
+  }), [filters, searchedText, organizerId]);
   const query = useInfiniteQuery({
     queryKey: adminQueryKeys.events.directory(JSON.stringify(payload)),
     queryFn: ({pageParam}) => loadEventDirectory({...payload,
