@@ -345,9 +345,7 @@ DNS alone cannot select a URL path.
 
 ## Cross-Surface Feature Identity
 
-`design/features/feature_coverage.json` is the exhaustive migration boundary
-across the Flutter screen registry, marketing route registry, and route-kind
-entries in the admin component registry. It can assign one semantic feature id
+A feature contract in `design/features/` can assign one semantic feature id
 to multiple runtime projections when the user outcome is genuinely shared—for
 example organizer discovery or organizer detail. It does not make Flutter and
 React share a UI runtime: each projection keeps its own screen/route authority,
@@ -398,10 +396,6 @@ operations cannot overlap. The compiled Admin action matrices disable every
 surface action in those pending states. This deliberately trades small amounts
 of operator throughput for deterministic receipts and unambiguous recovery.
 
-Run `node tool/design/check_feature_coverage.mjs --check` after adding or
-removing any registered product surface. A planned decision is migration debt,
-not completed contract coverage; a grouped decision is a secondary route
-projection, not a shortcut for combining unrelated workflows.
 
 ## Organizer Entity Boundary
 
@@ -709,11 +703,9 @@ only `firebase.ts` to import the generated callable types.
   admin entry chunk and largest async chunk. Query/API controllers belong
   behind lazy route wrappers; importing one into `admin/src/app/App.tsx` is a
   performance-boundary regression even when its view remains lazy.
-- `tool/web/react_controller_test_targets.json` classifies every feature
-  controller/mutation hook as `required`, `planned`, or an explained `exempt`.
-  `web:react-controller-test-targets` rejects unclassified hooks and required
-  targets whose named behavior suite is missing, while aggregate coverage stays
-  informational rather than becoming a brittle percentage gate.
+- `web:react-controller-test-targets` rejects a feature controller/mutation hook
+  that no unit test imports, while aggregate coverage stays informational rather
+  than becoming a brittle percentage gate.
 - Admin Storybook uses named feature chunks plus a separate generated-intake
   data chunk. `web:admin-storybook-bundle-budget` ratchets Catch-authored chunks
   independently of Storybook, axe, and other framework/vendor runtime; route

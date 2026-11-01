@@ -57,7 +57,6 @@ on:
       - "tool/web/lib/**"
       - "tool/web/check_storybook_visuals.mjs"
       - "tool/web/check_react_controller_test_targets.mjs"
-      - "tool/web/react_controller_test_targets.json"
       - "tool/web/react_dependency_graph.mjs"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"

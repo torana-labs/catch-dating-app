@@ -18,7 +18,6 @@ test("flat parity commands preserve real source invariants and deduplicate the f
     "node tool/ui_capture/check_capture_coverage.mjs --check",
     "node tool/design/check_design_parity_matrix.mjs --check",
     "node tool/design/check_screen_contracts.mjs --check",
-    "node tool/design/check_feature_coverage.mjs --check",
     "node tool/design/build_feature_contracts.mjs --check",
     "node tool/design/check_screen_top_bar_contracts.mjs --check",
     "node tool/design/check_widgetbook_contract_refs.mjs --check",

@@ -74,10 +74,8 @@ Loop:
    and run `npm --workspace catch-admin run check:boundaries`. Keep route and
    workspace entries thin, keep private feature components to arrangement and
    binding (D18), and run `node tool/run.mjs check web:admin-feature-ui-size`.
-14. Keep `tool/web/react_controller_test_targets.json` exhaustive. Promote
-    behavior-critical query/mutation controllers to `required` with a named
-    importing suite, and run
-    `node tool/run.mjs check web:react-controller-test-targets`.
+14. Give every query/mutation controller a unit test beside it that imports it,
+    and run `node tool/run.mjs check web:react-controller-test-targets`.
 15. Preserve focused-check output in the task or CI run. Do not create tracked
     execution history.
 

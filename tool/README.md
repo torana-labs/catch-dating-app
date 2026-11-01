@@ -86,9 +86,8 @@ revision, still runs the full matrix. Canonical Harness control-plane paths come
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
 runs retain the complete six-bucket matrix.
-The feature-coverage ledger and schema select `design:feature-coverage`. Its
-check tests have the same owner. These explicit mappings avoid full fanout when
-ordinary screen changes update generated manifests; unknown companion inputs
+Explicit mappings avoid full fanout when ordinary screen changes update
+generated manifests; unknown companion inputs
 still trigger the full fallback. Committed evidence follows the same rule:
 website Storybook baselines select `web:storybook-visuals`, app screenshots
 select every capture check that reads their bytes, and feature contracts select
@@ -925,10 +924,9 @@ website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
 through both surface adapters. The same gate also preserves the shared focus,
 accessible table/field/button contracts, and package CI path coverage.
 
-`web:react-controller-test-targets` keeps every feature controller and mutation
-hook classified in `tool/web/react_controller_test_targets.json`. Promoted
-targets need a named importing behavior suite; planned targets remain visible
-without turning aggregate coverage percentages into a brittle merge gate.
+`web:react-controller-test-targets` requires a unit test that imports each
+feature controller and mutation hook, normally beside it, without turning
+aggregate coverage percentages into a brittle merge gate. No list names them.
 
 `web:admin-pending-operations` derives write and submitted-query controllers
 from frozen Admin feature-contract cases. It requires each controller to
@@ -1085,19 +1083,6 @@ linters, component risk gates, or explicitly manual owner-runbook checks. Git
 and CI provide the durable proof of work.
 
 ## Feature Contract Compiler
-
-`design/features/feature_coverage.json` is the exhaustive migration ledger for
-registered feature surfaces. It derives its inventory from the Flutter screen
-registry, marketing route registry, and route-kind entries in the admin
-component registry. Every authority item must be contracted, grouped under one
-primary feature projection, planned against a stable migration debt id, or
-explicitly excluded. The checker also rejects orphaned source contracts and a
-`contracted` decision whose source contract does not bind the claimed surface.
-
-```sh
-node tool/design/check_feature_coverage.mjs --check
-node tool/design/check_feature_coverage.mjs --summary
-```
 
 `planned` proves that a surface is visible to the migration; it does not claim
 that its state/action/evidence contract exists yet. Grouping is reserved for a

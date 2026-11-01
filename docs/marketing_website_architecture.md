@@ -191,9 +191,7 @@ The website is already split out of the old monolithic shell:
   ownership, and Storybook coverage status. It is validated bidirectionally
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
-- `design/features/feature_coverage.json` classifies every marketing route as a
-  contracted, grouped, planned, or explicitly excluded feature projection.
-  Shared product outcomes may target a cross-runtime identity such as
+- Shared product outcomes may target a cross-runtime identity such as
   `feature.explore` or `feature.organizer_detail`; route metadata, static output,
   React components, actions, and evidence remain owned by the website runtime.
   Organizer Search is the first live projection: the feature compiler resolves
@@ -1096,12 +1094,11 @@ website/src/
    families; package exports, exact-name cross-app overlap, and adopted
    adapters cannot drift outside that decision record.
 
-13. Keep controller behavior-test targets explicit.
+13. Keep a behavior test beside each controller.
 
-   `tool/web/react_controller_test_targets.json` classifies every marketing and
-   admin feature controller/mutation hook. Run `node tool/run.mjs check
-   web:react-controller-test-targets`; required targets need named importing
-   behavior suites, while aggregate coverage remains an informational report.
+   Run `node tool/run.mjs check web:react-controller-test-targets`: every
+   marketing and admin feature controller/mutation hook needs a unit test that
+   imports it, while aggregate coverage remains an informational report.
 
 ## Next Implementation Batch
 

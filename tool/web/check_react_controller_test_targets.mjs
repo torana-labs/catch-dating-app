@@ -10,12 +10,11 @@ try {
   if (process.argv.includes("--self-test")) await runSelfTest();
   else await runCheck();
 } catch (error) {
-  console.error(`React controller test-target check failed: ${error.message}`);
+  console.error(`React controller test check failed: ${error.message}`);
   process.exitCode = 1;
 }
 
 async function runCheck() {
-  const manifest = JSON.parse(fs.readFileSync(fromRepo("tool/web/react_controller_test_targets.json"), "utf8"));
   const selectedByOwner = new Map();
   const optionsByOwner = new Map();
   for (const owner of ["admin", "website"]) {
@@ -28,14 +27,13 @@ async function runCheck() {
       ts.flattenDiagnosticMessageText(error.messageText, "\n")).join("\n"));
     optionsByOwner.set(owner, parsed.options);
   }
-  const findings = validateManifest(manifest, discoverControllerSources(), relative => {
+  const hooks = discoverControllerSources();
+  const findings = validateHooks(hooks, relative => {
     const absolute = fromRepo(relative);
     return fs.existsSync(absolute) ? fs.readFileSync(absolute, "utf8") : null;
   }, {root: fromRepo("."), selectedByOwner, optionsByOwner});
   if (findings.length) throw new Error(`${findings.length} finding(s):\n- ${findings.join("\n- ")}`);
-  const counts = Object.groupBy(manifest.targets, target => target.status);
-  console.log(`React controller test-target check passed: ${manifest.targets.length} classified hooks ` +
-    `(${Object.entries(counts).map(([status, targets]) => `${status}=${targets.length}`).join(", ")}).`);
+  console.log(`React controller test check passed: ${hooks.size} hooks each have a unit test that imports them.`);
 }
 
 // Use the owning Vitest projects' actual include/exclude rules. File discovery
@@ -74,39 +72,31 @@ function walk(root, visit) {
   }
 }
 
-function validateManifest(document, discovered, readSource, {root, selectedByOwner, optionsByOwner}) {
+// A hook's test sits beside it by convention. A test elsewhere also counts, as long as it
+// imports the hook and registers a test, so nothing has to list the exceptions.
+function validateHooks(discovered, readSource, {root, selectedByOwner, optionsByOwner}) {
   const findings = [];
-  if (document.schemaVersion !== 1) findings.push("schemaVersion must be 1");
-  if (!Array.isArray(document.targets)) return [...findings, "targets must be an array"];
-  const allowedStatuses = new Set(["required", "planned", "exempt"]);
-  const seen = new Set();
   const suites = new Map();
-  for (const target of document.targets) {
-    if (!target.source) { findings.push("every target needs a source path"); continue; }
-    if (seen.has(target.source)) findings.push(`${target.source}: duplicate target`);
-    seen.add(target.source);
-    if (!allowedStatuses.has(target.status)) findings.push(`${target.source}: unsupported status ${target.status}`);
-    if (!discovered.has(target.source)) findings.push(`${target.source}: target is missing or no longer a controller/mutation hook`);
-    if (target.status === "exempt" && !target.reason) findings.push(`${target.source}: exempt targets need a reason`);
-    if (target.status !== "required") continue;
-    if (!target.test) { findings.push(`${target.source}: required target needs a test path`); continue; }
-    const source = readSource(target.test);
-    if (source === null) { findings.push(`${target.source}: missing required test ${target.test}`); continue; }
-    const owner = target.source.split("/")[0];
-    const fileName = path.resolve(root, target.test);
-    if (!target.test.startsWith(`${owner}/src/`) || !selectedByOwner.get(owner)?.has(fileName)) {
-      findings.push(`${target.test}: not selected by the owning ${owner} Vitest unit project`);
+  const proves = (relative, target) => {
+    const owner = target.split("/")[0];
+    const fileName = path.resolve(root, relative);
+    if (!selectedByOwner.get(owner)?.has(fileName)) return false;
+    if (!suites.has(fileName)) {
+      const source = readSource(relative);
+      suites.set(fileName, source === null ? {parseError: "missing"} :
+        inspectSuite(fileName, source, optionsByOwner.get(owner)));
     }
-    if (!suites.has(fileName)) suites.set(fileName, inspectSuite(fileName, source, optionsByOwner.get(owner)));
     const suite = suites.get(fileName);
-    if (suite.parseError) { findings.push(`${target.test}: invalid TypeScript: ${suite.parseError}`); continue; }
-    if (!suite.imports.has(path.resolve(root, target.source))) {
-      findings.push(`${target.test}: does not runtime-import exact target ${target.source}`);
+    return !suite.parseError && suite.hasTest && suite.imports.has(path.resolve(root, target));
+  };
+  for (const hook of [...discovered].sort()) {
+    const base = hook.replace(/\.tsx?$/u, "");
+    const beside = [`${base}.test.tsx`, `${base}.test.ts`];
+    const elsewhere = [...selectedByOwner.get(hook.split("/")[0]) ?? []]
+      .map(file => path.relative(root, file).split(path.sep).join("/"));
+    if (![...beside, ...elsewhere].some(candidate => proves(candidate, hook))) {
+      findings.push(`${hook}: no unit test imports this hook and registers a test; add ${beside[0]}`);
     }
-    if (!suite.hasTest) findings.push(`${target.test}: has no provable non-skipped Vitest test registration`);
-  }
-  for (const source of [...discovered].sort()) {
-    if (!seen.has(source)) findings.push(`${source}: unclassified controller/mutation hook`);
   }
   return findings;
 }
@@ -230,7 +220,6 @@ async function runSelfTest() {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "catch-controller-proof-")));
   const sourcePath = "website/src/example/useExampleController.ts";
   const testPath = "website/src/example/useExampleController.test.tsx";
-  const target = {source: sourcePath, test: testPath, status: "required"};
   const write = (relative, text) => {
     const destination = path.join(root, relative);
     fs.mkdirSync(path.dirname(destination), {recursive: true});
@@ -240,9 +229,8 @@ async function runSelfTest() {
     selectedByOwner: new Map([["website", new Set([path.join(root, testPath)])]]),
     optionsByOwner: new Map([["website", {module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler}]]),
   };
-  const inspect = (source, entries = [target], overrides = {}) => validateManifest(
-    {schemaVersion: 1, targets: entries}, new Set(entries.map(entry => entry.source)),
-    () => source, {...options, ...overrides});
+  const inspect = (source, hooks = [sourcePath], overrides = {}) => validateHooks(
+    new Set(hooks), () => source, {...options, ...overrides});
   const imports = "import {it, test, describe} from 'vitest'; import {useExampleController} from './useExampleController';\n";
   const normal = "it('works', () => useExampleController());";
   try {
@@ -298,21 +286,18 @@ async function runSelfTest() {
       mixed: imports + "it.skip('skip', () => {}); " + normal,
     })) assert.deepEqual(inspect(source), [], `rejected ${name}`);
 
-    const second = {source: "website/src/example/useOtherController.ts", test: testPath, status: "required"};
-    write(second.source, "export function useOtherController() {}\n");
+    // One suite may prove two hooks, and it need not sit beside either.
+    const second = "website/src/example/useOtherController.ts";
+    write(second, "export function useOtherController() {}\n");
     assert.deepEqual(inspect(imports + "import {useOtherController} from './useOtherController'; " + normal +
-      "it('other', () => useOtherController());", [target, second]), []);
+      "it('other', () => useOtherController());", [sourcePath, second]), []);
     const aliasOptions = new Map([["website", {module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
       paths: {"@hooks/*": [path.join(root, "website/src/example/*")]}}]]);
     assert.deepEqual(inspect(imports.replace("./useExampleController", "@hooks/useExampleController") + normal,
-      [target], {optionsByOwner: aliasOptions}), []);
-    assert.ok(inspect(null).some(finding => finding.includes("missing required test")));
-    assert.ok(inspect(imports + normal, [target], {selectedByOwner: new Map()})
-      .some(finding => finding.includes("not selected")));
-    assert.ok(inspect(imports + normal, [{...target, test: "admin/src/example.test.ts"}])
-      .some(finding => finding.includes("not selected")));
-    assert.ok(validateManifest({schemaVersion: 1, targets: []}, new Set([sourcePath]), () => null, options)
-      .some(finding => finding.includes("unclassified")));
+      [sourcePath], {optionsByOwner: aliasOptions}), []);
+    assert.ok(inspect(null).some(finding => finding.includes("no unit test imports")));
+    assert.ok(inspect(imports + normal, [sourcePath], {selectedByOwner: new Map()})
+      .some(finding => finding.includes("no unit test imports")));
 
     // Real Vitest project discovery must honor include/exclude/project identity
     // without evaluating any fixture module or setup hook (all throw if loaded).
@@ -329,12 +314,11 @@ async function runSelfTest() {
     const selected = await discoverUnitTests(fixtureRoot);
     assert.deepEqual([...selected], [path.join(root, testPath)]);
     const actualSelection = new Map([["website", selected]]);
-    assert.deepEqual(inspect(imports + normal, [target], {selectedByOwner: actualSelection}), []);
-    assert.ok(inspect(imports + normal, [{...target, test: "website/src/excluded.test.tsx"}],
-      {selectedByOwner: actualSelection}).some(finding => finding.includes("not selected")));
-    assert.ok(inspect(imports + normal, [{...target, test: "website/src/other-project.ts"}],
-      {selectedByOwner: actualSelection}).some(finding => finding.includes("not selected")));
-    console.log("React controller test-target self-test passed: 32 negative and 12 positive registration fixtures, shared suite, resolution and real project discovery.");
+    assert.deepEqual(inspect(imports + normal, [sourcePath], {selectedByOwner: actualSelection}), []);
+    // A test outside the unit project proves nothing.
+    assert.ok(inspect(imports + normal, [sourcePath], {selectedByOwner: new Map([["website", new Set()]])})
+      .some(finding => finding.includes("no unit test imports")));
+    console.log("React controller test self-test passed: 32 negative and 12 positive registration fixtures, shared suite, resolution and real project discovery.");
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
