@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.40.0
+version: 1.41.0
 updated: 2026-11-01
 owner: operations_platform
 status: active
@@ -176,7 +176,11 @@ partner id, and discovery requests are always submitted by `system`.
    the page and adapter they came from. Organizer pages outrank event pages,
    and a nominator's typed name is used only when no page names the
    organizer. Links keep only organizer surfaces, and their normalized keys
-   become the identity keys used for matching. Upcoming events are
+   become the identity keys used for matching. A nominated social profile
+   stays a link even when nothing could read it (a personal Instagram
+   account, say): it is the account the nominator named, the account a claim
+   by Instagram message is checked against, and a key the duplicate check
+   compares. Upcoming events are
    deduplicated by platform id and by title and start time across platforms;
    past events are counted, not listed.
 3. **Record gaps.** Missing fields, unreadable seeds, a name that differs from

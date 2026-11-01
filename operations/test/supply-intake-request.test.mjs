@@ -353,6 +353,18 @@ test("an Instagram-only nomination searches the handle once and reads only calen
   assert.equal(otherListing.gaps.includes("found_by_search"), false);
 });
 
+test("a nominated Instagram account stays a listing link though nothing can read it", async () => {
+  const nominated = request({requestId: "nom-ig-personal", seed: {name: null, notes: null, categories: [],
+    urls: ["https://instagram.com/suvratgarg?igsh=abc", "https://district.in/events/missing"]}});
+  const gathered = await gatherIntakeEvidence({request: nominated, pageSource: await staticSource({}), now: NOW});
+  const listing = buildIntakeListing({request: nominated, gathered, now: NOW});
+  assert.deepEqual(listing.organizer.links.map((link) => [link.platform, link.surfaceKind, link.url]),
+    [["instagram", "socialProfile", "https://instagram.com/suvratgarg"]],
+    "the claim check and the duplicate check both need the account; an unread event page is still not a link");
+  assert.ok(listing.organizer.identityKeys.includes("instagram:suvratgarg"));
+  assert.ok(listing.gaps.includes("seed_page_unreadable"));
+});
+
 test("handle search stays out of the way when a seed reads, when it is off, and when its budget is spent", async () => {
   let calls = 0;
   const counting = {search: async () => {

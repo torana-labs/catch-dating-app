@@ -250,7 +250,7 @@ export function buildIntakeListing({request, gathered, now, findings = [], resea
   const locality = choose("locality", [...fromOrganizers("locality"), ...fromEvents("locality"),
     ...fromFindings("locality")]);
 
-  const links = listingLinks(gathered, findings.filter((finding) => finding.field === "link"));
+  const links = listingLinks(gathered, findings.filter((finding) => finding.field === "link"), intake.seed.urls);
   const events = listingEvents(gathered.events, observedAt);
   const pastEventCount = dedupeEvents(gathered.events).length - events.length;
   const gaps = [];
@@ -357,7 +357,7 @@ function rank(organizer) {
   return 2;
 }
 
-function listingLinks(gathered, linkFindings = []) {
+function listingLinks(gathered, linkFindings = [], seedUrls = []) {
   const links = new Map();
   // URLs that name the organizer (its own page, an event's organizer link)
   // resolve ambiguous slugs as organizer surfaces; event pages are not links.
@@ -389,6 +389,18 @@ function listingLinks(gathered, linkFindings = []) {
     if (event.organizerUrl) add(event.organizerUrl, event.pageUrl, {organizerRole: true});
   }
   for (const finding of linkFindings) add(finding.value, finding.sourceUrl, {organizerRole: true});
+  // A nominated social profile is the account the nominator named, and is
+  // never fetched (Instagram is read through Business Discovery, if at all),
+  // so it stays a link even unread: it is what a claim is checked against.
+  for (const url of seedUrls) {
+    let surface;
+    try {
+      surface = normalizeOrganizerSurfaceUrl(url);
+    } catch {
+      continue;
+    }
+    if (surface.surfaceKind === "socialProfile") add(url, url, {organizerRole: false});
+  }
   return [...links.values()].sort((left, right) => left.url.localeCompare(right.url)).slice(0, MAX_LISTING_LINKS);
 }
 
