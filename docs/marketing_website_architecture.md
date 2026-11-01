@@ -840,9 +840,10 @@ website/src/
       ClaimPage.tsx
       claimModel.ts
       useClaimFlowController.ts
-      useListingClaimController.ts
+      useInstantClaimController.ts
       sections/
         ClaimPageSections.tsx
+        InstantClaimSection.tsx
     reviews/
       reviewModel.ts
       useListingReviewsController.ts

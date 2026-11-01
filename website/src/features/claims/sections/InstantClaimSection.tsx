@@ -22,7 +22,11 @@ import type {InstantClaimController} from "../useInstantClaimController";
 export function InstantClaimPanel({controller, listing, pendingReview = false}: {
   controller: InstantClaimController; listing: HostListing; pendingReview?: boolean;
 }) {
-  if (controller.phase === "unavailable") return null;
+  if (controller.phase === "unavailable") {
+    return <HostPreviewSection aria-labelledby="instant-claim-title">
+      <HostPreviewSectionHead titleId="instant-claim-title" title={copy.title} body={copy.unavailable} />
+    </HostPreviewSection>;
+  }
   return (
     <HostPreviewSection aria-labelledby="instant-claim-title">
       <CatchGap size="section">

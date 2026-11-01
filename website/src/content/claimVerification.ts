@@ -7,6 +7,7 @@ const at = (handle: string) => `@${handle}`;
 export const claimVerificationCopy = {
   title: "Prove it’s yours in a minute",
   body: "Send us a code from the Instagram account on this page, or add one to its Luma calendar. When it checks out, the page is yours straight away, with no review.",
+  unavailable: "Claiming isn’t switched on for this version of the site yet. Get listing help below and we’ll sort it out.",
   accountIntro: "First, sign in with your phone so we know who to give the page to.",
   loadingOptions: "Checking which ways work for this page…",
   methodsLabel: "How should we check it’s you?",
