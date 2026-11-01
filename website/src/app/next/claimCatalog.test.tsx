@@ -28,3 +28,24 @@ it("claim discovery uses the current catalog and withdrawal clears the selection
   expect(result.current.searchResults).toEqual([]);
   expect(result.current.query).toBe("Current");
 });
+
+it("a listing in review stays selected when the catalog loads, so a code can still prove it", () => {
+  const unclaimed: HostListing = {...hostListings[0],
+    authority: {...hostListings[0].authority, ownershipState: "programmatic", claimState: "unclaimed", publishStatus: "published"},
+    capabilities: {...hostListings[0].capabilities, claimRequest: {state: "enabled", reason: ""}}};
+  const pending: HostListing = {...unclaimed, authority: {...unclaimed.authority, claimState: "claimPending"},
+    capabilities: {...unclaimed.capabilities, claimRequest: {state: "disabled", reason: "In review."}}};
+  let catalog: HostListing[] = [pending];
+  const client = new QueryClient();
+  function Wrapper({children}: PropsWithChildren) {
+    return <QueryClientProvider client={client}>
+      <publicEventListingsContext.Provider value={{listings: catalog, phase: "ready"}}>{children}</publicEventListingsContext.Provider>
+    </QueryClientProvider>;
+  }
+  const {result, rerender} = renderHook(() => useClaimFlowController({listing: pending,
+    lookup: pending.id, requestId: null, urlState: "pendingClaim"}), {wrapper: Wrapper});
+  catalog = [{...pending}];
+  rerender();
+  expect(result.current.listing?.id).toBe(pending.id);
+  expect(result.current.searchResults, "a listing in review isn't offered to anyone searching").toEqual([]);
+});

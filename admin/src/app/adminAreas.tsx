@@ -28,6 +28,7 @@ const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/C
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
 const AdminRoleManagementScreen = lazy(() => import("../features/admin-roles/ui/AdminRoleManagementScreen").then((m) => ({default: m.AdminRoleManagementScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
+const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
 
@@ -129,10 +130,18 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   support: {
-    label: "Support", icon: "support", frame: "legacy",
-    render: ({session, userUid}) => (
+    label: "Support", icon: "support", frame: "redrawn",
+    render: ({mode, navigate, route, session, setError, setNotice, userUid}) => route.supportWorkspace === "trial" ? (
       <CatchWhatsappTrialWorkspace
         scope={{actorUid: userUid ?? "", projectId: session.projectId, sessionKey: session.sessionKey, isCurrent: session.isCurrent}}
+      />
+    ) : (
+      <SupportRouteScreen
+        conversationId={route.params.supportConversationId ?? null}
+        onError={setError}
+        onNavigate={navigate}
+        onNotice={setNotice}
+        userUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
       />
     ),
   },

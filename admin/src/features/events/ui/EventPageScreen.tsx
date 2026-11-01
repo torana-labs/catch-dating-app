@@ -3,10 +3,13 @@ import {
   CatchButton,
   CatchGap,
   CatchIndexRow,
+  CatchMetaRow,
   CatchPageTabBar,
   CatchPaneLayout,
+  CatchSection,
   CatchText,
   CatchTopBar,
+  type CatchMetaEntry,
 } from "@catch/web-ui";
 import {eventWhenLabel} from "../../../shared/domain/recordDates";
 import {
@@ -21,50 +24,21 @@ import type {EventPageRecord} from "../controllers/useEventPageController";
 /** Overview for every event; Page edits a Catch event; Takedown removes a public imported event. */
 export type EventPageTab = "overview" | "page" | "takedown";
 
-interface Fact {
-  label: string;
-  value: string;
-  tone?: ToneText["tone"];
-}
-
-const toneColor = {success: "positiveText", warning: "attentionText", danger: "danger"} as const;
-
-// Facts as label over value in one column; CatchMetaRow (#1389) replaces it with two.
-function Facts({items}: {items: readonly Fact[]}) {
-  return (
-    <CatchGap size="formField">
-      {items.map((item) => <Fact item={item} key={item.label} />)}
-    </CatchGap>
-  );
-}
-
-function Fact({item}: {item: Fact}) {
-  return (
-        <CatchGap size="headerTitleToSubtitle">
-          <CatchText as="span" color="ink2" variant="supporting">{item.label}</CatchText>
-          <CatchText
-            as="span"
-            color={item.tone === "success" || item.tone === "warning" || item.tone === "danger" ?
-              toneColor[item.tone] : "ink"}
-            variant="bodyM"
-          >
-            {item.value}
-          </CatchText>
-        </CatchGap>
-  );
+function fact(label: string, value: string, tone?: ToneText["tone"]): CatchMetaEntry {
+  return tone === "success" || tone === "warning" || tone === "danger" ?
+    {label, value, tone} : {label, value};
 }
 
 function organizerRow(name: string, onOpen: () => void) {
   return (
-    <CatchGap size="related">
-      <CatchText as="h2" variant="sectionTitle">Organizer</CatchText>
+    <CatchSection dividers="none" title="Organizer">
       <CatchIndexRow
         onTap={onOpen}
         title={name}
         titleVariant="bodyM"
         trailing={<CatchText as="span" color="primary" variant="supportingStrong">Open</CatchText>}
       />
-    </CatchGap>
+    </CatchSection>
   );
 }
 
@@ -72,32 +46,30 @@ function catchOverview(record: Extract<EventPageRecord, {source: "catch"}>, onOp
   const event = record.event;
   const status = eventStatusLabel(event.status === "cancelled" ? "cancelled" :
     event.bookedCount >= event.capacityLimit ? "full" : "live");
-  const facts: Fact[] = [
-    {label: "Organizer", value: event.organizerName ?? event.organizerId},
-    {label: "When", value: eventWhenLabel(event.startTime)},
-    {label: "Where", value: event.meetingPoint},
-    {label: "Format", value: event.eventFormat.label},
-    {label: "Tickets", value: eventPriceLabel(event.priceInPaise)},
-    {label: "Source", value: "Made in Catch"},
-    {label: "Status", value: status.text, tone: status.tone},
-    {label: "In search", value: event.searchIndexStatus === "indexed" ? "Indexed" : "Not indexed yet",
-      tone: event.searchIndexStatus === "indexed" ? null : "warning"},
+  const facts = [
+    fact("Organizer", event.organizerName ?? event.organizerId),
+    fact("When", eventWhenLabel(event.startTime)),
+    fact("Where", event.meetingPoint),
+    fact("Format", event.eventFormat.label),
+    fact("Tickets", eventPriceLabel(event.priceInPaise)),
+    fact("Source", "Made in Catch"),
+    fact("Status", status.text, status.tone),
+    fact("In search", event.searchIndexStatus === "indexed" ? "Indexed" : "Not indexed yet",
+      event.searchIndexStatus === "indexed" ? null : "warning"),
   ];
   const bookings = (
-    <CatchGap size="related">
-      <CatchText as="h2" variant="sectionTitle">Bookings</CatchText>
+    <CatchSection title="Bookings">
       <CatchIndexRow title="Booked" titleVariant="bodyM" trailing={<CatchText as="span" variant="supportingStrong">{eventBookedLabel(event)}</CatchText>} />
       <CatchIndexRow title="Waitlist" titleVariant="bodyM" trailing={<CatchText as="span" variant="supportingStrong">{String(event.waitlistedCount)}</CatchText>} />
       <CatchIndexRow title="Checked in" titleVariant="bodyM" trailing={<CatchText as="span" variant="supportingStrong">{String(event.checkedInCount)}</CatchText>} />
-    </CatchGap>
+    </CatchSection>
   );
-  return {main: <CatchGap size="majorSection"><Facts items={facts} />{bookings}</CatchGap>,
+  return {main: <CatchGap size="majorSection"><CatchMetaRow entries={facts} />{bookings}</CatchGap>,
     organizer: organizerRow(event.organizerName ?? event.organizerId, () => onOpenOrganizer(event.organizerId)),
     aside: event.cancellationReason ? (
-      <CatchGap size="related">
-        <CatchText as="h2" variant="sectionTitle">Cancelled</CatchText>
+      <CatchSection dividers="none" title="Cancelled">
         <CatchText as="p" variant="bodyM">{event.cancellationReason}</CatchText>
-      </CatchGap>
+      </CatchSection>
     ) : null};
 }
 
@@ -106,36 +78,35 @@ function importedOverview(record: Extract<EventPageRecord, {source: "imported"}>
   const status = eventStatusLabel(event.status === "cancelled" ? "cancelled" :
     event.publicationStatus === "draft" ? "needsCheck" :
       event.publicationStatus === "public" ? "live" : "removed");
-  const facts: Fact[] = [
-    {label: "Organizer", value: event.canonicalHostId},
-    {label: "When", value: eventWhenLabel(event.startTime)},
-    {label: "Where", value: event.meetingPoint},
-    {label: "Tickets", value: event.priceDisplayText ?? "On the source page"},
-    {label: "Source", value: eventOriginLabel({source: "imported", platform: event.platform})},
-    {label: "Status", value: status.text, tone: status.tone},
+  const facts = [
+    fact("Organizer", event.canonicalHostId),
+    fact("When", eventWhenLabel(event.startTime)),
+    fact("Where", event.meetingPoint),
+    fact("Tickets", event.priceDisplayText ?? "On the source page"),
+    fact("Source", eventOriginLabel({source: "imported", platform: event.platform})),
+    fact("Status", status.text, status.tone),
   ];
   const checks = (
-    <CatchGap size="related">
-      <CatchText as="h2" variant="sectionTitle">Checks</CatchText>
+    <CatchSection title="Checks">
       <CatchIndexRow
-            titleVariant="bodyM"
         subtitle={event.importPolicyAcknowledged ? "The import policy was acknowledged" : "Not acknowledged yet"}
         title="Import policy"
+        titleVariant="bodyM"
       />
       <CatchIndexRow
-            titleVariant="bodyM"
         subtitle={event.ownerSafeCopyReviewed ? "Reviewed" : "Not reviewed yet"}
         title="Copy the organizer would sign off"
+        titleVariant="bodyM"
       />
       <CatchIndexRow
-            titleVariant="bodyM"
         subtitle={event.duplicateCandidateCount === 0 ? "None found" :
           `${event.duplicateCandidateCount} other listings of the same event`}
         title="Duplicates"
+        titleVariant="bodyM"
       />
-    </CatchGap>
+    </CatchSection>
   );
-  return {main: <CatchGap size="majorSection"><Facts items={facts} />{checks}</CatchGap>, aside: null,
+  return {main: <CatchGap size="majorSection"><CatchMetaRow entries={facts} />{checks}</CatchGap>, aside: null,
     organizer: organizerRow(event.canonicalHostId, () => onOpenOrganizer(event.canonicalHostId))};
 }
 
