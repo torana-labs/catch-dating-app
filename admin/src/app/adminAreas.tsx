@@ -14,6 +14,7 @@ import {
 const NowRouteScreen = lazy(() => import("../features/now/ui/NowRouteScreen").then((m) => ({default: m.NowRouteScreen})));
 const MarketplaceRouteScreen = lazy(() => import("../features/marketplace/ui/MarketplaceRouteScreen").then((m) => ({default: m.MarketplaceRouteScreen})));
 const MarketingOpsScreen = lazy(() => import("../features/marketing/ui/MarketingOpsScreen").then((m) => ({default: m.MarketingOpsScreen})));
+const InboxRouteScreen = lazy(() => import("../features/inbox/ui/InboxRouteScreen").then((m) => ({default: m.InboxRouteScreen})));
 const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWorkspaceScreen").then((m) => ({default: m.IntakeWorkspaceScreen})));
 const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
@@ -29,6 +30,7 @@ const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteSc
 const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
 const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
+const IntakeSettingsRouteScreen = lazy(() => import("../features/intake/organizer/ui/IntakeSettingsRouteScreen").then((m) => ({default: m.IntakeSettingsRouteScreen})));
 const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
@@ -100,7 +102,22 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   "organizer-intake": {
-    label: "Inbox", icon: "review", frame: "legacy-fill",
+    label: "Inbox", icon: "review", frame: "redrawn",
+    render: ({navigate, route, setError, setNotice, userUid, mode}) => (
+      <InboxRouteScreen
+        onError={setError}
+        onNotice={setNotice}
+        onOpenReview={() => navigate(adminPathForNav("intake-review"))}
+        onSelect={(itemId) => navigate(itemId ? `${adminPathForNav("organizer-intake")}/${encodeURIComponent(itemId)}` :
+          adminPathForNav("organizer-intake"))}
+        reviewHref={adminPathForNav("intake-review")}
+        selectedItemId={route.params.inboxItemId ?? null}
+        uid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
+      />
+    ),
+  },
+  "intake-review": {
+    label: "Intake review", icon: "review", frame: "legacy-fill",
     render: () => <IntakeWorkspaceScreen />,
   },
   safety: {
@@ -275,10 +292,16 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
         onError={setError}
         onNavigate={navigate}
         onNotice={setNotice}
-        otherPages={canOpen("safety") ? [{
-          id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
-          render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
-        }] : []}
+        otherPages={[
+          ...(canOpen("organizer-intake") ? [{
+            id: "intake", title: "Intake", subtitle: "Nominations, what runs on its own, launch cities",
+            render: () => <IntakeSettingsRouteScreen onError={setError} onNotice={setNotice} />,
+          }] : []),
+          ...(canOpen("safety") ? [{
+            id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
+            render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
+          }] : []),
+        ]}
         selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
         teamMemberUid={route.params.teamMemberUid ?? null}
       />

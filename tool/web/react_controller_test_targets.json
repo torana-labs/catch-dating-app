@@ -408,6 +408,11 @@
       "source": "admin/src/features/settings/controllers/useTeamController.ts",
       "test": "admin/src/features/settings/controllers/useTeamController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "admin/src/features/inbox/controllers/useInboxController.ts",
+      "test": "admin/src/features/inbox/controllers/useInboxController.test.tsx",
+      "status": "required"
     }
   ]
 }
