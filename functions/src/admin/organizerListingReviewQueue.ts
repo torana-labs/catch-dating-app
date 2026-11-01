@@ -2,6 +2,9 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import type {AdminGetOrganizerListingReviewCallablePayload} from "../shared/generated/adminGetOrganizerListingReviewCallablePayload";
+import type {AdminGetOrganizerListingReviewCallableResponse} from "../shared/generated/adminGetOrganizerListingReviewCallableResponse";
+import {validateAdminGetOrganizerListingReviewCallablePayload} from "../shared/generated/validators/adminGetOrganizerListingReviewInput";
 import type {AdminListOrganizerListingReviewsCallablePayload} from "../shared/generated/adminListOrganizerListingReviewsCallablePayload";
 import type {AdminListOrganizerListingReviewsCallableResponse} from "../shared/generated/adminListOrganizerListingReviewsCallableResponse";
 import {validateAdminListOrganizerListingReviewsCallablePayload} from "../shared/generated/validators/adminListOrganizerListingReviewsInput";
@@ -83,6 +86,33 @@ export async function adminListOrganizerListingReviewsHandler(
 
 export const adminListOrganizerListingReviews = onCall(appCheckCallableOptions,
   (request) => adminListOrganizerListingReviewsHandler(request));
+
+/**
+ * One listing awaiting approval, for the inbox item that names its request. A
+ * request already approved, not finished or unreadable has nothing to review.
+ */
+export async function adminGetOrganizerListingReviewHandler(
+  request: CallableRequest<unknown>,
+  deps: ListingReviewDeps = defaultDeps
+): Promise<AdminGetOrganizerListingReviewCallableResponse> {
+  const adminContext = requireAdminRole(request, reviewRoles);
+  const data = validateCallableWithAjv<AdminGetOrganizerListingReviewCallablePayload>(request,
+    validateAdminGetOrganizerListingReviewCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOrganizerListingReview",
+    {maxRequests: 120, windowMs: 60 * 1000});
+  const snap = await db.collection(supplyIntakeCollections.requests).doc(data.requestId).get();
+  const stored = snap.data();
+  if (!stored || stored.status !== "completed" || stored.approval !== null) {
+    throw new HttpsError("failed-precondition", "This listing is not waiting for approval.");
+  }
+  const review = await reviewRow(db, snap.id, stored);
+  if (!review) throw new HttpsError("failed-precondition", "This listing could not be read.");
+  return {review, canApprove: adminContext.roles.some((role) => (listingApprovalRoles as readonly string[]).includes(role))};
+}
+
+export const adminGetOrganizerListingReview = onCall(appCheckCallableOptions,
+  (request) => adminGetOrganizerListingReviewHandler(request));
 
 async function reviewRow(db: FirebaseFirestore.Firestore, requestId: string,
   stored: FirebaseFirestore.DocumentData): Promise<Row | null> {

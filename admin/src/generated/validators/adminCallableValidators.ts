@@ -46,6 +46,7 @@ const model = {
     "adminGetMarketingOpsDashboard",
     "adminGetOrganizerClaimRequestDetails",
     "adminGetOrganizerDetails",
+    "adminGetOrganizerListingReview",
     "adminGetOrganizerOverview",
     "adminGetOverview",
     "adminGetSafetySettings",
@@ -83,7 +84,6 @@ const model = {
     "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
     "adminListOrganizerDirectory",
-    "adminListOrganizerListingReviews",
     "adminListSalesAccounts",
     "adminListSalesCommercialReport",
     "adminListSalesContacts",
@@ -196,6 +196,7 @@ const model = {
     "adminGetMarketingOpsDashboard",
     "adminGetOrganizerClaimRequestDetails",
     "adminGetOrganizerDetails",
+    "adminGetOrganizerListingReview",
     "adminGetOrganizerOverview",
     "adminGetOverview",
     "adminGetSafetySettings",
@@ -233,7 +234,6 @@ const model = {
     "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
     "adminListOrganizerDirectory",
-    "adminListOrganizerListingReviews",
     "adminListSalesAccounts",
     "adminListSalesCommercialReport",
     "adminListSalesContacts",
@@ -331,6 +331,7 @@ const model = {
     "adminGenerateSalesOutreachDraft",
     "adminGetHostAnalytics",
     "adminGetInboxItem",
+    "adminGetOrganizerListingReview",
     "adminGetOrganizerOverview",
     "adminGetOverview",
     "adminGetSafetySettings",
@@ -355,7 +356,6 @@ const model = {
     "adminListListingEventImports",
     "adminListMyNominations",
     "adminListOrganizerDirectory",
-    "adminListOrganizerListingReviews",
     "adminListSalesCommercialReport",
     "adminListSalesFitQueue",
     "adminListSalesImportHistory",
@@ -428,8 +428,7 @@ const model = {
     "adminPublishListingEvents": "intake",
     "adminRefreshOrganizerEvents": "intake",
     "adminListSupplyIntakePolicies": "intake",
-    "adminListOrganizerListingReviews": "intake",
-    "adminApproveOrganizerListing": "intake",
+    "adminApproveOrganizerListing": "inbox",
     "adminCreateOrganizerDraftFromCandidate": "intake",
     "adminDecideOrganizerIntake": "intake",
     "adminDecideOrganizerPolicyGap": "intake",
@@ -550,7 +549,8 @@ const model = {
     "adminGetInboxItem": "inbox",
     "adminUpdateInboxItem": "inbox",
     "adminRecommendOrganizerClaim": "inbox",
-    "adminListMyNominations": "sales"
+    "adminListMyNominations": "sales",
+    "adminGetOrganizerListingReview": "inbox"
   }
 } as const;
 

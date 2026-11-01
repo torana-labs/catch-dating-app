@@ -1,12 +1,16 @@
 import {
+  CatchBadge,
   CatchButton,
+  CatchCheckboxInput,
   CatchDock,
   CatchEmptyState,
   CatchField,
+  CatchGap,
   CatchIndexRow,
   CatchMetaRow,
   CatchPaneLayout,
   CatchSection,
+  CatchSheet,
   CatchTable,
   CatchWorkspaceHeader,
   type CatchMetaEntry,
@@ -14,7 +18,16 @@ import {
   type CatchTableColumn,
 } from "@catch/web-ui";
 import {useMemo, useState} from "react";
-import type {InboxItem, InboxItemDetail, InboxScope, InboxType, JourneyStep} from "../api/inboxRepository";
+import {launchMarkets} from "../../../shared/config/launchMarkets";
+import type {
+  InboxItem,
+  InboxItemDetail,
+  InboxScope,
+  InboxType,
+  JourneyStep,
+  ListingApprovalInput,
+  ListingReview,
+} from "../api/inboxRepository";
 import {inboxTypeLabels, type InboxController} from "../controllers/useInboxController";
 import {inboxScopeLabels, inboxTypeLabel, queueNote, waitingLabel, waitingTone} from "../controllers/inboxLabels";
 
@@ -207,10 +220,10 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
         secondary={{label: item.assigneeUid === uid ? "Snooze a day" : "Pick it up", onPressed: item.assigneeUid === uid ? snooze : pickUp}}
         next={`Linking opens their Sales work; it doesn't approve a claim · ${next.toLowerCase()}`} />;
     } else {
-      const reviewLabel = item.type === "listing" ? "Review the listing" : item.type === "event" ? "Review the event" :
+      const reviewLabel = item.type === "listing" ? "Review and approve" : item.type === "event" ? "Review the event" :
         "Fill in by hand";
       dock = <CatchDock recipe="pane"
-        primary={{label: reviewLabel, onPressed: onOpenReview}}
+        primary={{label: reviewLabel, onPressed: item.type === "listing" ? () => controller.openListingReview(item.sourceId) : onOpenReview}}
         secondary={{label: item.assigneeUid === uid ? "Snooze a day" : "Pick it up", isLoading: busy,
           onPressed: item.assigneeUid === uid ? snooze : pickUp}}
         note={{label: "Note for the record", placeholder: "Optional", value: note, onChanged: setNote}}
@@ -232,7 +245,122 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
       {picker}
       <CatchSection title="How it got here" timeline={timeline(item, journey)} dividers="none" />
       {dock}
+      {controller.listingReview && controller.listingReview.review.requestId === item.sourceId ? (
+        <ListingApprovalSheet key={item.sourceId} controller={controller} requestId={item.sourceId} review={controller.listingReview.review}
+          canApprove={controller.listingReview.canApprove} onClose={() => controller.openListingReview(null)} />
+      ) : null}
     </>
+  );
+}
+
+type Checklist = ListingApprovalInput["checklist"];
+
+const organizerTypes = [
+  {value: "community", label: "Community"}, {value: "club", label: "Club"}, {value: "eventProducer", label: "Event producer"},
+  {value: "venue", label: "Venue"}, {value: "brand", label: "Brand"}, {value: "individual", label: "Individual"},
+];
+const checklistItems: Array<[keyof Checklist, string]> = [
+  ["identityReviewed", "This is one real organizer, not one Catch already lists"],
+  ["surfaceInventoryReviewed", "Every link belongs to this organizer"],
+  ["ownerSafeCopyReviewed", "The description is fit to show the organizer"],
+  ["marketScopeReviewed", "They run events in the chosen market"],
+  ["mediaRightsReviewed", "No image or copy is used without the right to"],
+  ["crawlDisabledReviewed", "Crawling stays off for this page"],
+  ["claimTargetReviewed", "Claim target is present and owner-safe"],
+  ["takedownPathReviewed", "Takedown path is available"],
+  ["impersonationReviewed", "Identity does not impersonate another organizer"],
+];
+const possibleDuplicateGap = "possible_duplicate_organizer";
+const bandLabels: Record<string, string> = {
+  match: "Likely the same", probable: "Probably the same", review: "Possibly the same", low: "Weak overlap",
+};
+
+/**
+ * How the listing compares with the organizers Catch already lists. Advisory:
+ * the reviewer decides, and approving is never blocked by it.
+ */
+function DuplicateCheck({review}: {review: ListingReview}) {
+  const check = review.duplicateCheck;
+  if (!check) {
+    return <CatchIndexRow title="Not compared with listed organizers" subtitle="Search Organizers before approving." titleVariant="bodyM" />;
+  }
+  const scope = `${check.organizersCompared} published organizer${check.organizersCompared === 1 ? "" : "s"}` +
+    (check.citySlug ? ` in ${check.citySlug}` : " across every city");
+  const truncated = check.truncated ? " Only the first ones were compared, so search Organizers too." : "";
+  if (!review.listing.gaps.includes(possibleDuplicateGap) || check.candidates.length === 0) {
+    return <CatchIndexRow title="No likely duplicate" subtitle={`Compared with ${scope}: none looks like the same organizer.${truncated}`} titleVariant="bodyM" />;
+  }
+  return (
+    <CatchSection title="Possible duplicate organizer" note={`Compared with ${scope}`} dividers="none">
+      <CatchIndexRow title="Catch may already list this organizer" titleVariant="bodyM"
+        subtitle={`Open each match and approve only if this is a different organizer.${truncated}`}
+        trailing={<CatchBadge recipe="status" tone="warning" label="Check" />} />
+      {check.candidates.map((candidate) => <CatchIndexRow key={candidate.organizerId} titleVariant="bodyM"
+        title={candidate.name ?? candidate.organizerId}
+        href={`/organizers/${encodeURIComponent(candidate.organizerId)}`}
+        subtitle={`${bandLabels[candidate.band] ?? candidate.band} · score ${candidate.score.toFixed(2)} · ${candidate.rationale}`} />)}
+    </CatchSection>
+  );
+}
+
+/** Approving publishes the page unclaimed and noindex, hidden in the app, and opens its Sales work. */
+function ListingApprovalSheet({controller, requestId, review, canApprove, onClose}: {
+  controller: InboxScreenModel;
+  requestId: string;
+  review: ListingReview;
+  canApprove: boolean;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(review.listing.name ?? "");
+  const [publicSlug, setPublicSlug] = useState(review.suggestedSlug);
+  const [marketId, setMarketId] = useState(review.market.open && review.market.marketId ? review.market.marketId : "");
+  const [organizerType, setOrganizerType] = useState("community");
+  const [checklist, setChecklist] = useState<Checklist>(
+    () => Object.fromEntries(checklistItems.map(([key]) => [key, false])) as never);
+  const [note, setNote] = useState("");
+  const ready = Boolean(name.trim() && /^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$/u.test(publicSlug) && marketId &&
+    note.trim().length >= 10 && checklistItems.every(([key]) => checklist[key]));
+  const markets = [{value: "", label: "Choose a launch market"},
+    ...launchMarkets.map((market) => ({value: market.id as string, label: market.label as string}))];
+  return (
+    <CatchSheet recipe="standard" pinFooter open onClose={onClose} title={`Review ${review.listing.name ?? "listing"}`} subtitle="Inbox"
+      footer={canApprove ? <CatchButton label={controller.isApproving ? "Publishing" : "Approve and publish unclaimed"}
+        onPressed={ready && !controller.isApproving ? () => void controller.approveListing({
+          listingWorkItemId: review.listingWorkItemId, contentHash: review.listing.contentHash, name: name.trim(), publicSlug, marketId,
+          organizerType: organizerType as ListingApprovalInput["organizerType"], checklist, note: note.trim()}, requestId) : null} /> : undefined}>
+      <CatchGap size="section">
+        <CatchSection title="What Catch found" dividers="none">
+          <CatchMetaRow columns={2} entries={[
+            ...(review.listing.description ? [{label: "About", value: review.listing.description, wide: true}] : []),
+            {label: "Upcoming events", value: String(review.listing.eventCount)},
+            {label: "Pages read", value: `${review.listing.fetchedPageCount} of ${review.listing.pageCount}`},
+            ...(review.listing.gaps.length ? [{label: "To check", value: `${review.listing.gaps.join(", ")}.${review.listing.researchNeeded ? " Research is still needed." : ""}`,
+              tone: "warning" as const, wide: true}] : []),
+            ...(!review.market.open ? [{label: "Market", value: `Nominated for ${review.market.label ?? review.market.slug}, which Catch has not opened. Choose an open market or wait.`,
+              tone: "warning" as const, wide: true}] : []),
+          ]} />
+          {review.listing.links.map((link) => <CatchIndexRow key={link.url} title={link.platform} titleVariant="bodyM" subtitle={link.url} href={link.url} />)}
+        </CatchSection>
+        <DuplicateCheck review={review} />
+        {canApprove ? (
+          <CatchGap size="related">
+            <CatchField recipe="input" title="Organizer name" maxLength={120} value={name} onChanged={setName} />
+            <CatchField recipe="input" title="Public page slug" maxLength={64} value={publicSlug}
+              onChanged={(value) => setPublicSlug(value.trim().toLowerCase())} />
+            <CatchField recipe="select" title="Launch market" value={marketId} values={markets.map((entry) => entry.value)}
+              itemLabelBuilder={(value) => markets.find((entry) => entry.value === value)?.label ?? value}
+              onChanged={(value) => setMarketId(value ?? "")} />
+            <CatchField recipe="select" title="Organizer type" value={organizerType} values={organizerTypes.map((entry) => entry.value)}
+              itemLabelBuilder={(value) => organizerTypes.find((entry) => entry.value === value)?.label ?? value}
+              onChanged={(value) => setOrganizerType(value ?? "community")} />
+            {checklistItems.map(([key, label]) => <CatchCheckboxInput key={key} label={label} value={checklist[key]}
+              onChanged={(value) => setChecklist((current) => ({...current, [key]: value}))} />)}
+            <CatchField recipe="input" title="Review note" maxLines={3} maxLength={500} value={note} onChanged={setNote}
+              helperText="What you checked, in at least ten characters." />
+          </CatchGap>
+        ) : <CatchEmptyState title="Approving needs an ops or owner role" />}
+      </CatchGap>
+    </CatchSheet>
   );
 }
 

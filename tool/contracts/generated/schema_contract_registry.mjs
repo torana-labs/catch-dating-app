@@ -274099,6 +274099,322 @@ export const adminListActivityLogCallableResponseSchema = {
   }
 };
 
+export const adminGetOrganizerListingReviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_organizer_listing_review_payload.schema.json",
+  "title": "AdminGetOrganizerListingReviewCallablePayload",
+  "description": "One Supply Intake listing awaiting approval, by its request, with what a reviewer needs to approve it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetOrganizerListingReview"
+  ]
+};
+
+export const adminGetOrganizerListingReviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_organizer_listing_review_response.schema.json",
+  "title": "AdminGetOrganizerListingReviewCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "review",
+    "canApprove"
+  ],
+  "properties": {
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "listingWorkItemId",
+        "kind",
+        "submittedByRole",
+        "submittedAt",
+        "origin",
+        "market",
+        "suggestedSlug",
+        "listing",
+        "duplicateCheck"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "listingWorkItemId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "kind": {
+          "enum": [
+            "nomination",
+            "self_submission",
+            "discovery"
+          ]
+        },
+        "submittedByRole": {
+          "enum": [
+            "associate",
+            "partner",
+            "organizer",
+            "system"
+          ]
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "origin": {
+          "enum": [
+            "admin_nomination",
+            "sales_inbound_intent",
+            "message_nomination",
+            "discovery_run",
+            "none"
+          ]
+        },
+        "market": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "slug",
+            "marketId",
+            "label",
+            "open"
+          ],
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "marketId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 96
+            },
+            "label": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "open": {
+              "type": "boolean",
+              "description": "Whether an organizer can be approved into this market as it stands."
+            }
+          }
+        },
+        "suggestedSlug": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+        },
+        "listing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "description",
+            "categories",
+            "links",
+            "gaps",
+            "eventCount",
+            "researchNeeded",
+            "contentHash",
+            "pageCount",
+            "fetchedPageCount"
+          ],
+          "properties": {
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 2000
+            },
+            "categories": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "maxLength": 80
+              }
+            },
+            "links": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "platform",
+                  "url"
+                ],
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                }
+              }
+            },
+            "gaps": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "maxLength": 120
+              }
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "researchNeeded": {
+              "type": "boolean"
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "pageCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fetchedPageCount": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "duplicateCheck": {
+          "description": "How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "verdict",
+                "organizersCompared",
+                "citySlug",
+                "truncated",
+                "candidates"
+              ],
+              "properties": {
+                "verdict": {
+                  "enum": [
+                    "match",
+                    "ambiguous",
+                    "none"
+                  ]
+                },
+                "organizersCompared": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "citySlug": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80,
+                  "description": "The city the comparison was limited to; null when it compared every city."
+                },
+                "truncated": {
+                  "type": "boolean",
+                  "description": "Whether more published organizers existed than were compared."
+                },
+                "candidates": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "organizerId",
+                      "name",
+                      "score",
+                      "band",
+                      "rationale"
+                    ],
+                    "properties": {
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 500
+                      },
+                      "score": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "band": {
+                        "enum": [
+                          "match",
+                          "probable",
+                          "review",
+                          "low"
+                        ]
+                      },
+                      "rationale": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "canApprove": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const adminListOrganizerListingReviewsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_list_organizer_listing_reviews_payload.schema.json",
