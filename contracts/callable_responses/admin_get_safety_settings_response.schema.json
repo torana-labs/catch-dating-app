@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_safety_settings_response.schema.json",
+  "title": "AdminGetSafetySettingsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "settings",
+    "deadlines",
+    "stepRoles",
+    "retentionDaysAfterDeletion"
+  ],
+  "properties": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reasons",
+        "restrictOnSevereReport",
+        "organizerBlockLists",
+        "organizerReports",
+        "updatedAtMillis",
+        "updatedByUid"
+      ],
+      "properties": {
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "label",
+              "severe",
+              "takedown",
+              "active"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{1,63}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "severe": {
+                "type": "boolean"
+              },
+              "takedown": {
+                "type": "boolean"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "restrictOnSevereReport": {
+          "type": "boolean"
+        },
+        "organizerBlockLists": {
+          "type": "boolean"
+        },
+        "organizerReports": {
+          "type": "boolean"
+        },
+        "updatedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "updatedByUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    },
+    "deadlines": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acknowledge",
+        "firstLookHours",
+        "resolveDays",
+        "takedownHours"
+      ],
+      "properties": {
+        "acknowledge": {
+          "type": "string",
+          "enum": [
+            "immediately"
+          ]
+        },
+        "firstLookHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolveDays": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "takedownHours": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "stepRoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warn",
+        "restrict",
+        "suspend",
+        "ban"
+      ],
+      "properties": {
+        "warn": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "restrict": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "suspend": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        },
+        "ban": {
+          "type": "string",
+          "enum": [
+            "ops",
+            "owner"
+          ]
+        }
+      }
+    },
+    "retentionDaysAfterDeletion": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

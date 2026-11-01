@@ -25,6 +25,8 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "events", "external-list", payloadKey] as const,
     detail: (eventId: string) =>
       [...adminQueryKeys.all, "events", "detail", eventId] as const,
+    directory: (payloadKey: string) =>
+      [...adminQueryKeys.all, "events", "directory", payloadKey] as const,
   },
   eventIntake: {
     dashboardBridge: () =>
@@ -88,6 +90,10 @@ export const adminQueryKeys = {
     claims: () => [...adminQueryKeys.all, "organizers", "claims"] as const,
     claimDetail: (requestId: string) =>
       [...adminQueryKeys.all, "organizers", "claims", requestId] as const,
+    directory: (payloadKey: string) =>
+      [...adminQueryKeys.all, "organizers", "directory", payloadKey] as const,
+    overview: (organizerId: string) =>
+      [...adminQueryKeys.all, "organizers", "overview", organizerId] as const,
   },
   overview: {
     snapshot: (mode: string) =>

@@ -50,7 +50,7 @@ const booked = (data: Raw) =>
   data?.status === "signedUp" || data?.status === "attended";
 
 export const onOrganizerGrowthOrganizerWritten = onDocumentWritten({
-  document: "organizers/{organizerId}", retry: true,
+  document: "organizers/{organizerId}",
 }, async (event) => {
   const observed = organizerMilestones(event.data?.before.data(),
     event.data?.after.data(), Timestamp.fromDate(new Date(event.time)));
@@ -58,7 +58,7 @@ export const onOrganizerGrowthOrganizerWritten = onDocumentWritten({
 });
 
 export const onOrganizerGrowthClaimRequestCreated = onDocumentCreated({
-  document: "organizerClaimRequests/{requestId}", retry: true,
+  document: "organizerClaimRequests/{requestId}",
 }, async (event) => {
   const request = event.data?.data();
   if (typeof request?.organizerId !== "string") return;
@@ -73,7 +73,7 @@ export const onOrganizerGrowthClaimRequestCreated = onDocumentCreated({
  * free, lands on an event that is not cancelled.
  */
 export const onOrganizerGrowthParticipationWritten = onDocumentWritten({
-  document: "eventParticipations/{participationId}", retry: true,
+  document: "eventParticipations/{participationId}",
 }, async (event) => {
   const before = event.data?.before.data();
   const after = event.data?.after.data();
@@ -175,19 +175,19 @@ async function recordCheckoutPayments(source: PaymentFact["source"],
 }
 
 export const onOrganizerGrowthPublicPaymentWritten = onDocumentWritten({
-  document: "publicEventPayments/{paymentId}", retry: true,
+  document: "publicEventPayments/{paymentId}",
 }, (event) => recordCheckoutPayments("publicEventPayments",
   event.params.paymentId, event.data?.before.data(),
   event.data?.after.data()));
 
 export const onOrganizerGrowthOfferPaymentWritten = onDocumentWritten({
-  document: "organizerEventOfferPayments/{paymentId}", retry: true,
+  document: "organizerEventOfferPayments/{paymentId}",
 }, (event) => recordCheckoutPayments("organizerEventOfferPayments",
   event.params.paymentId, event.data?.before.data(),
   event.data?.after.data()));
 
 export const onOrganizerGrowthNativePaymentWritten = onDocumentWritten({
-  document: "payments/{paymentId}", retry: true,
+  document: "payments/{paymentId}",
 }, async (event) => {
   const facts = nativePaymentFacts(event.params.paymentId,
     event.data?.before.data(), event.data?.after.data());

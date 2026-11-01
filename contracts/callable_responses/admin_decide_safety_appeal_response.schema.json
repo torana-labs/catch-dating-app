@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_appeal_response.schema.json",
+  "title": "AdminDecideSafetyAppealCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "outcome",
+    "replacementActionId"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "keep",
+        "reduce",
+        "lift"
+      ]
+    },
+    "replacementActionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{8,128}$"
+    }
+  }
+}

@@ -2,13 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reports.schema.json",
   "title": "ReportDocument",
-  "description": "Canonical safety report stored at reports/{reportId}.",
+  "description": "Canonical safety report stored at reports/{reportId}. A guest reports another guest from a profile or chat; an organizer or their team reports a guest from an event. The reporter is acknowledged at once and the deadlines (first look 24 h, resolve 15 days, intimate images down 24 h) drive the Safety queue. A severe reason restricts the reported account at once, pending review. Kept 180 days after either account is deleted (retainUntil).",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reports",
   "x-firestore-path": "reports/{reportId}",
   "x-document-id-field": "id",
-  "x-owner": "reportUser callable",
+  "x-owner": "reportUser and reportGuest callables",
   "required": [
     "reporterUserId",
     "targetUserId",
@@ -35,7 +35,8 @@
         "profile",
         "chat",
         "match",
-        "support"
+        "support",
+        "organizer"
       ],
       "x-catch-ownership": "callable-owned"
     },
@@ -63,6 +64,108 @@
     "notes": {
       "type": "string",
       "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterRole": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "organizer"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "severe",
+        "standard"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "acknowledgedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstLookDueAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolveDueAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "takedownDueAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstLookAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "resolvedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterNotifiedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "actionIds": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{8,128}$"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assigneeUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentUpdatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentUpdatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hasDeletedUser": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "x-catch-ownership": "callable-owned"
+    },
+    "deletedUserMarkedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "retainUntil": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
       "x-catch-ownership": "callable-owned"
     }
   }

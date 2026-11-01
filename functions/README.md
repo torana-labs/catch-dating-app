@@ -300,8 +300,14 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
-| `reportUser` | `src/safety/` | File a safety report |
 | `adminListSupportConversations` / `adminGetSupportConversation` / `adminUpdateSupportConversation` / `adminRecordSupportMessage` / `adminListSupportSavedReplies` / `adminUpsertSupportSavedReply` | `src/supportInbox/adminSupport.ts` | Support inbox for ops: WhatsApp and Instagram messages that are not nominations, and logged emails, as one conversation per person per channel with owner, waiting time, links and saved replies |
+| `reportUser` / `reportGuest` | `src/safety/reporting.ts` | File a safety report (guest, or organizer and team); acknowledged at once, deadlines attached, severe reasons restrict at once |
+| `adminTakeAccountSafetyAction` / `adminLiftAccountSafetyAction` / `adminListAccountSafetyActions` / `expireAccountSafetyActions` | `src/safety/accountActions.ts` | Warn and restrict (ops), suspend and ban (owner), enforced at sign-in, messaging and booking; suspensions and bans cancel future bookings; expiry every 15 minutes |
+| `submitSafetyAppeal` / `adminDecideSafetyAppeal` | `src/safety/safetyAppeals.ts` | One appeal per action, reviewed by someone who did not decide |
+| `adminGetSafetySettings` / `adminUpdateSafetySettings` | `src/safety/safetySettings.ts` | Settings → Safety: configurable reasons and rules (owner edits) |
+| `manageOrganizerGuestBlock` / `listOrganizerGuestBlocks` | `src/safety/organizerGuestBlocks.ts` | An organizer's own block list, enforced by every booking path |
+| `onUserCreatedSafetyScreen` / `onPushInstallationSafetyScreen` / `reconcileBannedIdentityScreens` | `src/safety/bannedIdentities.ts` | Stop new accounts on a banned phone or device and record the attempt; the triggers do not retry, so a nightly pass re-screens the last two days |
+| `purgeRetainedSafetyRecords` | `src/safety/safetyRetention.ts` | Delete case records 180 days after account deletion |
 | `listSuvbotDemoActions` / `requestSuvbotDemoOperation` | `src/demoOps/` | Demo-data operation catalogue and request surface |
 | `adminListCrossPathsShowcaseCandidates` / `adminSetCrossPathsShowcaseEligibility` | `src/admin/crossPathsShowcaseEligibility.ts` | Admin bounded Cross Paths showcase review queue and audited score-free eligibility decision |
 | `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |
@@ -314,7 +320,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminSetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner audited Firebase Auth custom-claim assignment |
 | `adminGetSafetyTriageDetails` | `src/admin/safetyTriage.ts` | Admin read-only normalized safety queue detail |
 | `adminAssignSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue assignment |
-| `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed status decision |
+| `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed decision; tells the reporter it was handled |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
 | `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/organizerClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
 | `adminSetOrganizerIndexStatus` | `src/admin/organizerIndexing.ts` | Admin audited organizer index/noindex publishing decision |
@@ -322,6 +328,9 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
 | `adminUpdateEventDetails` | `src/admin/eventDetails.ts` | Admin audited safe app-facing event field patch |
 | `adminListExternalEventDetails` | `src/admin/externalEventDetails.ts` | Admin read-only external event supply list for `externalEvents/{id}` |
+| `adminListOrganizerDirectory` | `src/admin/organizerDirectory.ts` | Admin Organizers directory: real totals, views, city/kind/claim/mine chips and paging |
+| `adminListEventDirectory` | `src/admin/eventDirectory.ts` | Admin Events directory: Catch and imported events in one table, with source, view totals and chips |
+| `adminGetOrganizerOverview` | `src/admin/organizerOverview.ts` | Admin organizer page Overview: facts, Sales owner, terms, payments, journey and upcoming events |
 | `adminListIntakeOperations` | `src/admin/intakeOperations.ts` | Role-gated read-only Supply Intake projection with authoritative aggregates, server-filtered human exceptions, and lazy ordinary pages |
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
@@ -426,6 +435,7 @@ enter previews.
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
 | `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
+| `reconcileAdminInboxNightly` | `src/admin/inbox/triggers.ts` | Nightly (03:10 India time), re-projects every inbox source and the people index from their documents; idempotent, so it changes only what a failed trigger missed (the inbox and people triggers are not retried) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
 | `reconcilePublicPages` | `src/publicPages/triggers.ts` | Daily, rebuilds every organizer's public page read models, so ended events move to past moments and missed changes heal |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
@@ -450,6 +460,7 @@ enter previews.
 | `joinWaitlist` | `src/waitlist/` | Public marketing waitlist endpoint |
 | `onHostPilotCheckIn` | `src/acquisition/` | Canonical roster check-in creates one private organiser activation after staff real-event review; no vendor export |
 | `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthPublicPaymentWritten`, `onOrganizerGrowthOfferPaymentWritten`, `onOrganizerGrowthNativePaymentWritten` | `src/growth/` | Record each organizer's dated steps (listed, claim asked, claimed, first event, first paid booking) in `organizerGrowthFacts`, keeping the earliest time, and stream them with paid bookings and refunds to BigQuery `organizer_growth_events` |
+| `reconcileOrganizerGrowthDaily` | `src/growth/` | Nightly (03:40 India time): recomputes every organizer's growth steps from organizers, claim requests, booked events and captured checkouts and records any the triggers missed; the triggers are not retried |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |

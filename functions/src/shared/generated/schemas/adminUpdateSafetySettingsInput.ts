@@ -1,0 +1,68 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminUpdateSafetySettingsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_safety_settings_payload.schema.json",
+  "title": "AdminUpdateSafetySettingsCallablePayload",
+  "description": "Owner-only. Replaces the report reasons and the safety rules. Reason codes already used on reports keep their meaning, so a reason is switched off (active false) rather than removed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reasons",
+    "restrictOnSevereReport",
+    "organizerBlockLists",
+    "organizerReports"
+  ],
+  "properties": {
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "label",
+          "severe",
+          "takedown",
+          "active"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "severe": {
+            "type": "boolean"
+          },
+          "takedown": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "restrictOnSevereReport": {
+      "type": "boolean"
+    },
+    "organizerBlockLists": {
+      "type": "boolean"
+    },
+    "organizerReports": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateSafetySettings"
+  ]
+} as const;

@@ -19,6 +19,12 @@ class FakeDocRef {
   async get(): Promise<FakeSnapshot> {
     return new FakeSnapshot(this.firestore, this.path);
   }
+
+  async update(patch: FakeData): Promise<void> {
+    const current = this.firestore.get(this.path);
+    if (current === undefined) throw new Error(`Missing doc: ${this.path}`);
+    this.firestore.set(this.path, applyPatch(current, patch));
+  }
 }
 
 class FakeSnapshot {
@@ -140,6 +146,10 @@ class FakeFirestore {
 
   collection(collectionPath: string): FakeCollectionRef {
     return new FakeCollectionRef(this, collectionPath);
+  }
+
+  doc(path: string): FakeDocRef {
+    return new FakeDocRef(this, path);
   }
 
   autoId(): string {
@@ -538,6 +548,11 @@ test("adminDecideSafetyTriageItemHandler reviews an open report", async () => {
   });
   assert.equal(firestore.get("reports/report-1")?.status, "reviewed");
   assert.equal(firestore.get("reports/report-1")?.reviewedAt, undefined);
+  assert.ok(firestore.get("reports/report-1")?.resolvedAt);
+  assert.ok(firestore.get("reports/report-1")?.reporterNotifiedAt);
+  assert.equal(firestore.get(
+    "accountSafetyNotices/user-1/items/report-handled-report-1")?.kind,
+  "reportHandled");
   assert.deepEqual(rateLimitActions, ["adminDecideSafetyTriageItem"]);
   assert.equal(
     firestore.adminAuditLogs()[0].action,
