@@ -1,0 +1,288 @@
+{
+  "workflow": {
+    "workflowId": "organizer-intake",
+    "label": "Organizer Intake",
+    "guiPath": "/intake/organizers"
+  },
+  "actions": [
+    {
+      "actionId": "organizer-intake.approve-listing",
+      "callable": "adminApproveOrganizerListing",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "listingWorkItemId",
+      "requestSchema": "contracts/callables/admin_approve_organizer_listing_payload.schema.json",
+      "summary": "Approve one Supply Intake listing: publish its organizer page unclaimed and noindex, hidden in the app, record the review, and open its Sales account, opportunity, tasks and activity.",
+      "example": {
+        "requestId": "example-approval-001",
+        "listingWorkItemId": "example-listing-work-item",
+        "contentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "name": "Example organizer",
+        "publicSlug": "example-organizer",
+        "marketId": "in-mh-mumbai",
+        "organizerType": "community",
+        "checklist": {
+          "identityReviewed": true,
+          "surfaceInventoryReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "crawlDisabledReviewed": true,
+          "claimTargetReviewed": true,
+          "takedownPathReviewed": true,
+          "impersonationReviewed": true
+        },
+        "note": "Fixture approval; do not apply to production."
+      }
+    },
+    {
+      "actionId": "organizer-intake.create-organizer-draft",
+      "callable": "adminCreateOrganizerDraftFromCandidate",
+      "workflowIds": [
+        "organizer-intake",
+        "organizers"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "workItemId",
+      "requestSchema": "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+      "summary": "Create one unclaimed, source-backed organizer draft from a reviewed Supply Intake candidate; publication, indexing, app visibility, crawling, and ownership remain disabled.",
+      "example": {
+        "workItemId": "example-organizer-work-item",
+        "candidateId": "example-organizer-candidate",
+        "publicSlug": "example-organizer",
+        "name": "Example organizer",
+        "organizerType": "community",
+        "reviewNote": "Fixture organizer draft; do not apply to production."
+      }
+    },
+    {
+      "actionId": "organizer-intake.decide-policy-gap",
+      "callable": "adminDecideOrganizerPolicyGap",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "gapId",
+      "requestSchema": "contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
+      "summary": "Record a policy-gap decision while the underlying behavior remains disabled.",
+      "example": {
+        "gapId": "example-policy-gap",
+        "decision": "hold",
+        "requiredInputsReviewed": [
+          "fixture input"
+        ],
+        "checklist": {
+          "requiredInputsReviewed": true,
+          "costAndSafetyReviewed": true,
+          "implementationOwnerReviewed": true,
+          "behaviorStillDisabledAcknowledged": true
+        },
+        "note": "Fixture policy hold."
+      }
+    },
+    {
+      "actionId": "organizer-intake.decide-publication",
+      "callable": "adminDecideOrganizerIntake",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "entityId",
+      "requestSchema": "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
+      "summary": "Approve or hold one organizer record while setting public-page publication, search indexing, and app discovery independently.",
+      "example": {
+        "entityId": "example-organizer",
+        "decision": "hold",
+        "publishStatus": "draft",
+        "indexStatus": "noindex",
+        "appVisibility": "hidden",
+        "checklist": {
+          "identityReviewed": true,
+          "surfaceInventoryReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "crawlDisabledReviewed": true
+        },
+        "note": "Fixture publication hold."
+      }
+    },
+    {
+      "actionId": "organizer-intake.list-listing-event-imports",
+      "callable": "adminListListingEventImports",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_listing_event_imports_payload.schema.json",
+      "summary": "List one page of approved Supply Intake listings with the events each imported and where each stands: published, withdrawn, ready, needing a check, or blocked.",
+      "example": {
+        "limit": 5,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "organizer-intake.list-listing-reviews",
+      "callable": "adminListOrganizerListingReviews",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_organizer_listing_reviews_payload.schema.json",
+      "summary": "List one page of Supply Intake listings awaiting approval, newest first, with what a reviewer needs to approve each.",
+      "example": {
+        "limit": 10,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "organizer-intake.list-supply-intake-policies",
+      "callable": "adminListSupplyIntakePolicies",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_supply_intake_policies_payload.schema.json",
+      "summary": "List the Supply Intake capabilities that stay off until the owner decides, each with its decision and whether its policy file switches it on.",
+      "example": {}
+    },
+    {
+      "actionId": "organizer-intake.publish-listing-events",
+      "callable": "adminPublishListingEvents",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "intakeRequestId",
+      "requestSchema": "contracts/callables/admin_publish_listing_events_payload.schema.json",
+      "summary": "Dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events, with a receipt per event.",
+      "example": {
+        "intakeRequestId": "example-intake-request",
+        "eventWorkItemIds": [
+          "example-event-work-item"
+        ],
+        "executionMode": "dry_run",
+        "idempotencyKey": "example-listing:dry-run",
+        "reviewNote": "Fixture publication; do not apply.",
+        "checklist": {
+          "outboundLinksReviewed": true,
+          "noCatchBookingPaymentsWaitlist": true,
+          "ownerSafeCopyReviewed": true
+        },
+        "blockerResolutions": []
+      }
+    },
+    {
+      "actionId": "organizer-intake.record-curation",
+      "callable": "adminRecordOrganizerCuration",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "entityId",
+      "requestSchema": "contracts/callables/admin_record_organizer_curation_payload.schema.json",
+      "summary": "Record one atomic organizer curation operation.",
+      "example": {
+        "operationType": "suppress_entity",
+        "entityId": "example-organizer",
+        "reason": "Fixture curation operation; do not apply."
+      }
+    },
+    {
+      "actionId": "organizer-intake.refresh-organizer-events",
+      "callable": "adminRefreshOrganizerEvents",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_refresh_organizer_events_payload.schema.json",
+      "summary": "Read new events for an unclaimed organizer Catch already lists, from given links or its page's event-calendar links; they go through the event publication policy.",
+      "example": {
+        "requestId": "example-refresh-001",
+        "organizerId": "example-organizer",
+        "urls": []
+      }
+    }
+  ]
+}

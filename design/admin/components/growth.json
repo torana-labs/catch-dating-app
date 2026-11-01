@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "id": "route_growth_kpi",
+      "kind": "route",
+      "owner": "features/growth",
+      "source": "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
+      "exportName": "GrowthKpiScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "GrowthRouteStory",
+        "states": [
+          "signal-directory"
+        ]
+      },
+      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered GrowthKpiWorkspace with deterministic signal/trend fixtures in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "workspace_growth_kpi",
+      "kind": "workspace",
+      "owner": "features/growth",
+      "source": "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
+      "exportName": "GrowthKpiWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "GrowthWorkspaceStory",
+        "states": [
+          "signal-directory"
+        ]
+      },
+      "notes": "Prop-driven Growth KPI workspace surface used by the route wrapper and deterministic Storybook previews; controller-owned query logic stays in GrowthKpiScreen."
+    }
+  ]
+}

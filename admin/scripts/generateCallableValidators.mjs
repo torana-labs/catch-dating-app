@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import {adminCallableNames, readAdminCallableSources} from
   "../../tool/admin/callable_inventory.mjs";
+import {readAdminActionCatalog} from "../../tool/lib/admin_registries.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -12,11 +13,6 @@ const contractsRoot = path.join(repoRoot, "contracts");
 const validatorsDir = path.join(adminRoot, "src/generated/validators");
 const facadePath = path.join(validatorsDir, "adminCallableValidators.ts");
 const groupsDir = path.join(validatorsDir, "groups");
-const adminActionCatalogPath = path.join(
-  contractsRoot,
-  "admin",
-  "admin_action_catalog.json"
-);
 const checkOnly = process.argv.includes("--check");
 const selfTest = process.argv.includes("--self-test");
 
@@ -107,7 +103,7 @@ function buildModel() {
       strictRequests.add(name);
     }
   }
-  const adminActions = readJson(adminActionCatalogPath).actions ?? [];
+  const adminActions = readAdminActionCatalog().actions;
   const groups = {};
   for (const action of adminActions) {
     if (!names.includes(action.callable) || groups[action.callable]) continue;
@@ -332,7 +328,8 @@ function renderFacade(model) {
     names: model.names,
     strictRequests: model.strictRequests,
     strictResponses: model.strictResponses,
-    groups: model.groups,
+    // Sorted: appending to the end is where two PRs collide.
+    groups: Object.fromEntries(Object.entries(model.groups).sort(([a], [b]) => a.localeCompare(b))),
   }, null, 2);
   const loaders = model.groupModels.map(({group}) =>
     `  ${JSON.stringify(group)}: () => import("./groups/${group}"),`).join("\n");

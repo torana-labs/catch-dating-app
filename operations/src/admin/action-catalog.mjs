@@ -5,6 +5,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import {OperationsError} from "../platform/errors.mjs";
 import {collectSchema} from "../platform/schema-dependencies.mjs";
+import {readAdminActionCatalog} from "../../../tool/lib/admin_registries.mjs";
 
 const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(moduleDirectory, "..", "..", "..");
@@ -19,7 +20,7 @@ export async function loadAdminActionCatalog({
   repoRoot = defaultRepoRoot,
   catalogPath = defaultCatalogPath,
 } = {}) {
-  const catalog = JSON.parse(await fs.readFile(catalogPath, "utf8"));
+  const catalog = readAdminActionCatalog(catalogPath);
   const validators = await requestValidators(catalog, repoRoot);
   const actionsById = new Map(catalog.actions.map((action) => [
     action.actionId,

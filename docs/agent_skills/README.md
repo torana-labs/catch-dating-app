@@ -68,6 +68,6 @@ components may be exported from `admin/src/features/**`, while reusable panels,
 cards, lists, badges, and sections must live under `admin/src/shared/ui` or stay
 private in their feature file. Admin route/workspace entries, shared admin
 primitives, and admin feedback providers are registered in
-`design/admin/components.json` and checked by `web:admin-components`. Admin
+`design/admin/components/` and checked by `web:admin-components`. Admin
 preview-ready entries are backed by Storybook exports under `admin/src/stories`
 and verified by `web:admin-storybook`.

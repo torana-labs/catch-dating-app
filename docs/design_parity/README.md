@@ -259,7 +259,7 @@ Finance Operations, Growth KPI, Intake, Marketing Operations, Organizer
 Publishing, Overview, Safety Triage, and User Analytics. Intake and Overview
 each retain two projections because their secondary route components expose
 independent state and actions; they are not flattened into grouped coverage.
-Admin route previews are resolved from `design/admin/components.json` just as
+Admin route previews are resolved from `design/admin/components/` just as
 marketing route previews are resolved from the website registry.
 
 Actions name one of the surface's declared Dart or TypeScript owners, so a

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
+import {readdirSync, readFileSync} from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {
@@ -12,12 +12,17 @@ import {SALES_ACTION_SCHEMAS, SALES_READ_SCHEMAS} from "./schemas";
 
 const root = path.resolve(__dirname, "../../../../contracts");
 
+// The catalog is one file per workflow under contracts/admin/actions/.
+function readCatalog<Action extends {actionId: string}>() {
+  const directory = path.join(root, "admin/actions");
+  const actions = readdirSync(directory).flatMap((file) => (JSON.parse(
+    readFileSync(path.join(directory, file), "utf8")) as {actions: Action[]}).actions);
+  return {actions: actions.sort((a, b) => a.actionId.localeCompare(b.actionId))};
+}
+
 test("Sales catalog requests match the runtime validator authority", () => {
-  const catalog = JSON.parse(readFileSync(path.join(root,
-    "admin/admin_action_catalog.json"), "utf8")) as {
-    actions: Array<{actionId: string; callable: string;
-      requestSchema: string}>;
-  };
+  const catalog = readCatalog<{actionId: string; callable: string;
+    requestSchema: string}>();
   const actions = {...SALES_READ_SCHEMAS, ...SALES_ACTION_SCHEMAS};
   const entries = catalog.actions.filter((entry) =>
     entry.actionId.startsWith("sales.") &&
@@ -48,11 +53,8 @@ test("Sales catalog requests match the runtime validator authority", () => {
 
 
 test("Partner catalog requests match their separate runtime validator", () => {
-  const catalog = JSON.parse(readFileSync(path.join(root,
-    "admin/admin_action_catalog.json"), "utf8")) as {
-    actions: Array<{actionId: string; callable: string;
-      requestSchema: string; example: Record<string, unknown>}>;
-  };
+  const catalog = readCatalog<{actionId: string; callable: string;
+    requestSchema: string; example: Record<string, unknown>}>();
   const entries = catalog.actions.filter((entry) =>
     entry.actionId.startsWith("sales.partners."));
   assert.deepEqual(entries.map((entry) => entry.callable),

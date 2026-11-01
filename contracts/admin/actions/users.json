@@ -1,0 +1,29 @@
+{
+  "workflow": {
+    "workflowId": "users",
+    "label": "Users",
+    "guiPath": "/users"
+  },
+  "actions": [
+    {
+      "actionId": "analytics.user",
+      "callable": "adminGetUserAnalytics",
+      "workflowIds": [
+        "users"
+      ],
+      "guiPath": "/users",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/user_analytics_query_payload.schema.json",
+      "summary": "Load the bounded analytics report for one exact user id.",
+      "example": {
+        "userId": "example-user",
+        "rangePreset": "30d",
+        "granularity": "day"
+      }
+    }
+  ]
+}

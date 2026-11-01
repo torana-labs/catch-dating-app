@@ -1,0 +1,63 @@
+{
+  "components": [
+    {
+      "id": "route_cross_paths_showcase",
+      "kind": "route",
+      "owner": "features/cross-paths",
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "exportName": "CrossPathsShowcaseScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "CrossPathsShowcaseRouteStory",
+        "states": [
+          "queue",
+          "review-decision"
+        ]
+      },
+      "notes": "Role-gated route wrapper loads the bounded score-free showcase queue and keeps all server mutations behind the pending-operation guard."
+    },
+    {
+      "id": "shared_admin_profile_photo_grid",
+      "kind": "feature-component",
+      "owner": "features/cross-paths",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminProfilePhotoGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminProfilePhotoGridStory",
+        "states": [
+          "three-photos"
+        ]
+      },
+      "notes": "Shared read-only photo grid for bounded public-profile evidence in admin review workspaces."
+    },
+    {
+      "id": "workspace_cross_paths_showcase",
+      "kind": "workspace",
+      "owner": "features/cross-paths",
+      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
+      "exportName": "CrossPathsShowcaseWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "CrossPathsShowcaseWorkspaceStory",
+        "states": [
+          "queue",
+          "review-decision"
+        ]
+      },
+      "notes": "Prop-driven reviewer workspace shows public profile evidence, coarse objective blockers, fingerprint state, and audited approve, hold, or pause decisions."
+    }
+  ]
+}

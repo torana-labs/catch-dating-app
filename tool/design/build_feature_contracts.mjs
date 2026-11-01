@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {readDesignRegistry} from "../lib/admin_registries.mjs";
 
 const featureRoot = fromRepo("design/features");
 const generatedRoot = fromRepo("design/features/generated");
@@ -67,13 +68,13 @@ async function runCli() {
   const authorityRegistries = Object.fromEntries(
     Object.entries(authorityRegistryPaths).map(([id, filePath]) => [
       id,
-      readJson(fromRepo(filePath)),
+      readDesignRegistry(filePath),
     ]),
   );
   const componentRegistries = Object.fromEntries(
     Object.entries(componentRegistryPaths).map(([runtime, filePath]) => [
       runtime,
-      readJson(fromRepo(filePath)),
+      readDesignRegistry(filePath),
     ]),
   );
   const sources = fs.readdirSync(featureRoot)

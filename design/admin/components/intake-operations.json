@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "id": "workspace_intake_operations",
+      "kind": "workspace",
+      "owner": "features/intake/operations",
+      "source": "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+      "exportName": "IntakeOperationsPreviewWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "IntakeOperationsWorkspaceStory",
+        "states": [
+          "default",
+          "human-review",
+          "read-only-boundary"
+        ]
+      },
+      "notes": "Prop-driven read-only Supply Intake operations inventory backed by canonical run and work-item fixtures."
+    },
+    {
+      "id": "workspace_intake_operations_live",
+      "kind": "workspace",
+      "owner": "features/intake/operations",
+      "source": "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+      "exportName": "IntakeOperationsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live Supply Intake operations hook wrapper; deterministic preview coverage belongs to workspace_intake_operations."
+    }
+  ]
+}

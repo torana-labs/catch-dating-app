@@ -1,0 +1,70 @@
+{
+  "workflow": {
+    "workflowId": "admin-roles",
+    "label": "Admin roles",
+    "guiPath": "/admin-roles"
+  },
+  "actions": [
+    {
+      "actionId": "admin-roles.get",
+      "callable": "adminGetAdminUserRoles",
+      "workflowIds": [
+        "admin-roles"
+      ],
+      "guiPath": "/admin-roles",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_admin_user_roles_payload.schema.json",
+      "summary": "Load the Catch admin roles assigned to one exact Firebase uid.",
+      "example": {
+        "targetUid": "example-admin"
+      }
+    },
+    {
+      "actionId": "admin-roles.list",
+      "callable": "adminListAdminRoleAssignments",
+      "workflowIds": [
+        "admin-roles"
+      ],
+      "guiPath": "/admin-roles",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
+      "summary": "List the bounded admin-role assignment register.",
+      "example": {
+        "status": "all",
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "admin-roles.set",
+      "callable": "adminSetAdminUserRoles",
+      "workflowIds": [
+        "admin-roles"
+      ],
+      "guiPath": "/admin-roles",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "targetUid",
+      "requestSchema": "contracts/callables/admin_set_admin_user_roles_payload.schema.json",
+      "summary": "Replace the complete Catch admin-role set for one Firebase uid.",
+      "example": {
+        "targetUid": "example-admin",
+        "roles": [
+          "support"
+        ],
+        "note": "Fixture role update; do not apply."
+      }
+    }
+  ]
+}

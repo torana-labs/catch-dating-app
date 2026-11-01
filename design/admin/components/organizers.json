@@ -1,0 +1,155 @@
+{
+  "components": [
+    {
+      "id": "route_organizer_directory",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerDirectoryScreen.tsx",
+      "exportName": "OrganizerDirectoryScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerDirectoryRouteStory",
+        "states": [
+          "all",
+          "views",
+          "chips"
+        ]
+      },
+      "notes": "Organizers: every listed organizer in one CatchTable on CatchPaneLayout wide-table with real totals from adminListOrganizerDirectory; CatchWorkspaceHeader carries the views (all, live, unclaimed, hidden), the city, kind, claim-waiting and Mine chips and search. It replaces the Organizer Publishing directory."
+    },
+    {
+      "id": "route_organizer_page",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerPageScreen.tsx",
+      "exportName": "OrganizerPageScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerPageRouteStory",
+        "states": [
+          "overview",
+          "journey",
+          "upcoming",
+          "money"
+        ]
+      },
+      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview, with CatchMetaRow facts and the CatchSection timeline journey; the Page tab hosts the Organizer Publishing editor for this organizer."
+    },
+    {
+      "id": "route_organizer_publishing",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
+      "exportName": "OrganizerPublishingScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "OrganizerPublishingRouteStory",
+        "states": [
+          "canonical-detail"
+        ]
+      },
+      "notes": "The editor the organizer page's Page tab hosts, and the claims review kept under Organizers until the Inbox decides claims. The Organizers directory replaced its directory list; deterministic preview coverage uses shared sample organizer details in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "route_organizer_records_live_controller",
+      "kind": "route",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizersRouteScreen.tsx",
+      "exportName": "OrganizersRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Organizers directory and organizer page controllers and keeps the claims review reachable until the Inbox decides claims; deterministic prop-driven coverage remains on route_organizer_directory and route_organizer_page."
+    },
+    {
+      "id": "shared_admin_checklist_copy",
+      "kind": "feature-component",
+      "owner": "features/organizers",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminChecklistCopy",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminChecklistCopyStory",
+        "states": [
+          "actionable"
+        ]
+      },
+      "notes": "Shared admin UI primitive for actionable checklist labels and supporting guidance."
+    },
+    {
+      "id": "shared_admin_checklist_header",
+      "kind": "feature-component",
+      "owner": "features/organizers",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminChecklistHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminChecklistHeaderStory",
+        "states": [
+          "incomplete"
+        ]
+      },
+      "notes": "Shared admin UI primitive for checklist section labels and remaining-task counts."
+    },
+    {
+      "id": "shared_admin_checklist_stack",
+      "kind": "feature-component",
+      "owner": "features/organizers",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminChecklistStack",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminChecklistStackStory",
+        "states": [
+          "checks"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "workspace_organizer_publishing",
+      "kind": "workspace",
+      "owner": "features/organizers",
+      "source": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
+      "exportName": "OrganizerPublishingWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "OrganizerPublishingWorkspaceStory",
+        "states": [
+          "canonical-detail",
+          "blocked-draft"
+        ]
+      },
+      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; the canonical editor, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
+    }
+  ]
+}

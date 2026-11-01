@@ -2,15 +2,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {readAdminActionCatalog} from "../lib/admin_registries.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDirectory, "..", "..");
-const sourcePath = path.join(
-  repoRoot,
-  "contracts",
-  "admin",
-  "admin_action_catalog.json"
-);
 const outputs = new Map([
   [
     path.join(repoRoot, "admin", "src", "generated", "adminActionCatalog.ts"),
@@ -30,7 +25,7 @@ const outputs = new Map([
 ]);
 const checkOnly = process.argv.includes("--check");
 const selfTest = process.argv.includes("--self-test");
-const catalog = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+const catalog = readAdminActionCatalog();
 validateCatalog(catalog);
 
 if (selfTest) {

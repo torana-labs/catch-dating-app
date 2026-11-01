@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import {readFileSync} from "node:fs";
 import test from "node:test";
+import {readDesignRegistry} from "../lib/admin_registries.mjs";
 
 const run = (args, env = process.env) => spawnSync(process.execPath,
   ["tool/design/check_component_lexicon.mjs", ...args],
@@ -38,7 +39,7 @@ test("one registry assigns identity and the retired web-ui registry stays delete
   const registry = readJson("design/components/catch.components.json");
   assert.equal(registry.components.some((component) => "surfaces" in component), false);
   for (const path of ["design/website/components.json", "design/admin/components.json"]) {
-    const entries = readJson(path).components;
+    const entries = readDesignRegistry(path).components;
     assert.equal(entries.some((entry) => "lexicon" in entry || "lexiconId" in entry), false, path);
   }
 });
@@ -48,7 +49,7 @@ test("structural labels remain distinct from status badges on every stack", () =
   const byId = new Map(registry.components.map((component) => [component.id, component]));
   assert.equal(byId.get("catch.typography")?.react?.symbol, "UiLabel");
   assert.equal(byId.get("catch.badge")?.react?.symbol, "CatchBadge");
-  const adapters = (path) => new Map(readJson(path).components
+  const adapters = (path) => new Map(readDesignRegistry(path).components
     .filter((entry) => entry.componentId).map((entry) => [entry.exportName, entry.componentId]));
   const website = adapters("design/website/components.json");
   const admin = adapters("design/admin/components.json");
