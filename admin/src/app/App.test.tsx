@@ -63,8 +63,8 @@ vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
   };
 });
 
-vi.mock("../features/overview/ui/OverviewRouteScreen", () => ({
-  OverviewRouteScreen: () => <p>Overview fixture</p>,
+vi.mock("../features/now/ui/NowRouteScreen", () => ({
+  NowRouteScreen: () => <p>Needs you fixture</p>,
 }));
 
 vi.mock("../features/sales/ui/SalesWorkspaceScreen", () => ({
@@ -84,7 +84,7 @@ describe("App live deep-link ownership", () => {
     mocks.requestPhoneSignInCode.mockReset();
     mocks.resetPhoneSignIn.mockReset();
     mocks.signOutAdmin.mockReset();
-    window.history.replaceState({}, "", "/overview");
+    window.history.replaceState({}, "", "/now");
   });
 
   it("preserves phone OTP beside the existing Google account sign-in", async () => {
@@ -134,7 +134,7 @@ describe("App live deep-link ownership", () => {
     render(<App />);
     await userEvent.setup().click(screen.getByRole("button", {name: "Sign in with Google"}));
     expect(mocks.signInWithGoogleAdmin).toHaveBeenCalledOnce();
-    expect(screen.queryByText("Overview fixture")).toBeNull();
+    expect(screen.queryByText("Needs you fixture")).toBeNull();
   });
 
   it("preserves a requested route while admin claims resolve", async () => {
@@ -182,12 +182,12 @@ describe("App live deep-link ownership", () => {
     render(<App />);
     expect(await screen.findByText("Sales fixture: staff-1 · assigned")).toBeTruthy();
     expect(window.location.pathname.startsWith("/sales")).toBe(true);
-    for (const name of ["Overview", "Organizers", "Marketing", "Admin roles", "Payments"]) {
-      expect(screen.queryByRole("button", {name})).toBeNull();
+    for (const name of ["Needs you", "Organizers", "Marketing", "Admin roles", "Money"]) {
+      expect(screen.queryByRole("link", {name})).toBeNull();
     }
     await act(async () => authChanged?.({email: "owner@catch.local", uid: "owner-1"}));
     expect(await screen.findByText("Sales fixture: owner-1 · admin")).toBeTruthy();
-    expect(screen.getByRole("button", {name: "Overview"})).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Needs you"})).toBeTruthy();
     await act(async () => authChanged?.(null));
     expect(await screen.findByRole("button", {name: "Sign in with Google"})).toBeTruthy();
     expect(screen.queryByText("Sales fixture: owner-1 · admin")).toBeNull();
@@ -213,7 +213,7 @@ describe("Marketing unsaved route transitions", () => {
     const caption = await screen.findByRole("textbox", {name: "Draft caption"});
     await user.type(caption, " updated");
 
-    await user.click(screen.getByRole("button", {name: "Overview"}));
+    await user.click(screen.getByRole("link", {name: "Needs you"}));
     await waitFor(() => expect(confirm).toHaveBeenCalledTimes(1));
     expect(window.location.pathname).toBe("/marketing/drafts/sample-draft/source");
     expect((caption as HTMLInputElement).value).toBe("Original caption updated");
@@ -223,19 +223,19 @@ describe("Marketing unsaved route transitions", () => {
     expect(confirm).toHaveBeenCalledTimes(1);
     expect((caption as HTMLInputElement).value).toBe("Original caption updated");
 
-    await user.click(screen.getByRole("button", {name: "Overview"}));
-    await waitFor(() => expect(screen.getByText("Overview fixture")).not.toBeNull());
+    await user.click(screen.getByRole("link", {name: "Needs you"}));
+    await waitFor(() => expect(screen.getByText("Needs you fixture")).not.toBeNull());
     expect(confirm).toHaveBeenCalledTimes(2);
-    expect(window.location.pathname).toBe("/overview");
+    expect(window.location.pathname).toBe("/now");
   });
 
   it("guards browser Back and preserves the draft when cancelled", async () => {
     const user = userEvent.setup();
     const confirm = vi.spyOn(window, "confirm").mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
-    window.history.replaceState({}, "", "/overview");
+    window.history.replaceState({}, "", "/now");
     render(<App />);
-    await user.click(screen.getByRole("button", {name: "Marketing"}));
+    await user.click(screen.getByRole("link", {name: "Marketing"}));
     const caption = await screen.findByRole("textbox", {name: "Draft caption"});
     await user.type(caption, " updated");
 
@@ -245,9 +245,9 @@ describe("Marketing unsaved route transitions", () => {
     expect((caption as HTMLInputElement).value).toBe("Original caption updated");
 
     act(() => window.history.back());
-    await waitFor(() => expect(screen.getByText("Overview fixture")).not.toBeNull());
+    await waitFor(() => expect(screen.getByText("Needs you fixture")).not.toBeNull());
     expect(confirm).toHaveBeenCalledTimes(2);
-    expect(window.location.pathname).toBe("/overview");
+    expect(window.location.pathname).toBe("/now");
   });
 
   it("guards browser Forward after returning to Marketing with a clean draft", async () => {
@@ -256,8 +256,8 @@ describe("Marketing unsaved route transitions", () => {
     window.history.replaceState({}, "", "/marketing");
     render(<App />);
     await screen.findByRole("textbox", {name: "Draft caption"});
-    await user.click(screen.getByRole("button", {name: "Overview"}));
-    await waitFor(() => expect(window.location.pathname).toBe("/overview"));
+    await user.click(screen.getByRole("link", {name: "Needs you"}));
+    await waitFor(() => expect(window.location.pathname).toBe("/now"));
     expect(confirm).not.toHaveBeenCalled();
 
     act(() => window.history.back());

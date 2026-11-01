@@ -24,8 +24,8 @@ vi.mock("../features/finance/api/financeOpsRepository", () => ({
   stageApprovedMessagingBudget: vi.fn(), loadOrganizerEntitlement: vi.fn(),
   grantOrganizerEntitlement: vi.fn(), revokeOrganizerEntitlementGrant: vi.fn(),
 }));
-vi.mock("../features/overview/ui/OverviewRouteScreen", () => ({
-  OverviewRouteScreen: () => <p>Permitted overview</p>,
+vi.mock("../features/now/ui/NowRouteScreen", () => ({
+  NowRouteScreen: () => <p>Permitted overview</p>,
 }));
 
 const owner = {uid: "owner", email: "owner@example.invalid"} as User;

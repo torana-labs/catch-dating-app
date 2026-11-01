@@ -193,7 +193,7 @@ function hasMountedPendingProvider(source) {
   function visit(node) {
     const tag = ts.isJsxElement(node) ? node.openingElement.tagName :
       ts.isJsxSelfClosingElement(node) ? node.tagName : null;
-    if (tag && ts.isIdentifier(tag) && tag.text === "AdminAppShell") {
+    if (tag && ts.isIdentifier(tag) && tag.text === "AdminShellFrame") {
       let guarded = false;
       for (let child = node, parent = node.parent; parent;
         child = parent, parent = parent.parent) {
@@ -246,7 +246,7 @@ function parseArgs(argv) {
 }
 
 function runSelfTest() {
-  const shell = "<AdminAppShell><AdminWorkspace /></AdminAppShell>";
+  const shell = "<AdminShellFrame><AdminWorkspace /></AdminShellFrame>";
   const provider = (children = shell) =>
     `<AdminPendingOperationProvider>${children}</AdminPendingOperationProvider>`;
   const component = (jsx) => `function AdminRouteApp() { return (${jsx}); }`;

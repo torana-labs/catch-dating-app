@@ -623,19 +623,35 @@
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_overview",
+      "authorityId": "route_now",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Compiled Overview contract covers source-owned metrics, role-checked queue routing, and scoped Host Analytics.",
-      "featureContract": "feature.admin_overview"
+      "reason": "Compiled Needs you contract covers the oldest-first queue list, counts by kind, data-source freshness, and role-checked routing to the owning area.",
+      "featureContract": "feature.admin_now"
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_overview_live_controller",
+      "authorityId": "route_now_live_controller",
       "status": "contracted",
       "priority": "P1",
       "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
-      "featureContract": "feature.admin_overview"
+      "featureContract": "feature.admin_now"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_marketplace",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Marketplace contract covers role-checked Host Analytics with range and entity scope, split from the old Overview.",
+      "featureContract": "feature.admin_marketplace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_marketplace_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
+      "featureContract": "feature.admin_marketplace"
     },
     {
       "authority": "admin_routes",

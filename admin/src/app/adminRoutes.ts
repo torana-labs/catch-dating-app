@@ -1,7 +1,12 @@
 import {matchPath, matchRoutes, type NonIndexRouteObject} from "react-router";
 
+// The route table. Every Admin area registers its destination here and its
+// navigation item and screen in adminAreas.tsx.
 export const adminSections = {
-  overview: {path: "/overview", title: "Overview"},
+  now: {path: "/now", title: "Needs you"},
+  support: {path: "/support", title: "Support"},
+  marketplace: {path: "/marketplace", title: "Marketplace"},
+  more: {path: "/more", title: "More"},
   safety: {path: "/safety", title: "Safety"},
   access: {path: "/access", title: "Launch access"},
   "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
@@ -26,6 +31,8 @@ export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing"
 
 interface RouteState {
   nav: AdminNavId | null;
+  /** An old address: the shell replaces it with this path. */
+  redirect?: string;
   title?: string;
   salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
   organizerWorkspace?: "directory" | "claims";
@@ -43,7 +50,9 @@ function route(path: string, nav: AdminNavId, state: Omit<RouteState, "nav"> = {
 // React Router ranks static workspace names ahead of dynamic record IDs.
 // Workspace fallbacks retain existing links without selecting an unrelated record.
 export const adminRoutes: AdminRoute[] = [
-  route("/", "overview"),
+  route("/", "now", {redirect: "/now"}),
+  // Overview split in two: its queues are Needs you, its analytics Marketplace.
+  route("/overview/*", "now", {redirect: "/now"}),
   ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),
@@ -99,6 +108,7 @@ export function resolveAdminRoute(pathname: string) {
   }));
   return {
     nav: state?.nav ?? null,
+    redirect: state?.redirect ?? null,
     title: state?.title,
     params,
     salesArea: state?.salesArea ?? "today",

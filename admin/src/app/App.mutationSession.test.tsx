@@ -20,8 +20,8 @@ vi.mock("../features/admin-roles/api/adminRoleRepository", () => ({
   loadAdminRoleAssignments: mocks.list, loadAdminUserRoles: mocks.load,
   saveAdminUserRoles: mocks.save,
 }));
-vi.mock("../features/overview/ui/OverviewRouteScreen", () => ({
-  OverviewRouteScreen: () => <p>Permitted support overview</p>,
+vi.mock("../features/now/ui/NowRouteScreen", () => ({
+  NowRouteScreen: () => <p>Permitted support overview</p>,
 }));
 const owner = {uid: "owner", email: "owner@example.invalid"} as User;
 const support = {uid: "support", email: "support@example.invalid"} as User;
@@ -62,7 +62,7 @@ describe("App mutation session isolation", () => {
     mocks.getIdTokenResult.mockResolvedValue({claims: {support: true}});
     act(() => tokenChanged(support));
     await screen.findByText("Permitted support overview");
-    expect((screen.getByRole("button", {name: "Overview"}) as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.getByRole("link", {name: "Needs you"}).getAttribute("aria-disabled")).toBeNull();
     await act(async () => {
       if (outcome === "success") {
         complete({user: {...target, roles: []}, beforeRoles: ["support"], afterRoles: []});

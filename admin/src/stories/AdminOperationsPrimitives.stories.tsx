@@ -49,13 +49,7 @@ import {
   AdminFeatureDropWideField,
   AdminFilterBar,
   AdminMutedCell,
-  AdminOverviewAnalyticsClearButton,
   AdminOverviewMainGrid,
-  AdminOverviewQueueDecisionButton,
-  AdminOverviewQueueDetailPanel,
-  AdminOverviewQueueItems,
-  AdminOverviewQueueRow,
-  AdminOverviewQueueRowActions,
   AdminPublishingLoadbar,
   AdminQueryList,
   AdminQueryRow,
@@ -109,123 +103,12 @@ export const AdminOverviewMainGridStory: Story = {
           <AdminStateRow label="Queued" value="12" />
           <AdminStateRow label="Escalated" value="3" />
         </AdminCard>
-        <AdminOverviewQueueDetailPanel>
-          <QualityList>
-            <QualityRow icon={<Activity size={16} />} tone="success">
-              Queue freshness under five minutes.
-            </QualityRow>
-          </QualityList>
-        </AdminOverviewQueueDetailPanel>
+        <QualityList>
+          <QualityRow icon={<Activity size={16} />} tone="success">
+            Queue freshness under five minutes.
+          </QualityRow>
+        </QualityList>
       </AdminOverviewMainGrid>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewAnalyticsClearButtonStory: Story = {
-  name: "Analytics clear button",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_analytics_clear_button",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewAnalyticsClearButton onClick={noop}>
-        Clear filters
-      </AdminOverviewAnalyticsClearButton>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueItemsStory: Story = {
-  name: "Queue items",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_items",
-      states: ["stacked"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueItems>
-        <AdminOverviewQueueRow intent="warning">Policy evidence pending</AdminOverviewQueueRow>
-        <AdminOverviewQueueRow intent="neutral">Source links verified</AdminOverviewQueueRow>
-      </AdminOverviewQueueItems>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueRowStory: Story = {
-  name: "Queue row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_row",
-      states: ["neutral", "warning", "selected"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueItems>
-        <AdminOverviewQueueRow intent="neutral">Standard review item</AdminOverviewQueueRow>
-        <AdminOverviewQueueRow intent="warning">Needs evidence follow-up</AdminOverviewQueueRow>
-        <AdminOverviewQueueRow intent="danger" selected>
-          Policy escalation selected
-        </AdminOverviewQueueRow>
-      </AdminOverviewQueueItems>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueRowActionsStory: Story = {
-  name: "Queue row actions",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_row_actions",
-      states: ["actions"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueRowActions>
-        <AdminButton>Open</AdminButton>
-        <AdminButton variant="primary">Assign</AdminButton>
-      </AdminOverviewQueueRowActions>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueDecisionButtonStory: Story = {
-  name: "Queue decision button",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_decision_button",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueDecisionButton onClick={noop}>
-        Mark reviewed
-      </AdminOverviewQueueDecisionButton>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueDetailPanelStory: Story = {
-  name: "Queue detail panel",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_detail_panel",
-      states: ["details"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueDetailPanel aria-label="Queue detail">
-        <StateRow label="Owner" value="Ops" />
-        <StateRow label="Status" value="Needs source check" />
-      </AdminOverviewQueueDetailPanel>
     </AdminWorkspace>
   ),
 };
@@ -489,9 +372,7 @@ export const AdminFilterBarStory: Story = {
       <AdminFilterBar ariaLabel="Overview filters">
         <AdminButton selected>All</AdminButton>
         <AdminButton>Blocked</AdminButton>
-        <AdminOverviewAnalyticsClearButton onClick={noop}>
-          Reset
-        </AdminOverviewAnalyticsClearButton>
+        <AdminButton onClick={noop}>Reset</AdminButton>
       </AdminFilterBar>
     </AdminWorkspace>
   ),

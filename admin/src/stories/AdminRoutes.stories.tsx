@@ -79,10 +79,12 @@ import type {
 } from "../features/growth/controllers/useGrowthKpiController";
 import {GrowthKpiWorkspace} from "../features/growth/ui/GrowthKpiScreen";
 import {
-  type OverviewAnalyticsGranularity,
-  type OverviewAnalyticsRangePreset,
-  OverviewScreen,
-} from "../features/overview/ui/OverviewScreen";
+  type MarketplaceAnalyticsGranularity,
+  type MarketplaceAnalyticsRangePreset,
+  MarketplaceScreen,
+} from "../features/marketplace/ui/MarketplaceScreen";
+import {buildNowModel} from "../features/now/controllers/useNowController";
+import {NowScreen} from "../features/now/ui/NowScreen";
 import type {SafetyTriageController} from "../features/safety/controllers/useSafetyTriageController";
 import {SafetyTriageWorkspace} from "../features/safety/ui/SafetyTriageScreen";
 import {
@@ -1304,11 +1306,11 @@ const noop = () => {
   // Storybook preview only; route-state mutation is covered by app/controller tests.
 };
 
-const setGranularity = (_value: OverviewAnalyticsGranularity) => {
+const setGranularity = (_value: MarketplaceAnalyticsGranularity) => {
   noop();
 };
 
-const setRangePreset = (_value: OverviewAnalyticsRangePreset) => {
+const setRangePreset = (_value: MarketplaceAnalyticsRangePreset) => {
   noop();
 };
 
@@ -1957,24 +1959,41 @@ export const AdminActionExecutionsWorkspaceStory: Story = {
   render: renderAdminActionExecutionsWorkspace,
 };
 
-export const OverviewRouteStory: Story = {
-  name: "Overview",
+export const NowRouteStory: Story = {
+  name: "Needs you",
   beforeEach: installReviewedQueueClock,
   parameters: {
     catchComponent: {
-      id: "route_overview",
-      states: [
-        "default",
-        "analytics-controls",
-        "queue-router",
-        "metric-ownership",
-        "scoped-analytics",
-      ],
+      id: "route_now",
+      states: ["oldest-first", "by-kind", "data-sources", "stats"],
+    },
+  },
+  render: () => (
+    <NowScreen
+      canOpen={() => true}
+      dateLabel="Saturday, 3 July"
+      error={null}
+      isLoading={false}
+      model={buildNowModel(overview, Date.parse("2026-07-03T09:30:00.000Z"))}
+      onOpenItem={noop}
+      onOpenKind={noop}
+      onRefresh={noop}
+    />
+  ),
+};
+
+export const MarketplaceRouteStory: Story = {
+  name: "Marketplace",
+  beforeEach: installReviewedQueueClock,
+  parameters: {
+    catchComponent: {
+      id: "route_marketplace",
+      states: ["default", "analytics-controls", "scoped-analytics"],
     },
   },
   render: () => (
     <AdminWorkspace>
-      <OverviewScreen
+      <MarketplaceScreen
         analyticsOrganizerId=""
         analyticsEndDate="2026-07-03"
         analyticsEventId=""
@@ -1983,7 +2002,6 @@ export const OverviewRouteStory: Story = {
         analyticsStartDate="2026-06-04"
         hostAnalytics={hostAnalytics}
         isLoading={false}
-        overview={overview}
         onAnalyticsOrganizerIdChange={noop}
         onAnalyticsEndDateChange={noop}
         onAnalyticsEventIdChange={noop}
@@ -1991,7 +2009,6 @@ export const OverviewRouteStory: Story = {
         onAnalyticsRangePresetChange={setRangePreset}
         onAnalyticsStartDateChange={noop}
         onClearAnalyticsScope={noop}
-        onOpenQueue={noop}
         onRefresh={noop}
       />
     </AdminWorkspace>

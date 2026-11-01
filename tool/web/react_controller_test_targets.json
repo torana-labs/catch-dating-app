@@ -140,8 +140,13 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/overview/controllers/useOverviewController.ts",
-      "test": "admin/src/features/overview/controllers/useOverviewController.test.tsx",
+      "source": "admin/src/features/marketplace/controllers/useMarketplaceController.ts",
+      "test": "admin/src/features/marketplace/controllers/useMarketplaceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/now/controllers/useNowController.ts",
+      "test": "admin/src/features/now/controllers/useNowController.test.tsx",
       "status": "required"
     },
     {
