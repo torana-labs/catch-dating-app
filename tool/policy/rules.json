@@ -830,11 +830,6 @@
           "docAnchor": "docs/widget_catalog.md"
         },
         {
-          "tool": "design:flutter-field-surface-inventory",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md"
-        },
-        {
           "tool": "design:field-facade-inventory",
           "stage": "scanner-gate",
           "docAnchor": "docs/design_language.md#73-catchfield-doctrine"
@@ -1002,17 +997,12 @@
         "tool/design/generate_widget_classification.mjs",
         "tool/design/component_concepts.mjs",
         "tool/design/component_concepts.test.mjs",
-        "tool/design/classify_widgetbook_use_cases.mjs",
-        "tool/design/check_widgetbook_golden_coverage.mjs",
-        "tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "widgetbook/test/support/golden_coverage_waivers.json",
-        "widgetbook/test/support/screen_scope_dispositions.json",
         "widgetbook/test/support/triage_inventory.dart",
         "test/goldens/**",
         "packages/catch_ui/lib/**",
         "lib/platform/riverpod_ui/**"
       ],
-      "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. Every production Widgetbook component/body mount requires golden coverage; proposals carry an explicit marker and remain outside production coverage. Every registered Widgetbook case must classify as component-mount, body-mount, screen-scope, or explicitly marked prototype; every screen-scope case must match one authored capture-migration or named-keep disposition. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
+      "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1036,16 +1026,6 @@
           "tool": "docs:metadata",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
-        },
-        {
-          "tool": "design:widgetbook-use-case-triage",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-1-catalog-becomes-a-test-goldens-before-any-moves"
-        },
-        {
-          "tool": "design:golden-coverage",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/plans/ui_system_blueprint_and_conformance_audit.md#d3-goldens-are-derived-from-the-widgetbook-corpus-and-coverage-is-whole-corpus"
         },
         {
           "stage": "manual",

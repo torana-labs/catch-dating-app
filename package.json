@@ -54,8 +54,6 @@
     "design:widgets:check": "node tool/design/check_widget_classification.mjs",
     "design:widgets:new": "node tool/design/check_new_widget_inventory.mjs",
     "design:widgets:new:check": "node tool/design/check_new_widget_inventory.mjs --check",
-    "design:fields:inventory": "node tool/design/generate_flutter_field_surface_inventory.mjs",
-    "design:fields:inventory:check": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
     "design:fields:facades": "node tool/design/generate_field_inventory.mjs",
     "design:fields:facades:check": "node tool/design/generate_field_inventory.mjs --check",
     "design:todo-summary:check": "node tool/design/check_comprehensive_todo_summary.mjs --check",

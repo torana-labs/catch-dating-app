@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.4
+version: 1.30.5
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -1011,7 +1011,9 @@ Scope:
    comparator reused from `test/goldens`.
 3. Whole-corpus coverage gate `design:golden-coverage` (public `Catch*`
    classes in `core/widgets` vs golden ids; waiver rows carry owner + expiry),
-   registered in the tool manifest and the visual-integration lane.
+   registered in the tool manifest and the visual-integration lane. Retired in
+   November 2026 with the use-case classifier in item 5 (governance rec 4); the
+   golden runner still renders every registered case.
 4. Seed baseline images; wire failed-image artifact retention (exists).
 5. Use-case triage: a deterministic classifier assigns every registered use
    case to `component-mount`, `body-mount`, `screen-scope`, or `prototype`.
