@@ -1952,7 +1952,7 @@
         "admin/src/shared/pendingOperation.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/actions.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.tsx",
-        "admin/src/features/access/controllers/useAccessReviewController.ts",
+        "admin/src/features/safety/controllers/useAccessReviewController.ts",
         "admin/src/features/settings/controllers/useTeamController.ts",
         "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",

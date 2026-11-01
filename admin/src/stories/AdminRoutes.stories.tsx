@@ -8,14 +8,13 @@ import {
 import type {
   AccessReviewController,
   AccessReviewFormState,
-} from "../features/access/controllers/useAccessReviewController";
+} from "../features/safety/controllers/useAccessReviewController";
 import {PeopleScreen} from "../features/people/ui/PeopleScreen";
 import {SettingsScreen} from "../features/settings/ui/SettingsScreen";
 import {TeamSettingsWorkspace} from "../features/settings/ui/TeamSettingsWorkspace";
 import type {TeamController} from "../features/settings/controllers/useTeamController";
 import {SafetySettingsWorkspace} from "../features/safety/ui/SafetySettingsWorkspace";
 import type {SafetySettingsController} from "../features/safety/controllers/useSafetySettingsController";
-import {AccessReviewWorkspace} from "../features/access/ui/AccessReviewScreen";
 import type {AdminActionExecutionsController} from
   "../features/operations/controllers/useAdminActionExecutionsController";
 import {AdminActionExecutionsWorkspace} from
@@ -85,7 +84,10 @@ import {
 import {buildNowModel} from "../features/now/controllers/useNowController";
 import {NowScreen} from "../features/now/ui/NowScreen";
 import type {SafetyTriageController} from "../features/safety/controllers/useSafetyTriageController";
-import {SafetyTriageWorkspace} from "../features/safety/ui/SafetyTriageScreen";
+import {SafetyScreen} from "../features/safety/ui/SafetyScreen";
+import {SafetyActionSheetWorkspace} from "../features/safety/ui/SafetyActionSheetWorkspace";
+import type {AccountSafetyController} from "../features/safety/controllers/useAccountSafetyController";
+import type {SafetyActionSheetController} from "../features/safety/controllers/useSafetyActionSheetController";
 import {
   type AccessApplicationDecision,
   type AdminOrganizerDetails,
@@ -1372,12 +1374,6 @@ const renderAdminActionExecutionsWorkspace = () => (
   </AdminWorkspace>
 );
 
-const renderAccessReviewWorkspace = () => (
-  <AdminWorkspace>
-    <AccessReviewWorkspace controller={accessController} />
-  </AdminWorkspace>
-);
-
 const renderEventPublishingWorkspace = () => (
   <AdminWorkspace>
     <EventPublishingWorkspace controller={eventController} />
@@ -1500,30 +1496,6 @@ const renderCrossPathsShowcaseWorkspace = () => (
   </AdminWorkspace>
 );
 
-const safetyListController: SafetyTriageController = {
-  ...safetyController,
-  assignmentValidationIssue: "Select a safety queue item before assigning.",
-  decisionValidationIssue: "Select a safety queue item before deciding.",
-  selected: null,
-  selectedDetail: null,
-};
-
-const renderSafetyTriageList = () => (
-  <AdminWorkspace>
-    <SafetyTriageWorkspace controller={safetyListController} view="list" />
-  </AdminWorkspace>
-);
-
-const renderSafetyTriageWorkspace = () => (
-  <AdminWorkspace>
-    <SafetyTriageWorkspace
-      controller={safetyController}
-      onBackToList={noop}
-      view="detail"
-    />
-  </AdminWorkspace>
-);
-
 // Shared preview clock keeps queue ages at their reviewed capture date.
 const installReviewedQueueClock = () => {
   const realNow = Date.now;
@@ -1555,55 +1527,101 @@ const installIntakeBaselineClock = () => {
   };
 };
 
-export const SafetyTriageRouteStory: Story = {
+const storySafetyReasons: SafetyActionSheetController["reasons"] = [
+  {code: "harassment", label: "Harassment", severe: false, takedown: false,
+    active: true},
+  {code: "unwanted_contact", label: "Unwanted contact", severe: false,
+    takedown: false, active: true},
+  {code: "threats", label: "Threats of violence", severe: true,
+    takedown: false, active: true},
+];
+const storyAccountActions: AccountSafetyController["items"] = [
+  {actionId: "story-vikram", uid: "user_412", displayName: "Vikram S.",
+    kind: "ban", reasonCode: "unwanted_contact",
+    reasonLabel: "Unwanted contact",
+    messageToUser: "You kept contacting people after they asked you to stop.",
+    durationDays: null, startsAtMillis: Date.parse("2026-10-12T10:00:00Z"),
+    endsAtMillis: null, status: "active", decidedByUid: "sample-owner",
+    decidedByRole: "owner", automatic: false, appealable: true,
+    caseTargetPaths: ["reports/report-1"],
+    appeal: {status: "open", text: "I only messaged to return her jacket.",
+      submittedAtMillis: Date.parse("2026-10-30T11:02:00Z"),
+      reviewerUid: null, decidedAtMillis: null, decisionNote: null},
+    bookings: {cancelled: 1, needsOrganizer: 1, failed: 0},
+    blockedSignupAttempts: 1, canReviewAppeal: true},
+  {actionId: "story-arjun", uid: "user_829", displayName: "Arjun M.",
+    kind: "restrict", reasonCode: "harassment", reasonLabel: "Harassment",
+    messageToUser: "Two messages you sent broke our rule on harassment.",
+    durationDays: 7, startsAtMillis: Date.parse("2026-11-01T09:00:00Z"),
+    endsAtMillis: Date.parse("2026-11-08T09:00:00Z"), status: "active",
+    decidedByUid: "sample-ops", decidedByRole: "ops", automatic: false,
+    appealable: true, caseTargetPaths: [], appeal: null,
+    bookings: {cancelled: 0, needsOrganizer: 0, failed: 0},
+    blockedSignupAttempts: 0, canReviewAppeal: false},
+];
+const storyAccountSafety: AccountSafetyController = {
+  view: "active", kind: "all", items: storyAccountActions,
+  counts: {all: 2, warn: 0, restrict: 1, suspend: 0, ban: 1},
+  selected: storyAccountActions[0], loadState: "ready", isMutating: false,
+  setView: noop, setKind: noop, select: noop,
+  take: async () => true, lift: async () => true, decide: async () => true,
+  refresh: noop,
+};
+const storySheet = (open: boolean): SafetyActionSheetController => ({
+  target: open ? {uid: "user_829", displayName: "Arjun M.",
+    caseTargetPath: "reports/report-1", caseTitle: "Harassment in chat",
+    reasonCode: "harassment"} : null,
+  draft: {kind: "restrict", durationDays: 7, reasonCode: "harassment",
+    messageToUser: "Something you did broke our rule on harassment. You " +
+      "can't send messages or post in group chats for 7 days.",
+    notifyReporter: true, appealable: true,
+    note: "Two harassing messages in the Padel mixer group."},
+  reasons: storySafetyReasons, error: null,
+  open: noop, close: noop, setKind: noop, setDuration: noop,
+  setReason: noop, setMessage: noop, setNote: noop,
+  setNotifyReporter: noop, setAppealable: noop, submit: async () => true,
+});
+
+export const SafetyRouteStory: Story = {
   name: "Safety",
   beforeEach: installReviewedQueueClock,
   parameters: {
     catchComponent: {
-      id: "route_safety_triage",
-      states: [
-        "directory",
-        "filters",
-        "open-action",
-        "queue-health",
-        "honest-preview-analytics",
-      ],
+      id: "route_safety",
+      states: ["open-cases", "case-detail", "launch-access",
+        "account-actions", "appeal"],
     },
   },
-  render: renderSafetyTriageList,
+  render: () => (
+    <SafetyScreen
+      access={accessController}
+      actions={storyAccountSafety}
+      caseKind="all"
+      job="ops"
+      nowMs={Date.parse("2026-07-14T12:00:00.000Z")}
+      onCaseKind={noop}
+      onSelectAction={noop}
+      onSelectCase={noop}
+      onViewChanged={noop}
+      selectedCaseKey={safetySelected?.targetPath ?? null}
+      sheet={storySheet(false)}
+      triage={safetyController}
+      view="open"
+    />
+  ),
 };
 
-export const SafetyTriageWorkspaceStory: Story = {
-  name: "Safety Workspace",
+export const SafetyActionSheetStory: Story = {
+  name: "Safety action sheet",
   parameters: {
     catchComponent: {
-      id: "workspace_safety_triage",
-      states: ["case-detail", "assignment", "decision"],
+      id: "workspace_safety_action_sheet",
+      states: ["restrict", "owner-only-steps"],
     },
   },
-  render: renderSafetyTriageWorkspace,
-};
-
-export const AccessReviewRouteStory: Story = {
-  name: "Launch access",
-  parameters: {
-    catchComponent: {
-      id: "route_access_review",
-      states: ["capped-directory"],
-    },
-  },
-  render: renderAccessReviewWorkspace,
-};
-
-export const AccessReviewWorkspaceStory: Story = {
-  name: "Launch access workspace",
-  parameters: {
-    catchComponent: {
-      id: "workspace_access_review",
-      states: ["capped-directory"],
-    },
-  },
-  render: renderAccessReviewWorkspace,
+  render: () => (
+    <SafetyActionSheetWorkspace isSaving={false} job="ops" sheet={storySheet(true)} />
+  ),
 };
 
 export const DataQualityRouteStory: Story = {

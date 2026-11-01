@@ -14,8 +14,7 @@ const NowRouteScreen = lazy(() => import("../features/now/ui/NowRouteScreen").th
 const MarketplaceRouteScreen = lazy(() => import("../features/marketplace/ui/MarketplaceRouteScreen").then((m) => ({default: m.MarketplaceRouteScreen})));
 const MarketingOpsScreen = lazy(() => import("../features/marketing/ui/MarketingOpsScreen").then((m) => ({default: m.MarketingOpsScreen})));
 const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWorkspaceScreen").then((m) => ({default: m.IntakeWorkspaceScreen})));
-const SafetyTriageScreen = lazy(() => import("../features/safety/ui/SafetyTriageScreen").then((m) => ({default: m.SafetyTriageScreen})));
-const AccessReviewScreen = lazy(() => import("../features/access/ui/AccessReviewScreen").then((m) => ({default: m.AccessReviewScreen})));
+const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
 const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
 const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
@@ -101,14 +100,16 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     render: () => <IntakeWorkspaceScreen />,
   },
   safety: {
-    label: "Safety", icon: "safety", frame: "legacy",
-    render: ({navigate, route, setError, setNotice}) => (
-      <SafetyTriageScreen
-        onBackToList={() => navigate(adminPathForNav("safety"))}
+    label: "Safety", icon: "safety", frame: "redrawn",
+    render: ({adminRoles, mode, navigate, route, setError, setNotice}) => (
+      <SafetyRouteScreen
+        adminRoles={mode === "sample" ? ["adminOwner"] : adminRoles}
         onError={setError}
+        onNavigate={navigate}
         onNotice={setNotice}
-        onSelectTargetPath={(targetPath) => navigate(`${adminPathForNav("safety")}/${encodeURIComponent(targetPath)}`)}
+        selectedActionId={route.params.safetyActionId ?? null}
         selectedTargetPath={route.params.targetPath ?? null}
+        view={route.safetyView}
       />
     ),
   },
@@ -187,18 +188,6 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     label: "Marketplace", icon: "insights", frame: "legacy",
     render: ({adminRoles, isSessionReady, mode, setError, setNotice}) => (
       <MarketplaceRouteScreen adminRoles={adminRoles} isSessionReady={isSessionReady} mode={mode} onError={setError} onNotice={setNotice} />
-    ),
-  },
-  access: {
-    label: "Launch access", icon: "key", frame: "legacy",
-    render: ({navigate, route, setError, setNotice}) => (
-      <AccessReviewScreen
-        onBackToList={() => navigate(adminPathForNav("access"))}
-        onError={setError}
-        onNotice={setNotice}
-        onSelectApplicationUid={(applicationUid) => navigate(`${adminPathForNav("access")}/${encodeURIComponent(applicationUid)}`)}
-        selectedApplicationUid={route.params.applicationUid ?? null}
-      />
     ),
   },
   users: {
@@ -330,7 +319,7 @@ function renderMoney(context: AdminAreaContext) {
 /** Opens a Needs you item in the area that owns it, at the record when the area has a record route. */
 function openQueueItem(
   context: AdminAreaContext,
-  destination: "safety" | "access" | "organizers" | "finance",
+  destination: "safety" | "organizers" | "finance",
   targetPath: string | null
 ) {
   const {navigate, setError, setNotice} = context;
@@ -344,8 +333,6 @@ function openQueueItem(
   const targetId = targetPath?.split("/").filter(Boolean).at(-1) ?? null;
   if (targetPath && destination === "safety") {
     navigate(`/safety/${encodeURIComponent(targetPath)}`);
-  } else if (targetId && destination === "access") {
-    navigate(`/access/${encodeURIComponent(targetId)}`);
   } else if (targetId && destination === "organizers") {
     navigate(targetPath?.startsWith("organizerClaimRequests/") ?
       `/organizers/claims/${encodeURIComponent(targetId)}` :

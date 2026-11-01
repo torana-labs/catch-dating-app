@@ -60,7 +60,9 @@ Files inspected:
 - `admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx`
 - `admin/src/features/safety/api/safetyTriageRepository.ts`
 - `admin/src/features/safety/controllers/useSafetyTriageController.ts`
-- `admin/src/features/safety/ui/SafetyTriageScreen.tsx`
+- `admin/src/features/safety/ui/SafetyRouteScreen.tsx`
+- `admin/src/features/safety/ui/SafetyScreen.tsx`
+- `admin/src/features/safety/ui/SafetyActionSheetWorkspace.tsx`
 - `admin/src/features/growth/api/growthKpiRepository.ts`
 - `admin/src/features/growth/controllers/useGrowthKpiController.ts`
 - `admin/src/features/growth/ui/GrowthKpiScreen.tsx`
@@ -71,9 +73,8 @@ Files inspected:
 - `admin/src/features/events/controllers/useEventPublishingController.ts`
 - `admin/src/features/events/controllers/eventPublishingHelpers.ts`
 - `admin/src/features/events/ui/EventPublishingScreen.tsx`
-- `admin/src/features/access/api/accessReviewRepository.ts`
-- `admin/src/features/access/controllers/useAccessReviewController.ts`
-- `admin/src/features/access/ui/AccessReviewScreen.tsx`
+- `admin/src/features/safety/api/accessReviewRepository.ts`
+- `admin/src/features/safety/controllers/useAccessReviewController.ts`
 - `admin/src/features/users/api/userAnalyticsRepository.ts`
 - `admin/src/features/users/controllers/useUserAnalyticsController.ts`
 - `admin/src/features/users/ui/UserAnalyticsScreen.tsx`
@@ -280,9 +281,11 @@ Current adherence:
   outcomes are queue-only, manual, or still blocked on a dedicated contract.
 - Good: `adminAssignSafetyTriageItem` supports explicit assignment/unassignment
   with required notes, role gates, partial updates, and audit logs.
-- Good: `SafetyTriageScreen` now delegates rendering to a prop-driven
-  `SafetyTriageWorkspace`, giving Storybook deterministic route/workspace
-  coverage for queue detail, assignment, and status-only decision states.
+- Good (1 Nov 2026): Safety is redrawn as one queue (`SafetyScreen`, board
+  AdminSafety): open cases from every queue, launch access included, due
+  soonest first, with account actions and appeals as views and the
+  act-on-an-account sheet. The Safety triage and Launch access screens are
+  retired; `/access` links open Safety.
 - Good: metric cards use authoritative aggregate open counts and separately
   disclose returned preview row counts. Filtering and search apply only to the
   loaded preview; an empty preview does not imply an empty backlog.
@@ -331,11 +334,9 @@ Current adherence:
   city, role, event types, availability windows, host interest, invite code,
   Instagram, referral source, Why Catch, submission count, timestamps, and
   bounded deterministic overlap signals before an operator decides.
-- Good: the route wrapper now delegates its rendered body to registered
-  `AccessReviewWorkspace`, giving Storybook deterministic route/workspace
-  coverage for the capped application directory without live reads or writes
-  in previews. Direct `/access/{uid}` routes load their own detail and show an
-  explicit retryable unavailable state instead of substituting another row.
+- Good: launch access applications are decided in the Safety queue (the
+  "Access" kind), where their details and approve or deny sit beside the
+  queue.
 - Good: Overview routes an application to Launch access; approve/deny remains
   owned by the detail workflow rather than duplicated in the command center.
 - Weak: broad identity search, account state, safety history, payment history,
