@@ -1,5 +1,5 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   loadOrganizerDirectory,
@@ -57,15 +57,21 @@ export function useOrganizerDirectoryController(
   const [filters, setFilters] = useState<OrganizerDirectoryFilters>({
     ...initialOrganizerDirectoryFilters, ...initial,
   });
+  // The search box updates at once; the read waits for a pause in typing.
+  const [searchedText, setSearchedText] = useState(filters.query);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearchedText(filters.query), 300);
+    return () => window.clearTimeout(timer);
+  }, [filters.query]);
   const payload = useMemo<OrganizerDirectoryQuery>(() => ({
     view: filters.view,
-    query: filters.query.trim() || null,
+    query: searchedText.trim() || null,
     citySlug: filters.citySlug,
     kind: filters.kind,
     claimState: filters.claimState,
     mine: filters.mine,
     limit: pageSize,
-  }), [filters]);
+  }), [filters, searchedText]);
   const query = useInfiniteQuery({
     queryKey: adminQueryKeys.organizers.directory(JSON.stringify(payload)),
     queryFn: ({pageParam}) => loadOrganizerDirectory({...payload,

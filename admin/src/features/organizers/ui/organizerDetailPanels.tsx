@@ -147,65 +147,6 @@ function OrganizerDetailView({
   );
 }
 
-function OrganizerDirectoryPanel({
-  controller,
-}: {
-  controller: OrganizerPublishingController;
-}) {
-  return (
-    <Panel
-      span={2}
-      icon={<Users size={18} strokeWidth={1.9} />}
-      title="Canonical organizer directory"
-      action={
-        controller.isListLoading ?
-          "Loading" :
-          `${controller.filteredRows.length} shown`
-      }
-    >
-      <AdminToolbar>
-        <SegmentedControl<OrganizerPublishingFilter>
-          ariaLabel="Organizer filters"
-          options={[
-            {id: "launchCities", label: "Indore + Mumbai"},
-            {id: "all", label: "All"},
-            {id: "needsPublish", label: "Needs review"},
-            {id: "published", label: "Published"},
-            {id: "appHidden", label: "App hidden"},
-            {id: "routeIssues", label: "Route issues"},
-            {id: "searchIssues", label: "Search issues"},
-          ]}
-          value={controller.filter}
-          onChange={controller.setFilter}
-        />
-        <SearchField
-          ariaLabel="Search canonical organizers"
-          icon={<Search size={16} strokeWidth={1.8} />}
-          onChange={controller.setQuery}
-          placeholder="Search name, id, path, city, status"
-          value={controller.query}
-        />
-        <AdminButton
-          disabled={controller.isListLoading}
-          icon={<RefreshCw size={15} strokeWidth={1.9} />}
-          onClick={() => void controller.refreshList()}
-        >
-          Refresh
-        </AdminButton>
-      </AdminToolbar>
-      <OrganizerDirectoryTable
-        rows={controller.filteredRows}
-        selectedOrganizerId={controller.organizer?.organizerId ?? controller.organizerId}
-        onSelect={controller.selectOrganizer}
-      />
-      <AdminWorkbenchNote>
-        {controller.filteredRows.length} shown from {controller.rows.length} loaded
-        organizers. Source generated at {formatDateTime(controller.listGeneratedAt)}.
-      </AdminWorkbenchNote>
-    </Panel>
-  );
-}
-
 function OrganizerDetailSummary({
   controller,
 }: {
@@ -272,86 +213,6 @@ function OrganizerDetailSummary({
         <StateRow label="Checklist tasks" value={checklistTaskCount} />
       </AdminStatusGrid>
     </Panel>
-  );
-}
-
-function OrganizerDirectoryTable({
-  onSelect,
-  rows,
-  selectedOrganizerId,
-}: {
-  onSelect: (organizerId: string) => void;
-  rows: AdminOrganizerListRow[];
-  selectedOrganizerId: string;
-}) {
-  if (rows.length === 0) {
-    return (
-      <EmptyState
-        variant="workbench"
-        icon={<FolderSearch size={16} strokeWidth={1.9} />}
-      >
-        No canonical organizers match this filter.
-      </EmptyState>
-    );
-  }
-  return (
-    <DataTable ariaLabel="Organizer directory" variant="workbench">
-      <thead>
-        <tr>
-          <th>Organizer</th>
-          <th>City</th>
-          <th>Public page</th>
-          <th>App / claim</th>
-          <th>Readiness</th>
-          <th>Select</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <AdminTableRow key={row.organizerId} selected={selectedOrganizerId === row.organizerId}>
-            <td>
-              <AdminRowTitle>
-                <strong>{row.name}</strong>
-                <span>{row.organizerId}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.cityName ?? "Unknown city"}</span>
-                <span>{row.citySlug ?? "No city slug"}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminRowTitle compact>
-                <span>{row.canonicalPath ?? "No public path"}</span>
-                <span>{row.publishStatus ?? "no status"} / {row.indexStatus ?? "no index"}</span>
-              </AdminRowTitle>
-            </td>
-            <td>
-              <AdminTagRow>
-                <CatchBadge label={row.appVisibility ?? "unset"} />
-                <CatchBadge label={row.claimState ?? "no claim"} />
-              </AdminTagRow>
-            </td>
-            <td>
-              <AdminTagRow>
-                <CatchBadge label={row.routeStatus} />
-                <CatchBadge label={row.routeReservationStatus} />
-                <CatchBadge label={row.searchIndexStatus} />
-                <CatchBadge label={row.sourceConfidence ?? "source unset"} />
-                <CatchBadge label={row.verificationStatus ?? "verification unset"} />
-                <CatchBadge label={organizerNeedsPublish(row) ? "needs work" : "ready"} />
-              </AdminTagRow>
-            </td>
-            <td>
-              <TableActionButton onClick={() => onSelect(row.organizerId)}>
-                {selectedOrganizerId === row.organizerId ? "Selected" : "Open"}
-              </TableActionButton>
-            </td>
-          </AdminTableRow>
-        ))}
-      </tbody>
-    </DataTable>
   );
 }
 
@@ -1095,9 +956,7 @@ function formatDateTime(value: string | null | undefined): string {
 
 export const organizerDetailPanels = {
   OrganizerDetailView,
-  OrganizerDirectoryPanel,
   OrganizerDetailSummary,
-  OrganizerDirectoryTable,
   OrganizerEditor,
   PublishingSidePanel,
   publicPreviewHref,
