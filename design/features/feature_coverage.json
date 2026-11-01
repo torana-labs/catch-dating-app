@@ -624,6 +624,22 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_settings_intake",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Settings → Intake is the redrawn home of the Supply Intake policy decisions and nominators that Organizer Intake used to hold, so the Supply Intake contract owns these states.",
+      "primaryAuthorityId": "route_organizer_intake"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_settings_intake_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Settings → Intake is the redrawn home of the Supply Intake policy decisions and nominators that Organizer Intake used to hold, so the Supply Intake contract owns these states.",
+      "primaryAuthorityId": "route_organizer_intake"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_marketing_ops",
       "status": "contracted",
       "priority": "P1",
