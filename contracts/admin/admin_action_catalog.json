@@ -3388,7 +3388,7 @@
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/money/bills",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -3926,6 +3926,102 @@
         "body": "Refunds reach your account in 5 to 7 working days.",
         "active": true
       }
+    },
+    {
+      "actionId": "inbox.list",
+      "callable": "adminListInboxItems",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_inbox_items_payload.schema.json",
+      "summary": "List one page of the Admin inbox (listings, events, claims, enquiries, launch access and stuck intake), oldest first, with real totals per scope and type.",
+      "example": {
+        "scope": "waiting",
+        "type": null,
+        "city": null,
+        "limit": 25,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "inbox.get",
+      "callable": "adminGetInboxItem",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_get_inbox_item_payload.schema.json",
+      "summary": "Read one inbox item and every step it took; a sales associate may read only what they nominated.",
+      "example": {
+        "itemId": "supply-example-request"
+      }
+    },
+    {
+      "actionId": "inbox.update",
+      "callable": "adminUpdateInboxItem",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action",
+      "targetField": "itemId",
+      "requestSchema": "contracts/callables/admin_update_inbox_item_payload.schema.json",
+      "summary": "Assign, unassign, snooze or wake one inbox item; audited and recorded in its journey.",
+      "example": {
+        "itemId": "supply-example-request",
+        "action": "assign",
+        "assigneeUid": "example-ops-uid",
+        "snoozedUntil": null,
+        "note": null
+      }
+    },
+    {
+      "actionId": "organizer-claims.recommend",
+      "callable": "adminRecommendOrganizerClaim",
+      "workflowIds": [
+        "organizer-claims",
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "requestId",
+      "requestSchema": "contracts/callables/admin_recommend_organizer_claim_payload.schema.json",
+      "summary": "Recommend approving or rejecting a pending organizer claim; the claim stays pending until the owner decides it.",
+      "example": {
+        "requestId": "example-claim-request",
+        "decision": "approve",
+        "note": "Phone verified; the proof link is the organizer's Instagram."
+      }
     }
   ],
   "workflows": [
@@ -4030,7 +4126,8 @@
       "actions": [
         "organizer-claims.list",
         "organizer-claims.get",
-        "organizer-claims.decide"
+        "organizer-claims.decide",
+        "organizer-claims.recommend"
       ]
     },
     {
@@ -4233,6 +4330,17 @@
         "support.messages.record",
         "support.replies.list",
         "support.replies.upsert"
+      ]
+    },
+    {
+      "workflowId": "inbox",
+      "label": "Inbox",
+      "guiPath": "/inbox",
+      "actions": [
+        "inbox.list",
+        "inbox.get",
+        "inbox.update",
+        "organizer-claims.recommend"
       ]
     }
   ]

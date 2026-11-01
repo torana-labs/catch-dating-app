@@ -12,12 +12,15 @@ export const adminSections = {
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
   sales: {path: "/sales/today", title: "Sales"},
-  "organizer-intake": {path: "/intake/organizers", title: "Intake"},
+  "organizer-intake": {path: "/inbox", title: "Inbox"},
+  // The listing, event and policy review the inbox links to until each moves into it.
+  "intake-review": {path: "/intake/organizers", title: "Intake review"},
   organizers: {path: "/organizers", title: "Organizers"},
   events: {path: "/events", title: "Events"},
   people: {path: "/people", title: "People"},
   users: {path: "/users", title: "User analytics"},
-  finance: {path: "/finance", title: "Finance"},
+  money: {path: "/money", title: "Money"},
+  "payment-setup": {path: "/payment-setup", title: "Payment setup"},
   quality: {path: "/quality", title: "Data quality"},
   operations: {path: "/operations", title: "Agent activity"},
   settings: {path: "/settings", title: "Settings"},
@@ -28,6 +31,7 @@ type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
   "diagnostics" | "draft";
 type MarketingStep = "source" | "copy" | "compliance" | "export";
 export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing";
+export type MoneyView = "issues" | "resolved" | "bills";
 
 interface RouteState {
   nav: AdminNavId | null;
@@ -42,6 +46,7 @@ interface RouteState {
   financeWorkspace?: FinanceWorkspace;
   supportWorkspace?: "inbox" | "trial";
   safetyView?: "open" | "actions" | "appeals";
+  moneyView?: MoneyView;
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -59,11 +64,12 @@ export const adminRoutes: AdminRoute[] = [
   route("/overview/*", "now", {redirect: "/now"}),
   // The Cross Paths page is retired; old links land on Needs you.
   route("/cross-paths/*", "now", {redirect: "/now"}),
-  ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
+  ...Object.entries(adminSections).filter(([nav]) => nav !== "intake-review").map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),
   route("/marketing-ops/*", "marketing-ops"),
-  route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
+  route("/organizer-intake/*", "intake-review", {title: "Organizer intake"}),
+  route("/inbox/:inboxItemId", "organizer-intake", {title: "Inbox item"}),
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
   route("/support/:supportConversationId", "support", {title: "Support conversation"}),
   route("/support/trial/*", "support", {supportWorkspace: "trial", title: "WhatsApp reply trial"}),
@@ -88,12 +94,21 @@ export const adminRoutes: AdminRoute[] = [
   // The retired readiness workspace: old links open the directory, not an event named "readiness".
   route("/events/readiness/*", "events"),
   route("/growth/signals/:growthSignalId", "growth", {title: "Growth signal"}),
-  route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
-  route("/finance/commercial-terms/*", "finance", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
-  route("/finance/commercial-terms/organizers/:termsOrganizerId", "finance", {
+  route("/money/resolved/*", "money", {moneyView: "resolved"}),
+  route("/money/resolved/:moneyIssueId", "money", {moneyView: "resolved", title: "Resolved payment issue"}),
+  route("/money/issues/:moneyIssueId", "money", {title: "Payment issue"}),
+  route("/money/bills/*", "money", {moneyView: "bills", title: "Bills"}),
+  route("/money/bills/:billId", "money", {moneyView: "bills", title: "Bill"}),
+  // The older payment setup screens moved off /finance; old links keep working.
+  route("/finance/*", "money", {redirect: "/money"}),
+  route("/finance/commercial-terms/*", "payment-setup", {redirect: "/payment-setup/commercial-terms"}),
+  route("/finance/payment-routing/*", "payment-setup", {redirect: "/payment-setup/payment-routing"}),
+  route("/payment-setup/issues/:financeIssueId", "payment-setup", {title: "Finance issue"}),
+  route("/payment-setup/commercial-terms/*", "payment-setup", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
+  route("/payment-setup/commercial-terms/organizers/:termsOrganizerId", "payment-setup", {
     financeWorkspace: "commercial-terms", title: "Organizer commercial terms",
   }),
-  route("/finance/payment-routing/*", "finance", {financeWorkspace: "payment-routing", title: "Payment routing"}),
+  route("/payment-setup/payment-routing/*", "payment-setup", {financeWorkspace: "payment-routing", title: "Payment routing"}),
   route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
   route("/settings/:settingsPage", "settings"),
   route("/settings/team/:teamMemberUid", "settings", {title: "Team and roles"}),
@@ -102,9 +117,9 @@ export const adminRoutes: AdminRoute[] = [
   ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
     .map((salesArea) => route(`/sales/${salesArea}/*`, "sales", {salesArea})),
   route("/sales/hosts/:salesOrganizerId", "sales", {salesArea: "hosts"}),
-  route("/intake/*", "organizer-intake", {title: "Organizer intake"}),
-  route("/intake/events/*", "organizer-intake", {title: "Event intake"}),
-  route("/intake/operations/*", "organizer-intake", {title: "Supply intake operations"}),
+  route("/intake/*", "intake-review", {title: "Organizer intake"}),
+  route("/intake/events/*", "intake-review", {title: "Event intake"}),
+  route("/intake/operations/*", "intake-review", {title: "Supply intake operations"}),
   ...(["posts", "new", "events", "media", "activity", "diagnostics"] as const)
     .map((marketingTab) => route(`/marketing/${marketingTab}/*`, "marketing-ops", {marketingTab})),
   route("/marketing/drafts/:draftId/*", "marketing-ops", {marketingTab: "draft", title: "Marketing draft"}),
@@ -141,6 +156,7 @@ export function resolveAdminRoute(pathname: string) {
     financeWorkspace: state?.financeWorkspace ?? "issues",
     supportWorkspace: state?.supportWorkspace ?? "inbox",
     safetyView: state?.safetyView ?? "open",
+    moneyView: state?.moneyView ?? "issues",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };
@@ -155,10 +171,17 @@ export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string
 }
 
 export function financePathForWorkspace(workspace: FinanceWorkspace): string {
-  return workspace === "issues" ? adminSections.finance.path : `/finance/${workspace}`;
+  return workspace === "issues" ? adminSections["payment-setup"].path : `/payment-setup/${workspace}`;
+}
+
+/** Money's view, and one issue or bill in it. */
+export function moneyPath(view: MoneyView, id: string | null = null): string {
+  const base = view === "issues" ? adminSections.money.path : `${adminSections.money.path}/${view}`;
+  if (id === null) return base;
+  return `${view === "issues" ? `${base}/issues` : base}/${encodeURIComponent(id)}`;
 }
 
 export function commercialTermsPathForOrganizer(organizerId: string | null): string {
   return organizerId === null ? financePathForWorkspace("commercial-terms") :
-    `/finance/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
+    `/payment-setup/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
 }

@@ -10,7 +10,7 @@ import {displayAdminQueueTitle} from "../../../shared/ui/adminPresentation";
 import {loadNowSnapshot} from "../api/nowRepository";
 
 /** The area an item opens in. The shell maps it to a route the person may open. */
-export type NowDestination = "safety" | "organizers" | "finance";
+export type NowDestination = "safety" | "organizers" | "money";
 
 type QueueKey = keyof AdminOverviewResponse["queues"];
 
@@ -21,14 +21,13 @@ const queueKinds: Record<QueueKey, {kind: string; many: string; destination: Now
   accessApplications: {kind: "Launch access", many: "launch access requests", destination: "safety"},
   organizerClaimRequests: {kind: "Claim", many: "claims", destination: "organizers"},
   organizerIndexReviews: {kind: "Index review", many: "index reviews", destination: "organizers"},
-  paymentIssues: {kind: "Payment issue", many: "payment issues", destination: "finance"},
+  paymentIssues: {kind: "Payment issue", many: "payment issues", destination: "money"},
 };
 
 const kindGroups: Array<{destination: NowDestination; title: string; queues: QueueKey[]}> = [
   {destination: "safety", title: "Safety", queues: ["safetyReports", "moderationFlags", "eventSafetyReports", "accessApplications"]},
   {destination: "organizers", title: "Organizers", queues: ["organizerClaimRequests", "organizerIndexReviews"]},
-  
-  {destination: "finance", title: "Money", queues: ["paymentIssues"]},
+  {destination: "money", title: "Money", queues: ["paymentIssues"]},
 ];
 
 const dayMs = 24 * 60 * 60 * 1000;

@@ -624,6 +624,22 @@
     },
     {
       "authority": "admin_routes",
+      "authorityId": "route_settings_intake",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Settings → Intake is the redrawn home of the Supply Intake policy decisions and nominators that Organizer Intake used to hold, so the Supply Intake contract owns these states.",
+      "primaryAuthorityId": "route_organizer_intake"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_settings_intake_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Settings → Intake is the redrawn home of the Supply Intake policy decisions and nominators that Organizer Intake used to hold, so the Supply Intake contract owns these states.",
+      "primaryAuthorityId": "route_organizer_intake"
+    },
+    {
+      "authority": "admin_routes",
       "authorityId": "route_marketing_ops",
       "status": "contracted",
       "priority": "P1",
@@ -724,6 +740,40 @@
       "priority": "P1",
       "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
       "featureContract": "feature.admin_now"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_money",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Money's payment issues and bills are governed by the adminManagePaymentIssues and adminManageOrganizerBills callable contracts, owner-only roles, the payment processors' reconcile, and focused controller and screen tests. A compiled Money feature contract remains planned.",
+      "targetFeature": "feature.admin_money",
+      "debtId": "FEATURE-ADMIN-MONEY-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_money_live_controller",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Live route wrapper of route_money; its query and lazy-boundary states follow the planned Money feature contract.",
+      "targetFeature": "feature.admin_money",
+      "debtId": "FEATURE-ADMIN-MONEY-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_inbox",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Intake inbox (queue, inspector, journey and the live route wrapper) is the new front of Supply Intake: listing approval and event review stay in the Intake review it links to, so the Intake contract owns these states until they move in and the inbox gets a contract of its own.",
+      "primaryAuthorityId": "route_intake_workspace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_inbox_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "The redrawn Intake inbox (queue, inspector, journey and the live route wrapper) is the new front of Supply Intake: listing approval and event review stay in the Intake review it links to, so the Intake contract owns these states until they move in and the inbox gets a contract of its own.",
+      "primaryAuthorityId": "route_intake_workspace"
     },
     {
       "authority": "admin_routes",

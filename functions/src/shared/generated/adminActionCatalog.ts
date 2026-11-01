@@ -1435,6 +1435,47 @@ export const ADMIN_ACTION_CATALOG = {
       "safetyReviewer",
       "support"
     ]
+  },
+  "inbox.list": {
+    "callable": "adminListInboxItems",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
+  "inbox.get": {
+    "callable": "adminGetInboxItem",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "inbox.update": {
+    "callable": "adminUpdateInboxItem",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
+  "organizer-claims.recommend": {
+    "callable": "adminRecommendOrganizerClaim",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
   }
 } as const;
 

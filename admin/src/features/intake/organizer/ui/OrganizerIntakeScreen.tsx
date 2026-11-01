@@ -23,12 +23,6 @@ import {renderOrganizerListingReview} from "./organizerListingReviewPanels";
 import {useListingEventImportsController} from
   "../controllers/useListingEventImportsController";
 import {renderListingEventImports} from "./listingEventImportPanels";
-import {useSupplyIntakePolicyController} from
-  "../controllers/useSupplyIntakePolicyController";
-import {renderSupplyIntakePolicies} from "./supplyIntakePolicyPanels";
-import {useSupplyNominatorController} from
-  "../controllers/useSupplyNominatorController";
-import {renderSupplyNominators} from "./supplyNominatorPanels";
 
 export function OrganizerIntakeScreen() {
   return (
@@ -62,14 +56,10 @@ function OrganizerIntakeLoadedScreen() {
   });
   const listingReview = useOrganizerListingReviewController({onError, onNotice});
   const eventImports = useListingEventImportsController({onError, onNotice});
-  const policies = useSupplyIntakePolicyController({onError, onNotice});
-  const nominators = useSupplyNominatorController({onError, onNotice});
   return (
     <>
       {renderOrganizerListingReview(listingReview)}
       {renderListingEventImports(eventImports)}
-      {renderSupplyIntakePolicies(policies)}
-      {renderSupplyNominators(nominators)}
       <OrganizerIntakeWorkspace controller={controller} />
     </>
   );

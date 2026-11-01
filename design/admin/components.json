@@ -47,6 +47,7 @@
       "route_support",
       "route_support_live_controller",
       "route_now",
+      "route_money",
       "route_marketplace",
       "route_user_analytics",
       "workspace_user_analytics",
@@ -680,6 +681,42 @@
       "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage includes a 30-item independently scrollable candidate queue and fail-closed organizer draft creation."
     },
     {
+      "id": "route_settings_intake",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsWorkspace.tsx",
+      "exportName": "IntakeSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSettingsIntake.stories.tsx",
+        "exportName": "IntakeSettingsStory",
+        "states": [
+          "policies",
+          "limits",
+          "nominators",
+          "launch-cities"
+        ]
+      },
+      "notes": "Settings → Intake: what Intake does on its own (each decision recorded in a dialog with its checklist, switched on only by a reviewed change), limits, who can nominate by message (the add-someone sheet) and launch cities, replacing the Supply Intake policy and nominator panels."
+    },
+    {
+      "id": "route_settings_intake_live_controller",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsRouteScreen.tsx",
+      "exportName": "IntakeSettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the policy and nominator controllers; deterministic visual coverage remains on route_settings_intake."
+    },
+    {
       "id": "workspace_organizer_intake",
       "kind": "workspace",
       "owner": "features/intake/organizer",
@@ -814,6 +851,77 @@
         ]
       },
       "notes": "Lazy live route wrapper owns the Needs you controller/query seam; deterministic prop-driven visual coverage remains on route_now."
+    },
+    {
+      "id": "route_money",
+      "kind": "route",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/MoneyScreen.tsx",
+      "exportName": "MoneyScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "MoneyRouteStory",
+        "states": [
+          "bills-queue",
+          "bill-inspector",
+          "decision-bar"
+        ]
+      },
+      "notes": "Money: payment issues (open and resolved) and the month's bills to organizers, each a CatchTable queue on CatchPaneLayout queue with an inspector (CatchMetaRow facts, CatchSection statement rows and timeline) and the CatchDock pane decision bar. It replaces the Finance issues workspace. Backed by the sample bills and issues in admin/src/features/money/api/moneySamples.ts."
+    },
+    {
+      "id": "route_money_live_controller",
+      "kind": "route",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/MoneyRouteScreen.tsx",
+      "exportName": "MoneyRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the bills and issues controllers and the address; deterministic prop-driven visual coverage remains on route_money."
+    },
+    {
+      "id": "route_inbox",
+      "kind": "route",
+      "owner": "features/inbox",
+      "source": "admin/src/features/inbox/ui/InboxScreen.tsx",
+      "exportName": "InboxScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminInbox.stories.tsx",
+        "exportName": "InboxRouteStory",
+        "states": [
+          "oldest-first",
+          "type-chips",
+          "inspector",
+          "journey"
+        ]
+      },
+      "notes": "The Intake inbox: listings, imported events, claims, enquiries, launch access and stuck intake in one oldest-first queue with real totals per scope and type, on CatchWorkspaceHeader and CatchTable, with the selected item beside it on CatchPaneLayout queue: facts on CatchMetaRow, How it got here on the CatchSection timeline, and the decision on CatchDock pane. Ops recommend claims; the owner decides them."
+    },
+    {
+      "id": "route_inbox_live_controller",
+      "kind": "route",
+      "owner": "features/inbox",
+      "source": "admin/src/features/inbox/ui/InboxRouteScreen.tsx",
+      "exportName": "InboxRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the inbox controller/query seam; deterministic prop-driven visual coverage remains on route_inbox."
     },
     {
       "id": "route_organizer_directory",

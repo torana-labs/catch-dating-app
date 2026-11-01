@@ -6,6 +6,7 @@ import {
   adminPathForNav,
   commercialTermsPathForOrganizer,
   marketingPathForTab,
+  moneyPath,
   resolveAdminRoute,
   type AdminNavId,
 } from "./adminRoutes";
@@ -13,9 +14,11 @@ import {
 const NowRouteScreen = lazy(() => import("../features/now/ui/NowRouteScreen").then((m) => ({default: m.NowRouteScreen})));
 const MarketplaceRouteScreen = lazy(() => import("../features/marketplace/ui/MarketplaceRouteScreen").then((m) => ({default: m.MarketplaceRouteScreen})));
 const MarketingOpsScreen = lazy(() => import("../features/marketing/ui/MarketingOpsScreen").then((m) => ({default: m.MarketingOpsScreen})));
+const InboxRouteScreen = lazy(() => import("../features/inbox/ui/InboxRouteScreen").then((m) => ({default: m.InboxRouteScreen})));
 const IntakeWorkspaceScreen = lazy(() => import("../features/intake/ui/IntakeWorkspaceScreen").then((m) => ({default: m.IntakeWorkspaceScreen})));
 const SafetyRouteScreen = lazy(() => import("../features/safety/ui/SafetyRouteScreen").then((m) => ({default: m.SafetyRouteScreen})));
 const GrowthKpiScreen = lazy(() => import("../features/growth/ui/GrowthKpiScreen").then((m) => ({default: m.GrowthKpiScreen})));
+const MoneyRouteScreen = lazy(() => import("../features/money/ui/MoneyRouteScreen").then((m) => ({default: m.MoneyRouteScreen})));
 const FinanceOpsScreen = lazy(() => import("../features/finance/ui/FinanceOpsScreen").then((m) => ({default: m.FinanceOpsScreen})));
 const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui/CommercialTermsScreen").then((m) => ({default: m.CommercialTermsScreen})));
 const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
@@ -27,6 +30,7 @@ const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteSc
 const SystemRouteScreen = lazy(() => import("../features/system/ui/SystemRouteScreen").then((m) => ({default: m.SystemRouteScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
 const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
+const IntakeSettingsRouteScreen = lazy(() => import("../features/intake/organizer/ui/IntakeSettingsRouteScreen").then((m) => ({default: m.IntakeSettingsRouteScreen})));
 const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
@@ -98,7 +102,22 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   "organizer-intake": {
-    label: "Inbox", icon: "review", frame: "legacy-fill",
+    label: "Inbox", icon: "review", frame: "redrawn",
+    render: ({navigate, route, setError, setNotice, userUid, mode}) => (
+      <InboxRouteScreen
+        onError={setError}
+        onNotice={setNotice}
+        onOpenReview={() => navigate(adminPathForNav("intake-review"))}
+        onSelect={(itemId) => navigate(itemId ? `${adminPathForNav("organizer-intake")}/${encodeURIComponent(itemId)}` :
+          adminPathForNav("organizer-intake"))}
+        reviewHref={adminPathForNav("intake-review")}
+        selectedItemId={route.params.inboxItemId ?? null}
+        uid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
+      />
+    ),
+  },
+  "intake-review": {
+    label: "Intake review", icon: "review", frame: "legacy-fill",
     render: () => <IntakeWorkspaceScreen />,
   },
   safety: {
@@ -148,9 +167,21 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
       />
     ),
   },
-  finance: {
-    label: "Money", icon: "payment", frame: "legacy",
-    render: (context) => renderMoney(context),
+  money: {
+    label: "Money", icon: "payment", frame: "redrawn",
+    render: ({navigate, route, setNotice}) => (
+      <MoneyRouteScreen
+        onNotice={setNotice}
+        onOpen={(view, id) => navigate(moneyPath(view, id))}
+        onOpenSettings={() => navigate(commercialTermsPathForOrganizer(null))}
+        selectedId={route.params.billId ?? route.params.moneyIssueId ?? null}
+        view={route.moneyView}
+      />
+    ),
+  },
+  "payment-setup": {
+    label: "Payment setup", icon: "settings", frame: "legacy",
+    render: (context) => renderPaymentSetup(context),
   },
   organizers: {
     label: "Organizers", icon: "organizer", frame: "redrawn",
@@ -255,10 +286,16 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
         onError={setError}
         onNavigate={navigate}
         onNotice={setNotice}
-        otherPages={canOpen("safety") ? [{
-          id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
-          render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
-        }] : []}
+        otherPages={[
+          ...(canOpen("organizer-intake") ? [{
+            id: "intake", title: "Intake", subtitle: "Nominations, what runs on its own, launch cities",
+            render: () => <IntakeSettingsRouteScreen onError={setError} onNotice={setNotice} />,
+          }] : []),
+          ...(canOpen("safety") ? [{
+            id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
+            render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
+          }] : []),
+        ]}
         selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
         teamMemberUid={route.params.teamMemberUid ?? null}
       />
@@ -267,12 +304,8 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
   },
 };
 
-/**
- * Each job's navigation, in the order of the redesign's NAV table (catch-design-source
- * gen/admin_common.py). Areas still to be redrawn follow under "Older pages" until their
- * replacements land; each area's PR moves or removes its line here.
- */
-function renderMoney(context: AdminAreaContext) {
+/** The older payment setup screens, until Settings → Payments replaces them. */
+function renderPaymentSetup(context: AdminAreaContext) {
   const {canManageCommercialTerms, financeWorkspaceSwitch, navigate, route, setError, setNotice, userUid, adminRoles} = context;
   if (route.financeWorkspace === "commercial-terms") {
     return (
@@ -304,10 +337,10 @@ function renderMoney(context: AdminAreaContext) {
       actorUid={userUid ?? "sample"}
       adminRoles={adminRoles}
       key={userUid ?? "sample"}
-      onBackToList={() => navigate(adminPathForNav("finance"))}
+      onBackToList={() => navigate(adminPathForNav("payment-setup"))}
       onError={setError}
       onNotice={setNotice}
-      onSelectIssueId={(issueId) => navigate(`/finance/issues/${encodeURIComponent(issueId)}`)}
+      onSelectIssueId={(issueId) => navigate(`/payment-setup/issues/${encodeURIComponent(issueId)}`)}
       selectedIssueId={route.params.financeIssueId ?? null}
       workspaceSwitch={financeWorkspaceSwitch}
     />
@@ -317,7 +350,7 @@ function renderMoney(context: AdminAreaContext) {
 /** Opens a Needs you item in the area that owns it, at the record when the area has a record route. */
 function openQueueItem(
   context: AdminAreaContext,
-  destination: "safety" | "organizers" | "finance",
+  destination: "safety" | "organizers" | "money",
   targetPath: string | null
 ) {
   const {navigate, setError, setNotice} = context;
@@ -335,8 +368,9 @@ function openQueueItem(
     navigate(targetPath?.startsWith("organizerClaimRequests/") ?
       `/organizers/claims/${encodeURIComponent(targetId)}` :
       `/organizers/${encodeURIComponent(targetId)}`);
-  } else if (targetPath && destination === "finance") {
-    navigate(`/finance/issues/${encodeURIComponent(targetPath)}`);
+  } else if (targetPath && destination === "money") {
+    // Needs you names a payment by its document path; Money names an issue "collection:id".
+    navigate(moneyPath("issues", targetPath.replace("/", ":")));
   } else {
     navigate(adminPathForNav(destination));
   }
