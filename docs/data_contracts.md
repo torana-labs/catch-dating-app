@@ -4545,6 +4545,9 @@ approved but unverified listing (hidden in the app) shows its events on the
 website only.
 `adminListExternalEventDetails` lists that collection for admin event-supply
 review with the same bounded launch-city and time-window filters.
+`adminListEventDirectory` reads it beside `events` so the Admin Events
+directory shows Catch and imported events as one table, each row naming its
+source.
 
 Supply Intake listing events publish through `adminPublishListingEvents`
 (staff) and `onSupplyIntakeListingApproved` (the event publication policy),
