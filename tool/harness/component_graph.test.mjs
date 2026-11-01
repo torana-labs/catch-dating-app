@@ -1292,7 +1292,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
 });
 
 test("capture validation keeps unrelated tooling narrow and mixed Functions authority intact", () => {
-  for (const file of ["tool/data/migrate_clubs_to_organizers.mjs",
+  for (const file of ["tool/data/validate_firestore_data.mjs",
     "tool/docs/check_doc_metadata.mjs", "functions/test/publicListingReadiness.test.cjs"]) {
     const result = plan(file);
     assert.equal(result.operations.ciTargets.includes("marketing"), false, file);

@@ -1,13 +1,13 @@
 import {fireEvent, render, screen} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 import {
-  EmptyStateControl,
   SelectControl,
   ToggleButtonControl,
   ToggleGroupControl,
 } from "./primitives";
 import {ButtonControl} from "./components/ButtonControl";
 import {DataTableControl} from "./components/DataTableControl";
+import {EmptyStateControl} from "./components/EmptyStateControl";
 
 describe("shared button control", () => {
   it("defaults to a non-submitting button", () => {

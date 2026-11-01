@@ -40,6 +40,7 @@ function States() {
       </State>
       <State label="title-only"><CatchEmptyState title="No links yet" /></State>
       <State label="message-only"><CatchEmptyState message="This organiser hasn't added any links." /></State>
+      <State label="done"><CatchEmptyState kind="done" message="Nothing is waiting on you." title="All caught up" /></State>
     </CatchGrid>
   );
 }

@@ -91,12 +91,9 @@ test("common arguments fail closed on malformed option input and declarations", 
   );
 });
 
-test("the eight common migration commands retain the shared parser", () => {
+test("the five common data commands retain the shared parser", () => {
   for (const path of [
     "tool/firebase/create_config_cities.mjs",
-    "tool/data/backfill_location_market_fields.mjs",
-    "tool/data/backfill_event_meeting_locations.mjs",
-    "tool/data/migrate_clubs_to_organizers.mjs",
     "tool/data/backfill_event_admin_search.mjs",
     "tool/data/backfill_event_discovery_fields.mjs",
     "tool/data/backfill_organizer_admin_search.mjs",

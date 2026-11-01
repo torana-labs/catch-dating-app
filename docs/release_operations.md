@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.1.1
-updated: 2026-10-31
+version: 3.1.2
+updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -2514,19 +2514,8 @@ node tool/data/backfill_event_admin_search.mjs --env dev --apply
 Repeat for staging, then prod. Production apply requires `--allow-prod`.
 
 Organizer supply capabilities are a callable-owned product-policy projection.
-Dry-run before applying the legacy repair:
-
-```bash
-npm --prefix functions run build
-node tool/data/backfill_organizer_supply_capabilities.mjs --env dev
-node tool/data/backfill_organizer_supply_capabilities.mjs --env staging
-node tool/data/backfill_organizer_supply_capabilities.mjs --env prod
-node tool/data/backfill_organizer_supply_capabilities.mjs --env prod --apply --allow-prod
-```
-
-The 2026-07-27 production run repaired 44 organizers and 42 compatibility
-clubs; the post-apply dry run reported 86 current documents and zero remaining
-repairs or invalid records. Deploy matching Functions before relying on the
+Its one-off legacy repair ran in production on 2026-07-27 and is retired;
+wipe-and-reseed makes it moot. Deploy matching Functions before relying on the
 projection. External-event publication/takedown must be smoke-tested through
 the Admin dry-run-then-apply actions so the immutable receipt, organizer
 ceiling, and outbound-only behavior are verified together.

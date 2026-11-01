@@ -1,0 +1,27 @@
+/*
+ * Flutter CatchDialog on the web: a 420px surface card with 24px insets and
+ * a large radius over a 45% ink scrim. A 20px bold title, a 15px ink2
+ * message, then actions on the right, confirming last; phones stack them
+ * full width.
+ */
+.dialog {
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  box-shadow: 0 24px 48px rgba(20, 17, 20, 0.18);
+}
+
+.dialog::backdrop { background: rgba(20, 17, 20, 0.45); }
+.body { display: flex; flex-direction: column; gap: var(--catch-space-s3); padding: var(--catch-space-s6); }
+.title { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.2; }
+.message { margin: 0; color: var(--catch-theme-ink2); font-size: 15px; line-height: 1.45; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--catch-space-s2); margin-top: var(--catch-space-s3); }
+
+@media (max-width: 599px) {
+  .actions { flex-direction: column-reverse; }
+  .actions > * { width: 100%; }
+}

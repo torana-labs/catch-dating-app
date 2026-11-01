@@ -1,7 +1,7 @@
 ---
 doc_id: location_stack
-version: 1.1.7
-updated: 2026-10-22
+version: 1.1.8
+updated: 2026-11-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -181,8 +181,8 @@ labels at rest.
   for disabled services, denied permission, and permanently denied permission.
 - Public profile exact coordinates have been removed from the Dart model,
   Firestore TypeScript contract, and `syncPublicProfile` projection.
-- `tool/data/strip_public_profile_coordinates.mjs` can dry-run/apply removal of
-  legacy `latitude`/`longitude` fields from existing `publicProfiles` docs.
+- Removing legacy `latitude`/`longitude` fields from existing `publicProfiles`
+  docs is moot under wipe-and-reseed; its one-off script is retired.
 - `latlong2.LatLng` has been removed from app-facing code and the dependency
   graph; SDK-specific coordinate types now stay at Google Maps adapter edges.
 - `tool/firebase/validate_google_maps_config.mjs` validates dev/staging/prod local Maps
@@ -274,9 +274,6 @@ References:
 
 ### Phase 1: Privacy Boundary
 
-- Run `tool/data/strip_public_profile_coordinates.mjs --env <env>` as a dry run,
-  then rerun with `--apply` for each environment that has legacy public
-  coordinates.
 - Decide whether swipe cards should show no location copy, city-only copy, or a
   coarse same-city/nearby-city label.
 - Define `prefsShowOnMap` precisely or rename it if it does not control a real

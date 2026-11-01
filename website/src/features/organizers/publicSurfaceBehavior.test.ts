@@ -235,18 +235,19 @@ function verifyClaim(
   const alreadyOwned = ["claimed", "verified"].includes(claimState) ||
     values["organizer.ownershipState"] === "userCreated";
 
-  const expected = !selectedListingAvailable ? {
-    signIn: "hidden", form: "hidden", submit: "hidden", status: "visibleReadOnly",
-  } : claimState === "claimPending" || alreadyOwned || !canRequest ? {
+  // One path: a phone sign-in, then a code or a review request. A pending
+  // review still offers a code; the panel says so.
+  const pending = claimState === "claimPending";
+  const expected = !selectedListingAvailable || alreadyOwned || (!canRequest && !pending) ? {
     signIn: "hidden", form: "hidden", submit: "hidden", status: "visibleReadOnly",
   } : !runtimeAvailable ? {
-    signIn: "visibleDisabled", form: "visibleReadOnly", submit: "visibleDisabled", status: "visibleReadOnly",
+    signIn: "hidden", form: "hidden", submit: "hidden", status: "visibleReadOnly",
   } : session === "resolving" ? {
-    signIn: "visibleDisabled", form: "visibleReadOnly", submit: "visibleDisabled", status: "hidden",
+    signIn: "visibleDisabled", form: "hidden", submit: "hidden", status: pending ? "visibleReadOnly" : "hidden",
   } : session === "guest" ? {
-    signIn: "visibleWeb", form: "visibleReadOnly", submit: "visibleSignInGate", status: "hidden",
+    signIn: "visibleWeb", form: "hidden", submit: "hidden", status: pending ? "visibleReadOnly" : "hidden",
   } : {
-    signIn: "hidden", form: "visibleReadOnly", submit: "visibleWeb", status: "hidden",
+    signIn: "hidden", form: "visibleReadOnly", submit: "visibleWeb", status: pending ? "visibleReadOnly" : "hidden",
   };
 
   expect(expectations["claim.signIn"].disposition).toBe(expected.signIn);

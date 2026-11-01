@@ -1,4 +1,4 @@
-import type {CSSProperties, ReactNode} from "react";
+import {useId, type CSSProperties, type ReactNode} from "react";
 import {CatchButton, type CatchButtonMode} from "./CatchButton";
 import styles from "./CatchDock.module.css";
 
@@ -46,7 +46,33 @@ export interface CatchDockPrimaryContentProps extends CatchDockAction {
   bottomPadding?: number;
 }
 
+export interface CatchDockPaneAction {
+  label: string;
+  /** Null disables the action. */
+  onPressed: (() => void) | null;
+  isLoading?: boolean;
+}
+
+/**
+ * `CatchDock.pane`: the decision bar at the foot of a detail pane (a review, a claim, a report).
+ * It stays in view while the pane scrolls.
+ */
+export interface CatchDockPaneProps {
+  recipe: "pane";
+  primary: CatchDockPaneAction;
+  secondary?: CatchDockPaneAction;
+  /** The refusing action (Reject, Decline), drawn as a quiet danger button before the secondary. */
+  danger?: CatchDockPaneAction;
+  /** A one-line note field above the actions ("Why? Only your team sees this"). */
+  note?: {label: string; placeholder?: string; value: string; onChanged: (value: string) => void; required?: boolean};
+  /** What happens after the decision ("Then: Harbor Social · 3 left"). */
+  next?: ReactNode;
+  /** Left of the actions when there is no next line: a price, a count. */
+  summary?: ReactNode;
+}
+
 export type CatchDockProps =
+  | CatchDockPaneProps
   | CatchDockUtilityProps
   | CatchDockPrimaryProps
   | CatchDockPageActionProps
@@ -66,6 +92,7 @@ const sparkle = (
  * line above and footnote below. The caller places the dock.
  */
 export function CatchDock(props: CatchDockProps) {
+  if (props.recipe === "pane") return <PaneDock {...props} />;
   if (props.recipe === undefined || props.recipe === "utility") {
     return (
       <div className={styles.dock} data-recipe="utility" data-safe-area={props.includeSafeArea === false ? undefined : true}
@@ -74,7 +101,7 @@ export function CatchDock(props: CatchDockProps) {
       </div>
     );
   }
-  const action = props as Exclude<CatchDockProps, CatchDockUtilityProps>;
+  const action = props as Exclude<CatchDockProps, CatchDockUtilityProps | CatchDockPaneProps>;
   const line = action.recipe !== "pageAction" ? action.catchLine : undefined;
   const footnote = action.recipe !== "pageAction" ? action.footnote : undefined;
   const leading = action.recipe !== "pageAction" ? action.leading : undefined;
@@ -101,6 +128,41 @@ export function CatchDock(props: CatchDockProps) {
           />
         </div>
         {footnote ? <p className={styles.footnote}>{footnote}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+function PaneDock({primary, secondary, danger, note, next, summary}: CatchDockPaneProps) {
+  const noteId = useId();
+  return (
+    <div className={styles.dock} data-recipe="pane">
+      {note ? (
+        <label className={styles.note} htmlFor={noteId}>
+          <span className={styles.noteLabel}>{note.label}</span>
+          <input
+            className={styles.noteInput}
+            id={noteId}
+            onChange={(event) => note.onChanged(event.currentTarget.value)}
+            placeholder={note.placeholder}
+            required={note.required}
+            type="text"
+            value={note.value}
+          />
+        </label>
+      ) : null}
+      {next ? <p className={styles.next}>{next}</p> : null}
+      <div className={styles.paneRow}>
+        {summary && !next ? <div className={styles.summary}>{summary}</div> : null}
+        <span className={styles.paneActions}>
+          {danger ? (
+            <CatchButton label={danger.label} onPressed={danger.isLoading ? null : danger.onPressed} recipe="text" tone="danger" />
+          ) : null}
+          {secondary ? (
+            <CatchButton label={secondary.label} onPressed={secondary.onPressed} size="md" status={secondary.isLoading ? "loading" : "idle"} variant="secondary" />
+          ) : null}
+          <CatchButton label={primary.label} onPressed={primary.onPressed} size="md" status={primary.isLoading ? "loading" : "idle"} />
+        </span>
       </div>
     </div>
   );

@@ -7,10 +7,7 @@ import {hostListings} from "../../features/organizers/data";
 import type {HostListing} from "../../features/organizers/types";
 import {useClaimFlowController} from "../../features/claims/useClaimFlowController";
 vi.mock("../../analytics", () => ({trackMarketingEvent: vi.fn(), trackCatchAcquisitionEvent: vi.fn()}));
-vi.mock("../../firebaseConfig", () => ({claimFirebaseConfigured: false}));
-vi.mock("../../firebase", () => ({watchClaimAuthState: vi.fn(() => vi.fn()),
-  requestOrganizerClaim: vi.fn(), signInForClaim: vi.fn(), signOutClaimUser: vi.fn()}));
-it("claim discovery uses the current catalog and withdrawal clears selection without erasing contact input", async () => {
+it("claim discovery uses the current catalog and withdrawal clears the selection", async () => {
   const listing: HostListing = {...hostListings[0], name: "Current catalog organizer",
     authority: {...hostListings[0].authority, ownershipState: "programmatic", claimState: "unclaimed", publishStatus: "published"},
     capabilities: {...hostListings[0].capabilities, claimRequest: {state: "enabled", reason: ""}}};
@@ -24,10 +21,10 @@ it("claim discovery uses the current catalog and withdrawal clears selection wit
   const {result, rerender} = renderHook(() => useClaimFlowController({listing,
     lookup: listing.id, requestId: null, urlState: null}), {wrapper: Wrapper});
   expect(result.current.searchResults.map(item => item.name)).toEqual([listing.name]);
-  act(() => result.current.setRequesterName("Entered contact"));
+  act(() => result.current.setQuery("Current"));
   catalog = [];
   rerender();
   await waitFor(() => expect(result.current.listing).toBeNull());
   expect(result.current.searchResults).toEqual([]);
-  expect(result.current.requesterName).toBe("Entered contact");
+  expect(result.current.query).toBe("Current");
 });

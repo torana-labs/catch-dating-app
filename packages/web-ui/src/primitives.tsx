@@ -26,35 +26,6 @@ export function CheckboxControl(props: CheckboxControlProps) {
   return <input type="checkbox" {...props} />;
 }
 
-export type EmptyStateAnnouncement = "assertive" | "off" | "polite";
-
-export interface EmptyStateControlProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "aria-live" | "role"> {
-  announce?: EmptyStateAnnouncement;
-  contentElement?: "none" | "span";
-  icon?: ReactNode;
-}
-
-export function EmptyStateControl({
-  announce = "off",
-  children,
-  contentElement = "none",
-  icon,
-  ...props
-}: EmptyStateControlProps) {
-  const content = contentElement === "span" ? <span>{children}</span> : children;
-  return (
-    <div
-      {...props}
-      aria-live={announce === "off" ? undefined : announce}
-      role={announce === "off" ? undefined : "status"}
-    >
-      {icon}
-      {content}
-    </div>
-  );
-}
-
 interface FieldControlValidationProps {
   descriptionId?: string;
   invalid?: boolean;

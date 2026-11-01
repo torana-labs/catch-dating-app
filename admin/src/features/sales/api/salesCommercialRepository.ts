@@ -9,7 +9,8 @@ import type {CommercialDecisionInput, CommercialDetail, CommercialPilotInput,
 async function call<Request, Response>(name: string,
   payload: Request): Promise<Response> {
   const {validateAdminCallableRequest, validateAdminCallableResponse} = await import(
-    "../../../generated/validators/adminCallableValidators");
+    "../../../generated/validators/adminCallableValidators")
+    .then((validators) => validators.loadAdminCallableValidators(name));
   validateAdminCallableRequest(name, payload);
   const result = await httpsCallable<Request, Response>(functions, name)(payload);
   validateAdminCallableResponse(name, result.data);

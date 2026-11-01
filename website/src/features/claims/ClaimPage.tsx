@@ -5,8 +5,8 @@ import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
 import {ClaimFlowMain} from "../../shared/ui/primitives";
 import {
   ClaimHeroSection,
+  ClaimSearchSection,
   ClaimUrlStateSection,
-  ClaimWorkspaceSection,
 } from "./sections/ClaimPageSections";
 import {InstantClaimPanel} from "./sections/InstantClaimSection";
 import type {HostListing} from "../organizers/types";
@@ -18,30 +18,35 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
   if (routeState.continuationId) return <DemoContinuationWorkspace key={routeState.continuationId} continuationId={routeState.continuationId} />;
   return <PublicClaimPage routeState={routeState} />;
 }
+/**
+ * One way through: find the page (unless the link already named it), sign in
+ * with a phone, then prove it with a code or ask for a review. A pending
+ * review does not block proving it straight away.
+ */
 function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
   const controller = useClaimFlowController(routeState);
-  const {claimUrlState} = controller;
+  const {claimUrlState, listing} = controller;
+  const pendingReview = claimUrlState === "pendingClaim";
+  const claimable = Boolean(listing) && (!claimUrlState || pendingReview);
 
   return (
     <>
       <PublicSiteHeader />
 
       <ClaimFlowMain>
-        <ClaimHeroSection listing={controller.listing} />
+        <ClaimHeroSection listing={listing} />
 
-        {claimUrlState ? (
+        {claimUrlState && !claimable ? (
           <ClaimUrlStateSection
             state={claimUrlState}
-            listing={controller.listing}
+            listing={listing}
             lookup={controller.claimLookup}
             requestId={controller.activeRequestId}
           />
-        ) : (
-          <>
-            {controller.listing ? <InstantClaim key={controller.listing.id} listing={controller.listing} /> : null}
-            <ClaimWorkspaceSection controller={controller} />
-          </>
-        )}
+        ) : null}
+        {!claimUrlState && !controller.listingFromLink ? <ClaimSearchSection controller={controller} /> : null}
+        {claimable && listing ? <InstantClaim key={listing.id} listing={listing} pendingReview={pendingReview}
+          onStart={controller.markClaimStarted} /> : null}
         <HostPreviewSection variant="faq">
           <HostPreviewSectionHead titleId="claim-guidance-title" title={claimGuidance.title} body={claimGuidance.body} />
           <HostPreviewFaqList items={[...claimGuidance.items]} />
@@ -54,6 +59,9 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
   );
 }
 
-function InstantClaim({listing}: {listing: HostListing}) {
-  return <InstantClaimPanel controller={useInstantClaimController(listing.id)} listing={listing} />;
+function InstantClaim({listing, pendingReview, onStart}: {
+  listing: HostListing; pendingReview: boolean; onStart: () => void;
+}) {
+  return <InstantClaimPanel controller={useInstantClaimController(listing.id, onStart)} listing={listing}
+    pendingReview={pendingReview} />;
 }

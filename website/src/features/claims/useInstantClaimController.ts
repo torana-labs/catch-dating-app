@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {useEffect, useState} from "react";
+import {type FormEvent, useEffect, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import type {
@@ -9,16 +9,21 @@ import type {
 } from "../../firebase";
 import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
 import {claimVerificationCopy} from "@content/claimVerification";
-import {readableError} from "./claimModel";
+import {parseProofUrls, readableError} from "./claimModel";
+import {useClaimRequestMutation} from "./useClaimRequestMutation";
 
-export type InstantClaimPhase = "unavailable" | "account" | "loading" | "choose" | "code" | "done";
+export type InstantClaimPhase = "unavailable" | "account" | "loading" | "choose" | "code" | "review" |
+  "requested" | "done";
 
 /**
- * Proving ownership straight away: a code sent from the listing's Instagram
- * account, or pasted into its Luma calendar. The backend approves the claim
- * when the proof arrives; staff review stays available beside it.
+ * Claiming one listing, after a single phone sign-in. The usual way proves
+ * ownership straight away: a code sent from the listing's Instagram account,
+ * or pasted into its Luma calendar, and the backend approves the claim when
+ * the proof arrives. When neither works, the organiser sends a link that
+ * shows the page is theirs and staff review it. The account already holds
+ * their name and verified phone, so the review asks for nothing else.
  */
-export function useInstantClaimController(organizerId: string) {
+export function useInstantClaimController(organizerId: string, onStart: () => void = () => undefined) {
   const account = useWebsiteAccountController();
   const [method, setMethod] = useState<OrganizerClaimVerificationMethod | null>(null);
   const [attempt, setAttempt] = useState<OrganizerClaimVerificationStart | null>(null);
@@ -26,6 +31,10 @@ export function useInstantClaimController(organizerId: string) {
   const [lumaMissing, setLumaMissing] = useState(false);
   const [verified, setVerified] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [proofLinks, setProofLinks] = useState("");
+  const [note, setNote] = useState("");
+  const [reviewRequestId, setReviewRequestId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [now, setNow] = useState(() => Date.now());
 
@@ -44,6 +53,7 @@ export function useInstantClaimController(organizerId: string) {
   const confirm = useMutation({retry: false, gcTime: 0,
     mutationFn: async (attemptId: string) =>
       (await import("../../firebase")).confirmOrganizerClaimVerification({attemptId})});
+  const review = useClaimRequestMutation(organizerId);
 
   // The Instagram webhook completes the attempt; the page follows it.
   useEffect(() => {
@@ -78,6 +88,7 @@ export function useInstantClaimController(organizerId: string) {
 
   async function showCode() {
     if (!chosen || start.isPending) return;
+    onStart();
     setError(""); setLumaMissing(false); setCopied(false); setAttemptState(null);
     try {
       const next = await start.mutateAsync(chosen.method);
@@ -109,6 +120,29 @@ export function useInstantClaimController(organizerId: string) {
     }
   }
 
+  async function requestReview(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const profile = account.account;
+    if (!profile || review.isPending) return;
+    onStart();
+    const proofUrls = parseProofUrls(proofLinks);
+    if (!proofUrls.length) {
+      setError(claimVerificationCopy.reviewNeedsLink);
+      return;
+    }
+    setError("");
+    try {
+      const response = await review.mutateAsync({organizerId, requesterName: profile.displayName,
+        requesterRole: "owner", businessEmail: null, businessPhone: profile.phoneNumber, proofUrls,
+        message: note.trim() || null});
+      setReviewRequestId(response.requestId);
+      trackMarketingEvent("claim_flow_submitted", {club_id: organizerId, proof_count: proofUrls.length,
+        request_id: response.requestId});
+    } catch (cause) {
+      setError(readableError(cause));
+    }
+  }
+
   function copyCode() {
     if (!attempt) return;
     try {
@@ -121,13 +155,21 @@ export function useInstantClaimController(organizerId: string) {
 
   function chooseAgain() {
     setAttempt(null); setAttemptState(null); setLumaMissing(false); setError(""); setCopied(false);
+    setReviewOpen(false);
+  }
+
+  function openReview() {
+    onStart();
+    setAttempt(null); setAttemptState(null); setError(""); setReviewOpen(true);
   }
 
   const phase: InstantClaimPhase = !claimFirebaseConfigured ? "unavailable" :
     verified ? "done" :
     !account.ready ? "account" :
     options.isPending ? "loading" :
-    attempt ? "code" : "choose";
+    reviewRequestId ? "requested" :
+    attempt ? "code" :
+    reviewOpen || (options.isSuccess && !chosen) ? "review" : "choose";
 
   return {
     account, phase, methods, chosen, attempt, expired, copied, error: error ||
@@ -135,7 +177,8 @@ export function useInstantClaimController(organizerId: string) {
     rejection: attemptState?.status === "awaitingProof" ? attemptState.rejection : null,
     lumaMissing, starting: start.isPending, checking: confirm.isPending,
     catchInstagramHandle: options.data?.catchInstagramHandle ?? attempt?.catchInstagramHandle ?? null,
-    setMethod, showCode, checkLuma, copyCode, chooseAgain,
+    proofLinks, setProofLinks, note, setNote, requesting: review.isPending,
+    setMethod, showCode, checkLuma, copyCode, chooseAgain, openReview, requestReview,
   };
 }
 

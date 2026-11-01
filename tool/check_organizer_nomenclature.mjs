@@ -37,7 +37,6 @@ const requiredMarkers = [
   ["functions/src/index.ts", "adminListOrganizerClaimRequests"],
   ["functions/src/index.ts", "adminSetOrganizerIndexStatus"],
   ["lib/platform/analytics/app_analytics.dart", "static const organizerId = 'organizer_id';"],
-  ["tool/data/migrate_clubs_to_organizers.mjs", "--confirm-migration"],
   ["docs/migrations/clubs_to_organizers.md", "organizerType"],
 ];
 
@@ -102,7 +101,6 @@ const allowedClubCopyKeys = new Set([
 export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
   const findings = [];
   checkTaxonomy(root, findings);
-  checkMigrationState(root, findings);
   for (const [relativePath, marker] of requiredMarkers) {
     const source = read(root, relativePath, findings);
     if (source != null && !source.includes(marker)) {
@@ -283,31 +281,6 @@ function checkTaxonomy(root, findings) {
       path: relativePath,
       detail: error.message,
     });
-  }
-}
-
-function checkMigrationState(root, findings) {
-  const relativePath = "contracts/migrations/clubs_to_organizers.json";
-  const source = read(root, relativePath, findings);
-  if (source == null) return;
-  try {
-    const migration = JSON.parse(source);
-    if (migration.selectedFutureName !== "organizers") {
-      findings.push({
-        rule: "migrationAuthorityDrift",
-        path: relativePath,
-        detail: "selectedFutureName must remain organizers.",
-      });
-    }
-    if (migration.currentPhase !== "retire_legacy") {
-      findings.push({
-        rule: "legacyRetirementIncomplete",
-        path: relativePath,
-        detail: "Legacy retirement must be marked complete after cleanup approval.",
-      });
-    }
-  } catch (error) {
-    findings.push({rule: "invalidJson", path: relativePath, detail: error.message});
   }
 }
 
