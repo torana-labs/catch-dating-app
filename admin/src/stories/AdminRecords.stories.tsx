@@ -4,6 +4,13 @@ import type {EventDirectoryController} from "../features/events/controllers/useE
 import {initialEventDirectoryFilters} from "../features/events/controllers/useEventDirectoryController";
 import {EventDirectoryScreen, OrganizerEventsWorkspace} from "../features/events/ui/EventDirectoryScreen";
 import {EventPageScreen} from "../features/events/ui/EventPageScreen";
+import {OrganizerBillsWorkspace} from "../features/money/ui/OrganizerBillsWorkspace";
+import {
+  organizerMonthBreakdown,
+  organizerMoneySummary,
+  type OrganizerBillsController,
+} from "../features/money/controllers/useOrganizerBillsController";
+import {moneySampleNowMillis, sampleManageOrganizerBills} from "../features/money/api/moneySamples";
 import type {OrganizerDirectoryController} from "../features/organizers/controllers/useOrganizerDirectoryController";
 import {initialOrganizerDirectoryFilters} from "../features/organizers/controllers/useOrganizerDirectoryController";
 import {OrganizerDirectoryScreen} from "../features/organizers/ui/OrganizerDirectoryScreen";
@@ -39,8 +46,16 @@ function eventDirectory(organizerId: string | null = null): EventDirectoryContro
   };
 }
 
+function organizerBills(): OrganizerBillsController {
+  const {bills} = sampleManageOrganizerBills({action: "list", month: null,
+    organizerId: "mumbai-padel-social", billId: null, expectedRevision: null, note: null});
+  return {bills, summary: organizerMoneySummary(bills),
+    latest: bills[0] ? organizerMonthBreakdown(bills[0]) : null, loadState: "ready", loadError: null};
+}
+
 const organizerLinks: OrganizerPageLinks = {
   eventsTab: <OrganizerEventsWorkspace controller={eventDirectory("afterfly")} onOpenEvent={noop} />,
+  moneyBills: <OrganizerBillsWorkspace controller={organizerBills()} nowMillis={moneySampleNowMillis} onOpenBill={noop} />,
   onBack: noop,
   onTabChanged: noop,
   onOpenEvent: noop,
@@ -95,6 +110,12 @@ export const OrganizerMoneyRouteStory: Story = {
       tab="money"
     />
   ),
+};
+
+export const OrganizerBillsWorkspaceStory: Story = {
+  name: "Organizer bills",
+  parameters: {catchComponent: {id: "workspace_organizer_bills", states: ["bills", "latest-month"]}},
+  render: () => <OrganizerBillsWorkspace controller={organizerBills()} nowMillis={moneySampleNowMillis} onOpenBill={noop} />,
 };
 
 export const EventDirectoryRouteStory: Story = {

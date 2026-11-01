@@ -22,9 +22,11 @@ function DirectoryRoute({onNavigate}: {onNavigate: (path: string) => void}) {
   );
 }
 
-function PageRoute({onNavigate, organizerId, renderEvents, tab}: {
+function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, renderEvents, tab}: {
+  canChangeTerms: boolean;
   onNavigate: (path: string) => void;
   organizerId: string;
+  renderBills: ((organizerId: string) => ReactNode) | null;
   renderEvents: (organizerId: string) => ReactNode;
   tab: OrganizerPageTab;
 }) {
@@ -34,12 +36,14 @@ function PageRoute({onNavigate, organizerId, renderEvents, tab}: {
     <OrganizerPageScreen
       links={{
         eventsTab: tab === "events" ? renderEvents(organizerId) : null,
+        moneyBills: tab === "money" && renderBills ? renderBills(organizerId) : null,
         onBack: () => onNavigate("/organizers"),
         onTabChanged: (next) => onNavigate(next === "overview" ? base : `${base}/${next}`),
         onOpenEvent: (source, eventId) => onNavigate(source === "catch" ?
           `/events/${encodeURIComponent(eventId)}` : `/events/external/${encodeURIComponent(eventId)}`),
         onOpenSales: () => onNavigate(`/sales/hosts/${encodeURIComponent(organizerId)}`),
-        onOpenTerms: () => onNavigate(`/finance/commercial-terms/organizers/${encodeURIComponent(organizerId)}`),
+        onOpenTerms: canChangeTerms ?
+          () => onNavigate(`/payment-setup/commercial-terms/organizers/${encodeURIComponent(organizerId)}`) : null,
         onOpenClaim: (requestId) => onNavigate(`/organizers/claims/${encodeURIComponent(requestId)}`),
         publicPageUrl: (canonicalPath) => `${publicSiteOrigin}${canonicalPath}`,
       }}
@@ -58,16 +62,21 @@ function PageRoute({onNavigate, organizerId, renderEvents, tab}: {
  * review screen here until the Inbox decides them.
  */
 export function OrganizersRouteScreen({
+  canChangeTerms,
   claimRequestId,
   onNavigate,
   organizerId,
+  renderBills,
   renderEvents,
   tab,
   workspace,
 }: {
+  canChangeTerms: boolean;
   claimRequestId: string | null;
   onNavigate: (path: string) => void;
   organizerId: string | null;
+  /** The Money tab's bills, which the Money area owns; null for those who cannot open Money. */
+  renderBills: ((organizerId: string) => ReactNode) | null;
   /** The Events tab: one organizer's events, which the Events area owns. */
   renderEvents: (organizerId: string) => ReactNode;
   tab: OrganizerPageTab;
@@ -89,8 +98,8 @@ export function OrganizersRouteScreen({
   }
   if (organizerId) {
     return (
-      <PageRoute key={organizerId} onNavigate={onNavigate} organizerId={organizerId} renderEvents={renderEvents}
-        tab={tab} />
+      <PageRoute canChangeTerms={canChangeTerms} key={organizerId} onNavigate={onNavigate} organizerId={organizerId}
+        renderBills={renderBills} renderEvents={renderEvents} tab={tab} />
     );
   }
   return <DirectoryRoute onNavigate={onNavigate} />;

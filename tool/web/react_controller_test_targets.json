@@ -130,6 +130,11 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/money/controllers/useOrganizerBillsController.ts",
+      "test": "admin/src/features/money/controllers/useOrganizerBillsController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
       "test": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
       "status": "required"
