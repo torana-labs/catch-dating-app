@@ -79,7 +79,7 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
     {nav: "people", section: "Records"},
     {nav: "settings", section: "Setup"},
     {nav: "system", section: "Setup"},
-    {nav: "intake-review", section: "Older pages"}, 
+    {nav: "intake-review", section: "Older pages"},
     {nav: "operations", section: "Older pages"},
   ],
 };
