@@ -239,8 +239,7 @@ export async function adminRebuildInboxHandler(request: CallableRequest<unknown>
   let written = 0;
   for (const doc of snapshot.docs) {
     if (data.source === "people") {
-      await syncPeopleIndex(db, doc.id, doc.data(), deps.now());
-      written += 1;
+      if (await syncPeopleIndex(db, doc.id, doc.data(), deps.now())) written += 1;
     } else {
       const result = await syncInboxSource(db, data.source as InboxSourceKind, doc.id, doc.data(), deps.now());
       if (result.outcome === "written") written += 1;

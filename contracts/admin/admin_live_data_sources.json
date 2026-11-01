@@ -54,8 +54,10 @@
       "liveReads": [
         "adminGetOrganizerClaimRequestDetails",
         "adminGetOrganizerDetails",
+        "adminGetOrganizerOverview",
         "adminListOrganizerClaimRequests",
-        "adminListOrganizerDetails"
+        "adminListOrganizerDetails",
+        "adminListOrganizerDirectory"
       ],
       "liveMutations": [
         "adminDecideOrganizerClaim",
@@ -70,6 +72,7 @@
       "liveReads": [
         "adminGetEventDetails",
         "adminListEventDetails",
+        "adminListEventDirectory",
         "adminListExternalEventDetails"
       ],
       "liveMutations": ["adminUpdateEventDetails"]

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_states.schema.json",
+  "title": "AccountSafetyStateDocument",
+  "description": "The current standing of one account, derived from its active account safety actions. Messaging, event chats and bookings read it; Firestore rules read messaging to stop direct chat writes. The account may read its own standing.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyStates",
+  "x-firestore-path": "accountSafetyStates/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "Account safety action service",
+  "required": ["schemaVersion", "uid", "level", "messaging", "booking", "authDisabledBySafety", "activeActionIds", "updatedAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "uid": {"type": "string", "minLength": 1, "maxLength": 128},
+    "level": {"type": "string", "enum": ["none", "warned", "restricted", "suspended", "banned"]},
+    "messaging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["held", "until"],
+      "properties": {"held": {"type": "boolean"}, "until": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}}
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["held", "until"],
+      "properties": {"held": {"type": "boolean"}, "until": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}}
+    },
+    "authDisabledBySafety": {"type": "boolean"},
+    "activeActionIds": {"type": "array", "maxItems": 50, "items": {"type": "string", "minLength": 8, "maxLength": 128}},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/account_safety_notices.schema.json",
+  "title": "AccountSafetyNoticeDocument",
+  "description": "A safety message to one account: the rule they broke and what changes, an appeal outcome, or (to a reporter) that their report was received or handled. A reporter is never told what was done. Server-written; the account reads its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accountSafetyNotices",
+  "x-firestore-path": "accountSafetyNotices/{uid}/items/{noticeId}",
+  "x-document-id-field": "noticeId",
+  "x-owner": "Account safety action service and report callables",
+  "required": ["schemaVersion", "noticeId", "uid", "kind", "title", "body", "actionId", "appealable", "createdAt", "readAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "noticeId": {"type": "string", "minLength": 8, "maxLength": 160},
+    "uid": {"type": "string", "minLength": 1, "maxLength": 128},
+    "kind": {"type": "string", "enum": ["warning", "restriction", "suspension", "ban", "lifted", "appealDecision", "reportReceived", "reportHandled"]},
+    "title": {"type": "string", "minLength": 1, "maxLength": 120},
+    "body": {"type": "string", "minLength": 1, "maxLength": 1200},
+    "actionId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{8,128}$"},
+    "appealable": {"type": "boolean"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "readAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"}
+  }
+}
