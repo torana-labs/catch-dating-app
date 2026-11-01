@@ -90,6 +90,8 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   assert.doesNotMatch(workflow, /docker build|npm ci|npm run build|--force|firebase deploy/u);
   assert.ok(workflow.indexOf("hostingState.mjs snapshot") < workflow.indexOf("gcloud run deploy"));
   assert.ok(workflow.indexOf("candidate-checks.json") < workflow.indexOf("firebase hosting:clone"));
+  assert.match(workflow, /for attempt in 1 2 3; do\n\s+if firebase hosting:channel:deploy next-release/u);
+  assert.match(workflow, /cat \.\.\/\.\.\/next-promote\/candidate\.json/u);
   assert.match(workflow, /hosting:clone "catch-dating-app-64e51@\$version" catch-dating-app-64e51:live/u);
   // One warm instance for the serving revision only. A revision-level minimum
   // would keep every Hosting-pinned tagged revision running and billed.
