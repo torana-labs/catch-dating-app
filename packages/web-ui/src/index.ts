@@ -256,6 +256,40 @@ export {CatchStickyAside} from "./components/CatchStickyAside";
 export type {CatchStickyAsideProps} from "./components/CatchStickyAside";
 export {CatchStoreButton} from "./components/CatchStoreButton";
 export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
+export {CatchPaneLayout} from "./components/CatchPaneLayout";
+export type {CatchPaneLayoutMode, CatchPaneLayoutProps} from "./components/CatchPaneLayout";
+export {useCatchPane} from "./components/catchPaneLayoutContext";
+export type {CatchPaneSlot, CatchPaneState} from "./components/catchPaneLayoutContext";
+export {CatchTabBar} from "./components/CatchTabBar";
+export type {
+  CatchTabBarAction,
+  CatchTabBarIdentity,
+  CatchTabBarItem,
+  CatchTabBarLayout,
+  CatchTabBarMore,
+  CatchTabBarProps,
+} from "./components/CatchTabBar";
+export {CatchTopBar} from "./components/CatchTopBar";
+export type {CatchTopBarAction, CatchTopBarBack, CatchTopBarProps, CatchTopBarVariant} from "./components/CatchTopBar";
+export {CatchViewport} from "./components/CatchViewport";
+export type {CatchViewportProps} from "./components/CatchViewport";
+export {useCatchViewport} from "./components/catchViewportContext";
+export type {
+  CatchViewportRegister,
+  CatchViewportSizeClass,
+  CatchViewportState,
+} from "./components/catchViewportContext";
+export {CatchWorkspaceHeader} from "./components/CatchWorkspaceHeader";
+export type {
+  CatchWorkspaceHeaderAction,
+  CatchWorkspaceHeaderBack,
+  CatchWorkspaceHeaderFilterChip,
+  CatchWorkspaceHeaderFilters,
+  CatchWorkspaceHeaderPosition,
+  CatchWorkspaceHeaderProps,
+  CatchWorkspaceHeaderView,
+  CatchWorkspaceHeaderViews,
+} from "./components/CatchWorkspaceHeader";
 export {CatchText} from "./components/CatchText";
 export type {
   CatchTextAccent,

@@ -1,0 +1,55 @@
+/*
+ * Flutter CatchViewport, the screen shell. A grid with named areas: the
+ * navigation takes a column beside the top bar, body and dock when it is a
+ * rail or a sidebar, and the last row when it is a bottom bar. Only the body
+ * scrolls. The shell sets the gutter (20, 32 and 48px by size class) and the
+ * 56px bar height that the navigation header, top bar and pane headers share.
+ */
+.viewport {
+  --catch-viewport-gutter: var(--catch-space-s5);
+  --catch-viewport-bar-height: 56px;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "top" "body" "dock" "nav";
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.viewport[data-fill="window"] { height: 100dvh; }
+.viewport[data-fill="parent"] { height: 100%; }
+.viewport[data-size="medium"] { --catch-viewport-gutter: var(--catch-space-s8); }
+.viewport[data-size="expanded"] { --catch-viewport-gutter: var(--catch-space-s12); }
+
+.viewport:has(> .navigation > [data-layout="rail"]),
+.viewport:has(> .navigation > [data-layout="sidebar"]) {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "nav top" "nav body" "nav dock";
+}
+
+.navigation { grid-area: nav; display: flex; min-height: 0; }
+.navigation > * { flex: 1 1 auto; }
+.top { grid-area: top; min-width: 0; }
+.dock { grid-area: dock; min-width: 0; }
+
+.body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* A queue scrolls each pane on its own, so the body holds still. */
+.body:has(> [data-pattern="queue"]) { overflow: hidden; }

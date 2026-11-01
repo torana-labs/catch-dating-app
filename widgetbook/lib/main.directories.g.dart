@@ -457,6 +457,8 @@ import 'package:widgetbook_workspace/primitives/contracts/metadata.dart'
     as _widgetbook_workspace_primitives_contracts_metadata;
 import 'package:widgetbook_workspace/primitives/contracts/page_body.dart'
     as _widgetbook_workspace_primitives_contracts_page_body;
+import 'package:widgetbook_workspace/primitives/contracts/pane_layout.dart'
+    as _widgetbook_workspace_primitives_contracts_pane_layout;
 import 'package:widgetbook_workspace/primitives/contracts/root_screen.dart'
     as _widgetbook_workspace_primitives_contracts_root_screen;
 import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
@@ -485,6 +487,8 @@ import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
 import 'package:widgetbook_workspace/primitives/contracts/welcome_text.dart'
     as _widgetbook_workspace_primitives_contracts_welcome_text;
+import 'package:widgetbook_workspace/primitives/contracts/workspace_header.dart'
+    as _widgetbook_workspace_primitives_contracts_workspace_header;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
     as _widgetbook_workspace_primitives_distance_ring_use_cases;
 import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
@@ -2459,6 +2463,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchPaneLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_pane_layout
+                    .catchPaneLayoutContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchScrollView',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2504,6 +2518,12 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookComponent(
             name: 'CatchWorkspaceHeader',
             useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_workspace_header
+                        .catchWorkspaceHeaderContractStates,
+              ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Natural pane header',
                 builder: _widgetbook_workspace_layout_host_workspace_use_cases
