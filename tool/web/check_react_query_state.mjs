@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
-
-const defaultBaselinePath = fromRepo("tool/web/react_query_state_baseline.json");
 
 const surfaces = {
   admin: {
@@ -90,41 +89,6 @@ function isCandidateFile(relativePath) {
   );
 }
 
-function splitFindingsByBaseline(findings, baseline) {
-  const allowedKeys = new Set(
-    (baseline.allowedFindings ?? []).map((finding) => findingKey(finding))
-  );
-  const baselineFindings = [];
-  const newFindings = [];
-  for (const finding of findings) {
-    if (allowedKeys.has(findingKey(finding))) {
-      baselineFindings.push(finding);
-    } else {
-      newFindings.push(finding);
-    }
-  }
-  return {baselineFindings, newFindings};
-}
-
-function baselineFromFindings(findings) {
-  return {
-    owner: "web_surface_architecture",
-    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
-    version: 1,
-    updated: new Date().toISOString().slice(0, 10),
-    description:
-      "Current React feature controller/hook manual async-state baseline. Normal scanner runs fail only on findings not listed here.",
-    allowedFindings: findings
-      .map(({surface, path: findingPath, stateName, setterName}) => ({
-        surface,
-        path: findingPath,
-        stateName,
-        setterName,
-      }))
-      .sort((a, b) => findingKey(a).localeCompare(findingKey(b))),
-  };
-}
-
 function findingKey(finding) {
   return [
     finding.surface,
@@ -142,16 +106,6 @@ function summarize(findings) {
     byPath[finding.path] = (byPath[finding.path] ?? 0) + 1;
   }
   return {bySurface, byPath};
-}
-
-function readBaseline(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return {allowedFindings: [], path: normalizePath(relativeToRepo(filePath))};
-  }
-  return {
-    ...JSON.parse(fs.readFileSync(filePath, "utf8")),
-    path: normalizePath(relativeToRepo(filePath)),
-  };
 }
 
 function walk(directory) {
@@ -187,20 +141,16 @@ function compareFinding(a, b) {
 
 function parseArgs(argv) {
   const parsed = {
-    baseline: defaultBaselinePath,
     check: false,
     help: false,
     json: false,
     selfTest: false,
     summary: false,
     surface: "all",
-    writeBaseline: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
-    if (arg === "--baseline") {
-      parsed.baseline = fromRepo(requiredValue(argv, ++index, arg));
-    } else if (arg === "--check") {
+    if (arg === "--check") {
       parsed.check = true;
     } else if (arg === "--help" || arg === "-h") {
       parsed.help = true;
@@ -212,8 +162,6 @@ function parseArgs(argv) {
       parsed.summary = true;
     } else if (arg === "--surface") {
       parsed.surface = requiredValue(argv, ++index, arg);
-    } else if (arg === "--write-baseline") {
-      parsed.writeBaseline = true;
     } else {
       fail(`Unknown argument: ${arg}`);
     }
@@ -255,11 +203,23 @@ export function useSampleController() {
   assert.equal(findings.length, 2);
   assert.equal(findings[0].stateName, "isLoading");
   assert.equal(findings[1].stateName, "decisionInFlight");
-  const split = splitFindingsByBaseline(findings, {
-    allowedFindings: [findings[0]],
-  });
-  assert.equal(split.baselineFindings.length, 1);
-  assert.equal(split.newFindings.length, 1);
+  assert.equal(findingsExitCode(findings, {check: true}), 1);
+  assert.equal(findingsExitCode(findings, {check: false}), 0);
+  assert.equal(findingsExitCode([], {check: true}), 0);
+
+  // One manual flag anywhere in a real tree fails the gate; nothing can list it.
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-query-state-"));
+  try {
+    const controllers = path.join(root, surfaces.admin.root, "sample", "controllers");
+    fs.mkdirSync(controllers, {recursive: true});
+    const controller = path.join(controllers, "useSampleController.ts");
+    fs.writeFileSync(controller, "export const useSample = () => useState(\"view\");\n");
+    assert.equal(findingsExitCode(scanReactQueryState({root}).findings, {check: true}), 0);
+    fs.writeFileSync(controller, source);
+    assert.equal(findingsExitCode(scanReactQueryState({root}).findings, {check: true}), 1);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
   console.log("React query-state scanner self-test passed.");
 }
 
@@ -281,62 +241,38 @@ function runCli() {
     root: fromRepo(),
     surfaceNames,
   });
-  const baseline = args.writeBaseline ?
-    {allowedFindings: []} :
-    readBaseline(args.baseline);
-  const {baselineFindings, newFindings} = splitFindingsByBaseline(
-    result.findings,
-    baseline
-  );
-
-  if (args.writeBaseline) {
-    const nextBaseline = baselineFromFindings(result.findings);
-    fs.mkdirSync(path.dirname(args.baseline), {recursive: true});
-    fs.writeFileSync(args.baseline, `${JSON.stringify(nextBaseline, null, 2)}\n`);
-    console.log(
-      `Wrote React query-state baseline with ${nextBaseline.allowedFindings.length} finding(s): ${normalizePath(relativeToRepo(args.baseline))}`
-    );
-    return;
-  }
-
   if (args.json) {
     console.log(JSON.stringify({
       checkedFiles: result.checkedFiles,
-      baseline: baseline.path ?? normalizePath(relativeToRepo(args.baseline)),
-      newFindings,
-      baselineFindings,
-      summary: {
-        newFindings: summarize(newFindings),
-        baselineFindings: summarize(baselineFindings),
-      },
+      findings: result.findings,
+      summary: summarize(result.findings),
     }, null, 2));
   } else if (args.summary || args.check) {
     console.log(
-      `React query-state scan: ${result.checkedFiles} controller/hook file(s), ${newFindings.length} new finding(s), ${baselineFindings.length} baseline finding(s).`
+      `React query-state scan: ${result.checkedFiles} controller/hook file(s), ${result.findings.length} finding(s).`
     );
   }
 
-  if (args.check && newFindings.length > 0) {
-    console.error("Unbaselined React manual async-state findings:");
-    for (const finding of newFindings) {
-      console.error(
-        `- ${finding.path}:${finding.line} ${finding.stateName}/${finding.setterName}`
-      );
-    }
+  process.exitCode = findingsExitCode(result.findings, args);
+  if (process.exitCode === 0) return;
+  console.error("React manual async-state findings:");
+  for (const finding of result.findings) {
     console.error(
-      "Move server-state pending/loading state to TanStack Query or refresh the baseline only after recording intentional debt."
+      `- ${finding.path}:${finding.line} ${finding.stateName}/${finding.setterName}`
     );
-    process.exit(1);
   }
+  console.error("Move server-state pending/loading state to TanStack Query.");
+}
+
+function findingsExitCode(findings, {check}) {
+  return check && findings.length > 0 ? 1 : 0;
 }
 
 function printHelp() {
   console.log(`Usage: node tool/web/check_react_query_state.mjs [--check] [--summary] [--json] [--surface all|admin|website]
-       node tool/web/check_react_query_state.mjs --write-baseline
        node tool/web/check_react_query_state.mjs --self-test
 
 Scans React feature controllers and feature use* hooks for manual async/loading
 state that should migrate to TanStack Query when it represents server state.
-Normal --check runs fail only on findings outside
-tool/web/react_query_state_baseline.json.`);
+--check fails on any finding.`);
 }

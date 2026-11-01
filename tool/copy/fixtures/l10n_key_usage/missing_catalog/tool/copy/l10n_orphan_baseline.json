@@ -1,7 +1,0 @@
-{
-  "owner": "app_architecture",
-  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
-  "version": 1,
-  "description": "Fixture baseline with no orphan debt.",
-  "allowedOrphanedKeys": []
-}
