@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchField, CatchText} from "@catch/web-ui";
 import {
   lazy,
   Suspense,
@@ -15,48 +15,17 @@ import {
   useLocation,
   useNavigate,
 } from "react-router";
+import {AlertTriangle, Lock} from "lucide-react";
 import {
-  Activity,
-  AlertTriangle,
-  BarChart3,
-  Bot,
-  CheckCircle2,
-  CircleDollarSign,
-  Database,
-  FolderSearch,
-  HeartHandshake,
-  LineChart,
-  Lock,
-  Megaphone,
-  ShieldAlert,
-  Sparkles,
-  UserCheck,
-  Users,
-} from "lucide-react";
-import {
-  AdminAccountMenu,
-  AdminAppShell,
-  AdminBrandBlock,
-  AdminBrandCopy,
   AdminBrandMark,
-  AdminBrandTitle,
   AdminButton,
-  AdminEnvironmentStatus,
   AdminFeatureLoadingState,
   AdminForm,
   AdminLoadingIcon,
-  AdminNavButton,
-  AdminNavGroup,
-  AdminNavList,
-  AdminSidebar,
-  AdminSidebarToggle,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
   AdminSignInScreen,
-  AdminTopbar,
-  AdminTopbarActions,
-  AdminWorkspace,
   SegmentedControl,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
@@ -72,230 +41,24 @@ import {
   adminPathForNav,
   adminRoutes,
   adminSections,
-  commercialTermsPathForOrganizer,
   financePathForWorkspace,
-  marketingPathForTab,
   resolveAdminRoute,
   type AdminNavId,
   type FinanceWorkspace,
 } from "./adminRoutes";
+import {adminAreaRoles, adminNavigation} from "./adminAccess";
+import {adminJobFor, adminJobLabels} from "./adminJobs";
 import {useAdminSession} from "./useAdminSession";
 import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
-import {
-  AdminRoleClaim,
-  DataMode,
-  adminRoleClaimKeys,
-} from "../shared/types/adminTypes";
-import {AdminFeedbackProvider} from "../shared/feedback/AdminFeedbackContext";
+import type {AdminRoleClaim} from "../shared/types/adminTypes";
 import {AdminPendingOperationProvider} from "../shared/pendingOperation";
-import type {OverviewQueueDestination} from
-  "../features/overview/ui/OverviewScreen";
 
+const AdminShellFrame = lazy(() => import("./AdminShellFrame").then((m) => ({default: m.AdminShellFrame})));
 const PartnerRouteApp = lazy(() => import("./PartnerRouteApp").then((m) => ({default: m.PartnerRouteApp})));
 const OperatorSessionRoute = lazy(() => import("../features/operator-session/ui/OperatorSessionScreen").then((m) => ({default: m.OperatorSessionScreen})));
 
 type PhoneSignInStage = "phone" | "code";
-
-const MarketingOpsScreen = lazy(() =>
-  import("../features/marketing/ui/MarketingOpsScreen").then((module) => ({
-    default: module.MarketingOpsScreen,
-  }))
-);
-
-const IntakeWorkspaceScreen = lazy(() =>
-  import("../features/intake/ui/IntakeWorkspaceScreen").then(
-    (module) => ({
-      default: module.IntakeWorkspaceScreen,
-    })
-  )
-);
-const SafetyTriageScreen = lazy(() =>
-  import("../features/safety/ui/SafetyTriageScreen").then((module) => ({
-    default: module.SafetyTriageScreen,
-  }))
-);
-const AccessReviewScreen = lazy(() =>
-  import("../features/access/ui/AccessReviewScreen").then((module) => ({
-    default: module.AccessReviewScreen,
-  }))
-);
-const GrowthKpiScreen = lazy(() =>
-  import("../features/growth/ui/GrowthKpiScreen").then((module) => ({
-    default: module.GrowthKpiScreen,
-  }))
-);
-const FinanceOpsScreen = lazy(() =>
-  import("../features/finance/ui/FinanceOpsScreen").then((module) => ({
-    default: module.FinanceOpsScreen,
-  }))
-);
-const CommercialTermsScreen = lazy(() =>
-  import("../features/commercial-terms/ui/CommercialTermsScreen").then((module) => ({
-    default: module.CommercialTermsScreen,
-  }))
-);
-const PaymentRoutingScreen = lazy(() =>
-  import("../features/payment-routing/ui/PaymentRoutingScreen").then((module) => ({
-    default: module.PaymentRoutingScreen,
-  }))
-);
-const OrganizerPublishingScreen = lazy(() =>
-  import("../features/organizers/ui/OrganizerPublishingScreen").then(
-    (module) => ({
-      default: module.OrganizerPublishingScreen,
-    })
-  )
-);
-const EventPublishingScreen = lazy(() =>
-  import("../features/events/ui/EventPublishingScreen").then((module) => ({
-    default: module.EventPublishingScreen,
-  }))
-);
-const UserAnalyticsScreen = lazy(() =>
-  import("../features/users/ui/UserAnalyticsScreen").then((module) => ({
-    default: module.UserAnalyticsScreen,
-  }))
-);
-const CrossPathsShowcaseScreen = lazy(() =>
-  import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then(
-    (module) => ({default: module.CrossPathsShowcaseScreen})
-  )
-);
-const OverviewRouteScreen = lazy(() =>
-  import("../features/overview/ui/OverviewRouteScreen").then((module) => ({
-    default: module.OverviewRouteScreen,
-  }))
-);
-const DataQualityScreen = lazy(() =>
-  import("../features/data-quality/ui/DataQualityScreen").then((module) => ({
-    default: module.DataQualityScreen,
-  }))
-);
-const AdminRoleManagementScreen = lazy(() =>
-  import("../features/admin-roles/ui/AdminRoleManagementScreen").then(
-    (module) => ({
-      default: module.AdminRoleManagementScreen,
-    })
-  )
-);
-const AdminActionExecutionsScreen = lazy(() =>
-  import("../features/operations/ui/AdminActionExecutionsScreen").then(
-    (module) => ({default: module.AdminActionExecutionsScreen})
-  )
-);
-const CatchWhatsappTrialWorkspace = lazy(() =>
-  import("../features/catch-support/ui/CatchWhatsappTrialWorkspace")
-    .then((module) => ({default: module.CatchWhatsappTrialWorkspace}))
-);
-
-const SalesWorkspaceScreen = lazy(() =>
-  import("../features/sales/ui/SalesWorkspaceScreen").then((module) => ({
-    default: module.SalesWorkspaceScreen,
-  }))
-);
-
-interface AdminNavigationItem {
-  id: AdminNavId;
-  label: string;
-  icon: typeof Activity;
-}
-
-const navigationGroups: Array<{
-  id: string;
-  label: string;
-  items: AdminNavigationItem[];
-}> = [
-  {
-    id: "queues",
-    label: "Work queues",
-    items: [
-      {id: "overview", label: "Overview", icon: Activity},
-      {id: "sales", label: "Sales", icon: HeartHandshake},
-      {id: "safety", label: "Safety", icon: ShieldAlert},
-      {id: "access", label: "Launch access", icon: UserCheck},
-      {id: "cross-paths", label: "Cross Paths", icon: HeartHandshake},
-    ],
-  },
-  {
-    id: "supply",
-    label: "Supply",
-    items: [
-      {id: "organizer-intake", label: "Intake", icon: FolderSearch},
-      {id: "organizers", label: "Organizers", icon: Users},
-      {id: "events", label: "Events", icon: BarChart3},
-    ],
-  },
-  {
-    id: "growth",
-    label: "Growth & insights",
-    items: [
-      {id: "growth", label: "Growth", icon: LineChart},
-      {id: "marketing-ops", label: "Marketing", icon: Megaphone},
-      {id: "users", label: "Users", icon: Sparkles},
-      {id: "finance", label: "Finance", icon: CircleDollarSign},
-    ],
-  },
-  {
-    id: "automation",
-    label: "Automation",
-    items: [
-      {id: "operations", label: "Agent activity", icon: Bot},
-    ],
-  },
-  {
-    id: "governance",
-    label: "Governance",
-    items: [
-      {id: "quality", label: "Data quality", icon: Database},
-      {id: "admin-roles", label: "Admin roles", icon: Lock},
-    ],
-  },
-];
-
-const navigation = navigationGroups.flatMap((group) => group.items);
-
-const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
-  overview: adminRoleClaimKeys.filter((role) => role !== "salesStaff"),
-  safety: ["admin", "adminOwner", "safetyReviewer", "support"],
-  access: ["admin", "adminOwner", "support"],
-  "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
-  growth: ["adminOwner"],
-  "marketing-ops": ["admin", "adminOwner", "support"],
-  sales: ["admin", "adminOwner", "salesStaff"],
-  "organizer-intake": ["admin", "adminOwner", "support"],
-  organizers: ["admin", "adminOwner", "support"],
-  events: ["admin", "adminOwner", "support"],
-  users: ["adminOwner"],
-  finance: ["adminOwner"],
-  quality: ["adminOwner"],
-  operations: ["admin", "adminOwner", "support"],
-  "admin-roles": ["adminOwner"],
-};
-
-const hostAnalyticsRoles: readonly AdminRoleClaim[] = ["adminOwner"];
-
-const adminSidebarPreferenceKey = "catch-admin.sidebar-collapsed.v1";
-
-function readAdminSidebarPreference(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(adminSidebarPreferenceKey) === "true";
-  } catch {
-    return false;
-  }
-}
-
-function writeAdminSidebarPreference(collapsed: boolean): void {
-  try {
-    window.localStorage.setItem(
-      adminSidebarPreferenceKey,
-      String(collapsed)
-    );
-  } catch {
-    // The in-memory preference still works when storage is unavailable.
-  }
-}
 
 export function App() {
   const [router] = useState(() => createBrowserRouter([
@@ -362,8 +125,9 @@ function AdminRouteApp() {
   const {error, notice, setError, setNotice} = useSessionFeedback(session);
   const {user, roles: adminRoles, resolved: rolesResolved} = session;
   const isRoleCheckPending = Boolean(user && !rolesResolved);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] =
-    useState(readAdminSidebarPreference);
+  // Sample data previews another job's navigation with ?as=sales or ?as=ops.
+  const [jobSearch] = useState(location.search);
+  const job = adminJobFor(adminRoles, mode, jobSearch);
   const [marketingDirty, setMarketingDirty] = useState(false);
   const blocker = useBlocker(useCallback(({currentLocation, nextLocation}) =>
     marketingDirty &&
@@ -393,19 +157,22 @@ function AdminRouteApp() {
     }
   }, [session.epoch, setError, setNotice, user]);
 
+  const canOpen = useCallback((nav: AdminNavId) =>
+    mode === "sample" || hasAnyAdminRole(adminRoles, adminAreaRoles[nav]),
+  [adminRoles, mode]);
   const visibleNavigation = useMemo(
-    () => navigation.filter((item) =>
-      mode === "sample" ||
-      hasAnyAdminRole(adminRoles, navRoleMap[item.id])),
-    [adminRoles, mode]
+    () => adminNavigation[job].filter((entry) => canOpen(entry.nav)),
+    [canOpen, job]
   );
   const route = resolveAdminRoute(location.pathname);
   const routeNav = route.nav;
-  const routeNavVisible = routeNav !== null &&
-    visibleNavigation.some((item) => item.id === routeNav);
-  const currentNav: AdminNavId = routeNavVisible ?
+  // An area can be open without being in this job's navigation (an older page, a link).
+  const routeNavOpen = routeNav !== null && canOpen(routeNav);
+  const currentNav: AdminNavId = routeNavOpen && !route.redirect ?
     routeNav :
-    visibleNavigation[0]?.id ?? "overview";
+    route.redirect && routeNav !== null && canOpen(routeNav) ?
+      routeNav :
+      visibleNavigation[0]?.nav ?? "now";
   const canResolveNavigation = mode !== "live" ||
     (user !== null && rolesResolved && adminRoles.length > 0);
   // Commercial terms and payment routing are Admin Owner only.
@@ -427,18 +194,9 @@ function AdminRouteApp() {
 
   useEffect(() => {
     if (!canResolveNavigation) return;
-    if (routeNav === currentNav) return;
+    if (routeNav === currentNav && !route.redirect) return;
     navigate(adminPathForNav(currentNav), {replace: true});
-  }, [canResolveNavigation, currentNav, navigate, routeNav]);
-
-  const setActiveNav = useCallback((nextNav: AdminNavId) => {
-    navigate(adminPathForNav(nextNav));
-  }, [navigate]);
-
-  const handleSidebarCollapsedChange = useCallback((collapsed: boolean) => {
-    setIsSidebarCollapsed(collapsed);
-    writeAdminSidebarPreference(collapsed);
-  }, []);
+  }, [canResolveNavigation, currentNav, navigate, route.redirect, routeNav]);
 
   const handleRequestPhoneCode = useCallback(async () => {
     const normalizedPhoneNumber = normalizeAdminPhoneNumber(phoneNumber);
@@ -536,50 +294,14 @@ function AdminRouteApp() {
     await session.refreshClaims();
   }, [session.refreshClaims]);
 
-  const handleOverviewQueueOpen = useCallback((
-    destination: OverviewQueueDestination,
-    targetPath?: string | null
-  ) => {
-    const destinationItem = visibleNavigation.find((item) =>
-      item.id === destination
-    );
-    if (!destinationItem) {
-      setNotice(null);
-      setError(`Your admin role cannot open the ${destination} workflow.`);
-      return;
-    }
-    setError(null);
-    setNotice(null);
-    if (targetPath && destination === "safety") {
-      navigate(`/safety/${encodeURIComponent(targetPath)}`);
-      return;
-    }
-    const targetId = targetPath?.split("/").filter(Boolean).at(-1) ?? null;
-    if (targetId && destination === "access") {
-      navigate(`/access/${encodeURIComponent(targetId)}`);
-      return;
-    }
-    if (targetId && destination === "organizers") {
-      navigate(targetPath?.startsWith("organizerClaimRequests/") ?
-        `/organizers/claims/${encodeURIComponent(targetId)}` :
-        `/organizers/${encodeURIComponent(targetId)}`);
-      return;
-    }
-    if (targetPath && destination === "finance") {
-      navigate(`/finance/issues/${encodeURIComponent(targetPath)}`);
-      return;
-    }
-    setActiveNav(destination);
-  }, [navigate, setActiveNav, setError, setNotice, visibleNavigation]);
-
-  const topbarTitle = (routeNav === currentNav ? route.title : undefined) ?? adminSections[currentNav].title;
+  const pageTitle = (routeNav === currentNav ? route.title : undefined) ?? adminSections[currentNav].title;
 
   useEffect(() => {
     const nextTitle = mode === "live" && !user ?
       "Catch Admin" :
-      `${topbarTitle} — Catch Admin`;
+      `${pageTitle} — Catch Admin`;
     document.title = nextTitle;
-  }, [mode, topbarTitle, user]);
+  }, [mode, pageTitle, user]);
 
   if (mode === "live" && !user) {
     return (
@@ -627,347 +349,39 @@ function AdminRouteApp() {
       sessionKey={sessionKey}
       isCurrentSession={session.isCurrent}
     >
-    <AdminAppShell
-      intakeMode={currentNav === "organizer-intake"}
-      sidebarCollapsed={isSidebarCollapsed}
-    >
-      <AdminSidebar aria-label="Admin sections" id="admin-sidebar">
-        <AdminBrandBlock>
-          <AdminBrandMark>C</AdminBrandMark>
-          <AdminBrandCopy>
-            <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-          </AdminBrandCopy>
-        </AdminBrandBlock>
-        <AdminNavList aria-label="Admin navigation">
-          {navigationGroups.map((group) => {
-            const visibleItems = group.items.filter((item) =>
-              visibleNavigation.some((visibleItem) =>
-                visibleItem.id === item.id
-              )
-            );
-            if (visibleItems.length === 0) return null;
-            return (
-              <AdminNavGroup key={group.id} label={group.label}>
-                {visibleItems.map((item) => {
-                  const Icon = item.icon;
-                  const selected = currentNav === item.id;
-                  return (
-                    <AdminNavButton
-                      icon={<Icon aria-hidden="true" size={17} strokeWidth={1.8} />}
-                      key={item.id}
-                      label={item.label}
-                      onClick={() => setActiveNav(item.id)}
-                      selected={selected}
-                      title={isSidebarCollapsed ? item.label : undefined}
-                    />
-                  );
-                })}
-              </AdminNavGroup>
-            );
-          })}
-        </AdminNavList>
-        <AdminSidebarToggle
-          collapsed={isSidebarCollapsed}
-          controlsId="admin-sidebar"
-          onCollapsedChange={handleSidebarCollapsedChange}
+      <Suspense fallback={<AdminFeatureLoadingState label="Loading Catch Admin" />}>
+        <AdminShellFrame
+          account={{
+            userLabel: user?.displayName ?? user?.email ?? user?.phoneNumber ?? user?.uid ?? "Local preview",
+            jobLabel: mode === "sample" ? `${adminJobLabels[job]} · sample data` : adminJobLabels[job],
+            environment: adminEnvironment,
+            isSigningOut: isAuthActionPending,
+            onSignOut: mode === "live" ? () => void handleSignOut() : undefined,
+          }}
+          context={{
+            route,
+            location,
+            navigate,
+            mode,
+            adminRoles,
+            userUid: user?.uid ?? null,
+            isSessionReady: mode === "sample" || (rolesResolved && adminRoles.length > 0),
+            session: {sessionKey, isCurrent: session.isCurrent, projectId: firebaseApp.options.projectId ?? ""},
+            canOpen,
+            canManageCommercialTerms,
+            financeWorkspaceSwitch,
+            setError,
+            setNotice,
+            setMarketingDirty,
+          }}
+          currentNav={currentNav}
+          error={error}
+          headerNote={mode === "sample" ? "Sample data" : `Live · ${adminEnvironment}`}
+          navigation={visibleNavigation}
+          notice={notice}
+          pageTitle={pageTitle}
         />
-      </AdminSidebar>
-
-      <AdminWorkspace
-        intakeMode={currentNav === "organizer-intake"}
-      >
-        <AdminTopbar>
-          <CatchText as="h1" variant="titleL">{topbarTitle}</CatchText>
-          <AdminTopbarActions>
-            <AdminEnvironmentStatus
-              environment={adminEnvironment}
-            />
-            <AdminAccountMenu
-              isSigningOut={isAuthActionPending}
-              mode={mode}
-              onSignOut={mode === "live" ?
-                () => void handleSignOut() :
-                undefined}
-              roles={adminRoles}
-              userLabel={
-                user?.displayName ??
-                user?.email ??
-                user?.phoneNumber ??
-                user?.uid ??
-                "Local preview"
-              }
-            />
-          </AdminTopbarActions>
-        </AdminTopbar>
-
-        <AdminFeedbackProvider onError={setError} onNotice={setNotice}>
-          {error && (
-            <StatusBanner
-              icon={<AlertTriangle size={17} strokeWidth={1.9} />}
-              tone="error"
-            >
-              {error}
-            </StatusBanner>
-          )}
-          {notice && (
-            <StatusBanner
-              icon={<CheckCircle2 size={17} strokeWidth={1.9} />}
-              tone="success"
-            >
-              {notice}
-            </StatusBanner>
-          )}
-
-          {currentNav === "overview" &&
-            (adminRoles.includes("support") || adminRoles.includes("adminOwner")) ? (
-            <Suspense fallback={<AdminFeatureLoadingState label="Loading support trial" />}>
-              <CatchWhatsappTrialWorkspace
-                scope={{actorUid: user?.uid ?? "", projectId: firebaseApp.options.projectId ?? "",
-                  sessionKey, isCurrent: session.isCurrent}}
-              />
-            </Suspense>
-          ) : null}
-
-          {currentNav === "sales" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Sales" />}>
-            <SalesWorkspaceScreen
-              area={route.salesArea}
-              isAdminOwner={adminRoles.includes("adminOwner")}
-              assignedStaffOnly={adminRoles.includes("salesStaff") &&
-                !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
-              currentUserUid={user?.uid ?? (mode === "sample" ? "sample-owner" : "")}
-              selectedOrganizerId={route.params.salesOrganizerId ?? null}
-              onAreaChange={(area) => navigate(`/sales/${area}`)}
-              onOpenHost={(organizerId) => navigate(
-                `/sales/hosts/${encodeURIComponent(organizerId)}`
-              )}
-              onBackToHosts={() => navigate("/sales/hosts")}
-              onOpenIntake={() => navigate("/intake/organizers")}
-              onOpenOrganizer={(organizerId) => navigate(
-                `/organizers/${encodeURIComponent(organizerId)}`
-              )}
-            />
-          </Suspense>
-        ) : currentNav === "safety" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Safety" />}>
-            <SafetyTriageScreen
-              onError={setError}
-              onNotice={setNotice}
-              selectedTargetPath={route.params.targetPath ?? null}
-              onBackToList={() => navigate(adminPathForNav("safety"))}
-              onSelectTargetPath={(targetPath) => {
-                navigate(
-                  `${adminPathForNav("safety")}/${encodeURIComponent(targetPath)}`
-                );
-              }}
-            />
-          </Suspense>
-        ) : currentNav === "marketing-ops" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Marketing" />}>
-            <MarketingOpsScreen
-              activeTab={route.marketingTab}
-              composerStep={route.composerStep}
-              onComposerStepChange={(step) => {
-                const draftId = route.params.draftId ?? null;
-                if (draftId) {
-                  navigate(`/marketing/drafts/${encodeURIComponent(draftId)}/${step}`);
-                }
-              }}
-              onDraftOpen={(draftId, step) => {
-                navigate(`/marketing/drafts/${encodeURIComponent(draftId)}/${step}`);
-              }}
-              onError={setError}
-              onNotice={setNotice}
-              onTabChange={(tab) => navigate(marketingPathForTab(tab))}
-              onUnsavedChangesChange={setMarketingDirty}
-              selectedDraftId={route.params.draftId ?? null}
-            />
-          </Suspense>
-        ) : currentNav === "access" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Access" />}>
-            <AccessReviewScreen
-              selectedApplicationUid={route.params.applicationUid ?? null}
-              onBackToList={() => navigate(adminPathForNav("access"))}
-              onError={setError}
-              onNotice={setNotice}
-              onSelectApplicationUid={(applicationUid) => {
-                navigate(`${adminPathForNav("access")}/${encodeURIComponent(applicationUid)}`);
-              }}
-            />
-          </Suspense>
-        ) : currentNav === "growth" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Growth" />}>
-            <GrowthKpiScreen
-              onBackToList={() => navigate(adminPathForNav("growth"))}
-              onError={setError}
-              onSelectSignalId={(signalId) => {
-                navigate(`/growth/signals/${encodeURIComponent(signalId)}`);
-              }}
-              selectedSignalId={route.params.growthSignalId ?? null}
-            />
-          </Suspense>
-        ) : currentNav === "organizer-intake" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Intake" />}>
-            <IntakeWorkspaceScreen />
-          </Suspense>
-        ) : currentNav === "organizers" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Organizers" />}>
-            <OrganizerPublishingScreen
-              activeWorkspace={route.organizerWorkspace}
-              selectedOrganizerId={route.params.organizerId ?? null}
-              onBackToList={() => navigate(adminPathForNav("organizers"))}
-              onBackToClaims={() => navigate(`${adminPathForNav("organizers")}/claims`)}
-              onSelectClaimRequestId={(requestId) => {
-                navigate(
-                  `${adminPathForNav("organizers")}/claims/${encodeURIComponent(requestId)}`
-                );
-              }}
-              onSelectOrganizerId={(organizerId) => {
-                navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(organizerId)}`);
-              }}
-              onWorkspaceChange={(workspace) => {
-                navigate(workspace === "claims" ?
-                  `${adminPathForNav("organizers")}/claims` :
-                  adminPathForNav("organizers"));
-              }}
-              selectedClaimRequestId={route.params.claimRequestId ?? null}
-            />
-          </Suspense>
-        ) : currentNav === "events" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Events" />}>
-            <EventPublishingScreen
-              activeWorkspace={route.eventWorkspace}
-              selectedEventId={route.params.eventId ?? null}
-              selectedExternalEventId={route.params.externalEventId ?? null}
-              onBackToList={() => navigate(
-                `${adminPathForNav("events")}${location.search}`
-              )}
-              onSelectEventId={(eventId) => {
-                navigate(
-                  `${adminPathForNav("events")}/${encodeURIComponent(eventId)}` +
-                  location.search
-                );
-              }}
-              onSelectExternalEventId={(eventId) => {
-                navigate(eventId ?
-                  `${adminPathForNav("events")}/external/${encodeURIComponent(eventId)}` +
-                    location.search :
-                  `${adminPathForNav("events")}/external${location.search}`);
-              }}
-              onWorkspaceChange={(workspace) => {
-                navigate(workspace === "directory" ?
-                  adminPathForNav("events") :
-                  `${adminPathForNav("events")}/${workspace}`);
-              }}
-            />
-          </Suspense>
-        ) : currentNav === "users" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Users" />}>
-            <UserAnalyticsScreen
-              handoffRequestId={null}
-              handoffUserId={null}
-              onError={setError}
-              onNotice={setNotice}
-            />
-          </Suspense>
-        ) : currentNav === "cross-paths" ? (
-          <Suspense fallback={
-            <AdminFeatureLoadingState label="Loading Cross Paths" />
-          }>
-            <CrossPathsShowcaseScreen
-              canDecide={mode === "sample" || hasAnyAdminRole(
-                adminRoles,
-                ["admin", "adminOwner", "safetyReviewer"]
-              )}
-              onError={setError}
-              onNotice={setNotice}
-            />
-          </Suspense>
-        ) : currentNav === "finance" && route.financeWorkspace === "commercial-terms" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Commercial terms" />}>
-            <CommercialTermsScreen
-              key={user?.uid ?? "sample"}
-              canManage={canManageCommercialTerms}
-              onError={setError}
-              onNotice={setNotice}
-              onOpenOrganizer={(organizerId) =>
-                navigate(commercialTermsPathForOrganizer(organizerId))}
-              onOpenPlatform={() => navigate(commercialTermsPathForOrganizer(null))}
-              organizerId={route.params.termsOrganizerId ?? null}
-              workspaceSwitch={financeWorkspaceSwitch}
-            />
-          </Suspense>
-        ) : currentNav === "finance" && route.financeWorkspace === "payment-routing" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Payment routing" />}>
-            <PaymentRoutingScreen
-              key={user?.uid ?? "sample"}
-              canManage={canManageCommercialTerms}
-              onError={setError}
-              onNotice={setNotice}
-              workspaceSwitch={financeWorkspaceSwitch}
-            />
-          </Suspense>
-        ) : currentNav === "finance" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Finance" />}>
-            <FinanceOpsScreen
-              key={user?.uid ?? "sample"}
-              actorUid={user?.uid ?? "sample"}
-              adminRoles={adminRoles}
-              onBackToList={() => navigate(adminPathForNav("finance"))}
-              onError={setError}
-              onNotice={setNotice}
-              onSelectIssueId={(issueId) => {
-                navigate(`/finance/issues/${encodeURIComponent(issueId)}`);
-              }}
-              selectedIssueId={route.params.financeIssueId ?? null}
-              workspaceSwitch={financeWorkspaceSwitch}
-            />
-          </Suspense>
-        ) : currentNav === "quality" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Data quality" />}>
-            <DataQualityScreen
-              onBackToList={() => navigate(adminPathForNav("quality"))}
-              onError={setError}
-              onOpenOwningWorkflow={(path) => navigate(path)}
-              onSelectSignalId={(signalId) => {
-                navigate(`/quality/signals/${encodeURIComponent(signalId)}`);
-              }}
-              selectedSignalId={route.params.qualitySignalId ?? null}
-            />
-          </Suspense>
-        ) : currentNav === "admin-roles" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Admin roles" />}>
-            <AdminRoleManagementScreen
-              currentUserUid={user?.uid ?? null}
-              onBackToRegister={() => navigate(adminPathForNav("admin-roles"))}
-              onError={setError}
-              onNotice={setNotice}
-              onSelectTargetUid={(targetUid) => {
-                navigate(`/admin-roles/${encodeURIComponent(targetUid)}`);
-              }}
-              selectedTargetUid={route.params.adminRoleTargetUid ?? null}
-            />
-          </Suspense>
-        ) : currentNav === "operations" ? (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Agent activity" />}>
-            <AdminActionExecutionsScreen onError={setError} />
-          </Suspense>
-        ) : (
-          <Suspense fallback={<AdminFeatureLoadingState label="Loading Overview" />}>
-            <OverviewRouteScreen
-              adminRoles={adminRoles}
-              isSessionReady={mode === "sample" ||
-                (rolesResolved && adminRoles.length > 0)}
-              mode={mode}
-              onError={setError}
-              onNotice={setNotice}
-              onOpenQueue={handleOverviewQueueOpen}
-            />
-          </Suspense>
-        )}
-        </AdminFeedbackProvider>
-      </AdminWorkspace>
-    </AdminAppShell>
+      </Suspense>
     </AdminQueryProvider>
     </AdminPendingOperationProvider>
   );

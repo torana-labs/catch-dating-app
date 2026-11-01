@@ -287,9 +287,9 @@ function validateExportCoverage(components) {
 }
 
 function validateAdminChrome() {
-  const appPath = fromRepo("admin/src/app/App.tsx");
+  const appPath = fromRepo("admin/src/app/AdminShellFrame.tsx");
   if (!fs.existsSync(appPath)) {
-    errors.push("missing admin/src/app/App.tsx for admin chrome validation.");
+    errors.push("missing admin/src/app/AdminShellFrame.tsx for admin chrome validation.");
     return;
   }
   errors.push(...adminChromeErrors(fs.readFileSync(appPath, "utf8")));
@@ -332,16 +332,16 @@ function adminPresentationCopyErrors(source, label = "admin source") {
 
 function adminChromeErrors(source) {
   const chromeErrors = [];
-  if (!source.includes("<AdminBrandTitle>Catch Admin</AdminBrandTitle>")) {
+  if (!/header=\{\{title: "Catch Admin"/u.test(source)) {
     chromeErrors.push("admin shell brand must be the single product label Catch Admin.");
   }
 
-  const {topbars, headings, subtitle} = adminTopbarContent(source);
-  if (topbars !== 1 || headings.length !== 1 || headings[0].element !== "h1" || !headings[0].routeTitle) {
-    chromeErrors.push("admin top bar must render the route-owned topbarTitle as its single heading.");
+  const {headers, routeTitled, extras, legacyChrome} = adminHeaderContent(source);
+  if (headers !== 1 || !routeTitled) {
+    chromeErrors.push("admin shell must render the route-owned pageTitle as its single workspace header.");
   }
-  if (subtitle) {
-    chromeErrors.push("admin top bar must not add a kicker, secondary PageHeader, or subtitle.");
+  if (extras || legacyChrome) {
+    chromeErrors.push("admin shell header must not add a kicker, note, secondary PageHeader, or old top bar.");
   }
 
   const forbiddenLabels = ["Catch Ops", "sample console", "dev · sample"];
@@ -352,51 +352,41 @@ function adminChromeErrors(source) {
   return chromeErrors;
 }
 
-function adminTopbarContent(source) {
+// The shell heads screens that are not yet redrawn with one CatchWorkspaceHeader whose title is
+// the route's own pageTitle; redrawn screens draw their own headers.
+function adminHeaderContent(source) {
   const unit = ts.createSourceFile("admin.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  const textNames = new Set();
-  for (const statement of unit.statements) {
-    if (!ts.isImportDeclaration(statement) || statement.moduleSpecifier.text !== "@catch/web-ui") continue;
-    const bindings = statement.importClause?.namedBindings;
-    if (!bindings || !ts.isNamedImports(bindings)) continue;
-    for (const specifier of bindings.elements) {
-      if ((specifier.propertyName?.text ?? specifier.name.text) === "CatchText") textNames.add(specifier.name.text);
-    }
-  }
-  const topbars = [];
-  function collect(node) {
-    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(unit) === "AdminTopbar") topbars.push(node);
-    ts.forEachChild(node, collect);
-  }
-  collect(unit);
-  const headings = [];
-  let subtitle = false;
+  let headers = 0;
+  let routeTitled = false;
+  let extras = false;
+  let legacyChrome = false;
   function inspect(node) {
     if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
       const opening = ts.isJsxElement(node) ? node.openingElement : node;
       const name = opening.tagName.getText(unit);
-      const attributes = opening.attributes.properties;
-      const literal = (name) => {
-        const attribute = attributes.find((item) => ts.isJsxAttribute(item) && item.name.getText(unit) === name);
-        const value = attribute?.initializer;
-        if (value && ts.isStringLiteral(value)) return value.text;
-        if (value && ts.isJsxExpression(value) && value.expression && ts.isStringLiteral(value.expression)) return value.expression.text;
-        return null;
-      };
-      const element = textNames.has(name)
-        ? (attributes.some(ts.isJsxSpreadAttribute) ? null : literal("as") ?? "p")
-        : name;
-      if (/^h[1-6]$/u.test(element ?? "") || literal("role") === "heading") {
-        const children = ts.isJsxElement(node) ? node.children.filter((child) => !ts.isJsxText(child) || child.text.trim()) : [];
-        const content = children.length === 1 && ts.isJsxExpression(children[0]) ? children[0].expression : null;
-        headings.push({element, routeTitle: Boolean(content && ts.isIdentifier(content) && content.text === "topbarTitle")});
+      if (["AdminTopbar", "PageHeader", "AdminEyebrow"].includes(name)) legacyChrome = true;
+      if (name === "CatchWorkspaceHeader") {
+        headers += 1;
+        for (const attribute of opening.attributes.properties) {
+          if (!ts.isJsxAttribute(attribute)) {
+            extras = true;
+            continue;
+          }
+          const attributeName = attribute.name.getText(unit);
+          const value = attribute.initializer;
+          if (attributeName === "title") {
+            routeTitled = Boolean(value && ts.isJsxExpression(value) && value.expression &&
+              ts.isIdentifier(value.expression) && value.expression.text === "pageTitle");
+          } else if (["kicker", "note", "count"].includes(attributeName)) {
+            extras = true;
+          }
+        }
       }
-      if (["AdminEyebrow", "PageHeader"].includes(name) || element === "p") subtitle = true;
     }
     ts.forEachChild(node, inspect);
   }
-  for (const topbar of topbars) for (const child of topbar.children) inspect(child);
-  return {topbars: topbars.length, headings, subtitle};
+  inspect(unit);
+  return {headers, routeTitled, extras, legacyChrome};
 }
 
 function featureComponentExports() {
@@ -642,42 +632,30 @@ export const StatusBannerStory = {
     ["probe: feature-component owned by features/marketing must live under packages/web-ui/src/components/ (or await its D18 move from admin/src/shared/ui); its feature keeps only the binding."],
   );
 
-  const validChrome = `
-    <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-    <AdminTopbar><h1>{topbarTitle}</h1><AdminTopbarActions /></AdminTopbar>
-  `;
-  assert.deepEqual(adminChromeErrors(validChrome), []);
-  const libraryChrome = (title, extra = "", imported = "CatchText") => `
-    import {CatchText as ${imported}} from "@catch/web-ui";
+  const chrome = (header, extra = "") => `
+    import {CatchTabBar, CatchWorkspaceHeader} from "@catch/web-ui";
     const Chrome = () => <>
-      <AdminBrandTitle>Catch Admin</AdminBrandTitle>
-      <AdminTopbar>${title}${extra}<AdminTopbarActions /></AdminTopbar>
+      <CatchTabBar header={{title: "Catch Admin", note: "Sample data"}} items={[]} active="now" />
+      ${header}${extra}
     </>;
   `;
-  for (const title of [
-    '<CatchText as="h1" variant="titleL">{topbarTitle}</CatchText>',
-    '<CatchText variant="titleL" as={"h1"}>{topbarTitle}</CatchText>',
-  ]) assert.deepEqual(adminChromeErrors(libraryChrome(title)), []);
-  assert.deepEqual(adminChromeErrors(libraryChrome(
-    '<Copy as="h1" variant="titleL">{topbarTitle}</Copy>', "", "Copy",
-  )), []);
-  for (const title of [
-    '<CatchText as="h2" variant="titleL">{topbarTitle}</CatchText>',
-    '<CatchText variant="titleL">{topbarTitle}</CatchText>',
-    '<CatchText as="h1" variant="titleL">{otherTitle}</CatchText>',
-    '<CatchText as="h1" {...props} variant="titleL">{topbarTitle}</CatchText>',
-    '<h1>{topbarTitle}</h1><h2>Duplicate</h2>',
-    '<h1>{topbarTitle}</h1><CatchText as="h3" variant="titleL">Extra</CatchText>',
-  ]) assert.ok(adminChromeErrors(libraryChrome(title)).includes(
-    "admin top bar must render the route-owned topbarTitle as its single heading.",
+  assert.deepEqual(adminChromeErrors(chrome("<CatchWorkspaceHeader title={pageTitle} />")), []);
+  for (const header of [
+    "<CatchWorkspaceHeader title={otherTitle} />",
+    '<CatchWorkspaceHeader title="Overview" />',
+    "<CatchWorkspaceHeader title={pageTitle} /><CatchWorkspaceHeader title={pageTitle} />",
+    "",
+  ]) assert.ok(adminChromeErrors(chrome(header)).includes(
+    "admin shell must render the route-owned pageTitle as its single workspace header.",
   ));
-  assert.ok(adminChromeErrors(libraryChrome(
-    '<CatchText as="h1" variant="titleL">{topbarTitle}</CatchText>',
-    '<CatchText as="p" variant="supporting">Subtitle</CatchText>',
-  )).includes("admin top bar must not add a kicker, secondary PageHeader, or subtitle."));
-  assert.ok(adminChromeErrors(libraryChrome(
-    '{/* <h1>{topbarTitle}</h1> */}<span>{"<h1>{topbarTitle}</h1>"}</span>',
-  )).includes("admin top bar must render the route-owned topbarTitle as its single heading."));
+  for (const extra of [
+    '<CatchWorkspaceHeader title={pageTitle} kicker="Admin" />',
+    "<AdminTopbar><h1>{pageTitle}</h1></AdminTopbar>",
+    '<PageHeader title="Second" />',
+  ]) assert.ok(adminChromeErrors(chrome(extra.startsWith("<CatchWorkspaceHeader") ? extra : "<CatchWorkspaceHeader title={pageTitle} />", extra.startsWith("<CatchWorkspaceHeader") ? "" : extra))
+    .includes("admin shell header must not add a kicker, note, secondary PageHeader, or old top bar."));
+  assert.ok(adminChromeErrors('<CatchWorkspaceHeader title={pageTitle} />')
+    .includes("admin shell brand must be the single product label Catch Admin."));
 
   assert.deepEqual(adminChromeErrors(`
     <AdminBrandTitle>Catch Ops</AdminBrandTitle>
@@ -685,8 +663,8 @@ export const StatusBannerStory = {
     <span>dev · sample</span>
   `), [
     "admin shell brand must be the single product label Catch Admin.",
-    "admin top bar must render the route-owned topbarTitle as its single heading.",
-    "admin top bar must not add a kicker, secondary PageHeader, or subtitle.",
+    "admin shell must render the route-owned pageTitle as its single workspace header.",
+    "admin shell header must not add a kicker, note, secondary PageHeader, or old top bar.",
     "admin shell must not expose prototype label Catch Ops.",
     "admin shell must not expose prototype label dev · sample.",
   ]);

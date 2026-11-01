@@ -1,0 +1,331 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-11-01",
+  "id": "feature.admin_marketplace",
+  "name": "Admin Marketplace",
+  "owner": "admin_console",
+  "status": "pilot",
+  "description": "Marketplace host analytics split from the old Overview: range and entity controls, scope clearing and refresh, until the Marketplace board replaces it.",
+  "surfaces": [
+    {
+      "id": "admin_marketplace",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_marketplace"
+      },
+      "actionScope": {
+        "included": "Refreshing analytics and clearing optional analytics entity scope.",
+        "excluded": [
+          "Range, granularity, date, organizer, and event inputs remain analytics query data.",
+          "Queue items moved to Needs you."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/marketplace/controllers/useMarketplaceController.ts",
+            "symbol": "useMarketplaceController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/marketplace/ui/MarketplaceScreen.tsx",
+            "symbol": "MarketplaceScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_marketplace"
+        ],
+        "dataContracts": [
+          "contracts/callables/host_analytics_query_payload.schema.json",
+          "contracts/callable_responses/host_analytics_response.schema.json"
+        ],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetHostAnalytics",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "default": [
+            "admin/src/features/marketplace/controllers/useMarketplaceController.test.tsx"
+          ],
+          "analytics-controls": [
+            "admin/src/features/marketplace/controllers/useMarketplaceController.test.tsx"
+          ],
+          "scoped-analytics": [
+            "admin/src/features/marketplace/controllers/useMarketplaceController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {
+        "analytics_source": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "failed",
+            "role_restricted"
+          ]
+        },
+        "analytics_scope": {
+          "default": "global",
+          "values": [
+            "global",
+            "organizer",
+            "event"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_marketplace_analytics",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "analyticsPayloadVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "analytics-controls",
+                "scoped-analytics"
+              ]
+            }
+          ],
+          "description": "Refetches the role-checked analytics payload."
+        },
+        {
+          "id": "clear_marketplace_analytics_scope",
+          "owner": "controller",
+          "codeValue": "clearAnalyticsScope",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "analyticsPayloadVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "analytics-controls",
+                "scoped-analytics"
+              ]
+            }
+          ],
+          "description": "Clears organizer and event scope while preserving the selected range and granularity."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "default",
+          "stateId": "default",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "ready",
+              "enabledActions": [
+                "refresh_marketplace_analytics"
+              ]
+            },
+            {
+              "id": "analytics_loading",
+              "dimensions": {
+                "analytics_source": "loading"
+              },
+              "disabledActions": [
+                "refresh_marketplace_analytics"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "analytics_controls",
+          "stateId": "analytics-controls",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "analytics_ready",
+              "enabledActions": [
+                "refresh_marketplace_analytics",
+                "clear_marketplace_analytics_scope"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "scoped_analytics",
+          "stateId": "scoped-analytics",
+          "dimensions": {
+            "analytics_scope": "organizer"
+          },
+          "actionCases": [
+            {
+              "id": "organizer_or_event_scope",
+              "enabledActions": [
+                "refresh_marketplace_analytics",
+                "clear_marketplace_analytics_scope"
+              ]
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      }
+    },
+    {
+      "id": "admin_marketplace_live_controller",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_marketplace_live_controller"
+      },
+      "actionScope": {
+        "included": "Owning the live query and role seam for the prop-driven Marketplace actions.",
+        "excluded": [
+          "Deterministic visual state remains on route_marketplace."
+        ]
+      },
+      "bindings": {
+        "previewSources": [],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/marketplace/controllers/useMarketplaceController.ts",
+            "symbol": "useMarketplaceController"
+          },
+          {
+            "id": "route",
+            "language": "typescript",
+            "file": "admin/src/features/marketplace/ui/MarketplaceRouteScreen.tsx",
+            "symbol": "MarketplaceRouteScreen"
+          }
+        ],
+        "componentContracts": [
+          "route_marketplace_live_controller"
+        ],
+        "dataContracts": [
+          "contracts/callables/host_analytics_query_payload.schema.json",
+          "contracts/callable_responses/host_analytics_response.schema.json"
+        ],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetHostAnalytics",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          }
+        ],
+        "testEvidence": {
+          "live-query-wrapper": [
+            "admin/src/features/marketplace/controllers/useMarketplaceController.test.tsx"
+          ],
+          "route-lazy-boundary": [
+            "admin/src/features/marketplace/controllers/useMarketplaceController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {
+        "boundary": {
+          "default": "resolved",
+          "values": [
+            "resolved",
+            "loading"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "refresh_marketplace_analytics",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "analyticsPayloadVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Refetches the live role-checked analytics query."
+        },
+        {
+          "id": "clear_marketplace_analytics_scope",
+          "owner": "controller",
+          "codeValue": "clearAnalyticsScope",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "analyticsPayloadVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "live-query-wrapper"
+              ]
+            }
+          ],
+          "description": "Clears live organizer and event analytics scope."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "live_query_wrapper",
+          "stateId": "live-query-wrapper",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "resolved",
+              "enabledActions": [
+                "refresh_marketplace_analytics",
+                "clear_marketplace_analytics_scope"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "route_lazy_boundary",
+          "stateId": "route-lazy-boundary",
+          "dimensions": {
+            "boundary": "loading"
+          },
+          "actionCases": [
+            {
+              "id": "lazy_loading"
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": false,
+        "tests": true
+      }
+    }
+  ]
+}

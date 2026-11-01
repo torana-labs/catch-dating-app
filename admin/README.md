@@ -56,7 +56,7 @@ and operator-session routes retain their separate entry boundaries.
 The app shell owns shared navigation, Firebase auth, role gating, the
 plain route title, and feature composition. Overview range state, refresh,
 analytics loading, and queue triage live in
-`admin/src/features/overview/controllers`.
+`admin/src/features/now/controllers`.
 The top bar omits the production environment label. Non-production environment
 and local-data context appear in the account menu only when they change
 operator risk; switching Firebase targets still happens through environment

@@ -7,7 +7,6 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {
   AdminButton,
   AdminLinkButton,
-  AdminNavButton,
   AdminWorkspace,
 } from "./ui/AdminPrimitives";
 import {
@@ -54,12 +53,6 @@ function PendingOperationHarness({
 
   return (
     <>
-      <AdminNavButton
-        icon={<span aria-hidden="true">N</span>}
-        label="Other workspace"
-        onClick={() => undefined}
-        selected={false}
-      />
       <AdminButton
         onClick={() => {
           const token = conflictingOperation.beginOperation();
@@ -103,12 +96,10 @@ describe("AdminPendingOperationProvider", () => {
 
     const workspace = screen.getByRole("main");
     const note = screen.getByRole("textbox", {name: "Review note"});
-    const nav = screen.getByRole("button", {name: "Other workspace"});
     const link = screen.getByRole("link", {name: "Leave workspace"});
     await waitFor(() => expect(workspace.getAttribute("aria-busy")).toBe("true"));
 
     expect(note.matches(":disabled")).toBe(true);
-    expect(nav.matches(":disabled")).toBe(true);
     expect(link.getAttribute("aria-disabled")).toBe("true");
     expect(link.getAttribute("tabindex")).toBe("-1");
 
@@ -129,6 +120,5 @@ describe("AdminPendingOperationProvider", () => {
     request.resolve();
     await waitFor(() => expect(workspace.getAttribute("aria-busy")).toBeNull());
     expect(note.matches(":disabled")).toBe(false);
-    expect(nav.matches(":disabled")).toBe(false);
   });
 });
