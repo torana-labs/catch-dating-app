@@ -2206,7 +2206,7 @@ export const adminActionCatalog = {
       "workflowIds": [
         "finance"
       ],
-      "guiPath": "/finance",
+      "guiPath": "/money/bills",
       "kind": "mutation",
       "risk": "high",
       "roles": [

@@ -36,7 +36,7 @@ let tokenChanged: (user: User | null) => void;
 
 afterEach(cleanup);
 beforeEach(() => {
-  window.history.replaceState({}, "", "/finance");
+  window.history.replaceState({}, "", "/payment-setup");
   window.sessionStorage.clear();
   mocks.onIdTokenChanged.mockImplementation((_auth, callback) => {
     tokenChanged = callback;
