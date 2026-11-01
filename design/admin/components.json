@@ -854,6 +854,96 @@
       "notes": "Lazy live route wrapper owns the Needs you controller/query seam; deterministic prop-driven visual coverage remains on route_now."
     },
     {
+      "id": "route_sales_today",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesTodayScreen.tsx",
+      "exportName": "SalesTodayScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesTodayStory",
+        "states": [
+          "due-first",
+          "kind-chips",
+          "inspector",
+          "log-dock"
+        ]
+      },
+      "notes": "Sales · Today: a sales associate's tasks by when they are due (the team's for the owner) on CatchWorkspaceHeader and CatchTable, with the task's host beside it on CatchPaneLayout queue and CatchDock pane: log what happened (completes the task), snooze to Monday, or done."
+    },
+    {
+      "id": "route_sales_hosts",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesHostsScreen.tsx",
+      "exportName": "SalesHostsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesHostsStory",
+        "states": [
+          "directory",
+          "host-overview"
+        ]
+      },
+      "notes": "Sales · Hosts: the accounts in Sales, searchable, on CatchTable; a host page on CatchPaneLayout reading with four CatchPageTabBar tabs (overview, conversations, deals, notes)."
+    },
+    {
+      "id": "route_sales_deals",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesDealsScreen.tsx",
+      "exportName": "SalesDealsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesDealsStory",
+        "states": [
+          "stage-columns",
+          "team-or-mine"
+        ]
+      },
+      "notes": "Sales · Deals: pipeline and pilots together, a CatchRail of CatchSection stage columns (New, Talking, Demo, Pilot, Paying), team or mine. Rows open the host."
+    },
+    {
+      "id": "route_sales_nominations",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/MyNominationsScreen.tsx",
+      "exportName": "MyNominationsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "MyNominationsStory",
+        "states": [
+          "filter-chips",
+          "stuck-detail"
+        ]
+      },
+      "notes": "My nominations: what happened to every organizer a sales associate sent, from the inbox items ops work, with real totals per filter and the journey beside it. They cannot approve."
+    },
+    {
+      "id": "route_sales_live_controller",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesRouteScreen.tsx",
+      "exportName": "SalesRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Sales controllers and queries; deterministic prop-driven visual coverage remains on the route_sales_* records."
+    },
+    {
       "id": "route_inbox",
       "kind": "route",
       "owner": "features/inbox",

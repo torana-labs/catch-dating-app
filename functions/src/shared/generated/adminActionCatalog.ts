@@ -1497,6 +1497,17 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner",
       "support"
     ]
+  },
+  "sales.list-my-nominations": {
+    "callable": "adminListMyNominations",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
   }
 } as const;
 

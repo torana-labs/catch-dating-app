@@ -265,7 +265,8 @@ export function InboxScreen({model, selectedItemId, onSelect, uid, reviewHref, o
       pattern="queue"
       detailOpen={selectedItemId !== null}
       main={<InboxQueue controller={model} selectedItemId={selectedItemId} onSelect={onSelect} reviewHref={reviewHref} />}
-      detail={selectedItemId === null ? undefined : detail && detail.item.itemId === selectedItemId ?
+      detail={selectedItemId === null ? <CatchEmptyState title="Pick an item" message="What it is, how it got here and the decision open here." /> :
+        detail && detail.item.itemId === selectedItemId ?
         <InboxInspector controller={model} detail={detail} uid={uid} onClose={() => onSelect(null)} onOpenReview={onOpenReview} /> :
         model.detailError ?
           <CatchEmptyState title="This item could not be opened" message="It may have been decided already. Pick another." /> :

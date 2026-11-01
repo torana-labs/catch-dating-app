@@ -2644,6 +2644,24 @@ export const adminActionCatalog = {
       ],
       "summary": "Recommend approving or rejecting a pending organizer claim; the claim stays pending until the owner decides it.",
       "controlPlane": false
+    },
+    {
+      "actionId": "sales.list-my-nominations",
+      "callable": "adminListMyNominations",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/nominations",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "List the organizers the caller nominated, newest first, published, waiting or stuck, with real totals per filter.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2947,7 +2965,8 @@ export const adminActionCatalog = {
         "sales.privacy.case.get",
         "sales.demo.GetSalesDemoPartnerReview",
         "sales.demo.ShareSalesDemoPartnerReview",
-        "sales.partners.offer"
+        "sales.partners.offer",
+        "sales.list-my-nominations"
       ]
     },
     {

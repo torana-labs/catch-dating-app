@@ -12,6 +12,9 @@ export const adminSections = {
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
   sales: {path: "/sales/today", title: "Sales"},
+  "sales-hosts": {path: "/sales/hosts", title: "Hosts"},
+  "sales-deals": {path: "/sales/deals", title: "Deals"},
+  nominations: {path: "/sales/nominations", title: "My nominations"},
   "organizer-intake": {path: "/inbox", title: "Inbox"},
   // The listing, event and policy review the inbox links to until each moves into it.
   "intake-review": {path: "/intake/organizers", title: "Intake review"},
@@ -36,7 +39,7 @@ interface RouteState {
   /** An old address: the shell replaces it with this path. */
   redirect?: string;
   title?: string;
-  salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
+  salesArea?: "today" | "settings" | "pipeline" | "pilots" | "research";
   organizerWorkspace?: "directory" | "claims";
   eventWorkspace?: "directory" | "external";
   eventTab?: "overview" | "page" | "takedown";
@@ -59,7 +62,7 @@ export const adminRoutes: AdminRoute[] = [
   route("/", "now", {redirect: "/now"}),
   // Overview split in two: its queues are Needs you, its analytics Marketplace.
   route("/overview/*", "now", {redirect: "/now"}),
-  ...Object.entries(adminSections).filter(([nav]) => nav !== "intake-review").map(([nav, {path}]) => route(
+  ...Object.entries(adminSections).filter(([nav]) => !["intake-review", "sales-hosts", "sales-deals", "nominations"].includes(nav)).map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),
   route("/marketing-ops/*", "marketing-ops"),
@@ -100,9 +103,18 @@ export const adminRoutes: AdminRoute[] = [
   route("/settings/team/:teamMemberUid", "settings", {title: "Team and roles"}),
   // Admin roles became Settings → Team and roles.
   route("/admin-roles/*", "settings", {redirect: "/settings/team"}),
-  ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
-    .map((salesArea) => route(`/sales/${salesArea}/*`, "sales", {salesArea})),
-  route("/sales/hosts/:salesOrganizerId", "sales", {salesArea: "hosts"}),
+  route("/sales/today/*", "sales", {salesArea: "today"}),
+  route("/sales/today/:salesTaskId", "sales", {salesArea: "today", title: "Task"}),
+  route("/sales/settings/*", "sales", {salesArea: "settings", title: "Sales settings"}),
+  route("/sales/hosts/*", "sales-hosts"),
+  route("/sales/hosts/:salesOrganizerId", "sales-hosts", {title: "Host"}),
+  route("/sales/deals/*", "sales-deals"),
+  route("/sales/nominations/*", "nominations"),
+  route("/sales/nominations/:nominationItemId", "nominations", {title: "Nomination"}),
+  // The older Sales pages keep the tools the new screens don't have yet: stage moves,
+  // pilot plans and quotes. Each goes when its replacement lands.
+  ...(["pipeline", "pilots", "research"] as const).map((salesArea) =>
+    route(`/sales/${salesArea}/*`, "sales", {salesArea, title: "Older Sales page"})),
   route("/intake/*", "intake-review", {title: "Organizer intake"}),
   route("/intake/events/*", "intake-review", {title: "Event intake"}),
   route("/intake/operations/*", "intake-review", {title: "Supply intake operations"}),

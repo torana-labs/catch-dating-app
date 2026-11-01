@@ -79,6 +79,7 @@ const model = {
     "adminListInboxItems",
     "adminListIntakeOperations",
     "adminListListingEventImports",
+    "adminListMyNominations",
     "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
     "adminListOrganizerDirectory",
@@ -226,6 +227,7 @@ const model = {
     "adminListInboxItems",
     "adminListIntakeOperations",
     "adminListListingEventImports",
+    "adminListMyNominations",
     "adminListOrganizerClaimRequests",
     "adminListOrganizerDetails",
     "adminListOrganizerDirectory",
@@ -347,6 +349,7 @@ const model = {
     "adminListInboxItems",
     "adminListIntakeOperations",
     "adminListListingEventImports",
+    "adminListMyNominations",
     "adminListOrganizerDirectory",
     "adminListOrganizerListingReviews",
     "adminListSalesCommercialReport",
@@ -538,7 +541,8 @@ const model = {
     "adminListInboxItems": "inbox",
     "adminGetInboxItem": "inbox",
     "adminUpdateInboxItem": "inbox",
-    "adminRecommendOrganizerClaim": "inbox"
+    "adminRecommendOrganizerClaim": "inbox",
+    "adminListMyNominations": "sales"
   }
 } as const;
 

@@ -33,6 +33,7 @@ const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/Safet
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const SupportRouteScreen = lazy(() => import("../features/support/ui/SupportRouteScreen").then((m) => ({default: m.SupportRouteScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
+const SalesRouteScreen = lazy(() => import("../features/sales/ui/SalesRouteScreen").then((m) => ({default: m.SalesRouteScreen})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
 
 /** What the shell hands every area's screen. */
@@ -149,21 +150,20 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   sales: {
-    label: "Sales", icon: "partner", frame: "legacy",
-    render: ({adminRoles, mode, navigate, route, userUid}) => (
-      <SalesWorkspaceScreen
-        area={route.salesArea}
-        assignedStaffOnly={adminRoles.includes("salesStaff") && !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
-        currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : "")}
-        isAdminOwner={adminRoles.includes("adminOwner")}
-        onAreaChange={(area) => navigate(`/sales/${area}`)}
-        onBackToHosts={() => navigate("/sales/hosts")}
-        onOpenHost={(organizerId) => navigate(`/sales/hosts/${encodeURIComponent(organizerId)}`)}
-        onOpenIntake={() => navigate("/intake/organizers")}
-        onOpenOrganizer={(organizerId) => navigate(`/organizers/${encodeURIComponent(organizerId)}`)}
-        selectedOrganizerId={route.params.salesOrganizerId ?? null}
-      />
-    ),
+    label: "Sales", icon: "partner", frame: "redrawn",
+    render: (context) => context.route.salesArea === "today" ? renderSales(context, "today") : renderOlderSales(context),
+  },
+  "sales-hosts": {
+    label: "Hosts", icon: "business", frame: "redrawn",
+    render: (context) => renderSales(context, "hosts"),
+  },
+  "sales-deals": {
+    label: "Deals", icon: "partner", frame: "redrawn",
+    render: (context) => renderSales(context, "deals"),
+  },
+  nominations: {
+    label: "My nominations", icon: "review", frame: "redrawn",
+    render: (context) => renderSales(context, "nominations"),
   },
   finance: {
     label: "Money", icon: "payment", frame: "legacy",
@@ -369,4 +369,49 @@ function openQueueItem(
   } else {
     navigate(adminPathForNav(destination));
   }
+}
+
+const salesAreaPaths = {today: "sales", hosts: "sales-hosts", deals: "sales-deals", nominations: "nominations"} as const;
+
+/** One Sales area. A sales associate sees their own work; anyone else sees the team's. */
+function renderSales(context: AdminAreaContext, area: keyof typeof salesAreaPaths) {
+  const {adminRoles, mode, navigate, route, setError, setNotice, userUid} = context;
+  const base = adminPathForNav(salesAreaPaths[area]);
+  const selectedId = (area === "today" ? route.params.salesTaskId : area === "hosts" ? route.params.salesOrganizerId :
+    area === "nominations" ? route.params.nominationItemId : undefined) ?? null;
+  return (
+    <SalesRouteScreen
+      area={area}
+      onError={setError}
+      onNominate={() => navigate(adminPathForNav("organizer-intake"))}
+      onNotice={setNotice}
+      onOpenHost={(organizerId) => navigate(`${adminPathForNav("sales-hosts")}/${encodeURIComponent(organizerId)}`)}
+      onOpenOrganizer={(organizerId) => navigate(`${adminPathForNav("organizers")}/${encodeURIComponent(organizerId)}`)}
+      onSelect={(id) => navigate(id ? `${base}/${encodeURIComponent(id)}` : base)}
+      ownWorkOnly={adminRoles.includes("salesStaff") && !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
+      selectedId={selectedId}
+      uid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
+    />
+  );
+}
+
+/**
+ * The older Sales pages: settings (custom fields, imports, history), and pipeline, pilots and
+ * research for the tools the new screens don't have yet. Each goes when its replacement lands.
+ */
+function renderOlderSales({adminRoles, mode, navigate, route, userUid}: AdminAreaContext) {
+  return (
+    <SalesWorkspaceScreen
+      area={route.salesArea}
+      assignedStaffOnly={adminRoles.includes("salesStaff") && !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
+      currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : "")}
+      isAdminOwner={adminRoles.includes("adminOwner")}
+      onAreaChange={(area) => navigate(`/sales/${area}`)}
+      onBackToHosts={() => navigate("/sales/hosts")}
+      onOpenHost={(organizerId) => navigate(`/sales/hosts/${encodeURIComponent(organizerId)}`)}
+      onOpenIntake={() => navigate("/intake/organizers")}
+      onOpenOrganizer={(organizerId) => navigate(`/organizers/${encodeURIComponent(organizerId)}`)}
+      selectedOrganizerId={null}
+    />
+  );
 }

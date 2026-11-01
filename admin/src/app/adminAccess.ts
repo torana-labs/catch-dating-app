@@ -19,6 +19,9 @@ export const adminAreaRoles: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   safety: ["admin", "adminOwner", "safetyReviewer", "support"],
   support: ["adminOwner", "support"],
   sales: ["admin", "adminOwner", "salesStaff"],
+  "sales-hosts": ["admin", "adminOwner", "salesStaff"],
+  "sales-deals": ["admin", "adminOwner", "salesStaff"],
+  nominations: ["admin", "adminOwner", "support", "salesStaff"],
   finance: owner,
   organizers: opsAndOwner,
   events: opsAndOwner,
@@ -38,6 +41,10 @@ export interface AdminNavigationEntry {
   section?: string;
   /** Kept on the phone bar; everything else is under More. */
   pinned?: boolean;
+  /** This job's name for the area, where it differs from the area's own. */
+  label?: string;
+  /** Areas with no entry of their own in this job's navigation that highlight this one. */
+  alsoActive?: readonly AdminNavId[];
 }
 
 /**
@@ -49,7 +56,7 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
   owner: [
     {nav: "now", pinned: true},
     {nav: "organizer-intake", section: "Work", pinned: true}, {nav: "safety", section: "Work"}, {nav: "support", section: "Work"},
-    {nav: "sales", section: "Work", pinned: true}, {nav: "finance", section: "Work"},
+    {nav: "sales", section: "Work", pinned: true, alsoActive: ["sales-hosts", "sales-deals"]}, {nav: "finance", section: "Work"},
     {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
     {nav: "people", section: "Records"},
     {nav: "growth", section: "Insights"}, {nav: "marketplace", section: "Insights"},
@@ -59,7 +66,8 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
     {nav: "quality", section: "Older pages"}, {nav: "operations", section: "Older pages"},
   ],
   sales: [
-    {nav: "sales", section: "Sales", pinned: true},
+    {nav: "sales", section: "Sales", pinned: true, label: "Today"}, {nav: "sales-hosts", section: "Sales", pinned: true},
+    {nav: "sales-deals", section: "Sales"}, {nav: "nominations", section: "Sales"},
     {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
   ],
   ops: [

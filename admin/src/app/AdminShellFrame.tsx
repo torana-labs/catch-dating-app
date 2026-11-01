@@ -53,9 +53,9 @@ export function AdminShellFrame({
 }) {
   // While an operation is saving, the navigation stays put, as the workspace's own controls do.
   const operationPending = useAdminOperationPending();
-  const items: CatchTabBarItem[] = navigation.map(({nav, section, pinned}) => ({
+  const items: CatchTabBarItem[] = navigation.map(({nav, section, pinned, label}) => ({
     value: nav,
-    label: adminAreas[nav].label,
+    label: label ?? adminAreas[nav].label,
     icon: adminAreas[nav].icon,
     href: adminPathForNav(nav),
     section,
@@ -74,7 +74,8 @@ export function AdminShellFrame({
     <CatchViewport
       navigation={(
         <CatchTabBar
-          active={currentNav}
+          active={navigation.some((entry) => entry.nav === currentNav) ? currentNav :
+            navigation.find((entry) => entry.alsoActive?.includes(currentNav))?.nav ?? currentNav}
           footer={<AccountFooter account={account} />}
           header={{title: "Catch Admin", note: headerNote}}
           items={items}

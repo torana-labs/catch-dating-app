@@ -67,10 +67,10 @@ vi.mock("../features/now/ui/NowRouteScreen", () => ({
   NowRouteScreen: () => <p>Needs you fixture</p>,
 }));
 
-vi.mock("../features/sales/ui/SalesWorkspaceScreen", () => ({
-  SalesWorkspaceScreen: ({assignedStaffOnly, currentUserUid}: {
-    assignedStaffOnly: boolean; currentUserUid: string;
-  }) => <p>Sales fixture: {currentUserUid} · {assignedStaffOnly ? "assigned" : "admin"}</p>,
+vi.mock("../features/sales/ui/SalesRouteScreen", () => ({
+  SalesRouteScreen: ({ownWorkOnly, uid}: {
+    ownWorkOnly: boolean; uid: string | null;
+  }) => <p>Sales fixture: {uid} · {ownWorkOnly ? "assigned" : "admin"}</p>,
 }));
 
 describe("App live deep-link ownership", () => {

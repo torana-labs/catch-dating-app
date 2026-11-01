@@ -28,7 +28,9 @@ describe("Admin route contract", () => {
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
     ["/settings/team/user-1", "settings", "teamMemberUid", "user-1"],
     ["/settings/safety", "settings", "settingsPage", "safety"],
-    ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
+    ["/sales/hosts/host-1", "sales-hosts", "salesOrganizerId", "host-1"],
+    ["/sales/today/task-1", "sales", "salesTaskId", "task-1"],
+    ["/sales/nominations/supply-req-1", "nominations", "nominationItemId", "supply-req-1"],
     ["/inbox/supply-req%3A1", "organizer-intake", "inboxItemId", "supply-req:1"],
     ["/marketing/drafts/draft%20one/copy", "marketing-ops", "draftId", "draft one"],
   ])("resolves %s", (path, nav, key, value) => {
@@ -122,6 +124,12 @@ describe("Admin route contract", () => {
     expect(adminPathForNav("organizer-intake")).toBe("/inbox");
     for (const path of ["/intake/organizers", "/intake/events", "/organizer-intake/listings"]) {
       expect(resolveAdminRoute(path).nav).toBe("intake-review");
+    }
+  });
+
+  it("keeps the older Sales pages reachable until their tools move", () => {
+    for (const area of ["pipeline", "pilots", "research", "settings"] as const) {
+      expect(resolveAdminRoute(`/sales/${area}`)).toMatchObject({nav: "sales", salesArea: area});
     }
   });
 
