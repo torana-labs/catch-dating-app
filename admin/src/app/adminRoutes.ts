@@ -8,7 +8,6 @@ export const adminSections = {
   marketplace: {path: "/marketplace", title: "Marketplace"},
   more: {path: "/more", title: "More"},
   safety: {path: "/safety", title: "Safety"},
-  access: {path: "/access", title: "Launch access"},
   "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
@@ -39,6 +38,7 @@ interface RouteState {
   eventWorkspace?: "directory" | "external";
   financeWorkspace?: FinanceWorkspace;
   supportWorkspace?: "inbox" | "trial";
+  safetyView?: "open" | "actions" | "appeals";
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -62,7 +62,12 @@ export const adminRoutes: AdminRoute[] = [
   route("/safety/:targetPath", "safety", {title: "Safety case"}),
   route("/support/:supportConversationId", "support", {title: "Support conversation"}),
   route("/support/trial/*", "support", {supportWorkspace: "trial", title: "WhatsApp reply trial"}),
-  route("/access/:applicationUid", "access"),
+  route("/safety/actions/*", "safety", {safetyView: "actions", title: "Account actions"}),
+  route("/safety/actions/:safetyActionId", "safety", {safetyView: "actions", title: "Account action"}),
+  route("/safety/appeals/*", "safety", {safetyView: "appeals", title: "Appeals"}),
+  route("/safety/appeals/:safetyActionId", "safety", {safetyView: "appeals", title: "Appeal"}),
+  // Launch access moved into the Safety queue.
+  route("/access/*", "safety", {redirect: "/safety"}),
   route("/organizers/:organizerId", "organizers"),
   route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
   route("/organizers/claims/:claimRequestId", "organizers", {organizerWorkspace: "claims"}),
@@ -119,6 +124,7 @@ export function resolveAdminRoute(pathname: string) {
     eventWorkspace: state?.eventWorkspace ?? "directory",
     financeWorkspace: state?.financeWorkspace ?? "issues",
     supportWorkspace: state?.supportWorkspace ?? "inbox",
+    safetyView: state?.safetyView ?? "open",
     marketingTab: state?.marketingTab ?? "posts",
     composerStep: state?.composerStep ?? "source",
   };

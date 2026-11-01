@@ -16,7 +16,8 @@ describe("Admin route contract", () => {
   it.each([
     ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
     ["/support/whatsapp-abc", "support", "supportConversationId", "whatsapp-abc"],
-    ["/access/user-1/", "access", "applicationUid", "user-1"],
+    ["/safety/actions/action-1", "safety", "safetyActionId", "action-1"],
+    ["/safety/appeals/action-2", "safety", "safetyActionId", "action-2"],
     ["/organizers/afterfly", "organizers", "organizerId", "afterfly"],
     ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
     ["/events/event-1", "events", "eventId", "event-1"],
@@ -32,6 +33,13 @@ describe("Admin route contract", () => {
     const route = resolveAdminRoute(path);
     expect(route.nav).toBe(nav);
     expect(route.params[key]).toBe(value);
+  });
+
+  it("opens Safety's views and sends old launch access links to Safety", () => {
+    expect(resolveAdminRoute("/safety").safetyView).toBe("open");
+    expect(resolveAdminRoute("/safety/actions").safetyView).toBe("actions");
+    expect(resolveAdminRoute("/safety/appeals/a1").safetyView).toBe("appeals");
+    expect(resolveAdminRoute("/access/user-1").redirect).toBe("/safety");
   });
 
   it.each([
