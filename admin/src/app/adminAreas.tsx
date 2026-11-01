@@ -109,7 +109,6 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
         onOpenReview={() => navigate(adminPathForNav("intake-review"))}
         onSelect={(itemId) => navigate(itemId ? `${adminPathForNav("organizer-intake")}/${encodeURIComponent(itemId)}` :
           adminPathForNav("organizer-intake"))}
-        reviewHref={adminPathForNav("intake-review")}
         selectedItemId={route.params.inboxItemId ?? null}
         uid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
       />

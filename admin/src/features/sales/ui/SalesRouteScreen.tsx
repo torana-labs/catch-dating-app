@@ -1,5 +1,4 @@
-import {CatchPageTabBar} from "@catch/web-ui";
-import type {ReactNode} from "react";
+import {CatchPageTabBar, CatchTopBar} from "@catch/web-ui";
 import {useSalesDealsController, useSalesHostNames} from "../controllers/useSalesDealsController";
 import {useSalesHostsController} from "../controllers/useSalesHostsController";
 import {useSalesTodayController} from "../controllers/useSalesTodayController";
@@ -22,26 +21,24 @@ interface Props {
   onNominate: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string) => void;
-  /** The owner's Today, Hosts and Deals tabs, drawn in each screen's header. */
-  tabs?: ReactNode;
 }
 
-function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice, tabs}: Props) {
+function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Props) {
   const names = useSalesHostNames();
   const controller = useSalesTodayController({ownerUid: ownWorkOnly ? uid : null, onError, onNotice,
     selectedTaskId: selectedId, onSelect});
   return <SalesTodayScreen model={{...controller, account: controller.account.data ?? null, names}}
-    onSelect={onSelect} selectedTaskId={selectedId} tabs={tabs} />;
+    onSelect={onSelect} selectedTaskId={selectedId} />;
 }
 
-function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer, tabs}: Props) {
+function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer}: Props) {
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId});
-  return <SalesHostsScreen model={controller} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} tabs={tabs} />;
+  return <SalesHostsScreen model={controller} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }
 
-function Deals({uid, onOpenHost, tabs}: Props) {
+function Deals({uid, onOpenHost}: Props) {
   const controller = useSalesDealsController({uid});
-  return <SalesDealsScreen model={controller} onOpenHost={onOpenHost} tabs={tabs} />;
+  return <SalesDealsScreen model={controller} onOpenHost={onOpenHost} />;
 }
 
 function Nominations({selectedId, onSelect, onNominate}: Props) {
@@ -59,11 +56,13 @@ const areaTabs = [
  * The live Sales routes: each area's controller and queries, drawn by its screen. A sales
  * associate has each area in the navigation; the owner has one Sales entry and these tabs.
  */
-export function SalesRouteScreen({area, ...props}: Omit<Props, "tabs"> & {area: SalesScreenArea}) {
-  const tabs = props.ownWorkOnly || area === "nominations" ? undefined :
-    <CatchPageTabBar label="Sales" options={areaTabs} selected={area} size="sm" fill={false} />;
-  if (area === "hosts") return <Hosts {...props} tabs={tabs} />;
-  if (area === "deals") return <Deals {...props} tabs={tabs} />;
-  if (area === "nominations") return <Nominations {...props} />;
-  return <Today {...props} tabs={tabs} />;
+export function SalesRouteScreen({area, ...props}: Props & {area: SalesScreenArea}) {
+  const screen = area === "hosts" ? <Hosts {...props} /> : area === "deals" ? <Deals {...props} /> :
+    area === "nominations" ? <Nominations {...props} /> : <Today {...props} />;
+  if (props.ownWorkOnly || area === "nominations") return screen;
+  return <>
+    <CatchTopBar title="Sales" actions={
+      <CatchPageTabBar label="Sales" options={areaTabs} selected={area} size="sm" fill={false} />} />
+    {screen}
+  </>;
 }

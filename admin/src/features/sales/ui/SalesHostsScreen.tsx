@@ -10,7 +10,6 @@ import {
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
-import type {ReactNode} from "react";
 import type {SalesAccountDetail} from "../api/salesTypes";
 import {dueLabel, researchLabels, stageLabel, taskKindLabels} from "../controllers/salesLabels";
 import type {HostTab, SalesHostsController} from "../controllers/useSalesHostsController";
@@ -88,9 +87,7 @@ function hostPage(model: SalesHostsModel, host: SalesAccountDetail, onBack: () =
 }
 
 /** Hosts: the accounts in Sales, searchable, and one host's page with four tabs. */
-export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, tabs}: {
-  /** The owner's Today, Hosts and Deals tabs. */
-  tabs?: ReactNode;
+export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer}: {
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
@@ -112,7 +109,6 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
       <CatchWorkspaceHeader title="Hosts" count={model.rows.length}
         filters={{search: {placeholder: "Search hosts", value: model.query, onChanged: model.setQuery}}}
         actions={<>
-          {tabs}
           {model.hasPreviousPage ? <CatchButton label="Previous" variant="secondary" size="sm" onPressed={model.previousPage} /> : null}
           {model.hasNextPage ? <CatchButton label="More" variant="secondary" size="sm" onPressed={model.nextPage} /> : null}
         </>} />

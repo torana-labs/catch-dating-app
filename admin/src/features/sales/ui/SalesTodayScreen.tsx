@@ -1,4 +1,5 @@
 import {
+  CatchButton,
   CatchDock,
   CatchEmptyState,
   CatchMetaRow,
@@ -9,7 +10,7 @@ import {
   type CatchSectionStep,
   type CatchTableColumn,
 } from "@catch/web-ui";
-import {useState, type ReactNode} from "react";
+import {useState} from "react";
 import type {SalesAccountDetail, SalesTask} from "../api/salesTypes";
 import {dueLabel, researchLabels, stageLabel, taskKindLabels, todayKinds, todayScopeLabels, type TodayKind, type TodayScope} from "../controllers/salesLabels";
 import type {SalesTodayController} from "../controllers/useSalesTodayController";
@@ -48,6 +49,7 @@ function inspector(model: SalesTodayModel, task: SalesTask, note: string, setNot
     <>
       <CatchWorkspaceHeader title={model.names.get(task.organizerId) ?? account?.organizerSummary.name ?? "Host"} kicker="Today"
         back={{label: "Back to Today", onPressed: onClose, close: true}}
+        actions={task.status === "open" ? <CatchButton label="Done" variant="secondary" size="sm" onPressed={() => void model.complete(task)} /> : undefined}
         {...(model.position ? {position: {label: `${model.position.index} of ${model.position.of}`}} : {})} />
       <CatchMetaRow columns={2} entries={[
         {label: "Task", value: task.title, wide: true},
@@ -63,7 +65,6 @@ function inspector(model: SalesTodayModel, task: SalesTask, note: string, setNot
           primary={{label: "Log what happened", isLoading: model.isSaving,
             onPressed: note.trim() ? () => void model.logAndComplete(task, note.trim()) : null}}
           secondary={{label: "Snooze to Monday", onPressed: () => void model.snooze(task)}}
-          danger={{label: "Done, nothing to log", onPressed: () => void model.complete(task)}}
           note={{label: "What happened", placeholder: "Called them; demo on Tuesday", value: note, onChanged: setNote}}
           next={model.nextTask ? `Then ${model.names.get(model.nextTask.organizerId) ?? model.nextTask.title}` : "Then you're done for today"} />
       ) : null}
@@ -72,12 +73,10 @@ function inspector(model: SalesTodayModel, task: SalesTask, note: string, setNot
 }
 
 /** A sales associate's day: their tasks by when they are due, done from the pane beside them. */
-export function SalesTodayScreen({model, selectedTaskId, onSelect, tabs}: {
+export function SalesTodayScreen({model, selectedTaskId, onSelect}: {
   model: SalesTodayModel;
   selectedTaskId: string | null;
   onSelect: (taskId: string | null) => void;
-  /** The owner's Today, Hosts and Deals tabs. */
-  tabs?: ReactNode;
 }) {
   const [note, setNote] = useState("");
   const rows: Row[] = model.rows.map((task) => {
@@ -97,7 +96,7 @@ export function SalesTodayScreen({model, selectedTaskId, onSelect, tabs}: {
       pattern="queue"
       detailOpen={selectedTaskId !== null}
       main={<>
-        <CatchWorkspaceHeader title="Today" count={model.counts.week} actions={tabs}
+        <CatchWorkspaceHeader title="Today" count={model.counts.week}
           note={[model.counts.due ? `${model.counts.due} due` : null].filter(Boolean).join(" · ") || null}
           views={{items: scopes, value: model.scope, label: "When", onChanged: (value) => model.setScope(value as TodayScope)}}
           filters={{chips: [

@@ -38,12 +38,10 @@ const toneOf = (tone: InboxItem["state"]["tone"]) =>
   tone === "success" || tone === "warning" || tone === "danger" ? tone : undefined;
 
 /** The inbox list: one header (title, totals, scope, type chips, search) over the oldest-first table. */
-function InboxQueue({controller, selectedItemId, onSelect, reviewHref}: {
+function InboxQueue({controller, selectedItemId, onSelect}: {
   controller: InboxScreenModel;
   selectedItemId: string | null;
   onSelect: (itemId: string) => void;
-  /** The review workspace (policies, nominators, event intake) until Settings → Intake replaces it. */
-  reviewHref?: string;
 }) {
   const [search, setSearch] = useState("");
   const totals = controller.totals;
@@ -81,7 +79,6 @@ function InboxQueue({controller, selectedItemId, onSelect, reviewHref}: {
         actions={<>
           {controller.hasPreviousPage ? <CatchButton label="Newer" variant="secondary" size="sm" onPressed={controller.previousPage} /> : null}
           {controller.hasNextPage ? <CatchButton label="Older" variant="secondary" size="sm" onPressed={controller.nextPage} /> : null}
-          {reviewHref ? <CatchButton label="Review workspace" variant="secondary" size="sm" href={reviewHref} onPressed={() => undefined} /> : null}
         </>}
       />
       <CatchTable
@@ -250,13 +247,12 @@ export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refres
  * selected item open beside it (the queue pattern). On a narrow screen the
  * item replaces the list and Back returns to it.
  */
-export function InboxScreen({model, selectedItemId, onSelect, uid, reviewHref, onOpenReview}: {
+export function InboxScreen({model, selectedItemId, onSelect, uid, onOpenReview}: {
   model: InboxScreenModel;
   selectedItemId: string | null;
   onSelect: (itemId: string | null) => void;
   uid: string | null;
-  /** Where listings, events and policies are still reviewed until they move into the inbox. */
-  reviewHref: string;
+  /** Listings and events are still reviewed in Intake review, until they move into the inbox. */
   onOpenReview: () => void;
 }) {
   const detail = model.detail;
@@ -264,7 +260,7 @@ export function InboxScreen({model, selectedItemId, onSelect, uid, reviewHref, o
     <CatchPaneLayout
       pattern="queue"
       detailOpen={selectedItemId !== null}
-      main={<InboxQueue controller={model} selectedItemId={selectedItemId} onSelect={onSelect} reviewHref={reviewHref} />}
+      main={<InboxQueue controller={model} selectedItemId={selectedItemId} onSelect={onSelect} />}
       detail={selectedItemId === null ? <CatchEmptyState title="Pick an item" message="What it is, how it got here and the decision open here." /> :
         detail && detail.item.itemId === selectedItemId ?
         <InboxInspector controller={model} detail={detail} uid={uid} onClose={() => onSelect(null)} onOpenReview={onOpenReview} /> :

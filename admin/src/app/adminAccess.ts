@@ -61,7 +61,7 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
     {nav: "people", section: "Records"},
     {nav: "growth", section: "Insights"}, {nav: "marketplace", section: "Insights"},
     {nav: "settings", section: "Setup"},
-    {nav: "users", section: "Older pages"},
+    {nav: "intake-review", section: "Older pages"}, {nav: "users", section: "Older pages"},
     {nav: "cross-paths", section: "Older pages"}, {nav: "marketing-ops", section: "Older pages"},
     {nav: "quality", section: "Older pages"}, {nav: "operations", section: "Older pages"},
   ],
@@ -77,7 +77,7 @@ export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
     {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
     {nav: "people", section: "Records"},
     {nav: "settings", section: "Setup"},
-    {nav: "cross-paths", section: "Older pages"},
+    {nav: "intake-review", section: "Older pages"}, {nav: "cross-paths", section: "Older pages"},
     {nav: "marketing-ops", section: "Older pages"}, {nav: "operations", section: "Older pages"},
   ],
 };
