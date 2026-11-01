@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-30",
+  "updated": "2026-11-01",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -528,11 +528,43 @@
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_admin_role_management",
+      "authorityId": "route_people",
       "status": "contracted",
-      "priority": "P2",
-      "reason": "Compiled Role Management contract covers exact-uid lookup, bounded assignments, high-risk confirmation, and before/after save receipts.",
-      "featureContract": "feature.admin_role_management"
+      "priority": "P1",
+      "reason": "Compiled People contract covers logged search by name, phone or user id and the person beside the results.",
+      "featureContract": "feature.admin_people"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_people_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_people"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_settings",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Settings contract covers the settings pages and Team and roles: three jobs, inviting by user id and audited role changes.",
+      "featureContract": "feature.admin_settings"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_settings_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states.",
+      "featureContract": "feature.admin_settings"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_safety_settings_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Settings → Safety projection: owner edits of rules and reasons, ops reads.",
+      "featureContract": "feature.admin_settings"
     },
     {
       "authority": "admin_routes",

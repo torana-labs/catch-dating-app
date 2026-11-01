@@ -23,9 +23,11 @@ const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/P
 const OrganizerPublishingScreen = lazy(() => import("../features/organizers/ui/OrganizerPublishingScreen").then((m) => ({default: m.OrganizerPublishingScreen})));
 const EventPublishingScreen = lazy(() => import("../features/events/ui/EventPublishingScreen").then((m) => ({default: m.EventPublishingScreen})));
 const UserAnalyticsScreen = lazy(() => import("../features/users/ui/UserAnalyticsScreen").then((m) => ({default: m.UserAnalyticsScreen})));
+const PeopleRouteScreen = lazy(() => import("../features/people/ui/PeopleRouteScreen").then((m) => ({default: m.PeopleRouteScreen})));
 const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
-const AdminRoleManagementScreen = lazy(() => import("../features/admin-roles/ui/AdminRoleManagementScreen").then((m) => ({default: m.AdminRoleManagementScreen})));
+const SettingsRouteScreen = lazy(() => import("../features/settings/ui/SettingsRouteScreen").then((m) => ({default: m.SettingsRouteScreen})));
+const SafetySettingsRouteScreen = lazy(() => import("../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
@@ -200,10 +202,14 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     ),
   },
   users: {
-    label: "Users", icon: "people", frame: "legacy",
+    label: "User analytics", icon: "insights", frame: "legacy",
     render: ({setError, setNotice}) => (
       <UserAnalyticsScreen handoffRequestId={null} handoffUserId={null} onError={setError} onNotice={setNotice} />
     ),
+  },
+  people: {
+    label: "People", icon: "people", frame: "redrawn",
+    render: ({navigate}) => <PeopleRouteScreen onOpenSafety={() => navigate("/safety/actions")} />,
   },
   "cross-paths": {
     label: "Cross Paths", icon: "like", frame: "legacy",
@@ -250,18 +256,27 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
     label: "Agent activity", icon: "bot", frame: "legacy",
     render: ({setError}) => <AdminActionExecutionsScreen onError={setError} />,
   },
-  "admin-roles": {
-    label: "Admin roles", icon: "admin", frame: "legacy",
-    render: ({navigate, route, setError, setNotice, userUid}) => (
-      <AdminRoleManagementScreen
-        currentUserUid={userUid}
-        onBackToRegister={() => navigate(adminPathForNav("admin-roles"))}
+  settings: {
+    label: "Settings", icon: "settings", frame: "redrawn",
+    render: ({adminRoles: claims, canOpen, mode, navigate, route, setError, setNotice, userUid}) => {
+      // Sample data signs in as the sample owner, who holds no claims.
+      const adminRoles = mode === "sample" ? ["adminOwner"] : claims;
+      return (
+      <SettingsRouteScreen
+        canManageTeam={adminRoles.includes("adminOwner")}
+        currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
         onError={setError}
+        onNavigate={navigate}
         onNotice={setNotice}
-        onSelectTargetUid={(targetUid) => navigate(`/admin-roles/${encodeURIComponent(targetUid)}`)}
-        selectedTargetUid={route.params.adminRoleTargetUid ?? null}
+        otherPages={canOpen("safety") ? [{
+          id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
+          render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
+        }] : []}
+        selectedPage={route.params.teamMemberUid ? "team" : route.params.settingsPage ?? null}
+        teamMemberUid={route.params.teamMemberUid ?? null}
       />
-    ),
+      );
+    },
   },
 };
 

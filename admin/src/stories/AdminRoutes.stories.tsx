@@ -9,14 +9,13 @@ import type {
   AccessReviewController,
   AccessReviewFormState,
 } from "../features/access/controllers/useAccessReviewController";
+import {PeopleScreen} from "../features/people/ui/PeopleScreen";
+import {SettingsScreen} from "../features/settings/ui/SettingsScreen";
+import {TeamSettingsWorkspace} from "../features/settings/ui/TeamSettingsWorkspace";
+import type {TeamController} from "../features/settings/controllers/useTeamController";
+import {SafetySettingsWorkspace} from "../features/safety/ui/SafetySettingsWorkspace";
+import type {SafetySettingsController} from "../features/safety/controllers/useSafetySettingsController";
 import {AccessReviewWorkspace} from "../features/access/ui/AccessReviewScreen";
-import {
-  buildAdminRoleScopeContract,
-  type AdminRoleAssignmentStatusFilter,
-  type AdminRoleManagementController,
-} from "../features/admin-roles/controllers/useAdminRoleManagementController";
-import {AdminRoleManagementWorkspace} from "../features/admin-roles/ui/AdminRoleManagementScreen";
-import {adminRolePolicyList} from "../features/admin-roles/controllers/adminRolePolicies";
 import type {AdminActionExecutionsController} from
   "../features/operations/controllers/useAdminActionExecutionsController";
 import {AdminActionExecutionsWorkspace} from
@@ -796,62 +795,6 @@ const adminRoleAssignmentRows: AdminRoleAssignmentRow[] = [
     updatedByUid: "admin-owner",
   },
 ];
-const adminRoleController: AdminRoleManagementController = {
-  assignmentFilter: "active",
-  assignmentGeneratedAt: "2026-07-03T09:55:00.000Z",
-  assignmentRows: adminRoleAssignmentRows,
-  assignmentVisibleRows: adminRoleAssignmentRows,
-  assignmentQuery: "",
-  assignmentCapped: false,
-  highRiskConfirmed: false,
-  hasHighRiskChange: false,
-  isAssignmentListLoading: false,
-  isLoading: false,
-  isSaving: false,
-  note: "",
-  roleDiff: {added: [], removed: []},
-  rolePolicies: adminRolePolicyList,
-  saveReceipt: null,
-  refreshAssignments: async () => {
-    noop();
-  },
-  selectedRoles: ["adminOwner"],
-  selectedTargetUid: "admin-owner",
-  selectedUnavailable: false,
-  selectedUser: adminRoleSelectedUser,
-  scopeContract: buildAdminRoleScopeContract("admin-owner", "admin-owner"),
-  targetUid: "admin-owner",
-  validationIssue: "Change at least one admin role before saving.",
-  load: async (_nextTargetUid?: string) => {
-    noop();
-    return true;
-  },
-  save: async () => {
-    noop();
-    return false;
-  },
-  selectAssignment: (_row: AdminRoleAssignmentRow) => {
-    noop();
-  },
-  setAssignmentFilter: (_value: AdminRoleAssignmentStatusFilter) => {
-    noop();
-  },
-  setAssignmentQuery: (_value: string) => {
-    noop();
-  },
-  setHighRiskConfirmed: (_value: boolean) => {
-    noop();
-  },
-  setNote: (_value: string) => {
-    noop();
-  },
-  setTargetUid: (_value: string) => {
-    noop();
-  },
-  toggleRole: (_role: AdminRoleClaim, _checked: boolean) => {
-    noop();
-  },
-};
 const dataQualityRows: DataQualityRow[] = [
   {
     id: "overview-club-claims",
@@ -1302,6 +1245,40 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const storyPeople = [
+  {uid: "user_829", name: "Arjun M.", phone: "+91 ••••• 41120", city: "Mumbai", deleted: false},
+  {uid: "user_830", name: "Arjun K.", phone: "+91 ••••• 22301", city: "Pune", deleted: false},
+];
+const storyTeamMembers = [
+  {targetUid: "owner-1", email: "suvrat@catch.local", displayName: "Suvrat Garg", disabled: false,
+    roles: ["adminOwner" as const], assignmentPath: "adminRoleAssignments/owner-1", status: "active" as const,
+    updatedAt: null, updatedByUid: null},
+  {targetUid: "ops-1", email: "dev@catch.local", displayName: "Dev Iyer", disabled: false,
+    roles: ["support" as const], assignmentPath: "adminRoleAssignments/ops-1", status: "active" as const,
+    updatedAt: null, updatedByUid: null},
+];
+const storyTeam: TeamController = {
+  members: storyTeamMembers, selected: storyTeamMembers[1], selectedUid: "ops-1", job: "sales",
+  note: "Moving to sales from Monday.", loadState: "ready", isSaving: false, validationIssue: null,
+  setJob: () => undefined, setNote: () => undefined, save: async () => true,
+};
+const storySafetySettings: SafetySettingsController = {
+  snapshot: {
+    settings: {
+      reasons: [
+        {code: "harassment", label: "Harassment", severe: false, takedown: false, active: true},
+        {code: "intimate_images", label: "Sharing intimate images", severe: true, takedown: true, active: true},
+        {code: "spam", label: "Spam", severe: false, takedown: false, active: false},
+      ],
+      restrictOnSevereReport: true, organizerBlockLists: true, organizerReports: true,
+      updatedAtMillis: null, updatedByUid: null,
+    },
+    deadlines: {acknowledge: "immediately", firstLookHours: 24, resolveDays: 15, takedownHours: 24},
+    stepRoles: {warn: "ops", restrict: "ops", suspend: "owner", ban: "owner"},
+    retentionDaysAfterDeletion: 180,
+  },
+  loadState: "ready", isSaving: false, canEdit: true, save: async () => true,
+};
 const noop = () => {
   // Storybook preview only; route-state mutation is covered by app/controller tests.
 };
@@ -1520,12 +1497,6 @@ const renderCrossPathsShowcaseWorkspace = () => (
       canDecide
       controller={crossPathsShowcaseController}
     />
-  </AdminWorkspace>
-);
-
-const renderAdminRoleWorkspace = () => (
-  <AdminWorkspace>
-    <AdminRoleManagementWorkspace controller={adminRoleController} />
   </AdminWorkspace>
 );
 
@@ -1915,26 +1886,54 @@ export const CrossPathsShowcaseWorkspaceStory: Story = {
   render: renderCrossPathsShowcaseWorkspace,
 };
 
-export const AdminRoleManagementRouteStory: Story = {
-  name: "Admin Roles",
+export const PeopleRouteStory: Story = {
+  name: "People",
   parameters: {
-    catchComponent: {
-      id: "route_admin_role_management",
-      states: ["role-assignment-detail"],
-    },
+    catchComponent: {id: "route_people", states: ["search-results", "person"]},
   },
-  render: renderAdminRoleWorkspace,
+  render: () => (
+    <PeopleScreen
+      onOpenSafety={noop}
+      search={{
+        draft: "Arjun", submitted: "Arjun", loadState: "ready",
+        result: {kind: "name", rows: storyPeople}, rows: storyPeople,
+        selected: storyPeople[0], setDraft: noop, search: noop, select: noop,
+      }}
+    />
+  ),
 };
 
-export const AdminRoleManagementWorkspaceStory: Story = {
-  name: "Admin Roles Workspace",
+export const SettingsRouteStory: Story = {
+  name: "Settings · Team and roles",
   parameters: {
-    catchComponent: {
-      id: "workspace_admin_role_management",
-      states: ["role-assignment-detail"],
-    },
+    catchComponent: {id: "route_settings", states: ["team", "role-change"]},
   },
-  render: renderAdminRoleWorkspace,
+  render: () => (
+    <SettingsScreen
+      onSelectPage={noop}
+      pages={[{id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact"},
+        {id: "team", title: "Team and roles", subtitle: "Who has an Admin job"}]}
+      selectedPage="team"
+    >
+      <TeamSettingsWorkspace onClosePerson={noop} onOpenPerson={noop} team={storyTeam} />
+    </SettingsScreen>
+  ),
+};
+
+export const TeamSettingsWorkspaceStory: Story = {
+  name: "Team and roles",
+  parameters: {
+    catchComponent: {id: "workspace_team_settings", states: ["team", "role-change"]},
+  },
+  render: () => <TeamSettingsWorkspace onClosePerson={noop} onOpenPerson={noop} team={storyTeam} />,
+};
+
+export const SafetySettingsWorkspaceStory: Story = {
+  name: "Settings · Safety",
+  parameters: {
+    catchComponent: {id: "workspace_safety_settings", states: ["owner-edits", "ops-reads"]},
+  },
+  render: () => <SafetySettingsWorkspace settings={storySafetySettings} />,
 };
 
 export const AdminActionExecutionsRouteStory: Story = {

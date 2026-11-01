@@ -14,11 +14,6 @@
       "count": 6
     }
   },
-  "src/features/admin-roles/ui/AdminRoleManagementScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 5
-    }
-  },
   "src/features/data-quality/ui/DataQualityScreen.tsx": {
     "react/forbid-elements": {
       "count": 4
