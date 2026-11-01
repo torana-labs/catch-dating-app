@@ -403,11 +403,6 @@
       "source": "admin/src/features/money/controllers/useMoneyIssuesController.ts",
       "test": "admin/src/features/money/controllers/useMoneyIssuesController.test.tsx",
       "status": "required"
-    },
-    {
-      "source": "admin/src/features/settings/controllers/usePaymentSettingsController.ts",
-      "test": "admin/src/features/settings/controllers/usePaymentSettingsController.test.tsx",
-      "status": "required"
     }
   ]
 }

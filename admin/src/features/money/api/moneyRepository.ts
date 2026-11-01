@@ -1,5 +1,5 @@
 import {httpsCallable} from "firebase/functions";
-import {validateAdminCallableRequest, validateAdminCallableResponse} from
+import {loadAdminCallableValidators} from
   "../../../generated/validators/adminCallableValidators";
 import type {AdminManageOrganizerBillsCallablePayload} from
   "../../../generated/contracts/adminManageOrganizerBillsCallablePayload";
@@ -32,6 +32,8 @@ async function call<Request, Response>(name: string, payload: Request,
     await new Promise((resolve) => window.setTimeout(resolve, 120));
     return sample(payload);
   }
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(name);
   validateAdminCallableRequest(name, payload);
   const response = await httpsCallable<Request, Response>(functions,
     name)(payload);
