@@ -93,3 +93,9 @@ test("path dependencies and declared sources become graph edges", async () => {
   }
   assert.ok(!edges.some((edge) => edge.startsWith("catch_ui -> catch_dating_app")), "membership must not add a cycle");
 });
+
+test("a lane with dependencies is selected when they change", () => {
+  for (const {name, targets} of options.sourceProjects.filter(({name}) => name.startsWith("lane-"))) {
+    assert.equal(targets.lane.inputs.includes("^production"), Boolean(options.implicitDependencies[name]), name);
+  }
+});

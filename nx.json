@@ -5,7 +5,10 @@
   "defaultBase": "main",
   "namedInputs": {
     "sharedGlobals": [],
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)",
@@ -18,14 +21,41 @@
     ]
   },
   "targetDefaults": {
-    "analyze": {"cache": true, "inputs": ["default", "^production"]},
-    "lint": {"cache": true, "inputs": ["default", "^production"]},
-    "test": {"cache": true, "inputs": ["default", "^production"]},
+    "analyze": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production"
+      ]
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production"
+      ]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production"
+      ]
+    },
     "build": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "outputs": ["{projectRoot}/dist", "{projectRoot}/.next", "{projectRoot}/lib"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ],
+      "outputs": [
+        "{projectRoot}/dist",
+        "{projectRoot}/.next",
+        "{projectRoot}/lib"
+      ]
     }
   },
   "plugins": [
@@ -77,16 +107,422 @@
                 ]
               }
             }
+          },
+          {
+            "name": "lane-docs",
+            "root": "tool/nx/lanes/docs",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/**/*.md",
+                  "{workspaceRoot}/docs/**/*",
+                  "!{workspaceRoot}/AGENTS.md",
+                  "!{workspaceRoot}/CLAUDE.md",
+                  "!{workspaceRoot}/PROJECT_CONTEXT.md",
+                  "!{workspaceRoot}/tool/README.md"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-policy-docs",
+            "root": "tool/nx/lanes/policy-docs",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/AGENTS.md",
+                  "{workspaceRoot}/CLAUDE.md",
+                  "{workspaceRoot}/PROJECT_CONTEXT.md",
+                  "{workspaceRoot}/docs/agent_operating_model.md",
+                  "{workspaceRoot}/docs/agent_skills/**/*",
+                  "{workspaceRoot}/tool/README.md",
+                  "{workspaceRoot}/tool/policy/**/*",
+                  "{workspaceRoot}/tool/tools_manifest.json",
+                  "{workspaceRoot}/tool/run.mjs",
+                  "{workspaceRoot}/tool/harness.mjs",
+                  "{workspaceRoot}/tool/harness/**/*",
+                  "{workspaceRoot}/tool/ci/**/*",
+                  "{workspaceRoot}/.github/**/*",
+                  "{workspaceRoot}/fastlane/**/*",
+                  "{workspaceRoot}/Gemfile",
+                  "{workspaceRoot}/Gemfile.lock"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-firestore-rules",
+            "root": "tool/nx/lanes/firestore-rules",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/firestore.rules",
+                  "{workspaceRoot}/storage.rules",
+                  "{workspaceRoot}/firebase.json",
+                  "{workspaceRoot}/.firebaserc",
+                  "{workspaceRoot}/extensions/**/*",
+                  "{workspaceRoot}/firebase/**/*",
+                  "{workspaceRoot}/.github/workflows/firestore-rules-ci.yml",
+                  "{workspaceRoot}/.github/workflows/backend-deploy.yml",
+                  "{workspaceRoot}/.github/workflows/_backend-deploy.yml",
+                  "^production",
+                  "{workspaceRoot}/functions/src/**/*",
+                  "{workspaceRoot}/functions/test/**/*"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-capture-freshness",
+            "root": "tool/nx/lanes/capture-freshness",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/.github/workflows/capture-freshness-ci.yml",
+                  "{workspaceRoot}/artifacts/marketing/app-screenshots/**/*",
+                  "{workspaceRoot}/tool/marketing/**/*",
+                  "{workspaceRoot}/tool/ui_capture/**/*",
+                  "{workspaceRoot}/tool/demo/demo_seed/**/*",
+                  "{workspaceRoot}/lib/**/*",
+                  "{workspaceRoot}/test/**/*",
+                  "{workspaceRoot}/integration_test/**/*",
+                  "{workspaceRoot}/assets/**/*",
+                  "^production",
+                  "{workspaceRoot}/design/website/**/*",
+                  "{workspaceRoot}/design/components/**/*",
+                  "{workspaceRoot}/website/scripts/**/*",
+                  "!{workspaceRoot}/lib/platform/schema_contracts/generated/**/*",
+                  "!{workspaceRoot}/**/*.md"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-tools",
+            "root": "tool/nx/lanes/tools",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/tool/**/*",
+                  "{workspaceRoot}/design/**/*",
+                  "{workspaceRoot}/design_context_pack/**/*",
+                  "{workspaceRoot}/analytics/**/*",
+                  "{workspaceRoot}/infra/**/*",
+                  "{workspaceRoot}/fastlane/**/*",
+                  "{workspaceRoot}/artifacts/**/*",
+                  "{workspaceRoot}/.github/**/*",
+                  "{workspaceRoot}/Gemfile",
+                  "{workspaceRoot}/Gemfile.lock",
+                  "{workspaceRoot}/package.json",
+                  "{workspaceRoot}/package-lock.json",
+                  "{workspaceRoot}/pubspec.yaml",
+                  "{workspaceRoot}/pubspec.lock",
+                  "{workspaceRoot}/analysis_options.yaml",
+                  "{workspaceRoot}/build.yaml",
+                  "{workspaceRoot}/dart_test.yaml",
+                  "{workspaceRoot}/.gitignore",
+                  "{workspaceRoot}/.editorconfig",
+                  "{workspaceRoot}/.env.example",
+                  "{workspaceRoot}/admin/src/shared/pendingOperation*",
+                  "{workspaceRoot}/admin/src/features/*/controllers/**/*",
+                  "{workspaceRoot}/apps/*/ios/**/*",
+                  "{workspaceRoot}/firebase/*/android/**/*",
+                  "{workspaceRoot}/firebase/*/ios/**/*",
+                  "{workspaceRoot}/firebase/*/host/**/*",
+                  "{workspaceRoot}/packages/web-ui/**/*",
+                  "{workspaceRoot}/packages/web-config/**/*",
+                  "{workspaceRoot}/packages/brand/**/*",
+                  "{workspaceRoot}/operations/**/*",
+                  "{workspaceRoot}/functions/src/**/*",
+                  "{workspaceRoot}/contracts/**/*",
+                  "{workspaceRoot}/widgetbook/**/*"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-build-android",
+            "root": "tool/nx/lanes/build-android",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/apps/*/android/**/*",
+                  "{workspaceRoot}/firebase/*/android/**/*",
+                  "{workspaceRoot}/firebase/*/host/android/**/*",
+                  "{workspaceRoot}/pubspec.yaml",
+                  "{workspaceRoot}/pubspec.lock",
+                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/analysis_options.yaml",
+                  "{workspaceRoot}/build.yaml",
+                  "{workspaceRoot}/dart_test.yaml",
+                  "{workspaceRoot}/.metadata",
+                  "{workspaceRoot}/assets/**/*",
+                  "{workspaceRoot}/apps/*/pubspec.yaml",
+                  "{workspaceRoot}/apps/*/analysis_options.yaml",
+                  "{workspaceRoot}/apps/*/.metadata",
+                  "{workspaceRoot}/tool/app_targets.json",
+                  "{workspaceRoot}/tool/flutter_with_env.sh",
+                  "{workspaceRoot}/tool/env/dart_defines/**/*",
+                  "{workspaceRoot}/tool/use_firebase_environment.sh",
+                  "{workspaceRoot}/tool/validate_firebase_environment.sh",
+                  "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
+                  "^production"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-build-ios",
+            "root": "tool/nx/lanes/build-ios",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/apps/*/ios/**/*",
+                  "{workspaceRoot}/firebase/*/ios/**/*",
+                  "{workspaceRoot}/firebase/*/host/ios/**/*",
+                  "{workspaceRoot}/copy/native_en.json",
+                  "{workspaceRoot}/tool/copy/sync_native_copy.mjs",
+                  "{workspaceRoot}/tool/platform/**/*",
+                  "{workspaceRoot}/.github/actions/cache-cocoapods/**/*",
+                  "{workspaceRoot}/pubspec.yaml",
+                  "{workspaceRoot}/pubspec.lock",
+                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/analysis_options.yaml",
+                  "{workspaceRoot}/build.yaml",
+                  "{workspaceRoot}/dart_test.yaml",
+                  "{workspaceRoot}/.metadata",
+                  "{workspaceRoot}/assets/**/*",
+                  "{workspaceRoot}/apps/*/pubspec.yaml",
+                  "{workspaceRoot}/apps/*/analysis_options.yaml",
+                  "{workspaceRoot}/apps/*/.metadata",
+                  "{workspaceRoot}/tool/app_targets.json",
+                  "{workspaceRoot}/tool/flutter_with_env.sh",
+                  "{workspaceRoot}/tool/env/dart_defines/**/*",
+                  "{workspaceRoot}/tool/use_firebase_environment.sh",
+                  "{workspaceRoot}/tool/validate_firebase_environment.sh",
+                  "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
+                  "^production"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-build-web",
+            "root": "tool/nx/lanes/build-web",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/apps/*/web/**/*",
+                  "{workspaceRoot}/pubspec.yaml",
+                  "{workspaceRoot}/pubspec.lock",
+                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/analysis_options.yaml",
+                  "{workspaceRoot}/build.yaml",
+                  "{workspaceRoot}/dart_test.yaml",
+                  "{workspaceRoot}/.metadata",
+                  "{workspaceRoot}/assets/**/*",
+                  "{workspaceRoot}/apps/*/pubspec.yaml",
+                  "{workspaceRoot}/apps/*/analysis_options.yaml",
+                  "{workspaceRoot}/apps/*/.metadata",
+                  "{workspaceRoot}/tool/app_targets.json",
+                  "{workspaceRoot}/tool/flutter_with_env.sh",
+                  "{workspaceRoot}/tool/env/dart_defines/**/*",
+                  "{workspaceRoot}/tool/use_firebase_environment.sh",
+                  "{workspaceRoot}/tool/validate_firebase_environment.sh",
+                  "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
+                  "^production"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-web-smoke",
+            "root": "tool/nx/lanes/web-smoke",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/apps/consumer/**/*",
+                  "{workspaceRoot}/apps/host/**/*",
+                  "{workspaceRoot}/copy/event_success_questionnaires_en.json",
+                  "{workspaceRoot}/copy/structured_domain_copy_en.json",
+                  "{workspaceRoot}/lib/l10n/app_en.arb",
+                  "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
+                  "^production"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-visual",
+            "root": "tool/nx/lanes/visual",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/lib/**/*",
+                  "{workspaceRoot}/test/**/*",
+                  "{workspaceRoot}/integration_test/**/*",
+                  "{workspaceRoot}/apps/**/*",
+                  "{workspaceRoot}/assets/**/*",
+                  "{workspaceRoot}/widgetbook/**/*",
+                  "{workspaceRoot}/.github/workflows/visual-integration-ci.yml",
+                  "{workspaceRoot}/.github/actions/cache-cocoapods/**/*",
+                  "{workspaceRoot}/pubspec.yaml",
+                  "{workspaceRoot}/pubspec.lock",
+                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/analysis_options.yaml",
+                  "{workspaceRoot}/build.yaml",
+                  "{workspaceRoot}/dart_test.yaml",
+                  "{workspaceRoot}/.metadata",
+                  "{workspaceRoot}/assets/**/*",
+                  "{workspaceRoot}/apps/*/pubspec.yaml",
+                  "{workspaceRoot}/apps/*/analysis_options.yaml",
+                  "{workspaceRoot}/apps/*/.metadata",
+                  "{workspaceRoot}/tool/app_targets.json",
+                  "{workspaceRoot}/tool/flutter_with_env.sh",
+                  "{workspaceRoot}/tool/env/dart_defines/**/*",
+                  "{workspaceRoot}/tool/use_firebase_environment.sh",
+                  "{workspaceRoot}/tool/validate_firebase_environment.sh",
+                  "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
+                  "^production",
+                  "{workspaceRoot}/design/components/**/*",
+                  "{workspaceRoot}/design/visual_baselines/**/*",
+                  "{workspaceRoot}/design/public_surface_behavior.json",
+                  "!{workspaceRoot}/lib/platform/schema_contracts/generated/**/*",
+                  "!{workspaceRoot}/**/*.md"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-flutter-design",
+            "root": "tool/nx/lanes/flutter-design",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/design/components/**/*",
+                  "{workspaceRoot}/design/screens/**/*",
+                  "{workspaceRoot}/design/tokens/**/*",
+                  "{workspaceRoot}/design/features/**/*",
+                  "{workspaceRoot}/design/design_system/**/*",
+                  "{workspaceRoot}/widgetbook/**/*",
+                  "{workspaceRoot}/tool/design/**/*",
+                  "{workspaceRoot}/tool/env/dart_defines/**/*",
+                  "{workspaceRoot}/tool/flutter_with_env.sh",
+                  "{workspaceRoot}/tool/use_firebase_environment.sh",
+                  "{workspaceRoot}/tool/validate_firebase_environment.sh",
+                  "{workspaceRoot}/design/public_surface_behavior.json"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-admin-design",
+            "root": "tool/nx/lanes/admin-design",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/design/components/**/*",
+                  "{workspaceRoot}/design/admin/**/*"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lane-marketing-design",
+            "root": "tool/nx/lanes/marketing-design",
+            "targets": {
+              "lane": {
+                "command": "true",
+                "cache": false,
+                "inputs": [
+                  "{workspaceRoot}/design/components/**/*",
+                  "{workspaceRoot}/design/website/**/*"
+                ]
+              }
+            }
           }
         ],
         "implicitDependencies": {
-          "catch_dating_app": ["contracts", "@catch/brand"],
-          "functions": ["contracts", "@catch/brand"],
-          "catch-admin": ["contracts"],
-          "catch-marketing": ["contracts"],
-          "@catch/operations": ["contracts", "@catch/brand"],
-          "catch_tokens": ["design-tokens"],
-          "@catch/web-config": ["design-tokens"]
+          "catch_dating_app": [
+            "contracts",
+            "@catch/brand"
+          ],
+          "functions": [
+            "contracts",
+            "@catch/brand",
+            "@catch/operations"
+          ],
+          "catch-admin": [
+            "contracts"
+          ],
+          "catch-marketing": [
+            "contracts"
+          ],
+          "@catch/operations": [
+            "contracts",
+            "@catch/brand"
+          ],
+          "catch_tokens": [
+            "design-tokens"
+          ],
+          "@catch/web-config": [
+            "design-tokens"
+          ],
+          "lane-firestore-rules": [
+            "contracts",
+            "functions"
+          ],
+          "lane-capture-freshness": [
+            "catch_consumer_app",
+            "catch_host_app",
+            "catch-marketing"
+          ],
+          "lane-build-android": [
+            "catch_tokens",
+            "catch_ui"
+          ],
+          "lane-build-ios": [
+            "catch_tokens",
+            "catch_ui"
+          ],
+          "lane-build-web": [
+            "catch_tokens",
+            "catch_ui"
+          ],
+          "lane-visual": [
+            "catch_consumer_app",
+            "catch_host_app",
+            "catch_tokens",
+            "catch_ui"
+          ],
+          "lane-web-smoke": [
+            "catch_consumer_app",
+            "catch_host_app"
+          ]
         }
       }
     }
