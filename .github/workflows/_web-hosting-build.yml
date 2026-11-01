@@ -165,7 +165,8 @@ jobs:
     needs: marketing_snapshot
     if: ${{ !cancelled() && (inputs.surface == 'admin' || inputs.surface == 'host' || needs.marketing_snapshot.result == 'success') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Long enough for the Admin callable check to wait out a backend deploy.
+    timeout-minutes: 120
     environment: prod-hosting
     permissions:
       actions: read
@@ -359,7 +360,9 @@ jobs:
 
       - name: Verify production Admin callable dependencies before build
         if: ${{ inputs.surface == 'admin' }}
-        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --wait-for-backend-deploy --environment prod --summary
 
       - name: Build the exact production admin bytes once
         if: ${{ inputs.surface == 'admin' }}
