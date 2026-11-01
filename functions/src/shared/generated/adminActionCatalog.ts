@@ -88,14 +88,6 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner"
     ]
   },
-  "analytics.user": {
-    "callable": "adminGetUserAnalytics",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "adminOwner"
-    ]
-  },
   "finance.review-event-messaging-budget": {
     "callable": "adminReviewEventMessagingBudget",
     "controlPlane": false,
@@ -118,27 +110,6 @@ export const ADMIN_ACTION_CATALOG = {
     "kind": "mutation",
     "roles": [
       "adminOwner"
-    ]
-  },
-  "cross-paths-showcase.list": {
-    "callable": "adminListCrossPathsShowcaseCandidates",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "safetyReviewer",
-      "support"
-    ]
-  },
-  "cross-paths-showcase.set-eligibility": {
-    "callable": "adminSetCrossPathsShowcaseEligibility",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "safetyReviewer"
     ]
   },
   "marketing.get": {

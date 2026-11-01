@@ -173,17 +173,13 @@ node tool/data/backfill_event_admin_search.mjs --env dev --summary-only
 node tool/data/backfill_event_admin_search.mjs --env dev --apply
 ```
 
-The Users tab calls `adminGetUserAnalytics` for a selected `users/{uid}` and
-renders the user-safe aggregate analytics response: summary cards, trend
-buckets, connection/profile aggregates, coaching refs, and data-quality rows.
-It is intentionally read-only. The Users tab input normalizes exact
-`users/{uid}`, `uid:{uid}`, or raw uid values into one callable scope.
-The tab also shows the lookup contract, normalized target path, allowed
-aggregate sources, unavailable domains, and blocked actions so this exact UID
-analytics lookup is not mistaken for identity search or support tooling. User
-identity search by email, phone, or name, account state, safety history, payment
-history, and support actions need separate role-scoped admin contracts before
-they are exposed here.
+The exact-uid Users page and the Cross Paths showcase page are retired (Admin
+redesign PR 15). Their callables remain for agents; People search (logged, by
+name, phone or user id) replaces the Users page.
+
+System (`/system`) is one activity log of what people and agents did in Admin,
+from `adminListActionExecutions`, filtered by who acted and by problems, beside
+the health of each data source from `adminGetOverview`.
 
 The Data quality tab is a read-only operations workspace over
 `adminGetOverview`, `adminGetHostAnalytics`, `adminGetMarketingOpsDashboard`,

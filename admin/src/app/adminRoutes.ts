@@ -7,15 +7,14 @@ export const adminSections = {
   support: {path: "/support", title: "Support"},
   marketplace: {path: "/marketplace", title: "Marketplace"},
   more: {path: "/more", title: "More"},
+  system: {path: "/system", title: "System"},
   safety: {path: "/safety", title: "Safety"},
-  "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
   growth: {path: "/growth", title: "Growth"},
   "marketing-ops": {path: "/marketing", title: "Marketing"},
   sales: {path: "/sales/today", title: "Sales"},
   "organizer-intake": {path: "/intake/organizers", title: "Intake"},
   organizers: {path: "/organizers", title: "Organizers"},
   events: {path: "/events", title: "Events"},
-  users: {path: "/users", title: "Users"},
   finance: {path: "/finance", title: "Finance"},
   quality: {path: "/quality", title: "Data quality"},
   operations: {path: "/operations", title: "Agent activity"},
@@ -53,6 +52,9 @@ export const adminRoutes: AdminRoute[] = [
   route("/", "now", {redirect: "/now"}),
   // Overview split in two: its queues are Needs you, its analytics Marketplace.
   route("/overview/*", "now", {redirect: "/now"}),
+  // Retired pages keep their links working.
+  route("/users/*", "now", {redirect: "/now"}),
+  route("/cross-paths/*", "now", {redirect: "/now"}),
   ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
     `/${path.split("/")[1]}/*`, nav as AdminNavId
   )),

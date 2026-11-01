@@ -1,9 +1,8 @@
-import {CatchBadge, type CatchBadgeTone, CatchField, CatchText} from "@catch/web-ui";
+import {CatchAdminIntakeSection, CatchBadge, type CatchBadgeTone, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {
   AdminButton,
   AdminForm,
-  AdminIntakeSection,
   AdminOrganizerIntakeCheckboxField,
   AdminToolbar,
   Panel,
@@ -47,7 +46,7 @@ function SupplyIntakePolicies({controller}: {controller: SupplyIntakePolicyContr
       Policies could not be loaded. Try again.</CatchText> : null}
     {controller.policies.map((policy) => {
       const [label, tone] = stateOf(policy);
-      return <AdminIntakeSection key={policy.gapId}>
+      return <CatchAdminIntakeSection key={policy.gapId}>
         <StateRow label={policy.label} value={<>
           <CatchBadge recipe="status" tone={tone} label={label} />{" "}
           <AdminButton onClick={() => setOpen(policy.gapId)}>Decide</AdminButton>
@@ -59,7 +58,7 @@ function SupplyIntakePolicies({controller}: {controller: SupplyIntakePolicyContr
           </CatchText> : null}
         {open === policy.gapId ? <PolicyDecisionForm policy={policy} controller={controller}
           onClose={() => setOpen(null)} /> : null}
-      </AdminIntakeSection>;
+      </CatchAdminIntakeSection>;
     })}
   </Panel>;
 }

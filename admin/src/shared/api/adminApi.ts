@@ -51,14 +51,6 @@ import type {AdminSearchPeopleCallableResponse} from
   "../../generated/contracts/adminSearchPeopleCallableResponse";
 import {functions} from "./firebaseFunctions";
 import {dataMode} from "./dataMode";
-import type {AdminListCrossPathsShowcaseCandidatesCallablePayload} from
-  "../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload";
-import type {AdminListCrossPathsShowcaseCandidatesCallableResponse} from
-  "../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallableResponse";
-import type {AdminSetCrossPathsShowcaseEligibilityCallablePayload} from
-  "../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload";
-import type {AdminSetCrossPathsShowcaseEligibilityCallableResponse} from
-  "../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallableResponse";
 import type {AdminReviewEventMessagingBudgetCallablePayload} from
   "../../generated/contracts/adminReviewEventMessagingBudgetCallablePayload";
 import type {AdminReviewEventMessagingBudgetCallableResponse} from
@@ -121,7 +113,6 @@ import {
   sampleExternalEventRows,
   sampleHostAnalytics,
   sampleOverview,
-  sampleUserAnalyticsReport,
 } from "./sampleData";
 import {
   sampleEventIntakeBridge,
@@ -206,8 +197,6 @@ import {
   MarketingOpsBridge,
   EventIntakeBridge,
   MarketingContentDraft,
-  UserAnalyticsQueryPayload,
-  UserAnalyticsResponse,
 } from "../types/adminTypes";
 
 const sampleGeneratedAt = "2026-06-25T08:30:00.000Z";
@@ -1034,127 +1023,6 @@ export async function loadHostAnalytics(
   >(functions, "adminGetHostAnalytics");
   const result = await callable(payload);
   return result.data;
-}
-
-export async function loadUserAnalytics(
-  payload: UserAnalyticsQueryPayload
-): Promise<UserAnalyticsResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return sampleUserAnalyticsReport(payload);
-  }
-
-  const callable = httpsCallable<
-    UserAnalyticsQueryPayload,
-    UserAnalyticsResponse
-  >(functions, "adminGetUserAnalytics");
-  const result = await callable(payload);
-  return result.data;
-}
-
-export async function loadCrossPathsShowcaseCandidates(
-  payload: AdminListCrossPathsShowcaseCandidatesCallablePayload = {}
-): Promise<AdminListCrossPathsShowcaseCandidatesCallableResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return sampleCrossPathsShowcaseCandidates(payload);
-  }
-  const callable = httpsCallable<
-    AdminListCrossPathsShowcaseCandidatesCallablePayload,
-    AdminListCrossPathsShowcaseCandidatesCallableResponse
-  >(functions, "adminListCrossPathsShowcaseCandidates");
-  return (await callable(payload)).data;
-}
-
-export async function setCrossPathsShowcaseEligibility(
-  payload: AdminSetCrossPathsShowcaseEligibilityCallablePayload
-): Promise<AdminSetCrossPathsShowcaseEligibilityCallableResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return sampleSetCrossPathsShowcaseEligibility(payload);
-  }
-  const callable = httpsCallable<
-    AdminSetCrossPathsShowcaseEligibilityCallablePayload,
-    AdminSetCrossPathsShowcaseEligibilityCallableResponse
-  >(functions, "adminSetCrossPathsShowcaseEligibility");
-  return (await callable(payload)).data;
-}
-
-const sampleCrossPathsGeneratedAt = "2026-08-05T10:00:00.000Z";
-const sampleCrossPathsFingerprint = "a".repeat(64);
-const sampleCrossPathsCandidates:
-  AdminListCrossPathsShowcaseCandidatesCallableResponse["candidates"] = [
-    {
-      uid: "user-rhea",
-      name: "Rhea",
-      age: 28,
-      gender: "woman",
-      city: "in-mh-mumbai",
-      photoUrls: [
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-      ],
-      promptAnswers: [
-        {prompt: "Ideal Sunday", answer: "A long walk and dosa."},
-        {prompt: "Together we could", answer: "Try every quiz night."},
-        {prompt: "I am known for", answer: "Making the plan happen."},
-      ],
-      relationshipGoal: "longTermRelationship",
-      automaticStatus: "ready",
-      automaticReasonCodes: [],
-      storedStatus: null,
-      effectiveStatus: "needsReview",
-      effectiveReasonCodes: [],
-      profileFingerprint: sampleCrossPathsFingerprint,
-      reviewedByUid: null,
-      reviewedAt: null,
-      reviewNote: null,
-    },
-  ];
-
-function sampleCrossPathsShowcaseCandidates(
-  payload: AdminListCrossPathsShowcaseCandidatesCallablePayload
-): AdminListCrossPathsShowcaseCandidatesCallableResponse {
-  const status = payload.status ?? "all";
-  return {
-    schemaVersion: 1,
-    generatedAt: sampleCrossPathsGeneratedAt,
-    candidates: sampleCrossPathsCandidates.filter((candidate) =>
-      (!payload.uid || candidate.uid === payload.uid) &&
-      (!payload.marketId || candidate.city === payload.marketId) &&
-      (status === "all" || candidate.effectiveStatus === status)
-    ),
-    nextCursor: null,
-  };
-}
-
-function sampleSetCrossPathsShowcaseEligibility(
-  payload: AdminSetCrossPathsShowcaseEligibilityCallablePayload
-): AdminSetCrossPathsShowcaseEligibilityCallableResponse {
-  const candidate = sampleCrossPathsCandidates.find(
-    (row) => row.uid === payload.uid
-  );
-  if (candidate) {
-    candidate.storedStatus = payload.status;
-    candidate.effectiveStatus = payload.status;
-    candidate.effectiveReasonCodes = payload.status === "paused" ?
-      ["manual_pause"] : payload.status === "needsReview" ?
-        ["reviewer_hold"] : [];
-    candidate.reviewedByUid = "sample-reviewer";
-    candidate.reviewedAt = sampleCrossPathsGeneratedAt;
-    candidate.reviewNote = payload.reviewNote;
-  }
-  return {
-    uid: payload.uid,
-    status: payload.status,
-    reasonCodes: candidate?.effectiveReasonCodes ?? [],
-    profileFingerprint: candidate?.profileFingerprint ??
-      sampleCrossPathsFingerprint,
-    ruleVersion: 1,
-    reviewVersion: 1,
-    reviewedAt: sampleCrossPathsGeneratedAt,
-  };
 }
 
 let sampleMarketingOpsBridgeState: MarketingOpsBridge | null = null;

@@ -123,12 +123,4 @@ export const adminQueryKeys = {
     savedReplies: () =>
       [...adminQueryKeys.all, "support", "saved-replies"] as const,
   },
-  users: {
-    analytics: (payloadKey: string) =>
-      [...adminQueryKeys.all, "users", "analytics", payloadKey] as const,
-  },
-  crossPaths: {
-    showcase: (status: string, cursor: string | null) =>
-      [...adminQueryKeys.all, "cross-paths", "showcase", status, cursor] as const,
-  },
 };

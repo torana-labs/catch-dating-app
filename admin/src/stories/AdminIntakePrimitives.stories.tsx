@@ -1,12 +1,4 @@
-import {
-  CatchAdminIntakeDecisionActions,
-  CatchAdminIntakeDecisionState,
-  CatchAdminIntakeSectionTitle,
-  CatchAdminIntakeSourceList,
-  CatchAdminSearchCandidateHeader,
-  CatchBadge,
-  CatchField,
-} from "@catch/web-ui";
+import {CatchAdminIntakeDecisionActions, CatchAdminIntakeDecisionState, CatchAdminIntakeSection, CatchAdminIntakeSourceList, CatchAdminSearchCandidateHeader, CatchBadge, CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -22,7 +14,6 @@ import {
   AdminIntakeBoundaryNotice,
   AdminIntakePublicationBoundaryPanel,
   AdminIntakeReviewWorkbench,
-  AdminIntakeSection,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminIntakeWorkspaceFrame,
@@ -284,50 +275,6 @@ export const AdminIntakeReviewWorkbenchStory: Story = {
   ),
 };
 
-export const AdminIntakeSectionStory: Story = {
-  name: "Section",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_section",
-      states: ["summary"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeSection>
-        <CatchAdminIntakeSectionTitle>
-          <strong>Review summary</strong>
-          <span>Bridge freshness and quality gates</span>
-        </CatchAdminIntakeSectionTitle>
-        <QualityList>
-          <QualityRow icon={<CheckCircle2 size={16} />} tone="success">
-            <strong>Generated bridge loaded</strong>
-            <span>Current source snapshot.</span>
-          </QualityRow>
-        </QualityList>
-      </AdminIntakeSection>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminIntakeSectionTitleStory: Story = {
-  name: "Section title",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_section_title",
-      states: ["title-meta"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <CatchAdminIntakeSectionTitle>
-        <strong>Policy gates</strong>
-        <span>4 warnings</span>
-      </CatchAdminIntakeSectionTitle>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminIntakeSourceListStory: Story = {
   name: "Source list",
   parameters: {
@@ -462,6 +409,31 @@ export const AdminSearchCandidateHeaderStory: Story = {
           <CatchBadge recipe="status" tone="success" label="96% match" />
         </CatchAdminSearchCandidateHeader>
       </AdminCard>
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminIntakeSectionStory: Story = {
+  name: "Intake section",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_intake_section",
+      states: ["summary", "event-editor", "duplicate-comparison"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <CatchAdminIntakeSection>
+        <p>Afterfly · 3 events found · 1 of 1 pages read</p>
+      </CatchAdminIntakeSection>
+      <CatchAdminIntakeSection variant="event-editor">
+        <label>Title<small>Takeoff: Run + Rave</small></label>
+        <label>Starts<small>15 Nov, 6 PM</small></label>
+      </CatchAdminIntakeSection>
+      <CatchAdminIntakeSection variant="duplicate-comparison">
+        <article><strong>Imported</strong><span>Takeoff: Run + Rave · 15 Nov</span></article>
+        <article><strong>Published</strong><span>Takeoff Run · 15 Nov</span></article>
+      </CatchAdminIntakeSection>
     </AdminWorkspace>
   ),
 };

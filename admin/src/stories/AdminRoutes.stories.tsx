@@ -30,7 +30,6 @@ import {
   sampleEventDetails,
   sampleExternalEventRows,
   sampleOrganizerDetails,
-  sampleUserAnalyticsReport,
 } from "../shared/api/sampleData";
 import type {EventPublishingController} from "../features/events/controllers/useEventPublishingController";
 import {formFromEventProfile} from "../features/events/controllers/eventPublishingHelpers";
@@ -84,6 +83,8 @@ import {
 } from "../features/marketplace/ui/MarketplaceScreen";
 import {buildNowModel} from "../features/now/controllers/useNowController";
 import {NowScreen} from "../features/now/ui/NowScreen";
+import {activityRow, healthRows} from "../features/system/controllers/useSystemController";
+import {SystemScreen} from "../features/system/ui/SystemScreen";
 import type {SafetyTriageController} from "../features/safety/controllers/useSafetyTriageController";
 import {SafetyScreen} from "../features/safety/ui/SafetyScreen";
 import {SafetyActionSheetWorkspace} from "../features/safety/ui/SafetyActionSheetWorkspace";
@@ -105,19 +106,7 @@ import {
   type AdminRoleClaim,
   type AdminUserRoleRecord,
   type HostAnalyticsTrendPoint,
-  type UserAnalyticsGranularity,
-  type UserAnalyticsQueryPayload,
-  type UserAnalyticsRangePreset,
 } from "../shared/types/adminTypes";
-import {
-  buildUserLookupContract,
-  type UserAnalyticsController,
-} from "../features/users/controllers/useUserAnalyticsController";
-import {UserAnalyticsWorkspace} from "../features/users/ui/UserAnalyticsScreen";
-import type {CrossPathsShowcaseController} from
-  "../features/cross-paths/controllers/useCrossPathsShowcaseController";
-import {CrossPathsShowcaseWorkspace} from
-  "../features/cross-paths/ui/CrossPathsShowcaseScreen";
 import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
 
 const overview = sampleOverview;
@@ -1206,90 +1195,12 @@ const financeController: FinanceOpsController = {
     noop();
   },
 };
-const userAnalyticsPayload: UserAnalyticsQueryPayload = {
-  endDate: null,
-  granularity: "day",
-  rangePreset: "30d",
-  startDate: null,
-  userId: "user-1",
-};
-const userAnalyticsController: UserAnalyticsController = {
-  endDate: "2026-07-03",
-  errorMessage: null,
-  granularity: "day",
-  isLoading: false,
-  lookupContract: buildUserLookupContract("users/user-1"),
-  payload: userAnalyticsPayload,
-  rangePreset: "30d",
-  report: sampleUserAnalyticsReport(userAnalyticsPayload),
-  startDate: "2026-06-04",
-  userId: "users/user-1",
-  viewState: "ready",
-  load: async (_nextUserId?: string) => {
-    noop();
-    return true;
-  },
-  setEndDate: (_value: string) => {
-    noop();
-  },
-  setGranularity: (_value: UserAnalyticsGranularity) => {
-    noop();
-  },
-  setRangePreset: (_value: UserAnalyticsRangePreset) => {
-    noop();
-  },
-  setStartDate: (_value: string) => {
-    noop();
-  },
-  setUserId: (_value: string) => {
-    noop();
-  },
-};
-
 function profilePhotoFixture(index: number): string {
   const palette = ["#efd3c4", "#d7e6df", "#d8d5ec"];
   const background = palette[index % palette.length];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400"><rect width="320" height="400" fill="${background}"/><circle cx="160" cy="145" r="72" fill="#5d4650"/><path d="M55 400c8-102 55-156 105-156s97 54 105 156" fill="#8c6777"/></svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
-
-const crossPathsShowcaseController: CrossPathsShowcaseController = {
-  candidates: [{
-    uid: "user-rhea",
-    name: "Rhea",
-    age: 28,
-    gender: "woman",
-    city: "mumbai",
-    photoUrls: [0, 1, 2].map(profilePhotoFixture),
-    promptAnswers: [
-      {prompt: "Ideal Sunday", answer: "A long walk and dosa."},
-      {prompt: "Together we could", answer: "Try every quiz night."},
-      {prompt: "I am known for", answer: "Making the plan happen."},
-    ],
-    relationshipGoal: "longTermRelationship",
-    automaticStatus: "ready",
-    automaticReasonCodes: [],
-    storedStatus: null,
-    effectiveStatus: "needsReview",
-    effectiveReasonCodes: [],
-    profileFingerprint: "a".repeat(64),
-    reviewedByUid: null,
-    reviewedAt: null,
-    reviewNote: null,
-  }],
-  cursor: null,
-  decide: async () => true,
-  errorMessage: null,
-  filter: "needsReview",
-  generatedAt: "2026-08-05T10:00:00.000Z",
-  isLoading: false,
-  isMutating: false,
-  loadNext: () => undefined,
-  nextCursor: null,
-  pendingUid: null,
-  refresh: async () => undefined,
-  setFilter: () => undefined,
-};
 
 const meta = {
   title: "Admin Dashboard/Routes",
@@ -1501,21 +1412,6 @@ const renderGrowthWorkspace = () => (
 const renderFinanceWorkspace = () => (
   <AdminWorkspace>
     <FinanceOpsWorkspace controller={financeController} />
-  </AdminWorkspace>
-);
-
-const renderUserAnalyticsWorkspace = () => (
-  <AdminWorkspace>
-    <UserAnalyticsWorkspace controller={userAnalyticsController} />
-  </AdminWorkspace>
-);
-
-const renderCrossPathsShowcaseWorkspace = () => (
-  <AdminWorkspace>
-    <CrossPathsShowcaseWorkspace
-      canDecide
-      controller={crossPathsShowcaseController}
-    />
   </AdminWorkspace>
 );
 
@@ -1889,50 +1785,6 @@ export const FinanceWorkspaceStory: Story = {
   render: renderFinanceWorkspace,
 };
 
-export const UserAnalyticsRouteStory: Story = {
-  name: "Users",
-  parameters: {
-    catchComponent: {
-      id: "route_user_analytics",
-      states: ["aggregate-report"],
-    },
-  },
-  render: renderUserAnalyticsWorkspace,
-};
-
-export const UserAnalyticsWorkspaceStory: Story = {
-  name: "Users Workspace",
-  parameters: {
-    catchComponent: {
-      id: "workspace_user_analytics",
-      states: ["aggregate-report"],
-    },
-  },
-  render: renderUserAnalyticsWorkspace,
-};
-
-export const CrossPathsShowcaseRouteStory: Story = {
-  name: "Cross Paths Showcase",
-  parameters: {
-    catchComponent: {
-      id: "route_cross_paths_showcase",
-      states: ["queue", "review-decision"],
-    },
-  },
-  render: renderCrossPathsShowcaseWorkspace,
-};
-
-export const CrossPathsShowcaseWorkspaceStory: Story = {
-  name: "Cross Paths Showcase Workspace",
-  parameters: {
-    catchComponent: {
-      id: "workspace_cross_paths_showcase",
-      states: ["queue", "review-decision"],
-    },
-  },
-  render: renderCrossPathsShowcaseWorkspace,
-};
-
 export const AdminRoleManagementRouteStory: Story = {
   name: "Admin Roles",
   parameters: {
@@ -1998,6 +1850,39 @@ export const NowRouteStory: Story = {
       onRefresh={noop}
     />
   ),
+};
+
+export const SystemRouteStory: Story = {
+  name: "System",
+  parameters: {
+    catchComponent: {
+      id: "route_system",
+      states: ["activity", "filters", "health"],
+    },
+  },
+  render: () => {
+    const rows = actionExecutionRows.map(activityRow);
+    return (
+      <SystemScreen
+        activityError={null}
+        counts={{
+          everyone: rows.length,
+          people: rows.filter((row) => !row.automatic).length,
+          automatic: rows.filter((row) => row.automatic).length,
+          problems: rows.filter((row) => row.problem).length,
+        }}
+        filter="everyone"
+        health={healthRows(overview)}
+        healthError={null}
+        isActivityLoading={false}
+        onFilterChanged={noop}
+        onQueryChanged={noop}
+        onRefresh={noop}
+        query=""
+        rows={rows}
+      />
+    );
+  },
 };
 
 export const MarketplaceRouteStory: Story = {

@@ -129,11 +129,6 @@
       "count": 2
     }
   },
-  "src/features/users/ui/UserAnalyticsScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/shared/ui/AdminPrimitives/actions.tsx": {
     "react/forbid-component-props": {
       "count": 2
@@ -180,10 +175,10 @@
       "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 8
+      "count": 7
     },
     "react/forbid-elements": {
-      "count": 13
+      "count": 12
     }
   },
   "src/shared/ui/AdminPrimitives/intakeWorkbench.tsx": {
@@ -243,10 +238,10 @@
       "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 9
+      "count": 8
     },
     "react/forbid-elements": {
-      "count": 9
+      "count": 8
     }
   },
   "src/shared/ui/AdminPrimitives/metrics.tsx": {

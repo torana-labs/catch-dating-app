@@ -41,15 +41,11 @@
       "workspace_organizer_publishing",
       "route_now",
       "route_marketplace",
-      "route_user_analytics",
-      "workspace_user_analytics",
       "route_safety",
       "workspace_safety_action_sheet",
       "route_safety_live_controller",
-      "route_cross_paths_showcase",
-      "workspace_cross_paths_showcase",
-      "shared_admin_profile_photo_grid",
-      "workspace_event_intake"
+      "workspace_event_intake",
+      "route_system"
     ],
     "previewKinds": [
       "route",
@@ -770,46 +766,6 @@
       "notes": "Lazy live route wrapper owns the Marketplace analytics controller/query seam; deterministic prop-driven visual coverage remains on route_marketplace."
     },
     {
-      "id": "route_cross_paths_showcase",
-      "kind": "route",
-      "owner": "features/cross-paths",
-      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
-      "exportName": "CrossPathsShowcaseScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "CrossPathsShowcaseRouteStory",
-        "states": [
-          "queue",
-          "review-decision"
-        ]
-      },
-      "notes": "Role-gated route wrapper loads the bounded score-free showcase queue and keeps all server mutations behind the pending-operation guard."
-    },
-    {
-      "id": "workspace_cross_paths_showcase",
-      "kind": "workspace",
-      "owner": "features/cross-paths",
-      "source": "admin/src/features/cross-paths/ui/CrossPathsShowcaseScreen.tsx",
-      "exportName": "CrossPathsShowcaseWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "CrossPathsShowcaseWorkspaceStory",
-        "states": [
-          "queue",
-          "review-decision"
-        ]
-      },
-      "notes": "Prop-driven reviewer workspace shows public profile evidence, coarse objective blockers, fingerprint state, and audited approve, hold, or pause decisions."
-    },
-    {
       "id": "route_safety",
       "kind": "route",
       "owner": "features/safety",
@@ -863,63 +819,6 @@
         ]
       },
       "notes": "Lazy live route wrapper owns the Safety triage, launch access, account action, settings and action-sheet controllers and the URL seam; deterministic prop-driven visual coverage remains on route_safety."
-    },
-    {
-      "id": "shared_admin_profile_photo_grid",
-      "kind": "feature-component",
-      "owner": "features/cross-paths",
-      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
-      "exportName": "AdminProfilePhotoGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminProfilePhotoGridStory",
-        "states": [
-          "three-photos"
-        ]
-      },
-      "notes": "Shared read-only photo grid for bounded public-profile evidence in admin review workspaces."
-    },
-    {
-      "id": "route_user_analytics",
-      "kind": "route",
-      "owner": "features/users",
-      "source": "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
-      "exportName": "UserAnalyticsScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "UserAnalyticsRouteStory",
-        "states": [
-          "aggregate-report"
-        ]
-      },
-      "notes": "Route wrapper owns QueryClient, handoff, and sample-mode autoload behavior; preview renders the registered UserAnalyticsWorkspace with deterministic aggregate report fixtures in AdminRoutes.stories.tsx."
-    },
-    {
-      "id": "workspace_user_analytics",
-      "kind": "workspace",
-      "owner": "features/users",
-      "source": "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
-      "exportName": "UserAnalyticsWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
-        "exportName": "UserAnalyticsWorkspaceStory",
-        "states": [
-          "aggregate-report"
-        ]
-      },
-      "notes": "Prop-driven User Analytics workspace surface used by the route wrapper and deterministic Storybook previews; query, handoff, and sample-mode autoload logic stay in UserAnalyticsScreen."
     },
     {
       "id": "shared_admin_brand_mark",
@@ -1765,46 +1664,24 @@
     },
     {
       "id": "shared_admin_intake_section",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeSection",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeSection.tsx",
+      "exportName": "CatchAdminIntakeSection",
       "css": [
-        "admin/src/styles.css"
+        "packages/web-ui/src/components/CatchAdminIntakeSection.module.css"
       ],
       "preview": {
         "status": "ready",
         "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
         "exportName": "AdminIntakeSectionStory",
         "states": [
-          "summary"
+          "summary",
+          "event-editor",
+          "duplicate-comparison"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.section",
-        "catch.metric_strip"
-      ],
-      "comparisonReason": "Variant-styled layout region of the intake screens with no heading or section anatomy."
-    },
-    {
-      "id": "shared_admin_intake_section_title",
-      "kind": "feature-component",
-      "owner": "features/users",
-      "source": "packages/web-ui/src/components/CatchAdminIntakeSectionTitle.tsx",
-      "exportName": "CatchAdminIntakeSectionTitle",
-      "css": [
-        "packages/web-ui/src/components/CatchAdminIntakeSectionTitle.module.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeSectionTitleStory",
-        "states": [
-          "title-meta"
-        ]
-      },
-      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/users renders it. admin/src/features/users/ui/UserAnalyticsScreen.tsx binds the section labels."
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/intake renders it, since Cross Paths retired. It retires with the Inbox redraw."
     },
     {
       "id": "shared_admin_intake_source_list",
@@ -4520,6 +4397,41 @@
         ]
       },
       "notes": "Exports only the already signed-in actor’s fresh Google session encrypted to an owner-protected helper pinned by its private launch file after explicit confirmation. No admin queries, role changes, sign-in or persistence migration."
+    },
+    {
+      "id": "route_system",
+      "kind": "route",
+      "owner": "features/system",
+      "source": "admin/src/features/system/ui/SystemScreen.tsx",
+      "exportName": "SystemScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SystemRouteStory",
+        "states": [
+          "activity",
+          "filters",
+          "health"
+        ]
+      },
+      "notes": "System: one activity log of people's and agents' Admin actions (newest first, filtered by who acted and by problems, searchable) beside the health of each data source, on CatchPaneLayout queue with CatchTable and CatchSection."
+    },
+    {
+      "id": "route_system_live_controller",
+      "kind": "route",
+      "owner": "features/system",
+      "source": "admin/src/features/system/ui/SystemRouteScreen.tsx",
+      "exportName": "SystemRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the System controller/query seam; deterministic prop-driven visual coverage remains on route_system."
     }
   ]
 }

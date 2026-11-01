@@ -163,21 +163,6 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
-      "actionId": "analytics.user",
-      "callable": "adminGetUserAnalytics",
-      "workflowIds": [
-        "users"
-      ],
-      "guiPath": "/users",
-      "kind": "read",
-      "risk": "sensitive-read",
-      "roles": [
-        "adminOwner"
-      ],
-      "summary": "Load the bounded analytics report for one exact user id.",
-      "controlPlane": false
-    },
-    {
       "actionId": "finance.review-event-messaging-budget",
       "callable": "adminReviewEventMessagingBudget",
       "workflowIds": [
@@ -220,41 +205,6 @@ export const adminActionCatalog = {
         "adminOwner"
       ],
       "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
-      "controlPlane": false
-    },
-    {
-      "actionId": "cross-paths-showcase.list",
-      "callable": "adminListCrossPathsShowcaseCandidates",
-      "workflowIds": [
-        "cross-paths-showcase"
-      ],
-      "guiPath": "/cross-paths",
-      "kind": "read",
-      "risk": "sensitive-read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "safetyReviewer",
-        "support"
-      ],
-      "summary": "List a bounded, score-free Cross Paths showcase review queue from public profile projections.",
-      "controlPlane": false
-    },
-    {
-      "actionId": "cross-paths-showcase.set-eligibility",
-      "callable": "adminSetCrossPathsShowcaseEligibility",
-      "workflowIds": [
-        "cross-paths-showcase"
-      ],
-      "guiPath": "/cross-paths",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "safetyReviewer"
-      ],
-      "summary": "Record an audited, fingerprint-bound Cross Paths showcase eligibility decision without storing an attractiveness score.",
       "controlPlane": false
     },
     {
@@ -2713,23 +2663,6 @@ export const adminActionCatalog = {
       "actions": [
         "external-events.list",
         "external-events.takedown"
-      ]
-    },
-    {
-      "workflowId": "users",
-      "label": "Users",
-      "guiPath": "/users",
-      "actions": [
-        "analytics.user"
-      ]
-    },
-    {
-      "workflowId": "cross-paths-showcase",
-      "label": "Cross Paths showcase",
-      "guiPath": "/cross-paths",
-      "actions": [
-        "cross-paths-showcase.list",
-        "cross-paths-showcase.set-eligibility"
       ]
     },
     {

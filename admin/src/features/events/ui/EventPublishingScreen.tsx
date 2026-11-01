@@ -62,7 +62,6 @@ import {
   AdminEyebrow,
   AdminEditorSection,
   AdminTagList,
-  AdminIntakeSection,
   AdminMutedCell,
   AdminPublishingLoadbar,
   AdminRowTitle,

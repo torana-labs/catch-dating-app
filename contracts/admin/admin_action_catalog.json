@@ -214,26 +214,6 @@
       }
     },
     {
-      "actionId": "analytics.user",
-      "callable": "adminGetUserAnalytics",
-      "workflowIds": [
-        "users"
-      ],
-      "guiPath": "/users",
-      "kind": "read",
-      "risk": "sensitive-read",
-      "roles": [
-        "adminOwner"
-      ],
-      "requestSchema": "contracts/callables/user_analytics_query_payload.schema.json",
-      "summary": "Load the bounded analytics report for one exact user id.",
-      "example": {
-        "userId": "example-user",
-        "rangePreset": "30d",
-        "granularity": "day"
-      }
-    },
-    {
       "actionId": "finance.review-event-messaging-budget",
       "callable": "adminReviewEventMessagingBudget",
       "workflowIds": [
@@ -309,57 +289,6 @@
         "decisionId": "message-budget-decision:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "expectedDecisionRevision": 1,
         "note": "Stage both reviewed ceilings in paused state."
-      }
-    },
-    {
-      "actionId": "cross-paths-showcase.list",
-      "callable": "adminListCrossPathsShowcaseCandidates",
-      "workflowIds": [
-        "cross-paths-showcase"
-      ],
-      "guiPath": "/cross-paths",
-      "kind": "read",
-      "risk": "sensitive-read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "safetyReviewer",
-        "support"
-      ],
-      "requestSchema": "contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
-      "summary": "List a bounded, score-free Cross Paths showcase review queue from public profile projections.",
-      "example": {
-        "status": "needsReview",
-        "limit": 25
-      }
-    },
-    {
-      "actionId": "cross-paths-showcase.set-eligibility",
-      "callable": "adminSetCrossPathsShowcaseEligibility",
-      "workflowIds": [
-        "cross-paths-showcase"
-      ],
-      "guiPath": "/cross-paths",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "safetyReviewer"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "uid",
-      "requestSchema": "contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
-      "summary": "Record an audited, fingerprint-bound Cross Paths showcase eligibility decision without storing an attractiveness score.",
-      "example": {
-        "uid": "example-user",
-        "status": "needsReview",
-        "reviewChecklist": {
-          "primaryPortraitClear": false,
-          "profileRepresentsCurrentMember": false,
-          "showcasePolicyReviewed": true
-        },
-        "reviewNote": "Fixture hold for profile follow-up."
       }
     },
     {
@@ -4116,23 +4045,6 @@
       "actions": [
         "external-events.list",
         "external-events.takedown"
-      ]
-    },
-    {
-      "workflowId": "users",
-      "label": "Users",
-      "guiPath": "/users",
-      "actions": [
-        "analytics.user"
-      ]
-    },
-    {
-      "workflowId": "cross-paths-showcase",
-      "label": "Cross Paths showcase",
-      "guiPath": "/cross-paths",
-      "actions": [
-        "cross-paths-showcase.list",
-        "cross-paths-showcase.set-eligibility"
       ]
     },
     {

@@ -12,7 +12,6 @@ import {
   type CatchAdminIntakeDecisionActionsProps,
   type CatchAdminIntakeDecisionStateProps,
 } from "./CatchAdminIntakeDecision";
-import {CatchAdminIntakeSectionTitle, type CatchAdminIntakeSectionTitleProps} from "./CatchAdminIntakeSectionTitle";
 import {CatchAdminIntakeSourceList, type CatchAdminIntakeSourceListProps} from "./CatchAdminIntakeSourceList";
 import {CatchAdminSearchCandidateHeader, type CatchAdminSearchCandidateHeaderProps} from "./CatchAdminSearchCandidateHeader";
 
@@ -58,7 +57,6 @@ describe("Admin T4 parts", () => {
   it("renders a section title, a source list and a header element", () => {
     render(
       <>
-        <CatchAdminIntakeSectionTitle>Blocked actions</CatchAdminIntakeSectionTitle>
         <CatchAdminSearchCandidateHeader aria-label="Afterfly Social">
           <h3>Afterfly Social</h3>
         </CatchAdminSearchCandidateHeader>
@@ -68,7 +66,6 @@ describe("Admin T4 parts", () => {
         </CatchAdminIntakeSourceList>
       </>,
     );
-    expect(screen.getByText("Blocked actions").tagName).toBe("DIV");
     expect(screen.getByLabelText("Afterfly Social").tagName).toBe("HEADER");
     expect(screen.getByLabelText("Sources").children).toHaveLength(2);
   });
@@ -79,7 +76,6 @@ describe("Admin T4 parts", () => {
     expectTypeOf<Styling>().extract<keyof CatchAdminCommandRowProps>().toEqualTypeOf<never>();
     expectTypeOf<Styling>().extract<keyof CatchAdminIntakeDecisionActionsProps>().toEqualTypeOf<never>();
     expectTypeOf<Styling>().extract<keyof CatchAdminIntakeDecisionStateProps>().toEqualTypeOf<never>();
-    expectTypeOf<Styling>().extract<keyof CatchAdminIntakeSectionTitleProps>().toEqualTypeOf<never>();
     expectTypeOf<Styling>().extract<keyof CatchAdminIntakeSourceListProps>().toEqualTypeOf<never>();
     expectTypeOf<Styling>().extract<keyof CatchAdminSearchCandidateHeaderProps>().toEqualTypeOf<never>();
   });

@@ -21,12 +21,11 @@ const CommercialTermsScreen = lazy(() => import("../features/commercial-terms/ui
 const PaymentRoutingScreen = lazy(() => import("../features/payment-routing/ui/PaymentRoutingScreen").then((m) => ({default: m.PaymentRoutingScreen})));
 const OrganizerPublishingScreen = lazy(() => import("../features/organizers/ui/OrganizerPublishingScreen").then((m) => ({default: m.OrganizerPublishingScreen})));
 const EventPublishingScreen = lazy(() => import("../features/events/ui/EventPublishingScreen").then((m) => ({default: m.EventPublishingScreen})));
-const UserAnalyticsScreen = lazy(() => import("../features/users/ui/UserAnalyticsScreen").then((m) => ({default: m.UserAnalyticsScreen})));
-const CrossPathsShowcaseScreen = lazy(() => import("../features/cross-paths/ui/CrossPathsShowcaseScreen").then((m) => ({default: m.CrossPathsShowcaseScreen})));
 const DataQualityScreen = lazy(() => import("../features/data-quality/ui/DataQualityScreen").then((m) => ({default: m.DataQualityScreen})));
 const AdminRoleManagementScreen = lazy(() => import("../features/admin-roles/ui/AdminRoleManagementScreen").then((m) => ({default: m.AdminRoleManagementScreen})));
 const AdminActionExecutionsScreen = lazy(() => import("../features/operations/ui/AdminActionExecutionsScreen").then((m) => ({default: m.AdminActionExecutionsScreen})));
 const CatchWhatsappTrialWorkspace = lazy(() => import("../features/catch-support/ui/CatchWhatsappTrialWorkspace").then((m) => ({default: m.CatchWhatsappTrialWorkspace})));
+const SystemRouteScreen = lazy(() => import("../features/system/ui/SystemRouteScreen").then((m) => ({default: m.SystemRouteScreen})));
 const SalesWorkspaceScreen = lazy(() => import("../features/sales/ui/SalesWorkspaceScreen").then((m) => ({default: m.SalesWorkspaceScreen})));
 
 /** What the shell hands every area's screen. */
@@ -188,22 +187,6 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
       <MarketplaceRouteScreen adminRoles={adminRoles} isSessionReady={isSessionReady} mode={mode} onError={setError} onNotice={setNotice} />
     ),
   },
-  users: {
-    label: "Users", icon: "people", frame: "legacy",
-    render: ({setError, setNotice}) => (
-      <UserAnalyticsScreen handoffRequestId={null} handoffUserId={null} onError={setError} onNotice={setNotice} />
-    ),
-  },
-  "cross-paths": {
-    label: "Cross Paths", icon: "like", frame: "legacy",
-    render: ({adminRoles, mode, setError, setNotice}) => (
-      <CrossPathsShowcaseScreen
-        canDecide={mode === "sample" || ["admin", "adminOwner", "safetyReviewer"].some((role) => adminRoles.includes(role))}
-        onError={setError}
-        onNotice={setNotice}
-      />
-    ),
-  },
   "marketing-ops": {
     label: "Marketing", icon: "announce", frame: "legacy",
     render: ({navigate, route, setError, setMarketingDirty, setNotice}) => (
@@ -238,6 +221,10 @@ export const adminAreas: Record<AdminNavId, AdminArea> = {
   operations: {
     label: "Agent activity", icon: "bot", frame: "legacy",
     render: ({setError}) => <AdminActionExecutionsScreen onError={setError} />,
+  },
+  system: {
+    label: "System", icon: "data", frame: "redrawn",
+    render: ({isSessionReady, mode}) => <SystemRouteScreen isSessionReady={isSessionReady} mode={mode} />,
   },
   "admin-roles": {
     label: "Admin roles", icon: "admin", frame: "legacy",

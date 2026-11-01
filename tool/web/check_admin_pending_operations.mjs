@@ -17,7 +17,6 @@ const expectedControllerFiles = new Set([
   "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
   "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
   "admin/src/features/safety/controllers/useSafetyTriageController.ts",
-  "admin/src/features/users/controllers/useUserAnalyticsController.ts",
 ]);
 
 const args = parseArgs(process.argv.slice(2));
@@ -117,10 +116,7 @@ function inspectContract({contract, onController, onViolation}) {
           const absolutePath = fromRepo(owner.file);
           if (!fs.existsSync(absolutePath)) continue;
           const source = fs.readFileSync(absolutePath, "utf8");
-          if (
-            source.includes(".mutateAsync(") ||
-            owner.file.endsWith("useUserAnalyticsController.ts")
-          ) {
+          if (source.includes(".mutateAsync(")) {
             onController(owner.file);
           }
         }
@@ -152,10 +148,6 @@ function inspectControllerSource({controllerPath, source, onViolation}) {
   if (source.includes(".mutateAsync(") &&
       occurrences(source, ".mutateAsync(") > beginCount) {
     onViolation("has more mutation dispatch sites than operation lease sites");
-  }
-  if (controllerPath.endsWith("useUserAnalyticsController.ts") &&
-      !source.includes("sampleAutoLoadStarted")) {
-    onViolation("does not bound the sample analytics auto-load");
   }
 }
 
@@ -295,7 +287,7 @@ function runSelfTest() {
         bindings: {
           actionOwners: [{
             id: "controller",
-            file: "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+            file: "admin/src/features/system/controllers/useSystemController.ts",
           }],
         },
         scenarios: [{

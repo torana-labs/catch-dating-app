@@ -90,6 +90,8 @@ describe("Admin route contract", () => {
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
     expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/users/user-1")).toMatchObject({nav: "now", redirect: "/now"});
+    expect(resolveAdminRoute("/cross-paths")).toMatchObject({nav: "now", redirect: "/now"});
     expect(resolveAdminRoute("/now").redirect).toBeNull();
   });
 

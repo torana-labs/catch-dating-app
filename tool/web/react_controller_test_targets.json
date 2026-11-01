@@ -35,11 +35,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
-      "test": "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/data-quality/controllers/useDataQualityController.ts",
       "test": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
       "status": "required"
@@ -145,6 +140,11 @@
       "status": "required"
     },
     {
+      "source": "admin/src/features/system/controllers/useSystemController.ts",
+      "test": "admin/src/features/system/controllers/useSystemController.test.tsx",
+      "status": "required"
+    },
+    {
       "source": "admin/src/features/now/controllers/useNowController.ts",
       "test": "admin/src/features/now/controllers/useNowController.test.tsx",
       "status": "required"
@@ -192,11 +192,6 @@
     {
       "source": "admin/src/features/sales/controllers/useSalesWorkspaceController.ts",
       "test": "admin/src/features/sales/controllers/useSalesWorkspaceController.test.tsx",
-      "status": "required"
-    },
-    {
-      "source": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
-      "test": "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
       "status": "required"
     },
     {
