@@ -290,6 +290,7 @@ class _HostFormResponseDetailScreenState
     setState(() => _navigating = true);
     try {
       final provider = hostFormResponsesControllerProvider(queue.request);
+      // provider-graph: ownership-widget-async:_HostFormResponseDetailScreenState._navigateQueue:await:hostFormResponsesControllerProvider.future watch CAT156 -- Existing bounded review signal at _HostFormResponseDetailScreenState._navigateQueue (await:hostFormResponsesControllerProvider.future). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       var current = await ref.read(provider.future);
       var target = queue.targetIndex(
         current.inboxEntries,
@@ -303,6 +304,7 @@ class _HostFormResponseDetailScreenState
             pages < 10;
         pages++
       ) {
+        // provider-graph: ownership-widget-async:_HostFormResponseDetailScreenState._navigateQueue:await:hostFormResponsesControllerProvider.loadMore watch CAT156 -- Existing bounded review signal at _HostFormResponseDetailScreenState._navigateQueue (await:hostFormResponsesControllerProvider.loadMore). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
         await ref.read(provider.notifier).loadMore();
         final refreshed = catchAsyncStateFromAsyncValue(
           ref.read(provider),
@@ -366,6 +368,7 @@ class _HostFormResponseDetailScreenState
   ) async {
     setState(() => _saving = true);
     try {
+      // provider-graph: ownership-widget-async:_HostFormResponseDetailScreenState._review:await:hostApplicationsControllerProvider.reviewApplication watch CAT156 -- Existing bounded review signal at _HostFormResponseDetailScreenState._review (await:hostApplicationsControllerProvider.reviewApplication). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostApplicationsControllerProvider)
           .reviewApplication(
@@ -434,6 +437,7 @@ class _HostFormResponseDetailScreenState
     setState(() => _converting = kind);
     try {
       final controller = ref.read(hostFormsControllerProvider);
+      // provider-graph: ownership-widget-async:_HostFormResponseDetailScreenState._reviewConversion:await:hostFormsControllerProvider.previewConversion watch CAT156 -- Existing bounded review signal at _HostFormResponseDetailScreenState._reviewConversion (await:hostFormsControllerProvider.previewConversion). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final preview = await controller.previewConversion(
         organizerId: widget.organizerId,
         responseId: detail.response.responseId,
@@ -442,6 +446,7 @@ class _HostFormResponseDetailScreenState
       if (!mounted) return;
       final confirmed = await _showConversionPreview(preview);
       if (confirmed != true || !mounted) return;
+      // provider-graph: ownership-widget-async:_HostFormResponseDetailScreenState._reviewConversion:await:hostFormsControllerProvider.convertResponse watch CAT156 -- Existing bounded review signal at _HostFormResponseDetailScreenState._reviewConversion (await:hostFormsControllerProvider.convertResponse). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await controller.convertResponse(
         organizerId: widget.organizerId,
         responseId: detail.response.responseId,

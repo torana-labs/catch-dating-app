@@ -53,6 +53,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
       return;
     }
     try {
+      // provider-graph: ownership-widget-async:_ProgramDispatchScreenState._openDispatchSheet:await:programWorkEntryProvider.future watch CAT156 -- Existing bounded review signal at _ProgramDispatchScreenState._openDispatchSheet (await:programWorkEntryProvider.future). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final accessView = await ref.read(
         programWorkEntryProvider(widget.programId, null).future,
       );
@@ -386,6 +387,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
       if (ref.read(uidProvider).asData?.value != widget.accountId) {
         throw const SignInRequiredException('dispatch this saved manifest');
       }
+      // provider-graph: ownership-widget-async:_ProgramDispatchSheetState._dispatch:await:programArrivalsRosterViewProvider.future planned CAT156 -- Owns pending/error and roster/access-generation checks around an existing generated operations/outbox seam. Preserve access deadlines, actor generation and durable dispatch recovery.
       final view = await ref.read(
         programArrivalsRosterViewProvider(
           widget.programId,
@@ -426,6 +428,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         widget.programId,
         widget.accountId,
       );
+      // provider-graph: ownership-widget-async:_ProgramDispatchSheetState._dispatch:await:programOperationsControllerProvider.dispatch planned CAT156 -- Owns pending/error and roster/access-generation checks around an existing generated operations/outbox seam. Preserve access deadlines, actor generation and durable dispatch recovery.
       final accepted = await ref
           .read(provider.notifier)
           .dispatch(

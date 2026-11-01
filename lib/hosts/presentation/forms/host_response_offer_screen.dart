@@ -102,7 +102,9 @@ class _HostResponseOfferScreenState
           throw StateError('Response selection changed.');
         }
       }
+      // provider-graph: ownership-repository-construction:_HostResponseOfferScreenState._createEvent:construct:PrivateEventSetupRepository planned CAT156 -- _HostResponseOfferScreenState._createEvent directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences.
       final summary = await PrivateEventSetupRepository(
+        // provider-graph: ownership-widget-backend:_HostResponseOfferScreenState._createEvent:read:firebaseFunctionsProvider planned CAT156 -- _HostResponseOfferScreenState._createEvent reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
         ref.read(firebaseFunctionsProvider),
       ).get(organizerId: widget.organizerId, eventId: eventId);
       if (!_current(account)) return;
@@ -208,6 +210,7 @@ class _HostResponseOfferScreenState
       ref.watch(hostEventOfferControllerProvider(_offerScope!));
     }
     final gateway = available
+        // provider-graph: ownership-widget-backend:_HostResponseOfferScreenState.build:read:firebaseFunctionsProvider planned CAT156 max=3 -- _HostResponseOfferScreenState.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
         ? CallableHostEventOfferGateway(ref.read(firebaseFunctionsProvider))
         : null;
     return CatchRouteScaffold(

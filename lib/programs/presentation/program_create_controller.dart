@@ -32,6 +32,7 @@ class ProgramCreateSnapshot {
 typedef ProgramCreateSnapshotWriter =
     Future<void> Function(ProgramCreateSnapshot snapshot);
 
+// provider-graph: ownership-listenable:ProgramCreateController:reactive-state planned CAT156 -- ProgramCreateController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Owns the program creation transaction, including confirmation. The form
 /// stays mounted after failures, and a receipt retry only reads the saved ID.
 class ProgramCreateController extends ChangeNotifier {

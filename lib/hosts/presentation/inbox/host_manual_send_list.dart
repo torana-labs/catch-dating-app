@@ -79,6 +79,7 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
     if (_loadingMore) return;
     setState(() => _loadingMore = true);
     try {
+      // provider-graph: ownership-widget-async:_HostManualSendListState._loadMore:await:hostAudienceControllerProvider.listManualSendTasks watch CAT156 -- Existing bounded review signal at _HostManualSendListState._loadMore (await:hostAudienceControllerProvider.listManualSendTasks). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final page = await ref
           .read(hostAudienceControllerProvider)
           .listManualSendTasks(organizerId: widget.organizerId, cursor: cursor);
@@ -104,6 +105,7 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
     if (_replanning) return;
     setState(() => _replanning = true);
     try {
+      // provider-graph: ownership-widget-async:_HostManualSendListState._replan:await:hostAudienceControllerProvider.replanManualSendTasks watch CAT156 -- Existing bounded review signal at _HostManualSendListState._replan (await:hostAudienceControllerProvider.replanManualSendTasks). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final result = await ref
           .read(hostAudienceControllerProvider)
           .replanManualSendTasks(
@@ -315,9 +317,11 @@ class _HostManualSendTaskSheetState
     if (_busy) return;
     setState(() => _busy = true);
     try {
+      // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._openWhatsapp:await:hostAudienceControllerProvider.validateManualSendTaskLaunch watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._openWhatsapp (await:hostAudienceControllerProvider.validateManualSendTaskLaunch). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final validated = await ref
           .read(hostAudienceControllerProvider)
           .validateManualSendTaskLaunch(_task);
+      // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._openWhatsapp:await:externalLinkControllerProvider.openWhatsappHandoff watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._openWhatsapp (await:externalLinkControllerProvider.openWhatsappHandoff). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final opened = await ref
           .read(externalLinkControllerProvider)
           .openWhatsappHandoff(
@@ -330,6 +334,7 @@ class _HostManualSendTaskSheetState
           context.l10n.hostCustomersWhatsappOpenFailed,
         );
       }
+      // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._openWhatsapp:await:hostAudienceControllerProvider.recordManualHandoffOpened watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._openWhatsapp (await:hostAudienceControllerProvider.recordManualHandoffOpened). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final updated = await ref
           .read(hostAudienceControllerProvider)
           .recordManualHandoffOpened(validated);
@@ -351,6 +356,7 @@ class _HostManualSendTaskSheetState
     if (_busy) return;
     setState(() => _busy = true);
     try {
+      // provider-graph: ownership-widget-async:_HostManualSendTaskSheetState._mark:await:hostAudienceControllerProvider.markManualSendTask watch CAT156 -- Existing bounded review signal at _HostManualSendTaskSheetState._mark (await:hostAudienceControllerProvider.markManualSendTask). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostAudienceControllerProvider)
           .markManualSendTask(_task, action);

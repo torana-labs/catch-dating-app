@@ -32,6 +32,7 @@ class HostResponseExportView {
   final bool downloadOpened;
 }
 
+// provider-graph: ownership-listenable:HostResponseExportController:reactive-state planned CAT156 -- HostResponseExportController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Uses only the applied query controller view. A draft filter, page cursor,
 /// account change or late receipt cannot silently change the exported set.
 class HostResponseExportController extends ChangeNotifier {

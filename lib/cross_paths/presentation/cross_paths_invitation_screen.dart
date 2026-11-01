@@ -507,6 +507,7 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
     if (profile == null) return;
     setState(() => _booking = true);
     try {
+      // provider-graph: ownership-widget-async:_PairHoldPanelState._completeBooking:await:crossPathsInvitationControllerProvider.completePairBooking watch CAT156 -- Existing bounded review signal at _PairHoldPanelState._completeBooking (await:crossPathsInvitationControllerProvider.completePairBooking). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(crossPathsInvitationControllerProvider.notifier)
           .completePairBooking(

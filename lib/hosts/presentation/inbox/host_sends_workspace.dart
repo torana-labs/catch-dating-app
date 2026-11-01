@@ -170,6 +170,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         }
         _setBusy(true);
         try {
+          // provider-graph: ownership-widget-async:_HostSendsPageBodySliverState._composeFollowerUpdate:await:hostOrganizerPostControllerProvider.createPost watch CAT156 max=2 -- Existing bounded review signal at _HostSendsPageBodySliverState._composeFollowerUpdate (await:hostOrganizerPostControllerProvider.createPost). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
           await ref
               .read(hostOrganizerPostControllerProvider)
               .createPost(
@@ -233,6 +234,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     if (_busy) return;
     _setBusy(true);
     try {
+      // provider-graph: ownership-widget-async:_HostSendsPageBodySliverState._openCampaign:await:hostAudienceControllerProvider.getCampaignReport watch CAT156 -- Existing bounded review signal at _HostSendsPageBodySliverState._openCampaign (await:hostAudienceControllerProvider.getCampaignReport). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final campaign = await ref
           .read(hostAudienceControllerProvider)
           .getCampaignReport(
@@ -264,6 +266,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     if (_loadingMore) return;
     setState(() => _loadingMore = true);
     try {
+      // provider-graph: ownership-widget-async:_HostSendsPageBodySliverState._loadMore:await:hostAudienceControllerProvider.listSends watch CAT156 -- Existing bounded review signal at _HostSendsPageBodySliverState._loadMore (await:hostAudienceControllerProvider.listSends). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final nextPage = await ref
           .read(hostAudienceControllerProvider)
           .listSends(organizerId: widget.organizer.id, cursor: cursor);
@@ -308,6 +311,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     if (_busy) return;
     _setBusy(true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostSendsPageBodySliverState._runCampaignAction:await:action watch CAT156 -- Existing bounded review signal at _HostSendsPageBodySliverState._runCampaignAction (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final campaign = await action(ref.read(hostAudienceControllerProvider));
       if (mounted && _sameScope(generation)) {
         setState(() => _flow = _SendCampaign(campaign));

@@ -1521,8 +1521,7 @@
       },
       "applies_to": [
         "lib/**/*.dart",
-        "tool/architecture/provider_graph.dart",
-        "tool/architecture/provider_graph_reviews.json"
+        "tool/architecture/provider_graph.dart"
       ],
       "instruction": "Derive and check the complete live Riverpod source graph from Dart ASTs. Keep providers, families, consumers, aliases, overrides, and Mutations resolvable; reject duplicate or dangling providers, provider-internal unresolved refs, reactive cycles, unreviewed architecture candidates, and stale review decisions. Do not commit generated graph views; emit deterministic JSON or summary evidence only on demand. Core-owned providers must not orchestrate feature data, and provider aliases should be removed when the canonical owner can be used directly.",
       "sunset_when": [

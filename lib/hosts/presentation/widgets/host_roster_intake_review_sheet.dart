@@ -92,6 +92,7 @@ class _HostRosterIntakeReviewSheetState
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_HostRosterIntakeReviewSheetState._excludeUnresolved:await:widget.onSetExcluded watch CAT156 -- Existing bounded review signal at _HostRosterIntakeReviewSheetState._excludeUnresolved (await:widget.onSetExcluded). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final review = await widget.onSetExcluded(_review, {
         ..._review.excludedRowIds,
         ...ids,
@@ -111,6 +112,7 @@ class _HostRosterIntakeReviewSheetState
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_HostRosterIntakeReviewSheetState._restoreExcluded:await:widget.onSetExcluded watch CAT156 -- Existing bounded review signal at _HostRosterIntakeReviewSheetState._restoreExcluded (await:widget.onSetExcluded). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final review = await widget.onSetExcluded(_review, const []);
       if (mounted && !_scopeInvalidated) setState(() => _review = review);
     } catch (error) {
@@ -127,6 +129,7 @@ class _HostRosterIntakeReviewSheetState
       _error = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_HostRosterIntakeReviewSheetState._apply:await:widget.onApply watch CAT156 -- Existing bounded review signal at _HostRosterIntakeReviewSheetState._apply (await:widget.onApply). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final applied = await widget.onApply(_review);
       if (mounted && !_scopeInvalidated) Navigator.of(context).pop(applied);
     } catch (error) {

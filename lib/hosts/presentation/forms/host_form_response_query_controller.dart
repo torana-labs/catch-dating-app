@@ -59,6 +59,7 @@ class HostResponseQueryView {
       status == HostResponseQueryStatus.ready && selectedIds.isNotEmpty;
 }
 
+// provider-graph: ownership-listenable:HostResponseQueryController:reactive-state planned CAT156 -- HostResponseQueryController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Owns one exact query result across pages. Every replacement query clears
 /// selection, and every later page must identify the same current result.
 class HostResponseQueryController extends ChangeNotifier {

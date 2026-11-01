@@ -301,19 +301,10 @@ final lookupProvider =
         ),
       );
 
-      final reviewFile = File('${root.path}/$providerGraphReviewPath');
+      final reviewFile = File('${root.path}/lib/sample/review_notes.dart');
       await reviewFile.parent.create(recursive: true);
       await reviewFile.writeAsString('''
-{
-  "decisions": [
-    {
-      "id": "manual-provider:lookupProvider",
-      "status": "planned",
-      "debtId": "TEST-DEBT-001",
-      "rationale": "Known fixture debt."
-    }
-  ]
-}
+// provider-graph: manual-provider:lookupProvider planned TEST-DEBT-001 -- Known fixture debt.
 ''');
       final reviewed = await buildProviderGraph(root);
       expect(reviewed.unreviewedCandidateIds, isEmpty);
@@ -321,15 +312,8 @@ final lookupProvider =
       expect(providerGraphCheckFailures(reviewed), isEmpty);
 
       await reviewFile.writeAsString('''
-{
-  "decisions": [
-    {
-      "id": "stale:decision",
-      "status": "accepted",
-      "rationale": "No matching candidate."
-    }
-  ]
-}
+// provider-graph: manual-provider:lookupProvider planned TEST-DEBT-001 -- Known fixture debt.
+// provider-graph: stale:decision accepted -- No matching candidate.
 ''');
       final stale = await buildProviderGraph(root);
       expect(stale.staleReviewIds, ['stale:decision']);
@@ -349,18 +333,10 @@ final lookupProvider =
 ''');
       addTearDown(() => root.delete(recursive: true));
 
-      final reviewFile = File('${root.path}/$providerGraphReviewPath');
+      final reviewFile = File('${root.path}/lib/sample/review_notes.dart');
       await reviewFile.parent.create(recursive: true);
       await reviewFile.writeAsString('''
-{
-  "decisions": [
-    {
-      "id": "manual-provider:lookupProvider",
-      "status": "planned",
-      "rationale": "Missing debt id."
-    }
-  ]
-}
+// provider-graph: manual-provider:lookupProvider planned -- Missing debt id.
 ''');
 
       await expectLater(
@@ -539,13 +515,17 @@ class BusinessState extends ConsumerState<Screen> {
         providerGraphCheckFailures(await buildProviderGraph(root)),
         isEmpty,
       );
-      await File(
-        '${root.path}/$path',
-      ).writeAsString('class Replacement extends ChangeNotifier {}');
+      await _replaceCode(
+        root,
+        path,
+        'class Replacement extends ChangeNotifier {}',
+      );
       graph = await buildProviderGraph(root);
       expect(graph.unreviewedCandidateIds, hasLength(1));
       expect(graph.staleReviewIds, hasLength(1));
-      await File('${root.path}/$path').writeAsString(
+      await _replaceCode(
+        root,
+        path,
         'class Existing extends ChangeNotifier {} class Additional extends ChangeNotifier {}',
       );
       graph = await buildProviderGraph(root);
@@ -556,7 +536,9 @@ class BusinessState extends ConsumerState<Screen> {
       );
       graph = await buildProviderGraph(root);
       await _reviewOwnership(root, graph, status: 'planned');
-      await File('${root.path}/$path').writeAsString(
+      await _replaceCode(
+        root,
+        path,
         r'@riverpod class Owner extends _$Owner { void build() {} void save() { ItemsRepository(); ItemsRepository(); } }',
       );
       graph = await buildProviderGraph(root);
@@ -580,19 +562,18 @@ class BusinessState extends ConsumerState<Screen> {
       await _reviewOwnership(root, graph, status: 'accepted-exception');
       graph = await buildProviderGraph(root);
       expect(graph.isHealthy, isTrue);
-      final file = File('${root.path}/$providerGraphReviewPath');
-      final reviews =
-          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
-      final decision = Map<String, Object?>.from(
-        (reviews['decisions'] as List).single as Map,
+      // A review reads against the file that holds it.
+      final source = File('${root.path}/${graph.candidates.first.path}');
+      final review = (await source.readAsLines()).first;
+      await source.writeAsString(
+        (await source.readAsString()).replaceFirst('$review\n', ''),
       );
-      decision['path'] = 'lib/sample/other.dart';
-      reviews['decisions'] = [decision];
-      await file.writeAsString(jsonEncode(reviews));
-      expect(
-        (await buildProviderGraph(root)).unreviewedCandidateIds,
-        isNotEmpty,
-      );
+      await File(
+        '${root.path}/lib/sample/other.dart',
+      ).writeAsString('$review\n');
+      final moved = await buildProviderGraph(root);
+      expect(moved.unreviewedCandidateIds, isNotEmpty);
+      expect(moved.staleReviewIds, isNotEmpty);
     },
   );
 
@@ -640,7 +621,7 @@ class BusinessState extends ConsumerState<Screen> {
         'await:itemsControllerProvider.submit',
       );
       await _reviewOwnership(root, graph, status: 'watch');
-      await File('${root.path}/$path').writeAsString(source('delete'));
+      await _replaceCode(root, path, source('delete'));
       final swapped = await buildProviderGraph(root);
       expect(swapped.unreviewedCandidateIds.single, contains('.delete'));
       expect(swapped.staleReviewIds.single, contains('.submit'));
@@ -769,28 +750,40 @@ Future<Directory> _fixtureRoot(
   return root;
 }
 
+/// Changes the code in a reviewed file and leaves its review comments in place.
+Future<void> _replaceCode(Directory root, String path, String code) async {
+  final file = File('${root.path}/$path');
+  final reviews = RegExp(
+    r'^// provider-graph:.*\n',
+    multiLine: true,
+  ).allMatches(await file.readAsString()).map((match) => match[0]).join();
+  await file.writeAsString('$reviews$code');
+}
+
 Future<void> _reviewOwnership(
   Directory root,
   ProviderGraph graph, {
   required String status,
 }) async {
-  final file = File('${root.path}/$providerGraphReviewPath');
-  await file.parent.create(recursive: true);
-  await file.writeAsString(
-    jsonEncode({
-      'decisions': [
-        for (final candidate in graph.candidates)
-          {
-            'id': candidate.id,
-            'status': status,
-            'rationale': 'Exact fixture responsibility reviewed.',
-            if (status == 'planned') 'debtId': 'CAT156',
-            'path': candidate.path,
-            'symbol': candidate.symbol,
-            'operation': candidate.operation,
-            'maxCallsites': candidate.metric,
-          },
-      ],
-    }),
-  );
+  final debt = status == 'planned' ? ' CAT156' : '';
+  final byPath = <String, List<ArchitectureCandidate>>{};
+  for (final candidate in graph.candidates) {
+    byPath.putIfAbsent(candidate.path!, () => []).add(candidate);
+  }
+  for (final MapEntry(key: path, value: candidates) in byPath.entries) {
+    final file = File('${root.path}/$path');
+    final reviews = candidates
+        .map((candidate) {
+          final key = candidate.id.replaceFirst('$path#', '');
+          final max = candidate.metric ?? 1;
+          return '// provider-graph: $key $status$debt max=$max -- '
+              'Exact fixture responsibility reviewed.';
+        })
+        .join('\n');
+    final source = (await file.readAsString()).replaceAll(
+      RegExp(r'^// provider-graph:.*\n', multiLine: true),
+      '',
+    );
+    await file.writeAsString('$reviews\n$source');
+  }
 }

@@ -715,6 +715,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
     if (_exporting) return;
     setState(() => _exporting = true);
     try {
+      // provider-graph: ownership-widget-async:_HostCustomersScreenState._exportCustomers:await:hostCustomersControllerProvider.exportCustomers watch CAT156 -- Existing bounded review signal at _HostCustomersScreenState._exportCustomers (await:hostCustomersControllerProvider.exportCustomers). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final export = await ref
           .read(hostCustomersControllerProvider)
           .exportCustomers(
@@ -729,6 +730,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
             ),
           );
       if (!mounted) return;
+      // provider-graph: ownership-widget-async:_HostCustomersScreenState._exportCustomers:await:externalShareControllerProvider.shareCsvFile watch CAT156 -- Existing bounded review signal at _HostCustomersScreenState._exportCustomers (await:externalShareControllerProvider.shareCsvFile). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(externalShareControllerProvider)
           .shareCsvFile(

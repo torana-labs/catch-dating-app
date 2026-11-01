@@ -131,6 +131,7 @@ class _HostPrivateEventSetupInventorySectionState
     if (_opening) return;
     setState(() => _opening = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostPrivateEventSetupInventorySectionState._open:await:widget.openSaved watch CAT156 -- Existing bounded review signal at _HostPrivateEventSetupInventorySectionState._open (await:widget.openSaved). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await widget.openSaved(eventId);
       if (mounted) await _load(reset: true);
     } catch (error) {

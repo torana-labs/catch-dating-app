@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.98.0
+version: 1.99.0
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -711,10 +711,15 @@ dart run tool/architecture/provider_graph.dart --summary
 dart run tool/architecture/provider_graph.dart --json
 ```
 
-`tool/architecture/provider_graph_reviews.json` owns explicit decisions for
+A `// provider-graph:` comment next to the code owns each explicit decision for
 cross-feature edges, high-fan-out providers, aliases, and intentional manual
-provider exceptions; it is the only durable provider-graph evidence stored in
-the repository. The check rejects dangling or duplicate provider nodes,
+provider exceptions, so moving a file moves its reviews:
+
+```dart
+// provider-graph: manual-provider:lookupProvider planned CAT156 -- why this is still handwritten
+```
+
+The check rejects dangling or duplicate provider nodes,
 unresolved internal references, reactive cycles, unreviewed candidates, and
 stale review decisions. Full JSON and compact summary output are deterministic,
 read-only, and created only on demand or as ephemeral CI evidence. Feature-owned
@@ -734,11 +739,11 @@ Generated repository function factories and pure orchestration helpers are
 different responsibilities; Firebase Auth current-user reads may be legitimate
 account-currentness fences. Consumer inheritance alone proves no boundary.
 
-Ownership decisions in `provider_graph_reviews.json` name the exact candidate
-id, path, symbol, operation, observed `maxCallsites`, and rationale. A new symbol
-in a reviewed file, a same-count operation replacement, or added callsites
-requires a new review. Remove stale decisions and lower the ceiling when debt
-shrinks. `planned` means confirmed debt with a stable task id; `watch` means an
+An ownership review sits in the reviewed file and names the exact kind, symbol
+and operation, then its status, any debt id, `max=<callsites>` when more than
+one, and the rationale. A new symbol in a reviewed file, a same-count operation
+replacement, or added callsites requires a new review. Remove stale reviews and
+lower the ceiling when debt shrinks. `planned` means confirmed debt with a stable task id; `watch` means an
 unresolved signal whose changed fields and caller contract still need review.
 Neither disposition claims compliance. Use `accepted-exception` only for a
 named mechanical/framework/service responsibility, such as the router

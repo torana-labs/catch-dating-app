@@ -63,8 +63,7 @@ const symbolTextExcluded = [codemodTests, /(?:^|\/)node_modules\//u, toolFixture
 // code values, component roles, capture builders) rename every Dart name but
 // the stored enum values; a test's strings rename the symbols they describe.
 const codeRegistryRoots = [/^design\/(?:screens|features|components)\/.*\.json$/u,
-  /^design\/public_surface_behavior\.json$/u, /^tool\/ui_capture\/.*\.json$/u,
-  /^tool\/architecture\/provider_graph_reviews\.json$/u];
+  /^design\/public_surface_behavior\.json$/u, /^tool\/ui_capture\/.*\.json$/u];
 const testRoots = [/^(?:test|integration_test)\//u, /^(?:widgetbook|apps\/[^/]+|packages\/[^/]+)\/test\//u];
 // A rename keeps import targets: only moved files change a directive.
 const noContexts = {roots: {contexts: "\0"}};

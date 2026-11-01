@@ -6662,9 +6662,11 @@
       "command": "dart run tool/architecture/provider_graph.dart --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks the live static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring current architecture decisions for questionable relationships; deterministic JSON is emitted only on demand.",
+      "description": "Checks the live static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring a current // provider-graph: review next to each questionable relationship; deterministic JSON is emitted only on demand.",
       "impactPaths": [
-        "tool/architecture/provider_graph_reviews.json"
+        "tool/architecture/provider_graph.dart",
+        "test/tool/provider_graph_test.dart",
+        "lib/**/*.dart"
       ],
       "ciRequirements": {
         "repositoryView": "full",
