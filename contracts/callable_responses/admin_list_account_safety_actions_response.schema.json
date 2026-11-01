@@ -1,0 +1,232 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_account_safety_actions_response.schema.json",
+  "title": "AdminListAccountSafetyActionsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actionId",
+          "uid",
+          "displayName",
+          "kind",
+          "reasonCode",
+          "reasonLabel",
+          "messageToUser",
+          "durationDays",
+          "startsAtMillis",
+          "endsAtMillis",
+          "status",
+          "decidedByUid",
+          "decidedByRole",
+          "automatic",
+          "appealable",
+          "caseTargetPaths",
+          "appeal",
+          "bookings",
+          "blockedSignupAttempts",
+          "canReviewAppeal"
+        ],
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{8,128}$"
+          },
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "warn",
+              "restrict",
+              "suspend",
+              "ban"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{1,63}$"
+          },
+          "reasonLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "messageToUser": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "durationDays": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "enum": [
+              7,
+              30,
+              null
+            ]
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "lifted",
+              "replaced"
+            ]
+          },
+          "decidedByUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "decidedByRole": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "ops",
+              "system"
+            ]
+          },
+          "automatic": {
+            "type": "boolean"
+          },
+          "appealable": {
+            "type": "boolean"
+          },
+          "caseTargetPaths": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 260
+            }
+          },
+          "appeal": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "status",
+                  "text",
+                  "submittedAtMillis",
+                  "reviewerUid",
+                  "decidedAtMillis",
+                  "decisionNote"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "kept",
+                      "reduced",
+                      "lifted"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "submittedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "reviewerUid": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 128
+                  },
+                  "decidedAtMillis": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "decisionNote": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1000
+                  }
+                }
+              }
+            ]
+          },
+          "bookings": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cancelled",
+              "needsOrganizer",
+              "failed"
+            ],
+            "properties": {
+              "cancelled": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "needsOrganizer": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "blockedSignupAttempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "canReviewAppeal": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

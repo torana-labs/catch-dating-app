@@ -18,6 +18,7 @@ const helperNames = new Map([
 ]);
 const endpointWrappers = new Map([
   ["eventSuccess/operations/liveWorkTriggers.ts", new Set(["sourceTrigger"])],
+  ["admin/inbox/triggers.ts", new Set(["inboxTrigger"])],
   ["admin/sales/callables.ts", new Set(["read", "write"])],
   ["admin/salesIntelligence/callables.ts", new Set(["read", "write"])],
   ["admin/salesPrivacy/callables.ts", new Set(["privacyCallable"])],
