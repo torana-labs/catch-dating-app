@@ -74,7 +74,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       }
     },

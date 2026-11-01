@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {compare, laneForTask, summary} from "./shadow_plan.mjs";
+import {compare, comparedLanes, isControlPlane, laneForTask, summary} from "./shadow_plan.mjs";
 
 const dart = {catch_dating_app: ["lang:dart"], catch_ui: ["lang:dart"], widget_dedupe: ["lang:dart"]};
 
@@ -13,11 +13,26 @@ test("Nx tasks map onto the CI lanes they would replace", () => {
   assert.equal(laneForTask("@catch/brand:test"), null);
 });
 
-test("agreement compares only lanes both selectors can choose", () => {
+test("every planner lane has an Nx project to compare with", () => {
   const result = compare({plannerLanes: ["functions", "contracts", "docs"],
-    nxTasks: ["functions:test", "contracts:conformance"], tagsByProject: dart});
+    nxTasks: ["functions:test", "contracts:conformance", "lane-docs:lane"], tagsByProject: dart});
   assert.equal(result.agree, true);
-  assert.deepEqual(result.uncomparedPlannerLanes, ["docs"]);
+  assert.equal(laneForTask("lane-build-ios:lane"), "flutter_build_ios");
+  assert.equal(laneForTask("lane-flutter-design:lane"), "flutter");
+});
+
+test("an edit to how CI runs selects every lane", () => {
+  assert.equal(isControlPlane(".github/workflows/ci.yml"), true);
+  assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
+  assert.equal(isControlPlane("tool/tools_manifest.json"), false);
+  const result = compare({plannerLanes: comparedLanes, nxTasks: [], changedFiles: [".github/actions/setup-flutter/action.yml"]});
+  assert.equal(result.agree, true);
+});
+
+test("pull requests leave the queue-only lanes to the merge queue", () => {
+  const result = compare({plannerLanes: ["flutter"], mode: "pr", tagsByProject: dart,
+    nxTasks: ["catch_dating_app:analyze", "lane-visual:lane", "lane-build-web:lane"]});
+  assert.equal(result.agree, true);
 });
 
 test("a lane only the planner selects is reported as Nx being narrower", () => {
