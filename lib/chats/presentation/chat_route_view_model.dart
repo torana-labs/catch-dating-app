@@ -21,6 +21,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chat_route_view_model.g.dart';
 
+// provider-graph: high-fan-out:chatRouteStateProvider accepted -- The eight dependencies form one route projection: conversation, match and host-inquiry context, event/profile enrichment, share capability, and action pending state. The provider has no cycles and prevents the screen from assembling those waves itself.
 @riverpod
 ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
   final uidAsync = ref.watch(uidProvider);

@@ -214,6 +214,7 @@ class _HostWhatsappSetupSectionState
     setState(() => _busy = true);
     widget.onBusyChanged?.call(true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostWhatsappSetupSectionState._run:await:action watch CAT156 -- Existing bounded review signal at _HostWhatsappSetupSectionState._run (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await action();
     } on Object catch (error) {
       if (mounted) {

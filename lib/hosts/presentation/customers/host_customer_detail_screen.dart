@@ -479,6 +479,7 @@ class _HostCustomerDetailScreenState
     if (_updatingCustomer) return;
     setState(() => _updatingCustomer = true);
     try {
+      // provider-graph: ownership-widget-async:_HostCustomerDetailScreenState._setMessagingEnabled:await:hostCustomersControllerProvider.mutateCustomer watch CAT156 -- Existing bounded review signal at _HostCustomerDetailScreenState._setMessagingEnabled (await:hostCustomersControllerProvider.mutateCustomer). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostCustomersControllerProvider)
           .mutateCustomer(
@@ -749,6 +750,7 @@ class _HostCustomerDetailScreenState
     if (_openingConversation) return;
     setState(() => _openingConversation = true);
     try {
+      // provider-graph: ownership-widget-async:_HostCustomerDetailScreenState._startConversation:await:hostCustomersControllerProvider.startConversation watch CAT156 -- Existing bounded review signal at _HostCustomerDetailScreenState._startConversation (await:hostCustomersControllerProvider.startConversation). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final matchId = await ref
           .read(hostCustomersControllerProvider)
           .startConversation(

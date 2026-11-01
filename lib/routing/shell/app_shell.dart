@@ -30,6 +30,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_shell.g.dart';
 
+// provider-graph: routing-to-presentation:appShellFcmInitializationProvider->foregroundNotificationControllerProvider accepted -- The shared authenticated app shell owns transport-to-presentation composition for both app roles. It connects the FCM service callback to the public foreground notification controller command seam; delivery occurs outside provider construction, the service checks session generations, and the controller validates recipient, role and foreground state. Shell, FCM lifecycle and foreground notification tests cover delivery and account changes.
 @riverpod
 Future<void> appShellFcmInitialization(
   Ref ref,

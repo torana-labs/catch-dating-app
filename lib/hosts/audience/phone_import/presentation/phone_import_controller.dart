@@ -16,6 +16,7 @@ enum PhoneImportNotice {
   empty,
 }
 
+// provider-graph: ownership-listenable:PhoneImportController:reactive-state planned CAT156 -- PhoneImportController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Owns the disposable in-memory review; submission uses the canonical adapter.
 class PhoneImportController extends ChangeNotifier {
   PhoneImportController({required this.picker, this.contactReferenceId});

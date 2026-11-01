@@ -119,6 +119,7 @@ String? _organizerAudienceUriRedirect(BuildContext _, GoRouterState state) {
   return hostOrganizerAudienceRedirect(state.uri);
 }
 
+// provider-graph: ownership-listenable:_RouterRefreshNotifier:reactive-state accepted-exception -- GoRouter requires a Listenable refresh bridge. This exact class bridges routing invalidation, owns no feature loaded/business state, and must retain listener cleanup; it is not a business controller migration.
 class _RouterRefreshNotifier extends ChangeNotifier {
   void notify() => notifyListeners();
 }

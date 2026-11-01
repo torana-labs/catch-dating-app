@@ -104,6 +104,7 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
       _mutationError = null;
     });
     try {
+      // provider-graph: ownership-widget-async-callback:_ProgramTeamPageBodyState._run:await:action planned CAT156 -- Owns pending/mutation error around a Future callback whose callers delegate invite/grant commands to ProgramWorkspaceController. Delegate lifecycle without weakening access checks.
       await action();
       ref.invalidate(programStaffListProvider(widget.programId));
     } catch (error) {

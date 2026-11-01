@@ -103,7 +103,9 @@ class _HostFormResponsesSectionState
         ? null
         : HostResponseQueryController(
             widget.queryCapability!.gateway ??
+                // provider-graph: ownership-repository-construction:_HostFormResponsesSectionState._bindQueryAccount:construct:HostResponseQueryRepository planned CAT156 -- _HostFormResponsesSectionState._bindQueryAccount directly constructs HostResponseQueryRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences.
                 HostResponseQueryRepository(
+                  // provider-graph: ownership-widget-backend:_HostFormResponsesSectionState._bindQueryAccount:read:firebaseFunctionsProvider planned CAT156 -- _HostFormResponsesSectionState._bindQueryAccount reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
                   ref.read(firebaseFunctionsProvider),
                 ),
           );
@@ -250,6 +252,7 @@ class _HostFormResponsesSectionState
       }
       final queryController = _queryController!;
       final offerCopy = capability.offerWorkspace;
+      // provider-graph: ownership-widget-backend:_HostFormResponsesSectionState.build:read:firebaseFunctionsProvider planned CAT156 -- _HostFormResponsesSectionState.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
       final functions = ref.read(firebaseFunctionsProvider);
       return SliverToBoxAdapter(
         child: Column(
@@ -289,6 +292,7 @@ class _HostFormResponsesSectionState
               exportGateway:
                   capability.exportGateway ??
                   (_exportGateway ??= JournalHostResponseExportGateway(
+                    // provider-graph: ownership-repository-construction:_HostFormResponsesSectionState.build:construct:HostFormsRepository planned CAT156 -- _HostFormResponsesSectionState.build directly constructs HostFormsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences.
                     repository: HostFormsRepository(functions),
                     storage: ref.read(commandJournalStorageProvider),
                     currentAccountId: () =>

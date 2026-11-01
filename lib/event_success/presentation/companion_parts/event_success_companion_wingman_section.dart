@@ -191,6 +191,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
   Future<void> _saveRequest(PublicProfile candidate) async {
     setState(() => _savingTargetUid = candidate.uid);
     try {
+      // provider-graph: ownership-widget-async-callback:_WingmanRequestSectionState._saveRequest:await:widget.onSaveRequest watch CAT156 -- Existing bounded review signal at _WingmanRequestSectionState._saveRequest (await:widget.onSaveRequest). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await widget.onSaveRequest(candidate, _noteController.text);
       if (!mounted) return;
       setState(() => _optimisticTargetUid = candidate.uid);
@@ -202,6 +203,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
   Future<void> _withdrawRequest() async {
     setState(() => _withdrawing = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_WingmanRequestSectionState._withdrawRequest:await:widget.onWithdrawRequest watch CAT156 -- Existing bounded review signal at _WingmanRequestSectionState._withdrawRequest (await:widget.onWithdrawRequest). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await widget.onWithdrawRequest();
       if (!mounted) return;
       setState(() => _optimisticTargetUid = null);

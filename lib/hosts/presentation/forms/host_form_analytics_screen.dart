@@ -318,6 +318,7 @@ class _HostFormAnalyticsScreenState
     final controller = ref.read(hostFormsControllerProvider);
     final requestId = 'export_${DateTime.now().microsecondsSinceEpoch}';
     try {
+      // provider-graph: ownership-widget-async:_HostFormAnalyticsScreenState._export:await:hostFormsControllerProvider.requestExport watch CAT156 max=2 -- Existing bounded review signal at _HostFormAnalyticsScreenState._export (await:hostFormsControllerProvider.requestExport). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       var receipt = await controller.requestExport(
         organizerId: widget.organizerId,
         formId: widget.formId,
@@ -347,6 +348,7 @@ class _HostFormAnalyticsScreenState
       if (!mounted) return;
       if (receipt.status == HostFormExportStatus.completed &&
           receipt.downloadUrl != null) {
+        // provider-graph: ownership-widget-async:_HostFormAnalyticsScreenState._export:await:externalLinkControllerProvider.open watch CAT156 -- Existing bounded review signal at _HostFormAnalyticsScreenState._export (await:externalLinkControllerProvider.open). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
         final opened = await ref
             .read(externalLinkControllerProvider)
             .open(Uri.parse(receipt.downloadUrl!));

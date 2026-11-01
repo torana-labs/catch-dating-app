@@ -96,6 +96,7 @@ class _HostWhatsappThreadSheetState
     }
     setState(() => _sending = true);
     try {
+      // provider-graph: ownership-widget-async:_HostWhatsappThreadSheetState._send:await:hostAudienceControllerProvider.sendWhatsappReply planned CAT156 -- Owns server send pending and payload-bound retry identity; retain reply body/idempotency key and text mechanics while moving business completion ownership.
       await ref
           .read(hostAudienceControllerProvider)
           .sendWhatsappReply(
