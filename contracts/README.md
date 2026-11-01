@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contracts
-version: 0.3.0
-updated: 2026-08-17
+version: 0.3.1
+updated: 2026-11-02
 owner: data_contracts
 status: active
 ---
@@ -197,6 +197,13 @@ This checks JSON syntax, schema metadata, local `$ref` targets, prompt catalog
 uniqueness, catalog/schema limit alignment, and fixture placement. Generated
 TypeScript/Ajv/Dart output is checked by `node tool/contracts/generate_schema_contracts.mjs
 --check` and by the full data-contract script.
+
+Adding a schema file is enough to generate its type, validator and registry
+entry: the generator finds every `*.schema.json` here, and a title such as
+`CreateEventCallablePayload` names the type. `shared/` and `storage/` hold
+helper schemas and generate nothing. `tool/contracts/schema_spec_exceptions.json`
+holds only what a schema cannot say, including which types Admin and the website
+also receive.
 
 Storage contract metadata is checked by:
 

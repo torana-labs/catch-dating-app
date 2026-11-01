@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.185.1
-updated: 2026-11-01
+version: 1.185.2
+updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -1836,6 +1836,9 @@ node tool/contracts/generate_schema_contracts.mjs --check
 node tool/contracts/validate_schema_contracts.mjs
 ./tool/check_data_contract.sh
 ```
+
+The generator finds every schema under `contracts/`, so a new schema needs no
+list entry. `contracts/README.md` gives the naming rule and the exceptions.
 
 Run Firestore and Storage rules tests through emulators unless those emulators
 are already running:

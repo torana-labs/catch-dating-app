@@ -1087,7 +1087,7 @@
     {
       "id": "contracts.schema-projections",
       "owner": "backend_platform",
-      "inputs": ["contracts/**/*.json", "tool/contracts/generate_schema_contracts.mjs", "functions/package.json", "functions/package-lock.json"],
+      "inputs": ["contracts/**/*.json", "tool/contracts/generate_schema_contracts.mjs", "tool/contracts/lib/schema_specs.mjs", "tool/contracts/schema_spec_exceptions.json", "tool/contracts/schema_spec_order.json", "functions/package.json", "functions/package-lock.json"],
       "outputs": ["lib/platform/schema_contracts/generated/**", "functions/src/shared/generated/**", "admin/src/generated/contracts/**", "tool/contracts/generated/**", "website/src/shared/contracts/generated/**"],
       "checkCommand": "node tool/contracts/generate_schema_contracts.mjs --check",
       "writeCommand": "node tool/contracts/generate_schema_contracts.mjs",
