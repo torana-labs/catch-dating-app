@@ -5,13 +5,13 @@ import path from "node:path";
 import test from "node:test";
 import {checkAppArchitectureExhibits} from "./check_app_architecture_exhibits.mjs";
 
-test("passes when exhibits have freshness markers and tracker links", () => {
+test("passes when exhibits have freshness markers", () => {
   const root = createFixture({
     doc: [
       "# App Architecture",
       "",
       "### Exhibit ARCH-SCREEN-001: Feature Screen Boundary",
-      "<!-- exhibit-freshness: ARCH-SCREEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->",
+      "<!-- exhibit-freshness: ARCH-SCREEN-001 owner=recursive_audit_loop -->",
       "",
       "```dart",
       "final sectionVisibility = eventDetailSectionVisibilityStateFrom();",
@@ -22,7 +22,7 @@ test("passes when exhibits have freshness markers and tracker links", () => {
       "```",
       "",
       "### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model",
-      "<!-- exhibit-freshness: ARCH-UI-STATE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->",
+      "<!-- exhibit-freshness: ARCH-UI-STATE-001 owner=recursive_audit_loop -->",
       "",
       "```dart",
       "class CalendarHomeState {}",
@@ -41,7 +41,7 @@ test("flags stale event-detail snippets in screen exhibit", () => {
       "# App Architecture",
       "",
       "### Exhibit ARCH-SCREEN-001: Feature Screen Boundary",
-      "<!-- exhibit-freshness: ARCH-SCREEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->",
+      "<!-- exhibit-freshness: ARCH-SCREEN-001 owner=recursive_audit_loop -->",
       "",
       "```dart",
       "final companionState = _eventDetailCompanionState();",
@@ -81,61 +81,24 @@ test("flags missing freshness markers", () => {
   );
 });
 
-test("flags tracker anchor drift", () => {
+test("flags a marker that names another exhibit", () => {
   const root = createFixture({
     doc: [
-      "# App Architecture",
-      "",
       "### Exhibit ARCH-SCREEN-001: Feature Screen Boundary",
-      "<!-- exhibit-freshness: ARCH-SCREEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->",
-      "",
-      "```dart",
-      "final sectionVisibility = eventDetailSectionVisibilityStateFrom();",
-      "final companionState = eventDetailCompanionStateFrom();",
-      "final hostState = eventDetailHostStateFrom();",
-      "final socialState = eventDetailSocialStateFrom();",
-      "EventDetailBody(sectionVisibility: sectionVisibility);",
-      "```",
-      "",
+      "<!-- exhibit-freshness: ARCH-OTHER-001 owner=recursive_audit_loop -->",
     ].join("\n"),
-    overridePatterns: [
-      {
-        id: "ARCH-SCREEN-001",
-        architectureExhibit: "docs/app_architecture.md#old-anchor",
-      },
-    ],
   });
 
   assert.match(
     checkAppArchitectureExhibits({root}).errors.join("\n"),
-    /tracker architectureExhibit is docs\/app_architecture\.md#old-anchor/u,
+    /exhibit-freshness marker references ARCH-OTHER-001/u,
   );
 });
 
-function createFixture({doc, overridePatterns}) {
+function createFixture({doc}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-exhibits-"));
   writeFile(root, "docs/app_architecture.md", doc);
-  writeFile(
-    root,
-    "tool/architecture/pattern_adoption.json",
-    JSON.stringify({patterns: overridePatterns ?? defaultPatterns()}, null, 2),
-  );
   return root;
-}
-
-function defaultPatterns() {
-  return [
-    {
-      id: "ARCH-SCREEN-001",
-      architectureExhibit:
-        "docs/app_architecture.md#exhibit-arch-screen-001-feature-screen-boundary",
-    },
-    {
-      id: "ARCH-UI-STATE-001",
-      architectureExhibit:
-        "docs/app_architecture.md#exhibit-arch-ui-state-001-provider-free-presentation-state-model",
-    },
-  ];
 }
 
 function writeFile(root, relativePath, contents) {

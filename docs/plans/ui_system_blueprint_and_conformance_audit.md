@@ -548,9 +548,8 @@ A migration slice is complete only when all five hold:
 5. **Catalog moves with code.** Widgetbook cases, goldens, and registry
    entries for touched shared components update in the same PR.
 
-`pattern_adoption.json` remains for pattern bookkeeping, but an `aligned`
-claim must name its machine check or carry an explicit `manual-review` line
-with reviewer and date. Every `*_baseline.json` in the repo gains an owner and
+A claim that code conforms to a pattern must name its machine check or carry an
+explicit `manual-review` line with reviewer and date. Every `*_baseline.json` in the repo gains an owner and
 target-zero phase reference; a baseline without one is drift
 (enforcement-integrity gate extension).
 
