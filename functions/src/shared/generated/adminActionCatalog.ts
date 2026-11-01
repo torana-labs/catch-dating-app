@@ -341,6 +341,39 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
+  "organizers.directory": {
+    "callable": "adminListOrganizerDirectory",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "organizers.overview": {
+    "callable": "adminGetOrganizerOverview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "events.directory": {
+    "callable": "adminListEventDirectory",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
   "organizers.get": {
     "callable": "adminGetOrganizerDetails",
     "controlPlane": false,

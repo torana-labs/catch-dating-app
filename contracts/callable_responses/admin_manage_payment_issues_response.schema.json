@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_payment_issues_response.schema.json",
+  "title": "AdminManagePaymentIssuesCallableResponse",
+  "description": "Money issues for one view, oldest first, with counts per kind, and the outcome of the action just taken.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["view", "issues", "counts", "outcome"],
+  "properties": {
+    "view": {"enum": ["open", "resolved"]},
+    "issues": {
+      "type": "array", "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["issueId", "kind", "source", "targetId", "title", "subtitle", "organizerId", "organizerName", "amountMinor", "waitingSinceMillis", "status", "lastErrorCode", "providerPaymentId", "eventId", "canConfirmBooking", "resolution"],
+        "properties": {
+          "issueId": {"type": "string", "maxLength": 240},
+          "kind": {"enum": ["payment", "refund", "review", "bill"]},
+          "source": {"enum": ["publicEventPayments", "organizerEventOfferPayments", "payments", "organizerBills"]},
+          "targetId": {"type": "string", "maxLength": 200},
+          "title": {"type": "string", "maxLength": 200},
+          "subtitle": {"type": "string", "maxLength": 200},
+          "organizerId": {"type": ["string", "null"], "maxLength": 180},
+          "organizerName": {"type": ["string", "null"], "maxLength": 160},
+          "amountMinor": {"type": "integer", "minimum": 0},
+          "waitingSinceMillis": {"type": "integer", "minimum": 0},
+          "status": {"type": "string", "maxLength": 40},
+          "lastErrorCode": {"type": ["string", "null"], "maxLength": 80},
+          "providerPaymentId": {"type": ["string", "null"], "maxLength": 128},
+          "eventId": {"type": ["string", "null"], "maxLength": 180},
+          "canConfirmBooking": {"type": "boolean"},
+          "resolution": {"anyOf": [{"type": "null"}, {"$ref": "../firestore/money_issue_resolutions.schema.json"}]}
+        }
+      }
+    },
+    "counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["all", "payment", "refund", "review", "bill"],
+      "properties": {
+        "all": {"type": "integer", "minimum": 0}, "payment": {"type": "integer", "minimum": 0},
+        "refund": {"type": "integer", "minimum": 0}, "review": {"type": "integer", "minimum": 0},
+        "bill": {"type": "integer", "minimum": 0}
+      }
+    },
+    "outcome": {
+      "anyOf": [{"type": "null"}, {
+        "type": "object", "additionalProperties": false,
+        "required": ["issueId", "result", "statusAfter"],
+        "properties": {
+          "issueId": {"type": "string", "maxLength": 240},
+          "result": {"enum": ["admitted", "stillWaiting", "refunding", "closed"]},
+          "statusAfter": {"type": "string", "maxLength": 40}
+        }
+      }]
+    }
+  }
+}

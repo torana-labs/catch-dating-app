@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_nominator_credits_response.schema.json",
+  "title": "AdminManageNominatorCreditsCallableResponse",
+  "description": "Every nominator with credit, their totals by state and whether their owed credit has reached the minimum payout, plus the newest credit entries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["nominators", "credits", "minimumPayoutMinor"],
+  "properties": {
+    "minimumPayoutMinor": {"type": "integer", "minimum": 0},
+    "nominators": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["nominatorUid", "nominatorRole", "owedMinor", "approvedMinor", "paidMinor", "payable", "organizerCount"],
+        "properties": {
+          "nominatorUid": {"type": "string", "minLength": 1, "maxLength": 128},
+          "nominatorRole": {"enum": ["associate", "partner", "guest", "organizer"]},
+          "owedMinor": {"type": "integer", "minimum": 0},
+          "approvedMinor": {"type": "integer", "minimum": 0},
+          "paidMinor": {"type": "integer", "minimum": 0},
+          "payable": {"type": "boolean"},
+          "organizerCount": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "credits": {"type": "array", "maxItems": 2000, "items": {"$ref": "../firestore/nominator_credits.schema.json"}}
+  }
+}

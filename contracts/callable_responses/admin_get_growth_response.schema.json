@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_growth_response.schema.json",
+  "title": "AdminGetGrowthCallableResponse",
+  "description": "Growth for one range, computed from organizerGrowthFacts, organizer bills, nominator credit and costs. Cohorts group organizers by the India-time month they were listed; days are medians counted from listing. Ticket sales are what organizers sold into their own accounts, from their monthly bills. Catch earned is what organizers' bills came to (paid or not, excluding free months).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["range", "generatedAtMillis", "summary", "cohorts", "claimDays", "salesByMonthOnCatch", "channels", "claimsByMonth", "adSpend", "nominators", "best"],
+  "definitions": {
+    "channel": {"$ref": "../firestore/organizer_growth_facts.schema.json#/definitions/channel"},
+    "month": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
+    "count": {"type": "integer", "minimum": 0},
+    "minor": {"type": "integer", "minimum": 0},
+    "days": {"type": ["number", "null"], "minimum": 0}
+  },
+  "properties": {
+    "range": {"enum": ["90d", "12m", "all"]},
+    "generatedAtMillis": {"type": "integer", "minimum": 1},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["listed", "claimed", "claimMedianDays", "ranEvent", "ranEventMedianDays", "paying", "sinceMonth"],
+      "properties": {
+        "listed": {"$ref": "#/definitions/count"},
+        "claimed": {"$ref": "#/definitions/count"},
+        "claimMedianDays": {"$ref": "#/definitions/days"},
+        "ranEvent": {"$ref": "#/definitions/count"},
+        "ranEventMedianDays": {"$ref": "#/definitions/days"},
+        "paying": {"$ref": "#/definitions/count"},
+        "sinceMonth": {"anyOf": [{"$ref": "#/definitions/month"}, {"type": "null"}]}
+      }
+    },
+    "cohorts": {
+      "type": "array", "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["month", "listed", "claimed", "claimMedianDays", "ranEvent", "ranEventMedianDays", "tooEarly"],
+        "properties": {
+          "month": {"$ref": "#/definitions/month"},
+          "listed": {"$ref": "#/definitions/count"},
+          "claimed": {"$ref": "#/definitions/count"},
+          "claimMedianDays": {"$ref": "#/definitions/days"},
+          "ranEvent": {"$ref": "#/definitions/count"},
+          "ranEventMedianDays": {"$ref": "#/definitions/days"},
+          "tooEarly": {"type": "boolean", "description": "Listed under 30 days ago, so most of its organizers have not had time to run an event."}
+        }
+      }
+    },
+    "claimDays": {
+      "type": "array", "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["label", "count"],
+        "properties": {"label": {"enum": ["0–3", "4–7", "8–14", "15–30", "31+"]}, "count": {"$ref": "#/definitions/count"}}
+      }
+    },
+    "salesByMonthOnCatch": {
+      "type": "array", "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["month", "organizers", "salesPerOrganizerMinor"],
+        "properties": {
+          "month": {"$ref": "#/definitions/month"},
+          "organizers": {"$ref": "#/definitions/count"},
+          "salesPerOrganizerMinor": {"type": "array", "maxItems": 6, "items": {"type": ["integer", "null"], "minimum": 0}, "description": "Average ticket sales per organizer in their 1st to 6th month on Catch, counted from the month of their first event; null where the month has not come yet."}
+        }
+      }
+    },
+    "channels": {
+      "type": "array", "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["channel", "listed", "claimed", "paying", "earnedMinor", "costMinor", "costKind", "detail"],
+        "properties": {
+          "channel": {"$ref": "#/definitions/channel"},
+          "listed": {"$ref": "#/definitions/count"},
+          "claimed": {"$ref": "#/definitions/count"},
+          "paying": {"$ref": "#/definitions/count"},
+          "earnedMinor": {"$ref": "#/definitions/minor"},
+          "costMinor": {"type": ["integer", "null"], "minimum": 0},
+          "costKind": {"enum": ["ads", "credit", "salaries", "none"]},
+          "detail": {"type": "string", "maxLength": 120}
+        }
+      }
+    },
+    "claimsByMonth": {
+      "type": "array", "maxItems": 120,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["month", "count"],
+        "properties": {"month": {"$ref": "#/definitions/month"}, "count": {"$ref": "#/definitions/count"}}
+      }
+    },
+    "adSpend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["month", "metaMinor", "metaConnected", "googleConnected", "adClaims"],
+      "properties": {
+        "month": {"$ref": "#/definitions/month"},
+        "metaMinor": {"type": ["integer", "null"], "minimum": 0},
+        "metaConnected": {"type": "boolean"},
+        "googleConnected": {"type": "boolean"},
+        "adClaims": {"$ref": "#/definitions/count"}
+      }
+    },
+    "nominators": {
+      "type": "array", "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["uid", "name", "role", "nominated", "claimed", "paying", "paidToCatchMinor", "creditOwedMinor", "creditApprovedMinor", "creditPaidMinor", "firstNominatedAtMillis", "organizers"],
+        "properties": {
+          "uid": {"type": "string", "maxLength": 128},
+          "name": {"type": "string", "maxLength": 120},
+          "role": {"enum": ["associate", "partner", "guest", "organizer"]},
+          "nominated": {"$ref": "#/definitions/count"},
+          "claimed": {"$ref": "#/definitions/count"},
+          "paying": {"$ref": "#/definitions/count"},
+          "paidToCatchMinor": {"$ref": "#/definitions/minor"},
+          "creditOwedMinor": {"$ref": "#/definitions/minor"},
+          "creditApprovedMinor": {"$ref": "#/definitions/minor"},
+          "creditPaidMinor": {"$ref": "#/definitions/minor"},
+          "firstNominatedAtMillis": {"type": ["integer", "null"], "minimum": 0},
+          "organizers": {
+            "type": "array", "maxItems": 50,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["organizerId", "name", "claimed", "latestBill", "creditMonthIndex"],
+              "properties": {
+                "organizerId": {"type": "string", "maxLength": 180},
+                "name": {"type": "string", "maxLength": 160},
+                "claimed": {"type": "boolean"},
+                "latestBill": {
+                  "anyOf": [{"type": "null"}, {
+                    "type": "object", "additionalProperties": false,
+                    "required": ["billId", "month", "totalMinor", "status", "creditMinor"],
+                    "properties": {
+                      "billId": {"type": "string", "maxLength": 200},
+                      "month": {"$ref": "#/definitions/month"},
+                      "totalMinor": {"$ref": "#/definitions/minor"},
+                      "status": {"$ref": "../firestore/organizer_bills.schema.json#/definitions/status"},
+                      "creditMinor": {"type": ["integer", "null"], "minimum": 0}
+                    }
+                  }]
+                },
+                "creditMonthIndex": {"type": ["integer", "null"], "minimum": 1}
+              }
+            }
+          }
+        }
+      }
+    },
+    "best": {
+      "type": "array", "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "name", "marketId", "salesMinor", "earnedMinor", "events", "trendPercent", "channel", "payingSinceMonth", "inTrial", "ownTerms"],
+        "properties": {
+          "organizerId": {"type": "string", "maxLength": 180},
+          "name": {"type": "string", "maxLength": 160},
+          "marketId": {"type": ["string", "null"], "maxLength": 50},
+          "salesMinor": {"$ref": "#/definitions/minor"},
+          "earnedMinor": {"$ref": "#/definitions/minor"},
+          "events": {"$ref": "#/definitions/count"},
+          "trendPercent": {"type": ["integer", "null"], "description": "Ticket sales in the last three billed months against the three before; null when there is nothing to compare."},
+          "channel": {"$ref": "#/definitions/channel"},
+          "payingSinceMonth": {"anyOf": [{"$ref": "#/definitions/month"}, {"type": "null"}]},
+          "inTrial": {"type": "boolean"},
+          "ownTerms": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

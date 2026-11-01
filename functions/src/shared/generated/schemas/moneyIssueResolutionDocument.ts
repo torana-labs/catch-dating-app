@@ -1,0 +1,88 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const moneyIssueResolutionDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/money_issue_resolutions.schema.json",
+  "title": "MoneyIssueResolutionDocument",
+  "description": "How a money issue in Admin Money was resolved, keyed by the issue id (source collection and record id joined by a colon, encoded). A resolved issue leaves the open queue even while its record still matches; a new issue on the same record needs the record to change state.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moneyIssueResolutions",
+  "x-firestore-path": "moneyIssueResolutions/{resolutionId}",
+  "x-document-id-field": "resolutionId",
+  "x-owner": "adminManagePaymentIssues",
+  "required": [
+    "schemaVersion",
+    "resolutionId",
+    "issueId",
+    "kind",
+    "statusAtResolution",
+    "action",
+    "note",
+    "resolvedAtMillis",
+    "resolvedByUid",
+    "title",
+    "organizerName"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "resolutionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,240}$"
+    },
+    "issueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "kind": {
+      "enum": [
+        "payment",
+        "refund",
+        "review",
+        "bill"
+      ]
+    },
+    "statusAtResolution": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "action": {
+      "enum": [
+        "confirmedBooking",
+        "closed"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "resolvedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resolvedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "organizerName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 160
+    }
+  }
+} as const;
