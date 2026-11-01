@@ -48,6 +48,7 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                   children: [
                     CatchSurface(
                       backgroundColor: entry.$2.$1,
+                      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                       borderRadius: BorderRadius.circular(CatchRadius.xs),
                       duration: Duration.zero,
                       child: const SizedBox(
@@ -162,6 +163,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
       ),
       child: CatchSurface(
         tone: CatchSurfaceTone.transparent,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.circular(CatchRadius.sm),
         onTap: onTap,
         child: Padding(
@@ -187,6 +189,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
                       ),
                       child: CatchSurface(
                         backgroundColor: t.primarySoft,
+                        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                         borderRadius: BorderRadius.circular(CatchRadius.xs),
                         duration: Duration.zero,
                         child: const SizedBox.shrink(),
@@ -205,6 +208,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
                       ),
                       child: CatchSurface(
                         backgroundColor: t.ink,
+                        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                         borderRadius: BorderRadius.circular(CatchRadius.xs),
                         borderSpec: selected
                             ? CatchBorderSpec(

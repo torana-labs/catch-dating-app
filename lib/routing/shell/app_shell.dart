@@ -309,12 +309,15 @@ class AppShellSideNavigation extends StatelessWidget {
         ],
       ),
     );
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return DecoratedBox(
       key: ValueKey(
         expanded ? 'app_shell.navigation.sidebar' : 'app_shell.navigation.rail',
       ),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       decoration: BoxDecoration(
         color: t.surface,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         border: Border(right: BorderSide(color: t.line)),
       ),
       child: SafeArea(
@@ -325,6 +328,7 @@ class AppShellSideNavigation extends StatelessWidget {
               : largeText
               ? CatchLayout.appShellLargeTextRailWidth
               : CatchLayout.appShellRailWidth,
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           child: Material(
             color: Colors.transparent,
             child: FocusTraversalGroup(

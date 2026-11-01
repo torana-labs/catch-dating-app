@@ -1,3 +1,4 @@
+// size-exemption: at the limit before its drawing exceptions moved here; split before it grows further.
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
@@ -452,6 +453,7 @@ class CalendarDateHeader extends StatelessWidget {
       label: expanded
           ? context.l10n.eventsCalendarScreenLabelCalendarDateHeaderDrag
           : context.l10n.eventsCalendarScreenLabelCalendarDateHeaderDrag0f5be6,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onVerticalDragUpdate: (details) =>
@@ -541,10 +543,13 @@ class _CalendarDateHeaderDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final t = CatchTokens.of(context);
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return DecoratedBox(
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       decoration: BoxDecoration(
         color: t.bg,
         border: overlapsContent
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             ? Border(bottom: BorderSide(color: t.line))
             : null,
       ),

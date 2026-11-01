@@ -2,7 +2,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
-import 'migration_baseline.dart' show migrationRepositoryRoot;
+import 'migration_scope.dart' show migrationRepositoryRoot;
 
 /// Lint codes for the dependency-direction and bounded-context rules. Every
 /// code is `catch_arch_*` so `catch_no_allow_debt` can keep rejecting ignores

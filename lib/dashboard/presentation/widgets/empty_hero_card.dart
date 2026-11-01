@@ -28,6 +28,7 @@ class EmptyHeroCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             const Positioned.fill(child: CustomPaint(painter: _HeroLineWash())),
             Padding(
               padding: CatchInsets.pageBody.copyWith(
@@ -107,6 +108,7 @@ class EmptyHeroBody extends StatelessWidget {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _HeroLineWash extends CustomPainter {
   const _HeroLineWash();
 

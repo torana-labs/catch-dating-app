@@ -20,6 +20,7 @@ final bool _kStageAnimationsEnabled = !Platform.environment.containsKey(
   'FLUTTER_TEST',
 );
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _CompanionPaperTicketHeaderPainter extends CustomPainter {
   const _CompanionPaperTicketHeaderPainter({
     required this.lineColor,
@@ -56,6 +57,7 @@ class _CompanionPaperTicketHeaderPainter extends CustomPainter {
   ) => oldDelegate.lineColor != lineColor || oldDelegate.markColor != markColor;
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _CompanionPaperTicketDividerPainter extends CustomPainter {
   const _CompanionPaperTicketDividerPainter({required this.color});
 
@@ -83,6 +85,7 @@ class _CompanionPaperTicketDividerPainter extends CustomPainter {
   ) => oldDelegate.color != color;
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _CompanionPaperTicketImagePainter extends CustomPainter {
   const _CompanionPaperTicketImagePainter({required this.color});
 
@@ -235,6 +238,7 @@ class _CompanionStageImageState extends State<CompanionStageImage>
           child: CatchSurface(
             width: CatchLayout.eventSuccessStageGlyphExtent,
             height: CatchLayout.eventSuccessStageGlyphExtent,
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             borderRadius: BorderRadius.circular(CatchRadius.pill),
             backgroundColor: widget._stageTheme.foreground.withValues(
               alpha: CatchOpacity.subtleFill,
@@ -350,6 +354,7 @@ class _CompanionStageTheme {
         foreground: d.ink,
         accent: d.gold,
         visualAsset: eventSuccessMotionAssetForMotif(choreography.motifId),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -387,6 +392,7 @@ class _CompanionStageTheme {
       foreground: d.ink,
       accent: accent,
       visualAsset: eventSuccessMotionAssetForMotif(choreography.motifId),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -526,6 +532,7 @@ class _CompanionBouncySurfaceState extends State<CompanionBouncySurface>
       enabled: enabled,
       label: widget.semanticLabel,
       selected: widget.selected,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: enabled ? (_) => setState(() => _down = true) : null,

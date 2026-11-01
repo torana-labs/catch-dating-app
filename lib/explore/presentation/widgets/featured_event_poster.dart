@@ -81,6 +81,7 @@ class FeaturedEventPoster extends StatelessWidget {
               radius: 0,
               padding: EdgeInsets.zero,
               duration: Duration.zero,
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               gradient: RadialGradient(
                 center: CatchLayout.coverStoryGlowCenter,
                 radius: CatchLayout.coverStoryGlowRadius,
@@ -99,6 +100,7 @@ class FeaturedEventPoster extends StatelessWidget {
               radius: 0,
               padding: EdgeInsets.zero,
               duration: Duration.zero,
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               gradient: LinearGradient(
                 colors: [
                   CatchTokens.editorialBlack.withValues(
@@ -117,6 +119,7 @@ class FeaturedEventPoster extends StatelessWidget {
             ),
           ),
           Positioned.fill(
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             child: CustomPaint(
               painter: _DiagonalScrimPainter(
                 color: paper.withValues(alpha: CatchOpacity.coverStoryScrim),
@@ -358,6 +361,7 @@ class FeaturedEventBody extends StatelessWidget {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 /// Faint repeating diagonal hairlines (135°) for the cover's paper texture.
 class _DiagonalScrimPainter extends CustomPainter {
   const _DiagonalScrimPainter({required this.color});

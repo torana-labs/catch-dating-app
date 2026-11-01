@@ -200,16 +200,21 @@ class ShareCardBubble extends StatelessWidget {
           child: CatchSurface(
             backgroundColor: isMe ? t.primary : t.surface,
             borderRole: isMe ? null : CatchBorderRole.separator,
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             borderRadius: BorderRadius.only(
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               topLeft: Radius.circular(
                 isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
               ),
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               topRight: Radius.circular(
                 !isMe || isFirstInGroup ? CatchRadius.lg : CatchRadius.sm,
               ),
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               bottomLeft: Radius.circular(
                 isMe || !isLastInGroup ? CatchRadius.lg : CatchRadius.sm,
               ),
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               bottomRight: Radius.circular(
                 isMe && isLastInGroup ? CatchRadius.sm : CatchRadius.lg,
               ),

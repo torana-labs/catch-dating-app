@@ -32,6 +32,7 @@ class EventBackdropImage extends StatelessWidget {
         CatchSurface(
           duration: Duration.zero,
           radius: CatchRadius.none,
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -43,6 +44,7 @@ class EventBackdropImage extends StatelessWidget {
           ),
           child: const SizedBox.expand(),
         ),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         CustomPaint(
           painter: _ActivityPatternPainter(
             pattern: visual.pattern,
@@ -65,6 +67,7 @@ class EventBackdropImage extends StatelessWidget {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _ActivityPatternPainter extends CustomPainter {
   const _ActivityPatternPainter({required this.pattern, required this.color});
 
@@ -202,6 +205,7 @@ class _ActivityPatternPainter extends CustomPainter {
           canvas.drawRRect(
             RRect.fromRectAndRadius(
               Rect.fromLTWH(x, size.height * 0.34, 24, 18),
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               const Radius.circular(CatchSpacing.micro3),
             ),
             paint,

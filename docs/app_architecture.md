@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.99.0
+version: 1.100.0
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -1687,21 +1687,13 @@ zero remains the explicit no-border value, while decorative `CustomPainter`
 artwork is outside this UI-boundary diagnostic.
 
 `catch_text_requires_style` also steers direct, resolved `Text` calls onto
-`CatchText` when its current variant and argument set preserve the call.
-Existing calls are counted per file and role in
-`tool/architecture/catch_text_migration_baseline.json`; new calls fail and name
-the matching `CatchTextVariant`. The existing lint-drift zero gate checks that
-this baseline matches the resolved source and cannot grow from its merge base.
-After a migration, regenerate it with
-`bash tool/check_catch_ui_lint_drift.sh --update-text-baseline`.
-The initial adoption also records pre-existing uncovered roles whose arguments
-already fit the text API. These reservations remain dormant until their variant
-exists, then activate without increasing another role's allowance. Uncovered
-calls added later cannot enlarge a reservation, and no diagnostic requires a
-variant that does not exist. Both enabled and dormant allowances only shrink.
-Modified styles, uncovered roles and unsupported text APIs remain review inputs;
-the steer does not invent replacement props or change typography to fit a role.
-The missing-style diagnostic continues to apply independently.
+`CatchText` when its current variant and argument set preserve the call, and
+names the matching `CatchTextVariant`. A role with no variant yet is left alone;
+the change that adds a variant moves that role's existing calls, so no list of
+reservations is kept. Modified styles, uncovered roles and unsupported text APIs
+remain review inputs; the steer does not invent replacement props or change
+typography to fit a role. The missing-style diagnostic continues to apply
+independently.
 
 `catch_no_raw_surface_shell` owns the D18 drawing boundary across handwritten
 production `lib/**` and both app packages. Its resolved SDK identities cover
@@ -1712,18 +1704,12 @@ widgets such as Row, Column, Stack, Padding and SizedBox remain arrangement.
 The former decorated-surface heuristic is retired. Existing control/network
 image diagnostics retain their boundary where they already fire.
 
-Existing drawing sites have per-file, per-family allowances in
-`tool/architecture/catch_drawing_migration_baseline.json`. The lint-drift zero
-gate checks this resolved inventory and its merge-base shrink constraint;
-regenerate with
-`bash tool/check_catch_ui_lint_drift.sh --update-drawing-baseline` after a
-migration. The initial baseline requires unchanged app/library source.
-Icon and Tooltip are inventoried as dormant reservations until CAT-226 supplies
-their library components; their later activation cannot enlarge allowances.
-The baseline's `activeKinds` records the same families enforced by the rule.
-Drawing and text use the same census/history engine, preserving separate
-budgets for each source file, including parts. This migration changes ownership
-enforcement without changing rendering or choosing new component APIs.
+An existing drawing site carries `// ignore: catch_ui_lints/catch_no_raw_surface_shell -- <reason>`
+on the line above. `catch_no_allow_debt` rejects one with no reason or no live
+site, and still rejects ignores of other UI rules. Icon and Tooltip stay out of
+the active families until CAT-226 supplies their library components; the change
+that activates them moves or excuses their sites. This migration changes
+ownership enforcement without changing rendering or choosing new component APIs.
 
 Closed Field layouts and secondary actions render only inside their owning
 Field library. The inventory's exact source/library/owner/method/return-type

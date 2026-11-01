@@ -62,6 +62,7 @@ class EventSuccessCountdownSurface extends StatelessWidget {
       padding: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       duration: Duration.zero,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -94,6 +95,7 @@ class EventSuccessCountdownSurface extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             child: CustomPaint(
               painter: _CountdownAtmospherePainter(
                 progress: progress,
@@ -166,6 +168,7 @@ class EventSuccessCountdownSurface extends StatelessWidget {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _CountdownAtmospherePainter extends CustomPainter {
   const _CountdownAtmospherePainter({
     required this.progress,

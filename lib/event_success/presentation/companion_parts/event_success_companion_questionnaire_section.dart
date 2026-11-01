@@ -291,6 +291,7 @@ class QuestionProgressRail extends StatelessWidget {
                   value1: index + 1,
                 ),
             child: CompanionBouncySurface(
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               borderRadius: BorderRadius.circular(CatchRadius.pill),
               glowColor: t.primary,
               semanticLabel: context.l10n

@@ -413,6 +413,7 @@ class PaperCelebrationDetailsCard extends StatelessWidget {
 
     return CatchSurface(
       backgroundColor: t.surface,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: BorderRadius.circular(CatchRadius.md),
       borderSpec: CatchBorderSpec(
         role: CatchBorderRole.boundary,
@@ -504,6 +505,7 @@ class CelebrationDetailsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       backgroundColor: _celebrationCream.withValues(alpha: 0.28),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: BorderRadius.circular(CatchRadius.lg),
       borderSpec: CatchBorderSpec(
         role: CatchBorderRole.boundary,
@@ -583,6 +585,7 @@ class CelebrationNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       backgroundColor: _celebrationCream.withValues(alpha: 0.20),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: BorderRadius.circular(CatchRadius.lg),
       borderSpec: CatchBorderSpec(
         role: CatchBorderRole.boundary,

@@ -72,6 +72,7 @@ class EventActionCard extends StatelessWidget {
       ),
       radius: radius,
       emphasis: CatchSurfaceEmphasis.subtle,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -88,6 +89,7 @@ class EventActionCard extends StatelessWidget {
               height: CatchSpacing.micro6,
               child: CatchSurface(
                 tone: CatchSurfaceTone.transparent,
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 gradient: LinearGradient(colors: topAccentColors!),
                 radius: CatchRadius.none,
                 duration: Duration.zero,

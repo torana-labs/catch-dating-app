@@ -4,14 +4,11 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
-import 'migration_baseline.dart';
+import 'migration_scope.dart';
 
-const textMigrationBaseline =
-    'tool/architecture/catch_text_migration_baseline.json';
 const _variantPath =
     'packages/catch_ui/lib/src/primitives/catch_text_variant.dart';
 typedef TextMigrationSite = ({InstanceCreationExpression node, String role});
-typedef TextMigrationCounts = Map<String, Map<String, int>>;
 
 bool textMigrationScope(String relative) => migrationScope(relative);
 
@@ -211,80 +208,24 @@ Set<String> textMigrationVariants(String root) =>
         .map((node) => node.name.lexeme)
         .toSet();
 
-TextMigrationCounts parseTextMigrationBaseline(String source) =>
-    parseMigrationBaseline(source, label: 'CatchText');
+final _variantCache = <String, ({DateTime modified, Set<String> variants})>{};
 
-List<String> textMigrationGrowth(
-  TextMigrationCounts actual,
-  TextMigrationCounts budget,
-) => migrationGrowth(actual, budget);
-
-TextMigrationCounts textMigrationRenamedBudget(
-  TextMigrationCounts budget,
-  Map<String, String> renames,
-) => migrationRenamedBudget(budget, renames);
-
-TextMigrationCounts textMigrationPrunedCounts(
-  TextMigrationCounts actual,
-  TextMigrationCounts? recorded,
-  Set<String> variants,
-) => migrationPrunedCounts(actual, recorded, variants);
-
-String? _repositoryRoot(String path) => migrationRepositoryRoot(path);
-
-final _cache =
-    <
-      String,
-      ({String stamp, Set<String> variants, TextMigrationCounts counts})
-    >{};
-
-/// Existing counts are silent; newly added replaceable calls name their role.
+/// Replaceable calls name the variant that fits. A role with no variant yet is
+/// left alone; when one ships, its existing calls move in the same change.
 List<TextMigrationSite> newTextMigrationSites(
   CompilationUnit unit,
   String path,
 ) {
-  final root = _repositoryRoot(path);
+  final root = migrationRepositoryRoot(path);
   if (root == null) return const [];
   final relative = path.substring(root.length + 1).replaceAll(r'\', '/');
   if (!textMigrationScope(relative)) return const [];
-  final baseline = File('$root/$textMigrationBaseline');
-  final variant = File('$root/$_variantPath');
-  final stamp =
-      '${baseline.statSync().modified}:${variant.statSync().modified}';
-  var inputs = _cache[root];
-  if (inputs == null || inputs.stamp != stamp) {
-    inputs = (
-      stamp: stamp,
-      variants: textMigrationVariants(root),
-      counts: parseTextMigrationBaseline(baseline.readAsStringSync()),
-    );
-    _cache[root] = inputs;
+  final modified = File('$root/$_variantPath').statSync().modified;
+  var cached = _variantCache[root];
+  if (cached == null || cached.modified != modified) {
+    cached = (modified: modified, variants: textMigrationVariants(root));
+    _variantCache[root] = cached;
   }
-  final sites = textMigrationSites(unit, inputs.variants);
-  // Baselines count in source order, not recursive visitor completion order.
-  sites.sort((left, right) => left.node.offset.compareTo(right.node.offset));
-  final seen = <String, int>{};
-  return [
-    for (final site in sites)
-      if ((seen.update(site.role, (value) => value + 1, ifAbsent: () => 1)) >
-          (inputs.counts[relative]?[site.role] ?? 0))
-        site,
-  ];
+  return textMigrationSites(unit, cached.variants)
+    ..sort((left, right) => left.node.offset.compareTo(right.node.offset));
 }
-
-// Internal mode of the existing lint-drift wrapper, not another check registry.
-Future<void> main(List<String> args) => runMigrationBaseline(
-  args,
-  label: 'CatchText',
-  baselinePath: textMigrationBaseline,
-  optionName: 'text',
-  activeKinds: textMigrationVariants,
-  kindsInUnit: (unit) =>
-      textMigrationSites(unit, null).map((site) => site.role),
-  initialSources: const [
-    'lib',
-    'apps',
-    'packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
-    'packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
-  ],
-);

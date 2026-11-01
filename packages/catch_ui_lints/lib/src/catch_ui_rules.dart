@@ -63,7 +63,7 @@ const _surfaceShellConstructors = <String>{
 };
 
 final _allowDebtPattern = RegExp(
-  r'(?:alpha|breakpoint|color-sweep|control|icon-size|motion|radius|shadow|sizing|spacing|surface|token|typography|ui-system):allow:|ignore(?:_for_file)?:[^\n]*\bcatch_(?!arch_|ui_lints/catch_arch_)[a-z0-9_]+',
+  r'(?:alpha|breakpoint|color-sweep|control|icon-size|motion|radius|shadow|sizing|spacing|surface|token|typography|ui-system):allow:|ignore(?:_for_file)?:[^\n]*\bcatch_(?!arch_|ui_lints/catch_arch_|no_raw_surface_shell|ui_lints/catch_no_raw_surface_shell)[a-z0-9_]+',
 );
 
 const _localDesignConstantWords = <String>{
@@ -726,6 +726,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       );
     }
 
+    final reportedDrawing = <AstNode>[];
     for (final site in newDrawingMigrationSites(node, currentPath)) {
       final drawing = site.node;
       if (drawing is InstanceCreationExpression) {
@@ -741,9 +742,21 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           continue;
         }
       }
+      reportedDrawing.add(drawing);
       rule.reportAtNode(
         drawing,
         diagnosticCode: CatchUiLayoutRules.noRawSurfaceShell,
+      );
+    }
+    for (final comment in invalidDrawingIgnores(
+      node,
+      ruleContext.currentUnit?.content ?? source,
+      reportedDrawing,
+    )) {
+      rule.reportAtOffset(
+        comment.offset,
+        comment.length,
+        diagnosticCode: CatchUiLayoutRules.noAllowDebt,
       );
     }
 

@@ -173,6 +173,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
           MediaQuery.textScalerOf(context).scale(1) >= 1.6;
       final phoneIdentity = Row(
         children: [
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           Image.asset(
             'flags/${countryIso.toLowerCase()}.png',
             package: 'country_code_picker',
@@ -187,6 +188,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
           gapW8,
           SizedBox(
             height: CatchSpacing.s6,
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             child: VerticalDivider(
               width: CatchStroke.emphasis,
               thickness: CatchStroke.hairline,

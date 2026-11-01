@@ -75,16 +75,21 @@ class ChatMessageList extends StatelessWidget {
                         widthFactor: spec.widthFactor,
                         child: CatchSkeleton.box(
                           height: CatchButtonTokens.largeHeight,
+                          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                           borderRadius: BorderRadius.only(
+                            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                             topLeft: Radius.circular(
                               spec.isMe ? CatchRadius.lg : CatchRadius.sm,
                             ),
+                            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                             topRight: Radius.circular(
                               spec.isMe ? CatchRadius.sm : CatchRadius.lg,
                             ),
+                            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                             bottomLeft: Radius.circular(
                               spec.isMe ? CatchRadius.lg : CatchRadius.sm,
                             ),
+                            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                             bottomRight: Radius.circular(
                               spec.isMe ? CatchRadius.sm : CatchRadius.lg,
                             ),
