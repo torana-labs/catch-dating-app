@@ -1022,6 +1022,7 @@ export {
   onOrganizerGrowthOfferPaymentWritten,
   onOrganizerGrowthNativePaymentWritten,
 } from "./growth/organizerGrowthTriggers";
+export {reconcileOrganizerGrowthDaily} from "./growth/organizerGrowthReconcile";
 export {
   adminManageOrganizerBills,
   generateOrganizerBillsMonthly,

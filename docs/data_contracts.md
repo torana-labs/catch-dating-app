@@ -4451,7 +4451,10 @@ other way get a channel from provenance (`came_to_us` for user-created, else
 The `onOrganizerGrowth*` triggers set the dated steps (`listedAt`,
 `claimRequestedAt`, `claimedAt`, `firstEventAt`, `firstPaidBookingAt`), each to
 the earliest time observed, and stream them, with paid bookings and refunds, to
-BigQuery `catch_analytics.organizer_growth_events`.
+BigQuery `catch_analytics.organizer_growth_events`. The triggers are not retried
+on failure (a retrying trigger needs a forced deploy); `reconcileOrganizerGrowthDaily`
+recomputes the steps nightly from organizers, claim requests, booked events and
+captured checkouts and records any that were missed.
 
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment
