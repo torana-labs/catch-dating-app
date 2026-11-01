@@ -1,7 +1,11 @@
 import type {
   AccountActionKind,
+  SafetySettingsSnapshot,
   TakeAccountAction,
 } from "../api/accountSafetyRepository";
+
+export type SafetyReason = SafetySettingsSnapshot["settings"]["reasons"][
+  number];
 
 /**
  * Rules behind the act-on-an-account sheet (board AdminSafetyAction): the
@@ -40,6 +44,14 @@ export const ACTION_STEPS: ActionStep[] = [
 
 export function safetyJob(roles: readonly string[]): SafetyJob {
   return roles.includes("adminOwner") ? "owner" : "ops";
+}
+
+export function durationLabel(duration: ActionDuration): string {
+  return duration === null ? "Until we lift it" : `${duration} days`;
+}
+
+export function activeReasons(reasons: SafetyReason[]): SafetyReason[] {
+  return reasons.filter((reason) => reason.active);
 }
 
 export function canTakeStep(job: SafetyJob, kind: AccountActionKind):

@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-30",
+  "updated": "2026-11-01",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -513,14 +513,6 @@
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_access_review",
-      "status": "contracted",
-      "priority": "P1",
-      "reason": "Compiled Access Review contract covers capped queue selection, direct evidence recovery, and audited approve or deny outcomes.",
-      "featureContract": "feature.admin_access_review"
-    },
-    {
-      "authority": "admin_routes",
       "authorityId": "route_admin_action_executions",
       "status": "excluded",
       "priority": "P3",
@@ -655,19 +647,27 @@
     },
     {
       "authority": "admin_routes",
-      "authorityId": "route_safety_triage",
-      "status": "contracted",
-      "priority": "P1",
-      "reason": "Compiled Safety Triage contract covers capped queue scope, encoded detail routing, assignment, decisions, and honest analytics.",
-      "featureContract": "feature.admin_safety_triage"
-    },
-    {
-      "authority": "admin_routes",
       "authorityId": "route_user_analytics",
       "status": "contracted",
       "priority": "P2",
       "reason": "Compiled User Analytics contract covers exact-uid aggregate reporting, validated scope, partial/empty states, and retry.",
       "featureContract": "feature.admin_user_analytics"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_safety",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Safety contract covers open cases from every queue with launch access, due order, case decisions, account actions, appeals and the act-on-an-account sheet.",
+      "featureContract": "feature.admin_safety"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_safety_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
+      "featureContract": "feature.admin_safety"
     },
     {
       "authority": "admin_routes",
