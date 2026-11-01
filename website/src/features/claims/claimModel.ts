@@ -32,10 +32,6 @@ export function claimWhileYouWaitItems(listing: HostListing | null) {
       title: websiteCopy["claimmodel_0022"],
       body: websiteCopy["claimmodel_0001"],
     },
-    {
-      title: websiteCopy["claimmodel_0002"],
-      body: websiteCopy["claimmodel_0006"],
-    },
   ];
 }
 
