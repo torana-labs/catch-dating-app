@@ -221,16 +221,6 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
-  "organizer-intake.list-listing-reviews": {
-    "callable": "adminListOrganizerListingReviews",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
   "organizer-intake.approve-listing": {
     "callable": "adminApproveOrganizerListing",
     "controlPlane": false,
@@ -1486,6 +1476,16 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner",
       "support",
       "salesStaff"
+    ]
+  },
+  "inbox.get-listing-review": {
+    "callable": "adminGetOrganizerListingReview",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
     ]
   }
 } as const;

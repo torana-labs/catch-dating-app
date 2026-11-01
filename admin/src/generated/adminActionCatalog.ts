@@ -396,29 +396,13 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
-      "actionId": "organizer-intake.list-listing-reviews",
-      "callable": "adminListOrganizerListingReviews",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "read",
-      "risk": "read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "summary": "List one page of Supply Intake listings awaiting approval, newest first, with what a reviewer needs to approve each.",
-      "controlPlane": false
-    },
-    {
       "actionId": "organizer-intake.approve-listing",
       "callable": "adminApproveOrganizerListing",
       "workflowIds": [
-        "organizer-intake"
+        "organizer-intake",
+        "inbox"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/inbox",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -2627,6 +2611,23 @@ export const adminActionCatalog = {
       ],
       "summary": "List the organizers the caller nominated, newest first, published, waiting or stuck, with real totals per filter.",
       "controlPlane": false
+    },
+    {
+      "actionId": "inbox.get-listing-review",
+      "callable": "adminGetOrganizerListingReview",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "Read one Supply Intake listing awaiting approval, by its request, with what a reviewer needs to approve it.",
+      "controlPlane": false
     }
   ],
   "workflows": [
@@ -2704,7 +2705,6 @@ export const adminActionCatalog = {
       "label": "Organizer Intake",
       "guiPath": "/intake/organizers",
       "actions": [
-        "organizer-intake.list-listing-reviews",
         "organizer-intake.approve-listing",
         "organizer-intake.list-listing-event-imports",
         "organizer-intake.publish-listing-events",
@@ -2946,7 +2946,9 @@ export const adminActionCatalog = {
         "inbox.list",
         "inbox.get",
         "inbox.update",
-        "organizer-claims.recommend"
+        "organizer-claims.recommend",
+        "inbox.get-listing-review",
+        "organizer-intake.approve-listing"
       ]
     }
   ]

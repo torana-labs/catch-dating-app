@@ -95,11 +95,6 @@
       "status": "required"
     },
     {
-      "source": "admin/src/features/intake/organizer/controllers/useOrganizerListingReviewController.ts",
-      "test": "admin/src/features/intake/organizer/controllers/useOrganizerListingReviewController.test.tsx",
-      "status": "required"
-    },
-    {
       "source": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
       "test": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
       "status": "required"
