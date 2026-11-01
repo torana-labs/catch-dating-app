@@ -617,6 +617,7 @@ export {
   onOrganizerClaimRequestWrittenSyncInbox,
   onSalesInboundIntentWrittenSyncInbox,
   onSupplyIntakeRequestWrittenSyncInbox,
+  reconcileAdminInboxNightly,
   wakeSnoozedInboxItemsEvery30Minutes,
 } from "./admin/inbox/triggers";
 export {

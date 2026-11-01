@@ -425,6 +425,7 @@ enter previews.
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
 | `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
+| `reconcileAdminInboxNightly` | `src/admin/inbox/triggers.ts` | Nightly (03:10 India time), re-projects every inbox source and the people index from their documents; idempotent, so it changes only what a failed trigger missed (the inbox and people triggers are not retried) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
 | `reconcilePublicPages` | `src/publicPages/triggers.ts` | Daily, rebuilds every organizer's public page read models, so ended events move to past moments and missed changes heal |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |

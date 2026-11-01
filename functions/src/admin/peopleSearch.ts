@@ -66,15 +66,24 @@ export function peopleIndexDocument(uid: string, user: Record<string, unknown> |
   };
 }
 
+/** Writes the index entry only when it changed; true when it wrote. */
 export async function syncPeopleIndex(db: FirebaseFirestore.Firestore, uid: string,
-  user: Record<string, unknown> | undefined, now: Date): Promise<void> {
+  user: Record<string, unknown> | undefined, now: Date): Promise<boolean> {
   const ref = db.collection(PEOPLE_INDEX_COLLECTION).doc(uid);
   const entry = peopleIndexDocument(uid, user, now);
-  if (entry) await ref.set(entry);
-  else await ref.delete();
+  const existing = (await ref.get()).data();
+  if (!entry) {
+    if (!existing) return false;
+    await ref.delete();
+    return true;
+  }
+  if (existing && JSON.stringify({...existing, updatedAt: ""}) === JSON.stringify({...entry, updatedAt: ""})) return false;
+  await ref.set(entry);
+  return true;
 }
 
-export const onUserWrittenIndexPeople = onDocumentWritten({document: "users/{uid}", retry: true},
+/** Not retried (a retrying trigger needs a forced deploy); reconcileAdminInboxNightly catches up. */
+export const onUserWrittenIndexPeople = onDocumentWritten({document: "users/{uid}"},
   async (event) => {
     await syncPeopleIndex(admin.firestore(), event.params.uid, event.data?.after.data(), new Date());
   });
