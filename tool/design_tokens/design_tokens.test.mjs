@@ -5,8 +5,8 @@ import path from "node:path";
 import test from "node:test";
 import {generateTokenOutputs, staleOutputs, writeOutputs} from "../design_tokens.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
-import {assertTokenTree, fontFaces} from "./style_dictionary.config.mjs";
-import {cssTokenValue, dartColor, derivedActivitySwatches, formatDartNumber} from "./values.mjs";
+import {assertTokenTree, fontFaces} from "./lib/style_dictionary.config.mjs";
+import {cssTokenValue, dartColor, derivedActivitySwatches, formatDartNumber} from "./lib/values.mjs";
 
 const source = JSON.parse(fs.readFileSync(fromRepo("design/tokens/catch.tokens.json"), "utf8"));
 const srgb = (hex, alpha) => ({

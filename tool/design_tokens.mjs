@@ -12,7 +12,7 @@ import {
   fontFaces,
   styleDictionaryConfig,
   tokenPath,
-} from "./design_tokens/style_dictionary.config.mjs";
+} from "./design_tokens/lib/style_dictionary.config.mjs";
 
 export async function generateTokenOutputs({root = repoRoot} = {}) {
   const document = JSON.parse(fs.readFileSync(path.join(root, tokenPath), "utf8"));
