@@ -4,6 +4,7 @@ import 'package:catch_ui/src/components/catch_navigation_button_status.dart';
 import 'package:catch_ui/src/components/catch_tab_bar_item.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/foundations/catch_transitions.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 /// A navigation destination with bottom-bar and side-rail layout recipes.
@@ -111,12 +112,14 @@ class _CatchNavigationButtonState<T> extends State<CatchNavigationButton<T>> {
     final selected = widget.selected;
     final showSelectedLabel = widget.showSelectedLabel ?? selected;
     final color = selected ? t.ink : t.ink3;
+    final sidebar = widget._railExpanded == true;
     final icon = CatchCountBadge.navigationIcon(
       icon: selected
           ? widget.item.activeIcon ?? widget.item.icon
           : widget.item.icon,
       color: color,
-      count: widget.item.badgeCount,
+      // The sidebar has room to right-align its count beside the label.
+      count: sidebar ? 0 : widget.item.badgeCount,
       child: selected
           ? widget.item.activeIconWidget ?? widget.item.iconWidget
           : widget.item.iconWidget,
@@ -135,6 +138,28 @@ class _CatchNavigationButtonState<T> extends State<CatchNavigationButton<T>> {
                 icon,
                 const SizedBox(width: CatchSpacing.s3),
                 Expanded(child: label),
+                if (widget.item.badgeCount > 0) ...[
+                  const SizedBox(width: CatchSpacing.s2),
+                  CatchSurface(
+                    radius: CatchRadius.pill,
+                    backgroundColor: selected ? t.surface : t.bg,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CatchLayout.countBadgeHorizontalPadding,
+                      ),
+                      child: Text(
+                        catchCountLabel(widget.item.badgeCount),
+                        key: ValueKey(
+                          'catch_navigation.sidebar_count.${widget.item.id}',
+                        ),
+                        style: CatchTextStyles.statusLabel(
+                          context,
+                          color: t.ink,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             )
           : Column(

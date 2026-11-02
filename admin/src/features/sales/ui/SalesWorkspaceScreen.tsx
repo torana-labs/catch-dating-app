@@ -1,5 +1,4 @@
 import {CatchBadge, CatchButton, CatchField, CatchText} from "@catch/web-ui";
-import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
@@ -25,7 +24,6 @@ import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
 import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
-import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 import {renderSalesNominationWorkspace} from "./SalesNominationPanel";
 
@@ -34,7 +32,7 @@ import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "workflow" | "activity" |
-  "opportunities" | "research" | "demo" | "commercial" | "intelligence";
+  "opportunities" | "research" | "demo" | "intelligence";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "today", label: "Today"},
@@ -53,7 +51,6 @@ const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "activity", label: "Activity"},
   {id: "opportunities", label: "Opportunities"},
   {id: "intelligence", label: "Fit & outreach"},
-  {id: "commercial", label: "Pilot & terms"},
   {id: "research", label: "Research"},
 ];
 const stageOptions = [
@@ -113,9 +110,6 @@ export function SalesWorkspaceScreen({
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   const {setError, setNotice} = useAdminFeedback();
-  const operationPending = useAdminOperationPending();
-  const [showPrivacy, setShowPrivacy] = useState(false);
-  useEffect(() => setShowPrivacy(false), [selectedOrganizerId, currentUserUid]);
   const controller = useSalesWorkspaceController({
     area, selectedOrganizerId, assignedStaffOnly,
     onError: setError, onNotice: setNotice,
@@ -147,20 +141,10 @@ export function SalesWorkspaceScreen({
       ) : null}
       {selectedOrganizerId ? (
         <>
-          {isAdminOwner ? <AdminToolbar>
-            <AdminButton disabled={operationPending}
-              onClick={() => setShowPrivacy((value) => !value)}>
-              {showPrivacy ? "Back to host details" : "Privacy controls"}
-            </AdminButton>
-          </AdminToolbar> : null}
-          {showPrivacy && isAdminOwner ? renderSalesPrivacyWorkspace({
-            actorUid: currentUserUid, isAdminOwner,
-            organizerId: selectedOrganizerId,
-            organizerName: controller.detail.data?.organizerSummary.name,
-          }) : <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
+          <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
             controller={controller} currentUserUid={currentUserUid}
             isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
-            onOpenOrganizer={onOpenOrganizer} />}
+            onOpenOrganizer={onOpenOrganizer} />
         </>
       ) : assignedStaffOnly && !staffAreaAllowed ? (
         <Panel title="Assigned Sales access" icon={<ClipboardList size={18} />}>
@@ -543,8 +527,8 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     <AdminButton onClick={() => void controller.detail.refetch()}>Try again</AdminButton>
   </EmptyState>;
   const availableDetailTabs = assignedStaffOnly ? detailTabs.filter((item) =>
-    item.id !== "demo" && item.id !== "commercial") : detailTabs;
-  const visibleTab = assignedStaffOnly && (tab === "demo" || tab === "commercial") ?
+    item.id !== "demo") : detailTabs;
+  const visibleTab = assignedStaffOnly && tab === "demo" ?
     "overview" : tab;
   return <AdminDetailScreenStack>
     <AdminToolbar>
@@ -574,8 +558,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       organizerId={detail.account.organizerId}
       organizerName={detail.organizerSummary.name}
       currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
-    {visibleTab === "commercial" && !assignedStaffOnly ? renderSalesCommercialWorkspace(detail,
-      controller.evidence.data?.rows ?? [], isAdminOwner) : null}
     {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
       key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
       organizerId={detail.account.organizerId}
@@ -586,8 +568,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
       <HostCustomFields
       detail={detail} controller={controller} /> : null}
-    {!assignedStaffOnly && visibleTab === "overview" ? renderSalesPartnerOffer(
-      currentUserUid, detail.account.organizerId, detail.organizerSummary.name) : null}
     <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}
       currentUserUid={currentUserUid} assignedStaffOnly={assignedStaffOnly} />
   </AdminDetailScreenStack>;

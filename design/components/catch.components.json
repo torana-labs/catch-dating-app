@@ -5423,6 +5423,36 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.section.timeline_list",
+            "symbol": "CatchTimelineList",
+            "file": "packages/catch_ui/lib/src/components/catch_timeline_list.dart",
+            "summary": "A journey drawn as joined markers from steps: done, current with a neutral, warning or danger tone, and next. Flutter's side of web-ui CatchSection's timeline; the parent Section owns the title.",
+            "states": [
+              "done",
+              "current",
+              "current-warning",
+              "current-danger",
+              "next"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "List",
+            "naming": {
+              "useCase": "Timeline",
+              "comparedWith": [
+                "catch.section",
+                "catch.journey_steps"
+              ],
+              "reason": "Steps that have happened and one that waits, with dates. CatchStepList is a numbered set of instructions with no current step."
+            }
+          },
+          {
             "id": "catch.section.body",
             "symbol": "CatchSectionBody",
             "file": "packages/catch_ui/lib/src/components/catch_section_body.dart",

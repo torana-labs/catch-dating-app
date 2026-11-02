@@ -71,7 +71,7 @@
   },
   "src/features/sales/ui/SalesPrivacyWorkspace.tsx": {
     "react/forbid-elements": {
-      "count": 4
+      "count": 2
     }
   },
   "src/features/sales/ui/SalesWorkspaceScreen.tsx": {
