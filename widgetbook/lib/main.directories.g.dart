@@ -12027,6 +12027,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerBillList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Bills, overdue to free, and no bills',
+                    builder:
+                        _widgetbook_workspace_hosts_host_payout_connection_use_cases
+                            .hostOrganizerBillListPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerBillSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unpaid statement',
+                    builder:
+                        _widgetbook_workspace_hosts_host_payout_connection_use_cases
+                            .hostOrganizerBillSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerBillsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reads the bills of one organizer',
+                    builder:
+                        _widgetbook_workspace_hosts_host_payout_connection_use_cases
+                            .hostOrganizerBillsSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostPaymentAccountCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

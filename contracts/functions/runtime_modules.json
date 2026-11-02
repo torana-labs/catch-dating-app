@@ -445,6 +445,8 @@
     "ListEventWhatsappPreferencesCallablePayload",
     "ListEventWhatsappPreferencesCallableResponse",
     "ListMyHostAssignmentsCallablePayload",
+    "ListOrganizerBillsCallablePayload",
+    "ListOrganizerBillsCallableResponse",
     "ListOfferEventTargetsCallablePayload",
     "ListOrganizerApplicationsCallablePayload",
     "ListOrganizerAttentionItemsCallablePayload",
