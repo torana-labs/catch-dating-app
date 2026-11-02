@@ -19,6 +19,7 @@ import {
 } from "./lib/new_widget_inventory_declarations.mjs";
 import {
   isGeneratedProductionWidgetDartPath,
+  isWidgetInventoryPath,
 } from "./lib/production_widget_roots.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -344,6 +345,8 @@ test("generated exclusions are file-specific rather than directory-wide", () => 
     ),
     true,
   );
+  assert.equal(isWidgetInventoryPath("apps/host/lib/today/today_screen.dart"), true);
+  assert.equal(isWidgetInventoryPath("apps/consumer/lib/explore/explore_screen.dart"), true);
   assert.equal(
     isGeneratedProductionWidgetDartPath(
       "lib/l10n/generated/app_localizations.dart",

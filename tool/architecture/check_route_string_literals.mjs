@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const navigationMethods = "go|push|replace|pushReplacement";
@@ -28,7 +29,8 @@ const isCliEntrypoint =
 if (isCliEntrypoint) runCli();
 
 export function scanRouteStringLiterals({root}) {
-  const files = collectDartFiles(path.join(root, "lib"));
+  const files = screenSourceRoots(root)
+    .flatMap((sourceRoot) => collectDartFiles(path.join(root, sourceRoot)));
   const checkedFiles = files.filter((file) => {
     const relativePath = normalizePath(path.relative(root, file));
     return !isRoutingFile(relativePath);
@@ -160,8 +162,8 @@ function printHelp() {
   node tool/architecture/check_route_string_literals.mjs
   node tool/architecture/check_route_string_literals.mjs --json
 
-Scans production lib/**/*.dart files outside lib/routing/ for navigation calls
-that pass raw route path strings, such as context.push('/...') or
+Scans production lib/**/*.dart and apps/*/lib/**/*.dart files outside lib/routing/
+for navigation calls that pass raw route path strings, such as context.push('/...') or
 GoRouter.of(context).go('/...'). Use named routes or route constants instead.`);
 }
 

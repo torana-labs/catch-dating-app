@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isAppPackageSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
@@ -138,14 +139,15 @@ function runCli() {
 
 function collectPresentationFiles(root) {
   const files = new Set();
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return files;
-
-  for (const absolute of walk(libRoot)) {
-    const relativePath = normalizePath(relativeTo(root, absolute));
-    if (!relativePath.endsWith(".dart")) continue;
-    if (!relativePath.includes("/presentation/")) continue;
-    files.add(relativePath);
+  for (const sourceRoot of screenSourceRoots(root)) {
+    const absoluteRoot = path.join(root, sourceRoot);
+    if (!fs.existsSync(absoluteRoot)) continue;
+    for (const absolute of walk(absoluteRoot)) {
+      const relativePath = normalizePath(relativeTo(root, absolute));
+      if (!relativePath.endsWith(".dart")) continue;
+      if (!relativePath.includes("/presentation/") && !isAppPackageSource(relativePath)) continue;
+      files.add(relativePath);
+    }
   }
   return files;
 }
@@ -232,7 +234,7 @@ function printSummary(result, {maxRows, includeLow}) {
   console.log(
     [
       "Screen gutter EdgeInsets advisory:",
-      "Scope: lib/**/presentation/**/*.dart plus contracted screen implementation paths",
+      "Scope: lib/**/presentation/**/*.dart, apps/*/lib/**/*.dart and contracted screen implementation paths",
       `Files scanned: ${result.filesScanned}`,
       `Contract registry files included: ${result.contractedFiles}`,
       `EdgeInsets constructors found: ${result.findings.length}`,
@@ -480,7 +482,8 @@ function printHelp() {
   node tool/design/check_screen_gutters.mjs --json
 
 Advisory inventory for EdgeInsets constructors in screen implementation
-surfaces. The scan intentionally covers all lib/**/presentation/**/*.dart files,
+surfaces. The scan intentionally covers all lib/**/presentation/**/*.dart and
+apps/*/lib/**/*.dart files,
 not only *_screen.dart, because section widgets can own accidental page gutters.
 High and medium findings are review candidates, not automatic errors.`);
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.101.0
-updated: 2026-11-02
+version: 1.102.0
+updated: 2026-11-03
 owner: app_architecture
 status: active
 ---
@@ -447,11 +447,13 @@ The `catch_arch_*` lints place each file by layer rather than matching
 `lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
 under these roots take no exceptions, so moved code arrives clean.
 
-The app packages are analyzed from the workspace root and include its
-`analysis_options.yaml`, so the Catch UI and Riverpod plugins reach them. The
-other screen checks still read only `lib/`; closing that gap is a prerequisite
-for phase 4, not for phase 3. Tools that name specific files update in the PR
-that moves those files.
+The app packages include the root `analysis_options.yaml` and stay in the root
+analysis, so the Catch UI and Riverpod plugins reach them from the root analysis
+and from `dart analyze apps/<app>`. The analyzer refuses a `plugins:` block
+anywhere but the workspace root, and `flutter analyze` inside a package does not
+load them. The other screen checks read `apps/*/lib` as well as `lib/`, through
+`tool/lib/flutter_source_roots.mjs`, which finds app packages on disk. Tools that
+name specific files update in the PR that moves those files.
 
 #### Phase 3: move domain and data
 
@@ -483,9 +485,11 @@ The baseline is empty when this phase ends.
 Each redrawn screen is written in `apps/<app>/lib/<destination>/`, or
 `lib/pages/` when both apps show it, and the old screen is deleted in the same
 PR (Migration Protocol v2). Destinations are disjoint folders, so these PRs can
-run in parallel. The first one proves Riverpod code generation and tests inside
-an app package with one host destination; if that proves too costly, screens go
-to `lib/apps/<app>/` instead, placed as the app layer in the map.
+run in parallel. Riverpod code generation already runs inside both app packages:
+`dart run build_runner build` from `apps/<app>`, using that package's `build.yaml`.
+The first screen PR proves tests inside an app package with one host destination;
+if that proves too costly, screens go to `lib/apps/<app>/` instead, placed as the
+app layer in the map.
 
 #### Phase 5: delete empty legacy folders
 
@@ -669,10 +673,10 @@ Hard rules:
 - `data` must not import feature presentation files.
 - `presentation/widgets/**` must not call repository methods or watch
   repository providers directly.
-- Aligned adopters whose architecture-tracker role declares provider-free body
-  or state behavior are machine-checked by
-  `node tool/architecture/check_adopted_architecture_boundaries.mjs`; do not
-  mark a file aligned/provider-free until routing and provider APIs have been
+- Files that promise to stay provider-free (display-state adapters by name,
+  context `parts/` by folder, anything marked `// architecture: provider-free`)
+  are checked by `catch_arch_provider_free_boundary`, including under
+  `apps/*/lib`; do not add the marker until routing and provider APIs have been
   lifted to the route/controller boundary.
 - A route-level `*_screen.dart` may watch a feature view model or controller
   provider, and may watch mutation state for display. It should not reach
@@ -712,7 +716,7 @@ Temporary exceptions require an override comment described in
 
 Riverpod topology is a live checked source contract, not a committed diagram or
 snapshot. `tool/architecture/provider_graph.dart` parses handwritten Dart
-sources and derives the complete provider, family, consumer, override, alias,
+sources under `lib/` and `apps/*/lib/` and derives the complete provider, family, consumer, override, alias,
 Mutation, and dependency inventory when the gate runs.
 
 Use these commands after adding, removing, renaming, or changing dependencies
@@ -3975,7 +3979,7 @@ screen pane, or component family; a file split must expose a useful ownership
 boundary rather than distribute one monolith across `part` files.
 
 `node tool/run.mjs check audit:flutter-source-size` checks tracked and untracked
-source. A file above 800 lines states why in a `// size-exemption: <reason>`
+source under `lib/`, `apps/*/lib/`, `packages/` and `widgetbook/lib/`. A file above 800 lines states why in a `// size-exemption: <reason>`
 comment in its first 20 lines; no file passes 2,500 lines, exemption or not.
 The reason lives next to the code it excuses, so there is no baseline file to
 refresh. Today's exemptions are the route table in `lib/routing/go_router.dart`
@@ -4101,7 +4105,8 @@ entered as a root deep link should also provide a navigation `onPressed` fallbac
 owning root destination.
 
 `node tool/run.mjs check design:screen-top-bar-contracts` walks all
-handwritten `lib/**/*.dart`, not only `presentation/` or `*_screen.dart`. It
+handwritten `lib/**/*.dart` and `apps/*/lib/**/*.dart`, not only `presentation/`
+or `*_screen.dart`. It
 also inventories raw Material/Cupertino navigation bars, exact media-hero
 exceptions, and feature classes ending in `Screen`, `Scaffold`, `Header`,
 `TopBar`, or `HeaderContent` that own screen typography. Stateful-widget
@@ -4152,8 +4157,6 @@ Good scanner candidates:
 
 - screen-ish widgets missing clear route/screen classification;
 - possible direct repository reads in presentation;
-- aligned provider-free adopters drifting back into provider/routing imports
-  via `tool/architecture/check_adopted_architecture_boundaries.mjs`;
 - possible missing mutation listeners;
 - overly complex widgets that should split rendering from behavior;
 - raw `AsyncValue.when` branches that may need a wrapper or typed state;

@@ -147,6 +147,23 @@ test("accepts the directory contract and rejects a removed required owner", () =
   assert.ok(checkRootScreenCompositionContracts({root}).findings.some((finding) => finding.code === "missing-required-text"));
 });
 
+test("app-package screens cannot bring back legacy root symbols or raw state slivers", () => {
+  const root = fixtureRoot({
+    ownerSource: "return CatchRootScreenScaffold(child: Text('Home'));",
+  });
+  write(root, "apps/host/lib/today/today_screen.dart", `
+    Widget build() => CatchTabbedScreenScaffold(
+      child: SliverFillRemaining(child: CatchEmptyState(title: title)),
+    );
+  `);
+  const findings = checkRootScreenCompositionContracts({root}).findings
+    .filter((finding) => finding.path === "apps/host/lib/today/today_screen.dart");
+  assert.deepEqual(findings.map((finding) => finding.code).sort(), [
+    "legacy-root-layout-symbol",
+    "raw-sliver-state-viewport",
+  ]);
+});
+
 function fixtureRoot({
   ownerSource,
   shellSource = "return AdaptiveTabScaffold(body: navigationShell);",

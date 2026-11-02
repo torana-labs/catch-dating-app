@@ -326,7 +326,7 @@ node tool/test/check_flutter_test_size.mjs --check
 ## Flutter Source Budgets
 
 `node tool/run.mjs check audit:flutter-source-size` enforces the architecture
-owner's 800-line handwritten source budget across app, packages, and Widgetbook.
+owner's 800-line handwritten source budget across `lib/`, `apps/*/lib/`, packages, and Widgetbook.
 The exact Field constructor facade has its approved 1,150-line ceiling; both
 ordinary debt and the facade can only shrink. `lib/routing/go_router.dart` is
 exempt from the line budget: the route inventory requires every `GoRoute` in
@@ -453,7 +453,7 @@ check that executes it.
 ## Riverpod Provider Graph
 
 `tool/architecture/provider_graph.dart` parses every handwritten Dart AST under
-`lib/` and checks the live provider topology. Its deterministic JSON includes
+`lib/` and `apps/*/lib/` and checks the live provider topology. Its deterministic JSON includes
 generated and handwritten providers, aliases, families, consumers, provider
 operations, overrides, and Riverpod experimental Mutations, but no generated
 view is committed to the repository.

@@ -49,6 +49,38 @@ test("check mode derives similarity without writing a tracked snapshot", (t) => 
   assert.equal(parsed.sourceOfTruth.fingerprints, "ephemeral:test");
 });
 
+test("a widget used only in an app package does not read as unused", (t) => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-widget-similarity-apps-"));
+  t.after(() => fs.rmSync(tempRoot, {recursive: true, force: true}));
+  const fingerprints = path.join(tempRoot, "fingerprints.json");
+  const report = path.join(tempRoot, "similarity.json");
+  fs.writeFileSync(fingerprints, `${JSON.stringify({
+    version: 1,
+    widgets: [fingerprint("FixtureAlphaCard", "a"), fingerprint("FixtureBetaCard", "b")],
+    failures: [],
+  })}\n`);
+  const appScreen = path.join(tempRoot, "apps/host/lib/today/today_screen.dart");
+  fs.mkdirSync(path.dirname(appScreen), {recursive: true});
+  fs.writeFileSync(appScreen, "Widget build() => const FixtureAlphaCard();\n");
+
+  const generated = spawnSync(process.execPath, [
+    script,
+    "--fingerprints",
+    path.relative(repoRoot, fingerprints),
+    "--fingerprints-label",
+    "ephemeral:test",
+    "--out",
+    path.relative(repoRoot, report),
+    "--usage-root",
+    tempRoot,
+  ], {cwd: repoRoot, encoding: "utf8"});
+  assert.equal(generated.status, 0, generated.stderr);
+  const usage = Object.fromEntries(
+    JSON.parse(fs.readFileSync(report, "utf8")).widgets.map((widget) => [widget.name, widget.usageCountRaw]),
+  );
+  assert.deepEqual(usage, {FixtureAlphaCard: 1, FixtureBetaCard: 0});
+});
+
 function fingerprint(name, marker) {
   return {
     name,

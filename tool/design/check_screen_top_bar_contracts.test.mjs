@@ -1149,6 +1149,50 @@ function hasFinding(result, code) {
   return result.findings.some((finding) => finding.code === code);
 }
 
+test("an app-package screen registers its chrome like any other screen", () => {
+  const registered = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Today'));",
+    contract: {...screenContract(), path: "apps/host/lib/today/today_screen.dart"},
+  });
+  assert.deepEqual(checkScreenTopBarContracts({root: registered}).findings, []);
+
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.screen(title: 'July 2026'));",
+    contract: screenContract(),
+  });
+  const appPath = "apps/consumer/lib/explore/explore_screen.dart";
+  write(root, appPath, `
+    Widget build() => Scaffold(appBar: CatchTopBar.screen(title: 'Explore'));
+    Widget hero() => SliverAppBar();
+    Widget action() => CatchTopBar.route(title: 'Saved', actions: [CatchButton(label: 'Save')]);
+    class ExploreHeader extends StatelessWidget {
+      Widget build(BuildContext context) => CatchTopBar.route(title: 'Explore');
+    }
+  `);
+  const codes = checkScreenTopBarContracts({root}).findings
+    .filter((finding) => finding.path === appPath)
+    .map((finding) => finding.code);
+  for (const code of ["unregistered-app-bar", "top-bar-direct-pill-action"]) {
+    assert.ok(codes.includes(code), `${code} missing from ${codes.join()}`);
+  }
+  assert.ok(codes.some((code) => code.includes("raw")), `no raw-chrome finding in ${codes.join()}`);
+  assert.ok(codes.some((code) => code.includes("manual")), `no manual-header finding in ${codes.join()}`);
+});
+
+test("manifest paths may name an app package but nothing outside the screen roots", () => {
+  const appContract = {...screenContract(), path: "apps/host/lib/today/today_screen.dart"};
+  const allowed = fixtureRoot({source: "Scaffold(appBar: CatchTopBar.screen(title: 'Today'));", contract: appContract});
+  assert.deepEqual(
+    checkScreenTopBarContracts({root: allowed}).findings.filter((finding) => finding.code === "invalid-path"),
+    [],
+  );
+  const outside = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Today'));",
+    contract: {...screenContract(), path: "apps/host/test/today_screen.dart"},
+  });
+  assert.ok(checkScreenTopBarContracts({root: outside}).findings.some((finding) => finding.code === "invalid-path"));
+});
+
 function screenContract({
   expression = "CatchTopBar.screen",
   owner = "CatchTopBar.screen",

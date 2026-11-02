@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
 const isCliEntrypoint =
@@ -23,12 +24,13 @@ const forbiddenPatterns = [
 if (isCliEntrypoint) runCli();
 
 export function checkTerminalPadding({root = repoRoot} = {}) {
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return {fileCount: 0, findings: []};
-
-  const files = dartFilesUnder(libRoot).filter(
-    (absolutePath) => !relative(root, absolutePath).startsWith("lib/core/"),
-  );
+  const files = screenSourceRoots(root)
+    .map((sourceRoot) => path.join(root, sourceRoot))
+    .filter((absoluteRoot) => fs.existsSync(absoluteRoot))
+    .flatMap((absoluteRoot) => dartFilesUnder(absoluteRoot))
+    .filter(
+      (absolutePath) => !relative(root, absolutePath).startsWith("lib/core/"),
+    );
   const findings = [];
 
   for (const absolutePath of files) {

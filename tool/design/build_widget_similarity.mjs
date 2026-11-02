@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
@@ -21,11 +22,12 @@ let fingerprintsPath = explicitFingerprintsPath;
 let fingerprintsLabel = valueAfter("--fingerprints-label");
 const outputPath = valueAfter("--out") ?? "build/reports/widget_similarity.json";
 const visualPath = valueAfter("--visual");
+const usageRoot = path.resolve(valueAfter("--usage-root") ?? fromRepo());
 const today = new Date().toISOString().slice(0, 10);
 
 if (args.includes("--help") || args.includes("-h")) {
   console.log(`Usage:
-  node tool/design/build_widget_similarity.mjs [--fingerprints path] [--fingerprints-label path] [--out path] [--visual path] [--check] [--json]
+  node tool/design/build_widget_similarity.mjs [--fingerprints path] [--fingerprints-label path] [--out path] [--visual path] [--usage-root path] [--check] [--json]
 
 Builds mechanical widget similarity from explicit Phase A fingerprints, or
 generates current fingerprints in a temporary directory when none are supplied.
@@ -392,9 +394,9 @@ function collectContractedSymbols(components) {
 
 function computeUsageCounts(widgets) {
   const sources = [];
-  for (const root of ["lib", "widgetbook/lib"]) {
-    for (const file of listFiles(fromRepo(root), ".dart")) {
-      const relative = relativeToRepo(file);
+  for (const root of [...screenSourceRoots(usageRoot), "widgetbook/lib"]) {
+    for (const file of listFiles(path.join(usageRoot, root), ".dart")) {
+      const relative = path.relative(usageRoot, file);
       if (relative.endsWith(".g.dart")) continue;
       sources.push({file: relative, source: fs.readFileSync(file, "utf8")});
     }

@@ -338,7 +338,7 @@ test("committed semantic route errors prevent a fresh CI receipt, while coverage
 
 test("actual CLI persists proof only in bound CI and preserves standalone generation", t => {
   const f = ciFixture(t);
-  const files = ["tool/ci/generated_inventories.mjs", "tool/lib/repo_paths.mjs",
+  const files = ["tool/ci/generated_inventories.mjs", "tool/lib/repo_paths.mjs", "tool/lib/flutter_source_roots.mjs",
     "tool/ui_capture/check_route_inventory.mjs", "tool/marketing/export_hosted_captures.mjs",
     "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
     "tool/design/component_concepts.mjs", "tool/design/lib/component_naming.mjs",

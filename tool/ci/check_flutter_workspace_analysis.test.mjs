@@ -125,3 +125,23 @@ test("the shared UI package enables the Catch semantic lint plugin", () => {
   assert.match(options, /^plugins:\n  catch_ui_lints:\n    path: \.\.\/catch_ui_lints$/mu);
   assert.ok(fs.existsSync(new URL("../catch_ui_lints/pubspec.yaml", optionsUrl)));
 });
+
+// The analyzer loads plugins only from the workspace root and warns on a
+// `plugins:` block anywhere else, so an app package gets them by including the
+// root options and staying inside the root analysis. Seeded violations prove it
+// today; this keeps the wiring that makes that true.
+test("app packages reach the plugins through the root options, not a block of their own", () => {
+  const root = new URL("../../", import.meta.url).pathname;
+  const rootOptions = fs.readFileSync(path.join(root, "analysis_options.yaml"), "utf8");
+  assert.match(rootOptions, /^plugins:\n(?:  .*\n)*  riverpod_lint:/mu);
+  assert.match(rootOptions, /^plugins:\n(?:  .*\n)*  catch_ui_lints:/mu);
+  assert.doesNotMatch(rootOptions, /^\s*- apps(?:\/|\b)/mu);
+
+  const apps = fs.readdirSync(path.join(root, "apps"));
+  assert.ok(apps.includes("host") && apps.includes("consumer"));
+  for (const app of apps) {
+    const options = fs.readFileSync(path.join(root, "apps", app, "analysis_options.yaml"), "utf8");
+    assert.match(options, /^include: \.\.\/\.\.\/analysis_options\.yaml$/mu, app);
+    assert.doesNotMatch(options, /^plugins:/mu, app);
+  }
+});
