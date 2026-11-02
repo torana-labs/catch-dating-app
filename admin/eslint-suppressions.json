@@ -89,18 +89,18 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 7
+      "count": 6
     },
     "react/forbid-elements": {
-      "count": 9
+      "count": 8
     }
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
     "react/forbid-dom-props": {
-      "count": 12
+      "count": 11
     },
     "react/forbid-elements": {
-      "count": 15
+      "count": 14
     }
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
@@ -116,7 +116,7 @@
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {
     "react/forbid-component-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-dom-props": {
       "count": 2
@@ -126,25 +126,11 @@
     }
   },
   "src/shared/ui/AdminPrimitives/intake.tsx": {
-    "react/forbid-component-props": {
+    "react/forbid-dom-props": {
       "count": 1
     },
-    "react/forbid-dom-props": {
-      "count": 8
-    },
     "react/forbid-elements": {
-      "count": 13
-    }
-  },
-  "src/shared/ui/AdminPrimitives/intakeWorkbench.tsx": {
-    "react/forbid-component-props": {
-      "count": 2
-    },
-    "react/forbid-dom-props": {
-      "count": 50
-    },
-    "react/forbid-elements": {
-      "count": 79
+      "count": 1
     }
   },
   "src/shared/ui/AdminPrimitives/marketing-composer.tsx": {
@@ -168,18 +154,18 @@
   },
   "src/shared/ui/AdminPrimitives/marketing-library.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 11
     },
     "react/forbid-elements": {
-      "count": 25
+      "count": 22
     }
   },
   "src/shared/ui/AdminPrimitives/marketing-shell.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
       "count": 10
@@ -193,18 +179,18 @@
       "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 8
+      "count": 7
     },
     "react/forbid-elements": {
-      "count": 8
+      "count": 7
     }
   },
   "src/shared/ui/AdminPrimitives/metrics.tsx": {
     "react/forbid-dom-props": {
-      "count": 14
+      "count": 13
     },
     "react/forbid-elements": {
-      "count": 16
+      "count": 14
     }
   },
   "src/shared/ui/AdminPrimitives/overview.tsx": {

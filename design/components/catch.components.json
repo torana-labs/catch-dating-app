@@ -642,7 +642,7 @@
             "text-custom-padding"
           ]
         },
-        "notes": "The D20 styled twin with every recipe: 4px corners; sm 32px, md 40px and lg 48px; primary, secondary, quiet, danger and light. Web additions: href draws a link with the button's look, type sets the native button type, and the default recipe takes a trailing glyph. Pressed, hovered and focused are pointer and keyboard states (the Interaction story presses by pointer and keyboard); large text and reduced motion follow the reader's settings, so the Contract story does not list them. ButtonControl, in its own file beside it, is the retiring headless button (a safe default type and busy loading, drawing nothing) under the four surface adapters (website Button and StepRail, Admin AdminButton and AdminIntakeStageRail); it is deleted when the D20 call-site moves to CatchButton land."
+        "notes": "The D20 styled twin with every recipe: 4px corners; sm 32px, md 40px and lg 48px; primary, secondary, quiet, danger and light. Web additions: href draws a link with the button's look, type sets the native button type, and the default recipe takes a trailing glyph. Pressed, hovered and focused are pointer and keyboard states (the Interaction story presses by pointer and keyboard); large text and reduced motion follow the reader's settings, so the Contract story does not list them. ButtonControl, in its own file beside it, is the retiring headless button (a safe default type and busy loading, drawing nothing) under the four surface adapters (website Button and StepRail, Admin AdminButton); it is deleted when the D20 call-site moves to CatchButton land."
       },
       "design": {
         "figma": {
@@ -11004,7 +11004,7 @@
         "notes": [
           "Use to resume or jump between the sections of a multi-step form; each row shows the section's completion status.",
           "Callers own step selection and status labels. Without onStepSelected, the Flutter list returns the chosen index from showCatchFormStepSheet.",
-          "Website StepRail and admin AdminIntakeStageRail are componentId adapters of this contract; the canonical @catch/web-ui implementation replaces both rails (blueprint Phase 7e).",
+          "Website StepRail is a componentId adapter of this contract; the canonical @catch/web-ui implementation replaces it (blueprint Phase 7e).",
           "Passive numbered instructions use catch.journey_steps; value editing uses catch.field.form_row_list."
         ]
       },
