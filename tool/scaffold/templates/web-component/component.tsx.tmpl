@@ -1,0 +1,11 @@
+import styles from "./%%Name%%.module.css";
+
+export interface %%Name%%Props {
+  /** Resolved copy; the caller localizes it. */
+  label: string;
+}
+
+/** State what it shows and when to use it. */
+export function %%Name%%({label}: %%Name%%Props) {
+  return <span className={styles.root}>{label}</span>;
+}

@@ -1,0 +1,27 @@
+%%imports%%
+
+/// Route parsing, chrome, the async boundary, listeners and navigation
+/// callbacks of this screen. What it shows belongs in [%%Name%%Body].
+class %%Name%%Screen extends ConsumerWidget {
+  const %%Name%%Screen({super.key, required this.title});
+
+  /// Localized by the route.
+  final String title;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(%%camel%%ViewModelProvider);
+    return CatchViewport(
+      compactBuilder: (context) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) =>
+            CatchTopBar.route(title: title),
+        body: CatchRouteBody.fullBleed(
+          child: CatchAsyncBoundary<%%Name%%ViewModel>(
+            value: viewModel,
+            builder: (context, state) => %%Name%%Body(title: title),
+          ),
+        ),
+      ),
+    );
+  }
+}

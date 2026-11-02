@@ -1,0 +1,18 @@
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('%%Symbol%% announces its label', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.light,
+        home: const %%Symbol%%(label: 'Label'),
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Label'), findsOneWidget);
+    semantics.dispose();
+  });
+}

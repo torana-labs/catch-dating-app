@@ -1,0 +1,19 @@
+name: %%name%%
+description: The %%name%% bounded context of Catch.
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: %%sdk%%
+
+dependencies:
+  catch_ui:
+    path: ../../catch_ui
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: %%flutterLints%%
+  flutter_test:
+    sdk: flutter

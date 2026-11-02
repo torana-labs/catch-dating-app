@@ -1,0 +1,21 @@
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/contract_preview.dart';
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: %%Symbol%%,
+  path: '[Core primitives]/Product composites',
+)
+Widget %%builder%%(BuildContext context) => const WidgetbookContractFrame(
+  title: '%%Symbol%%',
+  contractId: '%%id%%',
+  states: ['default'],
+  children: [
+    WidgetbookContractStateCard(
+      label: 'default',
+      child: %%Symbol%%(label: 'Label'),
+    ),
+  ],
+);

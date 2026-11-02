@@ -1,0 +1,57 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of '%%name%%_view_model.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(%%camel%%ViewModel)
+final %%camel%%ViewModelProvider = %%Name%%ViewModelProvider._();
+
+final class %%Name%%ViewModelProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<%%Name%%ViewModel>,
+          AsyncValue<%%Name%%ViewModel>,
+          AsyncValue<%%Name%%ViewModel>
+        >
+    with $Provider<AsyncValue<%%Name%%ViewModel>> {
+  %%Name%%ViewModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'%%camel%%ViewModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$%%camel%%ViewModelHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<%%Name%%ViewModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<%%Name%%ViewModel> create(Ref ref) {
+    return %%camel%%ViewModel(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<%%Name%%ViewModel> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<%%Name%%ViewModel>>(value),
+    );
+  }
+}
+
+String _$%%camel%%ViewModelHash() => r'%%hash%%';

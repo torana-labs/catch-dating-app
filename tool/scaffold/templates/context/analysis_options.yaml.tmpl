@@ -1,0 +1,12 @@
+include: ../../../analysis_options.yaml
+
+plugins:
+  riverpod_lint: %%riverpodLint%%
+  catch_ui_lints:
+    path: ../../catch_ui_lints
+
+linter:
+  rules:
+    # A member that imports an unlisted member still compiles in a pub
+    # workspace; this lint is what holds the package boundary (blueprint D25).
+    - depend_on_referenced_packages

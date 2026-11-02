@@ -1,0 +1,16 @@
+%%imports%%
+
+void main() {
+  testWidgets('%%Name%%Body announces its title', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.light,
+        home: const %%Name%%Body(title: 'Title'),
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Title'), findsOneWidget);
+    semantics.dispose();
+  });
+}
