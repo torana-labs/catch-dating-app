@@ -48,7 +48,6 @@ import {
   AdminRoadmapListItem,
   AdminStatusGrid,
   AdminSurfacePreview,
-  AdminTableRow,
   AdminToolbar,
   AdminWorkbenchStack,
   CheckboxField,
@@ -60,8 +59,6 @@ import {
   SearchField,
   SegmentedControl,
   StateRow,
-  TableActionButton,
-  AdminRowTitle,
   AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {

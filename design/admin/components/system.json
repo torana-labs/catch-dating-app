@@ -14,10 +14,16 @@
         "states": [
           "activity",
           "filters",
-          "health"
+          "health",
+          "load-more",
+          "receipt",
+          "unclear-result",
+          "failed-source",
+          "signals",
+          "signal"
         ]
       },
-      "notes": "System: one activity log of people's and agents' Admin actions (newest first, filtered by who acted and by problems, searchable) beside the health of each data source, on CatchPaneLayout queue with CatchTable and CatchSection."
+      "notes": "System: one activity log of people's and agents' Admin actions (newest first, filtered by who acted and by problems, searchable) beside the health of each data source, on CatchPaneLayout queue with CatchTable and CatchSection. A row opens its receipt in place of the health pane; a data signal opens the same way, with its evidence, owner, runbook and next step."
     },
     {
       "id": "route_system_live_controller",

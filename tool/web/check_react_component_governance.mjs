@@ -1151,7 +1151,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminRowTitle and AdminTagRow instead of rendering admin row title or tag-row shells directly.",
+    guidance: "Use CatchTable title cells and AdminTagRow instead of rendering admin row title or tag-row shells directly.",
   },
   {
     family: "admin-roadmap-list",

@@ -1,13 +1,12 @@
-import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchButton, CatchField, CatchText} from "@catch/web-ui";
 import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
   AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
-  AdminForm, AdminTableRow, AdminToolbar, DataTable, EmptyState,
+  AdminForm, AdminToolbar, DataTable, EmptyState,
   PageHeader, Panel, SearchField, SegmentedControl, selectOptions, StateRow,
-  TableActionButton,
-} from "../../../shared/ui/AdminPrimitives";
+  } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
@@ -342,7 +341,7 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
         <th>Host</th><th>Market</th><th>Events</th><th>Fit</th>
         <th>Research</th><th>Stage</th><th>Owner</th><th>Next step</th><th />
       </tr></thead><tbody>
-        {rows.map((row) => <AdminTableRow key={row.organizerId}>
+        {rows.map((row) => <tr key={row.organizerId}>
           <td><strong>{row.name}</strong></td>
           <td>{[row.city, row.marketLabel].filter(Boolean).join(", ") || "Not recorded"}</td>
           <td>{row.eventTypes?.join(", ") || "Not recorded"}</td>
@@ -351,10 +350,8 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
           <td>{labelFor(row.stage)}</td>
           <td>{ownerLabel(row.assignedOwnerUid, currentUserUid)}</td>
           <td>{row.nextAction || "Not set"}</td>
-          <td><TableActionButton onClick={() => onOpenHost(row.organizerId)}>
-            Open
-          </TableActionButton></td>
-        </AdminTableRow>)}
+          <td><CatchButton label="Open" onPressed={() => onOpenHost(row.organizerId)} recipe="text" /></td>
+        </tr>)}
       </tbody>
     </DataTable> : null}
     <Pagination hasPrevious={controller.hasPreviousPage}
@@ -390,15 +387,13 @@ function PipelineView({controller, currentUserUid, onOpenHost}: {
     {rows.length ? <DataTable ariaLabel="Sales opportunities">
       <thead><tr><th>Motion</th><th>Stage</th><th>Owner</th>
         <th>Next step</th><th>Due</th><th /></tr></thead>
-      <tbody>{rows.map((row) => <AdminTableRow key={row.opportunityId}>
+      <tbody>{rows.map((row) => <tr key={row.opportunityId}>
         <td>{labelFor(row.motion)}</td><td>{labelFor(row.stage)}</td>
         <td>{ownerLabel(row.ownerUid, currentUserUid)}</td>
         <td>{row.nextStep || "Not set"}</td>
         <td>{dateLabel(row.nextStepAt)}</td>
-        <td><TableActionButton onClick={() => onOpenHost(row.organizerId)}>
-          Open host
-        </TableActionButton></td>
-      </AdminTableRow>)}</tbody>
+        <td><CatchButton label="Open host" onPressed={() => onOpenHost(row.organizerId)} recipe="text" /></td>
+      </tr>)}</tbody>
     </DataTable> : null}
     <Pagination hasPrevious={controller.hasPreviousOpportunityPage}
       hasNext={Boolean(controller.opportunities.data?.nextCursor)}

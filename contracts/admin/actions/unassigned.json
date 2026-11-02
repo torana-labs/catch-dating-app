@@ -4,7 +4,7 @@
       "actionId": "operations.record-execution",
       "callable": "adminRecordActionExecution",
       "workflowIds": [],
-      "guiPath": "/operations",
+      "guiPath": "/system",
       "kind": "control",
       "risk": "high",
       "roles": [

@@ -1516,10 +1516,6 @@ select {
   min-width: 920px;
 }
 
-.workbench-table tr.selected-row {
-  background: var(--selected-surface);
-}
-
 .event-supply-review-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
@@ -1547,32 +1543,10 @@ select {
   gap: var(--catch-space-s2);
 }
 
-.row-title {
-  display: grid;
-  gap: var(--catch-space-micro3);
-  min-width: 0;
-}
-
-.row-title strong,
-.row-title span {
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-.row-title strong {
-  color: var(--ink);
-  font-size: var(--catch-typography-web-context-size);
-}
-
-.row-title span,
 .muted-cell {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
   font-weight: var(--catch-typography-web-headline-weight);
-}
-
-.row-title.compact {
-  gap: var(--catch-space-s1);
 }
 
 .tag-row {
@@ -1989,18 +1963,6 @@ th {
   font-size: var(--catch-typography-brand-kicker-size);
   font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
-}
-
-.table-action {
-  height: 28px;
-  padding: 0 var(--catch-space-micro10);
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-pill);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-  font-size: var(--catch-typography-web-status-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .signals,

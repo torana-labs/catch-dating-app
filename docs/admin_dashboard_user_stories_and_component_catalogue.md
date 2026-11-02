@@ -78,9 +78,10 @@ Files inspected:
 - `admin/src/features/users/api/userAnalyticsRepository.ts`
 - `admin/src/features/users/controllers/useUserAnalyticsController.ts`
 - `admin/src/features/users/ui/UserAnalyticsScreen.tsx`
-- `admin/src/features/data-quality/api/dataQualityRepository.ts`
-- `admin/src/features/data-quality/controllers/useDataQualityController.ts`
-- `admin/src/features/data-quality/ui/DataQualityScreen.tsx`
+- `admin/src/features/system/api/systemRepository.ts`
+- `admin/src/features/system/controllers/useSystemController.ts`
+- `admin/src/features/system/controllers/systemHealth.ts`
+- `admin/src/features/system/ui/SystemScreen.tsx`
 - `admin/src/stories/AdminRoutes<Feature>.stories.tsx`
 - `design/admin/components/`
 - `functions/src/admin/**` and `functions/src/clubs/organizerClaims.ts` for API
@@ -108,11 +109,11 @@ The sidebar exposes 12 role-gated top-level tabs:
 - Events
 - Users
 - Finance
-- Data quality
+- System
 - Admin roles
 
 Overview, Safety, Access, Growth, Marketing, Intake, Organizers, Events, Users,
-Finance, Data quality, and Admin roles now branch to dedicated surfaces. The
+Finance, System, and Admin roles now branch to dedicated surfaces. The
 remaining contract and source material now lives in this audit document or a
 secondary disclosure instead of taking over whole tabs. The global chrome uses
 one `Catch Admin` brand and one plain route title; it does not repeat prototype
@@ -138,7 +139,7 @@ Imported events publish from Organizer Intake's "Imported events" panels
 through `adminPublishListingEvents`; the retired `eventSupplyReadiness/current`
 readiness workspace is gone. Its
 Indore + Mumbai default uses the same bounded launch-city pattern.
-Safety, Launch access, Growth, Users, Finance, Data quality, and Admin roles now
+Safety, Launch access, Growth, Users, Finance, System, and Admin roles now
 use task-first, URL-owned directory/detail or exact-lookup workflows. Their
 remaining gaps are the explicitly deferred backend contracts listed below, not
 placeholder screen structure.
@@ -159,7 +160,7 @@ placeholder screen structure.
 | Money | `features/money` | `adminManagePaymentIssues` and `adminManageOrganizerBills` | work payment issues, confirm a booking through the payment processor's reconcile, issue bills, record reminders and payments, write off | Refunds happen in the organizer's Razorpay and are recorded here; reminders are recorded, not sent |
 | Marketplace | `features/marketplace` | `adminGetMarketplace` over the analytics warehouse | read events, fill, no-shows, returning guests, bookings each week and quiet organizers over a range and city; open an organizer | Per-organizer and per-event analytics stay out; Data quality keeps the host-analytics source |
 | Finance | `features/finance` | `adminGetFinanceMonth`, `adminManagePlatformCosts`, `adminExportMoneyLedger` | read the month line by line, enter costs by hand, download the ledger for the accountant | What's left over is before salaries; ticket sales are organizers' money and stay out of the ledger |
-| Data quality | `features/data-quality` | four independently loaded overview, analytics, marketing, and intake sources | inspect source-health dimensions, retry one failed source, filter severity/owner, open URL-owned signal detail or validated owning workflow | Complete approved data-trust register; scheduler receipts, acknowledgement, backfill, and remediation remain absent |
+| System | `features/system` | `adminListActionExecutions` plus overview, marketing, intake and (owner only) analytics sources, each loaded on its own | read the activity log, open a receipt, inspect source health, retry one failed source, read a signal's evidence, owner, runbook and next step |
 | Settings → Team and roles | `features/settings` | active assignment register plus exact Firebase Auth UID read and audited role mutation | three jobs (owner, sales associate, ops and support) mapped to role claims, invite by user id, a review note on every change, self-owner lock | Replaced the Admin roles screen on 1 Nov 2026; broad Auth search, account state and session revocation remain absent |
 
 ## Auth And Admin Roles
@@ -244,7 +245,7 @@ Current adherence:
   owned queues, scoped host analytics, refresh, independent partial-source
   states, and the feature-owned Overview repository, controller, and UI.
 - Good: event-directory work and source-quality diagnostics have moved to
-  Events and Data quality instead of competing with the daily queue router.
+  Events and System instead of competing with the daily queue router.
 - Good: six cross-vertical headline metrics identify their owning workflow;
   live queues appear before scoped analytics and route each row directly to
   its role-checked owning vertical.
@@ -380,7 +381,7 @@ Current adherence:
   not connected, and there is no per-campaign table or export yet.
 - Retired: the Growth KPI signal directory. Signups this week and completed
   profiles moved to Needs you, and its host analytics stay on Marketplace and
-  Data quality.
+  System.
 
 Recommended next work:
 
@@ -777,19 +778,17 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Data quality is feature-owned under `features/data-quality` and has a
-  dedicated read-only operations workspace.
+- Good: System's Health is feature-owned under `features/system` and read-only.
 - Good: it combines overview quality rows, host analytics quality rows,
   generated marketing bridge freshness, Event Intake dashboard freshness, and
   source crawl run-plan health.
 - Good: disabled/not-configured crawl and import policies are visible as
   separate rows, so stale generated artifacts are not mistaken for failed live
   schedulers.
-- Good: the table now supports explicit signal selection and a detail panel for
-  source, state, owner, runbook, updated time, detail, and next action.
-- Good: the route wrapper now delegates its rendered body to registered
-  `DataQualityWorkspace`, giving Storybook deterministic route/workspace
-  coverage without running live query fetches in previews.
+- Good: a signal opens in the pane with its source, state, owner, runbook,
+  read time, evidence, and next step.
+- Good: the route wrapper delegates to the prop-driven `SystemScreen`, giving
+  Storybook deterministic coverage without running live query fetches.
 - Weak: generated bridge metadata is still partly assembled in the
   frontend; there is still no scheduler last-run/last-error telemetry, backfill
   status, acknowledgement, or remediation workflow.

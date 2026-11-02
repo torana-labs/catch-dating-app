@@ -2,7 +2,7 @@
   "workflow": {
     "workflowId": "agent-activity",
     "label": "Agent activity",
-    "guiPath": "/operations"
+    "guiPath": "/system"
   },
   "actions": [
     {
@@ -11,7 +11,7 @@
       "workflowIds": [
         "agent-activity"
       ],
-      "guiPath": "/operations",
+      "guiPath": "/system",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [

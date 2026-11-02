@@ -109,22 +109,6 @@ export function DataTable({
   );
 }
 
-export function AdminTableRow({
-  children,
-  className = "",
-  selected = false,
-  ...props
-}: HTMLAttributes<HTMLTableRowElement> & {
-  children: ReactNode;
-  selected?: boolean;
-}) {
-  return (
-    <tr {...props} className={classNames(selected && "selected-row", className)}>
-      {children}
-    </tr>
-  );
-}
-
 export function AdminForm({
   children,
   className = "",
@@ -172,26 +156,6 @@ export function AdminFieldGrid({
     <div className={classNames("form-grid", columns === 2 && "two", columns === 3 && "three", className)}>
       {children}
     </div>
-  );
-}
-
-export function TableActionButton({
-  children,
-  className = "",
-  type = "button",
-  ...props
-}: {
-  children: ReactNode;
-  className?: string;
-} & ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      className={`table-action ${className}`.trim()}
-      type={type}
-      {...props}
-    >
-      {children}
-    </button>
   );
 }
 

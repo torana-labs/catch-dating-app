@@ -9,11 +9,6 @@
       "count": 1
     }
   },
-  "src/features/data-quality/ui/DataQualityScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 4
-    }
-  },
   "src/features/events/ui/eventPublishingEditorPanels.tsx": {
     "react/forbid-elements": {
       "count": 5
@@ -57,11 +52,6 @@
   "src/features/marketing/ui/marketingWorkflowPanels.tsx": {
     "react/forbid-elements": {
       "count": 19
-    }
-  },
-  "src/features/operations/ui/AdminActionExecutionsScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 9
     }
   },
   "src/features/organizers/ui/organizerDetailPanels.tsx": {
@@ -122,10 +112,10 @@
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 12
     },
     "react/forbid-elements": {
-      "count": 16
+      "count": 15
     }
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
@@ -133,10 +123,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 12
+      "count": 11
     },
     "react/forbid-elements": {
-      "count": 19
+      "count": 18
     }
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {

@@ -17,5 +17,8 @@ export default defineArea({
   },
   routes: [
     route("/system/*", "system"),
+    // Agent activity and Data quality moved into System; old links keep working.
+    route("/operations/*", "system", {redirect: "/system"}),
+    route("/quality/*", "system", {redirect: "/system"}),
   ],
 });
