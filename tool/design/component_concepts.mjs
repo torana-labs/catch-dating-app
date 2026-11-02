@@ -139,22 +139,26 @@ export function componentAliasProblems(components) {
 }
 
 /**
- * `absorbs` lists registered symbols a component takes over when its first
- * redesigned consumer lands. An alias may not shadow a registered symbol, so an
- * unregistered name goes in `aliases` and a registered one here.
+ * `absorbs` lists names a component takes over when its first redesigned consumer
+ * lands and that `aliases` cannot hold, because a name an alias may not shadow is
+ * already claimed: a registered symbol or another record's alias.
  */
 export function componentAbsorptionProblems(components) {
   const problems = [];
-  const symbols = new Set();
+  const claimed = new Set();
   for (const component of components) {
-    if (component.dart?.symbol) symbols.add(normalizeSymbol(component.dart.symbol));
-    for (const member of component.contract?.members ?? []) symbols.add(normalizeSymbol(member.symbol));
+    if (component.dart?.symbol) claimed.add(normalizeSymbol(component.dart.symbol));
+    for (const alias of component.aliases ?? []) claimed.add(normalizeSymbol(alias));
+    for (const member of component.contract?.members ?? []) {
+      claimed.add(normalizeSymbol(member.symbol));
+      for (const alias of member.aliases ?? []) claimed.add(normalizeSymbol(alias));
+    }
   }
   const owners = new Map();
   for (const component of components) {
     for (const symbol of component.absorbs ?? []) {
-      if (!symbols.has(normalizeSymbol(symbol))) {
-        problems.push(`${component.id}: absorbs ${symbol}, which is not a registered symbol; list it in aliases`);
+      if (!claimed.has(normalizeSymbol(symbol))) {
+        problems.push(`${component.id}: absorbs ${symbol}, which no record claims; list it in aliases`);
       }
       if (normalizeSymbol(symbol) === normalizeSymbol(component.dart?.symbol)) {
         problems.push(`${component.id}: absorbs its own symbol ${symbol}`);

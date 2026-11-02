@@ -264,7 +264,7 @@
         "aliases": {"$ref": "#/$defs/componentAliases"},
         "absorbs": {
           "type": "array",
-          "description": "Registered symbols this component takes over when its first redesigned consumer lands. An alias may not shadow a registered symbol, so unregistered names stay in aliases.",
+          "description": "Names this component takes over when its first redesigned consumer lands that aliases cannot hold because a registered symbol or another record's alias already claims them. Any other name goes in aliases.",
           "minItems": 1,
           "uniqueItems": true,
           "items": {"type": "string", "pattern": "^(?:[A-Z][a-z0-9]*)+$"}

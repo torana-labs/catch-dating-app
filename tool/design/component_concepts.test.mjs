@@ -499,12 +499,13 @@ test("a planned record has no symbol to prove and still claims its name", () => 
   assert.deepEqual(componentAliasProblems([planned]), []);
 });
 
-test("absorbs names registered symbols once; other names belong in aliases", () => {
+test("absorbs holds claimed names once; any other name belongs in aliases", () => {
   const owner = {...primary("catch.notice", "CatchNotice"), absorbs: ["CatchBanner"]};
   const banner = primary("catch.banner", "CatchBanner");
   assert.deepEqual(componentAbsorptionProblems([owner, banner]), []);
   assert.deepEqual(componentAbsorptionProblems([{...owner, absorbs: ["CatchNotRegistered"]}, banner]),
-    ["catch.notice: absorbs CatchNotRegistered, which is not a registered symbol; list it in aliases"]);
+    ["catch.notice: absorbs CatchNotRegistered, which no record claims; list it in aliases"]);
+  assert.deepEqual(componentAbsorptionProblems([{...owner, absorbs: ["CatchSplit"]}, {...banner, aliases: ["SplitView"]}]), []);
   assert.deepEqual(componentAbsorptionProblems([{...owner, absorbs: ["CatchNotice"]}, banner]),
     ["catch.notice: absorbs its own symbol CatchNotice"]);
   assert.deepEqual(componentAbsorptionProblems([owner, {...banner, id: "catch.other", absorbs: ["CatchBanner"], dart: {symbol: "CatchOther"}}, banner]),

@@ -104,7 +104,7 @@ export function buildRows({components, reactExports, dartExports, table = system
       const flutter = flutterToday(component, dartExports);
       const react = reactToday(component, reactExports);
       const absorbs = [...(component.aliases ?? []), ...(component.absorbs ?? [])]
-        .filter((symbol) => dartExports.has(symbol) || reactExports.has(symbol));
+        .filter((symbol) => (dartExports.has(symbol) || reactExports.has(symbol)) && symbol !== react);
       rows.push({
         system,
         id,
@@ -126,8 +126,9 @@ function flutterToday(component, dartExports) {
   return dartExports.has(component.name) ? component.name : null;
 }
 
+/** D9: the styled implementation shares the Flutter symbol, so it wins over a headless record. */
 function reactToday(component, reactExports) {
-  for (const symbol of [component.react?.symbol, component.dart?.symbol, component.name]) {
+  for (const symbol of [component.dart?.symbol, component.name, component.react?.symbol]) {
     if (symbol && reactExports.has(symbol)) return symbol;
   }
   return null;

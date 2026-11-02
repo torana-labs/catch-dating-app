@@ -30,8 +30,6 @@ const flutterPlaceholder = "@@flutter@@";
 
 const usage = "Usage: node tool/design/import_ds_props.mjs [--check] [--source <catch-design-source>]";
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) runCli();
-
 function runCli() {
   const args = process.argv.slice(2);
   const check = args.includes("--check");
@@ -486,3 +484,5 @@ function formatSystemBlock(block) {
   }
   return ['      "system": {', fields.join(",\n"), "      }"];
 }
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) runCli();

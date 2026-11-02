@@ -259,10 +259,11 @@ new-widget gate
 (`node tool/design/check_new_widget_inventory.mjs --check`) rejects a new widget
 whose name matches a registered name or alias and names the component to use.
 
-`absorbs` lists registered symbols a component takes over when its first redesigned
-consumer lands, such as `CatchBanner` on `catch.notice`. An alias may not shadow a
-registered symbol, so a name with its own record or member goes here and any other
-absorbed name goes in `aliases`. The contract check holds each entry to one owner.
+`absorbs` lists names a component takes over when its first redesigned consumer
+lands that an alias cannot hold, such as `CatchBanner` on `catch.notice`. An alias
+may not shadow a registered symbol or repeat another record's alias, so a name
+already claimed goes here and any other absorbed name goes in `aliases`. The contract
+check holds each entry to one owner and rejects one that `aliases` could hold.
 
 `roleNounRedirects` maps nouns agents commonly write but the grammar spells
 differently (Panel, Content, View, ...) to the role nouns to use. Naming
