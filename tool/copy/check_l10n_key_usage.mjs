@@ -10,7 +10,6 @@ import {
 
 const defaultArbRelativePath = "lib/l10n/app_en.arb";
 const defaultSourceRootRelativePath = "lib";
-const defaultBaselineRelativePath = "tool/copy/l10n_orphan_baseline.json";
 
 const generatedSuffixPattern =
   /\.(?:freezed|g|gen|gr|mocks)\.dart$/u;
@@ -236,70 +235,6 @@ function l10nMemberReferencesFromTokens(tokens) {
   return references;
 }
 
-export function evaluateOrphanRatchet(orphanedKeys, baseline) {
-  const current = [...new Set(orphanedKeys)].sort(compareText);
-  const allowed = [...new Set(baseline.allowedOrphanedKeys ?? [])].sort(
-    compareText,
-  );
-  const currentSet = new Set(current);
-  const allowedSet = new Set(allowed);
-  const newOrphanedKeys = current.filter((key) => !allowedSet.has(key));
-  const baselineOrphanedKeys = current.filter((key) => allowedSet.has(key));
-  const resolvedBaselineKeys = allowed.filter((key) => !currentSet.has(key));
-  return {
-    passed: newOrphanedKeys.length === 0,
-    newOrphanedKeys,
-    baselineOrphanedKeys,
-    resolvedBaselineKeys,
-  };
-}
-
-export function baselineFromOrphans(orphanedKeys) {
-  return {
-    owner: "app_architecture",
-    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
-    version: 1,
-    generatedBy: "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
-    checkCommand: "node tool/copy/check_l10n_key_usage.mjs --check",
-    refreshCommand:
-      "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
-    description:
-      "Existing orphaned Flutter ARB keys. Normal checks fail only when a newly orphaned key is not listed here; this list may only shrink.",
-    allowedOrphanedKeys: [...new Set(orphanedKeys)].sort(compareText),
-  };
-}
-
-export function readOrphanBaseline(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return baselineFromOrphans([]);
-  }
-  const value = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  if (
-    value == null ||
-    typeof value !== "object" ||
-    Array.isArray(value) ||
-    value.version !== 1 ||
-    !Array.isArray(value.allowedOrphanedKeys)
-  ) {
-    throw new Error(
-      `${filePath} must be a version 1 l10n orphan baseline with allowedOrphanedKeys.`,
-    );
-  }
-  const seen = new Set();
-  for (const [index, key] of value.allowedOrphanedKeys.entries()) {
-    if (typeof key !== "string" || !dartIdentifierPattern.test(key)) {
-      throw new Error(
-        `${filePath} allowedOrphanedKeys[${index}] must be a Dart identifier.`,
-      );
-    }
-    if (seen.has(key)) {
-      throw new Error(`${filePath} contains duplicate orphan key ${key}.`);
-    }
-    seen.add(key);
-  }
-  return value;
-}
-
 export function stableJson(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
@@ -384,35 +319,25 @@ function displayPath(filePath, repoRoot) {
 function parseArgs(argv) {
   const parsed = {
     arb: defaultArbRelativePath,
-    baseline: defaultBaselineRelativePath,
     check: false,
     help: false,
     json: false,
     repoRoot: defaultRepoRoot,
     sourceRoot: defaultSourceRootRelativePath,
-    writeBaseline: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--arb") parsed.arb = requiredValue(argv, ++index, argument);
-    else if (argument === "--baseline") {
-      parsed.baseline = requiredValue(argv, ++index, argument);
-    } else if (argument === "--check") parsed.check = true;
+    else if (argument === "--check") parsed.check = true;
     else if (argument === "--help" || argument === "-h") parsed.help = true;
     else if (argument === "--json") parsed.json = true;
     else if (argument === "--repo-root") {
       parsed.repoRoot = path.resolve(requiredValue(argv, ++index, argument));
     } else if (argument === "--source-root") {
       parsed.sourceRoot = requiredValue(argv, ++index, argument);
-    } else if (argument === "--write-baseline") parsed.writeBaseline = true;
-    else throw new CliUsageError(`Unknown argument: ${argument}`);
+    } else throw new CliUsageError(`Unknown argument: ${argument}`);
   }
 
-  if (parsed.writeBaseline && parsed.check) {
-    throw new CliUsageError(
-      "--write-baseline cannot be combined with --check.",
-    );
-  }
   return parsed;
 }
 
@@ -438,49 +363,12 @@ function runCli() {
   const repoRoot = path.resolve(args.repoRoot);
   const arbPath = resolveFromRoot(repoRoot, args.arb);
   const sourceRoot = resolveFromRoot(repoRoot, args.sourceRoot);
-  const baselinePath = resolveFromRoot(repoRoot, args.baseline);
   const result = scanL10nKeyUsage({repoRoot, arbPath, sourceRoot});
-
-  if (args.writeBaseline) {
-    if (result.missingCatalogReferences.length > 0) {
-      reportMissingCatalogReferences(result.missingCatalogReferences);
-      console.error(
-        "Refusing to refresh the orphan baseline while handwritten l10n getters are absent from the canonical ARB.",
-      );
-      process.exitCode = 1;
-      return;
-    }
-    if (fs.existsSync(baselinePath)) {
-      const currentBaseline = readOrphanBaseline(baselinePath);
-      const refreshCheck = evaluateOrphanRatchet(
-        result.orphanedKeys,
-        currentBaseline,
-      );
-      if (!refreshCheck.passed) {
-        throw new Error(
-          "Refusing to grow the l10n orphan baseline with new key(s): " +
-            refreshCheck.newOrphanedKeys.join(", "),
-        );
-      }
-    }
-    const baseline = baselineFromOrphans(result.orphanedKeys);
-    fs.mkdirSync(path.dirname(baselinePath), {recursive: true});
-    fs.writeFileSync(baselinePath, stableJson(baseline));
-    console.log(
-      `Wrote l10n orphan baseline with ${baseline.allowedOrphanedKeys.length} key(s): ${displayPath(baselinePath, repoRoot)}`,
-    );
-    return;
-  }
-
-  const baseline = readOrphanBaseline(baselinePath);
-  const ratchet = evaluateOrphanRatchet(result.orphanedKeys, baseline);
 
   if (args.json) {
     console.log(
       stableJson({
         inventory: result.inventory,
-        baseline: displayPath(baselinePath, repoRoot),
-        ratchet,
         excludedFiles: result.excludedFiles,
       }).trimEnd(),
     );
@@ -494,11 +382,6 @@ function runCli() {
         `${summary.scannedDartFiles} handwritten Dart file(s), ` +
         `${summary.excludedGeneratedDartFiles} generated Dart file(s) excluded.`,
     );
-    console.log(
-      `Orphan ratchet: ${ratchet.newOrphanedKeys.length} new, ` +
-        `${ratchet.baselineOrphanedKeys.length} baseline, ` +
-        `${ratchet.resolvedBaselineKeys.length} resolved baseline key(s).`,
-    );
   }
 
   if (result.missingCatalogReferences.length > 0) {
@@ -506,24 +389,14 @@ function runCli() {
     process.exitCode = 1;
   }
 
-  if (args.check && !ratchet.passed) {
-    console.error("New orphaned Flutter ARB keys:");
-    for (const key of ratchet.newOrphanedKeys) console.error(`- ${key}`);
+  if (args.check && result.orphanedKeys.length > 0) {
+    console.error("Orphaned Flutter ARB keys:");
+    for (const key of result.orphanedKeys) console.error(`- ${key}`);
     console.error(
-      "Restore a handwritten production use or remove the obsolete ARB entry. Do not refresh the baseline to hide new debt.",
+      "Restore a handwritten production use or remove the obsolete ARB entry.",
     );
     process.exitCode = 1;
   }
-
-  if (ratchet.resolvedBaselineKeys.length > 0 && !args.json) {
-    console.log(
-      `Baseline can shrink by ${ratchet.resolvedBaselineKeys.length} key(s); after reviewing the cleanup, run:`,
-    );
-    console.log(
-      "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
-    );
-  }
-
 }
 
 function reportMissingCatalogReferences(references) {
@@ -536,7 +409,7 @@ function reportMissingCatalogReferences(references) {
     );
   }
   console.error(
-    "Restore each canonical ARB message or update the handwritten callsite; missing catalog getters cannot be baselined.",
+    "Restore each canonical ARB message or update the handwritten callsite; missing catalog getters always fail.",
   );
 }
 
@@ -548,24 +421,17 @@ handwritten production Dart. Missing catalog getters always fail. Generated
 Dart, comments, and ordinary string contents cannot affect either result.
 
 Check options:
-  --check                 Fail when an orphan is outside the baseline.
-  --json                  Print the complete live inventory and ratchet result.
-
-Reviewed write option:
-  --write-baseline        Replace the baseline with current orphaned keys after
-                          pruning or restoring usages; the baseline may only shrink.
+  --check                 Fail on any orphaned catalog key.
+  --json                  Print the complete live inventory.
 
 Path options:
   --arb <path>            Override lib/l10n/app_en.arb.
   --source-root <path>    Override the lib source root.
-  --baseline <path>       Override tool/copy/l10n_orphan_baseline.json.
   --repo-root <path>      Override the checkout root (used by fixture tests).
   --help, -h              Show this help.
 
 Parent integration loop:
   node tool/copy/check_l10n_key_usage.mjs --check
   node tool/copy/check_l10n_key_usage.mjs --check --json > build/ci/l10n-key-usage.json
-  # After deleting obsolete ARB keys or restoring real usages:
-  node tool/copy/check_l10n_key_usage.mjs --write-baseline
 `);
 }

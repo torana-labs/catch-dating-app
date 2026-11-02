@@ -6,24 +6,14 @@
   "additionalProperties": false,
   "required": [
     "$schema",
-    "version",
-    "updated",
     "owner",
     "sourceOfTruth",
     "coverage",
-    "interactionContractAdoptions",
-    "components"
+    "interactionContractAdoptions"
   ],
   "properties": {
     "$schema": {
       "const": "./admin.components.schema.json"
-    },
-    "version": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "updated": {
-      "type": "string"
     },
     "owner": {
       "const": "admin_dashboard"
@@ -39,19 +29,11 @@
       "additionalProperties": false,
       "required": [
         "strategy",
-        "currentFocus",
         "previewKinds"
       ],
       "properties": {
         "strategy": {
           "const": "route-workspace-plus-shared-primitives"
-        },
-        "currentFocus": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "uniqueItems": true
         },
         "previewKinds": {
           "type": "array",
@@ -75,7 +57,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "concept", "source", "components"],
+        "required": [
+          "id",
+          "concept",
+          "source",
+          "components"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -99,123 +86,7 @@
           }
         }
       }
-    },
-    "components": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "kind",
-          "owner",
-          "source",
-          "exportName",
-          "css",
-          "preview",
-          "notes"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[a-z0-9_]+$"
-          },
-          "kind": {
-            "type": "string",
-            "enum": [
-              "route",
-              "workspace",
-              "shared-primitive",
-              "feature-component",
-              "provider"
-            ]
-          },
-          "owner": {
-            "type": "string"
-          },
-          "source": {
-            "type": "string"
-          },
-          "exportName": {
-            "type": "string",
-            "pattern": "^[A-Z][A-Za-z0-9_]*$"
-          },
-          "componentId": {
-            "type": "string",
-            "pattern": "^catch\\.[a-z0-9_.-]+$",
-            "description": "The design/components/catch.components.json contract this export implements as an admin adapter."
-          },
-          "comparedWith": {
-            "type": "array",
-            "items": {"type": "string", "pattern": "^catch\\.[a-z0-9_.-]+$"},
-            "minItems": 1,
-            "uniqueItems": true,
-            "description": "Contracts the React component inventory matched by name or rendering and that this export does not implement."
-          },
-          "comparisonReason": {
-            "type": "string",
-            "minLength": 20,
-            "description": "The responsibility that differs from every comparedWith contract."
-          },
-          "interactionContract": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["concept", "mode"],
-            "properties": {
-              "concept": {
-                "const": "field_row"
-              },
-              "mode": {
-                "type": "string",
-                "pattern": "^[A-Za-z][A-Za-z0-9]*$"
-              }
-            }
-          },
-          "css": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "uniqueItems": true
-          },
-          "preview": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "status",
-              "states"
-            ],
-            "properties": {
-              "status": {
-                "type": "string",
-                "enum": [
-                  "ready",
-                  "planned",
-                  "not-required"
-                ]
-              },
-              "story": {
-                "type": "string"
-              },
-              "exportName": {
-                "type": "string"
-              },
-              "states": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "minItems": 1,
-                "uniqueItems": true
-              }
-            }
-          },
-          "notes": {
-            "type": "string"
-          }
-        }
-      }
     }
-  }
+  },
+  "description": "The registry index. Components live in one file per feature under design/admin/components/; see admin.component-fragment.schema.json."
 }

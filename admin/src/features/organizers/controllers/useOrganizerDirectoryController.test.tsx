@@ -1,5 +1,5 @@
 import {act, renderHook, waitFor} from "@testing-library/react";
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController";
 import {useOrganizerOverviewController} from "./useOrganizerOverviewController";
@@ -47,7 +47,7 @@ describe("useOrganizerOverviewController", () => {
   it("loads an organizer's journey and next step", async () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(
-      () => useOrganizerOverviewController("afterfly"), {wrapper});
+      () => useOrganizerOverviewController("afterfly", {onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
 
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     expect(result.current.overview?.journey.map((step) => step.kind))
@@ -55,10 +55,21 @@ describe("useOrganizerOverviewController", () => {
     expect(result.current.overview?.nextStep).toBe("claim");
   });
 
+  it("checks for new events and says what it is reading", async () => {
+    const {wrapper} = createQueryHarness();
+    const onError = vi.fn();
+    const onNotice = vi.fn();
+    const {result} = renderHook(
+      () => useOrganizerOverviewController("afterfly", {onError, onNotice}), {wrapper});
+    await act(async () => { await result.current.checkForEvents(); });
+    expect(onError).toHaveBeenCalledWith(null);
+    expect(onNotice).toHaveBeenCalledWith(expect.stringContaining("Reading 1 page for new events."));
+  });
+
   it("reports an organizer that is not there", async () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(
-      () => useOrganizerOverviewController("missing"), {wrapper});
+      () => useOrganizerOverviewController("missing", {onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
     await waitFor(() => expect(result.current.loadState).toBe("error"));
     expect(result.current.loadError).toContain("not found");
   });

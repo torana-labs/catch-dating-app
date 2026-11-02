@@ -52,7 +52,23 @@ test("independently locked npm packages and source projects become projects", as
   assert.equal(projects.operations.name, operationsPackage.name);
   assert.equal(projects.contracts.name, "contracts");
   assert.match(projects.contracts.targets.check.options.command, /generate_schema_contracts\.mjs --check$/);
+  // The conformance scans read Functions and Dart code, so editing either selects them.
+  assert.ok(projects.contracts.targets.conformance.inputs.includes("{workspaceRoot}/functions/src/**/*"));
+  assert.ok(projects.contracts.targets.conformance.inputs.includes("{workspaceRoot}/lib/**/*"));
   assert.equal(projects["design/tokens"].name, "design-tokens");
+  // These checks compare generators with their committed output, so a change to
+  // either selects them and a stale result never passes from the cache.
+  // targetDefaults beat plugin targets, so a `check` default would undo all of this.
+  const nxJson = JSON.parse(fs.readFileSync(path.join(workspaceRoot, "nx.json"), "utf8"));
+  assert.equal(nxJson.targetDefaults.check, undefined);
+  for (const [project, generator, output] of [
+    ["contracts", "{workspaceRoot}/tool/contracts/**/*", "{workspaceRoot}/admin/src/generated/**/*"],
+    ["design/tokens", "{workspaceRoot}/tool/design_tokens/**/*", "{workspaceRoot}/packages/web-config/generated/**/*"],
+  ]) {
+    assert.equal(projects[project].targets.check.cache, false);
+    assert.ok(projects[project].targets.check.inputs.includes(generator));
+    assert.ok(projects[project].targets.check.inputs.includes(output));
+  }
 });
 
 test("path dependencies and declared sources become graph edges", async () => {
@@ -76,4 +92,10 @@ test("path dependencies and declared sources become graph edges", async () => {
     assert.ok(edges.includes(edge), `missing ${edge}`);
   }
   assert.ok(!edges.some((edge) => edge.startsWith("catch_ui -> catch_dating_app")), "membership must not add a cycle");
+});
+
+test("a lane with dependencies is selected when they change", () => {
+  for (const {name, targets} of options.sourceProjects.filter(({name}) => name.startsWith("lane-"))) {
+    assert.equal(targets.lane.inputs.includes("^production"), Boolean(options.implicitDependencies[name]), name);
+  }
 });

@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.96.1
-updated: 2026-11-01
+version: 1.97.1
+updated: 2026-11-02
 owner: app_architecture
 status: active
 ---
@@ -281,8 +281,10 @@ app folders without touching repositories, and data ownership never depends
 on which tab shows the data.
 
 `tool/architecture/context_map.json` is the source of truth for the contexts,
-their order and where every current folder belongs. `audit:context-map`
-(`tool/architecture/check_context_map.mjs`) checks it on every app build.
+their order and where every current folder belongs. The `catch_arch_*` lints in
+`packages/catch_ui_lints` read it and check every file inside the analyzer;
+`audit:context-map` (`tool/architecture/check_context_map.mjs`) checks that the
+map is well formed and that the table below matches it.
 
 ### Target layout
 
@@ -385,11 +387,10 @@ may read repositories and platform plugins.
 8. Context names are product nouns used the same way in Flutter,
    `functions/src` and the website. Manual review when a context is added.
 
-Imports in legacy folders that already break rules 1 and 2 are listed in
-`tool/architecture/context_map_baseline.json`. CI fails on a new one and on a
-listed one that no longer exists, so the list only shrinks. Files under
-`lib/contexts/`, `lib/pages/`, `lib/kernel/` and `lib/platform/` cannot be
-listed, and rules 3 to 5 cannot be listed anywhere.
+A legacy import that has to break rules 1 or 2 takes a reasoned `// ignore:`
+next to the import; see [Enforcement And Overrides](#enforcement-and-overrides).
+Files under `lib/contexts/`, `lib/pages/`, `lib/kernel/` and `lib/platform/`
+take no exceptions, and rules 3 to 5 take none anywhere.
 
 ### Placing legacy folders
 
@@ -422,21 +423,22 @@ summaries.
 
 #### Phase 1: contract and check
 
-This contract and `audit:context-map`.
+This contract and the context-map checks.
 
 #### Phase 2: teach path-keyed checks the new roots
 
-`audit:dependency-direction` places each file by layer rather than matching
-`lib/<feature>/<layer>/`, so its rules keep applying after a move. Context
+The `catch_arch_*` lints place each file by layer rather than matching
+`lib/<feature>/<layer>/`, so their rules keep applying after a move. Context
 `domain/` and `data/` folders and `lib/kernel/` get the domain and data rules,
 `actions/` the controller exemptions, `parts/` the provider-free rule, and
 `lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
-under these roots can never be baselined, so moved code arrives clean.
+under these roots take no exceptions, so moved code arrives clean.
 
-The other screen checks still read only `lib/`, and the app packages don't
-load the Catch UI or Riverpod analyzer plugins. Closing that gap is a
-prerequisite for phase 4, not for phase 3. Tools that name specific files
-update in the PR that moves those files.
+The app packages are analyzed from the workspace root and include its
+`analysis_options.yaml`, so the Catch UI and Riverpod plugins reach them. The
+other screen checks still read only `lib/`; closing that gap is a prerequisite
+for phase 4, not for phase 3. Tools that name specific files update in the PR
+that moves those files.
 
 #### Phase 3: move domain and data
 
@@ -679,10 +681,8 @@ Hard rules:
   repository/data boundaries or feature-neutral adapter seams that keep those
   SDKs out of domain models and validators.
 - Domain serialization that still needs Firestore `Timestamp` handling routes
-  through `lib/platform/firebase/firestore_converters.dart`. Existing direct
-  Firebase imports in domain are ratcheted debt in
-  `tool/architecture/dependency_direction_baseline.json`; new domain code must
-  not add them. The long-term target is no Firebase API calls or Firebase types
+  through `lib/platform/firebase/firestore_converters.dart`; new domain code
+  must not add direct Firebase imports. The long-term target is no Firebase API calls or Firebase types
   in domain signatures. Full DTO purity is not the target by default.
 - Platform/plugin effects such as URL launch, share, image picker, location,
   calendar, clipboard, haptics, notifications, and connectivity need a seam
@@ -690,7 +690,7 @@ Hard rules:
 
 Between contexts and layers, the
 [Bounded Context Contract](#bounded-context-contract) adds the context order,
-the public API rule and the layer order; `audit:context-map` checks them.
+the public API rule and the layer order; the `catch_arch_*` lints check them.
 
 Temporary exceptions require an override comment described in
 `Enforcement And Overrides`.
@@ -743,10 +743,9 @@ unresolved signal whose changed fields and caller contract still need review.
 Neither disposition claims compliance. Use `accepted-exception` only for a
 named mechanical/framework/service responsibility, such as the router
 Listenable bridge. Do not generate approvals from counts or use directory,
-filename, or whole-file ownership exceptions. Manual provider declarations in
-`dependency_direction_baseline.json` likewise require their exact symbol and
-canonical builder operation; the reviewed private Host family and Programs debt
-do not admit another declaration in the same file.
+filename, or whole-file ownership exceptions. A manual provider declaration
+likewise takes its own `// ignore:` with a reason, so the Programs debt does not
+admit another declaration in the same file.
 
 This is a parsed-source review gate, not whole-program type/flow analysis.
 Dynamic dispatch, typedef/tear-off callback aliases, re-export-only ancestry,
@@ -1640,7 +1639,7 @@ Catch's UI system has separate sources of truth by layer:
 
 | Layer | Source of truth | Mirrors / consumers |
 |---|---|---|
-| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
+| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables |
 | Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/contexts/*/parts/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
 | Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
 | Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
@@ -1651,11 +1650,10 @@ arbitrary JSX/CSS exports as visual proposal material, not implementation
 source. A handoff is implementation-ready only when it names component contract
 ids, props, slots, and any missing primitive/token deltas.
 
-Style Dictionary is a candidate token transformation engine, not a component
-translator. Keep `dart run tool/design_tokens.dart` as the production generator
-until a spike proves generated Dart/CSS equivalence, custom gradient/semantic
-formats, deterministic `--check`, and real Figma/Tokens Studio value. Component
-contracts remain separate; no Style Dictionary output is widget implementation.
+Style Dictionary is the token transformation engine, not a component
+translator: `node tool/design_tokens.mjs` is the production generator, and
+`--check` fails when a tracked output differs. Component contracts remain
+separate; no Style Dictionary output is widget implementation.
 
 Validate the component registry with:
 
@@ -2742,7 +2740,7 @@ Use these lifecycle rules:
 - Use `@Riverpod(keepAlive: true)` only when the stream is deliberately global
   or prewarmed. Document the reason at the provider or call site with a
   `// keepalive:` marker within the three lines above the annotation or
-  handwritten provider declaration; the dependency-direction scanner enforces
+  handwritten provider declaration; `catch_arch_undocumented_keep_alive` enforces
   that marker.
 - For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
   whether the stream should remain active while its tab is inactive. If not,
@@ -2973,7 +2971,7 @@ or implementation technique cannot justify a second shared implementation.
   component) and it names a responsibility no existing role covers; a synonym
   of an existing role redirects to that role instead. Every registered
   component and role noun records `aliases`, the other names an agent would
-  plausibly write. The generated catalog and context pack index them, and the
+  plausibly write. The generated catalog indexes them, and the
   new-widget gate rejects a new widget whose name matches an existing
   component's name or alias with a pointer to that component (blueprint Phase
   7b delivers the alias data and gate).
@@ -3299,9 +3297,8 @@ node tool/run.mjs check copy:event-success-questionnaires
 node tool/run.mjs check copy:structured-domain-content
 ```
 
-The baselines in `tool/copy/mobile_copy_baseline.json` and
-`tool/copy/l10n_orphan_baseline.json` must remain empty. New inline findings or
-missing catalog getters or zero-use ARB keys fail immediately. Exact usage
+Both checks are plain gates with no baseline: any inline finding, missing
+catalog getter or zero-use ARB key fails immediately. Exact usage
 locations are available from live `--json` output; no generated usage inventory
 is committed. An allowlist entry is only appropriate for a technical
 identifier, test/demo fixture, or user-authored value and must contain a narrow
@@ -3867,6 +3864,26 @@ metadata or broken phase references. Refresh commands retain this metadata.
 The source-budget split targets Phase 5; remaining domain-owned debt targets
 Phase 6's continuous conformance lanes. A target is an outstanding obligation,
 not evidence that a baseline is already empty.
+
+### Architecture lint exceptions
+
+The `catch_arch_*` lints enforce dependency direction and bounded-context
+placement in the analyzer, on the workspace-root analysis CI runs. An exception
+is one comment next to the code, not a row in a list, so moving a file moves its
+exception:
+
+```dart
+// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt
+final programEventsControllerProvider = Provider.autoDispose
+```
+
+`catch_arch_invalid_ignore` rejects an exception that applies to the whole file,
+gives no reason after `--`, no longer matches a finding, names a rule that holds
+everywhere (barrel exports, parts stay provider-free, the public API rule,
+placement), or sits under `lib/contexts/`, `lib/pages/`, `lib/kernel/`,
+`lib/platform/` or an app destination. `catch_no_allow_debt` still rejects
+ignores of the UI rules. `// keepalive:`, `// public-api:` and
+`// architecture:allow stream-timeout` markers keep their meaning.
 
 ### Screen chrome contracts
 
@@ -5167,7 +5184,8 @@ architecture cleanup within a feature or context:
      completion state.
 
 2. Inventory the current surface.
-   - `node tool/run.mjs check audit:dependency-direction audit:adopted-architecture-boundaries audit:mutation-error-surfaces`
+   - `node tool/ci/check_flutter_workspace_analysis.mjs` for the `catch_arch_*` lints
+   - `node tool/run.mjs check audit:adopted-architecture-boundaries audit:mutation-error-surfaces`
    - `bash tool/widget_cleanup_scan.sh --summary`
    - `dart tool/audit/backend_error_candidates.dart`
    - `dart tool/audit/frontend_error_candidates.dart`

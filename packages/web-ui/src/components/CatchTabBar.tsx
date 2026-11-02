@@ -122,17 +122,17 @@ export function CatchTabBar({
     onSelect: (() => void) | undefined,
     className = styles.item,
   ) => {
-    const common = {"aria-current": current ? ("page" as const) : undefined, className, key};
+    const common = {"aria-current": current ? ("page" as const) : undefined, className};
     if (href) {
       return (
-        <a {...common} href={href} onClick={onSelect ? (event) => {
+        <a key={key} {...common} href={href} onClick={onSelect ? (event) => {
           if (!followsPlainClick(event)) return;
           event.preventDefault();
           onSelect();
         } : undefined}>{content}</a>
       );
     }
-    return <button {...common} onClick={onSelect} type="button">{content}</button>;
+    return <button key={key} {...common} onClick={onSelect} type="button">{content}</button>;
   };
 
   const itemContent = (icon: CatchIconName | undefined, text: string, badge: number | undefined) => (

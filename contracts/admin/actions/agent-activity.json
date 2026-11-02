@@ -1,0 +1,29 @@
+{
+  "workflow": {
+    "workflowId": "agent-activity",
+    "label": "Agent activity",
+    "guiPath": "/operations"
+  },
+  "actions": [
+    {
+      "actionId": "operations.list-executions",
+      "callable": "adminListActionExecutions",
+      "workflowIds": [
+        "agent-activity"
+      ],
+      "guiPath": "/operations",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_action_executions_payload.schema.json",
+      "summary": "List bounded agent/CLI action executions for GUI monitoring.",
+      "example": {
+        "limit": 50
+      }
+    }
+  ]
+}

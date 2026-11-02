@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   validateAdminLiveDataSources,
   verifyAdminCallableReachability,
+  verifyWhileBackendDeploys,
 } from
   "./check_admin_live_data_sources.mjs";
 
@@ -117,4 +118,32 @@ test("live verification reports every missing deployed callable", async () => {
     "adminListActionExecutions",
     "adminListIntakeOperations",
   ]);
+});
+
+test("keeps checking while Deploy backend runs, and stops when it is live", async () => {
+  const results = [{failures: [{callable: "a"}]}, {failures: [{callable: "a"}]}, {failures: []}];
+  let waits = 0;
+  const live = await verifyWhileBackendDeploys({
+    verify: async () => results.shift(),
+    backendDeployRunning: () => true,
+    wait: async () => {
+      waits += 1;
+    },
+  });
+  assert.deepEqual(live.failures, []);
+  assert.equal(waits, 2);
+});
+
+test("a missing callable fails at once with no backend deploy running", async () => {
+  let verifications = 0;
+  const live = await verifyWhileBackendDeploys({
+    verify: async () => {
+      verifications += 1;
+      return {failures: [{callable: "a"}]};
+    },
+    backendDeployRunning: () => false,
+    wait: async () => assert.fail("must not wait"),
+  });
+  assert.equal(live.failures.length, 1);
+  assert.equal(verifications, 1);
 });

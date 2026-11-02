@@ -13,10 +13,22 @@ import type {AdminRecommendOrganizerClaimCallablePayload} from
   "../../../generated/contracts/adminRecommendOrganizerClaimCallablePayload";
 import type {AdminRecommendOrganizerClaimCallableResponse} from
   "../../../generated/contracts/adminRecommendOrganizerClaimCallableResponse";
+import type {AdminGetListingEventReviewCallableResponse} from
+  "../../../generated/contracts/adminGetListingEventReviewCallableResponse";
+import type {AdminPublishListingEventsCallablePayload} from
+  "../../../generated/contracts/adminPublishListingEventsCallablePayload";
+import type {AdminPublishListingEventsCallableResponse} from
+  "../../../generated/contracts/adminPublishListingEventsCallableResponse";
 import {decideAccessApplication, decideOrganizerClaim, listOrganizerDetails} from "../../../shared/api/adminApi";
+import type {AdminApproveOrganizerListingCallablePayload} from
+  "../../../generated/contracts/adminApproveOrganizerListingCallablePayload";
+import type {AdminApproveOrganizerListingCallableResponse} from
+  "../../../generated/contracts/adminApproveOrganizerListingCallableResponse";
+import type {AdminGetOrganizerListingReviewCallableResponse} from
+  "../../../generated/contracts/adminGetOrganizerListingReviewCallableResponse";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
-import {sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
+import {sampleEventReviews, sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
 
 export type InboxPage = AdminListInboxItemsCallableResponse;
 export type InboxQuery = AdminListInboxItemsCallablePayload;
@@ -27,6 +39,12 @@ export type InboxItemDetail = AdminGetInboxItemCallableResponse;
 export type JourneyStep = InboxItemDetail["journey"][number];
 export type InboxUpdate = AdminUpdateInboxItemCallablePayload;
 export type ClaimRecommendationInput = AdminRecommendOrganizerClaimCallablePayload;
+export type ListingReviewDetail = AdminGetOrganizerListingReviewCallableResponse;
+export type ListingReview = ListingReviewDetail["review"];
+export type ListingApprovalInput = AdminApproveOrganizerListingCallablePayload;
+export type ListingEventReview = AdminGetListingEventReviewCallableResponse;
+export type ListingEventRef = NonNullable<InboxItem["listingEvent"]>;
+export type ListingEventPublishInput = AdminPublishListingEventsCallablePayload;
 
 // The validators load on first call, not in the inbox chunk.
 async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
@@ -41,6 +59,7 @@ async function call<Request extends object, Response>(name: string, payload: Req
 
 const sampleState = new Map(sampleItems.map((item) => [item.itemId, item]));
 const sampleUpdates = new Map<string, JourneyStep[]>();
+const sampleDismissedStates = new Map<string, InboxItem["state"]>();
 
 function samplePage(query: InboxQuery): InboxPage {
   const items = [...sampleState.values()];
@@ -86,12 +105,18 @@ export async function updateInboxItem(input: InboxUpdate): Promise<AdminUpdateIn
   if (dataMode() !== "sample") return call("adminUpdateInboxItem", input);
   const before = sampleState.get(input.itemId);
   if (!before) throw new Error("This inbox item was not found.");
+  const dismissed = input.action === "dismiss";
+  if (dismissed) sampleDismissedStates.set(before.itemId, before.state);
   const item: InboxItem = {...before,
+    ...(dismissed ? {status: "done" as const, state: {code: "dismissed", label: "Dismissed", tone: "neutral" as const},
+      doneAt: new Date().toISOString()} : {}),
+    ...(input.action === "reopen" ? {state: sampleDismissedStates.get(before.itemId) ?? before.state, doneAt: null} : {}),
     assigneeUid: input.action === "assign" ? input.assigneeUid : input.action === "unassign" ? null : before.assigneeUid,
-    status: input.action === "snooze" ? "snoozed" : input.action === "wake" ? "waiting" : before.status,
+    status: dismissed ? "done" : input.action === "snooze" ? "snoozed" : input.action === "wake" || input.action === "reopen" ? "waiting" : before.status,
     snoozedUntil: input.action === "snooze" ? input.snoozedUntil : input.action === "wake" ? null : before.snoozedUntil};
   sampleState.set(item.itemId, item);
-  const titles = {assign: "Assigned", unassign: "Unassigned", snooze: "Snoozed", wake: "Back in the inbox"};
+  const titles = {assign: "Assigned", unassign: "Unassigned", snooze: "Snoozed", wake: "Back in the inbox",
+    dismiss: "Dismissed", reopen: "Back in the inbox"};
   sampleUpdates.set(item.itemId, [...(sampleUpdates.get(item.itemId) ?? []), {stepId: `staff-${Date.now()}`,
     occurredAt: new Date().toISOString(), title: titles[input.action], detail: input.note, actorUid: "sample-owner", tone: "ink"}]);
   return {item};
@@ -156,4 +181,53 @@ export async function linkEnquiry(input: {intentId: string; organizerId: string}
   if (!intent) throw new Error("This enquiry is no longer waiting to be linked. Reload the inbox.");
   await call("adminLinkSalesInboundIntent", {intentId: input.intentId, organizerId: input.organizerId,
     requestId: crypto.randomUUID(), expectedRevision: intent.revision});
+}
+
+const sampleApprovals = new Map<string, AdminApproveOrganizerListingCallableResponse>();
+
+/** One listing awaiting approval, with what a reviewer needs to approve it. */
+export async function getListingReview(requestId: string): Promise<ListingReviewDetail> {
+  if (dataMode() !== "sample") return call("adminGetOrganizerListingReview", {requestId});
+  const item = sampleState.get(requestId) ?? [...sampleState.values()].find((entry) => entry.sourceId === requestId);
+  return {canApprove: true, review: {
+    requestId, listingWorkItemId: `work-item-${requestId}`, kind: "nomination", submittedByRole: "associate",
+    submittedAt: item?.waitingSince ?? new Date(sampleNow).toISOString(), origin: "message_nomination",
+    market: {slug: "mumbai", marketId: "in-mh-mumbai", label: "Mumbai · Maharashtra", open: true},
+    suggestedSlug: (item?.title ?? "listing").toLowerCase().replace(/[^a-z0-9]+/gu, "-"),
+    listing: {name: item?.title ?? "Listing", description: "Weekly social nights for people who would rather meet in person.",
+      categories: ["social"], links: [{platform: "luma", url: "https://lu.ma/afterfly"}], gaps: [], eventCount: 3,
+      researchNeeded: false, contentHash: "a".repeat(64), pageCount: 2, fetchedPageCount: 2},
+    duplicateCheck: {verdict: "none", organizersCompared: 12, citySlug: "mumbai", truncated: false, candidates: []},
+  }};
+}
+
+/** Publishes the listing unclaimed and noindex, hidden in the app, and opens its Sales work. */
+export async function approveListing(input: ListingApprovalInput, requestId: string): Promise<AdminApproveOrganizerListingCallableResponse> {
+  if (dataMode() !== "sample") return call("adminApproveOrganizerListing", input);
+  const approval: AdminApproveOrganizerListingCallableResponse = sampleApprovals.get(input.listingWorkItemId) ?? {
+    approvalId: `listing-${"0".repeat(40)}`, organizerId: "sample-afterfly", organizerPath: "organizers/sample-afterfly",
+    created: true, publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden",
+    claimState: "unclaimed", salesOwnerUid: "sample-owner"};
+  sampleApprovals.set(input.listingWorkItemId, approval);
+  closeSampleItem("supplyIntakeRequest", requestId, "Approved and published");
+  return approval;
+}
+
+/** One imported event of an approved listing, with what a reviewer must check to publish it. */
+export async function getListingEventReview(ref: ListingEventRef): Promise<ListingEventReview> {
+  if (dataMode() !== "sample") return call("adminGetListingEventReview", ref);
+  const review = sampleEventReviews[ref.eventWorkItemId];
+  if (!review) throw new Error("This event is no longer part of an approved listing.");
+  return review;
+}
+
+/** Publishes the event on the organizer's page; a blocked one is reported, not written. */
+export async function publishListingEvent(input: ListingEventPublishInput): Promise<AdminPublishListingEventsCallableResponse> {
+  if (dataMode() !== "sample") return call("adminPublishListingEvents", input);
+  const reviews = input.eventWorkItemIds.map((id) => sampleEventReviews[id]);
+  for (const review of reviews) if (review?.event.eventId) closeSampleItem("externalEvent", review.event.eventId, "Published");
+  return {intakeRequestId: input.intakeRequestId, organizerId: reviews[0]?.organizer.organizerId ?? null,
+    executionMode: input.executionMode, counts: {published: input.eventWorkItemIds.length, wouldPublish: 0, alreadyPublished: 0, withdrawn: 0, blocked: 0},
+    results: input.eventWorkItemIds.map((eventWorkItemId) => ({eventWorkItemId, eventId: sampleEventReviews[eventWorkItemId]?.event.eventId ?? null,
+      blockers: [], outcome: "published" as const, receiptPath: null, idempotent: false}))};
 }

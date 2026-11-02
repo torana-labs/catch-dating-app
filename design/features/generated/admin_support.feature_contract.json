@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_support.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:aa21aacf61cb66d245011b86ddee89a1458a05888f35f0aaba2dd97a73575143",
-  "resolvedDigest": "sha256:20b8102f7b250a2b26b29fed7e13e72890becbeb9e327de40284ca519dddca39",
+  "sourceDigest": "sha256:bc5e9c67a2824ec920431bfbc6227b813ba730819431fd899ea5a125d62632ba",
+  "resolvedDigest": "sha256:3b16343e26d795098c9d74b300ce2cec9c38e38800932bd5dabe503704829658",
   "feature": {
     "id": "feature.admin_support",
     "name": "Admin Support",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesSupport.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -381,7 +381,7 @@
             "exportName": "SupportScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesSupport.stories.tsx",
               "exportName": "SupportRouteStory",
               "states": [
                 "open-conversations",

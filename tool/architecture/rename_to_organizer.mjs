@@ -52,7 +52,7 @@ const pathTextExtensions = /\.(?:arb|json|md|mjs|js|ts|tsx|yaml|yml|sh|dart|temp
 const codemodTests = /^tool\/(?:architecture\/(?:move_to_contexts|rename_to_organizer)|check_organizer_nomenclature)\.test\.mjs$/u;
 const pathTextExcluded = [/(?:^|\/)node_modules\//u, /^lib\/l10n\/generated\//u, toolFixtures, codemodTests,
   /^design\/source_packs\//u];
-const symbolTextRoots = [/^design\/(?!source_packs\/)/u, /^design_context_pack\//u, /^tool\//u,
+const symbolTextRoots = [/^design\/(?!source_packs\/)/u, /^tool\//u,
   /^docs\//u, /^widgetbook\//u, /^lib\/.*\.md$/u, /^PROJECT_CONTEXT\.md$/u];
 const symbolTextExtensions = /\.(?:json|md|mjs|js|sh|yaml|yml)$/u;
 // The schema generator and its outputs name contracts; its few Dart-facing

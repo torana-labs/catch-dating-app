@@ -86,11 +86,8 @@ revision, still runs the full matrix. Canonical Harness control-plane paths come
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
 runs retain the complete six-bucket matrix.
-The feature-coverage ledger and schema select `design:feature-coverage`; the
-context-pack and gallery manifests select `design:context-pack`, which rebuilds
-the pack in a temporary directory and verifies drift. Their check tests and
-generator have the same owners. These explicit mappings avoid full fanout when
-ordinary screen changes update generated manifests; unknown companion inputs
+Explicit mappings avoid full fanout when ordinary screen changes update
+generated manifests; unknown companion inputs
 still trigger the full fallback. Committed evidence follows the same rule:
 website Storybook baselines select `web:storybook-visuals`, app screenshots
 select every capture check that reads their bytes, and feature contracts select
@@ -190,8 +187,7 @@ reports every deferred obligation. It never sets `preflightComplete` true while
 one remains and never ignores a failing executable check.
 
 The required `source-preflight` job uses a full checkout and pinned runtimes.
-Its structural gates include dependency direction, mutation/error boundaries,
-route literals, source/test size, generated route/catalog/responsibility/design
+Its structural gates include mutation/error boundaries, route literals, source/test size, generated route/catalog/responsibility/design
 references, provider ownership and resolved composition. Selected expensive
 jobs depend on its success, and Required CI independently rejects missing,
 skipped, failed or cancelled preflight. Full tests and analysis remain required.
@@ -379,7 +375,7 @@ complete zero-diagnostic invariant. In this workspace,
 use either command as proof that a Catch UI rule is clean.
 
 Phase 5 also retired the broad `tool/scan_architecture.py` report in favor of
-the focused dependency, adopted-boundary, mutation-error, error-catalog,
+the focused `catch_arch_*` lints and adopted-boundary, mutation-error, error-catalog,
 source-size, and widget-classification gates. The three unreferenced Dart
 personality/visual-review entrypoints are removed; Widgetbook goldens, UI
 captures, and registered reference-screen comparisons own visual review.
@@ -393,8 +389,8 @@ needs a reusable drift snapshot artifact with analyzer completion status.
 The drift helper parses the machine analyzer diagnostic-code field; it must not
 count `catch_*` text from filenames, symbol names, or diagnostic messages.
 
-`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
-Only the eight remaining regex-only categories live there. Promoted categories
+`bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup gate:
+any candidate in its eight regex-only categories fails. Promoted categories
 are analyzer rules with seeded fixture parity, and every Catch analyzer
 diagnostic must remain at zero.
 
@@ -850,12 +846,11 @@ wrapper/workflow checks run through `marketing:hosted-capture-export`.
 Node, `gh` and Python 3's standard ZIP reader to validate the complete artifact
 before replacing generated outputs. Consumers run it before dependency setup;
 `--check-dist` verifies actual website build bytes before Hosting packaging.
-Tools uses `--marketing-captures-imported` with the same run's binding to verify
-all 26 imported outputs before and after selected checks, then reuse only the
-three exact exporter/design-context/sync freshness commands. Missing or changed
-proof fails; standalone commands, syntax/unit checks and Dart framing checks
-still execute. Strict import precedes bootstrap; later proof tolerates only the
-standalone widget-dedupe analyzer's generated dependency cache and lockfile.
+Tools imports no captures and does not run the exporter or sync `--check`
+commands, because app source moves ahead of the tracked images. The capture
+producer runs those commands and the import above verifies them again before a
+build. Tools keeps syntax, unit and Dart framing checks and
+`--check-design-json`.
 The Figma/AI-friendly metadata shape is checked into
 `tool/marketing/app_screenshots_design_context.json` so downstream consumers do
 not depend on ad hoc stdout.
@@ -896,11 +891,8 @@ inline allow markers. After resolving debt, prune with
 
 The React website/admin surfaces share scanners for route ownership, UI
 primitive ownership, governed component families, and server-state ownership.
-The query-state scanner is a baseline-backed ratchet: current manual async
-state candidates are listed in `tool/web/react_query_state_baseline.json`, and
-new feature controller or `use*` hook loading/saving/submitting/in-flight state
-fails the check unless the owning baseline is deliberately updated in the same
-reviewed change with a source-level rationale.
+The query-state scanner is a plain gate: any feature controller or `use*` hook
+loading/saving/submitting/in-flight state fails the check.
 
 ```sh
 node tool/run.mjs check web:react-architecture-boundaries
@@ -925,12 +917,16 @@ into `build/` when a temporary artifact is useful.
 `web:shared-ui-adoption` reconciles the cross-surface decision tracker with
 website/admin runtime exports and `@catch/web-ui`. Adopted entries must be used
 through both surface adapters. The same gate also preserves the shared focus,
-accessible table/field/button contracts, and package CI path coverage.
+accessible table/field/button contracts, and package CI path coverage, and it
+caps consolidation debt: only growth fails, so a PR that reduces debt passes
+with no baseline edit. Page CSS caps come from the merge base, so a merged
+reduction lowers them by itself. Identity allowances in
+`tool/web/react_consolidation_baseline.json` are ceilings; the check prints how
+many are fixed, and `--update-consolidation-baseline` drops those when convenient.
 
-`web:react-controller-test-targets` keeps every feature controller and mutation
-hook classified in `tool/web/react_controller_test_targets.json`. Promoted
-targets need a named importing behavior suite; planned targets remain visible
-without turning aggregate coverage percentages into a brittle merge gate.
+`web:react-controller-test-targets` requires a unit test that imports each
+feature controller and mutation hook, normally beside it, without turning
+aggregate coverage percentages into a brittle merge gate. No list names them.
 
 `web:admin-pending-operations` derives write and submitted-query controllers
 from frozen Admin feature-contract cases. It requires each controller to
@@ -968,8 +964,11 @@ A story that provably drifts a few tenths of a percent between identical
 builds can take a scoped waiver instead of forcing a global threshold raise.
 `tool/web/storybook_visual_thresholds.json` maps a built story id to its own
 changed-pixel ratio with a required `surface`, evidence `reason`, and valid
-`expires` date; the check fails on unknown story ids, malformed entries, and
-expired overrides so waivers cannot rot silently.
+`expires` date; the check fails on malformed entries and expired overrides so
+waivers cannot rot silently. An override whose story is gone or no longer
+registry-ready cannot fail anyone's PR: every mode ignores it with a notice that
+names it, and a full `--update` removes it. A renamed story needs its override
+re-keyed in the same PR, because the old key stops applying.
 
 The Admin Website and Marketing Website workflows pin the blocking Linux
 capture to Ubuntu 24.04. Their manual `workflow_dispatch` input
@@ -1085,19 +1084,6 @@ and CI provide the durable proof of work.
 
 ## Feature Contract Compiler
 
-`design/features/feature_coverage.json` is the exhaustive migration ledger for
-registered feature surfaces. It derives its inventory from the Flutter screen
-registry, marketing route registry, and route-kind entries in the admin
-component registry. Every authority item must be contracted, grouped under one
-primary feature projection, planned against a stable migration debt id, or
-explicitly excluded. The checker also rejects orphaned source contracts and a
-`contracted` decision whose source contract does not bind the claimed surface.
-
-```sh
-node tool/design/check_feature_coverage.mjs --check
-node tool/design/check_feature_coverage.mjs --summary
-```
-
 `planned` proves that a surface is visible to the migration; it does not claim
 that its state/action/evidence contract exists yet. Grouping is reserved for a
 secondary route projection of the same feature, such as a dynamic lookup or a
@@ -1182,15 +1168,20 @@ network-free, and the standard design-parity gate owns freshness.
 
 ## Design Tokens
 
-The canonical UI primitive source is `design/tokens/catch.tokens.json`. It
-generates the customer website token CSS, website font assets, and Flutter Dart
-constants in `packages/catch_tokens/lib/generated/catch_design_tokens.g.dart`.
+The canonical UI primitive source is `design/tokens/catch.tokens.json`.
+[Style Dictionary](https://styledictionary.com) reads and resolves it;
+`tool/design_tokens/` holds the two formats that write the customer website
+token CSS and the Flutter Dart constants in
+`packages/catch_tokens/lib/generated/catch_design_tokens.g.dart`, and every
+format rejects a value it cannot represent. Website font assets are copied
+alongside. The Dart output goes through `dart format`, so generating still needs
+the Dart SDK on `PATH`.
 The Flutter-only `catch_tokens` workspace package exports these scales and its
 handwritten semantic/component tokens to the apps and Widgetbook.
 
 ```sh
-dart run tool/design_tokens.dart
-dart run tool/design_tokens.dart --check
+node tool/design_tokens.mjs
+node tool/design_tokens.mjs --check
 node tool/run.mjs run design:tokens
 node tool/run.mjs check design:tokens
 ```
@@ -1202,7 +1193,7 @@ or muscle memory already depend on them:
 
 - `tool/check_data_contract.sh`
 - `tool/check_catch_ui_lint_drift.sh`
-- `tool/design_tokens.dart`
+- `tool/design_tokens.mjs`
 - `tool/check_riverpod_lint.sh`
 - `tool/check_catch_ui_lints.sh`
 - `tool/deploy_firebase_targets.sh`
@@ -1224,8 +1215,8 @@ questionnaires:
 widget arguments, copy-shaped constructor defaults and initializers,
 presentation-state members, validator/share/status helpers, and Event Success
 display enums. Its self-test seeds each supported AST shape plus technical and
-diagnostic counterexamples. The product-copy baseline stays empty; the narrow
-allowlist is reserved for proven technical identifiers.
+diagnostic counterexamples. It has no baseline: any finding fails, and the
+narrow allowlist is reserved for proven technical identifiers.
 
 `tool/copy/check_mobile_copy_catalog.mjs` also rejects new ARB identifiers that
 contain the generated `Visiblecopy` marker. Reviewed legacy exceptions live in
@@ -1239,10 +1230,9 @@ node --test tool/copy/check_l10n_key_usage.test.mjs
 ```
 
 The live key-usage scan reports exact handwritten Dart references, excludes
-generated Dart, comments, and string contents, and fails on any new orphan or
+generated Dart, comments, and string contents, and fails on any orphan or
 missing catalog getter. Use `--json` for ephemeral review evidence; do not
-commit a generated usage snapshot. Baseline reductions pass; baseline growth
-is rejected.
+commit a generated usage snapshot.
 
 ```sh
 node tool/copy/sync_event_success_questionnaires.mjs --write

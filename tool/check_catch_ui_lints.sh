@@ -1132,4 +1132,61 @@ expect_probe exact catch_row_section_fills_viewport 0
 expect_probe exact catch_section_content_is_passive 0
 expect_probe exact catch_field_owns_row_interaction 0
 
+# Dependency direction and bounded-context rules. The arch/ folder is the only
+# fixture path these rules place, so the UI fixtures above stay out of them.
+# Each entry: repository path, expected code, source on one line (\n expands).
+while IFS='|' read -r arch_path arch_code arch_source; do
+  [[ -z "$arch_path" ]] && continue
+  probe_path="$probe_root/arch/$arch_path"
+  stage_probe "architecture $arch_code" <<< "$(printf '%b' "$arch_source")"
+  expect_probe exact "$arch_code" 1
+done <<'ARCH'
+lib/events/domain/event.dart|catch_arch_domain_framework_import|import 'package:cloud_firestore/cloud_firestore.dart';
+lib/contexts/events/domain/event.dart|catch_arch_domain_framework_import|import 'package:flutter/widgets.dart';
+lib/kernel/ids.dart|catch_arch_domain_framework_import|import 'package:flutter/widgets.dart';
+lib/contexts/events/domain/event_time.dart|catch_arch_domain_clock_access|bool past(DateTime at) => at.isBefore(DateTime.now());
+lib/events/data/event_repository.dart|catch_arch_data_domain_presentation_import|import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
+lib/contexts/events/data/event_repository.dart|catch_arch_data_stream_timeout|Stream<int> watch(Stream<int> s) => s.timeout(const Duration(seconds: 5));
+lib/dashboard/presentation/widgets/dashboard_full.dart|catch_arch_cross_feature_presentation_import|import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+lib/events/presentation/widgets/event_pins_map.dart|catch_arch_presentation_plugin_import|import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+apps/consumer/lib/explore/widgets/map_button.dart|catch_arch_presentation_plugin_import|import 'package:url_launcher/url_launcher.dart';
+lib/events/events.dart|catch_arch_barrel_presentation_export|export 'presentation/event_detail_screen.dart';
+lib/explore/presentation/widgets/explore_body.dart|catch_arch_widget_ref_parameter|import 'package:flutter_riverpod/flutter_riverpod.dart';\nint rows(WidgetRef ref) => 1;
+lib/explore/presentation/widgets/explore_city_picker.dart|catch_arch_widget_repository_provider_read|int read(dynamic ref) => ref\n    .watch(cityRepositoryProvider);
+lib/chats/presentation/chat_route_state.dart|catch_arch_state_file_provider_coupling|import 'package:flutter_riverpod/flutter_riverpod.dart';
+apps/host/lib/today/today_state.dart|catch_arch_state_file_provider_coupling|import 'package:flutter_riverpod/flutter_riverpod.dart';
+lib/contexts/events/parts/event_row.dart|catch_arch_parts_provider_coupling|import 'package:flutter_riverpod/flutter_riverpod.dart';
+lib/hosts/presentation/host_operations_screen.dart|catch_arch_misplaced_state_class|class HostScreenState {\n  const HostScreenState();\n  factory HostScreenState.from(Object source) => const HostScreenState();\n}
+lib/hosts/presentation/host_operations_screen.dart|catch_arch_multi_route_screen_file|import 'package:flutter/widgets.dart';\nabstract class HomeScreen extends StatelessWidget {}\nabstract class OtherScreen extends StatelessWidget {}
+lib/chats/presentation/inbox/chats_list_view_model.dart|catch_arch_undocumented_keep_alive|const value = {'keepAlive': true};\nconst other = Object();\nvoid set({bool keepAlive = false}) {}\nvoid call() => set(keepAlive: true);
+lib/chats/presentation/chat_route_view_model.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nfinal stateProvider = Provider<int>((ref) => 1);
+apps/consumer/lib/some_entrypoint.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nfinal stateProvider = Provider<int>((ref) => 1);
+lib/platform/firebase.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/contexts/events/events.dart';
+lib/contexts/account/data/session.dart|catch_arch_context_order_import|import 'package:catch_dating_app/contexts/events/events.dart';
+lib/contexts/bookings/domain/booking.dart|catch_arch_context_barrel_bypass|import 'package:catch_dating_app/contexts/events/domain/event.dart';
+lib/weddings/domain/wedding.dart|catch_arch_unmapped_file|class Wedding {}
+lib/contexts/weddings/domain/wedding.dart|catch_arch_unknown_context|class Wedding {}
+lib/events/domain/event_model.dart|catch_arch_legacy_context_file|class EventModel {}
+lib/chats/presentation/chat_route_widget.dart|catch_arch_invalid_ignore|// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- stale exception\nclass ChatRouteWidget {}
+ARCH
+
+# A reasoned ignore next to the code silences its finding and nothing else.
+probe_path="$probe_root/arch/lib/chats/presentation/chat_route_view_model.dart"
+stage_probe "architecture reasoned ignore" <<'DART'
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- seeded reason
+final stateProvider = Provider<int>((ref) => 1);
+DART
+expect_probe exact catch_arch_manual_provider_declaration 0
+expect_probe exact catch_arch_invalid_ignore 0
+expect_probe exact catch_no_allow_debt 0
+
+# Outside lib/ and apps/*/lib/ the rules place nothing.
+probe_path="$probe_root/arch/packages/catch_ui/lib/src/ignored.dart"
+stage_probe "architecture rules skip other packages" <<'DART'
+const Object? value = null;
+DART
+expect_probe exact catch_arch_unmapped_file 0
+
 node tool/lib/lint_probe_batch.mjs "$probe_root" "$probe_manifest" "$dart_bin"

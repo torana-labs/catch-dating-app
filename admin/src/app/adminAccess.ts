@@ -1,75 +1,25 @@
 import type {AdminRoleClaim} from "../shared/types/adminTypes";
-import {adminRoleClaimKeys} from "../shared/types/adminTypes";
+import type {AdminNavId, AdminNavigationEntry as AreaNavigationEntry} from "./adminAreaKit";
 import type {AdminJob} from "./adminJobs";
-import type {AdminNavId} from "./adminRoutes";
+import {adminAreaList} from "./adminRoutes";
 
-const allButSales = adminRoleClaimKeys.filter((role) => role !== "salesStaff");
-const owner: readonly AdminRoleClaim[] = ["adminOwner"];
-const opsAndOwner: readonly AdminRoleClaim[] = ["admin", "adminOwner", "support"];
+/** Who may open each Admin area, and each job's navigation: read from the files in areas/. */
+export const adminAreaRoles = Object.fromEntries(adminAreaList.map(({id, roles}) => [id, roles])) as
+  Record<AdminNavId, readonly AdminRoleClaim[]>;
 
-/**
- * Who may open each Admin area, by role claim. The sign-in entry reads this without loading any
- * screen; each area's label, icon and screen are in adminAreas.tsx.
- */
-export const adminAreaRoles: Record<AdminNavId, readonly AdminRoleClaim[]> = {
-  now: allButSales,
-  more: adminRoleClaimKeys,
-  "organizer-intake": opsAndOwner,
-  "intake-review": opsAndOwner,
-  safety: ["admin", "adminOwner", "safetyReviewer", "support"],
-  support: ["adminOwner", "support"],
-  sales: ["admin", "adminOwner", "salesStaff"],
-  money: owner,
-  organizers: opsAndOwner,
-  events: opsAndOwner,
-  growth: owner,
-  marketplace: owner,
-  people: ["admin", "adminOwner", "safetyReviewer", "support"],
-  users: owner,
-  "cross-paths": ["admin", "adminOwner", "safetyReviewer", "support"],
-  "marketing-ops": opsAndOwner,
-  quality: owner,
-  operations: opsAndOwner,
-  settings: ["admin", "adminOwner", "safetyReviewer", "support"],
-};
-
-export interface AdminNavigationEntry {
+export interface AdminNavigationEntry extends AreaNavigationEntry {
   nav: AdminNavId;
-  section?: string;
-  /** Kept on the phone bar; everything else is under More. */
-  pinned?: boolean;
 }
 
-/**
- * Each job's navigation, in the order of the redesign's NAV table (catch-design-source
- * gen/admin_common.py). Areas still to be redrawn follow under "Older pages" until their
- * replacements land; each area's PR moves or removes its line here.
- */
+function navigationFor(job: AdminJob): AdminNavigationEntry[] {
+  return adminAreaList.flatMap((area) => {
+    const entry = area.navigation?.[job];
+    return entry ? [{...entry, nav: area.id}] : [];
+  }).sort((a, b) => a.order - b.order).map(({order: _order, ...entry}) => entry);
+}
+
 export const adminNavigation: Record<AdminJob, AdminNavigationEntry[]> = {
-  owner: [
-    {nav: "now", pinned: true},
-    {nav: "organizer-intake", section: "Work", pinned: true}, {nav: "safety", section: "Work"}, {nav: "support", section: "Work"},
-    {nav: "sales", section: "Work", pinned: true}, {nav: "money", section: "Work"},
-    {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
-    {nav: "people", section: "Records"},
-    {nav: "growth", section: "Insights"}, {nav: "marketplace", section: "Insights"},
-    {nav: "settings", section: "Setup"},
-    {nav: "users", section: "Older pages"},
-    {nav: "cross-paths", section: "Older pages"}, {nav: "marketing-ops", section: "Older pages"},
-    {nav: "quality", section: "Older pages"}, {nav: "operations", section: "Older pages"},
-  ],
-  sales: [
-    {nav: "sales", section: "Sales", pinned: true},
-    {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
-  ],
-  ops: [
-    {nav: "now", pinned: true},
-    {nav: "organizer-intake", section: "Work", pinned: true}, {nav: "safety", section: "Work", pinned: true},
-    {nav: "support", section: "Work"},
-    {nav: "organizers", section: "Records"}, {nav: "events", section: "Records"},
-    {nav: "people", section: "Records"},
-    {nav: "settings", section: "Setup"},
-    {nav: "cross-paths", section: "Older pages"},
-    {nav: "marketing-ops", section: "Older pages"}, {nav: "operations", section: "Older pages"},
-  ],
+  owner: navigationFor("owner"),
+  sales: navigationFor("sales"),
+  ops: navigationFor("ops"),
 };

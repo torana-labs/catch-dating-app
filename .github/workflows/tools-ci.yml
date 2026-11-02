@@ -17,11 +17,6 @@ on:
       full:
         required: true
         type: boolean
-      capture_binding:
-        description: Exact canonical capture artifact identity shared by the calling CI.
-        required: false
-        type: string
-        default: ""
       marketing_checks_in_react:
         description: The caller's required aggregate owns the same-run React marketing site build, Storybook build, and browser checks.
         required: false
@@ -63,7 +58,6 @@ jobs:
       tool_mode: ${{ steps.impact.outputs.tool_mode }}
       repository_view: ${{ steps.impact.outputs.repository_view }}
       setup_requirements: ${{ steps.impact.outputs.setup_requirements }}
-      capture_required: ${{ steps.impact.outputs.capture_required }}
       producer_attempt: ${{ steps.impact.outputs.producer_attempt }}
 
     steps:
@@ -150,22 +144,13 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  captures:
-    name: Produce required canonical captures
-    needs: preflight
-    if: ${{ needs.preflight.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.preflight.outputs.capture_required == 'true' && inputs.capture_binding == '' }}
-    uses: ./.github/workflows/marketing-captures.yml
-    with:
-      automatic_source_sha: ${{ github.sha }}
-
   affected-tools:
     name: Tool checks (affected)
-    needs: [preflight, captures]
+    needs: preflight
     if: >-
       ${{ !cancelled() && needs.preflight.result == 'success' &&
           needs.preflight.outputs.producer_attempt == format('{0}', github.run_attempt) &&
-          needs.preflight.outputs.tool_mode == 'affected' &&
-          (needs.captures.result == 'success' || needs.captures.result == 'skipped') }}
+          needs.preflight.outputs.tool_mode == 'affected' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -204,13 +189,6 @@ jobs:
       - name: Derive exact-source route and widget inventories
         if: ${{ needs.preflight.outputs.repository_view != 'index' }}
         run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
-
-      - name: Import verified exact-source marketing captures
-        if: ${{ needs.preflight.outputs.capture_required == 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
-        run: node tool/marketing/import_hosted_captures.mjs --import
 
       - uses: ./.github/actions/setup-flutter
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'flutter') }}
@@ -263,17 +241,12 @@ jobs:
           COMMIT_WINDOW: ${{ inputs.commit_window || false }}
           MODE: ${{ inputs.mode }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
-          CAPTURE_REQUIRED: ${{ needs.preflight.outputs.capture_required }}
-          CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
           INVENTORY_MATERIALIZED: ${{ needs.preflight.outputs.repository_view != 'index' }}
         run: |
           set -euo pipefail
           shared_flags=()
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
-          fi
-          if [[ "$CAPTURE_REQUIRED" == "true" ]]; then
-            shared_flags+=(--marketing-captures-imported)
           fi
           if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
             shared_flags+=(--generated-inventories-materialized)
@@ -337,12 +310,10 @@ jobs:
     needs:
       - preflight
       - fast-gates
-      - captures
     if: >-
       !cancelled() && needs.preflight.outputs.producer_attempt == format('{0}', github.run_attempt) &&
       needs.preflight.outputs.tool_mode == 'full' &&
-      needs.fast-gates.result == 'success' &&
-      (needs.captures.result == 'success' || needs.captures.result == 'skipped')
+      needs.fast-gates.result == 'success'
     runs-on: ubuntu-latest
     # Serial analyzer probes and the complete marketing/design contract matrix
     # need more time than the smaller scanner buckets.
@@ -384,13 +355,6 @@ jobs:
       - name: Derive exact-source route and widget inventories
         run: node tool/ci/generated_inventories.mjs --source-sha "$GITHUB_SHA"
 
-      - name: Import verified exact-source marketing captures
-        if: ${{ matrix.name == 'marketing-design' && needs.preflight.outputs.capture_required == 'true' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
-        run: node tool/marketing/import_hosted_captures.mjs --import
-
       - uses: ./.github/actions/setup-flutter
 
       - name: Install scanner dependencies
@@ -431,17 +395,12 @@ jobs:
         env:
           CATEGORIES: ${{ matrix.categories }}
           MARKETING_CHECKS_IN_REACT: ${{ inputs.marketing_checks_in_react }}
-          CAPTURE_REQUIRED: ${{ matrix.name == 'marketing-design' && needs.preflight.outputs.capture_required == 'true' }}
-          CAPTURE_BINDING: ${{ inputs.capture_binding || needs.captures.outputs.capture_binding }}
           INVENTORY_MATERIALIZED: "true"
         run: |
           set -euo pipefail
           shared_flags=()
           if [[ "$MARKETING_CHECKS_IN_REACT" == "true" ]]; then
             shared_flags=(--marketing-checks-in-react)
-          fi
-          if [[ "$CAPTURE_REQUIRED" == "true" ]]; then
-            shared_flags+=(--marketing-captures-imported)
           fi
           if [[ "$INVENTORY_MATERIALIZED" == "true" ]]; then
             shared_flags+=(--generated-inventories-materialized)
@@ -469,7 +428,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - preflight
-      - captures
       - affected-tools
       - fast-gates
       - tool-buckets
@@ -480,9 +438,6 @@ jobs:
       - name: Check tool job results
         env:
           PRODUCER_ATTEMPT: ${{ needs.preflight.outputs.producer_attempt }}
-          CAPTURE_REQUIRED: ${{ needs.preflight.outputs.capture_required }}
-          CAPTURE_BINDING: ${{ inputs.capture_binding }}
-          CAPTURE_RESULT: ${{ needs.captures.result }}
           PREFLIGHT_RESULT: ${{ needs.preflight.result }}
           AFFECTED_RESULT: ${{ needs['affected-tools'].result }}
           FAST_GATES_RESULT: ${{ needs['fast-gates'].result }}
@@ -492,10 +447,6 @@ jobs:
           if [[ "$PRODUCER_ATTEMPT" != "$GITHUB_RUN_ATTEMPT" ]]; then
             echo "Tools requires this attempt's preflight. Use Re-run all jobs."
             exit 64
-          fi
-          if [[ "$CAPTURE_REQUIRED" == "true" && -z "$CAPTURE_BINDING" && "$CAPTURE_RESULT" != "success" ]]; then
-            echo 'Required canonical capture producer did not succeed.'
-            exit 1
           fi
           echo "preflight: ${PREFLIGHT_RESULT}"
           echo "affected tools: ${AFFECTED_RESULT}"

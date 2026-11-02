@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_safety.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:485624e7759dc283716881bb820fbc85cfbfe81c93b078ff9198f4d7e6ac0e4e",
-  "resolvedDigest": "sha256:9b0700a6503088e08344c5f73291140fabdd422eafa0fdabde7a757bddd57fe9",
+  "sourceDigest": "sha256:4178c510d40016419d578814cda9df3f18dd0640103efd493f3ee08322d3f39e",
+  "resolvedDigest": "sha256:362f81a0baa3a9f21b48d9c1ab5b6b0457601f37797c9e11467fdc342974c488",
   "feature": {
     "id": "feature.admin_safety",
     "name": "Admin Safety",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesSafety.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -657,7 +657,7 @@
             "exportName": "SafetyScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesSafety.stories.tsx",
               "exportName": "SafetyRouteStory",
               "states": [
                 "open-cases",
@@ -675,7 +675,7 @@
             "exportName": "SafetyActionSheetWorkspace",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesSafety.stories.tsx",
               "exportName": "SafetyActionSheetStory",
               "states": [
                 "restrict",

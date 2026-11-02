@@ -1,0 +1,200 @@
+{
+  "components": [
+    {
+      "id": "route_sales_deals",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesDealsScreen.tsx",
+      "exportName": "SalesDealsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesDealsStory",
+        "states": [
+          "stage-columns",
+          "team-or-mine"
+        ]
+      },
+      "notes": "Sales · Deals: pipeline and pilots together, a CatchRail of CatchSection stage columns (New, Talking, Demo, Pilot, Paying), team or mine. Rows open the host."
+    },
+    {
+      "id": "route_sales_hosts",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesHostsScreen.tsx",
+      "exportName": "SalesHostsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesHostsStory",
+        "states": [
+          "directory",
+          "host-overview"
+        ]
+      },
+      "notes": "Sales · Hosts: the accounts in Sales, searchable, on CatchTable; a host page on CatchPaneLayout reading with four CatchPageTabBar tabs (overview, conversations, deals, notes)."
+    },
+    {
+      "id": "route_sales_live_controller",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesRouteScreen.tsx",
+      "exportName": "SalesRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Sales controllers and queries; deterministic prop-driven visual coverage remains on the route_sales_* records."
+    },
+    {
+      "id": "route_sales_nominations",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/MyNominationsScreen.tsx",
+      "exportName": "MyNominationsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "MyNominationsStory",
+        "states": [
+          "filter-chips",
+          "stuck-detail"
+        ]
+      },
+      "notes": "My nominations: what happened to every organizer a sales associate sent, from the inbox items ops work, with real totals per filter and the journey beside it. They cannot approve."
+    },
+    {
+      "id": "route_sales_today",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesTodayScreen.tsx",
+      "exportName": "SalesTodayScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesTodayStory",
+        "states": [
+          "due-first",
+          "kind-chips",
+          "inspector",
+          "log-dock"
+        ]
+      },
+      "notes": "Sales · Today: a sales associate's tasks by when they are due (the team's for the owner) on CatchWorkspaceHeader and CatchTable, with the task's host beside it on CatchPaneLayout queue and CatchDock pane: log what happened (completes the task), snooze to Monday, or done."
+    },
+    {
+      "id": "route_sales_workspace",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesWorkspaceScreen.tsx",
+      "exportName": "SalesWorkspaceScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "today",
+          "hosts",
+          "pipeline",
+          "detail",
+          "save-conflict"
+        ]
+      },
+      "notes": "Private Sales route with server-paged host, task and opportunity queries; account, task, activity and opportunity changes use revision checks and request receipts."
+    },
+    {
+      "id": "workspace_sales_demo",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesDemoPanel.tsx",
+      "exportName": "SalesDemoWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "unavailable",
+          "draft",
+          "reviewed",
+          "invitation",
+          "conflict",
+          "review",
+          "unconfirmed",
+          "withdrawn",
+          "expired"
+        ]
+      },
+      "notes": "Owner-reviewed private synthetic demo setup and revocable invitations; grants remain only in memory. Owner exact recipient/preview opt-in with independent sharing revision, explicit expiry and withdrawal; pending wording needs normal blueprint review."
+    },
+    {
+      "id": "workspace_sales_import",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesImportPanel.tsx",
+      "exportName": "SalesImportWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "csv-mapping",
+          "batch-preview",
+          "batch-applied"
+        ]
+      },
+      "notes": "CSV mapping and explicit server preview before each bounded import batch is applied."
+    },
+    {
+      "id": "workspace_sales_intelligence",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesIntelligenceWorkspace.tsx",
+      "exportName": "SalesIntelligenceWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "unknown-fit",
+          "review-factor",
+          "source-restricted",
+          "draft-review",
+          "manual-copy"
+        ]
+      },
+      "notes": "Reviewed private scoring, grounded draft preparation and manual copy; no messaging provider."
+    },
+    {
+      "id": "workspace_sales_records",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesRecordsPanels.tsx",
+      "exportName": "SalesRecordsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "contacts",
+          "evidence",
+          "suppression",
+          "draft-blocked"
+        ]
+      },
+      "notes": "Private contact and evidence views with explicit account/contact restriction decisions and draft readiness boundary."
+    }
+  ]
+}

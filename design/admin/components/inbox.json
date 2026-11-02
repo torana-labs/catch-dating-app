@@ -1,0 +1,40 @@
+{
+  "components": [
+    {
+      "id": "route_inbox",
+      "kind": "route",
+      "owner": "features/inbox",
+      "source": "admin/src/features/inbox/ui/InboxScreen.tsx",
+      "exportName": "InboxScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminInbox.stories.tsx",
+        "exportName": "InboxRouteStory",
+        "states": [
+          "oldest-first",
+          "type-chips",
+          "inspector",
+          "journey"
+        ]
+      },
+      "notes": "The Intake inbox: listings, imported events, claims, enquiries, launch access and stuck intake in one oldest-first queue with real totals per scope and type, on CatchWorkspaceHeader and CatchTable, with the selected item beside it on CatchPaneLayout queue: facts on CatchMetaRow, How it got here on the CatchSection timeline, and the decision on CatchDock pane. Ops recommend claims; the owner decides them."
+    },
+    {
+      "id": "route_inbox_live_controller",
+      "kind": "route",
+      "owner": "features/inbox",
+      "source": "admin/src/features/inbox/ui/InboxRouteScreen.tsx",
+      "exportName": "InboxRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the inbox controller/query seam; deterministic prop-driven visual coverage remains on route_inbox."
+    }
+  ]
+}

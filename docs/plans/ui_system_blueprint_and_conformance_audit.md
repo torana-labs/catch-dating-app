@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.3
-updated: 2026-10-31
+version: 1.30.5
+updated: 2026-11-02
 owner: app_architecture
 status: active
 ---
@@ -1011,7 +1011,9 @@ Scope:
    comparator reused from `test/goldens`.
 3. Whole-corpus coverage gate `design:golden-coverage` (public `Catch*`
    classes in `core/widgets` vs golden ids; waiver rows carry owner + expiry),
-   registered in the tool manifest and the visual-integration lane.
+   registered in the tool manifest and the visual-integration lane. Retired in
+   November 2026 with the use-case classifier in item 5 (governance rec 4); the
+   golden runner still renders every registered case.
 4. Seed baseline images; wire failed-image artifact retention (exists).
 5. Use-case triage: a deterministic classifier assigns every registered use
    case to `component-mount`, `body-mount`, `screen-scope`, or `prototype`.
@@ -1074,7 +1076,7 @@ Phase 2 continuation.
 
 ### Phase 2 — `packages/catch_tokens`
 
-Scope: create the package; retarget `tool/design_tokens.dart` generator
+Scope: create the package; retarget `tool/design_tokens.mjs` generator
 output; move generated primitive tokens plus the semantic token classes,
 splitting the token monolith by tier during the move (D6);
 rewrite imports
@@ -1085,7 +1087,7 @@ pointed at the new package. Theme wiring, typography, icon assets, gap widgets,
 and app-coupled activity palettes remain app-side until Phase 3.
 
 DoD: old files gone; `flutter analyze` green across workspace members and
-widgetbook; `dart run tool/design_tokens.dart --check` green; goldens
+widgetbook; `node tool/design_tokens.mjs --check` green; goldens
 unchanged (Phase 1 proof of no visual drift); lint probe corpus green.
 
 Implementation: `packages/catch_tokens` is a Flutter-only production dependency

@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.11.0
-updated: 2026-10-24
+version: 1.11.2
+updated: 2026-11-02
 owner: ui_elevation_initiative
 status: active
 ---
@@ -64,7 +64,7 @@ of `@catch/web-ui` lives in `react.storybook`, which the `webui` visual surface
 of `tool/web/check_storybook_visuals.mjs` reads.
 
 The website and admin registries (`design/website/components.json`,
-`design/admin/components.json`) own their routes, sections, and
+`design/admin/components/`) own their routes, sections, and
 surface-specific (T4) components. A surface adapter of a shared contract
 carries `componentId`, which must name a T1 or T2 contract. Under D18 the
 library draws: a React T4 component lives in `packages/web-ui/src/components/`
@@ -180,8 +180,8 @@ id, and metrics are asserted from the same contract values in both test suites.
 it would plausibly write (`PrimaryButton` for `CatchButton`, `ProfileCard` for
 `CatchPolaroid`). Aliases must be unique, must not repeat or shadow any
 registered symbol, and must not be a bare role noun; the contract check enforces
-this. The generated widget catalog prints them as "Also called", the design
-context pack carries them, and the new-widget gate
+this. The generated widget catalog prints them as "Also called", and the
+new-widget gate
 (`node tool/design/check_new_widget_inventory.mjs --check`) rejects a new widget
 whose name matches a registered name or alias and names the component to use.
 
@@ -217,11 +217,6 @@ fixed finding that is still listed also fails until
 4. Run `node tool/design/build_lint_enforcement_tables.mjs`, then
    `node tool/design/check_component_enforcement_coverage.mjs`.
 5. Run `node tool/design/check_component_contracts.mjs`.
-6. Regenerate the design context pack with
-   `node tool/design/build_context_pack.mjs` when the registry should be shared
-   with Claude Design or another design tool.
-7. Regenerate `design/sync/catch.design-sync.json` so mapping state and contract
-   digests stay current.
 
 Use `Catch<ControlledNoun>` for new concepts. Prefer named constructors for
 variants, concept-qualified names for public members, and explicit adapter or
@@ -239,18 +234,6 @@ indicator. Conversely, feature adapters that only retain semantics, pending
 state, or stable test keys should configure an existing renderer rather than
 claim another core concept.
 
-Figma mappings start as `unmapped`. The registry's `componentName` is the stable
-join key. A library-publish snapshot supplies the file key and node id, and the
-sync manifest generates the node URL; live mappings do not require hand-edited
-URLs. The old `status` and `componentUrl` fields remain accepted as declared
-fallback metadata and are treated as stale when no captured node proves them.
-`design.figma.propertyProjection` is the explicit tool-facing API when a usable
-Figma component should not mirror every code prop or review state one-to-one.
-Its properties must cite the owning code props, while `reviewStates: evidence`
-keeps large governed state sets in review galleries instead of multiplying the
-public variant matrix. Optional code slots may intentionally project as both a
-Boolean visibility control and an instance-swap control.
-Code Connect templates should live beside their owning Flutter primitive or in
-a dedicated Figma mapping folder, and the registry should point at that
-template. The executable sync contract, snapshot importer, and current
-live-capability receipt live in `design/sync/README.md`.
+The registry's `design.figma` and `design.codeConnect` fields are descriptive
+metadata and nothing syncs them. The design system lives in
+`catch-design-source`.

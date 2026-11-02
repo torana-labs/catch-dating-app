@@ -251,32 +251,23 @@
       "applies_to": [
         "website/src/**",
         "tool/web/check_website_copy_ownership.mjs",
-        "tool/web/website_copy_baseline.json",
         "tool/web/website_copy_allowlist.json",
         "website/package.json"
       ],
-      "instruction": "User-visible marketing-authored strings belong under website/src/content. Existing component strings are temporary baseline debt; do not add new entries. Move strings into page-specific content modules and shrink the baseline as pages migrate. Permanent technical exceptions require an exact-string allowlist entry with a reason.",
+      "instruction": "User-visible marketing-authored strings belong under website/src/content, in page-specific content modules. Permanent technical exceptions require an exact-string allowlist entry with a reason.",
       "sunset_when": [
-        "The website copy baseline is empty and remains empty for five copy changes"
+        "Never; keeping marketing-authored strings in the content layer is permanent website architecture"
       ],
       "sunset_signals": [
         {
-          "type": "baseline-empty",
-          "baseline": "tool/web/website_copy_baseline.json",
-          "countKey": "entries"
+          "type": "manual"
         }
       ],
-      "sunset_review": {
-        "date": "2026-07-16",
-        "decision": "keep",
-        "note": "The recovered baseline is empty, but this rule remains the regression guard that keeps marketing-authored strings in the content layer."
-      },
       "enforcement": [
         {
           "tool": "web:website-copy-ownership",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules",
-          "baseline": "tool/web/website_copy_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#architecture-rules"
         }
       ]
     },
@@ -422,7 +413,8 @@
         "design/website/components.json",
         "tool/web/check_admin_feature_exports.mjs",
         "tool/web/check_admin_components.mjs",
-        "design/admin/components.json"
+        "design/admin/components.json",
+        "design/admin/components/**"
       ],
       "instruction": "React feature, app, and story code must route governed component families through shared primitives instead of rendering the shell directly. Marketing website exported uppercase feature components must be declared in design/website/components.json or made private, so route/section/supporting components remain registry-backed. Admin feature UI files may export route/workspace entry components such as *Screen and *Workspace; reusable panels, cards, lists, badges, and sections belong in admin/src/shared/ui or stay private. Admin route/workspace entries, shared admin primitives, and admin feedback providers must be declared in design/admin/components.json. Every exported React component in website, admin and @catch/web-ui maps to a registry concept, a T4 owner or deletion in the generated inventory (web:shared-ui-adoption; --write saves build/react_component_inventory.json); a shared-layer export that matches a registered contract by name or renders its @catch/web-ui implementation records componentId, or comparedWith with a comparisonReason, in its surface registry. Production drawing belongs in @catch/web-ui. The shared ESLint preset ratchets raw elements and className/style props against existing app suppressions; do not add inline allow markers or grow recorded debt. The scanner owns its governed families in source and emits a current view with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a duplicate generated registry. The family scanner is a known-family blocklist: passing it does not classify novel component shells, so repeated new shell drift must become a scanner family before handoff. Run `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:admin-feature-exports`, `node tool/run.mjs check web:admin-components`, `node tool/run.mjs check web:react-ui-lint`, `node tool/run.mjs check web:react-component-governance`, and `node tool/run.mjs check web:shared-ui-adoption` before handoff.",
       "sunset_when": [
@@ -485,14 +477,12 @@
         "website/src/features/**",
         "admin/src/features/**",
         "tool/web/check_react_query_state.mjs",
-        "tool/web/react_query_state_baseline.json",
         "package.json",
         "website/package.json",
         "admin/package.json"
       ],
       "instruction": "React feature controllers and feature use* hooks should not add new manual loading, saving, submitting, pending, or in-flight state for server reads or mutations. Use TanStack Query query/mutation state and explicit query-key invalidation for server state; keep only view-local form, filter, selection, and client-only rendering state in React state. Run node tool/run.mjs check web:react-query-state before handoff.",
       "sunset_when": [
-        "The React query-state baseline is empty for website and admin feature controllers/hooks",
         "New React server-state work consistently uses query keys, mutation pending state, and explicit invalidation without manual async-state flags"
       ],
       "sunset_signals": [
@@ -503,9 +493,8 @@
       "enforcement": [
         {
           "tool": "web:react-query-state",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/marketing_website_architecture.md#server-state-direction",
-          "baseline": "tool/web/react_query_state_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/marketing_website_architecture.md#server-state-direction"
         },
         {
           "stage": "manual",
@@ -842,11 +831,6 @@
           "docAnchor": "docs/widget_catalog.md"
         },
         {
-          "tool": "design:flutter-field-surface-inventory",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md"
-        },
-        {
           "tool": "design:field-facade-inventory",
           "stage": "scanner-gate",
           "docAnchor": "docs/design_language.md#73-catchfield-doctrine"
@@ -1014,17 +998,12 @@
         "tool/design/generate_widget_classification.mjs",
         "tool/design/component_concepts.mjs",
         "tool/design/component_concepts.test.mjs",
-        "tool/design/classify_widgetbook_use_cases.mjs",
-        "tool/design/check_widgetbook_golden_coverage.mjs",
-        "tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "widgetbook/test/support/golden_coverage_waivers.json",
-        "widgetbook/test/support/screen_scope_dispositions.json",
         "widgetbook/test/support/triage_inventory.dart",
         "test/goldens/**",
         "packages/catch_ui/lib/**",
         "lib/platform/riverpod_ui/**"
       ],
-      "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. Every production Widgetbook component/body mount requires golden coverage; proposals carry an explicit marker and remain outside production coverage. Every registered Widgetbook case must classify as component-mount, body-mount, screen-scope, or explicitly marked prototype; every screen-scope case must match one authored capture-migration or named-keep disposition. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
+      "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1048,16 +1027,6 @@
           "tool": "docs:metadata",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
-        },
-        {
-          "tool": "design:widgetbook-use-case-triage",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-1-catalog-becomes-a-test-goldens-before-any-moves"
-        },
-        {
-          "tool": "design:golden-coverage",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/plans/ui_system_blueprint_and_conformance_audit.md#d3-goldens-are-derived-from-the-widgetbook-corpus-and-coverage-is-whole-corpus"
         },
         {
           "stage": "manual",
@@ -1416,10 +1385,14 @@
           "docAnchor": "tool/policy/rules.json"
         },
         {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#controller-and-view-model-contract",
-          "baseline": "tool/architecture/dependency_direction_baseline.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#controller-and-view-model-contract"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#controller-and-view-model-contract"
         }
       ]
     },
@@ -1433,13 +1406,11 @@
       },
       "applies_to": [
         "lib/**",
-        "apps/*/lib/**",
-        "tool/architecture/check_dependency_direction.mjs",
-        "tool/architecture/dependency_direction_baseline.json"
+        "apps/*/lib/**"
       ],
-      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json \u2014 new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots are never baselined.",
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and new domain code must not add direct imports. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots take no exceptions. These are catch_arch_* analyzer lints; an exception elsewhere is a // ignore: catch_ui_lints/<code> -- <reason> next to the code, which the lints reject when it is file-wide, unreasoned or stale.",
       "sunset_when": [
-        "The dependency-direction baseline is empty and adopted architecture boundary checks cover aligned features"
+        "No catch_arch_* ignore remains and adopted architecture boundary checks cover aligned features"
       ],
       "sunset_signals": [
         {
@@ -1448,18 +1419,17 @@
       ],
       "enforcement": [
         {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#dependency-direction",
-          "baseline": "tool/architecture/dependency_direction_baseline.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#dependency-direction"
         },
         {
-          "tool": "audit:adopted-architecture-boundaries",
+          "tool": "lint:catch-ui-drift",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#dependency-direction"
         },
         {
-          "tool": "audit:dependency-direction",
+          "tool": "audit:adopted-architecture-boundaries",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#dependency-direction"
         },
@@ -1481,12 +1451,12 @@
       "applies_to": [
         "lib/**",
         "tool/architecture/context_map.json",
-        "tool/architecture/context_map_baseline.json",
-        "tool/architecture/check_context_map.mjs"
+        "tool/architecture/check_context_map.mjs",
+        "packages/catch_ui_lints/lib/src/architecture_context_map.dart"
       ],
-      "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. Existing legacy imports that break the order ratchet in tool/architecture/context_map_baseline.json and are removed as each context moves; files under the target roots cannot be baselined. Since the phase 3 move, domain and data code lives under lib/contexts/ and a legacy feature folder keeps only its screens and barrel; any other file there fails legacyContextFile.",
+      "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. These are catch_arch_* analyzer lints that read the map; audit:context-map keeps what one file cannot show, that the map is well formed and the spec's context table matches it. Files under the target roots take no exceptions. Since the phase 3 move, domain and data code lives under lib/contexts/ and a legacy feature folder keeps only its screens and barrel; any other file there fails catch_arch_legacy_context_file.",
       "sunset_when": [
-        "Every legacy entry in the context map has moved under the target roots and the baseline is empty"
+        "Every legacy entry in the context map has moved under the target roots"
       ],
       "sunset_signals": [
         {
@@ -1495,10 +1465,14 @@
       ],
       "enforcement": [
         {
-          "tool": "audit:context-map",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#bounded-context-contract",
-          "baseline": "tool/architecture/context_map_baseline.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#bounded-context-contract"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#bounded-context-contract"
         },
         {
           "tool": "audit:context-map",
@@ -1698,15 +1672,19 @@
       "sunset_signals": [
         {
           "type": "tool-exists",
-          "tool": "audit:dependency-direction"
+          "tool": "lint:catch-ui-plugin-smoke"
         }
       ],
       "enforcement": [
         {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#realtime-stream-lifecycle",
-          "baseline": "tool/architecture/dependency_direction_baseline.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#realtime-stream-lifecycle"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#realtime-stream-lifecycle"
         },
         {
           "stage": "manual",
@@ -1838,7 +1816,7 @@
       "sunset_signals": [
         {
           "type": "tool-exists",
-          "tool": "audit:dependency-direction"
+          "tool": "lint:catch-ui-plugin-smoke"
         }
       ],
       "enforcement": [
@@ -1849,10 +1827,14 @@
           "baseline": "tool/audit/frontend_error_candidates_baseline.json"
         },
         {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#dependency-direction",
-          "baseline": "tool/architecture/dependency_direction_baseline.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#dependency-direction"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#dependency-direction"
         },
         {
           "stage": "manual",
@@ -2260,15 +2242,19 @@
       "sunset_signals": [
         {
           "type": "tool-exists",
-          "tool": "audit:dependency-direction"
+          "tool": "lint:catch-ui-plugin-smoke"
         }
       ],
       "enforcement": [
         {
-          "tool": "audit:dependency-direction",
-          "stage": "scanner-ratchet",
-          "docAnchor": "tool/policy/rules.json",
-          "baseline": "tool/architecture/dependency_direction_baseline.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "tool/policy/rules.json"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-gate",
+          "docAnchor": "tool/policy/rules.json"
         },
         {
           "stage": "manual",
@@ -2367,15 +2353,13 @@
         },
         {
           "tool": "copy:mobile-ownership",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
-          "baseline": "tool/copy/mobile_copy_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         },
         {
           "tool": "copy:l10n-key-usage",
-          "stage": "scanner-ratchet",
-          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary",
-          "baseline": "tool/copy/l10n_orphan_baseline.json"
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-copy-001-product-copy-boundary"
         },
         {
           "tool": "copy:native-sync",
@@ -2878,12 +2862,11 @@
       },
       "applies_to": [
         "admin/src/shared/api/adminApi.ts",
-        "admin/src/generated/validators/**",
         "admin/scripts/generateCallableValidators.mjs",
         "contracts/callables/**",
         "contracts/callable_responses/**"
       ],
-      "instruction": "Every callable used by adminApi must have a generated top-level validator; schema-backed requests validate on every live call and schema-backed responses validate in development or when VITE_ADMIN_VALIDATE_RESPONSES is enabled. Generator drift must fail pretypecheck.",
+      "instruction": "Every callable used by adminApi must have a generated top-level validator; schema-backed requests validate on every live call and schema-backed responses validate in development or when VITE_ADMIN_VALIDATE_RESPONSES is enabled. pretypecheck regenerates the validators from their sources, so they cannot be stale.",
       "sunset_when": [
         "Admin no longer calls Firebase callable functions directly"
       ],
@@ -3017,12 +3000,11 @@
       "applies_to": [
         "admin/src/features/**",
         "website/src/features/**",
-        "tool/web/react_controller_test_targets.json",
         "tool/web/check_react_controller_test_targets.mjs",
         ".github/workflows/admin-website.yml",
         ".github/workflows/marketing-website.yml"
       ],
-      "instruction": "Classify every React feature controller or mutation hook in the target manifest. Promote behavior-critical hooks to required with a named importing test suite; use planned for an explicit coverage queue and exempt only for behavior-free compatibility re-exports with a reason. Keep aggregate percentage reports informational.",
+      "instruction": "Every React feature controller or mutation hook needs a unit test that imports it and registers a test, normally beside it. Keep aggregate percentage reports informational.",
       "sunset_when": [
         "A replacement mutation/controller contract system enforces equivalent named behavior coverage"
       ],

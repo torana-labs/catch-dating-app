@@ -31,11 +31,16 @@ export type OrganizerPageTab = "overview" | "page" | "events" | "sales" | "money
 export interface OrganizerPageLinks {
   /** The Events tab's list, read live by the route. */
   eventsTab: ReactNode;
+  /** The Money tab's bills, read live; null for those who cannot open Money. */
+  moneyBills: ReactNode;
+  /** Null for those who cannot open Payment setup. */
+  onOpenTerms: (() => void) | null;
+  onCheckForEvents: () => void;
+  isCheckingForEvents: boolean;
   onBack: () => void;
   onTabChanged: (tab: OrganizerPageTab) => void;
   onOpenEvent: (source: "catch" | "imported", eventId: string) => void;
   onOpenSales: () => void;
-  onOpenTerms: () => void;
   onOpenClaim: (requestId: string) => void;
   publicPageUrl: (canonicalPath: string) => string;
 }
@@ -117,7 +122,15 @@ function upcoming(overview: OrganizerOverview, links: OrganizerPageLinks) {
 function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: OrganizerPageLinks): {main: ReactNode; aside?: ReactNode} {
   switch (tab) {
   case "events":
-    return {main: links.eventsTab};
+    return {main: (
+      <CatchGap size="related">
+        {overview.organizer.publishStatus === "published" && overview.organizer.claimState === "unclaimed" ? (
+          <CatchButton label={links.isCheckingForEvents ? "Checking" : "Check for new events"}
+            onPressed={links.isCheckingForEvents ? null : links.onCheckForEvents} size="sm" variant="secondary" />
+        ) : null}
+        {links.eventsTab}
+      </CatchGap>
+    )};
   case "sales":
     return {main: (
       <CatchGap size="majorSection">
@@ -142,9 +155,12 @@ function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: Orga
           fact("First paid booking", overview.growth?.firstPaidBookingAt ?
             eventWhenLabel(overview.growth.firstPaidBookingAt).split(" · ")[0] : "Not yet"),
         ]} />
-        <CatchGap direction="horizontal" size="related">
-          <CatchButton label="Change terms" onPressed={links.onOpenTerms} size="sm" variant="secondary" />
-        </CatchGap>
+        {links.onOpenTerms ? (
+          <CatchGap direction="horizontal" size="related">
+            <CatchButton label="Change terms" onPressed={links.onOpenTerms} size="sm" variant="secondary" />
+          </CatchGap>
+        ) : null}
+        {links.moneyBills}
       </CatchGap>
     )};
   }

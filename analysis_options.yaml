@@ -11,8 +11,8 @@ analyzer:
     # Each nested package is analyzed from its own package root by the
     # repository-wide analysis gate. Keeping those boundaries explicit avoids
     # resolving fixture/example code through the root package configuration.
-    - apps/consumer/**
-    - apps/host/**
+    # apps/* stay in this analysis and include this file: the Catch plugin only
+    # loads from the workspace root, and it holds them to the architecture lints.
     - packages/catch_tokens/**
     - packages/catch_ui/**
     - packages/catch_ui_lints/**

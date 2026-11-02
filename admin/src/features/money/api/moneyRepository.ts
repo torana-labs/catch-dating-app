@@ -51,6 +51,14 @@ export function loadBills(month: string | null, generate = false):
     sampleManageOrganizerBills);
 }
 
+/** Every bill of one organizer, newest month first, for its Money tab. */
+export function loadOrganizerBills(organizerId: string): Promise<BillsMonth> {
+  return call<AdminManageOrganizerBillsCallablePayload, BillsMonth>(
+    "adminManageOrganizerBills", {action: "list", month: null, organizerId,
+      billId: null, expectedRevision: null, note: null},
+    sampleManageOrganizerBills);
+}
+
 /** Sends, reminds, marks paid or writes off one bill. */
 export function actOnBill(bill: Pick<Bill, "billId" | "revision">,
   action: BillAction, note: string | null): Promise<BillsMonth> {

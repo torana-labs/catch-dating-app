@@ -1,0 +1,28 @@
+{
+  "actions": [
+    {
+      "actionId": "operations.record-execution",
+      "callable": "adminRecordActionExecution",
+      "workflowIds": [],
+      "guiPath": "/operations",
+      "kind": "control",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "controlPlane": true,
+      "requestSchema": "contracts/callables/admin_record_action_execution_payload.schema.json",
+      "summary": "Create or advance the remotely visible receipt for one CLI action execution.",
+      "example": {
+        "executionId": "00000000-0000-4000-8000-000000000000",
+        "actionId": "overview.get",
+        "callable": "adminGetOverview",
+        "status": "started",
+        "requestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "workflow": {
+    "workflowId": "organizer-claims",
+    "label": "Organizer claims",
+    "guiPath": "/organizers/claims"
+  },
+  "actions": [
+    {
+      "actionId": "organizer-claims.decide",
+      "callable": "adminDecideOrganizerClaim",
+      "workflowIds": [
+        "organizer-claims"
+      ],
+      "guiPath": "/organizers/claims",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "requestId",
+      "requestSchema": "contracts/callables/admin_decide_organizer_claim_payload.schema.json",
+      "summary": "Approve or reject one organizer claim request.",
+      "example": {
+        "requestId": "example-claim",
+        "decision": "reject",
+        "decisionReason": "Fixture decision; do not apply."
+      }
+    },
+    {
+      "actionId": "organizer-claims.get",
+      "callable": "adminGetOrganizerClaimRequestDetails",
+      "workflowIds": [
+        "organizer-claims"
+      ],
+      "guiPath": "/organizers/claims",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_organizer_claim_request_details_payload.schema.json",
+      "summary": "Load one organizer-claim request and its proof references.",
+      "example": {
+        "requestId": "example-claim"
+      }
+    },
+    {
+      "actionId": "organizer-claims.list",
+      "callable": "adminListOrganizerClaimRequests",
+      "workflowIds": [
+        "organizer-claims"
+      ],
+      "guiPath": "/organizers/claims",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_organizer_claim_requests_payload.schema.json",
+      "summary": "List the bounded organizer-claim review queue.",
+      "example": {}
+    },
+    {
+      "actionId": "organizer-claims.recommend",
+      "callable": "adminRecommendOrganizerClaim",
+      "workflowIds": [
+        "organizer-claims",
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "requestId",
+      "requestSchema": "contracts/callables/admin_recommend_organizer_claim_payload.schema.json",
+      "summary": "Recommend approving or rejecting a pending organizer claim; the claim stays pending until the owner decides it.",
+      "example": {
+        "requestId": "example-claim-request",
+        "decision": "approve",
+        "note": "Phone verified; the proof link is the organizer's Instagram."
+      }
+    }
+  ]
+}

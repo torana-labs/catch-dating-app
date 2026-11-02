@@ -1,0 +1,262 @@
+{
+  "workflow": {
+    "workflowId": "safety",
+    "label": "Safety triage",
+    "guiPath": "/safety"
+  },
+  "actions": [
+    {
+      "actionId": "people.search",
+      "callable": "adminSearchPeople",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/people",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_search_people_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_search_people_response.schema.json",
+      "summary": "Search people by name, phone or user id; every search is logged.",
+      "example": {
+        "query": "Arjun",
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "safety.actions.lift",
+      "callable": "adminLiftAccountSafetyAction",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "actionId",
+      "requestSchema": "contracts/callables/admin_lift_account_safety_action_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_lift_account_safety_action_response.schema.json",
+      "summary": "Lift one account safety action early. Lifting a suspension or ban is owner-only.",
+      "example": {
+        "actionId": "example-action-id",
+        "note": "Lifted after review."
+      }
+    },
+    {
+      "actionId": "safety.actions.list",
+      "callable": "adminListAccountSafetyActions",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_account_safety_actions_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_account_safety_actions_response.schema.json",
+      "summary": "List account safety actions in force, with an appeal waiting, or most recent.",
+      "example": {
+        "view": "active",
+        "uid": null,
+        "limit": 50
+      }
+    },
+    {
+      "actionId": "safety.actions.take",
+      "callable": "adminTakeAccountSafetyAction",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "uid",
+      "requestSchema": "contracts/callables/admin_take_account_safety_action_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_take_account_safety_action_response.schema.json",
+      "summary": "Warn, restrict, suspend or ban one account. Ops may warn and restrict; suspend and ban are owner-only.",
+      "example": {
+        "uid": "example-guest",
+        "kind": "restrict",
+        "durationDays": 7,
+        "reasonCode": "harassment",
+        "messageToUser": "Two messages you sent broke our rule on harassment. You can't message for 7 days.",
+        "caseTargetPath": "reports/example-report",
+        "notifyReporter": true,
+        "appealable": true,
+        "note": "Two harassing messages in a group chat."
+      }
+    },
+    {
+      "actionId": "safety.appeals.decide",
+      "callable": "adminDecideSafetyAppeal",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "actionId",
+      "requestSchema": "contracts/callables/admin_decide_safety_appeal_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_decide_safety_appeal_response.schema.json",
+      "summary": "Decide the one appeal on an account safety action; the reviewer must not be its decider.",
+      "example": {
+        "actionId": "example-action-id",
+        "outcome": "keep",
+        "reduceTo": null,
+        "messageToUser": "We looked again and the restriction stays.",
+        "note": "Messages clearly break the rule."
+      }
+    },
+    {
+      "actionId": "safety.assign",
+      "callable": "adminAssignSafetyTriageItem",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "targetPath",
+      "requestSchema": "contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
+      "summary": "Assign or clear the owner of one safety-triage item.",
+      "example": {
+        "targetPath": "reports/example-report",
+        "assigneeUid": "example-reviewer",
+        "note": "Assign for bounded CLI workflow validation."
+      }
+    },
+    {
+      "actionId": "safety.decide",
+      "callable": "adminDecideSafetyTriageItem",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "targetPath",
+      "requestSchema": "contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+      "summary": "Record the reviewed or dismissed outcome for one safety item.",
+      "example": {
+        "targetPath": "reports/example-report",
+        "decision": "review",
+        "note": "Reviewed in the CLI workflow fixture."
+      }
+    },
+    {
+      "actionId": "safety.get",
+      "callable": "adminGetSafetyTriageDetails",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/safety",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_safety_triage_details_payload.schema.json",
+      "summary": "Load one normalized safety-triage item and its bounded evidence.",
+      "example": {
+        "targetPath": "reports/example-report"
+      }
+    },
+    {
+      "actionId": "safety.settings.get",
+      "callable": "adminGetSafetySettings",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/settings/safety",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_safety_settings_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_safety_settings_response.schema.json",
+      "summary": "Read the report reasons, safety rules, deadlines and who may take each step.",
+      "example": {}
+    },
+    {
+      "actionId": "safety.settings.update",
+      "callable": "adminUpdateSafetySettings",
+      "workflowIds": [
+        "safety"
+      ],
+      "guiPath": "/settings/safety",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "restrictOnSevereReport",
+      "requestSchema": "contracts/callables/admin_update_safety_settings_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_safety_settings_response.schema.json",
+      "summary": "Owner-only: replace the report reasons and the safety rules.",
+      "example": {
+        "reasons": [
+          {
+            "code": "harassment",
+            "label": "Harassment",
+            "severe": false,
+            "takedown": false,
+            "active": true
+          }
+        ],
+        "restrictOnSevereReport": true,
+        "organizerBlockLists": true,
+        "organizerReports": true
+      }
+    }
+  ]
+}

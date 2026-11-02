@@ -27,10 +27,56 @@
       "tool:runner"
     ],
     "manifestCheckIds": [
+      "meta:ci-tool-category-coverage",
       "tool:runner"
     ]
   },
   "tools": [
+    {
+      "id": "meta:nx-shadow-plan",
+      "category": "meta",
+      "path": "tool/nx/shadow_plan.mjs",
+      "command": "node --test tool/nx/shadow_plan.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Shadow mode for the Nx cut-over: runs the current planner and nx affected for one change, maps Nx tasks onto CI lanes and reports where they disagree. Run by the non-gating nx-shadow workflow; deleted with the planner.",
+      "checks": [
+        "node --check tool/nx/shadow_plan.mjs",
+        "node --test tool/nx/shadow_plan.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/shadow_plan.test.mjs",
+        ".github/workflows/nx-shadow.yml"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "meta:nx-select-lanes",
+      "category": "meta",
+      "path": "tool/nx/select_lanes.mjs",
+      "command": "node --test tool/nx/select_lanes.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Nx chooses which CI lanes run for pull requests and queue groups. The planner's selection stands for main, nightly and full runs, and whenever Nx cannot answer.",
+      "checks": [
+        "node --check tool/nx/select_lanes.mjs",
+        "node --test tool/nx/select_lanes.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/select_lanes.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
     {
       "id": "meta:nx-project-graph",
       "category": "meta",
@@ -50,7 +96,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       }
     },
@@ -415,7 +462,7 @@
         "contains": [
           "every catalogued committed compile generator has a staged-source trigger",
           "partially staged Dart fails before formatting can stage unrelated work",
-          "contract drift reports both exact regeneration commands"
+          "contract drift reports the exact regeneration command"
         ]
       }
     },
@@ -1210,107 +1257,42 @@
       }
     },
     {
-      "id": "audit:dependency-direction",
-      "category": "audit",
-      "path": "tool/architecture/check_dependency_direction.mjs",
-      "command": "node tool/architecture/check_dependency_direction.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files, by layer placement across legacy features, the bounded-context roots and app packages.",
-      "checks": [
-        "node --test tool/architecture/check_dependency_direction.test.mjs",
-        "node --check tool/architecture/check_dependency_direction.mjs",
-        "node tool/architecture/check_dependency_direction.mjs"
-      ],
-      "role": "ratchet",
-      "rules": [
-        "DEPENDENCY-DIRECTION-001",
-        "INJECTED-CLOCK-001",
-        "STREAM-LIFECYCLE-001",
-        "EXTERNAL-SIDE-EFFECT-001",
-        "CONTROLLER-BOUNDARY-001"
-      ],
-      "baseline": "tool/architecture/dependency_direction_baseline.json",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_dependency_direction.test.mjs",
-        "contains": [
-          "scanFile flags domain framework imports",
-          "scanFile flags data/domain imports of feature presentation",
-          "scanFile flags sibling feature widget imports",
-          "scanFile flags domain DateTime.now access",
-          "scanFile honors stream timeout override comments",
-          "scanFile flags presentation plugin imports outside controllers and services",
-          "scanDependencyDirection ratchets baseline findings",
-          "scanFile flags WidgetRef parameters below route build methods",
-          "scanFile flags repository provider reads from presentation widgets",
-          "scanFile flags unannotated feature-root presentation barrel exports",
-          "scanFile flags provider-coupled presentation state files",
-          "scanFile flags undocumented keepAlive providers",
-          "scanFile flags manual provider declarations outside core",
-          "scanFile flags display state classes misplaced outside state files",
-          "scanFile flags presentation files with multiple route screens",
-          "scanDependencyDirection flags untracked state adapters as a hard gate",
-          "scanFile holds context domain and kernel files to the domain rules",
-          "scanFile flags context data and domain imports of actions, parts and screens",
-          "scanFile flags provider-coupled context parts as a hard gate",
-          "scanFile applies screen rules to app-package destinations and shared pages",
-          "scanDependencyDirection scans app packages and never baselines the context roots"
-        ]
-      },
-      "impactPaths": [
-        "tool/architecture/check_dependency_direction.test.mjs",
-        "tool/architecture/check_dependency_direction.mjs",
-        "tool/architecture/dependency_direction_baseline.json",
-        "tool/architecture/pattern_adoption.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node"]
-      }
-    },
-    {
       "id": "audit:context-map",
       "category": "audit",
       "path": "tool/architecture/check_context_map.mjs",
       "command": "node tool/architecture/check_context_map.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Places every handwritten lib Dart file in a bounded context or layer from tool/architecture/context_map.json and checks that layers and contexts import only downward, that new contexts cross through their public API file, that no new top-level folder goes undeclared, that no domain or data file returns to a legacy folder, and that the architecture spec's context table matches the map.",
+      "description": "Checks what one file cannot show: tool/architecture/context_map.json is well formed and the architecture spec's context table matches it. Placement and import order are catch_arch_* lints that read the same map.",
       "checks": [
         "node --test tool/architecture/check_context_map.test.mjs",
         "node --check tool/architecture/check_context_map.mjs",
         "node tool/architecture/check_context_map.mjs"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "CONTEXT-MAP-001"
       ],
-      "baseline": "tool/architecture/context_map_baseline.json",
       "vacuityProof": {
         "type": "test",
         "path": "tool/architecture/check_context_map.test.mjs",
         "contains": [
-          "scanFile flags a context importing a context declared after it",
-          "scanFile flags upward layer imports",
-          "scanFile flags new contexts that bypass the public API file",
-          "scanFile flags unmapped files and undeclared contexts",
-          "scanContextMap ratchets legacy debt but never baselines new roots",
-          "scanContextMap reports obsolete baseline allowances",
+          "loadContextMap rejects undeclared contexts and duplicate placements",
           "checkSpecTable fails when the spec's context table drifts from the map",
-          "legacyContextFileFinding keeps legacy folders to screens and barrels once forbidden"
+          "scanContextMap reports a spec table that drifts from the map"
         ]
       },
       "impactPaths": [
         "docs/app_architecture.md",
         "tool/architecture/check_context_map.test.mjs",
         "tool/architecture/check_context_map.mjs",
-        "tool/architecture/context_map.json",
-        "tool/architecture/context_map_baseline.json"
+        "tool/architecture/context_map.json"
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -1502,19 +1484,18 @@
       "command": "bash tool/widget_cleanup_scan.sh",
       "safety": "local",
       "status": "active",
-      "description": "Ratchets live widget/design-system cleanup candidates against checked maximum counts.",
+      "description": "Fails on any live widget/design-system cleanup candidate.",
       "checks": [
         "bash -n tool/widget_cleanup_scan.sh",
-        "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
+        "node --test tool/lib/widget_cleanup_gate.test.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
-      "role": "ratchet",
-      "baseline": "tool/audit/widget_cleanup_baseline.json",
+      "role": "gate",
       "vacuityProof": {
         "type": "test",
-        "path": "tool/lib/widget_cleanup_ratchet.test.mjs",
+        "path": "tool/lib/widget_cleanup_gate.test.mjs",
         "contains": [
-          "ratchet flags increases, missing categories, and new categories"
+          "gate flags any candidate, missing categories, and unknown categories"
         ]
       }
     },
@@ -1612,7 +1593,7 @@
       "command": "node tool/web/check_website_copy_ownership.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
+      "description": "Fails on user-visible marketing website strings outside website/src/content and the reasoned allowlist.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -1628,7 +1609,7 @@
       "impactPaths": [
         "tool/web/website_copy_allowlist.json"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "WEB-COPY-001"
       ],
@@ -1678,7 +1659,6 @@
       "rules": [
         "APP-COPY-001"
       ],
-      "baseline": "tool/copy/mobile_copy_baseline.json",
       "vacuityProof": {
         "type": "self-test",
         "command": "dart run tool/copy/check_mobile_copy_ownership.dart --self-test"
@@ -1690,7 +1670,6 @@
       "path": "tool/copy/check_l10n_key_usage.mjs",
       "impactPaths": [
         "tool/copy/check_l10n_key_usage.test.mjs",
-        "tool/copy/l10n_orphan_baseline.json",
         "tool/copy/fixtures/l10n_key_usage/**"
       ],
       "command": "node tool/copy/check_l10n_key_usage.mjs --check",
@@ -1702,27 +1681,26 @@
           "node"
         ]
       },
-      "description": "Derives exact handwritten Flutter localization-key usage live and fails on missing catalog getters or any new zero-use catalog key; complete JSON evidence is ephemeral.",
+      "description": "Derives exact handwritten Flutter localization-key usage live and fails on missing catalog getters or any zero-use catalog key; complete JSON evidence is ephemeral.",
       "checks": [
         "node --check tool/copy/check_l10n_key_usage.mjs",
         "node --test tool/copy/check_l10n_key_usage.test.mjs",
         "node tool/copy/check_l10n_key_usage.mjs --check"
       ],
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "APP-COPY-001"
       ],
-      "baseline": "tool/copy/l10n_orphan_baseline.json",
       "vacuityProof": {
         "type": "test",
         "path": "tool/copy/check_l10n_key_usage.test.mjs",
         "contains": [
-          "known-bad fixture reports only the newly orphaned key",
+          "known-bad fixture reports every orphaned key",
+          "CLI fails on any orphan and passes when there are none",
           "inventory generation is deterministic JSON",
           "JSON review records missing getters but exits unsuccessfully",
-          "baseline refresh refuses to bless a newly orphaned key",
           "retired tracked inventory and legacy CLI modes stay absent",
-          "CLI help exposes only live evidence and baseline modes"
+          "CLI help exposes only live evidence modes"
         ]
       }
     },
@@ -1954,7 +1932,6 @@
         "admin/src/shared/ui/AdminPrimitives/shell.tsx",
         "admin/src/features/safety/controllers/useAccessReviewController.ts",
         "admin/src/features/settings/controllers/useTeamController.ts",
-        "admin/src/features/cross-paths/controllers/useCrossPathsShowcaseController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
@@ -2021,7 +1998,7 @@
       "command": "node tool/web/check_admin_components.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
+      "description": "Validates design/admin/components/ against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -2069,12 +2046,11 @@
       "command": "node tool/web/check_react_query_state.mjs",
       "safety": "local",
       "status": "active",
-      "role": "ratchet",
+      "role": "gate",
       "rules": [
         "WEB-QUERY-STATE-001"
       ],
-      "baseline": "tool/web/react_query_state_baseline.json",
-      "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
+      "description": "Fails on React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -2175,7 +2151,8 @@
         "tool/lib/lint_probe_batch.test.mjs",
         "tool/design/generated/enforcement_expectations.json",
         "widgetbook/lib/primitives/catalog/feedback.dart",
-        "widgetbook/lib/primitives/contracts/feedback.dart"
+        "widgetbook/lib/primitives/contracts/feedback.dart",
+        "tool/architecture/context_map.json"
       ],
       "alsoCheckIds": [
         "lint:probe-batch-protocol"
@@ -2190,7 +2167,13 @@
         "UI-LINT-001",
         "ASYNC-LOADING-PRESENTATION-001",
         "ERROR-UI-002",
-        "IMAGE-NETWORK-PRIMITIVE-001"
+        "IMAGE-NETWORK-PRIMITIVE-001",
+        "CONTEXT-MAP-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DEPENDENCY-DIRECTION-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "INJECTED-CLOCK-001",
+        "STREAM-LIFECYCLE-001"
       ],
       "vacuityProof": {
         "type": "probe-harness",
@@ -2200,7 +2183,10 @@
           "catch_async_requires_retry",
           "catch_error_state_requires_action",
           "catch_no_raw_content_dimension",
-          "catch_no_local_design_constant"
+          "catch_no_local_design_constant",
+        "catch_arch_cross_feature_presentation_import",
+        "catch_arch_context_order_import",
+        "catch_arch_invalid_ignore"
         ]
       }
     },
@@ -2221,7 +2207,13 @@
       "rules": [
         "UI-LINT-001",
         "DESIGN-TOKENS-001",
-        "RESPONSIVE-LAYOUT-001"
+        "RESPONSIVE-LAYOUT-001",
+        "CONTEXT-MAP-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DEPENDENCY-DIRECTION-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "INJECTED-CLOCK-001",
+        "STREAM-LIFECYCLE-001"
       ],
       "vacuityProof": {
         "type": "self-test",
@@ -2562,9 +2554,14 @@
       "description": "Generates isolated Functions schemas, validators and catalogs plus test/tool inventories, paths and cross-runtime contracts.",
       "checks": [
         "node --check tool/contracts/generate_schema_contracts.mjs",
-        "node --test tool/contracts/schema_modules.test.mjs"
+        "node --test tool/contracts/schema_modules.test.mjs",
+        "node --test tool/contracts/schema_specs.test.mjs"
       ],
       "impactPaths": [
+        "tool/contracts/lib/schema_specs.mjs",
+        "tool/contracts/schema_spec_exceptions.json",
+        "tool/contracts/schema_spec_order.json",
+        "tool/contracts/schema_specs.test.mjs",
         "tool/contracts/schema_modules.test.mjs",
         "tool/contracts/profile_requirements.test.mjs",
         "tool/contracts/generated/**"
@@ -4208,6 +4205,24 @@
       }
     },
     {
+      "id": "web:verify-admin-hosting",
+      "category": "lint",
+      "path": "tool/web/verify_admin_hosting.mjs",
+      "command": "node tool/web/verify_admin_hosting.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "description": "Asserts that a supplied Admin Hosting origin serves no-cache HTML, immutable chunks and a real 404 for a missing chunk, so tabs left open across a deploy can recover.",
+      "checks": [
+        "node --check tool/web/verify_admin_hosting.mjs",
+        "node --test tool/web/verify_admin_hosting.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/web/verify_admin_hosting.test.mjs",
+        "firebase.json"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "marketing:verify-hosting-404",
       "category": "marketing",
       "path": "website/scripts/verifyHosting404.mjs",
@@ -4362,13 +4377,12 @@
       "command": "node tool/marketing/export_app_screenshots.mjs",
       "safety": "local-writes-artifacts",
       "status": "active",
-      "description": "Renders active app marketing captures and wraps them in the configured device frame.",
+      "description": "Renders active app marketing captures and wraps them in the configured device frame. Tools checks recipes and the design context; the capture producer and the release import check image bytes and provenance.",
       "checks": [
         "node --check tool/marketing/export_app_screenshots.mjs",
         "node --test tool/marketing/capture_pipeline.test.mjs",
         "dart analyze tool/marketing/frame_device_capture.dart",
         "dart run tool/marketing/frame_device_capture_test.dart",
-        "node tool/marketing/export_app_screenshots.mjs --check",
         "node tool/marketing/export_app_screenshots.mjs --check-design-json",
         "node --test tool/marketing/web_captures.test.mjs"
       ],
@@ -4469,12 +4483,11 @@
       "command": "node tool/marketing/sync_website_media.mjs",
       "safety": "local-writes-website-assets",
       "status": "active",
-      "description": "Syncs app-derived marketing capture slots into website assets and checks drift.",
+      "description": "Syncs app-derived marketing capture slots into website assets. Tools checks the authored manifest; the capture producer and the release import check image bytes and provenance.",
       "checks": [
         "node --check tool/marketing/sync_website_media.mjs",
         "node --test tool/marketing/capture_pipeline.test.mjs",
-        "node --test tool/marketing/sync_website_media.test.mjs",
-        "node tool/marketing/sync_website_media.mjs --check"
+        "node --test tool/marketing/sync_website_media.test.mjs"
       ],
       "role": "finder",
       "impactPaths": [
@@ -4625,7 +4638,8 @@
         "lib/platform/theme/**",
         "packages/catch_tokens/lib/**",
         "packages/catch_ui/**",
-        "tool/design_tokens.dart",
+        "tool/design_tokens.mjs",
+        "tool/design_tokens/**",
         "tool/design/test/platform_token_coverage.test.mjs",
         "test/core/catch_platform_tokens_test.dart",
         "test/core/platform_typography_test.dart"
@@ -4706,14 +4720,19 @@
     {
       "id": "design:tokens",
       "category": "design",
-      "path": "tool/design_tokens.dart",
-      "command": "dart run tool/design_tokens.dart",
+      "path": "tool/design_tokens.mjs",
+      "impactPaths": [
+        "tool/design_tokens/**"
+      ],
+      "command": "node tool/design_tokens.mjs",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON.",
+      "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON with Style Dictionary.",
       "checks": [
-        "dart analyze tool/design_tokens.dart packages/catch_tokens/lib/generated/catch_design_tokens.g.dart",
-        "dart run tool/design_tokens.dart --check"
+        "node --check tool/design_tokens.mjs",
+        "node --test tool/design_tokens/design_tokens.test.mjs",
+        "dart analyze packages/catch_tokens/lib/generated/catch_design_tokens.g.dart",
+        "node tool/design_tokens.mjs --check"
       ],
       "role": "finder"
     },
@@ -4753,46 +4772,6 @@
           "strict verification rejects unverified configurations and planned harnesses",
           "rejects duplicate configuration tuples",
           "rejects unclassified or multiply owned consumer routes"
-        ]
-      }
-    },
-    {
-      "id": "design:feature-coverage",
-      "category": "design",
-      "path": "tool/design/check_feature_coverage.mjs",
-      "command": "node tool/design/check_feature_coverage.mjs --check",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Fails when a registered Flutter screen, marketing route, or admin route component lacks exactly one contracted, grouped, planned, or excluded feature-contract decision.",
-      "checks": [
-        "node --check tool/design/check_feature_coverage.mjs",
-        "node --test tool/design/check_feature_coverage.test.mjs",
-        "node tool/design/check_feature_coverage.mjs --check"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_feature_coverage.test.mjs",
-        "contains": [
-          "accepts one feature contract binding multiple runtime authorities",
-          "rejects missing, duplicate, and unknown authority decisions",
-          "rejects contracted decisions that do not bind their authority item",
-          "rejects missing or chained grouped primaries",
-          "fails when a registry adds an unclassified feature surface",
-          "rejects orphaned source contracts"
-        ]
-      },
-      "impactPaths": [
-        "design/features/feature_coverage.json",
-        "design/features/feature_coverage.schema.json",
-        "tool/design/check_feature_coverage.test.mjs",
-        "design/features/*.feature.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "root-npm"
         ]
       }
     },
@@ -4990,97 +4969,6 @@
       }
     },
     {
-      "id": "design:figma-library-snapshot",
-      "category": "design",
-      "path": "tool/design/import_figma_library_snapshot.mjs",
-      "command": "node tool/design/import_figma_library_snapshot.mjs --check",
-      "safety": "local-writes-generated",
-      "status": "active",
-      "description": "Normalizes a Figma LIBRARY_PUBLISH webhook plus hydrated file response into deterministic component-node, property-definition, variable-binding, and review-snapshot evidence.",
-      "checks": [
-        "node --check tool/design/import_figma_library_snapshot.mjs",
-        "node tool/design/import_figma_library_snapshot.mjs --self-test",
-        "node tool/design/import_figma_library_snapshot.mjs --check"
-      ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/design/import_figma_library_snapshot.mjs --self-test"
-      },
-      "impactPaths": [
-        "design/sync/figma_library_snapshot.json",
-        "tool/design/import_figma_library_snapshot.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
-    },
-    {
-      "id": "design:claude-handoff-contract",
-      "category": "design",
-      "path": "tool/design/claude_design_handoff.mjs",
-      "command": "node --check tool/design/claude_design_handoff.mjs",
-      "safety": "local-readonly",
-      "status": "internal",
-      "role": "generator",
-      "description": "Generates the deterministic Badge + Field Claude Design request and validates a referenced receipt against source, concept, and supported-state digests.",
-      "checks": [
-        "node --check tool/design/claude_design_handoff.mjs"
-      ]
-    },
-    {
-      "id": "design:sync-manifest",
-      "category": "design",
-      "path": "tool/design/build_design_sync_manifest.mjs",
-      "command": "node tool/design/build_design_sync_manifest.mjs --check",
-      "safety": "local",
-      "status": "active",
-      "description": "Builds and validates generated current/stale/missing Figma mappings, property drift, Code Connect readiness, Claude context parity, and a referenced Claude Design receipt for the Badge + Field live spike.",
-      "checks": [
-        "node --check tool/design/claude_design_handoff.mjs",
-        "node --check tool/design/build_design_sync_manifest.mjs",
-        "node --test tool/design/build_design_sync_manifest.test.mjs",
-        "node tool/design/build_design_sync_manifest.mjs --check"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/build_design_sync_manifest.test.mjs",
-        "contains": [
-          "known-bad mapped entries without node URLs fail",
-          "live spike gate stays red when Figma and Code Connect are unavailable",
-          "snapshot names generate current mappings without hand-edited URLs",
-          "known-bad Figma property drift is deterministic",
-          "known-bad stale Claude context fails",
-          "known-bad Claude Design state receipt fails",
-          "require-live rejects missing visual proof and unpublished templates",
-          "fully evidenced Badge and Field spike passes the live gate",
-          "real Badge and Field contract projection round-trips and fails on one removed property"
-        ]
-      },
-      "impactPaths": [
-        "design/components/catch.components.json",
-        "design/sync/live_capabilities.json",
-        "design/sync/figma_library_snapshot.json",
-        "design/sync/claude_design_receipt.json",
-        "design/sync/catch.design-sync.json",
-        "design_context_pack/design_system/components.json",
-        "design_context_pack/design_system/claude_design_handoff_request.json",
-        "tool/design/component_concepts.mjs",
-        "tool/design/claude_design_handoff.mjs",
-        "tool/design/build_design_sync_manifest.test.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
-    },
-    {
       "id": "design:widget-classification-check",
       "category": "design",
       "path": "tool/design/check_widget_classification.mjs",
@@ -5247,34 +5135,6 @@
       }
     },
     {
-      "id": "design:parity-matrix",
-      "category": "design",
-      "path": "tool/design/check_design_parity_matrix.mjs",
-      "impactPaths": [
-        "docs/design_parity/state_matrix.json",
-        "tool/ui_capture/route_inventory.json",
-        "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "design/components/catch.components.json",
-        "design/screens/catch.screens.json",
-        "design/features/generated/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "command": "node tool/design/check_design_parity_matrix.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Validates the feature-by-feature design parity state matrix against routes, captures, components, screen contracts, and source paths.",
-      "checks": [
-        "node --check tool/design/check_design_parity_matrix.mjs",
-        "node tool/design/check_design_parity_matrix.mjs --check"
-      ],
-      "role": "finder"
-    },
-    {
       "id": "design:comprehensive-todo-summary",
       "category": "design",
       "path": "tool/design/check_comprehensive_todo_summary.mjs",
@@ -5296,8 +5156,7 @@
       },
       "impactPaths": [
         "docs/design_parity/comprehensive_todo.md",
-        "design/screens/catch.screens.json",
-        "docs/design_parity/state_matrix.json"
+        "design/screens/catch.screens.json"
       ]
     },
     {
@@ -5394,92 +5253,6 @@
         "node tool/design/check_screen_contracts.mjs --check"
       ],
       "role": "finder"
-    },
-    {
-      "id": "design:widgetbook-use-case-triage",
-      "category": "design",
-      "path": "tool/design/classify_widgetbook_use_cases.mjs",
-      "impactPaths": [
-        "widgetbook/test/support/screen_scope_dispositions.json",
-        "widgetbook/test/support/triage_inventory.dart",
-        "widgetbook/lib/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "flutter",
-          "flutter-pub"
-        ]
-      },
-      "command": "node tool/design/classify_widgetbook_use_cases.mjs",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Classifies every registered Widgetbook use case into four catalog roles and requires an authored disposition for every screen-scope case.",
-      "checks": [
-        "node --check tool/design/classify_widgetbook_use_cases.mjs",
-        "node tool/design/classify_widgetbook_use_cases.mjs --self-test",
-        "node tool/design/classify_widgetbook_use_cases.mjs --check"
-      ],
-      "role": "gate",
-      "rules": [
-        "WIDGET-CATALOG-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/classify_widgetbook_use_cases.mjs",
-        "contains": [
-          "Widgetbook-defined composition lacks explicit proposed marker",
-          "Duplicate registered id",
-          "screen-scope disposition requires an owner",
-          "expected exactly one screen-scope disposition"
-        ]
-      }
-    },
-    {
-      "id": "design:golden-coverage",
-      "category": "design",
-      "path": "tool/design/check_widgetbook_golden_coverage.mjs",
-      "impactPaths": [
-        "tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "widgetbook/test/support/golden_coverage_waivers.json",
-        "widgetbook/test/support/triage_inventory.dart",
-        "widgetbook/lib/**",
-        "lib/contexts/*/parts/**",
-        "lib/platform/media/**",
-        "lib/pages/startup/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "flutter",
-          "flutter-pub"
-        ]
-      },
-      "command": "node tool/design/check_widgetbook_golden_coverage.mjs --check",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Requires every public Catch* class in the shared UI homes and every public app-coupled shared widget (context parts, the media editor, the startup page) to map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with at most 20 waivers.",
-      "checks": [
-        "node --check tool/design/check_widgetbook_golden_coverage.mjs",
-        "node --test tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "node tool/design/check_widgetbook_golden_coverage.mjs --check"
-      ],
-      "role": "gate",
-      "rules": [
-        "WIDGET-CATALOG-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_widgetbook_golden_coverage.test.mjs",
-        "contains": [
-          "fails when a public core class loses every registered golden id",
-          "rejects expired, ownerless, vague and stale waivers",
-          "rejects waiver counts above the Phase 1 ceiling",
-          "keeps generated public Catch classes in the denominator"
-        ]
-      }
     },
     {
       "id": "design:widgetbook-contract-refs",
@@ -5882,12 +5655,10 @@
         "node tool/ui_capture/check_route_inventory.mjs --check",
         "node tool/ui_capture/check_capture_coverage.mjs --check",
         "node tool/design/check_host_shell_coverage.mjs",
-        "node tool/design/check_design_parity_matrix.mjs --check",
         "node --test tool/design/check_comprehensive_todo_summary.test.mjs",
         "node tool/design/check_comprehensive_todo_summary.mjs --check",
         "node tool/design/check_screen_coverage.mjs --check",
         "node tool/design/check_screen_contracts.mjs --check",
-        "node tool/design/check_feature_coverage.mjs --check",
         "node tool/design/build_feature_contracts.mjs --check",
         "node tool/design/build_host_feature_responsibilities.mjs --check",
         "node tool/design/check_screen_top_bar_contracts.mjs --check",
@@ -5899,60 +5670,6 @@
       "role": "finder",
       "impactPaths": [
         "tool/design/check_design_parity.test.mjs"
-      ]
-    },
-    {
-      "id": "design:context-pack",
-      "category": "design",
-      "path": "tool/design/build_context_pack.mjs",
-      "command": "node tool/design/build_context_pack.mjs",
-      "safety": "local-writes-generated",
-      "status": "active",
-      "description": "Checks the portable design handoff export against its theme/token/component/catalog inputs; this is export freshness, not proof of rendered app parity.",
-      "checks": [
-        "node --check tool/design/build_context_pack.mjs",
-        "node tool/design/build_context_pack.mjs --check"
-      ],
-      "role": "finder",
-      "impactPaths": [
-        "design_context_pack/**",
-        "tool/design/build_context_pack.mjs",
-        "tool/design/context_pack_builder_test.dart",
-        "tool/design/claude_design_handoff.mjs",
-        "tool/design/component_concepts.mjs",
-        "docs/design_language.md",
-        "design/components/catch.components.json",
-        "lib/platform/theme/**",
-        "lib/kernel/activity_taxonomy.dart",
-        "packages/catch_tokens/**",
-        "packages/catch_ui/**",
-        "test/ui_captures/**",
-        "tool/ui_capture/capture_coverage.json",
-        "pubspec.yaml",
-        "pubspec.lock",
-        ".github/actions/setup-flutter/**",
-        "tool/ci/toolchain.env",
-        "assets/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "flutter",
-          "flutter-pub"
-        ]
-      }
-    },
-    {
-      "id": "design:context-pack-builder",
-      "category": "design",
-      "path": "tool/design/context_pack_builder_test.dart",
-      "command": "flutter test tool/design/context_pack_builder_test.dart",
-      "safety": "local-writes-generated",
-      "status": "support",
-      "description": "Flutter-test-bound generator used by design:context-pack.",
-      "checks": [
-        "flutter analyze tool/design/context_pack_builder_test.dart"
       ]
     },
     {
@@ -6192,14 +5909,13 @@
       "command": "node tool/web/check_react_controller_test_targets.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Classifies every React feature controller/mutation hook and requires named behavior suites for promoted targets without gating on aggregate coverage percentages.",
+      "description": "Requires a unit test that imports each React feature controller/mutation hook, found from the source, without gating on aggregate coverage percentages.",
       "checks": [
         "node --check tool/web/check_react_controller_test_targets.mjs",
         "node tool/web/check_react_controller_test_targets.mjs --self-test",
         "node tool/web/check_react_controller_test_targets.mjs --check"
       ],
       "impactPaths": [
-        "tool/web/react_controller_test_targets.json",
         "packages/web-config/**"
       ],
       "role": "gate",
@@ -6257,15 +5973,14 @@
       "id": "web:admin-callable-validators",
       "category": "lint",
       "path": "admin/scripts/generateCallableValidators.mjs",
-      "command": "npm --workspace catch-admin run check:callable-validators",
+      "command": "node admin/scripts/generateCallableValidators.mjs --self-test",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks the generated admin callable request/response validator registry against current adminApi callables and schema contracts.",
+      "description": "Proves the admin callable validator generator covers every adminApi callable and keeps every schema rule through compaction. Its output is built on demand by the Admin npm lifecycle and never tracked.",
       "checks": [
         "node --test tool/admin/callable_inventory.test.mjs",
         "node --check admin/scripts/generateCallableValidators.mjs",
-        "node admin/scripts/generateCallableValidators.mjs --self-test",
-        "npm --workspace catch-admin run check:callable-validators"
+        "node admin/scripts/generateCallableValidators.mjs --self-test"
       ],
       "role": "gate",
       "rules": [
@@ -6276,7 +5991,7 @@
         "path": "admin/scripts/generateCallableValidators.mjs",
         "contains": [
           "simulated schema drift",
-          "Admin callable validator drift self-test passed."
+          "Admin callable validator self-test passed."
         ]
       },
       "impactPaths": [
@@ -6334,6 +6049,24 @@
           "__KnownMissingWebsiteSymbol__"
         ]
       }
+    },
+    {
+      "id": "admin:check-ci",
+      "category": "test",
+      "path": "admin/scripts/checkAdminCi.mjs",
+      "command": "npm run check:admin",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "description": "Runs CI's Admin lane locally, reading its steps from the React surface workflow. Its checks here cover only the step reader; the steps themselves run in the Admin lane.",
+      "impactPaths": [
+        "admin/scripts/checkAdminCi.test.mjs",
+        ".github/workflows/react-surface-validation.yml"
+      ],
+      "checks": [
+        "node --check admin/scripts/checkAdminCi.mjs",
+        "node --test admin/scripts/checkAdminCi.test.mjs"
+      ],
+      "role": "finder"
     },
     {
       "id": "web:admin-bundle-budget",
@@ -6505,10 +6238,10 @@
       "rules": [
         "OPERATIONS-PLATFORM-001"
       ],
-      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/admin_action_catalog.json.",
+      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/actions/ on demand through the Admin and Functions npm lifecycles. --validate checks the catalog's own links; the views are never tracked.",
       "checks": [
         "node --check tool/admin/generate_admin_action_catalog.mjs",
-        "node tool/admin/generate_admin_action_catalog.mjs --check",
+        "node tool/admin/generate_admin_action_catalog.mjs --validate",
         "node tool/admin/generate_admin_action_catalog.mjs --self-test",
         "node --test tool/admin/generate_admin_action_catalog.test.mjs"
       ],
@@ -6789,41 +6522,6 @@
         "contains": [
           "callable steps fail when undeployed, denied, or outside main's contract"
         ]
-      }
-    },
-    {
-      "id": "design:flutter-field-surface-inventory",
-      "category": "design",
-      "path": "tool/design/generate_flutter_field_surface_inventory.mjs",
-      "command": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "description": "Validates the authored Flutter field-surface adoption ledger directly against current routes, screens, anchors, and legacy product callsites; an explicit non-check run writes only an ignored build report.",
-      "checks": [
-        "node --check tool/design/generate_flutter_field_surface_inventory.mjs",
-        "node --test tool/design/generate_flutter_field_surface_inventory.test.mjs",
-        "node tool/design/generate_flutter_field_surface_inventory.mjs --check"
-      ],
-      "impactPaths": [
-        "tool/design/generate_flutter_field_surface_inventory.test.mjs",
-        "design/components/flutter_field_surface_adoption.json"
-      ],
-      "role": "gate",
-      "rules": [
-        "DESIGN-PRIMITIVES-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/generate_flutter_field_surface_inventory.test.mjs",
-        "contains": [
-          "rejects an unclassified legacy callsite",
-          "rejects stale expected anchor counts",
-          "rejects duplicate callsite classifications"
-        ]
-      },
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node"]
       }
     },
     {

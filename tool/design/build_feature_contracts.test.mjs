@@ -17,7 +17,7 @@ const webOwnerPath = "website/src/features/organizers/useExampleController.ts";
 const webStoryPath = "website/src/stories/Example.stories.tsx";
 const webTestPath = "website/src/features/organizers/useExampleController.test.tsx";
 const adminOwnerPath = "admin/src/features/example/useAdminExampleController.ts";
-const adminStoryPath = "admin/src/stories/AdminRoutes.stories.tsx";
+const adminStoryPath = "admin/src/stories/AdminRoutesPeople.stories.tsx";
 const adminTestPath = "admin/src/features/example/useAdminExampleController.test.tsx";
 const adminRuntimeRegistryPath =
   "admin/src/generated/validators/adminCallableValidators.ts";

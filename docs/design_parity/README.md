@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.3.0
-updated: 2026-10-18
+version: 0.3.1
+updated: 2026-11-02
 owner: product_design_parity
 status: active
 ---
@@ -9,9 +9,9 @@ status: active
 # Design Parity Tracker
 
 This folder owns the feature-by-feature contract for bringing Catch screens and
-widgets closer to the design specification. It connects product states, Flutter
-screens, reusable components, UI captures, future previews, and drift-prevention
-checks in one durable matrix.
+widgets closer to the design specification. `design/screens/catch.screens.json`
+connects product states, Flutter screens, reusable components, UI captures,
+previews, and drift-prevention checks.
 
 ## Source Files
 
@@ -25,12 +25,10 @@ checks in one durable matrix.
 | `design/screens/catch.screens.json` | Machine-readable screen composition registry connecting routes, controller owners, states, captures, sections, implementation paths, and typed route-layout owners. |
 | `design/features/*.feature.json` | Structured multi-surface feature orchestration contracts. Each surface binds a Flutter screen, marketing route, or admin route plus native components, action owners, and evidence. |
 | `design/features/generated/*.feature_contract.json` | Generated cross-surface state/action/evidence projections. These artifacts are deterministic and must not be edited by hand. |
-| `design/features/feature_coverage.json` | Exhaustive cross-surface migration ledger. Every registered Flutter screen, marketing route, and admin route component is contracted, grouped, planned with stable debt, or explicitly excluded. |
 | `design/features/host_feature_responsibilities.json` | Ordered responsibility and migration contract for Today, Events, Audience, Inbox, and Organizer. It resolves existing feature-contract action owners instead of duplicating their behavior. |
 | `tool/design/check_design_parity.mjs` | Standard local design parity gate. Runs component contracts, route inventory, capture coverage, screen coverage, screen contracts, Widgetbook refs, and advisory scanners. |
 | `tool/design/build_feature_contracts.mjs` | Compiles multi-surface feature sources, enforces exact authority-state coverage and action cardinality, resolves runtime-native evidence, and fails stale generated output. |
 | `tool/design/build_host_feature_responsibilities.mjs` | Validates the five Host owners against shell order, routes, code symbols, contracts, and tests, then generates their local `lib/hosts/*/README.md` overviews. |
-| `tool/design/check_feature_coverage.mjs` | Fails missing, duplicate, unknown, falsely contracted, or orphaned feature coverage across the three product runtimes. |
 | `tool/design/check_screen_coverage.mjs` | Validates screen coverage against route inventory, capture coverage, and the screen composition registry. |
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
 | `tool/design/check_widgetbook_contract_refs.mjs` | Validates component contracts and contract preview ids against generated Widgetbook directories. |
@@ -41,16 +39,13 @@ checks in one durable matrix.
 | `tool/design/check_screen_gutters.mjs` | Advisory inventory for `EdgeInsets` constructors across `lib/**/presentation/**/*.dart` and contracted screen implementation files. Classifies likely screen-gutter candidates separately from lower-confidence local spacing so manual UI reviews have broad evidence instead of a narrow lint. |
 | `design/reference_screens/manifest.json` | Exported design-reference PNG manifest used for advisory pixel comparison. |
 | `tool/design/check_reference_screens.mjs` | Validates reference PNG metadata and can compare exported references against UI capture output. |
-| `state_matrix.json` | Machine-readable feature/state matrix for design parity passes. |
-| `state_matrix.schema.json` | JSON Schema for the matrix shape. |
-| `tool/design/check_design_parity_matrix.mjs` | Validates routes, captures, component ids, screen contracts, source paths, tests, and state entries. |
 | `widgetbook/` | Local Widgetbook workspace for reusable component and hard-to-reach state previews. |
 
 ## Pass Workflow
 
-1. Choose one feature from `state_matrix.json`.
-2. Read the feature's design refs, implementation paths, component ids, capture
-   ids, and open gaps.
+1. Choose one screen from `design/screens/catch.screens.json`.
+2. Read the screen's design refs, source bindings, components, captures, and
+   open gaps.
 3. Expand the state list before editing UI. Include loading, populated, empty,
    error, offline, permission, mutation, light/dark, text-scale, and reduced
    motion states when they apply.
@@ -110,9 +105,8 @@ ledgers in the same PR:
    `canonicalRouteId` and no rendered owner. Add focused router coverage for the
    actual redirect result; the composition gate checks typed alias metadata but
    does not traverse redirect expressions.
-7. For a new product screen, add the screen contract in
-   `design/screens/catch.screens.json` and a matching screen/state entry in
-   `docs/design_parity/state_matrix.json`.
+7. For a new product screen, add the screen contract and its states in
+   `design/screens/catch.screens.json`.
 8. Run the aggregate gate:
 
    ```bash
@@ -123,7 +117,7 @@ Flutter CI also runs this gate, so new product routes cannot pass CI without
 screen and capture coverage decisions.
 
 The router remains the source for path inventory only. Rich design metadata
-belongs in the portable `design/screens` and `docs/design_parity` ledgers so the
+belongs in the portable `design/screens` ledgers so the
 same contracts can serve Flutter, Widgetbook, website/social templates, and
 future design-tool exports without making Dart routing the design source of
 truth.
@@ -235,12 +229,8 @@ screen or route contract. It references native component ids, action-owner
 symbols, data-contract paths, previews, captures, and tests; the compiler
 resolves those authorities into one checked generated artifact.
 
-The compiler is paired with `design/features/feature_coverage.json`. That ledger
-defines the complete migration boundary from existing authoritative registries,
-so adding a Flutter screen, marketing route, or admin route component without a
-feature decision fails the design-parity gate. A `planned` target may intentionally
-reuse an existing feature identity across runtimes. `feature.explore` is the
-first checked example: it contains both `screen.explore.discovery` and the
+A feature identity can span runtimes. `feature.explore` is the first checked
+example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
@@ -265,7 +255,7 @@ Finance Operations, Growth KPI, Intake, Marketing Operations, Organizer
 Publishing, Overview, Safety Triage, and User Analytics. Intake and Overview
 each retain two projections because their secondary route components expose
 independent state and actions; they are not flattened into grouped coverage.
-Admin route previews are resolved from `design/admin/components.json` just as
+Admin route previews are resolved from `design/admin/components/` just as
 marketing route previews are resolved from the website registry.
 
 Actions name one of the surface's declared Dart or TypeScript owners, so a
@@ -460,7 +450,7 @@ An Admin callable binding must also state validation strength rather than
 treating every generated validator as equivalent. `bindings.runtimeContracts`
 names the callable and declares request and response validation separately as
 `strict_schema` or `structural_object`. The compiler compares those values with
-`admin/src/generated/validators/adminCallableValidators.ts` and rejects both
+the registry `admin/scripts/generateCallableValidators.mjs` builds and rejects both
 overclaiming and stale underclaiming. Structural validation is real boundary
 protection, but it is not a field-level request/response schema. The prioritized
 overview, access-decision, role, safety, and marketing mutation directions now
@@ -506,7 +496,6 @@ id. The compiler rejects missing exceptions and also rejects stale exceptions
 after the evidence is added. Compile and verify the contracts with:
 
 ```bash
-node tool/design/check_feature_coverage.mjs --check
 node tool/design/build_feature_contracts.mjs
 node tool/design/build_feature_contracts.mjs --check
 ```

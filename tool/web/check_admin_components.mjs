@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
+import {readAdminComponentRegistry} from "../lib/admin_registries.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 // Blueprint D18: the library draws; features arrange and bind. A component
@@ -28,7 +29,7 @@ const schemaPath = fromRepo("design/admin/admin.components.schema.json");
 const errors = [];
 const warnings = [];
 
-const registry = readJson(componentsPath, "admin component registry");
+const registry = args.components ? readJson(componentsPath, "admin component registry") : readAdminComponentRegistry();
 
 validateRegistryShape(registry);
 validateComponents(registry.components ?? []);
@@ -67,9 +68,6 @@ function validateRegistryShape(value) {
   if (!fs.existsSync(schemaPath)) {
     errors.push("missing design/admin/admin.components.schema.json.");
   }
-  if (!Number.isInteger(value.version) || value.version < 1) {
-    errors.push("components.json version must be a positive integer.");
-  }
   if (value.owner !== "admin_dashboard") {
     errors.push("components.json owner must be admin_dashboard.");
   }
@@ -77,7 +75,7 @@ function validateRegistryShape(value) {
     errors.push("components.json coverage.strategy must be route-workspace-plus-shared-primitives.");
   }
   if (!Array.isArray(value.components) || value.components.length === 0) {
-    errors.push("components.json must declare at least one component.");
+    errors.push("design/admin/components/ must declare at least one component.");
   }
 }
 
@@ -281,7 +279,7 @@ function validateExportCoverage(components) {
   for (const exported of requiredExports) {
     if (registeredExports.has(`${exported.source}::${exported.name}`)) continue;
     errors.push(
-      `${exported.source}: exported ${exported.label} ${exported.name} must be registered in design/admin/components.json.`,
+      `${exported.source}: exported ${exported.label} ${exported.name} must be registered in design/admin/components/.`,
     );
   }
 }
@@ -556,7 +554,7 @@ function requiredValue(argv, index, flag) {
 function printHelp() {
   console.log(`Usage: node tool/web/check_admin_components.mjs [--check] [--summary] [--self-test]
 
-Validates design/admin/components.json against admin feature route/workspace
+Validates design/admin/components/ against admin feature route/workspace
 exports, shared UI primitive exports, shared feedback provider exports, and
 ready Storybook catchComponent coverage. It also enforces the restrained admin
 shell brand and single-title top-bar contract. Completed design-adoption history

@@ -35,5 +35,9 @@ export interface AdminUpdateInboxItemCallableResponse {
       at: string;
       note: string;
     } | null;
+    listingEvent: {
+      intakeRequestId: string;
+      eventWorkItemId: string;
+    } | null;
   };
 }

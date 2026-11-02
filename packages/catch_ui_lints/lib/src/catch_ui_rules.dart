@@ -63,7 +63,7 @@ const _surfaceShellConstructors = <String>{
 };
 
 final _allowDebtPattern = RegExp(
-  r'(?:alpha|breakpoint|color-sweep|control|icon-size|motion|radius|shadow|sizing|spacing|surface|token|typography|ui-system):allow:|ignore(?:_for_file)?:[^\n]*\bcatch_[a-z0-9_]+',
+  r'(?:alpha|breakpoint|color-sweep|control|icon-size|motion|radius|shadow|sizing|spacing|surface|token|typography|ui-system):allow:|ignore(?:_for_file)?:[^\n]*\bcatch_(?!arch_|ui_lints/catch_arch_)[a-z0-9_]+',
 );
 
 const _localDesignConstantWords = <String>{

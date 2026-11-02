@@ -58,7 +58,6 @@ test("ARB generation, Dart formatting, explicit staging, and freshness checks st
   assert.ok(result.formattedDartPaths.includes("lib/example.dart"));
   assert.deepEqual(result.checked, [
     "contracts.schema-projections",
-    "admin.callable-validators",
     "flutter.l10n",
   ]);
   assert.deepEqual(calls.slice(0, 4), [
@@ -114,11 +113,10 @@ test("partially staged Dart fails before formatting can stage unrelated work", (
   assert.equal(commandCalls, 0);
 });
 
-test("contract drift reports both exact regeneration commands", () => {
+test("contract drift reports the exact regeneration command", () => {
   const failures = [];
   for (const failedCommand of [
     "node tool/contracts/generate_schema_contracts.mjs --check",
-    "npm --workspace catch-admin run check:callable-validators",
   ]) {
     assert.throws(
       () => runPreCommitGeneratedArtifacts({
@@ -140,10 +138,6 @@ test("contract drift reports both exact regeneration commands", () => {
   assert.match(
     failures.join("\n"),
     /node tool\/contracts\/generate_schema_contracts\.mjs/u,
-  );
-  assert.match(
-    failures.join("\n"),
-    /npm --workspace catch-admin run generate:callable-validators/u,
   );
 });
 
@@ -230,17 +224,6 @@ test("stale generated Dart still rejects the commit without a formatter rewrite"
   assert.equal(calls.some((call) => call.command === "git"), false);
   assert.deepEqual(calls[0].args,
     ["-c", "node tool/contracts/generate_schema_contracts.mjs --check"]);
-});
-
-test("admin exclusions match the planner while declared outputs still trigger", () => {
-  for (const candidate of ["admin/src/example.test.ts", "admin/src/example.stories.tsx"]) {
-    assert.equal(planPreCommitActions({graph, stagedPaths: [candidate]})
-      .triggeredGeneratorIds.includes("admin.callable-validators"), false, candidate);
-  }
-  for (const candidate of ["admin/src/example.ts", "admin/src/generated/validators/adminCallableValidators.ts"]) {
-    assert.equal(planPreCommitActions({graph, stagedPaths: [candidate]})
-      .triggeredGeneratorIds.includes("admin.callable-validators"), true, candidate);
-  }
 });
 
 const arb = "lib/l10n/app_en.arb";

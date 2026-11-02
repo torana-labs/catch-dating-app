@@ -122,13 +122,20 @@ function listBills(scope: {month: string} | {organizerId: string},
  * @param {number} nowMillis Sample clock.
  * @return {AdminManageOrganizerBillsCallableResponse} Month.
  */
+/** The organizer records' ids, so an organizer page opens the same organizer's bills. */
+const organizerRecordBills: Record<string, string> = {
+  "afterfly": "sample-afterfly",
+  "bhag": "sample-bhag",
+  "mumbai-padel-social": "sample-padel",
+};
+
 export function sampleManageOrganizerBills(
   payload: AdminManageOrganizerBillsCallablePayload,
   nowMillis = moneySampleNowMillis):
   AdminManageOrganizerBillsCallableResponse {
   if (payload.action === "list" || payload.action === "generate") {
     return listBills(payload.organizerId ?
-      {organizerId: payload.organizerId} :
+      {organizerId: organizerRecordBills[payload.organizerId] ?? payload.organizerId} :
       {month: payload.month ?? "2026-10"}, nowMillis);
   }
   const current = bills.find((entry) => entry.billId === payload.billId);

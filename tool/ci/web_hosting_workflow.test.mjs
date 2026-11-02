@@ -158,7 +158,11 @@ test("admin and marketing callers share one exact build and promotion path", () 
   }
   const admin = caller("admin");
   for (const adminDependency of [
-    "contracts/admin/admin_live_data_sources.json",
+    // Admin's validators and catalog are generated at build time, so no Admin
+    // path changes in a diff when a contract or their generator does.
+    "contracts/**/*.json",
+    "tool/admin/callable_inventory.mjs",
+    "tool/admin/generate_admin_action_catalog.mjs",
     "tool/firebase/check_client_callable_dependencies.mjs",
     "tool/lib/firebase_project.mjs",
     "tool/web/check_admin_live_data_sources.mjs",
@@ -740,6 +744,14 @@ test("marketing production postconditions run only after exact promotion", () =>
     /probeProduction\.mjs --base-url "\$\(node -p 'require\("\.\/packages\/brand\/brand\.json"\)\.web\.origin'\)" --json/u);
   assert.match(promote,
     /if: \$\{\{ inputs\.surface == 'marketing' && steps\.legacy-runtime\.outputs\.retired != 'true' && /u);
+});
+
+test("admin production postcondition runs only after exact promotion", () => {
+  const promote = workflow("_web-hosting-promote.yml");
+  const removeCredentials = promote.indexOf("Remove deploy credentials before postconditions");
+  const adminHosting = promote.indexOf("Verify Admin serves no-cache HTML, immutable chunks and real 404s");
+  assert.ok(removeCredentials >= 0 && removeCredentials < adminHosting);
+  assert.match(promote, /verify_admin_hosting\.mjs https:\/\/catchdates-admin\.web\.app/u);
 });
 
 function initialEvidence() {

@@ -20,7 +20,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesOrganizers.stories.tsx"],
         "actionOwners": [
           {"id": "publishing_controller", "language": "typescript", "file": "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts", "symbol": "useOrganizerPublishingController"},
           {"id": "claim_controller", "language": "typescript", "file": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts", "symbol": "useOrganizerClaimReviewController"},

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {readAdminComponentRegistry} from "../lib/admin_registries.mjs";
 
 const surfaces = {
   admin: {
@@ -2000,9 +2001,7 @@ if (selectedSurfaces.includes("admin")) {
   const componentContracts = JSON.parse(
     fs.readFileSync(fromRepo("design/components/catch.components.json"), "utf8"),
   );
-  const adminRegistry = JSON.parse(
-    fs.readFileSync(fromRepo("design/admin/components.json"), "utf8"),
-  );
+  const adminRegistry = readAdminComponentRegistry();
   interactionContractErrors.push(
     ...validateAdminInteractionContracts({
       componentContracts,

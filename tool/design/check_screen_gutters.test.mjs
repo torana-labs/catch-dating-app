@@ -31,7 +31,6 @@ test("scanSourceForEdgeInsets flags the known-bad horizontal screen gutter fixtu
 test("scanScreenGutters covers presentation widgets, not only screen files", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-screen-gutters-"));
   writeJson(root, "design/screens/catch.screens.json", {screens: []});
-  writeJson(root, "docs/design_parity/state_matrix.json", {features: []});
   writeFile(
     root,
     "lib/dashboard/presentation/widgets/activity_section.dart",

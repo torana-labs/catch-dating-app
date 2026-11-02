@@ -6,9 +6,9 @@
 //   workspaces (functions, operations, tool/impact) becomes a project whose
 //   npm scripts are targets, like the ones Nx infers for workspace packages.
 // - `sourceProjects` in this plugin's nx.json options declares source-only
-//   projects, such as contracts and design tokens, each with an optional
-//   generator `check` target; `implicitDependencies`
-//   maps each project to the sources its committed generated code comes from.
+//   projects, such as contracts and design tokens, each with command targets
+//   (`{command, inputs?, cache?}`); `implicitDependencies` maps each project to the
+//   sources its committed generated code comes from.
 //
 // Pub workspace membership is modelled as an input (members read the shared
 // root pubspec.lock), not an edge: the root package already depends on its
@@ -85,12 +85,18 @@ export const createNodesV2 = [
   async (configFiles, options, context) => configFiles.map((file) => {
     const root = path.dirname(file);
     if (file === "nx.json") {
-      const projects = (options?.sourceProjects ?? []).map(({name, root: sourceRoot, check}) => [sourceRoot, {
+      const projects = (options?.sourceProjects ?? []).map(({name, root: sourceRoot, targets = {}}) => [sourceRoot, {
         name,
         root: sourceRoot,
         tags: ["type:source"],
-        // The generator's --check proves the committed outputs match this source.
-        targets: check ? {check: {executor: "nx:run-commands", options: {command: check, cwd: "."}}} : {},
+        // A target that reads code outside the source root (a conformance scan
+        // over consumers, say) names those files in its own inputs.
+        targets: Object.fromEntries(Object.entries(targets).map(([target, {command, inputs, cache}]) => [target, {
+          executor: "nx:run-commands",
+          options: {command, cwd: "."},
+          ...(inputs ? {inputs} : {}),
+          ...(cache === undefined ? {} : {cache}),
+        }])),
       }]);
       return [file, {projects: Object.fromEntries(projects)}];
     }

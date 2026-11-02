@@ -81,8 +81,8 @@ Files inspected:
 - `admin/src/features/data-quality/api/dataQualityRepository.ts`
 - `admin/src/features/data-quality/controllers/useDataQualityController.ts`
 - `admin/src/features/data-quality/ui/DataQualityScreen.tsx`
-- `admin/src/stories/AdminRoutes.stories.tsx`
-- `design/admin/components.json`
+- `admin/src/stories/AdminRoutes<Feature>.stories.tsx`
+- `design/admin/components/`
 - `functions/src/admin/**` and `functions/src/clubs/organizerClaims.ts` for API
   ownership context
 - the admin and analytics dashboard spec, now
@@ -1034,7 +1034,7 @@ Admin feature UI files may export route or workspace entry components such as
 should live in shared admin UI or stay private. This is enforced by
 `node tool/run.mjs check web:admin-feature-exports`.
 Admin route/workspace entries, shared admin primitives, and admin feedback
-providers are registered in `design/admin/components.json`. Update that
+providers are registered in `design/admin/components/`. Update that
 registry before exporting or renaming admin screens, workspaces, primitives, or
 providers, then run `node tool/run.mjs check web:admin-components`.
 Admin preview coverage lives in Storybook under `admin/src/stories`. Registry

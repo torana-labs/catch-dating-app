@@ -6,7 +6,6 @@ import {fileURLToPath} from "node:url";
 import ts from "typescript";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
-const defaultBaselinePath = fromRepo("tool/web/website_copy_baseline.json");
 const defaultAllowlistPath = fromRepo("tool/web/website_copy_allowlist.json");
 const websiteSourceRoot = fromRepo("website/src");
 const copyPropNames = new Set([
@@ -172,52 +171,19 @@ function looksLikeAuthoredDataText(value) {
   return /\s/u.test(text) || /^[A-Z]/u.test(text) || /[₹$€£]/u.test(text);
 }
 
-function splitFindings(findings, baseline, allowlist) {
-  const baselineKeys = new Set((baseline.entries ?? []).map(entryKey));
+function splitFindings(findings, allowlist) {
   const allowlistKeys = new Set((allowlist.entries ?? []).map(entryKey));
   const allowedFindings = [];
-  const baselineFindings = [];
   const newFindings = [];
   for (const finding of findings) {
-    const key = findingKey(finding);
-    if (allowlistKeys.has(key)) allowedFindings.push(finding);
-    else if (baselineKeys.has(key)) baselineFindings.push(finding);
+    if (allowlistKeys.has(findingKey(finding))) allowedFindings.push(finding);
     else newFindings.push(finding);
   }
   const findingKeys = new Set(findings.map(findingKey));
-  const staleBaselineEntries = baseline.entries.filter(
-    (entry) => !findingKeys.has(entryKey(entry))
-  );
   const staleAllowlistEntries = allowlist.entries.filter(
     (entry) => !findingKeys.has(entryKey(entry))
   );
-  const overlappingEntries = baseline.entries.filter(
-    (entry) => allowlistKeys.has(entryKey(entry))
-  );
-  return {
-    allowedFindings,
-    baselineFindings,
-    newFindings,
-    staleAllowlistEntries,
-    staleBaselineEntries,
-    overlappingEntries,
-  };
-}
-
-function baselineFromFindings(findings, allowlist) {
-  const allowlistKeys = new Set((allowlist.entries ?? []).map(entryKey));
-  return {
-    owner: "marketing_website_architecture",
-    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
-    version: 1,
-    updated: currentRepoDate(),
-    description:
-      "Existing marketing website component copy. The scanner blocks additions; migrate entries into website/src/content and delete them from this baseline.",
-    entries: findings
-      .filter((finding) => !allowlistKeys.has(findingKey(finding)))
-      .map(({file, text}) => ({file, text}))
-      .sort((a, b) => entryKey(a).localeCompare(entryKey(b))),
-  };
+  return {allowedFindings, newFindings, staleAllowlistEntries};
 }
 
 function readRegistry(filePath, label, {requireReason = false} = {}) {
@@ -298,38 +264,23 @@ function normalizePath(value) {
   return value.split(path.sep).join("/");
 }
 
-function currentRepoDate() {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-  }).formatToParts(new Date());
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
 function parseArgs(argv) {
   const parsed = {
     allowlist: defaultAllowlistPath,
-    baseline: defaultBaselinePath,
     check: false,
     help: false,
     json: false,
     selfTest: false,
     summary: false,
-    writeBaseline: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--allowlist") parsed.allowlist = fromRepo(requiredValue(argv, ++index, arg));
-    else if (arg === "--baseline") parsed.baseline = fromRepo(requiredValue(argv, ++index, arg));
     else if (arg === "--check") parsed.check = true;
     else if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--self-test") parsed.selfTest = true;
     else if (arg === "--summary") parsed.summary = true;
-    else if (arg === "--write-baseline") parsed.writeBaseline = true;
     else fail(`Unknown argument: ${arg}`);
   }
   return parsed;
@@ -352,17 +303,7 @@ function runCli() {
     "website copy allowlist",
     {requireReason: true}
   );
-  if (args.writeBaseline) {
-    const baseline = baselineFromFindings(result.findings, allowlist);
-    fs.writeFileSync(args.baseline, `${JSON.stringify(baseline, null, 2)}\n`);
-    console.log(
-      `Wrote website copy baseline with ${baseline.entries.length} entry(s): ${normalizePath(relativeToRepo(args.baseline))}`
-    );
-    return;
-  }
-
-  const baseline = readRegistry(args.baseline, "website copy baseline");
-  const split = splitFindings(result.findings, baseline, allowlist);
+  const split = splitFindings(result.findings, allowlist);
   if (args.json) {
     console.log(JSON.stringify({
       checkedFiles: result.checkedFiles,
@@ -371,11 +312,9 @@ function runCli() {
   } else if (args.summary || allFailureCount(split) === 0) {
     console.log(
       `Website copy ownership scan: ${result.checkedFiles} TS/TSX file(s), ` +
-        `${split.newFindings.length} new, ${split.baselineFindings.length} baseline, ` +
+        `${split.newFindings.length} new, ` +
         `${split.allowedFindings.length} allowlisted, ` +
-        `${split.staleBaselineEntries.length} stale baseline, ` +
-        `${split.staleAllowlistEntries.length} stale allowlist, ` +
-        `${split.overlappingEntries.length} overlapping entry(s).`
+        `${split.staleAllowlistEntries.length} stale allowlist entry(s).`
     );
   }
 
@@ -389,37 +328,18 @@ function runCli() {
     console.error(
       "Move the string to website/src/content, or add a narrowly justified permanent exception to tool/web/website_copy_allowlist.json."
     );
-    process.exitCode = 1;
-  }
-  if (split.staleBaselineEntries.length > 0) {
-    console.error("Stale website copy baseline entries:");
-    for (const entry of split.staleBaselineEntries) {
-      console.error(`- ${entry.file}: ${JSON.stringify(entry.text)}`);
-    }
-    console.error("Regenerate the baseline so completed copy migration debt is removed.");
-    process.exitCode = 1;
   }
   if (split.staleAllowlistEntries.length > 0) {
     console.error("Stale website copy allowlist entries:");
     for (const entry of split.staleAllowlistEntries) {
       console.error(`- ${entry.file}: ${JSON.stringify(entry.text)}`);
     }
-    process.exitCode = 1;
   }
-  if (split.overlappingEntries.length > 0) {
-    console.error("Website copy entries cannot appear in both baseline and allowlist:");
-    for (const entry of split.overlappingEntries) {
-      console.error(`- ${entry.file}: ${JSON.stringify(entry.text)}`);
-    }
-    process.exitCode = 1;
-  }
+  if (allFailureCount(split) > 0) process.exitCode = 1;
 }
 
 function allFailureCount(split) {
-  return split.newFindings.length +
-    split.staleBaselineEntries.length +
-    split.staleAllowlistEntries.length +
-    split.overlappingEntries.length;
+  return split.newFindings.length + split.staleAllowlistEntries.length;
 }
 
 function runSelfTest() {
@@ -443,19 +363,17 @@ export function Sample() {
     ["prop:title", "Owned elsewhere"],
     ["prop:label", "Two words"],
   ]);
-  const split = splitFindings(findings, {entries: [findings[0]]}, {
-    entries: [{...findings[1], reason: "technical fixture"}],
-  });
-  assert.equal(split.baselineFindings.length, 1);
+  const allowedEntry = {...findings[1], reason: "technical fixture"};
+  const split = splitFindings(findings, {entries: [allowedEntry]});
   assert.equal(split.allowedFindings.length, 1);
-  assert.equal(split.newFindings.length, 2);
-  assert.equal(split.staleBaselineEntries.length, 0);
+  assert.equal(split.newFindings.length, 3);
   assert.equal(split.staleAllowlistEntries.length, 0);
-  assert.equal(split.overlappingEntries.length, 0);
-  const stale = splitFindings(findings.slice(1), {entries: [findings[0]]}, {
-    entries: [{...findings[1], reason: "technical fixture"}],
-  });
-  assert.equal(stale.staleBaselineEntries.length, 1);
+  // Any string outside the allowlist fails; only the allowlist can excuse one.
+  assert.equal(allFailureCount(split), 3);
+  assert.equal(allFailureCount(splitFindings([findings[1]], {entries: [allowedEntry]})), 0);
+  const stale = splitFindings(findings.slice(0, 1), {entries: [allowedEntry]});
+  assert.equal(stale.staleAllowlistEntries.length, 1);
+  assert.equal(allFailureCount(stale), 2);
   assert.deepEqual(
     scanSource({
       relativePath: "website/src/features/sample/content.ts",
@@ -475,11 +393,9 @@ function printHelp() {
   console.log(`Usage: node tool/web/check_website_copy_ownership.mjs [options]
 
 Options:
-  --check                 Scan and fail on findings outside the baseline/allowlist.
+  --check                 Scan and fail on findings outside the allowlist.
   --summary               Print counts even when findings fail.
   --self-test             Prove known-good and known-bad scanner behavior.
-  --write-baseline        Replace the baseline with current findings.
-  --baseline <path>       Override the baseline path.
   --allowlist <path>      Override the permanent allowlist path.
   --json                  Print machine-readable findings.
 `);

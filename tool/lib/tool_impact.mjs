@@ -422,14 +422,11 @@ export function uniqueToolChecks(tools) {
 // Required CI still requires Tools success, including every underlying command.
 export function toolsOwnDesignChecks({plan, manifest, componentGraph}) {
   if (plan.complete !== true) throw new Error("Cannot share checks from an incomplete plan.");
-  if (!plan.operations.ciTargets.includes("tools")) return {parity: false, handoff: false};
-  const ids = ["design:parity-gate", "design:figma-library-snapshot", "design:sync-manifest", "design:context-pack"];
-  for (const id of ids) {
-    const entry = manifest.tools.find(tool => tool.id === id && tool.status === "active");
-    if (!hasExecutableChecks(entry)) throw new Error(`Tools no longer provides ${id}.`);
-  }
+  if (!plan.operations.ciTargets.includes("tools")) return {parity: false};
+  const id = "design:parity-gate";
+  const entry = manifest.tools.find(tool => tool.id === id && tool.status === "active");
+  if (!hasExecutableChecks(entry)) throw new Error(`Tools no longer provides ${id}.`);
   const selected = planAffectedToolChecks({changedPaths: plan.changedPaths, manifest, componentGraph,
     mode: plan.mode, full: plan.full});
-  const owns = id => selected.mode === "full" || selected.toolIds.includes(id);
-  return {parity: owns(ids[0]), handoff: ids.slice(1).every(owns)};
+  return {parity: selected.mode === "full" || selected.toolIds.includes(id)};
 }

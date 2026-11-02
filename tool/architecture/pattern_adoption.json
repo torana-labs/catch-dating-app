@@ -1638,7 +1638,7 @@
       "requiredChecks": [
         "flutter test test/user_profile/profile_location_initializer_test.dart",
         "dart run tool/architecture/provider_graph.dart --check",
-        "node tool/architecture/check_dependency_direction.mjs",
+        "bash tool/check_catch_ui_lints.sh",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "notes": "The app root may activate feature startup work. It must not make core own a feature repository or profile stream."

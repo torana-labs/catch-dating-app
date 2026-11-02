@@ -5,7 +5,6 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
-const _baselinePath = 'tool/copy/mobile_copy_baseline.json';
 const _allowlistPath = 'tool/copy/mobile_copy_allowlist.json';
 
 const _copyArgumentNames = <String>{
@@ -177,7 +176,6 @@ final _visibleText = RegExp('[A-Za-z]');
 
 Future<void> main(List<String> arguments) async {
   final root = Directory.current;
-  final writeBaseline = arguments.contains('--write-baseline');
   final jsonOutput = arguments.contains('--json');
   if (arguments.contains('--self-test')) {
     _runSelfTest();
@@ -190,58 +188,17 @@ Future<void> main(List<String> arguments) async {
     requireReason: true,
   );
 
-  if (writeBaseline) {
-    final allowedKeys = allowlist.entries.map((entry) => entry.key).toSet();
-    final entries =
-        result.findings
-            .where((finding) => !allowedKeys.contains(finding.key))
-            .map(RegistryEntry.fromFinding)
-            .toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
-    _writeBaseline(
-      File('${root.path}/$_baselinePath'),
-      CopyRegistry(
-        version: 1,
-        updated: _today(),
-        description:
-            'Existing unmanaged Flutter product copy. The scanner blocks additions; migrate entries into lib/l10n/app_en.arb and delete them from this baseline.',
-        entries: entries,
-      ),
-    );
-    stdout.writeln(
-      'Wrote ${entries.length} baseline entries from ${result.checkedFiles} Dart files.',
-    );
-    return;
-  }
-
-  final baseline = _readRegistry(File('${root.path}/$_baselinePath'));
-  final currentByKey = {
-    for (final finding in result.findings) finding.key: finding,
-  };
-  final baselineKeys = baseline.entries.map((entry) => entry.key).toSet();
-  final allowlistKeys = allowlist.entries.map((entry) => entry.key).toSet();
-  final newFindings = result.findings
-      .where(
-        (finding) =>
-            !baselineKeys.contains(finding.key) &&
-            !allowlistKeys.contains(finding.key),
-      )
-      .toList();
-  final staleBaseline = baseline.entries
-      .where((entry) => !currentByKey.containsKey(entry.key))
-      .toList();
-  final staleAllowlist = allowlist.entries
-      .where((entry) => !currentByKey.containsKey(entry.key))
-      .toList();
+  final verdict = ownershipVerdict(result.findings, allowlist.entries);
 
   if (jsonOutput) {
     stdout.writeln(
       const JsonEncoder.withIndent('  ').convert({
         'checkedFiles': result.checkedFiles,
         'findings': result.findings.map((finding) => finding.toJson()).toList(),
-        'newFindings': newFindings.map((finding) => finding.toJson()).toList(),
-        'staleBaseline': staleBaseline.map((entry) => entry.toJson()).toList(),
-        'staleAllowlist': staleAllowlist
+        'newFindings': verdict.newFindings
+            .map((finding) => finding.toJson())
+            .toList(),
+        'staleAllowlist': verdict.staleAllowlist
             .map((entry) => entry.toJson())
             .toList(),
       }),
@@ -250,38 +207,45 @@ Future<void> main(List<String> arguments) async {
     stdout.writeln(
       'Mobile copy ownership: ${result.checkedFiles} files, '
       '${result.findings.length} unmanaged entries, '
-      '${newFindings.length} new, '
-      '${staleBaseline.length} stale baseline, '
-      '${staleAllowlist.length} stale allowlist.',
+      '${verdict.newFindings.length} new, '
+      '${verdict.staleAllowlist.length} stale allowlist.',
     );
-    for (final finding in newFindings.take(80)) {
+    for (final finding in verdict.newFindings.take(80)) {
       stderr.writeln(
         '${finding.file}:${finding.line}:${finding.column} '
         '[${finding.kind}] ${finding.text}',
       );
     }
-    if (newFindings.length > 80) {
-      stderr.writeln('...and ${newFindings.length - 80} more new entries.');
-    }
-    if (staleBaseline.isNotEmpty) {
+    if (verdict.newFindings.length > 80) {
       stderr.writeln(
-        'Baseline contains ${staleBaseline.length} stale entries; run '
-        '`dart run tool/copy/check_mobile_copy_ownership.dart --write-baseline` '
-        'after migrating copy.',
+        '...and ${verdict.newFindings.length - 80} more new entries.',
       );
     }
-    if (staleAllowlist.isNotEmpty) {
+    if (verdict.staleAllowlist.isNotEmpty) {
       stderr.writeln(
-        'Allowlist contains ${staleAllowlist.length} stale entries; remove them.',
+        'Allowlist contains ${verdict.staleAllowlist.length} stale entries; remove them.',
       );
     }
   }
 
-  if (newFindings.isNotEmpty ||
-      staleBaseline.isNotEmpty ||
-      staleAllowlist.isNotEmpty) {
-    exitCode = 1;
-  }
+  if (verdict.failed) exitCode = 1;
+}
+
+/// Any unmanaged finding outside the reasoned allowlist fails the gate.
+OwnershipVerdict ownershipVerdict(
+  List<CopyFinding> findings,
+  List<RegistryEntry> allowlist,
+) {
+  final currentKeys = findings.map((finding) => finding.key).toSet();
+  final allowlistKeys = allowlist.map((entry) => entry.key).toSet();
+  return OwnershipVerdict(
+    newFindings: findings
+        .where((finding) => !allowlistKeys.contains(finding.key))
+        .toList(),
+    staleAllowlist: allowlist
+        .where((entry) => !currentKeys.contains(entry.key))
+        .toList(),
+  );
 }
 
 ScanResult scanMobileCopy(Directory root) {
@@ -638,23 +602,8 @@ CopyRegistry _readRegistry(File file, {bool requireReason = false}) {
   );
 }
 
-void _writeBaseline(File file, CopyRegistry registry) {
-  file.parent.createSync(recursive: true);
-  final baseline = {
-    ...registry.toJson(),
-    'owner': 'app_architecture',
-    'targetPhase':
-        'docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes',
-  };
-  file.writeAsStringSync(
-    '${const JsonEncoder.withIndent('  ').convert(baseline)}\n',
-  );
-}
-
 String _relativePath(String path, String root) =>
     path.substring(root.length + 1).replaceAll('\\', '/');
-
-String _today() => DateTime.now().toIso8601String().substring(0, 10);
 
 void _runSelfTest() {
   const source = '''
@@ -913,6 +862,22 @@ Widget build(BuildContext context) => Text('Fixture title');
   } finally {
     fixtureRoot.deleteSync(recursive: true);
   }
+  final unmanaged = scanDartSource(
+    'lib/example/presentation/widgets/example.dart',
+    "Widget build(BuildContext context) => Text('Gate fixture title');",
+  );
+  final allowedEntry = RegistryEntry(
+    file: unmanaged.first.file,
+    kind: unmanaged.first.kind,
+    text: unmanaged.first.text,
+    reason: 'Technical fixture.',
+  );
+  if (!ownershipVerdict(unmanaged, const []).failed ||
+      ownershipVerdict(unmanaged.take(1).toList(), [allowedEntry]).failed ||
+      !ownershipVerdict(const [], [allowedEntry]).failed ||
+      ownershipVerdict(const [], const []).failed) {
+    throw StateError('The ownership gate must fail on any unmanaged finding.');
+  }
   stdout.writeln('Mobile copy ownership scanner self-test passed.');
 }
 
@@ -921,6 +886,18 @@ class ScanResult {
 
   final int checkedFiles;
   final List<CopyFinding> findings;
+}
+
+class OwnershipVerdict {
+  const OwnershipVerdict({
+    required this.newFindings,
+    required this.staleAllowlist,
+  });
+
+  final List<CopyFinding> newFindings;
+  final List<RegistryEntry> staleAllowlist;
+
+  bool get failed => newFindings.isNotEmpty || staleAllowlist.isNotEmpty;
 }
 
 class CopyFinding {
@@ -959,9 +936,6 @@ class RegistryEntry {
     required this.text,
     this.reason,
   });
-
-  factory RegistryEntry.fromFinding(CopyFinding finding) =>
-      RegistryEntry(file: finding.file, kind: finding.kind, text: finding.text);
 
   factory RegistryEntry.fromJson(Map<String, Object?> value) => RegistryEntry(
     file: value['file']! as String,

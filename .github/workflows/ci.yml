@@ -72,7 +72,6 @@ jobs:
       commit_window: ${{ steps.plan.outputs.commit_window }}
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
       tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
-      tools_owns_design_handoff: ${{ steps.plan.outputs.tools_owns_design_handoff }}
       queue_verified_run: ${{ steps.queue.outputs.run_id }}
 
     steps:
@@ -86,6 +85,8 @@ jobs:
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
             /tool/harness/compare_selectors.mjs
+            /tool/nx/select_lanes.mjs
+            /tool/nx/shadow_plan.mjs
             /tool/ci/toolchain.env
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -108,6 +109,14 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      # Nx chooses the lanes for pull requests and queue groups, and reads the
+      # whole tree to do it. Other runs keep the planner's selection.
+      - name: Install Nx
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+        run: |
+          git sparse-checkout disable
+          npm ci --ignore-scripts --no-audit --no-fund
 
       - id: plan
         name: Resolve fail-closed impact plan
@@ -198,6 +207,8 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
+          node tool/nx/select_lanes.mjs --plan build/ci/impact-plan.json --base "$base_sha" --head "$HEAD_SHA" \
+            --github-output "$GITHUB_OUTPUT"
           {
             echo "base_sha=$base_sha"
             echo "source_sha=$HEAD_SHA"
@@ -218,7 +229,7 @@ jobs:
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
-            `tools_owns_design_parity=${design.parity}\ntools_owns_design_handoff=${design.handoff}\n`);
+            `tools_owns_design_parity=${design.parity}\n`);
           NODE
 
       - id: queue
@@ -349,12 +360,11 @@ jobs:
           retention-days: 7
 
   tools:
-    needs: [plan, source-preflight, capture-freshness]
+    needs: [plan, source-preflight]
     if: >-
       ${{ !cancelled() && needs.source-preflight.result == 'success' &&
           needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
-          needs.plan.outputs.tools == 'true' && !needs.plan.outputs.queue_verified_run &&
-          (needs.capture-freshness.result == 'success' || needs.capture-freshness.result == 'skipped') }}
+          needs.plan.outputs.tools == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/tools-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
@@ -362,7 +372,6 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
-      capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
 
   contracts:
     needs: [plan, source-preflight]
@@ -404,7 +413,6 @@ jobs:
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
-      design_handoff_in_tools: ${{ needs.plan.outputs.tools_owns_design_handoff == 'true' }}
 
   visual-integration:
     needs: [plan, source-preflight]

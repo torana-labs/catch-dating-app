@@ -7,7 +7,8 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const governedKeys = ["doc_id", "version", "updated", "owner", "status"];
+// version and updated are optional: Git has the history, and every PR bumping them collides.
+const governedKeys = ["doc_id", "owner", "status"];
 const isCliEntrypoint =
   process.argv[1] != null &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -138,14 +139,16 @@ export function parseGovernedDocument(
   if (!/^[A-Za-z0-9_.-]+$/u.test(docId)) {
     throw new DocumentMetadataError(`${documentPath}: invalid doc_id ${JSON.stringify(docId)}.`);
   }
-  const version = values.get("version");
-  parseSemanticVersion(version);
-  const updated = values.get("updated");
-  const parsedDate = /^\d{4}-\d{2}-\d{2}$/u.test(updated)
-    ? new Date(`${updated}T00:00:00Z`)
-    : null;
-  if (parsedDate == null || Number.isNaN(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== updated) {
-    throw new DocumentMetadataError(`${documentPath}: invalid updated date ${JSON.stringify(updated)}.`);
+  const version = values.get("version") ?? null;
+  if (version !== null) parseSemanticVersion(version);
+  const updated = values.get("updated") ?? null;
+  if (updated !== null) {
+    const parsedDate = /^\d{4}-\d{2}-\d{2}$/u.test(updated)
+      ? new Date(`${updated}T00:00:00Z`)
+      : null;
+    if (parsedDate == null || Number.isNaN(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== updated) {
+      throw new DocumentMetadataError(`${documentPath}: invalid updated date ${JSON.stringify(updated)}.`);
+    }
   }
   const status = normalizeLifecycleStatus(values.get("status"));
   if (status == null) {
@@ -242,7 +245,9 @@ export function compareDocumentMetadata({baseDocuments, currentDocuments}) {
       }
       continue;
     }
-    const comparison = compareSemanticVersions(current.version, base.version);
+    // A document may drop its version; only a version that stays can decrease.
+    const comparison = current.version === null || base.version === null ? 0 :
+      compareSemanticVersions(current.version, base.version);
     const row = {
       id: base.id,
       basePath: base.path,

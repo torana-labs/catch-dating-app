@@ -19,6 +19,8 @@ npm run web:typecheck
 node tool/run.mjs check --category meta
 ```
 
+For Admin work, run `npm run check:admin` before pushing. It runs CI's Admin lane locally, reading the steps from `.github/workflows/react-surface-validation.yml`, plus the Admin checks in the contracts and tools lanes: the build with its import boundaries and bundle budget, unused code, Storybook accessibility and the visual report, design parity, the callable validators and the action catalog. It takes about 8 minutes; `-- --pr` skips the Storybook build and visual report, and `-- --only <text>` runs one step.
+
 Use focused tests while iterating, then run the owning surface's full gate before handoff. Never run multiple Flutter analyzer/test processes concurrently. Add regression coverage beside the owned surface and make recurring architectural rules enforceable through the tool manifest.
 
 Functions tests are discovered recursively from compiled

@@ -16,12 +16,15 @@ class HostInboxBroadcastController {
 
   static final sendMutation = Mutation<SendEventBroadcastCallableResponse>();
 
+  // ignore: catch_ui_lints/catch_arch_widget_ref_parameter -- static broadcast command seam shared by the send screens; it becomes a Riverpod controller with the Inbox redraw
   static String generateRequestId(WidgetRef ref) =>
       ref.read(eventRepositoryProvider).generateBroadcastRequestId();
 
+  // ignore: catch_ui_lints/catch_arch_widget_ref_parameter -- static broadcast command seam shared by the send screens; it becomes a Riverpod controller with the Inbox redraw
   static void reset(WidgetRef ref) => sendMutation.reset(ref);
 
   static Future<SendEventBroadcastCallableResponse> send({
+    // ignore: catch_ui_lints/catch_arch_widget_ref_parameter -- static broadcast command seam shared by the send screens; it becomes a Riverpod controller with the Inbox redraw
     required WidgetRef ref,
     required String requestId,
     required String eventId,

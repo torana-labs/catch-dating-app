@@ -517,7 +517,7 @@ test("freshness selection uses explicit graph requirements and never loses unava
     repositoryPaths, platform: "linux", fileAvailable: () => true,
     executableAvailable: () => true, packageAvailable: () => true};
   const available = planCodegenFreshness(options);
-  assert.equal(available.length, 8);
+  assert.equal(available.length, 7);
   assert.ok(available.every((check) => check.runnable), JSON.stringify(available));
   const noFlutter = planCodegenFreshness({...options,
     executableAvailable: (executable) => executable !== "flutter" && executable !== "dart"});
@@ -540,7 +540,7 @@ test("freshness selection uses explicit graph requirements and never loses unava
   assert.ok(missingOutput.every((check) => check.runnable),
     "Missing full-checkout files must execute and fail their freshness command");
   const indirectOmission = planCodegenFreshness({...options,
-    codegenIds: ["admin.callable-validators"],
+    codegenIds: ["contracts.schema-projections"],
     sparsePaths: ["contracts/firestore/sales_quotes.schema.json"],
     fileAvailable: (file) => file !== "contracts/firestore/sales_quotes.schema.json"});
   assert.equal(indirectOmission[0].runnable, false);
@@ -567,9 +567,9 @@ test("source preflight includes the queue regressions and refuses unavailable co
   const options = {targets: ["flutter"], executableAvailable: () => true,
     packageAvailable: () => true};
   const checks = planSourcePreflight(options);
-  for (const command of ["check_dependency_direction", "check_flutter_test_size",
+  for (const command of ["check_flutter_test_size",
     "check_flutter_source_size", "check_route_inventory", "generate_widget_catalog",
-    "build_host_feature_responsibilities", "build_design_sync_manifest",
+    "build_host_feature_responsibilities",
     "provider_graph", "check_ui_composition_contracts"]) {
     assert.ok(checks.some(check => check.command.includes(command)), command);
   }

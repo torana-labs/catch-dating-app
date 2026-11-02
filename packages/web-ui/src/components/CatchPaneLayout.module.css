@@ -58,7 +58,7 @@
 .panes[data-pattern="feed"][data-split] { grid-template-columns: minmax(0, 1fr) 360px; column-gap: var(--catch-space-s10); }
 .panes[data-pattern="feed"][data-split] > .pane[data-slot="aside"] { padding-left: 0; }
 .panes[data-pattern="feed"][data-split] > .pane[data-slot="main"] { padding-right: 0; }
-.panes[data-pattern="reading"] > .pane[data-slot="main"] { width: 100%; max-width: 600px; }
+.panes[data-pattern="reading"] > .pane[data-slot="main"] { display: flex; flex-direction: column; row-gap: var(--catch-space-s6); width: 100%; max-width: 600px; }
 .panes[data-pattern="reading"][data-split] { grid-template-columns: minmax(0, 600px) 360px; justify-content: center; column-gap: var(--catch-space-s12); align-items: start; }
 .panes[data-pattern="reading"][data-split] > .pane { padding-inline: 0; }
 .panes[data-pattern="reading"][data-split] > .pane[data-slot="aside"] { position: sticky; top: var(--catch-space-s6); }

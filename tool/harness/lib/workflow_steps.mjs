@@ -260,7 +260,6 @@ export function planSourcePreflight({targets, sparsePaths = [], executableAvaila
   if (!targets.some(target => target === "flutter" || target === "contracts" ||
       target === "visual_integration" || target === "tools" || target.startsWith("flutter_"))) return [];
   const commands = [
-    ["node tool/architecture/check_dependency_direction.mjs"],
     ["node tool/architecture/check_mutation_error_surfaces.mjs"],
     ["node tool/architecture/check_route_string_literals.mjs"],
     ["node tool/architecture/check_flutter_source_size.mjs --check"],
@@ -268,7 +267,6 @@ export function planSourcePreflight({targets, sparsePaths = [], executableAvaila
     ["node tool/ui_capture/check_route_inventory.mjs --check"],
     ["node tool/design/generate_widget_catalog.mjs --check"],
     ["node tool/design/build_host_feature_responsibilities.mjs --check"],
-    ["node tool/design/build_design_sync_manifest.mjs --check"],
     ["dart run tool/architecture/provider_graph.dart --check", "analyzer"],
     ["dart run tool/architecture/check_ui_composition_contracts.dart --check", "analyzer"],
   ];

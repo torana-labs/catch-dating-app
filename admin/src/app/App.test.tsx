@@ -67,10 +67,10 @@ vi.mock("../features/now/ui/NowRouteScreen", () => ({
   NowRouteScreen: () => <p>Needs you fixture</p>,
 }));
 
-vi.mock("../features/sales/ui/SalesWorkspaceScreen", () => ({
-  SalesWorkspaceScreen: ({assignedStaffOnly, currentUserUid}: {
-    assignedStaffOnly: boolean; currentUserUid: string;
-  }) => <p>Sales fixture: {currentUserUid} · {assignedStaffOnly ? "assigned" : "admin"}</p>,
+vi.mock("../features/sales/ui/SalesRouteScreen", () => ({
+  SalesRouteScreen: ({ownWorkOnly, uid}: {
+    ownWorkOnly: boolean; uid: string | null;
+  }) => <p>Sales fixture: {uid} · {ownWorkOnly ? "assigned" : "admin"}</p>,
 }));
 
 describe("App live deep-link ownership", () => {
@@ -250,9 +250,11 @@ describe("Marketing unsaved route transitions", () => {
     const user = userEvent.setup();
     const confirm = vi.spyOn(window, "confirm").mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
-    window.history.replaceState({}, "", "/now");
+    // Marketing is parked out of the navigation; reach it by address after Needs you.
+    // The router's back guard reads its own entry index from history state.
+    window.history.replaceState({usr: null, key: "now", idx: 0}, "", "/now");
+    window.history.pushState({usr: null, key: "marketing", idx: 1}, "", "/marketing");
     render(<App />);
-    await user.click(screen.getByRole("link", {name: "Marketing"}));
     const caption = await screen.findByRole("textbox", {name: "Draft caption"});
     await user.type(caption, " updated");
 

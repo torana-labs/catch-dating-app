@@ -52,7 +52,9 @@ printf '%s|flutter|%s\\n' "$PWD" "$*" >> "$CATCH_BOOTSTRAP_TEST_LOG"
   assert.match(result.stdout, /Worktree bootstrap complete/u);
   assert.deepEqual(fs.readFileSync(logPath, "utf8").trim().split("\n"), [
     `${fixtureRoot}|npm|ci`,
+    `${fixtureRoot}|npm|--workspace catch-admin run generate`,
     `${path.join(fixtureRoot, "functions")}|npm|ci`,
+    `${path.join(fixtureRoot, "functions")}|npm|run generate`,
     `${fixtureRoot}|flutter|pub get`,
   ]);
 });
@@ -70,18 +72,19 @@ test("targeted bootstrap installs only its selected locked dependency family", (
   const env = {...process.env, PATH: `${binDirectory}:${process.env.PATH}`,
     CATCH_BOOTSTRAP_TEST_ROOT: fixtureRoot, CATCH_BOOTSTRAP_TEST_LOG: logPath};
   const families = [
-    {target: "root", locks: ["package.json", "package-lock.json"], command: `${fixtureRoot}|npm|ci`},
+    {target: "root", locks: ["package.json", "package-lock.json"],
+      commands: [`${fixtureRoot}|npm|ci`, `${fixtureRoot}|npm|--workspace catch-admin run generate`]},
     {target: "functions", locks: ["functions/package.json", "functions/package-lock.json"],
-      command: `${path.join(fixtureRoot, "functions")}|npm|ci`},
-    {target: "flutter", locks: ["pubspec.yaml", "pubspec.lock"], command: `${fixtureRoot}|flutter|pub get`},
+      commands: [`${path.join(fixtureRoot, "functions")}|npm|ci`, `${path.join(fixtureRoot, "functions")}|npm|run generate`]},
+    {target: "flutter", locks: ["pubspec.yaml", "pubspec.lock"], commands: [`${fixtureRoot}|flutter|pub get`]},
   ];
 
-  for (const {target, locks, command} of families) {
+  for (const {target, locks, commands} of families) {
     for (const lock of locks) fs.writeFileSync(path.join(fixtureRoot, lock), "fixture\n");
     const result = spawnSync("bash", [scriptPath, "--target", target],
       {cwd: fixtureRoot, encoding: "utf8", env});
     assert.equal(result.status, 0, `${target}: ${result.stderr}`);
-    assert.equal(fs.readFileSync(logPath, "utf8").trim(), command);
+    assert.deepEqual(fs.readFileSync(logPath, "utf8").trim().split("\n"), commands);
     fs.rmSync(logPath);
     for (const lock of locks) fs.rmSync(path.join(fixtureRoot, lock));
   }

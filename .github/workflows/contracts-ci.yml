@@ -41,13 +41,10 @@ jobs:
           node --check tool/contracts/generated/schema_contract_validators.mjs
           node tool/contracts/generate_domain_classes.mjs --check
           node --test tool/contracts/generate_domain_classes.test.mjs
-          node tool/admin/generate_admin_action_catalog.mjs --check
+          node tool/admin/generate_admin_action_catalog.mjs --validate
 
       - name: Check schema/type boundaries
         run: node tool/contracts/check_schema_type_boundaries.mjs
-
-      - name: Check Dart domain dependency direction
-        run: node tool/run.mjs check audit:dependency-direction
 
       - name: Check schema path literals
         run: node tool/contracts/check_schema_path_literals.mjs

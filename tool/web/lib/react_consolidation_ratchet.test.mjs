@@ -7,8 +7,8 @@ import {fileURLToPath} from "node:url";
 import {test} from "node:test";
 import {planAffectedToolChecks} from "../../lib/tool_impact.mjs";
 import {
-  baselinePath, consolidationDifferences, consolidationSnapshot,
-  pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
+  baselinePath, consolidationDifferences, consolidationSnapshot, fixedAllowanceCount,
+  mergeBaseCssBudgets, pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
   strandedByRetirementCeiling, strandedDifferences,
 } from "./react_consolidation_ratchet.mjs";
 
@@ -54,14 +54,18 @@ const probes = [
     }
     for (const document of malformed) assert.throws(() => parseConsolidationBaseline(document));
     assert.deepEqual(parseConsolidationBaseline(empty()), empty());
+    const {[css]: _css, ...recordedGates} = empty().gates;
+    assert.ok(parseConsolidationBaseline({...empty(), gates: recordedGates}), "the recorded file carries no CSS gate");
+    const {[library]: _library, ...missingGate} = empty().gates;
+    assert.throws(() => parseConsolidationBaseline({...empty(), gates: missingGate}));
   }],
-  ["same-count replacements are new debt, while fixed identities must leave the baseline", () => {
+  ["same-count replacements are new debt, while fixing debt passes with no baseline edit", () => {
     const before = empty(); before.gates[library] = ["catch.button"];
     const replaced = empty(); replaced.gates[library] = ["catch.badge"];
-    assert.equal(consolidationDifferences(replaced, before).length, 2);
-    assert.match(consolidationDifferences(replaced, before, {freshness: false})[0], /new debt.*catch.badge/u);
-    assert.deepEqual(consolidationDifferences(empty(), before, {freshness: false}), []);
-    assert.match(consolidationDifferences(empty(), before)[0], /stale allowance/u);
+    assert.deepEqual(consolidationDifferences(replaced, before), [`new debt ${library}: catch.badge`]);
+    assert.deepEqual(consolidationDifferences(empty(), before), []);
+    assert.equal(fixedAllowanceCount(empty(), before), 1);
+    assert.equal(fixedAllowanceCount(before, before), 0);
   }],
   ["a stranded record holds only the tool's closed list, each name an allowance with its ticket", () => {
     assert.ok(parseConsolidationBaseline(withStranded({[strandedId]: strandedTicket})));
@@ -74,25 +78,27 @@ const probes = [
   }],
   ["recording a stranded name lets it in once, then the record may only shrink", () => {
     const first = withStranded({[strandedId]: strandedTicket}, ["website/src/shared/ui/a.tsx::Other"]);
-    const findings = strandedDifferences(consolidationDifferences(first, empty(), {freshness: false}), first, empty());
+    const findings = strandedDifferences(consolidationDifferences(first, empty()), first, empty());
     assert.deepEqual(findings, [`new debt ${single}: website/src/shared/ui/a.tsx::Other`]);
     const recorded = withStranded({[strandedId]: strandedTicket});
-    assert.deepEqual(strandedDifferences(consolidationDifferences(recorded, recorded, {freshness: false}), recorded, recorded), []);
+    assert.deepEqual(strandedDifferences(consolidationDifferences(recorded, recorded), recorded, recorded), []);
     const grown = withStranded({[strandedId]: strandedTicket, [otherStrandedId]: otherStrandedTicket});
-    assert.deepEqual(strandedDifferences(consolidationDifferences(grown, recorded, {freshness: false}), grown, recorded),
+    assert.deepEqual(strandedDifferences(consolidationDifferences(grown, recorded), grown, recorded),
       [`new debt ${single}: ${otherStrandedId}`, `new stranded name ${single}: ${otherStrandedId}`]);
     const emptied = withStranded({});
-    assert.deepEqual(strandedDifferences(consolidationDifferences(emptied, recorded, {freshness: false}), emptied, recorded), []);
-    assert.equal(strandedDifferences(consolidationDifferences(recorded, emptied, {freshness: false}), recorded, emptied).length, 2);
+    assert.deepEqual(strandedDifferences(consolidationDifferences(emptied, recorded), emptied, recorded), []);
+    assert.equal(strandedDifferences(consolidationDifferences(recorded, emptied), recorded, emptied).length, 2);
   }],
   ["moving debt between CSS files or surfaces cannot spend another file's allowance", () => {
     const before = empty(); before.gates[css] = {"admin/src/a.css": 20};
     for (const file of ["admin/src/b.css", "website/src/b.css"]) {
       const moved = empty(); moved.gates[css] = {[file]: 20};
-      assert.match(consolidationDifferences(moved, before, {freshness: false})[0], /new debt/u);
+      assert.match(consolidationDifferences(moved, before)[0], /new debt/u);
     }
     const shorter = empty(); shorter.gates[css] = {"admin/src/a.css": 19};
-    assert.match(consolidationDifferences(shorter, before)[0], /stale allowance/u);
+    assert.deepEqual(consolidationDifferences(shorter, before), []);
+    const longer = empty(); longer.gates[css] = {"admin/src/a.css": 21};
+    assert.deepEqual(consolidationDifferences(longer, before), [`new debt ${css}: admin/src/a.css 21 exceeds 20`]);
   }],
   ["inventory identities and CSS budgets must agree with every canonical total and surface", () => {
     const measures = Object.fromEntries([
@@ -118,6 +124,32 @@ const probes = [
       assert.deepEqual(pageCssBudgets(root), {"admin/src/a.css": 1, "website/src/a.css": 1});
     } finally { fs.rmSync(root, {recursive: true}); }
   }],
+  ["CSS ceilings tighten by themselves: a merged reduction lowers them with no edit", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-css-ceiling-"));
+    const git = (args) => execFileSync("git", args, {cwd: root, stdio: "pipe", encoding: "utf8"}).trim();
+    const write = (file, lines) => {
+      fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+      fs.writeFileSync(path.join(root, file), "a{}\n".repeat(lines));
+    };
+    const commit = () => { git(["add", "."]); git(["commit", "-qm", "css"]); return git(["rev-parse", "HEAD"]); };
+    const measured = () => ({gates: {[css]: pageCssBudgets(root)}});
+    try {
+      git(["init", "-q"]); git(["config", "user.email", "probe@example.invalid"]); git(["config", "user.name", "Ratchet probe"]);
+      write("admin/src/page.css", 10); write("website/src/styles/base.css", 500);
+      const first = commit();
+      assert.deepEqual(mergeBaseCssBudgets(root, first), {"admin/src/page.css": 10}, "shared layers stay out of scope");
+
+      write("admin/src/page.css", 8);
+      assert.deepEqual(consolidationDifferences(measured(), {gates: {[css]: mergeBaseCssBudgets(root, first)}}), [],
+        "the reducing PR passes against its merge base");
+
+      const second = commit();
+      assert.deepEqual(mergeBaseCssBudgets(root, second), {"admin/src/page.css": 8});
+      write("admin/src/page.css", 9);
+      assert.deepEqual(consolidationDifferences(measured(), {gates: {[css]: mergeBaseCssBudgets(root, second)}}),
+        [`new debt ${css}: admin/src/page.css 9 exceeds 8`], "the reduced lines cannot grow back");
+    } finally { fs.rmSync(root, {recursive: true}); }
+  }],
   ["history reads the fetched-main merge base, not a rewritten working baseline", () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-web-ratchet-git-"));
     const git = (args) => execFileSync("git", args, {cwd: root, stdio: "pipe"});
@@ -132,7 +164,7 @@ const probes = [
       const changed = empty(); changed.gates[library] = ["catch.button"];
       fs.writeFileSync(path.join(root, baselinePath), JSON.stringify(changed));
       assert.deepEqual(previousConsolidationBaseline(root), empty());
-      assert.match(consolidationDifferences(changed, previousConsolidationBaseline(root), {freshness: false})[0], /new debt/u);
+      assert.match(consolidationDifferences(changed, previousConsolidationBaseline(root))[0], /new debt/u);
     } finally { fs.rmSync(root, {recursive: true}); }
   }],
 ];

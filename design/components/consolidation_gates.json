@@ -70,7 +70,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. Existing missing styled T1 contracts are allowed by identity; new missing contracts fail and resolved identities must be removed."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. Existing missing styled T1 contracts are allowed by identity; new missing contracts fail; resolving one passes with no baseline edit."
     },
     {
       "id": "library.priority_t2_web",
@@ -86,7 +86,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. The approved priority T2 contract set is measured from the canonical registry; new missing styled contracts fail and resolved identities must be removed."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. The approved priority T2 contract set is measured from the canonical registry; new missing styled contracts fail; resolving one passes with no baseline edit."
     },
     {
       "id": "library.headless_controls",
@@ -102,7 +102,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. New headless-control identities fail; contracts that gain styled implementations must leave the baseline."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. New headless-control identities fail; contracts that gain styled implementations pass with no baseline edit."
     },
     {
       "id": "library.cross_framework_parity",
@@ -118,7 +118,7 @@
       "linear": [
         "CAT-216"
       ],
-      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. This is catalog state coverage: ready styled Storybook states must cover the canonical Widgetbook states. Missing identities are ratcheted; screenshot parity remains a separate check."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. This is catalog state coverage: ready styled Storybook states must cover the canonical Widgetbook states. Missing identities are ratcheted; screenshot parity remains a separate check."
     },
     {
       "id": "screens.web_adapters",
@@ -134,7 +134,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. Every remaining adapter is tracked by source path and symbol; same-count identity replacement cannot add new debt."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. Every remaining adapter is tracked by source path and symbol; same-count identity replacement cannot add new debt."
     },
     {
       "id": "screens.web_dead_exports",
@@ -169,7 +169,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. The canonical inventory tracks remaining t4-move identities by path and symbol. Registered library T4 components use their registry mapping; new move candidates fail and resolved candidates must leave the baseline."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. The canonical inventory tracks remaining t4-move identities by path and symbol. Registered library T4 components use their registry mapping; new move candidates fail; resolving one passes with no baseline edit."
     },
     {
       "id": "screens.web_bare_markup",
@@ -202,7 +202,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "web:shared-ui-adoption enforces per-file CSS line budgets in tool/web/react_consolidation_baseline.json. New or larger files fail, resolved allowances must shrink, and moving debt between files cannot spend another allowance. The scope matches the scorecard and excludes only base.css and catch-language.css."
+      "enforcement": "web:shared-ui-adoption caps each page CSS file at its line count on the merge base, with no recorded budget. New or larger files fail, shorter files pass and lower the cap once merged, and moving debt between files cannot spend another allowance. The scope matches the scorecard and excludes only base.css and catch-language.css."
     },
     {
       "id": "screens.flutter_inline_text_styles",
