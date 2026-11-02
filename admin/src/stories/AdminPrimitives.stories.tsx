@@ -10,7 +10,6 @@ import {
   Home,
   Lock,
   RefreshCw,
-  Search as SearchIcon,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -33,7 +32,6 @@ import {
   AdminMetricGrid,
   AdminSectionCaption,
   AdminPanel,
-  AdminRowTitle,
   AdminSecondaryDisclosure,
   AdminSignInActions,
   AdminSignInMeta,
@@ -42,7 +40,6 @@ import {
   AdminStateRow,
   AdminStatGrid,
   AdminStatusGrid,
-  AdminTableRow,
   AdminTagList,
   AdminTagRow,
   AdminToolbar,
@@ -59,11 +56,9 @@ import {
   PageHeader,
   QualityList,
   QualityRow,
-  SearchField,
   SegmentedControl,
   SelectableCardButton,
   StatusBanner,
-  TableActionButton,
   TagList,
 } from "../shared/ui/AdminPrimitives";
 
@@ -243,7 +238,7 @@ export const DataTableStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_data_table",
-      states: ["default", "selected"],
+      states: ["default"],
     },
   },
   render: () => (
@@ -257,16 +252,16 @@ export const DataTableStory: Story = {
           </tr>
         </thead>
         <tbody>
-          <AdminTableRow selected>
+          <tr>
             <td>Afterfly Social</td>
             <td>Ready</td>
             <td>Ops</td>
-          </AdminTableRow>
-          <AdminTableRow>
+          </tr>
+          <tr>
             <td>City Supper Club</td>
             <td>Needs source</td>
             <td>Growth</td>
-          </AdminTableRow>
+          </tr>
         </tbody>
       </DataTable>
     </AdminWorkspace>
@@ -493,22 +488,6 @@ export const FilePickerButtonStory: Story = {
   ),
 };
 
-export const SearchFieldStory: Story = {
-  name: "Search field",
-  parameters: {
-    catchComponent: {
-      id: "shared_search_field",
-      states: ["empty", "value", "icon"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <SearchField ariaLabel="Search organizers" icon={<SearchIcon size={16} />} value="Afterfly" />
-      <SearchField ariaLabel="Search empty queue" placeholder="Search by name, city, or source" value="" />
-    </AdminWorkspace>
-  ),
-};
-
 export const InlineTextFieldStory: Story = {
   name: "Inline text field",
   parameters: {
@@ -676,7 +655,6 @@ export const AdminToolbarStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminToolbar>
-        <SearchField ariaLabel="Search queue" value="social" />
         <AdminButton>Reset</AdminButton>
       </AdminToolbar>
       <AdminToolbar compact>
@@ -939,53 +917,6 @@ export const TagListStory: Story = {
   ),
 };
 
-export const AdminTableRowStory: Story = {
-  name: "Admin table row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_table_row",
-      states: ["default", "selected"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <DataTable ariaLabel="Table row preview">
-        <tbody>
-          <AdminTableRow selected>
-            <td>Selected organizer</td>
-            <td>Ready</td>
-          </AdminTableRow>
-          <AdminTableRow>
-            <td>Default organizer</td>
-            <td>Queued</td>
-          </AdminTableRow>
-        </tbody>
-      </DataTable>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminRowTitleStory: Story = {
-  name: "Row title",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_row_title",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminRowTitle>
-        <strong>Afterfly Social</strong>
-        <span>San Francisco</span>
-      </AdminRowTitle>
-      <AdminRowTitle compact>
-        <strong>Compact row title</strong>
-      </AdminRowTitle>
-    </AdminWorkspace>
-  ),
-};
-
 export const CardHeaderStory: Story = {
   name: "Card header",
   parameters: {
@@ -1028,21 +959,6 @@ export const SelectableCardButtonStory: Story = {
     <AdminWorkspace>
       <SelectableCardButton>Draft campaign</SelectableCardButton>
       <SelectableCardButton selected>Selected campaign</SelectableCardButton>
-    </AdminWorkspace>
-  ),
-};
-
-export const TableActionButtonStory: Story = {
-  name: "Table action button",
-  parameters: {
-    catchComponent: {
-      id: "shared_table_action_button",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <TableActionButton>View detail</TableActionButton>
     </AdminWorkspace>
   ),
 };

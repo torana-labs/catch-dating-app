@@ -2,7 +2,7 @@
   "workflow": {
     "workflowId": "event-intake",
     "label": "Event Intake",
-    "guiPath": "/quality"
+    "guiPath": "/system"
   },
   "actions": [
     {
@@ -12,7 +12,7 @@
         "event-intake",
         "data-quality"
       ],
-      "guiPath": "/quality",
+      "guiPath": "/system",
       "kind": "read",
       "risk": "read",
       "roles": [

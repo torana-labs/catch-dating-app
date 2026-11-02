@@ -5950,7 +5950,7 @@
             "functions/src/operations/**",
             "functions/scripts/operations/**",
             "functions/src/admin/**",
-            "admin/src/features/operations/**",
+            "admin/src/features/system/**",
             "tool/host_discovery/**",
             "tool/tools_manifest.json",
             "tool/remote_ops_manifest.json"

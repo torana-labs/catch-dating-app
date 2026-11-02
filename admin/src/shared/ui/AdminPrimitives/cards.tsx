@@ -171,22 +171,6 @@ export function AdminTagList({
   );
 }
 
-export function AdminRowTitle({
-  children,
-  className = "",
-  compact = false,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  compact?: boolean;
-}) {
-  return (
-    <div {...props} className={classNames("row-title", compact && "compact", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminTagRow({
   as = "div",
   children,

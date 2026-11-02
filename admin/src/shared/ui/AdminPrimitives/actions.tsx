@@ -133,33 +133,6 @@ export function FilePickerButton({
   );
 }
 
-export function SearchField({
-  ariaLabel,
-  className = "",
-  icon,
-  onChange,
-  value,
-  ...props
-}: {
-  ariaLabel: string;
-  className?: string;
-  icon?: ReactNode;
-  onChange?: (value: string) => void;
-  value?: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "aria-label" | "onChange" | "value">) {
-  return (
-    <div className={`search-control ${className}`.trim()}>
-      {icon}
-      <input
-        aria-label={ariaLabel}
-        onChange={(event) => onChange?.(event.target.value)}
-        value={value}
-        {...props}
-      />
-    </div>
-  );
-}
-
 export function InlineTextField({
   ariaLabel,
   className = "",

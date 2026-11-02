@@ -807,8 +807,7 @@ local-data context, and sign-out live in the account disclosure.
 Operational directories and record review use URL-owned master-detail routes.
 Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
 `/organizers`, `/inbox`, `/events`,
-`/events/external`, `/users`, `/finance`, `/quality`, `/operations`, and
-`/admin-roles`.
+`/events/external`, `/users`, `/finance`, `/system`, and `/admin-roles`.
 
 The Inbox owns `/inbox`; old `/intake/*` addresses and `/organizers/claims` open it.
 Marketing owns `/marketing` (default Posts), `/marketing/posts`,
@@ -819,15 +818,15 @@ Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
 `/organizers/{organizerId}`, `/inbox/{itemId}`, `/events/{eventId}`,
 `/events/external/{candidateId}`,
-`/growth/nominators/{nominatorUid}`, `/finance/issues/{issueId}`,
-`/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
+`/growth/nominators/{nominatorUid}`, `/finance/issues/{issueId}`, and
+`/admin-roles/{uid}`. A missing direct record
 stays unavailable; controllers must never auto-select another row to make a
 deep link appear valid.
 
 Route shells own path and search-param parsing. Feature controllers accept
 explicit selected ids and navigation callbacks, while repositories keep remote
 sources independent where partial results are useful. Overview, Growth,
-Finance, and Data quality therefore retain successful source data when another
+Finance, and System therefore retain successful source data when another
 query fails and expose retry at the smallest truthful source boundary.
 
 Loaded lists must disclose their scope. A returned preview, local search result,
@@ -903,17 +902,17 @@ Ready. The candidate queue and detail pane scroll independently inside a
 viewport-bounded workbench so a 25-candidate market does not stretch the entire
 Admin page.
 
-## Admin Agent Activity Monitor
+## Admin Activity Log
 
-`/operations` is the read-only employee monitor for catalogued CLI/agent
-actions. `admin/src/features/operations/` uses the standard
-repository/controller/workspace split and reads only the bounded
-`adminListActionExecutions` callable. It filters the loaded page by action,
-status, actor, target, or error text and exposes explicit pagination. The table
-shows hash-bound metadata, including transport-ambiguous actions that need
-reconciliation, never request or response bodies. Manual actions
-remain in their owning routes; this route does not reproduce their mutation
-forms or authority decisions.
+`/system` holds the read-only activity log of catalogued Admin actions, by
+people and by CLI agents, beside data health. `admin/src/features/system/` uses
+the standard repository/controller/screen split and reads only the bounded
+`adminListActionExecutions` callable. It filters the loaded pages by who acted
+and by problems, searches every field on a receipt, and exposes explicit
+paging. A row opens its receipt: hash-bound metadata, never request or response
+bodies. An action whose result was lost in transit reads as "Unclear" and
+counts as a problem. Manual actions remain in their owning routes; System does
+not reproduce their mutation forms or authority decisions.
 
 `contracts/admin/actions/` binds every admin API callable to a
 stable CLI action id, request schema, roles, workflow, GUI path, and
