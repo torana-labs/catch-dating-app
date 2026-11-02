@@ -60,6 +60,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/requests/host_requests_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/work/presentation/host_work_screen.dart';
@@ -177,6 +178,9 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialResponses: view == HostAudienceView.responses,
       initialFormId: uri.queryParameters['formId'],
       initialContactId: uri.queryParameters['contactId'],
+    ),
+    HostAudienceView.requests => HostRequestsScreen(
+      initialOrganizerId: uri.queryParameters['organizerId'],
     ),
     HostAudienceView.people ||
     HostAudienceView.audiences => HostCustomersScreen(

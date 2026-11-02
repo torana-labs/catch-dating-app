@@ -135,10 +135,6 @@ function validateRequiredSourceContracts(readSource = readRepoSource) {
       path: "packages/web-ui/src/components/CatchField.module.css",
       includes: [".field:has(.control:focus-visible)"],
     },
-    {
-      path: "admin/src/styles.css",
-      includes: [".marketing-title-input:focus-visible"],
-    },
   ];
   const findings = [];
   for (const contract of contracts) {

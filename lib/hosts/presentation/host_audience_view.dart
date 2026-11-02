@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 part 'host_audience_header.dart';
 
-enum HostAudienceView { people, audiences, forms, responses }
+enum HostAudienceView { people, audiences, forms, responses, requests }
 
 HostAudienceView hostAudienceViewFromName(String? name) =>
     HostAudienceView.values.firstWhere(
@@ -118,6 +118,10 @@ class HostAudienceTabRail extends StatelessWidget
           CatchOption(
             value: HostAudienceView.responses,
             label: context.l10n.hostFormsViewResponses,
+          ),
+          CatchOption(
+            value: HostAudienceView.requests,
+            label: context.l10n.hostRequestsTab,
           ),
         ],
       ),

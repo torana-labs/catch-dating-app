@@ -1387,9 +1387,13 @@ Secrets:
 
 When the CLI refuses:
 
-- **A Function removed from source.** The deploy stops and prints a
-  `firebase functions:delete` command for each Function it would delete.
-  Delete them, or redeploy the commit after restoring the export, then re-run.
+- **A Function removed from source.** The deploy stops and lists it, because a
+  broad deploy never deletes. In the pull request that removes a Function, add
+  its name to `functions/retired-functions.json`. Every deploy run, in every
+  environment, then deletes exactly the listed names that are live there, before
+  it deploys Functions, and no one deletes by hand. A listed name this commit
+  still deploys stops the run before any deletion. Names can stay in the list:
+  one already gone is skipped, and staging only deploys when someone runs it.
 - **A Function that newly retries on failure.** Firebase deploys it only with
   `--force`, and refuses a broad deploy before changing anything, listing
   those Functions. The run then deploys exactly them with `--force` and

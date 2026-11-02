@@ -1200,7 +1200,8 @@ preference:
 - Events owns the durable event inventory, creation, schedule, history, and
   lifecycle entry points. The isolated rehearsal feature remains event-scoped,
   but it is entered from Today instead of masquerading as event creation.
-- Audience owns four peer modes: People, Audiences, Forms, and Responses.
+- Audience owns five peer modes: People, Audiences, Forms, Responses, and
+  Requests.
   Person-level CRM and intake keep their focused controllers and deep routes;
   they no longer compete as global destinations.
 - Inbox owns the peer Inbox and Sends workspaces at `/host/inbox`. The short

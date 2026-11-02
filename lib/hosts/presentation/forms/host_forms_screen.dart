@@ -508,6 +508,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
           _responseQuery = query;
         case HostAudienceView.people:
         case HostAudienceView.audiences:
+        case HostAudienceView.requests:
           return;
       }
     });
