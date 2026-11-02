@@ -2519,7 +2519,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": ["Toast", "Snackbar", "InAppNotification", "NotificationToast"],
+      "aliases": ["InAppNotification"],
       "absorbs": ["CatchBanner"],
       "summary": "Configurable ambient notice family with one app-level safe-area overlay. Arrival notices open from the whole card and support swipe dismissal; ordinary notifications use explicit action and dismiss controls. Features own copy, identity, tone and routing; the shared renderer owns readable geometry and interaction.",
       "dart": {
@@ -10465,7 +10465,8 @@
         "Toolbar",
         "HeaderBar",
         "TitleBar",
-        "CatchSiteHeader"
+        "CatchSiteHeader",
+        "CatchPrimaryRail"
       ],
       "absorbs": ["CatchStepHeader", "CatchCollapsedHeaderTitle"],
       "summary": "One canonical app bar with route, identity, root, embedded-root and branded navigation recipes; workspace headers flow from their content and share an anchored title baseline, with subtitles below and width-aware parent navigation.",
@@ -15082,10 +15083,7 @@
         "BottomNavBar",
         "BottomNavigation",
         "NavBar",
-        "BottomTabBar",
-        "CatchPrimaryRail",
-        "AdaptiveTabScaffold",
-        "HostAppShell"
+        "BottomTabBar"
       ],
       "summary": "Adaptive bottom navigation with stable keyed destination slots, one shared 48px selection/contact indicator, measured selected labels, press-and-slide selection, badges, and platform-specific chrome.",
       "dart": {
@@ -20529,7 +20527,9 @@
         "ResponsiveLayout",
         "AdaptiveLayout",
         "SizeClassBuilder",
-        "BreakpointBuilder"
+        "BreakpointBuilder",
+        "AdaptiveTabScaffold",
+        "HostAppShell"
       ],
       "absorbs": ["CatchScaffold", "CatchRootScreenScaffold", "CatchNavigationViewport", "CatchRouteScaffold"],
       "summary": "One local viewport owner with named size-class, explicit-width, sliver geometry, readable sliver lane and bounded-scene recipes.",
@@ -22205,7 +22205,7 @@
       "status": "planned",
       "kind": "composite",
       "tier": "T1",
-      "aliases": ["CatchNoticeRegion"],
+      "aliases": ["CatchNoticeRegion", "Toast", "Snackbar", "NotificationToast"],
       "summary": "A short note that something happened, with an optional undo.",
       "design": {
         "figma": {

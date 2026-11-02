@@ -54,10 +54,10 @@ symbol outside `catch_ui`.
 | Rail | `catch.rail` | T2 | `CatchRail` | `CatchRail` | align; absorbs: `CatchScroller`, `CatchHorizontalScrollView` |
 | Table | `catch.table` | T1 | `CatchTable` | `CatchTable` | align |
 | Accordion | `catch.accordion` | T2 | — | `CatchAccordion` | port flutter; absorbs: `CatchAccordionController`, `CatchErrorDetailsAccordion` |
-| TopBar | `catch.top_bar` | T2 | `CatchTopBar` | `CatchTopBar` | align; absorbs: `CatchSiteHeader`, `CatchStepHeader`, `CatchCollapsedHeaderTitle` |
+| TopBar | `catch.top_bar` | T2 | `CatchTopBar` | `CatchTopBar` | align; absorbs: `CatchSiteHeader`, `CatchPrimaryRail`, `CatchStepHeader`, `CatchCollapsedHeaderTitle` |
 | TopBar | `catch.step_header` | T2 | `CatchStepHeader` | — | port react |
 | PaneHeader | `catch.workspace_header` | T2 | `CatchWorkspaceHeader` | `CatchWorkspaceHeader` | align |
-| Navigation | `catch.tab_bar` | T2 | `CatchTabBar` | `CatchTabBar` | align; absorbs: `CatchPrimaryRail` |
+| Navigation | `catch.tab_bar` | T2 | `CatchTabBar` | `CatchTabBar` | align |
 | Dock | `catch.bottom_action` | T2 | `CatchDock` | `CatchDock` | align |
 | AppShell | `catch.viewport` | T2 | `CatchViewport` | `CatchViewport` | align; absorbs: `CatchScaffold`, `CatchRootScreenScaffold`, `CatchNavigationViewport`, `CatchRouteScaffold` |
 | ScreenBody | `catch.screen_body` | T1 | `CatchPageBody` | `CatchPageBody` | align |
