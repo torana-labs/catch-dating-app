@@ -283,6 +283,7 @@ export 'callables/list_event_rcs_preferences_callable_request.g.dart';
 export 'callables/list_event_sms_preferences_callable_request.g.dart';
 export 'callables/list_event_whatsapp_preferences_callable_request.g.dart';
 export 'callables/list_my_host_assignments_callable_request.g.dart';
+export 'callables/list_my_organizer_journeys_callable_request.g.dart';
 export 'callables/list_offer_event_targets_callable_request.g.dart';
 export 'callables/list_organizer_applications_callable_request.g.dart';
 export 'callables/list_organizer_attention_items_callable_request.g.dart';

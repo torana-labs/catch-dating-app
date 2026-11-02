@@ -759,6 +759,7 @@ import {
   programIdCallablePayloadSchema,
   listOrganizerProgramsCallablePayloadSchema,
   listMyHostAssignmentsCallablePayloadSchema,
+  listMyOrganizerJourneysCallablePayloadSchema,
   listOrganizerBillsCallablePayloadSchema,
   listOrganizerRequestsCallablePayloadSchema,
   createOrganizerProgramCallablePayloadSchema,
@@ -811,6 +812,7 @@ import {
   organizerProgramListCallableResponseSchema,
   programAccessCallableResponseSchema,
   listMyHostAssignmentsCallableResponseSchema,
+  listMyOrganizerJourneysCallableResponseSchema,
   listOrganizerBillsCallableResponseSchema,
   listOrganizerRequestsCallableResponseSchema,
   organizerProgramCallableResponseSchema,
@@ -2163,6 +2165,7 @@ export const validateTransportOperationReceiptDocument = ajv.compile(transportOp
 export const validateProgramIdCallablePayload = ajv.compile(programIdCallablePayloadSchema);
 export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrganizerProgramsCallablePayloadSchema);
 export const validateListMyHostAssignmentsCallablePayload = ajv.compile(listMyHostAssignmentsCallablePayloadSchema);
+export const validateListMyOrganizerJourneysCallablePayload = ajv.compile(listMyOrganizerJourneysCallablePayloadSchema);
 export const validateListOrganizerBillsCallablePayload = ajv.compile(listOrganizerBillsCallablePayloadSchema);
 export const validateListOrganizerRequestsCallablePayload = ajv.compile(listOrganizerRequestsCallablePayloadSchema);
 export const validateCreateOrganizerProgramCallablePayload = ajv.compile(createOrganizerProgramCallablePayloadSchema);
@@ -2215,6 +2218,7 @@ export const validateSubmitProgramHouseholdRsvpCallableResponse = ajv.compile(su
 export const validateOrganizerProgramListCallableResponse = ajv.compile(organizerProgramListCallableResponseSchema);
 export const validateProgramAccessCallableResponse = ajv.compile(programAccessCallableResponseSchema);
 export const validateListMyHostAssignmentsCallableResponse = ajv.compile(listMyHostAssignmentsCallableResponseSchema);
+export const validateListMyOrganizerJourneysCallableResponse = ajv.compile(listMyOrganizerJourneysCallableResponseSchema);
 export const validateListOrganizerBillsCallableResponse = ajv.compile(listOrganizerBillsCallableResponseSchema);
 export const validateListOrganizerRequestsCallableResponse = ajv.compile(listOrganizerRequestsCallableResponseSchema);
 export const validateOrganizerProgramCallableResponse = ajv.compile(organizerProgramCallableResponseSchema);

@@ -25729,6 +25729,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostRequestsOffer => 'Offer a spot';
 
   @override
+  String get hostJourneyTitle => 'Your page so far';
+
+  @override
+  String get hostJourneyWaitingTitle => 'Your claim is being checked';
+
+  @override
+  String get hostJourneyWaitingBody =>
+      'We’ll let you know here when it’s done. Meanwhile your page stays live.';
+
+  @override
+  String hostJourneyNominated({required String name}) {
+    return 'Someone nominated $name';
+  }
+
+  @override
+  String hostJourneyBuiltFrom({required String source}) {
+    return 'Catch built a page from $source';
+  }
+
+  @override
+  String get hostJourneyListed => 'Your page went live';
+
+  @override
+  String get hostJourneyClaimRequested => 'You asked to claim it';
+
+  @override
+  String get hostJourneyClaimRejected => 'We couldn’t confirm your claim';
+
+  @override
+  String get hostJourneyClaimed => 'You claimed your page';
+
+  @override
+  String get hostJourneyFirstEvent => 'Your first event';
+
+  @override
+  String get hostJourneyFirstPaidBooking => 'Your first paid booking';
+
+  @override
+  String get hostJourneyRunPage => 'Run your page';
+
+  @override
+  String get hostJourneyRunPageBody => 'Edit it, add photos, connect payments';
+
+  @override
+  String get hostJourneyRunFirstEvent => 'Run your first event';
+
+  @override
   String get hostPayoutsRazorpayUnavailable =>
       'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.';
 

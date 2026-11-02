@@ -631,6 +631,17 @@ class _HostOrganizerEditBodyState extends ConsumerState<HostOrganizerEditBody> {
           children: [
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('host-club-settings-journey'),
+              title: context.l10n.hostJourneyTitle,
+              icon: CatchIcons.history,
+              onTap: () => showCatchBottomSheet<void>(
+                context: context,
+                builder: (_) =>
+                    HostOrganizerJourneySheet(organizerId: organizer.id),
+              ),
+            ),
+            CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-event-defaults'),
               title: context.l10n.hostsHostOrganizerEditTabLabelEventDefaults,
               valueText: organizer.hostDefaults.primaryActivityKind.label,

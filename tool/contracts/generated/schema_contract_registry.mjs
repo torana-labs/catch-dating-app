@@ -230617,6 +230617,33 @@ export const listMyHostAssignmentsCallablePayloadSchema = {
   }
 };
 
+export const listMyOrganizerJourneysCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_my_organizer_journeys_payload.schema.json",
+  "title": "ListMyOrganizerJourneysCallablePayload",
+  "description": "A host reads how an organizer's page got here. With organizerId, that organizer's journey for its hosts. With null, the journey of each page the caller has asked to claim and is still waiting on.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Organizer hosts and claimants (Host app)",
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
 export const listOrganizerBillsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_organizer_bills_payload.schema.json",
@@ -234892,6 +234919,99 @@ export const listMyHostAssignmentsCallableResponseSchema = {
         "none"
       ],
       "description": "The app shell the caller should land in: managers always get managerShell even when they also hold staff assignments; staff get workShell only while at least one assignment is live."
+    }
+  }
+};
+
+export const listMyOrganizerJourneysCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_my_organizer_journeys_response.schema.json",
+  "title": "ListMyOrganizerJourneysCallableResponse",
+  "description": "How a page got here, as its organizer sees it. Staff names, who nominated it, recommendations and decision reasons stay with Catch's staff, and someone else's claim is left out.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "journeys"
+  ],
+  "properties": {
+    "journeys": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "waitingClaim",
+          "steps",
+          "next"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "waitingClaim": {
+            "type": "boolean",
+            "description": "The caller's own claim is still being checked."
+          },
+          "steps": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "atMillis",
+                "detail"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "nominated",
+                    "listed",
+                    "claimRequested",
+                    "claimRejected",
+                    "claimed",
+                    "firstEvent",
+                    "firstPaidBooking"
+                  ]
+                },
+                "atMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "detail": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500,
+                  "description": "nominated: the link the page was built from. firstEvent: the event's name."
+                }
+              }
+            }
+          },
+          "next": {
+            "enum": [
+              "runYourPage",
+              "firstEvent",
+              null
+            ],
+            "description": "What comes next; null once the organizer has run an event."
+          }
+        }
+      }
     }
   }
 };

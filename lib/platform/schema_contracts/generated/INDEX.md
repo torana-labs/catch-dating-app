@@ -465,6 +465,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `functions/src/shared/generated/programIdCallablePayload.ts` | yes |
 | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `functions/src/shared/generated/listOrganizerProgramsCallablePayload.ts` | yes |
 | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallablePayload.ts` | yes |
+| ListMyOrganizerJourneysCallablePayload | `callables/list_my_organizer_journeys_payload.schema.json` | `functions/src/shared/generated/listMyOrganizerJourneysCallablePayload.ts` | yes |
 | ListOrganizerBillsCallablePayload | `callables/list_organizer_bills_payload.schema.json` | `functions/src/shared/generated/listOrganizerBillsCallablePayload.ts` | yes |
 | ListOrganizerRequestsCallablePayload | `callables/list_organizer_requests_payload.schema.json` | `functions/src/shared/generated/listOrganizerRequestsCallablePayload.ts` | yes |
 | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `functions/src/shared/generated/createOrganizerProgramCallablePayload.ts` | yes |
@@ -517,6 +518,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | OrganizerProgramListCallableResponse | `callable_responses/organizer_program_list_response.schema.json` | `functions/src/shared/generated/organizerProgramListCallableResponse.ts` | no |
 | ProgramAccessCallableResponse | `callable_responses/program_access_response.schema.json` | `functions/src/shared/generated/programAccessCallableResponse.ts` | no |
 | ListMyHostAssignmentsCallableResponse | `callable_responses/list_my_host_assignments_response.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallableResponse.ts` | no |
+| ListMyOrganizerJourneysCallableResponse | `callable_responses/list_my_organizer_journeys_response.schema.json` | `functions/src/shared/generated/listMyOrganizerJourneysCallableResponse.ts` | yes |
 | ListOrganizerBillsCallableResponse | `callable_responses/list_organizer_bills_response.schema.json` | `functions/src/shared/generated/listOrganizerBillsCallableResponse.ts` | yes |
 | ListOrganizerRequestsCallableResponse | `callable_responses/list_organizer_requests_response.schema.json` | `functions/src/shared/generated/listOrganizerRequestsCallableResponse.ts` | yes |
 | OrganizerProgramCallableResponse | `callable_responses/organizer_program_response.schema.json` | `functions/src/shared/generated/organizerProgramCallableResponse.ts` | no |
@@ -1194,6 +1196,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ProgramIdCallableRequest | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/program_id_callable_request.g.dart` |
 | ListOrganizerProgramsCallableRequest | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_programs_callable_request.g.dart` |
 | ListMyHostAssignmentsCallableRequest | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_my_host_assignments_callable_request.g.dart` |
+| ListMyOrganizerJourneysCallableRequest | ListMyOrganizerJourneysCallablePayload | `callables/list_my_organizer_journeys_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_my_organizer_journeys_callable_request.g.dart` |
 | ListOrganizerBillsCallableRequest | ListOrganizerBillsCallablePayload | `callables/list_organizer_bills_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_bills_callable_request.g.dart` |
 | ListOrganizerRequestsCallableRequest | ListOrganizerRequestsCallablePayload | `callables/list_organizer_requests_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_requests_callable_request.g.dart` |
 | CreateOrganizerProgramCallableRequest | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_organizer_program_callable_request.g.dart` |

@@ -41412,6 +41412,90 @@ abstract class AppLocalizations {
   /// **'Offer a spot'**
   String get hostRequestsOffer;
 
+  /// Organizer: how the public page got here.
+  ///
+  /// In en, this message translates to:
+  /// **'Your page so far'**
+  String get hostJourneyTitle;
+
+  /// Your page so far: a claim waits on Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Your claim is being checked'**
+  String get hostJourneyWaitingTitle;
+
+  /// Your page so far: what happens while a claim is checked.
+  ///
+  /// In en, this message translates to:
+  /// **'We’ll let you know here when it’s done. Meanwhile your page stays live.'**
+  String get hostJourneyWaitingBody;
+
+  /// Journey step: the organizer was nominated.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone nominated {name}'**
+  String hostJourneyNominated({required String name});
+
+  /// Journey step: where the page came from.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch built a page from {source}'**
+  String hostJourneyBuiltFrom({required String source});
+
+  /// Journey step: the public page was published.
+  ///
+  /// In en, this message translates to:
+  /// **'Your page went live'**
+  String get hostJourneyListed;
+
+  /// Journey step: the caller's claim.
+  ///
+  /// In en, this message translates to:
+  /// **'You asked to claim it'**
+  String get hostJourneyClaimRequested;
+
+  /// Journey step: the claim was turned down.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t confirm your claim'**
+  String get hostJourneyClaimRejected;
+
+  /// Journey step: the claim went through.
+  ///
+  /// In en, this message translates to:
+  /// **'You claimed your page'**
+  String get hostJourneyClaimed;
+
+  /// Journey step: the first event.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first event'**
+  String get hostJourneyFirstEvent;
+
+  /// Journey step: the first paid booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first paid booking'**
+  String get hostJourneyFirstPaidBooking;
+
+  /// Journey next step: after a claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Run your page'**
+  String get hostJourneyRunPage;
+
+  /// Journey next step: what running a page means.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit it, add photos, connect payments'**
+  String get hostJourneyRunPageBody;
+
+  /// Journey next step: a claimed page with no event.
+  ///
+  /// In en, this message translates to:
+  /// **'Run your first event'**
+  String get hostJourneyRunFirstEvent;
+
   /// Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.
   ///
   /// In en, this message translates to:
