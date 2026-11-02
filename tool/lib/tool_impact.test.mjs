@@ -143,12 +143,7 @@ test("widget variants stay narrow while their comparison consumer closes safely"
   assert.equal(widgetbookPlan.mode, "affected");
   assert.equal(widgetbookPlan.repositoryView, "full");
   // Feature contracts validate their Widgetbook bindings with root-installed Ajv.
-  assert.deepEqual(widgetbookPlan.setupRequirements, [
-    "node",
-    "flutter",
-    "flutter-pub",
-    "root-npm",
-  ]);
+  assert.deepEqual(widgetbookPlan.setupRequirements, ["node", "root-npm"]);
   for (const id of ["design:widget-variant-inventory", "design:feature-contracts",
     "design:widgetbook-contract-refs", "design:section-headers"]) {
     assert.ok(widgetbookPlan.toolIds.includes(id), id);

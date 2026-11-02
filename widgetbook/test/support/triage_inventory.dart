@@ -1,6 +1,5 @@
-// Syntax-only inventory for classify_widgetbook_use_cases.mjs. Run from the
-// repository root with the app's already-pinned analyzer; no code generation.
-import 'dart:convert';
+// Syntax-only inventory of Widgetbook use cases for the golden corpus runner,
+// parsed with the app's already-pinned analyzer; no code generation.
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
@@ -277,58 +276,6 @@ bool isAppSharedWidgetSource(String path) =>
     path.startsWith('lib/platform/media/') ||
     path.startsWith('lib/pages/startup/');
 
-// Preserve the migration denominator across shared UI and app adapters: every public
-// Catch* core class, including descriptors and controllers, remains inventoried
-// when moved into the package. Nonvisual classes need an explicit disposition.
-// App-coupled shared widgets follow feature naming without the Catch prefix,
-// so their public widget classes are inventoried by base type instead.
-List<Map<String, Object?>> _coreSurface() {
-  final files = [
-    for (final root in [
-      'lib/contexts',
-      'lib/pages/startup',
-      'lib/platform/media',
-      'lib/platform/riverpod_ui',
-      'packages/catch_ui/lib/src/primitives',
-      'packages/catch_ui/lib/src/components',
-      'packages/catch_ui/lib/src/patterns',
-    ])
-      if (Directory(root).existsSync())
-        ...Directory(root)
-            .listSync(recursive: true)
-            .whereType<File>()
-            .map((file) => file.path)
-            .where((path) => path.endsWith('.dart'))
-            .where(
-              (path) =>
-                  !path.startsWith('lib/contexts/') ||
-                  isAppSharedWidgetSource(path),
-            ),
-  ]..sort();
-  return [
-    for (final file in files)
-      for (final node in _unit(file).declarations.whereType<ClassDeclaration>())
-        if (node.namePart.typeName.lexeme.startsWith('Catch') ||
-            (isAppSharedWidgetSource(file) &&
-                !node.namePart.typeName.lexeme.startsWith('_') &&
-                (node.extendsClause?.superclass.toSource() ?? '').endsWith(
-                  'Widget',
-                )))
-          {
-            'name': node.namePart.typeName.lexeme,
-            'file': file,
-            'line': _unit(file).lineInfo.getLocation(node.offset).lineNumber,
-            'base': node.extendsClause?.superclass.toSource(),
-            'interfaces': [
-              for (final type
-                  in node.implementsClause?.interfaces ?? <NamedType>[])
-                type.toSource(),
-            ],
-            'generated': file.endsWith('.g.dart'),
-          },
-  ];
-}
-
 Map<String, Object?> readWidgetbookInventory({String repoRoot = '.'}) {
   final originalDirectory = Directory.current;
   Directory.current = Directory(repoRoot).absolute;
@@ -385,7 +332,6 @@ Map<String, Object?> _readWidgetbookInventory() {
       ),
   };
   return {
-    'coreSurface': _coreSurface(),
     'cases': cases,
     'generated': [
       for (final entry in generated.cases)
@@ -399,5 +345,3 @@ Map<String, Object?> _readWidgetbookInventory() {
     ],
   };
 }
-
-void main() => stdout.writeln(jsonEncode(readWidgetbookInventory()));

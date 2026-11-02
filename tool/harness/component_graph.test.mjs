@@ -900,17 +900,6 @@ test("shared React build configuration expands to both web consumers", () => {
   assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "tools"]);
 });
 
-test("Flutter field adoption stays on the Flutter design lane", () => {
-  const result = plan("design/components/flutter_field_surface_adoption.json");
-  assert.deepEqual(result.directComponents, ["app.design-field-adoption"]);
-  assert.deepEqual(result.affectedComponents, []);
-  assert.deepEqual(result.operations.ciTargets, [
-    "flutter",
-    "tools",
-    "visual_integration",
-  ]);
-});
-
 test("authored contracts expand to every declared validation consumer", () => {
   const result = plan("contracts/users/v1.schema.json");
   assert.deepEqual(result.directComponents, ["contracts.source"]);

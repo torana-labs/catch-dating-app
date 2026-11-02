@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {stripCommentsAndStrings} from './generate_flutter_field_surface_inventory.mjs';
+import {scanDartSource} from '../lib/dart_source.mjs';
 
 // These are the migrated operational surfaces, not a global ban on form cards.
 export const hostSectionSources = [
@@ -13,7 +13,7 @@ export const hostSectionSources = [
 ];
 
 export function hostSectionCompositionProblems(source, file) {
-  const code = stripCommentsAndStrings(source);
+  const {code} = scanDartSource(source);
   const failures = [];
   for (const match of code.matchAll(/\bCatchSection\s*\.\s*(contained|plain|divided)\s*\(/gu)) {
     const line = code.slice(0, match.index).split('\n').length;
