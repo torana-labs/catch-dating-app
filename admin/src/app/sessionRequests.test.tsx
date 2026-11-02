@@ -1,16 +1,13 @@
 import {act, cleanup, render, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {AdminQueryProvider} from "../shared/query/queryClient";
-import {useMessagingBudgetController} from "../features/finance/controllers/useMessagingBudgetController";
-import {useFinanceOpsController} from "../features/finance/controllers/useFinanceOpsController";
-import {sampleOverview, sampleHostAnalytics} from "../shared/api/sampleData";
+import {useMessagingBudgetController} from "../features/settings/controllers/useMessagingBudgetController";
 
 const mocks = vi.hoisted(() => ({
   loadMessagingBudgetReview: vi.fn(), recordMessagingBudgetDecision: vi.fn(),
-  stageApprovedMessagingBudget: vi.fn(), loadFinanceOverview: vi.fn(),
-  loadFinanceHostAnalytics: vi.fn(),
+  stageApprovedMessagingBudget: vi.fn(),
 }));
-vi.mock("../features/finance/api/financeOpsRepository", () => mocks);
+vi.mock("../features/settings/api/grantedPlansRepository", () => mocks);
 const baseReview = {
   review: {
     runtime: {sourceHash: "a"}, sender: {reviewHash: "b"},
@@ -21,8 +18,6 @@ const baseReview = {
 afterEach(cleanup);
 beforeEach(() => {
   mocks.loadMessagingBudgetReview.mockResolvedValue(baseReview);
-  mocks.loadFinanceOverview.mockResolvedValue(sampleOverview);
-  mocks.loadFinanceHostAnalytics.mockResolvedValue(sampleHostAnalytics);
 });
 
 describe("Retired session controller requests", () => {
@@ -50,24 +45,4 @@ describe("Retired session controller requests", () => {
     expect(mocks.loadMessagingBudgetReview).toHaveBeenCalledOnce();
   });
 
-  it("starts no further analytics request when a Finance refresh is cancelled", async () => {
-    let controller!: ReturnType<typeof useFinanceOpsController>;
-    const onError = vi.fn();
-    function Probe() {
-      controller = useFinanceOpsController({adminRoles: ["adminOwner"], onError});
-      return null;
-    }
-    const view = render(<AdminQueryProvider sessionKey="owner:1" isCurrentSession={() => true}><Probe /></AdminQueryProvider>);
-    await waitFor(() => expect(controller.isLoading).toBe(false));
-    mocks.loadFinanceOverview.mockReturnValue(new Promise(() => undefined));
-    mocks.loadFinanceHostAnalytics.mockReturnValue(new Promise(() => undefined));
-    let refreshing!: Promise<boolean>;
-    act(() => { refreshing = controller.refresh(); });
-    await waitFor(() => expect(mocks.loadFinanceOverview).toHaveBeenCalledTimes(2));
-    expect(mocks.loadFinanceHostAnalytics).toHaveBeenCalledTimes(2);
-    view.rerender(<AdminQueryProvider sessionKey="finance:2" isCurrentSession={() => true}><p>Next session</p></AdminQueryProvider>);
-    await act(async () => { await refreshing; });
-    expect(mocks.loadFinanceOverview).toHaveBeenCalledTimes(2);
-    expect(mocks.loadFinanceHostAnalytics).toHaveBeenCalledTimes(2);
-  });
 });

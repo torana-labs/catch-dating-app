@@ -576,6 +576,40 @@ Catch domains, Firebase Hosting domains, and local previews. Keep any future
 public web-abuse controls for that endpoint separate from callable App Check
 enforcement.
 
+## Backend rules
+
+No tool checks these. Hold new Functions code to them in review.
+
+- **Idempotent triggers:** every `onDocument*` or `onObject*` trigger and payment
+  webhook guards non-idempotent side effects (push, auto-id flag writes, counter
+  increments) with a deterministic `functionEventReceipts` receipt from
+  `src/shared/eventReceipts.ts`. Writes whose id is already deterministic need no
+  guard.
+- **Payments:** each provider has a signature-verified webhook and a scheduled
+  reconciliation sweep, and a pending payment document is written at order creation,
+  keyed by order id. A failed refund ends in a distinct status (`reviewRequired`)
+  with a structured alert, never silently as complete.
+- **Client ids and paths:** identifiers and storage paths from a client are
+  validated for ownership and format before use as document ids, canonical URLs or
+  slugs, or admin-SDK action targets. A profile photo `storagePath`, for example,
+  must sit under `users/{uid}/`. A client id is never trusted as a deletion target
+  or public path.
+- **Moderation boundary:** moderation runs at the write boundary, so the stored
+  document, the denormalized `lastMessagePreview` and every delivery channel never
+  carry blocked content. Publicly rendered free text (reviews, reviewer names, host
+  responses) is moderated too.
+- **Aggregation triggers:** return early when the relevant fields did not change,
+  and bound queries with `count()`, limits or incremental deltas rather than scanning
+  a whole collection or lifetime history on every write.
+- **Free text and leaks:** user free text (reviews, occupation, company, names) is
+  length-bounded on the server. Logs and client errors never carry PII or a raw
+  upstream error body such as a Google Places `error.message`.
+- **One source of logic:** authorization, eligibility, attendance and state-machine
+  logic lives in one shared module, not copies in sibling features.
+
+See [Write Path Discipline](../docs/data_contracts.md#write-path-discipline) for
+partial writes and denormalized fields.
+
 ## Request validation
 
 Callable functions that accept structured user input should use the generated

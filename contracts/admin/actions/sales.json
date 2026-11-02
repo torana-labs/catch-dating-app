@@ -631,7 +631,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/hosts",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -658,7 +658,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/hosts",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -705,7 +705,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/hosts",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -731,7 +731,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/hosts",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [

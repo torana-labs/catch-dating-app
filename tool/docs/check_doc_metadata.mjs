@@ -299,7 +299,7 @@ export function runSelfTest() {
   const result = compareDocumentMetadata({baseDocuments: base, currentDocuments: current});
   const machine = machineReferenceFindings({
     matches: [
-      {path: "tool/policy/rules.json", line: 3, text: '"docAnchor": "docs/deleted.md#scope"'},
+      {path: "tool/example_policy.json", line: 3, text: '"docAnchor": "docs/deleted.md#scope"'},
       {path: "tool/check.mjs", line: 9, text: 'const owner = "docs/decrease.md#old-heading";'},
     ],
     retiredPaths: ["docs/deleted.md"],
@@ -523,7 +523,7 @@ export function retiredDocumentReferences({paths, readSource, retiredPaths}) {
   return findings;
 }
 
-/** GitHub-style heading slug; enforcement-integrity docAnchors share this. */
+/** GitHub-style heading slug; baseline targetPhase references share this. */
 export function slugifyHeading(heading, {preserveSpaces = false} = {}) {
   return heading
     .trim()

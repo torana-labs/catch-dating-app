@@ -317,7 +317,7 @@ for (const [file, target] of [
       const result = plan(filePath, mode);
       assert.equal(result.complete, true);
       assert.deepEqual(result.operations.ciTargets, [target, "policy_docs"].sort());
-      assert.deepEqual(result.operations.checkIds, ["agent:harness-v2", "meta:enforcement-integrity"]);
+      assert.deepEqual(result.operations.checkIds, ["agent:harness-v2"]);
     }
   });
 }
@@ -363,8 +363,7 @@ test("shared React validation runs both callers and retains Hosting and policy c
     const tools = planAffectedToolChecks({changedPaths: [file],
       manifest: toolsManifest, componentGraph: graph, mode});
     assert.equal(tools.mode, "affected");
-    for (const id of ["agent:harness-v2", "meta:enforcement-integrity",
-      "ci:web-hosting-delivery-workflow"]) {
+    for (const id of ["agent:harness-v2", "ci:web-hosting-delivery-workflow"]) {
       assert.ok(tools.toolIds.includes(id), `${mode} omitted ${id}`);
     }
   }
@@ -483,7 +482,6 @@ test("native build controls validate their callers with Node-only toolchain setu
       assert.equal(tools.mode, "affected");
       assert.ok(tools.toolIds.includes("env:ci-toolchain"));
       assert.ok(tools.toolIds.includes("agent:harness-v2"));
-      assert.ok(tools.toolIds.includes("meta:enforcement-integrity"));
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
     }
   }
@@ -567,6 +565,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/repository_snapshot.mjs",
       "/tool/lib/tool_impact.mjs",
+      "/tool/lib/tool_manifest_rules.mjs",
       "/tool/lib/tool_platform.mjs",
       "/tool/run.mjs",
       "/tool/tools_manifest.json",
@@ -740,10 +739,7 @@ test("agent policy remains distinct from ordinary documentation", () => {
   const result = plan("AGENTS.md");
   assert.deepEqual(result.directComponents, ["policy.agent"]);
   assert.deepEqual(result.operations.ciTargets, ["policy_docs"]);
-  assert.deepEqual(result.operations.checkIds, [
-    "docs:metadata",
-    "meta:enforcement-integrity",
-  ]);
+  assert.deepEqual(result.operations.checkIds, ["docs:metadata"]);
 });
 
 test("terminal Functions documentation never inherits deploy authority", () => {

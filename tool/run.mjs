@@ -18,6 +18,7 @@ import {
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./lib/tool_impact.mjs";
+import {validateToolRoles, validateToolRules} from "./lib/tool_manifest_rules.mjs";
 
 const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
@@ -80,6 +81,9 @@ async function checkTools(args) {
   const tools = categories.length === 0 ? selectTools(manifest, {ids}) :
     categories.flatMap((category) => selectTools(manifest, {category, ids}));
   const errors = validateManifest(manifest, loadComponentGraph());
+  if (manifestOnly) {
+    errors.push(...validateToolRoles(manifest.tools), ...validateToolRules(manifest.tools));
+  }
 
   if (errors.length > 0) {
     console.error("Tool manifest validation failed:");
@@ -355,6 +359,7 @@ function validateManifest(manifest, componentGraph) {
     }
     validateStringArrayField(tool.impactPaths, `${tool.id}.impactPaths`, errors);
     validateStringArrayField(tool.alsoCheckIds, `${tool.id}.alsoCheckIds`, errors);
+    validateStringArrayField(tool.alsoEnforces, `${tool.id}.alsoEnforces`, errors, {nonEmpty: true});
     for (const error of validateToolCiRequirements(tool)) {
       errors.push(`${tool.id ?? "<missing>"}: ${error}`);
     }
@@ -363,6 +368,9 @@ function validateManifest(manifest, componentGraph) {
     }
     if (tool.status === "active" && !hasExecutableChecks(tool)) {
       errors.push(`${tool.id ?? "<missing>"} is active but defines no checks.`);
+    }
+    if (tool.baseline && !repositorySnapshot().exists(tool.baseline)) {
+      errors.push(`${tool.id}: missing baseline ${tool.baseline}`);
     }
     if (tool.id && ids.has(tool.id)) errors.push(`Duplicate tool id: ${tool.id}`);
     if (tool.id) ids.add(tool.id);

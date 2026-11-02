@@ -3,7 +3,8 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {useSalesHostsController} from "./useSalesHostsController";
 
-const repository = vi.hoisted(() => ({listSalesAccounts: vi.fn(), getSalesAccount: vi.fn(), listSalesContacts: vi.fn(),
+const repository = vi.hoisted(() => ({addSalesEvidence: vi.fn(), listSalesEvidence: vi.fn(), listSalesEvidenceProposals: vi.fn(),
+  reviewSalesEvidenceProposal: vi.fn(), setSalesAccountSuppression: vi.fn(), listSalesAccounts: vi.fn(), getSalesAccount: vi.fn(), listSalesContacts: vi.fn(),
   recordSalesActivity: vi.fn(), upsertSalesTask: vi.fn(), upsertSalesOpportunity: vi.fn(), updateSalesAccount: vi.fn(), upsertSalesContact: vi.fn()}));
 vi.mock("../api/salesRepository", () => repository);
 
@@ -17,6 +18,8 @@ describe("useSalesHostsController", () => {
     repository.getSalesAccount.mockResolvedValue({account: {organizerId: "harbor", revision: 1, researchStatus: "qualified"},
       organizerSummary: {name: "Harbor"}, activities: [], opportunities: [], tasks: []});
     repository.listSalesContacts.mockResolvedValue({rows: [{contactId: "c1", displayName: "Kavya"}]});
+    repository.listSalesEvidence.mockResolvedValue({rows: [], nextCursor: null});
+    repository.listSalesEvidenceProposals.mockResolvedValue({rows: [], nextCursor: null});
   });
 
   it("lists a person's hosts, searches and pages, and opens one host", async () => {
@@ -97,5 +100,42 @@ describe("useSalesHostsController", () => {
     await act(async () => { done = await result.current.saveDeal(null, {stage: "new_enquiry", nextStep: "Call", nextStepAt: null}); });
     expect(done).toBe(false);
     expect(onError).toHaveBeenLastCalledWith("Someone updated this opportunity. Reload before saving.");
+  });
+
+  it("records evidence, reviews the suggestion the person read, and sets a hold bound to what they opened", async () => {
+    const {wrapper} = createQueryHarness();
+    const onNotice = vi.fn();
+    repository.listSalesEvidence.mockResolvedValue({rows: [{evidenceId: "e1"}], nextCursor: "page-2"});
+    repository.listSalesEvidenceProposals.mockResolvedValue({rows: [{proposalId: "p1", revision: 2}], nextCursor: null});
+    const {result} = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "dev", onError: vi.fn(), onNotice}), {wrapper});
+    await waitFor(() => expect(result.current.evidence).toEqual([{evidenceId: "e1"}]));
+    await waitFor(() => expect(result.current.suggestions).toHaveLength(1));
+    expect(result.current.hasMoreEvidence).toBe(true);
+    await act(async () => { await result.current.addEvidence({claimKey: "identity", sourceType: "human_note", sourceRef: "Call", observedAt: "2026-11-01T00:00:00.000Z", confidence: "low"}); });
+    expect(repository.addSalesEvidence.mock.calls[0][0]).toMatchObject({organizerId: "harbor", sourceRef: "Call", requestId: expect.any(String)});
+    await act(async () => { await result.current.reviewSuggestion(result.current.suggestions[0]!, "accept", "Checked the page"); });
+    expect(repository.reviewSalesEvidenceProposal.mock.calls[0][0]).toMatchObject({organizerId: "harbor", proposalId: "p1",
+      expectedRevision: 2, decision: "accept", reason: "Checked the page"});
+    expect(onNotice).toHaveBeenCalledWith("Suggestion accepted.");
+    await act(async () => { await result.current.setHold(7, "held", "Asked us to pause"); });
+    expect(repository.setSalesAccountSuppression.mock.calls[0][0]).toMatchObject({organizerId: "harbor", expectedRevision: 7,
+      status: "held", reason: "Asked us to pause"});
+    await act(async () => result.current.moreEvidence());
+    await waitFor(() => expect(repository.listSalesEvidence).toHaveBeenCalledWith("harbor", "page-2"));
+  });
+
+  it("says when evidence or suggestions could not be loaded, and an error from saving comes back as false", async () => {
+    const {wrapper} = createQueryHarness();
+    const onError = vi.fn();
+    repository.listSalesEvidence.mockRejectedValue(new Error("nope"));
+    repository.listSalesEvidenceProposals.mockRejectedValue(new Error("nope"));
+    repository.setSalesAccountSuppression.mockRejectedValue(new Error("Account changed since review."));
+    const {result} = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "dev", onError, onNotice: vi.fn()}), {wrapper});
+    await waitFor(() => expect(result.current.evidenceFailed).toBe(true), {timeout: 5000});
+    await waitFor(() => expect(result.current.suggestionsFailed).toBe(true), {timeout: 5000});
+    let saved = true;
+    await act(async () => { saved = await result.current.setHold(1, "clear", "x"); });
+    expect(saved).toBe(false);
+    expect(onError).toHaveBeenCalledWith("Account changed since review.");
   });
 });

@@ -182,27 +182,21 @@ describe("useSalesWorkspaceController", () => {
     }
   });
 
-  it("pages contacts and evidence by organizer without an all-record scan", async () => {
+  it("pages contacts by organizer without an all-record scan", async () => {
     const {wrapper} = createQueryHarness();
     repository.getSalesAccount.mockResolvedValue({account: {organizerId: "host-one"},
       organizerSummary: {}, activities: [], opportunities: [], tasks: []});
     repository.listSalesContacts.mockResolvedValueOnce({rows: [],
       nextCursor: "contact-page-two"}).mockResolvedValue({rows: [], nextCursor: null});
-    repository.listSalesEvidence.mockResolvedValueOnce({rows: [],
-      nextCursor: "evidence-page-two"}).mockResolvedValue({rows: [], nextCursor: null});
     const {result} = renderHook(() => useSalesWorkspaceController({
       area: "hosts", selectedOrganizerId: "host-one",
       onError: vi.fn(), onNotice: vi.fn(),
     }), {wrapper});
     await waitFor(() => expect(result.current.contacts.data?.nextCursor)
       .toBe("contact-page-two"));
-    await waitFor(() => expect(result.current.evidence.data?.nextCursor)
-      .toBe("evidence-page-two"));
-    act(() => {result.current.nextContactPage(); result.current.nextEvidencePage();});
+    act(() => {result.current.nextContactPage();});
     await waitFor(() => expect(repository.listSalesContacts)
       .toHaveBeenCalledWith("host-one", "contact-page-two"));
-    await waitFor(() => expect(repository.listSalesEvidence)
-      .toHaveBeenCalledWith("host-one", "evidence-page-two"));
   });
 
   it("does not report an import apply success when the server rejects the reviewed hash", async () => {

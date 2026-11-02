@@ -63,12 +63,12 @@ Files inspected:
 - `admin/src/features/safety/ui/SafetyRouteScreen.tsx`
 - `admin/src/features/safety/ui/SafetyScreen.tsx`
 - `admin/src/features/safety/ui/SafetyActionSheetWorkspace.tsx`
-- `admin/src/features/growth/api/growthKpiRepository.ts`
-- `admin/src/features/growth/controllers/useGrowthKpiController.ts`
-- `admin/src/features/growth/ui/GrowthKpiScreen.tsx`
-- `admin/src/features/finance/api/financeOpsRepository.ts`
-- `admin/src/features/finance/controllers/useFinanceOpsController.ts`
-- `admin/src/features/finance/ui/FinanceOpsScreen.tsx`
+- `admin/src/features/growth/api/growthRepository.ts`
+- `admin/src/features/growth/controllers/useGrowthController.ts`
+- `admin/src/features/growth/ui/GrowthScreen.tsx`
+- `admin/src/features/money/api/moneyRepository.ts`
+- `admin/src/features/money/controllers/useMoneyIssuesController.ts`
+- `admin/src/features/money/ui/MoneyScreen.tsx`
 - `admin/src/features/events/api/eventPublishingRepository.ts`
 - `admin/src/features/events/controllers/useEventPublishingController.ts`
 - `admin/src/features/events/controllers/eventPublishingHelpers.ts`
@@ -150,7 +150,7 @@ placeholder screen structure.
 | Overview | `features/overview` repository, controller, and UI | `loadOverview`, `loadHostAnalytics`, local-preview fallbacks | refresh scoped analytics and route each queue row to its owning workflow | Good read-only command center; metric drilldown, saved filters, and pagination remain |
 | Safety | `features/safety` | aggregate overview safety counts, capped queue previews, plus `adminGetSafetyTriageDetails` detail reads | inspect aggregate queue health and explicitly scoped preview analytics, filter/select triage rows, inspect normalized detail, assignment/SLA/evidence, assign owner, mark an explicitly selected row reviewed/dismissed with required notes | Partial triage workflow; honest queue-health analytics, assignment, and status-only decisions are wired, while full-backlog aging, escalation, restrictions, and resolution actions still need backend contracts |
 | Launch access | `features/access`; Overview provides route-only queue previews | `adminGetOverview` capped access queue; direct `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | URL-owned list/detail review, inspect source evidence, enter a required note/cohort, choose exact backed outcomes, receive completion feedback | Real launch-gate review workflow; full directory, cohort catalogue, invitation, notification, and durable history still need contracts |
-| Growth | `features/growth` | independently loaded overview metrics and host analytics | inspect four backed outcomes, apply endpoint-owned range, filter URL-owned signals, inspect accessible trend/table and source basis | Complete approved read-only KPI workflow; cohort conversion, attribution, referral, paid ROI, and retention claims remain absent |
+| Growth | `features/growth` | `adminGetGrowth` over organizer growth facts, bills, credit and ad spend; `adminManageNominatorCredits` | read cohorts, channels and ads, nominators and best organizers over a range; approve nominator credit and record it paid | Per-campaign ad tables and export remain absent |
 | Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
 | Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake and Automation read canonical operations records through `adminListIntakeOperations`; reviewed organizer candidates create fail-closed drafts through `adminCreateOrganizerDraftFromCandidate`; typed synthetic records support sample/Storybook views without operational snapshots | review event and organizer intake, create an unclaimed hidden organizer draft, inspect persisted shadow runs and human exceptions | Strong but dense; candidate handoffs persist through curation receipts, while Automation remains read-only and publication/crawling/ownership stay separately gated |
 | Organizers | `features/organizers` | canonical `organizers/{id}` plus `clubs/{id}` compatibility list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, receive an Intake draft handoff, inspect one record, edit governed enum and launch-market fields, follow field-targeted blockers and evidence-checklist tasks, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake can scaffold a hidden draft but cannot publish, index, crawl, or assign ownership |
@@ -363,27 +363,27 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Growth is feature-owned under `features/growth` and has a dedicated
-  read-only KPI workspace.
-- Good: it combines overview metrics and host analytics into acquisition,
-  supply, conversion, and marketplace stages with range and stage filters plus
-  booking trend buckets, and labels the combined dashboard timestamp as load
-  time rather than source-generated attribution.
-- Good: the KPI table now has explicit signal selection and a detail panel for
-  metric value, stage, status, source, and source-specific detail.
-- Good: the route wrapper now delegates its rendered body to registered
-  `GrowthKpiWorkspace`, giving Storybook deterministic route/workspace coverage
-  for signal filters, selected detail, and booking trend buckets without
-  running live query fetches in previews.
-- Weak: no channel attribution, referral graph, cohort analysis, campaign
-  action workflow, export workflow, or linked anomaly drilldown exists yet.
+- Good: Growth (`features/growth`, Admin redesign PR 13) reads organizer growth
+  facts through `adminGetGrowth`. It has four views:
+  - Cohorts: listed, claimed and ran an event by listing month, with median
+    days and ticket sales per organizer by month on Catch.
+  - Channels and ads: one first-touch channel per organizer, with what each
+    channel costs, cost per claim and cost per paying organizer.
+  - Nominators: nominator credit approved and recorded as paid through
+    `adminManageNominatorCredits`.
+  - Best organizers: ranked by what Catch earned in the last 90 days.
+- Good: the range is 90 days, 12 months or all. The view and nominator are in
+  the address (`/growth/channels`, `/growth/nominators/:uid`).
+- Weak: ad spend waits for the Meta token (GitHub issue #1364), Google Ads is
+  not connected, and there is no per-campaign table or export yet.
+- Retired: the Growth KPI signal directory. Signups this week and completed
+  profiles moved to Needs you, and its host analytics stay on Marketplace and
+  Data quality.
 
 Recommended next work:
 
-- Add channel/cohort/referral dimensions to the analytics contracts and
-  BigQuery marts before adding campaign workflows.
-- Keep campaign tasking and export actions out of Growth until attribution
-  contracts exist.
+- Per-campaign spend and claims once Meta spend is flowing.
+- An export for the four views.
 
 ### Marketing
 
@@ -746,31 +746,20 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Finance is feature-owned under `features/finance` and has a dedicated
-  read-only issue workspace.
-- Good: it combines overview payment issue rows, host analytics payment
-  anomalies, payout restriction counts, search/filter controls, and an
-  explicit issue detail panel.
-- Good: selected rows now show deterministic provider authority, source model,
-  reconciliation status, required evidence, blocked actions, and mutation
-  boundary, so operators can distinguish canonical payment rows, event
-  analytics aggregates, and payout restriction aggregates before touching
-  provider systems.
-- Good: the route wrapper now delegates its rendered body to registered
-  `FinanceOpsWorkspace`, giving Storybook deterministic route/workspace
-  coverage for issue rows, selected detail, and reconciliation evidence without
-  running live query fetches in previews.
-- Weak: no provider ledger, payout lifecycle, reconciliation detail, refund
-  execution, export, or audited finance mutation path exists yet. The tab
-  deliberately surfaces the missing evidence instead of offering retry, refund,
-  payout, or settlement buttons.
-
-Recommended next work:
-
-- Define provider-led ledger/read-model contracts before adding any money
-  movement or reconciliation actions.
-- Keep refund, payout release, and settlement edits out of the tab until each
-  action has an audited finance callable and role gate.
+- Money (`features/money`, Admin redesign PR 10a) replaces the read-only
+  Finance issue workspace:
+  - Payment issues arrive as a queue from `adminManagePaymentIssues`: payments
+    not admitted, refunds pending, payments needing review, failed app
+    bookings and overdue bills.
+  - "Confirm the booking" runs the payment processor's reconcile. Every action
+    is audited.
+  - The month's bills to organizers are sent, reminded, marked paid or written
+    off through `adminManageOrganizerBills`.
+- Finance (`features/finance`, PR 14) shows the month line by line from
+  `adminGetFinanceMonth`, takes costs entered by hand, and downloads the
+  ledger for Zoho Books.
+- Weak: refunds still happen in the organizer's Razorpay and are recorded
+  here. Reminders are recorded, not yet sent to organizers.
 
 ### Data Quality
 
@@ -923,34 +912,40 @@ and approve, hold, or reject candidates.
 
 Current fit: present. Actual canonical import remains policy-limited.
 
-### Finance: Commercial Terms
+### Settings: Payments
 
-As Finance or the Admin Owner, I need to see and change what Catch charges
-hosts without calling callables or pasting values.
+As the Admin Owner, I need to see and change what Catch charges organizers, who
+collects each kind of payment, the partner credit rule and GST, without
+calling callables or pasting values.
 
-Current fit: present at `/finance/commercial-terms` (feature
-`features/commercial-terms`). It shows the platform defaults and their newest
-revisions with what changed, offers the owner's 30 Oct 2026 decision as the
-starting draft while platform terms are unsaved, and saves only after a
-field-by-field preview against the reviewed revision and a reason. Organizer
-overrides are listed, found by name, and edited at
-`/finance/commercial-terms/organizers/{organizerId}`, where every unticked
-term reads as inherited. An unconfirmed save is retried exactly; a conflict
-keeps the draft and asks for a fresh review. Only the Admin Owner sees it.
+Current fit: `/settings/payments` (feature `features/settings`, Admin redesign
+PR 10b) shows:
+- Platform terms, who collects what, partner credit, tax and invoices, and
+  organizers on their own terms.
 
-### Finance: Payment Routing
+Each "Change" opens an editor in the detail pane:
+- `/settings/payments/terms`: the platform terms. While they are unsaved, it
+  offers the owner's 30 Oct 2026 decision as the starting draft.
+- `/settings/payments/organizer-terms/{organizerId}`: one organizer's own terms.
+  Every unticked term follows the platform terms.
+- `/settings/payments/collection`: who collects event tickets, form fees and
+  host memberships, and in which mode. Turning a purpose live, choosing the
+  Route split or turning it off needs the phrase typed.
+- `/settings/payments/credit`: the nominator credit rule and the bill due day.
 
-As Finance or the Admin Owner, I need to see who collects event tickets, form
-fees and host memberships, in which mode, and change it safely.
+Rules that carry over from the old Commercial terms and Payment routing
+workspaces:
+- Terms and routing are saved only after a field-by-field preview against the
+  reviewed revision. An unconfirmed save is retried exactly.
+- The GST switch asks for confirmation.
+- The monthly ledger CSV downloads for Zoho Books.
 
-Current fit: present at `/finance/payment-routing` (feature
-`features/payment-routing`) for the app policy. Each purpose shows its route
-(host collects through `razorpayOAuth`, or Catch splits through
-`razorpayRoute`) and a test or live badge. A change is previewed against the
-saved revision, and turning a purpose live, choosing the Route split or turning
-it off needs the phrase typed. Before the first app policy exists, the screen
-says that form fees follow each organizer's own connection and that saving
-replaces that. Organizer overrides are not edited here.
+"Granted by hand" (PR 10c) has two editors:
+- `/settings/payments/plans`: load an organizer's entitlement ledger, grant a
+  plan against a settled invoice, or revoke one. Unconfirmed grants and
+  revocations are retried exactly.
+- `/settings/payments/messaging`: review one event's messaging setup, record a
+  decision and stage paused ceilings.
 
 ### Intake: Organizers
 

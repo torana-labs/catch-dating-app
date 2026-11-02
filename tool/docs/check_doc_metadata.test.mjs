@@ -484,7 +484,7 @@ test("heading anchors follow GitHub slugs and ignore fenced examples", () => {
 
 test("machine references to removed documents and headings fail; old gaps are advisory", () => {
   const matches = [
-    {path: "tool/policy/rules.json", line: 4, text: '"docAnchor": "docs/plans/old.md#scope"'},
+    {path: "tool/example_policy.json", line: 4, text: '"docAnchor": "docs/plans/old.md#scope"'},
     {path: "tool/check.mjs", line: 7, text: 'read("../../docs/plans/old.md")'},
     {path: "website/README.txt", line: 1, text: "website/docs/plans/old.md and docs/plans/old.mdx"},
     {path: "tool/owner.json", line: 2, text: '"docs/guide.md#usage", "docs/guide.md#kept"'},
@@ -507,7 +507,7 @@ test("machine references to removed documents and headings fail; old gaps are ad
     readTarget: (file) => sources.target[file],
   });
   assert.deepEqual(result.findings.map((row) => [row.kind, row.path, row.line, row.target, row.fragment]), [
-    ["retired-document-machine-reference", "tool/policy/rules.json", 4, "docs/plans/old.md", undefined],
+    ["retired-document-machine-reference", "tool/example_policy.json", 4, "docs/plans/old.md", undefined],
     ["retired-document-machine-reference", "tool/check.mjs", 7, "docs/plans/old.md", undefined],
     ["removed-document-anchor", "tool/owner.json", 2, "docs/guide.md", "usage"],
     ["retired-document-machine-reference", "lib/styles.dart", 9, "docs/plans/old.md", undefined],
@@ -528,7 +528,7 @@ test("CLI rejects registry and code references to removed documents and headings
     };
     write("docs/old.md", "# Old\n");
     write("docs/guide.md", "# Guide\n\n## Scope\n");
-    write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#scope"}\n');
+    write("tool/example_policy.json", '{"docAnchor": "docs/guide.md#scope"}\n');
     write("tool/check.mjs", 'const owner = "docs/old.md";\n');
     write("lib/styles.dart", "/// Approved in `old.md`.\n");
     git(repo, ["add", "."]);
@@ -549,16 +549,16 @@ test("CLI rejects registry and code references to removed documents and headings
     git(repo, ["add", "-A"]);
     git(repo, ["commit", "-qm", "break consumers"]);
     const broken = git(repo, ["rev-parse", "HEAD"]).trim();
-    git(repo, ["update-index", "--skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
+    git(repo, ["update-index", "--skip-worktree", "tool/example_policy.json", "tool/check.mjs"]);
     fs.rmSync(path.join(repo, "tool"), {recursive: true});
     assert.deepEqual(kinds(run()), ["removed-document-anchor", "retired-document-machine-reference",
       "retired-document-machine-reference"]);
-    git(repo, ["update-index", "--no-skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
+    git(repo, ["update-index", "--no-skip-worktree", "tool/example_policy.json", "tool/check.mjs"]);
     git(repo, ["checkout", "--", "tool"]);
     assert.deepEqual(kinds(run("--ref", broken)), ["removed-document-anchor", "retired-document-machine-reference",
       "retired-document-machine-reference"]);
 
-    write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#ownership"}\n');
+    write("tool/example_policy.json", '{"docAnchor": "docs/guide.md#ownership"}\n');
     write("tool/check.mjs", 'const owner = "docs/guide.md";\n');
     const bare = run();
     assert.equal(bare.status, 1, bare.stderr);

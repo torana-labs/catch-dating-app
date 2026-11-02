@@ -141,7 +141,6 @@
                   "{workspaceRoot}/docs/agent_operating_model.md",
                   "{workspaceRoot}/docs/agent_skills/**/*",
                   "{workspaceRoot}/tool/README.md",
-                  "{workspaceRoot}/tool/policy/**/*",
                   "{workspaceRoot}/tool/tools_manifest.json",
                   "{workspaceRoot}/tool/run.mjs",
                   "{workspaceRoot}/tool/harness.mjs",

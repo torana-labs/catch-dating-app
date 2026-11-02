@@ -94,7 +94,6 @@ export interface AdminAreaContext {
   /** This person's navigation, for the phone's More page. */
   navigation: CatchTabBarItem[];
   canManageCommercialTerms: boolean;
-  financeWorkspaceSwitch: ReactNode;
   setError: (message: string | null) => void;
   setNotice: (message: string | null) => void;
   setMarketingDirty: (dirty: boolean) => void;

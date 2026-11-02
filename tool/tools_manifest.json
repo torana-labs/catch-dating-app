@@ -4,7 +4,7 @@
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
-      "meta:enforcement-integrity",
+      "meta:tool-manifest",
       "meta:brand-literals",
       "meta:repository-root-hygiene",
       "operations:boundaries"
@@ -117,22 +117,7 @@
       "checks": [
         "node --check tool/run.mjs",
         "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs tool/lib/cli_args.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/run.test.mjs",
-        "contains": [
-          "unknown commands and empty filtered selections fail clearly",
-          "direct check selection rejects inactive and unknown ids",
-          "unknown Harness ownership refuses affected-tool execution before dispatch",
-          "affected-tool routing selects owners and mandatory guards",
-          "the runner executes manifest checks without task authority metadata",
-          "manifest validation rejects vacuous tools before dispatch",
-          "manifest validation rejects malformed safety and platform metadata",
-          "manifest validation rejects unregistered scripts and duplicate ids",
-          "import-derived owners select only the tools that reach a changed file"
-        ]
-      }
+      ]
     },
     {
       "id": "functions:emulator-test-selection",
@@ -153,11 +138,7 @@
         "node --check tool/impact/emulator_test_selection.mjs",
         "node --test tool/lib/functions_test_selection.test.mjs"
       ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/lib/functions_test_selection.test.mjs"
-      }
+      "role": "generator"
     },
     {
       "id": "tool:import-owners",
@@ -177,18 +158,14 @@
         "node --check tool/impact/import_owners.mjs",
         "node --test tool/lib/tool_import_graph.test.mjs"
       ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/lib/tool_import_graph.test.mjs"
-      }
+      "role": "generator"
     },
     {
-      "id": "meta:enforcement-integrity",
+      "id": "meta:tool-manifest",
       "category": "meta",
-      "path": "tool/check_enforcement_integrity.mjs",
-      "command": "node tool/check_enforcement_integrity.mjs",
-      "safety": "local",
+      "path": "tool/lib/tool_manifest_rules.mjs",
+      "command": "node tool/run.mjs check --manifest-only",
+      "safety": "local-readonly",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -197,28 +174,15 @@
         ]
       },
       "role": "gate",
-      "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and baseline ownership and target-zero phase references without requiring tracked metric receipts.",
+      "description": "Validates the tool manifest: ids, paths and CI requirements, each tool's role, that a gate or ratchet has a check that executes it, that an internal gate's node tests run under an active tool, and that every rule sits complete on one active tool.",
       "checks": [
-        "node --check tool/check_enforcement_integrity.mjs",
-        "node --test tool/check_enforcement_integrity.test.mjs",
-        "node tool/check_enforcement_integrity.mjs"
+        "node --check tool/lib/tool_manifest_rules.mjs",
+        "node --test tool/lib/tool_manifest_rules.test.mjs",
+        "node tool/run.mjs check --manifest-only"
       ],
       "impactPaths": [
-        "tool/check_enforcement_integrity.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/check_enforcement_integrity.test.mjs",
-        "contains": [
-          "fails when an active rule has no enforcement",
-          "fails satisfied sunset signals without review",
-          "fails role-less covered runtime tools",
-          "fails gate tools that only run count or syntax checks",
-          "accepts ratchet baselines without a separate metric receipt",
-          "every baseline requires ownership and a real target phase even without a tool binding",
-          "baseline ownership rejects placeholders and missing phase anchors while accepting owned fixtures"
-        ]
-      }
+        "tool/lib/tool_manifest_rules.test.mjs"
+      ]
     },
     {
       "id": "git:audit-merge-drops",
@@ -232,15 +196,7 @@
         "node --check tool/git/audit_merge_drops.mjs",
         "node --test tool/git/audit_merge_drops.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/git/audit_merge_drops.test.mjs",
-        "contains": [
-          "classifyMergeTrees reports exact discards, divergence, equivalence, add, and delete",
-          "CLI audits temporary Git refs and strict mode rejects then accepts a receipt"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "docs:metadata",
@@ -267,19 +223,20 @@
       ],
       "role": "gate",
       "rules": [
-        "DOC-HYGIENE-001",
-        "WIDGET-CATALOG-001"
+        {
+          "id": "DOC-HYGIENE-001",
+          "title": "Prefer versioned owners over new markdown sprawl",
+          "appliesTo": [
+            "docs/**",
+            "PROJECT_CONTEXT.md",
+            "README.md"
+          ],
+          "instruction": "Update an existing source-of-truth document before creating a new one. Mark stale snapshots historical or delete them after their durable content moves. Markdown frontmatter is the document's metadata authority; do not update a parallel version catalog."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/docs/check_doc_metadata.test.mjs",
-        "contains": [
-          "governed source requires complete metadata and unique identity",
-          "comparison rejects decreases and identity swaps while reporting deletions",
-          "known-bad self-test proves decrease detection and deletion reporting",
-          "widget catalog stays current inventory instead of inline history"
-        ]
-      }
+      "alsoEnforces": [
+        "WIDGET-CATALOG-001"
+      ]
     },
     {
       "id": "agent:harness-v2",
@@ -300,8 +257,7 @@
         "tool/check_repository_root_hygiene.test.mjs",
         "tool/lib/path_glob.mjs",
         "tool/lib/path_glob.test.mjs",
-        "design/features/admin_*.feature.json",
-        "tool/policy/rules.json"
+        "design/features/admin_*.feature.json"
       ],
       "description": "Plans fail-closed CI, release, and deploy impact from the source-owned component graph and runs only explicitly allowlisted compile-codegen checks.",
       "checks": [
@@ -313,16 +269,24 @@
       ],
       "role": "gate",
       "rules": [
-        "AGENT-HARNESS-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/harness/harness_cli.test.mjs",
-        "contains": [
-          "bounded plan outputs contain no changed-path inventory",
-          "plan CLI fails closed before writing outputs for an unknown path"
-        ]
-      }
+        {
+          "id": "AGENT-HARNESS-001",
+          "title": "Use read-only impact planning for broad AI-assisted work",
+          "appliesTo": [
+            "AGENTS.md",
+            "CLAUDE.md",
+            "PROJECT_CONTEXT.md",
+            "docs/agent_operating_model.md",
+            "docs/agent_skills/**",
+            "tool/agent/**",
+            "tool/harness.mjs",
+            "tool/harness/**",
+            "tool/lib/repository_snapshot.mjs",
+            "tool/lib/repository_snapshot.test.mjs"
+          ],
+          "instruction": "For broad work, inspect the Git diff and use the read-only Catch planner to explain affected components and checks. Run the selected checks and preserve proof in Git and CI. Do not write registry receipts, readiness metrics, or regression ledgers."
+        }
+      ]
     },
     {
       "id": "agent:verify-local",
@@ -342,15 +306,7 @@
         "node --check tool/harness/lib/workflow_steps.mjs",
         "node --test tool/harness/workflow_steps.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/harness/workflow_steps.test.mjs",
-        "contains": [
-          "the real flutter workflow yields its known gates",
-          "every ciTarget in the component graph resolves to a workflow"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "git:worktree-guard",
@@ -376,28 +332,24 @@
       ],
       "role": "gate",
       "rules": [
-        "AGENT-DELEGATION-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/git/worktree_guard.test.mjs",
-        "contains": [
-          "start refuses overlapping claims and permits disjoint worktrees",
-          "doctor detects committed out-of-scope changes while keeping committed in-scope work clean",
-          "finish refuses uncommitted, upstream-less, and unpushed unique work",
-          "finish abandon releases clean unpushed out-of-scope work with an attributable record",
-          "finish abandon requires a reason and refuses a dirty worktree",
-          "stale reports old claims and unclaimed worktrees without deleting either",
-          "retire reports before applying and repeated merged closeout is idempotent",
-          "retire proves full squash paths and keeps unique history in local and live remote refs",
-          "retire refuses partial squash incorporation, stale main and stale remote recovery",
-          "retire preserves dirty, untracked, ignored files and common stashes",
-          "retire requires exact identity, external clearance and no foreign active claims",
-          "retire retains the claim after a normal Git refusal and never forces removal",
-          "retire treats pattern-bearing task filenames literally during squash verification",
-          "retire refuses omitted filenames with leading Git pathspec magic"
-        ]
-      }
+        {
+          "id": "AGENT-DELEGATION-001",
+          "title": "Keep parallel agent work parent-integrated and worktree-isolated",
+          "appliesTo": [
+            "AGENTS.md",
+            "docs/agent_operating_model.md",
+            "docs/agent_skills/**",
+            "tool/agent/**",
+            "tool/git/worktree_guard.mjs",
+            "tool/harness.mjs",
+            "tool/harness/**",
+            "tool/tools_manifest.json",
+            "lib/**",
+            "test/**"
+          ],
+          "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse ordinary handoff while unique work is uncommitted or unpushed, and run final verification in the integration branch. Reject stale launcher lifecycle files; plain finish must not release a claim. Explicit retained handoff preserves the original claim and states its next action. Keep the task claim through acceptance, then use the existing dry-run retire and normally admitted non-forced apply path. Prove accepted-source equivalence and exact recovery, preserve dirty/untracked/ignored files and active ownership, and report retirement or its exact accountable retention reason and next action. External acceptance, cross-clone ownership/runtime clearance and deletion authority are named manual completion checks. A deliberately superseded claim may be abandoned only from a clean worktree with an attributable local reason record. Keep coordination state local and disposable; do not write delegation metrics or tracked receipts."
+        }
+      ]
     },
     {
       "id": "git:worktree-bootstrap",
@@ -454,17 +406,20 @@
       ],
       "role": "gate",
       "rules": [
-        "GENERATED-ARTIFACT-DRIFT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/git/pre_commit_generated_artifacts.test.mjs",
-        "contains": [
-          "every catalogued committed compile generator has a staged-source trigger",
-          "partially staged Dart fails before formatting can stage unrelated work",
-          "contract drift reports the exact regeneration command"
-        ]
-      }
+        {
+          "id": "GENERATED-ARTIFACT-DRIFT-001",
+          "title": "Keep committed generated artifacts synchronized before review",
+          "appliesTo": [
+            "contracts/**",
+            "copy/**",
+            "lib/l10n/**",
+            "tool/git/hooks/**",
+            "tool/git/pre_commit_generated_artifacts.mjs",
+            "tool/harness/component_graph.json"
+          ],
+          "instruction": "Install the repository-local pre-commit hook. Regenerate localization inputs, format staged Dart without absorbing partial work, and run the source-owned freshness check for every triggered committed compile-codegen output before review."
+        }
+      ]
     },
     {
       "id": "git:branch-hygiene",
@@ -491,16 +446,19 @@
       ],
       "role": "gate",
       "rules": [
-        "GIT-BRANCH-HYGIENE-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/git/branch_hygiene.test.mjs",
-        "contains": [
-          "CLI audits remote refs, protects open PRs, and fails on abandoned code",
-          "scheduled workflow reports safe refs without granting branch deletion authority"
-        ]
-      }
+        {
+          "id": "GIT-BRANCH-HYGIENE-001",
+          "title": "Keep completed branches disposable and surface abandoned code",
+          "appliesTo": [
+            ".github/workflows/branch-hygiene.yml",
+            "docs/release_operations.md",
+            "tool/git/branch_hygiene.mjs",
+            "tool/git/branch_hygiene.test.mjs",
+            "tool/tools_manifest.json"
+          ],
+          "instruction": "Delete single-use branches after semantic integration is proven. Audit remote refs daily, never auto-delete open-PR or unique-looking work, and fail visibly when a branch remains outside main without an open PR beyond the review window."
+        }
+      ]
     },
     {
       "id": "ci:delivery-core",
@@ -526,16 +484,7 @@
         "node --check tool/ci/delivery_core.mjs",
         "node --test tool/ci/delivery_core.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/delivery_core.test.mjs",
-        "contains": [
-          "refuses artifact tampering and mismatched expected source SHA or CI run",
-          "resumes in manifest order and treats a passed-stage replay as idempotent",
-          "refuses checkpoint provenance mismatch and malformed checkpoint order"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:form-domain-hosting",
@@ -634,11 +583,7 @@
         "node --check tool/firebase/affected_function_targets.mjs",
         "node --test tool/firebase/affected_function_targets.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/firebase/affected_function_targets.test.mjs"
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:function-release-fingerprints",
@@ -662,16 +607,7 @@
         "node --check tool/firebase/function_release_fingerprints.mjs",
         "node --test tool/firebase/function_release_fingerprints.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/function_release_fingerprints.test.mjs",
-        "contains": [
-          "shared file changes only the reachable exported behavior",
-          "changed dynamic-load consumer fails closed rather than deploying all",
-          "arbitrary dynamic loading cannot hide changes elsewhere in the package"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "ci:host-measurement-preview",
@@ -697,16 +633,7 @@
         "node --check tool/ci/host_measurement_preview.mjs",
         "node --test tool/ci/host_measurement_preview.test.mjs website/scripts/next/measurementRuntime.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/host_measurement_preview.test.mjs",
-        "contains": [
-          "measurement preview rejects other callers, reruns and unaccepted CI",
-          "measurement package rejects tampering, added files, links and source substitution",
-          "measurement serving acceptance requires exact bytes and all privacy headers"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:functions-source-closure",
@@ -733,15 +660,7 @@
         "node --test tool/firebase/check_functions_source_closure.test.mjs tool/git/pre_commit_generated_artifacts.test.mjs",
         "node tool/firebase/check_functions_source_closure.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_functions_source_closure.test.mjs",
-        "contains": [
-          "reports every unresolved production and test import",
-          "checks the staged index so an untracked file cannot mask an omission"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "ci:data-validation-workflow",
@@ -765,15 +684,7 @@
         "node --check tool/ci/data_validation_workflow.test.mjs",
         "node --test tool/ci/data_validation_workflow.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/data_validation_workflow.test.mjs",
-        "contains": [
-          "failing validator fails the step while explicit output retains its JSON",
-          "explicit output failure also fails the step"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "ci:web-hosting-delivery-package",
@@ -801,17 +712,7 @@
         "node --check tool/ci/package_web_hosting.mjs",
         "node --test tool/ci/package_web_hosting.test.mjs"
       ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/package_web_hosting.test.mjs",
-        "contains": [
-          "marketing package contains one lifecycle-hook-free target and exact byte inventory",
-          "prepare rejects the wrong production project or Hosting site",
-          "verification rejects added, removed, or modified site bytes",
-          "verification rejects run, workflow-generation, and source binding mismatches"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "ci:web-hosting-freshness",
@@ -836,15 +737,7 @@
         "node --check tool/ci/web_hosting_freshness.mjs",
         "node --test tool/ci/web_hosting_workflow.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/web_hosting_workflow.test.mjs",
-        "contains": [
-          "final promotion freshness evaluator accepts only the complete source and latest-run identity",
-          "final freshness shell retries one stale API read once, then still refuses persistent mismatch"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "ci:web-hosting-delivery-workflow",
@@ -879,19 +772,7 @@
         "node --check tool/ci/web_hosting_freshness.mjs",
         "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/web_hosting_workflow.test.mjs",
-        "contains": [
-          "standalone Host web uses the same immutable build and promotion authority",
-          "caller triggers cover the exact build dependency closure",
-          "production Hosting push filters never grant test files deploy authority",
-          "main builds the deployable Vite output once while validation-only dispatch remains a no-op",
-          "promotion downloads only the immutable artifact id and verifies bytes before credentials",
-          "stale recovery and an older partial-rerun artifact fail before mutation"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "ci:flutter-workspace-analysis",
@@ -920,16 +801,7 @@
         "node --test tool/ci/check_flutter_workspace_analysis.test.mjs",
         "node tool/ci/check_flutter_workspace_analysis.mjs --list"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/check_flutter_workspace_analysis.test.mjs",
-        "contains": [
-          "workspace plan discovers every pubspec and resolves workspace members once",
-          "workspace plan fails closed without the root package",
-          "workspace runner stops at the first nonzero package analysis"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:index-readiness-waiter",
@@ -954,16 +826,7 @@
         "node --test tool/firebase/wait_firestore_indexes_ready.test.mjs",
         "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test"
       ],
-      "role": "operator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/wait_firestore_indexes_ready.test.mjs",
-        "contains": [
-          "missing and building indexes remain pending while failed indexes stop",
-          "waiter polls metadata until every desired index is ready",
-          "gcloud query is metadata-only, project-bound, and quiet"
-        ]
-      }
+      "role": "operator"
     },
     {
       "id": "firebase:index-deploy-sanitizer",
@@ -989,18 +852,7 @@
         "node --check tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
         "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
       ],
-      "role": "operator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs",
-        "contains": [
-          "an obsolete redundant declaration is removed from only the deploy copy",
-          "a declaration still present in current source is never removed",
-          "field overrides fail closed instead of assuming a built-in index",
-          "identical historical composite duplicates are removed only from the deploy copy",
-          "deduplication retains definitions that differ in any property or field order"
-        ]
-      }
+      "role": "operator"
     },
     {
       "id": "firebase:functions-deploy-params",
@@ -1028,16 +880,7 @@
         "node --check tool/firebase/prepare_functions_params_for_deploy.mjs",
         "node --test tool/firebase/prepare_functions_params_for_deploy.test.mjs"
       ],
-      "role": "operator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/prepare_functions_params_for_deploy.test.mjs",
-        "contains": [
-          "disabled legacy Meta params remain visibly unconfigured",
-          "enabled provider requires and preserves real non-secret ids",
-          "provider enablement without real ids fails closed"
-        ]
-      }
+      "role": "operator"
     },
     {
       "id": "firebase:params-coverage",
@@ -1065,16 +908,7 @@
         "node tool/firebase/check_functions_params_coverage.mjs",
         "node --test tool/firebase/check_functions_params_coverage.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_functions_params_coverage.test.mjs",
-        "contains": [
-          "a declared param missing from the materialized set fails",
-          "dynamic names and invalid source fail closed",
-          "empty dotenv values fail coverage and duplicate keys fail closed"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "agent:context-pack",
@@ -1096,7 +930,7 @@
         "tool/lib/path_glob.test.mjs",
         "tool/lib/repository_snapshot.mjs",
         "tool/lib/repository_snapshot.test.mjs",
-        "tool/policy/rules.json"
+        "tool/lib/tool_manifest_rules.mjs"
       ],
       "description": "Prints optional read-only guidance from the current Git SHA and source-owned scope, skills, rules, owner docs, and locally safe checks. It grants no execution or write authority and stores no receipt.",
       "checks": [
@@ -1121,23 +955,9 @@
         "bash tool/flutter_with_env.test.sh"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/flutter_with_env.test.sh",
-        "contains": [
-          "resolves flavor 'host-prod'; caller supplied 'prod'",
-          "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'",
-          "Expected exact CocoaPods Git TLS failure to succeed on bounded retry.",
-          "Expected non-TLS compile failures to fail immediately without retry.",
-          "Expected CocoaPods Git TLS retries to stop after exactly three attempts.",
-          "Expected exact Gradle wrapper download failure to succeed on bounded retry.",
-          "Expected unrelated Android network-like failures to fail without retry.",
-          "Expected local Flutter builds to retain single-attempt behavior."
-        ]
-      }
+      ]
     },
     {
       "id": "audit:backend-errors",
@@ -1153,16 +973,17 @@
       ],
       "role": "gate",
       "rules": [
-        "ERROR-CATALOG-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/audit/backend_error_candidates.dart",
-        "contains": [
-          "blockingCandidates.isNotEmpty",
-          "_isBlockingCandidate"
-        ]
-      }
+        {
+          "id": "ERROR-CATALOG-001",
+          "title": "Keep the app error catalogue current",
+          "appliesTo": [
+            "lib/platform/errors/**",
+            "lib/**/presentation/**",
+            "docs/app_architecture.md"
+          ],
+          "instruction": "When adding, renaming, or removing an AppException subclass, stable error code, error mapper, AppErrorContext, branded error primitive, or repeated app-facing failure category, update the error handling contract and error quick-reference sections in docs/app_architecture.md in the same pass. Add typed exceptions only for stable product/domain errors that need branching, analytics, retry policy, or tests; use mapped copy for one-off message changes."
+        }
+      ]
     },
     {
       "id": "audit:frontend-errors",
@@ -1179,48 +1000,20 @@
       ],
       "role": "ratchet",
       "rules": [
-        "ERROR-CATALOG-001",
-        "EXTERNAL-SIDE-EFFECT-001"
+        {
+          "id": "EXTERNAL-SIDE-EFFECT-001",
+          "title": "Put plugin and platform side effects behind seams",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/platform/**"
+          ],
+          "instruction": "Store launches, URL launches, share sheets, image pickers, connectivity subscriptions, FCM setup, and other platform/plugin effects should sit behind providers/controllers/services so tests can replace them."
+        }
       ],
-      "baseline": "tool/audit/frontend_error_candidates_baseline.json",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "dart tool/audit/frontend_error_candidates.dart --self-test"
-      }
-    },
-    {
-      "id": "audit:adopted-architecture-boundaries",
-      "category": "audit",
-      "path": "tool/architecture/check_adopted_architecture_boundaries.mjs",
-      "command": "node tool/architecture/check_adopted_architecture_boundaries.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Enforces provider/routing-free imports and API usage for aligned provider-free adopters tracked in the architecture pattern registry.",
-      "checks": [
-        "node --test tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "node --check tool/architecture/check_adopted_architecture_boundaries.mjs",
-        "node tool/architecture/check_adopted_architecture_boundaries.mjs"
+      "alsoEnforces": [
+        "ERROR-CATALOG-001"
       ],
-      "role": "gate",
-      "rules": [
-        "DEPENDENCY-DIRECTION-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "contains": [
-          "scanBoundaryFile flags provider, routing, data, and repository access"
-        ]
-      },
-      "impactPaths": [
-        "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "tool/architecture/check_adopted_architecture_boundaries.mjs",
-        "tool/architecture/pattern_adoption.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node"]
-      }
+      "baseline": "tool/audit/frontend_error_candidates_baseline.json"
     },
     {
       "id": "audit:app-architecture-exhibits",
@@ -1231,26 +1024,25 @@
       "status": "active",
       "role": "gate",
       "rules": [
-        "EXHIBIT-FRESHNESS-001"
+        {
+          "id": "EXHIBIT-FRESHNESS-001",
+          "title": "Keep architecture exhibits fresh against the code they quote",
+          "appliesTo": [
+            "docs/app_architecture.md",
+            "tool/architecture/check_app_architecture_exhibits.mjs"
+          ],
+          "instruction": "Every architecture reference exhibit must declare an exhibit-freshness marker naming the exhibit and its owner, and remove stale code snippets when the reference implementation changes."
+        }
       ],
-      "description": "Checks app architecture reference exhibits for freshness markers, tracker anchor drift, and stale code snippets.",
+      "description": "Checks app architecture reference exhibits for freshness markers and stale code snippets.",
       "checks": [
         "node --check tool/architecture/check_app_architecture_exhibits.mjs",
         "node --test tool/architecture/check_app_architecture_exhibits.test.mjs",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
       "impactPaths": [
-        "tool/architecture/check_app_architecture_exhibits.test.mjs",
-        "tool/architecture/pattern_adoption.json"
+        "tool/architecture/check_app_architecture_exhibits.test.mjs"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_app_architecture_exhibits.test.mjs",
-        "contains": [
-          "flags stale event-detail snippets in screen exhibit",
-          "flags tracker anchor drift"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -1270,18 +1062,9 @@
         "node tool/architecture/check_context_map.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "CONTEXT-MAP-001"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_context_map.test.mjs",
-        "contains": [
-          "loadContextMap rejects undeclared contexts and duplicate placements",
-          "checkSpecTable fails when the spec's context table drifts from the map",
-          "scanContextMap reports a spec table that drifts from the map"
-        ]
-      },
       "impactPaths": [
         "docs/app_architecture.md",
         "tool/architecture/check_context_map.test.mjs",
@@ -1308,7 +1091,7 @@
         "node --check tool/architecture/move_to_contexts.mjs"
       ],
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "CONTEXT-MAP-001"
       ],
       "impactPaths": [
@@ -1335,7 +1118,7 @@
         "node --check tool/architecture/rename_wire_to_organizer.mjs"
       ],
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "ORGANIZER-AUTHORITY-001"
       ],
       "impactPaths": [
@@ -1365,7 +1148,7 @@
         "node --check tool/architecture/rename_to_organizer.mjs"
       ],
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "ORGANIZER-AUTHORITY-001"
       ],
       "impactPaths": [
@@ -1396,15 +1179,15 @@
       ],
       "role": "gate",
       "rules": [
-        "MUTATION-ERROR-SURFACE-001"
+        {
+          "id": "MUTATION-ERROR-SURFACE-001",
+          "title": "A watched Mutation consumed for isPending must also surface hasError",
+          "appliesTo": [
+            "lib/**/presentation/**"
+          ],
+          "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError — via an inline ErrorBanner.fromError, a screen-level listenToCatchMutationErrors, or try/catch + showCatchNoticeError around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_mutation_error_surfaces.test.mjs",
-        "contains": [
-          "scanFile flags build methods that read mutation pending without errors"
-        ]
-      },
       "impactPaths": [
         "tool/architecture/check_mutation_error_surfaces.test.mjs",
         "tool/architecture/check_mutation_error_surfaces.mjs"
@@ -1428,21 +1211,33 @@
       ],
       "role": "gate",
       "rules": [
-        "HOST-CRM-AUTHORITY-001"
+        {
+          "id": "HOST-CRM-AUTHORITY-001",
+          "title": "Keep Host CRM identity, provenance, permission, intent, route, and delivery authorities separate",
+          "appliesTo": [
+            "lib/hosts/presentation/customers/**",
+            "lib/hosts/presentation/inbox/**",
+            "lib/hosts/presentation/host_audience_controller.dart",
+            "lib/l10n/app_en.arb",
+            "lib/routing/go_router.dart",
+            "lib/routing/route_contract.dart",
+            "functions/src/events/eventAttendees.ts",
+            "functions/src/organizers/organizerAudienceProjection.ts",
+            "functions/src/organizers/organizerCampaign*.ts",
+            "functions/src/organizers/organizerContacts.ts",
+            "functions/src/organizers/organizerForm*.ts",
+            "functions/src/organizers/organizerManualSendTasks.ts",
+            "functions/src/organizers/organizerSavedAudiences.ts",
+            "functions/src/organizers/organizerWhatsappWebhook.ts",
+            "functions/src/shared/organizerContactOrigins.ts",
+            "contracts/firestore/organizer_*communication*.schema.json",
+            "contracts/firestore/organizer_contact_*.schema.json",
+            "contracts/firestore/organizer_manual_send_tasks.schema.json",
+            "tool/architecture/check_host_crm_boundaries.mjs"
+          ],
+          "instruction": "Keep contact identity, immutable provenance, participant-controlled communication permission, organizer suppression, host intent, server-resolved route, manual work, and provider delivery evidence as separate authorities. Audience owns People, saved audiences, Forms, Applications, and Responses; the Forms domain retains response/application semantics and mutation ownership without becoming a global shell destination. Inbox consumes audience references and owns Sends/Inbox composition. Legacy Customers and Forms application links redirect to Audience. Host Forms may append source-backed contact provenance or prepare reviewed work but ordinary form consent never grants marketing permission and automations never dispatch outreach. External handoff may record only device acceptance and explicit host assertions, never delivery or read state. Visible Host CRM counts use ICU plural ownership."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_host_crm_boundaries.test.mjs",
-        "contains": [
-          "flags saved-audience mutation outside Customers",
-          "flags host-visible communication route pickers",
-          "flags unreviewed permission-authority access",
-          "flags direct contact creation outside canonical projection owners",
-          "flags provider delivery states on manual handoffs",
-          "flags visible Host CRM counts without ICU plurals",
-          "flags application queue ownership outside Audience"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -1463,15 +1258,17 @@
       ],
       "role": "gate",
       "rules": [
-        "ROUTE-STRING-001"
+        {
+          "id": "ROUTE-STRING-001",
+          "title": "Navigation outside routing config uses named routes or constants",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/**/application/**",
+            "tool/architecture/check_route_string_literals.mjs"
+          ],
+          "instruction": "Production navigation outside lib/routing must use named routes, route constants, or typed route helpers instead of raw path string literals. Raw paths stay owned by route definitions and URL contract files."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_route_string_literals.test.mjs",
-        "contains": [
-          "scanFile flags context navigation with raw path strings"
-        ]
-      },
       "impactPaths": [
         "tool/architecture/check_route_string_literals.test.mjs",
         "tool/architecture/check_route_string_literals.mjs"
@@ -1490,14 +1287,7 @@
         "node --test tool/lib/widget_cleanup_gate.test.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/lib/widget_cleanup_gate.test.mjs",
-        "contains": [
-          "gate flags any candidate, missing categories, and unknown categories"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "remote-ops:manifest",
@@ -1568,23 +1358,31 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-DEPENDENCY-TOPOLOGY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/web/react_dependency_graph.test.mjs",
-        "contains": [
-          "known-bad unresolved repo-local import makes graph health fail",
-          "direct website-to-admin dependency is rejected",
-          "full and summary JSON evidence is deterministic and newline terminated",
-          "CLI accepts live evidence combinations and rejects retired artifact modes",
-          "CLI emits inspectable JSON before a combined check fails",
-          "missing source roots and TypeScript configs fail closed",
-          "known-bad runtime cycle makes graph health and CLI check fail",
-          "type-only cycles stay visible and do not block graph health or CLI check",
-          "runtime self-imports and re-export cycles are rejected"
-        ]
-      }
+        {
+          "id": "WEB-DEPENDENCY-TOPOLOGY-001",
+          "title": "Keep React dependency topology deterministic and surface-safe",
+          "appliesTo": [
+            "website/src/**",
+            "website/tsconfig.json",
+            "website/package.json",
+            "admin/src/**",
+            "admin/tsconfig.json",
+            "admin/package.json",
+            "packages/web-ui/src/**",
+            "packages/web-ui/tsconfig.json",
+            "packages/web-ui/package.json",
+            "functions/src/shared/generated/**",
+            "package.json",
+            "package-lock.json",
+            "tool/web/react_dependency_graph.mjs",
+            "tool/web/react_dependency_graph.test.mjs",
+            ".github/workflows/react-surface-validation.yml",
+            ".github/workflows/admin-website.yml",
+            ".github/workflows/marketing-website.yml"
+          ],
+          "instruction": "Check the React dependency graph live from current TypeScript sources. Repo-local imports must resolve, website and admin may share through governed packages rather than importing each other directly, and runtime dependencies must be acyclic without an allowlist. Type-only cycles remain visible without blocking the check. Keep summary and JSON evidence available for unhealthy graphs; do not commit generated graph projections. Run node tool/web/react_dependency_graph.mjs --check whenever React imports or workspace exports move."
+        }
+      ]
     },
     {
       "id": "web:website-copy-ownership",
@@ -1611,12 +1409,18 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-COPY-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_website_copy_ownership.mjs --self-test"
-      }
+        {
+          "id": "WEB-COPY-001",
+          "title": "Keep marketing-authored website copy in the content layer",
+          "appliesTo": [
+            "website/src/**",
+            "tool/web/check_website_copy_ownership.mjs",
+            "tool/web/website_copy_allowlist.json",
+            "website/package.json"
+          ],
+          "instruction": "User-visible marketing-authored strings belong under website/src/content, in page-specific content modules. Permanent technical exceptions require an exact-string allowlist entry with a reason."
+        }
+      ]
     },
     {
       "id": "copy:mobile-catalog",
@@ -1633,12 +1437,18 @@
       ],
       "role": "gate",
       "rules": [
-        "APP-COPY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/copy/check_mobile_copy_catalog_test.mjs"
-      }
+        {
+          "id": "APP-COPY-001",
+          "title": "Product copy is owned by typed, reviewable locale catalogs",
+          "appliesTo": [
+            "lib/**",
+            "copy/**",
+            "functions/src/**",
+            "apps/*/ios/Runner/**"
+          ],
+          "instruction": "Handwritten user-facing Flutter copy belongs in lib/l10n/app_en.arb with description, audience, owner, and surface metadata and is consumed through generated AppLocalizations. Domain and controller layers carry semantic ids, codes, and placeholder data rather than localized prose. Native permission copy belongs in copy/native_en.json and notification templates belong in copy/notifications_en.json; generated consumers must stay in sync. Inline technical identifiers, test fixtures, and user-authored content require narrow documented exemptions rather than broad folders."
+        }
+      ]
     },
     {
       "id": "copy:mobile-ownership",
@@ -1656,13 +1466,9 @@
         "tool/copy/mobile_copy_allowlist.json"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-COPY-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "dart run tool/copy/check_mobile_copy_ownership.dart --self-test"
-      }
+      ]
     },
     {
       "id": "copy:l10n-key-usage",
@@ -1688,21 +1494,9 @@
         "node tool/copy/check_l10n_key_usage.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-COPY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/copy/check_l10n_key_usage.test.mjs",
-        "contains": [
-          "known-bad fixture reports every orphaned key",
-          "CLI fails on any orphan and passes when there are none",
-          "inventory generation is deterministic JSON",
-          "JSON review records missing getters but exits unsuccessfully",
-          "retired tracked inventory and legacy CLI modes stay absent",
-          "CLI help exposes only live evidence modes"
-        ]
-      }
+      ]
     },
     {
       "id": "copy:mobile-catalog-tests",
@@ -1715,11 +1509,7 @@
       "checks": [
         "node tool/copy/check_mobile_copy_catalog_test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/copy/check_mobile_copy_catalog_test.mjs"
-      }
+      "role": "gate"
     },
     {
       "id": "copy:mobile-simple-migration",
@@ -1776,7 +1566,7 @@
         "node tool/copy/sync_native_copy.mjs"
       ],
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "APP-COPY-001"
       ]
     },
@@ -1794,7 +1584,7 @@
         "npm --prefix functions run build"
       ],
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "APP-COPY-001"
       ]
     },
@@ -1851,17 +1641,26 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-UI-PRIMITIVE-001",
-        "WEB-UI-COMPONENT-001"
+        {
+          "id": "WEB-UI-PRIMITIVE-001",
+          "title": "React interactive UI must use shared primitives",
+          "appliesTo": [
+            "website/src/**",
+            "admin/src/**",
+            "tool/web/check_react_ui.mjs",
+            "package.json",
+            "website/package.json",
+            "admin/package.json",
+            "packages/web-config/lint/**",
+            "website/eslint-suppressions.json",
+            "admin/eslint-suppressions.json"
+          ],
+          "instruction": "React production UI composes library components instead of raw markup or className/style overrides. The shared ESLint preset records existing production debt in each app eslint-suppressions.json; counts must match source and may never grow above accepted main. Table/image families wait for their styled components (D17). Story/test control and class-name ownership guards remain in the preset. Run node tool/run.mjs check web:react-ui-lint before handoff."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "packages/web-config/lint/eslint.test.mjs",
-        "contains": [
-          "production JSX and createElement controls fail, library composition passes",
-          "actual lint results reject new debt, resolved stale counts and committed growth"
-        ]
-      }
+      "alsoEnforces": [
+        "WEB-UI-COMPONENT-001"
+      ]
     },
     {
       "id": "web:react-component-governance",
@@ -1884,13 +1683,33 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-UI-COMPONENT-001",
-        "DESIGN-LEXICON-001"
+        {
+          "id": "WEB-UI-COMPONENT-001",
+          "title": "React governed component families must use shared wrappers",
+          "appliesTo": [
+            "website/src/**",
+            "admin/src/**",
+            "tool/web/check_react_ui.mjs",
+            "tool/web/check_react_component_governance.mjs",
+            "package.json",
+            "website/package.json",
+            "admin/package.json",
+            "tool/web/check_shared_web_ui_adoption.mjs",
+            "tool/web/lib/react_component_graph.mjs",
+            "tool/web/lib/react_component_inventory.mjs",
+            "tool/marketing/check_website_components.mjs",
+            "design/website/components.json",
+            "tool/web/check_admin_feature_exports.mjs",
+            "tool/web/check_admin_components.mjs",
+            "design/admin/components.json",
+            "design/admin/components/**"
+          ],
+          "instruction": "React feature, app, and story code must route governed component families through shared primitives instead of rendering the shell directly. Marketing website exported uppercase feature components must be declared in design/website/components.json or made private, so route/section/supporting components remain registry-backed. Admin feature UI files may export route/workspace entry components such as *Screen and *Workspace; reusable panels, cards, lists, badges, and sections belong in admin/src/shared/ui or stay private. Admin route/workspace entries, shared admin primitives, and admin feedback providers must be declared in design/admin/components.json. Every exported React component in website, admin and @catch/web-ui maps to a registry concept, a T4 owner or deletion in the generated inventory (web:shared-ui-adoption; --write saves build/react_component_inventory.json); a shared-layer export that matches a registered contract by name or renders its @catch/web-ui implementation records componentId, or comparedWith with a comparisonReason, in its surface registry. Production drawing belongs in @catch/web-ui. The shared ESLint preset ratchets raw elements and className/style props against existing app suppressions; do not add inline allow markers or grow recorded debt. The scanner owns its governed families in source and emits a current view with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a duplicate generated registry. The family scanner is a known-family blocklist: passing it does not classify novel component shells, so repeated new shell drift must become a scanner family before handoff. Run `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:admin-feature-exports`, `node tool/run.mjs check web:admin-components`, `node tool/run.mjs check web:react-ui-lint`, `node tool/run.mjs check web:react-component-governance`, and `node tool/run.mjs check web:shared-ui-adoption` before handoff."
+        }
       ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_react_component_governance.mjs --self-test"
-      }
+      "alsoEnforces": [
+        "DESIGN-LEXICON-001"
+      ]
     },
     {
       "id": "web:admin-feature-exports",
@@ -1912,13 +1731,9 @@
         "node tool/web/check_admin_feature_exports.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "WEB-UI-COMPONENT-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_admin_feature_exports.mjs --self-test"
-      }
+      ]
     },
     {
       "id": "web:admin-pending-operations",
@@ -1936,7 +1751,6 @@
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
-        "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
         "admin/src/features/safety/controllers/useSafetyTriageController.ts",
         "admin/src/features/users/controllers/useUserAnalyticsController.ts",
@@ -1952,13 +1766,9 @@
         "node tool/web/check_admin_pending_operations.mjs --check --summary"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "PENDING-SNAPSHOT-001"
       ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_admin_pending_operations.mjs --self-test"
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -1978,18 +1788,9 @@
         "node tool/web/check_admin_live_data_sources.mjs --check --summary"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/web/check_admin_live_data_sources.test.mjs",
-        "contains": [
-          "rejects a production feature that imports generated operational JSON",
-          "rejects navigation without a live callable contract",
-          "live verification reports every missing deployed callable"
-        ]
-      }
+      ]
     },
     {
       "id": "web:admin-components",
@@ -2011,13 +1812,9 @@
         "node tool/web/check_admin_components.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "WEB-UI-COMPONENT-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_admin_components.mjs --self-test"
-      }
+      ]
     },
     {
       "id": "web:react-architecture-boundaries",
@@ -2048,7 +1845,19 @@
       "status": "active",
       "role": "gate",
       "rules": [
-        "WEB-QUERY-STATE-001"
+        {
+          "id": "WEB-QUERY-STATE-001",
+          "title": "React server-state pending state must ratchet toward TanStack Query",
+          "appliesTo": [
+            "website/src/features/**",
+            "admin/src/features/**",
+            "tool/web/check_react_query_state.mjs",
+            "package.json",
+            "website/package.json",
+            "admin/package.json"
+          ],
+          "instruction": "React feature controllers and feature use* hooks should not add new manual loading, saving, submitting, pending, or in-flight state for server reads or mutations. Use TanStack Query query/mutation state and explicit query-key invalidation for server state; keep only view-local form, filter, selection, and client-only rendering state in React state. Run node tool/run.mjs check web:react-query-state before handoff."
+        }
       ],
       "description": "Fails on React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
       "ciRequirements": {
@@ -2061,11 +1870,7 @@
         "node --check tool/web/check_react_query_state.mjs",
         "node tool/web/check_react_query_state.mjs --self-test",
         "node tool/web/check_react_query_state.mjs --check"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_react_query_state.mjs --self-test"
-      }
+      ]
     },
     {
       "id": "branding:catch-icon",
@@ -2132,11 +1937,7 @@
         "node --check tool/lib/lint_probe_batch.mjs",
         "node --test tool/lib/lint_probe_batch.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/lib/lint_probe_batch.test.mjs"
-      }
+      "role": "gate"
     },
     {
       "id": "lint:catch-ui-plugin-smoke",
@@ -2164,31 +1965,109 @@
       ],
       "role": "gate",
       "rules": [
-        "UI-LINT-001",
-        "ASYNC-LOADING-PRESENTATION-001",
-        "ERROR-UI-002",
-        "IMAGE-NETWORK-PRIMITIVE-001",
-        "CONTEXT-MAP-001",
-        "CONTROLLER-BOUNDARY-001",
-        "DEPENDENCY-DIRECTION-001",
-        "EXTERNAL-SIDE-EFFECT-001",
-        "INJECTED-CLOCK-001",
-        "STREAM-LIFECYCLE-001"
+        {
+          "id": "UI-LINT-001",
+          "title": "Codify audited UI invariants as analyzer plugin rules",
+          "appliesTo": [
+            "analysis_options.yaml",
+            "packages/catch_ui_lints/**",
+            "tool/check_catch_ui_lints.sh",
+            "tool/check_catch_ui_lint_drift.sh",
+            "tool/design/build_lint_enforcement_tables.mjs",
+            "tool/design/check_component_enforcement_coverage.mjs",
+            "tool/architecture/check_ui_composition_contracts.dart",
+            "tool/check_riverpod_lint.sh",
+            ".github/workflows/**",
+            "lib/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**",
+            "apps/consumer/lib/**",
+            "apps/host/lib/**"
+          ],
+          "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Verify Catch diagnostics with the seeded harness or repository-root dart analyze, never flutter analyze or a targeted subdirectory analysis. Generate steering tables from component contracts, use the resolved checker for cross-file composition, exempt only semantic source-of-truth folders or generated code, and keep broad scanners only for triage and migration discovery."
+        },
+        {
+          "id": "ASYNC-LOADING-PRESENTATION-001",
+          "title": "Async loading states render credible data before blocking skeletons and always recover",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**",
+            "test/**"
+          ],
+          "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading states. Known layouts use CatchSkeleton.content or the matching CatchSection loading constructor and real CatchFieldLayout. When fetched data determines the page structure, preserve its known chrome and center progress in CatchStateViewport.loading or .sliverLoading; unresolved sheet and inline sections use a bounded CatchLoadingIndicator. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncBoundary and its sliver constructor call sites must supply onRetry that restarts the failing provider boundary."
+        },
+        {
+          "id": "ERROR-UI-002",
+          "title": "Data-load errors must use a Catch primitive and blocking states must expose recovery",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**"
+          ],
+          "instruction": "AsyncValue/stream error branches must render CatchLocalizedErrorState (including inline/compact modes) or CatchLocalizedSliverErrorState with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackButton. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object."
+        },
+        {
+          "id": "IMAGE-NETWORK-PRIMITIVE-001",
+          "title": "Network images go through a shared caching/decode-sized primitive",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**"
+          ],
+          "instruction": "Remote images must render through a shared CatchNetworkImage primitive providing caching, cacheWidth/cacheHeight decode sizing, a branded errorBuilder, and a loading placeholder. Raw Image.network in feature code is forbidden."
+        },
+        {
+          "id": "CONTEXT-MAP-001",
+          "title": "Code lives in a declared bounded context and depends only downward",
+          "appliesTo": [
+            "lib/**",
+            "tool/architecture/context_map.json",
+            "tool/architecture/check_context_map.mjs",
+            "packages/catch_ui_lints/lib/src/architecture_context_map.dart"
+          ],
+          "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. These are catch_arch_* analyzer lints that read the map; audit:context-map keeps what one file cannot show, that the map is well formed and the spec's context table matches it. Files under the target roots take no exceptions. Since the phase 3 move, domain and data code lives under lib/contexts/ and a legacy feature folder keeps only its screens and barrel; any other file there fails catch_arch_legacy_context_file."
+        },
+        {
+          "id": "CONTROLLER-BOUNDARY-001",
+          "title": "Keep product behavior out of presentation widgets",
+          "appliesTo": [
+            "lib/**/presentation/**"
+          ],
+          "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, repository-provider reads, validation decisions, mutation orchestration, product side effects, and WidgetRef-threaded provider access into controllers, view-model providers, or repositories. Business loaded data, cursors, pending/error/retry and completion identity remain controller responsibilities even when an injected callback or generated action performs the write. Consumer widgets and controller filenames do not exempt these responsibilities. Keep genuine mechanical feedback distinct; preserve domain currentness, cancellation, snapshot and idempotency fences when moving ownership."
+        },
+        {
+          "id": "DEPENDENCY-DIRECTION-001",
+          "title": "Layer imports follow dependency direction",
+          "appliesTo": [
+            "lib/**",
+            "apps/*/lib/**"
+          ],
+          "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and new domain code must not add direct imports. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals — when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots take no exceptions. These are catch_arch_* analyzer lints; an exception elsewhere is a // ignore: catch_ui_lints/<code> -- <reason> next to the code, which the lints reject when it is file-wide, unreasoned or stale. A provider-free file (a *_state.dart adapter, a context parts/ widget, or a file marked // architecture: provider-free) uses no Riverpod, routing, data-layer or repository API."
+        },
+        {
+          "id": "INJECTED-CLOCK-001",
+          "title": "Time-dependent domain getters take an injected clock, not DateTime.now()",
+          "appliesTo": [
+            "lib/**/domain/**",
+            "lib/**/data/**"
+          ],
+          "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally — otherwise adjacent branches disagree and tests cannot pin time."
+        },
+        {
+          "id": "STREAM-LIFECYCLE-001",
+          "title": "Do not idle-timeout realtime Firestore listeners",
+          "appliesTo": [
+            "lib/**/data/**",
+            "lib/**/presentation/**",
+            "test/**/*.dart"
+          ],
+          "instruction": "Do not wrap Firestore snapshot streams in Stream.timeout to detect stalled loads; realtime streams may legitimately stay silent after initial data. Prefer Riverpod autoDispose, screen-active gating, explicit refresh/retry UI, and focused tests that advance fake time past prior timeout thresholds. Every keepAlive provider must carry a // keepalive: rationale marker within the three lines above the annotation or declaration."
+        }
       ],
-      "vacuityProof": {
-        "type": "probe-harness",
-        "path": "tool/check_catch_ui_lints.sh",
-        "diagnostics": [
-          "catch_no_allow_debt",
-          "catch_async_requires_retry",
-          "catch_error_state_requires_action",
-          "catch_no_raw_content_dimension",
-          "catch_no_local_design_constant",
-        "catch_arch_cross_feature_presentation_import",
-        "catch_arch_context_order_import",
-        "catch_arch_invalid_ignore"
-        ]
-      }
+      "alsoEnforces": [
+        "EXTERNAL-SIDE-EFFECT-001"
+      ]
     },
     {
       "id": "lint:catch-ui-drift",
@@ -2205,20 +2084,36 @@
       ],
       "role": "gate",
       "rules": [
+        {
+          "id": "DESIGN-TOKENS-001",
+          "title": "Keep design-system ownership centralized",
+          "appliesTo": [
+            "lib/**",
+            "packages/catch_tokens/**"
+          ],
+          "instruction": "L0 generated scales, semantic roles, and component tokens live in packages/catch_tokens, whose only production dependency is Flutter. Shared foundations and branded font assets live under packages/catch_ui; its production dependencies are limited to Flutter, catch_tokens and Skeletonizer 2.1.3; icon glyphs come from the vendored font behind the icon role catalog. AppTheme only attaches the app activity palette to CatchTheme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder."
+        },
+        {
+          "id": "RESPONSIVE-LAYOUT-001",
+          "title": "Avoid hardcoded widget dimensions for content-sized UI",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**",
+            "test/**/*.dart"
+          ],
+          "instruction": "Treat fixed heights and widths on content-bearing widgets as a layout smell. Prefer intrinsic content sizing, flexible constraints, aspect ratios for truly fixed-format media, and min/max constraints only when they preserve responsiveness across screen sizes, text scale, localization, and variable backend content. Fixed dimensions are acceptable for icons, avatars, progress indicators, toolbars, known-format controls, and intentionally bounded visual assets, but cards, tiles, list rows, and sections should not depend on magic-number heights to look correct."
+        }
+      ],
+      "alsoEnforces": [
         "UI-LINT-001",
-        "DESIGN-TOKENS-001",
-        "RESPONSIVE-LAYOUT-001",
         "CONTEXT-MAP-001",
         "CONTROLLER-BOUNDARY-001",
         "DEPENDENCY-DIRECTION-001",
         "EXTERNAL-SIDE-EFFECT-001",
         "INJECTED-CLOCK-001",
         "STREAM-LIFECYCLE-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "bash tool/check_catch_ui_lint_drift.sh --self-test"
-      }
+      ]
     },
     {
       "id": "meta:ci-tool-category-coverage",
@@ -2233,15 +2128,7 @@
         "node --test tool/ci/check_tool_category_coverage.test.mjs",
         "node tool/ci/check_tool_category_coverage.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/check_tool_category_coverage.test.mjs",
-        "contains": [
-          "coverage fails for both unknown workflow and missing active categories",
-          "coverage passes when every active category is declared exactly"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "design:lint-enforcement-generate",
@@ -2259,7 +2146,7 @@
         "tool/design/generated/enforcement_expectations.json"
       ],
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "UI-LINT-001"
       ],
       "ciRequirements": {
@@ -2285,16 +2172,9 @@
         "widgetbook/lib/main.directories.g.dart"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "UI-LINT-001"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_component_enforcement_coverage.test.mjs",
-        "contains": [
-          "requires decisions, executable verification, live waivers, ownership, and probes"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -2344,27 +2224,9 @@
         ]
       },
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "test/tool/ui_composition_ownership_test.dart",
-        "contains": [
-          "flags raw Scaffold ownership",
-          "follows Widget constructors, createState, State.build, and Widget methods",
-          "follows generic widget-builder wrappers",
-          "rejects a rogue adapter branch",
-          "rejects unresolved and external adapter terminals",
-          "rejects a mixed-family adapter terminal",
-          "rejects cyclic Widget adapter graphs",
-          "rejects an owner outside the registered layout family",
-          "requires header-owned roots to declare their top edge",
-          "analyzer rejects prefixed, aliased, direct, and indirect Scaffold ownership",
-          "analysis contexts own app and shared UI production sources",
-          "only the exact package scaffold owns the Material construction"
-        ]
-      }
+      ]
     },
     {
       "id": "contracts:form-alignment",
@@ -2379,15 +2241,29 @@
       ],
       "role": "gate",
       "rules": [
-        "FORM-CONTRACT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "test/core/forms/contract_alignment_test.dart",
-        "contains": [
-          "seeded overlong UI limit proves the alignment gate is non-vacuous"
-        ]
-      }
+        {
+          "id": "FORM-CONTRACT-001",
+          "title": "Editable form constraints derive from schema contracts",
+          "appliesTo": [
+            "contracts/**/*.schema.json",
+            "tool/contracts/generate_schema_contracts.mjs",
+            "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+            "lib/platform/schema_contracts/generated/field_constraints.g.dart",
+            "packages/catch_ui/lib/src/components/catch_contract_field_constraints.dart",
+            "packages/catch_ui/lib/src/components/catch_contract_field_policy.dart",
+            "packages/catch_ui/lib/src/components/catch_chip*.dart",
+            "packages/catch_ui/lib/src/components/catch_option_*.dart",
+            "packages/catch_ui/lib/src/components/catch_range_input.dart",
+            "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
+            "lib/**/presentation/**",
+            "test/core/forms/contract_alignment_test.dart",
+            "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+            "lib/user_profile/presentation/**",
+            "lib/hosts/presentation/**"
+          ],
+          "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption."
+        }
+      ]
     },
     {
       "id": "contracts:flutter-form-inventory",
@@ -2403,18 +2279,9 @@
         "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "FORM-CONTRACT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
-        "contains": [
-          "known-bad missing binding is detected",
-          "range sliders require both generated endpoint bindings",
-          "inventory includes bound and unbound product callsites"
-        ]
-      }
+      ]
     },
     {
       "id": "contracts:check-all",
@@ -2475,16 +2342,20 @@
       ],
       "role": "gate",
       "rules": [
-        "FLUTTER-TEST-MAINTAINABILITY-001"
+        {
+          "id": "FLUTTER-TEST-MAINTAINABILITY-001",
+          "title": "Keep Flutter test specs bounded while coverage remains honest evidence",
+          "appliesTo": [
+            "test/**/*_test.dart",
+            "test/**/*_tests.dart",
+            "integration_test/**/*_test.dart",
+            "integration_test/**/*_tests.dart",
+            "tool/test/**",
+            ".github/workflows/flutter-ci.yml"
+          ],
+          "instruction": "Keep Flutter test specs at or below 1,200 lines; a larger spec states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no spec passes 2,500 lines. Use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/test/check_flutter_test_size.test.mjs",
-        "contains": [
-          "an oversized spec without a stated exemption fails",
-          "a stated exemption allows growth and shrinkage up to the ceiling with no bookkeeping"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -2518,17 +2389,17 @@
       ],
       "role": "gate",
       "rules": [
-        "FLUTTER-SOURCE-MAINTAINABILITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/architecture/check_flutter_source_size.test.mjs",
-        "contains": [
-          "a new source at 801 lines fails in every owned source root unless it states an exemption",
-          "no source passes the ceiling, exemption or not",
-          "CLI reads the exemption from the file itself, including untracked source"
-        ]
-      }
+        {
+          "id": "FLUTTER-SOURCE-MAINTAINABILITY-001",
+          "title": "Bound handwritten Dart sources; exceptions state their reason in the file",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "packages/**/*.dart",
+            "widgetbook/lib/**/*.dart"
+          ],
+          "instruction": "Keep handwritten Dart files at or below 800 lines. A larger file states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no file passes 2,500 lines. Generated producer outputs are excluded by identity."
+        }
+      ]
     },
     {
       "id": "contracts:generate-business-rules",
@@ -2597,16 +2468,17 @@
       ],
       "role": "gate",
       "rules": [
-        "SCHEMA-FIXTURE-001"
+        {
+          "id": "SCHEMA-FIXTURE-001",
+          "title": "Contract fixtures stay schema-backed",
+          "appliesTo": [
+            "contracts/fixtures/**/*.json",
+            "tool/contracts/check_schema_fixtures.mjs",
+            "tool/contracts/generated/schema_contract_registry.mjs"
+          ],
+          "instruction": "Every JSON fixture under contracts/fixtures/valid or contracts/fixtures/invalid must be declared in tool/contracts/check_schema_fixtures.mjs and must validate with the expected pass/fail result against its generated JSON Schema."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/contracts/check_schema_fixtures.test.mjs",
-        "contains": [
-          "fixture manifest maps every fixture exactly once",
-          "schema fixture check validates all current fixtures"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -2627,16 +2499,16 @@
       ],
       "role": "gate",
       "rules": [
-        "MIGRATION-CONTRACT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/contracts/check_migration_contracts.test.mjs",
-        "contains": [
-          "migration contract check validates the current migration inventory",
-          "migration contract check rejects incomplete complete-state evidence"
-        ]
-      }
+        {
+          "id": "MIGRATION-CONTRACT-001",
+          "title": "Migration contracts keep phase evidence machine-checkable",
+          "appliesTo": [
+            "contracts/migrations/*.json",
+            "tool/contracts/check_migration_contracts.mjs"
+          ],
+          "instruction": "Every migration contract must declare schemaVersion, logicalName, currentPhase, reason, unique phases with known statuses, operational evidence such as guards or known consumers, and liveApply evidence when any phase is complete_remote."
+        }
+      ]
     },
     {
       "id": "contracts:firestore-contract",
@@ -2678,18 +2550,17 @@
       ],
       "role": "gate",
       "rules": [
-        "FIRESTORE-INDEX-PARITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/contracts/check_firestore_query_indexes.test.mjs",
-        "contains": [
-          "known-bad missing composite index is detected",
-          "known-bad uncontracted composite query builder is detected",
-          "known-bad unnecessary single-field composite index is detected",
-          "known-bad duplicate composite index is detected"
-        ]
-      }
+        {
+          "id": "FIRESTORE-INDEX-PARITY-001",
+          "title": "Composite Firestore queries stay synchronized with deployable index configuration",
+          "appliesTo": [
+            "lib/**/data/**",
+            "firestore.indexes.json",
+            "tool/contracts/check_firestore_query_indexes.mjs"
+          ],
+          "instruction": "Every repository-owned composite query builder declares its ordered firestore-index contract beside the query. The checked index configuration must contain every declared contract, retired collection indexes must not survive renames, duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites must be rejected, and the parity gate must run before deploy."
+        }
+      ]
     },
     {
       "id": "contracts:firestore-read-limits",
@@ -2706,17 +2577,17 @@
       ],
       "role": "gate",
       "rules": [
-        "FIRESTORE-READ-LIMIT-POLICY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/contracts/check_firestore_read_limits.test.mjs",
-        "contains": [
-          "known-bad numeric repository limit is detected",
-          "known-bad numeric limit default is detected",
-          "unbounded collection reads are detected"
-        ]
-      }
+        {
+          "id": "FIRESTORE-READ-LIMIT-POLICY-001",
+          "title": "Repository read limits use one reviewed surface policy",
+          "appliesTo": [
+            "lib/**/data/*repository*.dart",
+            "lib/platform/firebase/read_limit_policy.dart",
+            "lib/platform/firebase/cursor_page.dart"
+          ],
+          "instruction": "Growing repository reads use a reviewed ReadLimitPolicy value plus an opaque cursor path. Numeric limit and take literals must not be reintroduced in repository code, and bounded-set exceptions must remain explicit in data_contracts.md."
+        }
+      ]
     },
     {
       "id": "contracts:storage-contract",
@@ -2730,7 +2601,17 @@
         "node --check tool/contracts/check_storage_contract.mjs"
       ],
       "rules": [
-        "STORAGE-CONTRACT-001"
+        {
+          "id": "STORAGE-CONTRACT-001",
+          "title": "Storage path contracts stay tied to rules and rules tests",
+          "appliesTo": [
+            "contracts/storage/*.schema.json",
+            "storage.rules",
+            "functions/test/storage.rules.test.cjs",
+            "tool/contracts/check_storage_contract.mjs"
+          ],
+          "instruction": "Every storage path schema must declare x-storage-rules-match, x-storage-read, x-storage-write, x-storage-rules-test-file, and matching storage.rules coverage. Review passes for storage contracts should run the static storage checker and, when feasible, the firestore/storage emulator rules suite."
+        }
       ]
     },
     {
@@ -3214,17 +3095,19 @@
       ],
       "role": "gate",
       "rules": [
-        "FIREBASE-RULES-DRIFT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_rules_deployment_drift.test.mjs",
-        "contains": [
-          "active Firestore and every active Storage release match normalized committed content",
-          "semantic source changes and missing active releases fail closed",
-          "missing credentials skip clearly without touching the Rules API"
-        ]
-      }
+        {
+          "id": "FIREBASE-RULES-DRIFT-001",
+          "title": "Keep active Firebase rules releases synchronized with committed rules",
+          "appliesTo": [
+            "firestore.rules",
+            "storage.rules",
+            "firebase.json",
+            "tool/firebase/check_rules_deployment_drift.mjs",
+            ".github/workflows/_backend-deploy.yml"
+          ],
+          "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after every Deploy backend run. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed."
+        }
+      ]
     },
     {
       "id": "firebase:function-binding-intent",
@@ -3251,14 +3134,7 @@
       "checks": [
         "node --check tool/firebase/function_binding_intent.mjs",
         "node --test tool/firebase/function_binding_intent.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/function_binding_intent.test.mjs",
-        "contains": [
-          "unknown option helpers, spreads and dynamic identities fail closed"
-        ]
-      }
+      ]
     },
     {
       "id": "firebase:environment-readiness",
@@ -3276,15 +3152,6 @@
         "node tool/firebase/check_environment_readiness.mjs --manifest-only"
       ],
       "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_environment_readiness.test.mjs",
-        "contains": [
-          "secret runtime IAM fails closed before Firebase can mutate policy",
-          "secret metadata classification never returns payload fields",
-          "Deploy backend checks readiness before any mutation"
-        ]
-      },
       "alsoCheckIds": [
         "firebase:form-upload-identity"
       ],
@@ -3356,17 +3223,9 @@
         "node tool/firebase/check_client_callable_dependencies.mjs --role host --environment prod"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_client_callable_dependencies.test.mjs",
-        "contains": [
-          "fails enabled flags whose callable is not exported",
-          "live probe rejects HTML, redirects, and IAM permission errors"
-        ]
-      }
+      ]
     },
     {
       "id": "firebase:register-app-check-debug-token",
@@ -3486,17 +3345,9 @@
         "node --test tool/platform/check_mobile_package.test.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/check_mobile_package.test.mjs",
-        "contains": [
-          "package policy enforces budgets and role-forbidden payload",
-          "cross-role comparison rejects identical compiled products"
-        ]
-      }
+      ]
     },
     {
       "id": "platform:app-package-graphs",
@@ -3512,19 +3363,10 @@
         "node tool/platform/check_app_package_graph.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-TARGET-IDENTITY-001",
         "DESIGN-TOKENS-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/check_app_package_graph.test.mjs",
-        "contains": [
-          "rejects consumer SDKs in the Host graph",
-          "token package rejects every dependency outside Flutter",
-          "UI package rejects app, state, backend and unrelated dependencies"
-        ]
-      }
+      ]
     },
     {
       "id": "env:firebase",
@@ -3600,15 +3442,7 @@
         "node --check tool/firebase/check_deploy_ref.mjs",
         "node --test tool/firebase/check_deploy_ref.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_deploy_ref.test.mjs",
-        "contains": [
-          "reports behind when the remote has commits HEAD lacks",
-          "treats an unparseable count as unknown rather than current"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:check-deploy-parity",
@@ -3634,17 +3468,7 @@
         "node --check tool/firebase/check_deploy_parity.mjs",
         "node --test tool/firebase/check_deploy_parity.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/check_deploy_parity.test.mjs",
-        "contains": [
-          "fails when a repo export is absent while ignoring deployed extension extras",
-          "fails when a declared defineSecret name is absent from the target project",
-          "live inventory commands are metadata-only and project-bound",
-          "Functions deployment checks live parity against the exact source checkout"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:environment-parity",
@@ -3681,18 +3505,7 @@
         "node --test tool/firebase/report_environment_parity.test.mjs",
         "node tool/firebase/report_environment_parity.mjs --policy-only"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/report_environment_parity.test.mjs",
-        "contains": [
-          "policy guard requires every discovered switch to be classified",
-          "an allowed difference needs a feature gate, owner, reason, CAT ticket and unexpired date",
-          "policy-only mode reads a real repository layout offline and fails closed on a new switch",
-          "the CLI collects only read-only metadata, survives an unavailable source and never prints identities",
-          "retired switches may not return outside their allowed sources"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "firebase:deploy-targets",
@@ -3792,15 +3605,7 @@
       ],
       "impactPaths": [
         "tool/analytics/host_analytics_contract.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/analytics/host_analytics_contract.test.mjs",
-        "contains": [
-          "an export is incomplete until its collection and table both match",
-          "failed, disabled, duplicate, missing and wrong-kind schedules are incomplete"
-        ]
-      }
+      ]
     },
     {
       "id": "analytics:host-bigquery-live-status",
@@ -3918,15 +3723,7 @@
         "node tool/platform/sync_ios_pod_policy.mjs --check",
         "node --test tool/platform/sync_ios_pod_policy.test.mjs"
       ],
-      "role": "generator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/sync_ios_pod_policy.test.mjs",
-        "contains": [
-          "stale or missing output fails read-only check and write repairs exactly those files",
-          "policy edits change all actual Podfiles while leaving locks and installation state alone"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "platform:app-targets",
@@ -3958,20 +3755,26 @@
       ],
       "role": "gate",
       "rules": [
-        "APP-TARGET-IDENTITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/check_app_targets.test.mjs",
-        "contains": [
-          "validateManifestShape rejects a duplicate role/environment target",
-          "signed app-target authority rejects operational release evidence",
-          "release ownership rejects retired pipeline fields and a drifted policy",
-          "release ownership keeps production out of the automatic beta workflow",
-          "release ownership requires the beta schedule, provenance and verifiers",
-          "release ownership keeps production manual, reviewer-gated and rebuild-free"
-        ]
-      }
+        {
+          "id": "APP-TARGET-IDENTITY-001",
+          "title": "Installable app identity resolves from one checked target contract",
+          "appliesTo": [
+            "tool/app_targets.json",
+            "apps/*/lib/main*.dart",
+            "lib/platform/app_config.dart",
+            "lib/routing/**",
+            "firebase/**",
+            "tool/firebase/client_callable_dependencies.json",
+            "tool/firebase/check_client_callable_dependencies.mjs",
+            "apps/*/ios/**",
+            "apps/*/macos/**",
+            "apps/*/android/**",
+            ".github/workflows/**",
+            "lib/force_update/**"
+          ],
+          "instruction": "Consumer and Host are separate installable products. Entrypoints, native ids and capabilities, Firebase registrations, links, force-update keys, routine release ownership, and enabled release-critical callable dependencies must match checked target contracts. A production client feature cannot be enabled until its callable export and live Firebase callable/IAM reachability pass the release preflight; temporary release exceptions require a stable debt id and explicit removal proof."
+        }
+      ]
     },
     {
       "id": "platform:verify-ios-release-identity",
@@ -3986,18 +3789,9 @@
         "node --test tool/platform/verify_ios_release_identity.test.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/verify_ios_release_identity.test.mjs",
-        "contains": [
-          "rejects a Host archive compiled from the Consumer entrypoint",
-          "rejects Host inheriting Consumer-only capabilities",
-          "rejects Host Firebase and OAuth URL identity drift"
-        ]
-      }
+      ]
     },
     {
       "id": "platform:verify-android-release-identity",
@@ -4012,18 +3806,9 @@
         "node --test tool/platform/verify_android_release_bundle.test.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/platform/verify_android_release_bundle.test.mjs",
-        "contains": [
-          "rejects wrong role identity and unsigned bundles",
-          "rejects Play-invalid version codes",
-          "rejects signer, Maps, Firebase, and debug drift"
-        ]
-      }
+      ]
     },
     {
       "id": "platform:upload-crashlytics-symbols",
@@ -4143,11 +3928,7 @@
         "node --check website/scripts/analyticsContract.test.mjs",
         "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "website/scripts/analyticsContract.test.mjs"
-      }
+      "role": "gate"
     },
     {
       "id": "marketing:website-owner-gated-content",
@@ -4161,11 +3942,7 @@
         "node --check website/scripts/ownerGatedContent.test.mjs",
         "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "website/scripts/ownerGatedContent.test.mjs"
-      }
+      "role": "gate"
     },
     {
       "id": "marketing:website-a11y-debt",
@@ -4181,11 +3958,7 @@
         "node website/scripts/checkStorybookA11yDebt.mjs"
       ],
       "role": "ratchet",
-      "baseline": "design/website/a11y.todo.json",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node website/scripts/checkStorybookA11yDebt.mjs --self-test"
-      }
+      "baseline": "design/website/a11y.todo.json"
     },
     {
       "id": "marketing:website-storybook-a11y",
@@ -4199,10 +3972,9 @@
         "npm --workspace catch-marketing run test:storybook:a11y"
       ],
       "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "website/vitest.config.ts"
-      }
+      "impactPaths": [
+        "website/vitest.config.ts"
+      ]
     },
     {
       "id": "web:verify-admin-hosting",
@@ -4248,14 +4020,7 @@
         "node --check website/src/content/metaContract.ts",
         "node --test tool/marketing/website_meta_contract.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/marketing/website_meta_contract.test.mjs",
-        "contains": [
-          "metadata validation rejects missing template tokens and unsupported fields"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "marketing:website-routes",
@@ -4276,12 +4041,20 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-ROUTE-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/marketing/check_website_routes.mjs --self-test"
-      }
+        {
+          "id": "WEB-ROUTE-001",
+          "title": "Keep marketing website route contracts ahead of visual review",
+          "appliesTo": [
+            "website/**",
+            "packages/web-config/**",
+            "design/website/**",
+            "tool/marketing/**",
+            "tool/web/check_react_architecture_boundaries.mjs",
+            ".github/workflows/marketing-website.yml"
+          ],
+          "instruction": "Before changing public marketing routes, generated organizer route families, SEO metadata, static postbuild output, robots/sitemap behavior, review states, route Storybook evidence, or route-owned URL state, update design/website/routes.json when the public contract changes and pass node tool/run.mjs check marketing:website-routes plus node tool/run.mjs check web:react-architecture-boundaries when React route boundaries are touched. The route gate validates runtime/static metadata, rejects deployable organizer listings outside live active-market cities, and validates matching Storybook parameters.catchRoute declarations for Storybook-backed review states. Start component-first review only after the route contract is current."
+        }
+      ]
     },
     {
       "id": "marketing:website-components",
@@ -4297,13 +4070,9 @@
         "node tool/marketing/check_website_components.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "WEB-UI-COMPONENT-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/marketing/check_website_components.mjs --self-test"
-      }
+      ]
     },
     {
       "id": "marketing:device-frame",
@@ -4329,15 +4098,7 @@
       "checks": [
         "dart run tool/marketing/frame_device_capture_test.dart"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/marketing/frame_device_capture_test.dart",
-        "contains": [
-          "Native source pixels were resampled.",
-          "Undersampled inputs must fail before writing output."
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "marketing:hosted-capture-export",
@@ -4523,20 +4284,7 @@
         "node --test tool/ui_capture/check_route_inventory_test.mjs",
         "node tool/ui_capture/check_route_inventory.mjs --check"
       ],
-      "role": "finder",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ui_capture/check_route_inventory_test.mjs",
-        "contains": [
-          "rejects unnamed routes that can render a page",
-          "canonical presentation expressions ignore formatting but preserve strings",
-          "extracts deterministic presentation targets from route presentations",
-          "discovers arrow-bodied route helpers instead of dropping their routes",
-          "fails closed on imported or prebuilt route collections",
-          "fails closed on route constructor typedefs",
-          "fails closed on unsupported full-screen PageRoute constructors"
-        ]
-      }
+      "role": "finder"
     },
     {
       "id": "ui-capture:route-inventory-tests",
@@ -4549,11 +4297,7 @@
       "checks": [
         "node --test tool/ui_capture/check_route_inventory_test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs"
-      }
+      "role": "gate"
     },
     {
       "id": "design:host-shell-coverage",
@@ -4582,14 +4326,7 @@
         "node --test tool/design/check_host_shell_coverage.test.mjs",
         "node tool/design/check_host_shell_coverage.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_host_shell_coverage.test.mjs",
-        "contains": [
-          "rejects a retired primary route and missing canonical capture"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "ui-capture:coverage",
@@ -4660,17 +4397,9 @@
         ]
       },
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/test/platform_token_coverage.test.mjs",
-        "contains": [
-          "normal CI rejects arbitrary native deletions and value changes without the external inventory",
-          "the independent source dependency set, hashes and provenance cannot be vacuous"
-        ]
-      }
+      ]
     },
     {
       "id": "design:platform-control-behavior",
@@ -4704,18 +4433,9 @@
         "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart packages/catch_ui/test/foundations_test.dart"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "test/core/widgets/platform_control_targets_test.dart",
-        "contains": [
-          "small siblings have disjoint touch targets",
-          "range render target is not only semantic",
-          "top-bar does not compress multiple action targets"
-        ]
-      }
+      ]
     },
     {
       "id": "design:tokens",
@@ -4763,17 +4483,30 @@
       ],
       "role": "gate",
       "rules": [
-        "PUBLIC-SURFACE-BEHAVIOR-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_public_surface_behavior.test.mjs",
-        "contains": [
-          "strict verification rejects unverified configurations and planned harnesses",
-          "rejects duplicate configuration tuples",
-          "rejects unclassified or multiply owned consumer routes"
-        ]
-      }
+        {
+          "id": "PUBLIC-SURFACE-BEHAVIOR-001",
+          "title": "Keep public viewer and listing authority behavior explicit across app and web",
+          "appliesTo": [
+            "design/public_surface_behavior.json",
+            "design/public_surface_behavior.schema.json",
+            "design/screens/catch.screens.json",
+            "contracts/firestore/organizers.schema.json",
+            "contracts/public/website_host_listing_projection.schema.json",
+            "lib/routing/**",
+            "lib/explore/**",
+            "lib/organizers/**",
+            "lib/events/**",
+            "lib/organizers/**",
+            "website/src/features/claims/**",
+            "website/src/features/organizers/**",
+            "website/src/features/reviews/**",
+            "website/scripts/**",
+            "test/design/**",
+            "tool/design/check_public_surface_behavior.mjs"
+          ],
+          "instruction": "Treat design/public_surface_behavior.json as the executable decision table for public app and marketing surfaces. Keep viewer-session resolution, app role, profile readiness, viewer relationship, app and web publication, organizer ownership/claim/verification, host/contact identity, event supply/lifecycle/availability/payment, location, independent claim/review capabilities, and their runtimes explicit. Every consumer route must have exactly one matrix owner, every configuration must be verified by the declared app or website harness, and excluded dimension values require a rationale. Public actions fail closed when relationship or runtime authority is unresolved."
+        }
+      ]
     },
     {
       "id": "design:feature-contracts",
@@ -4797,29 +4530,32 @@
       ],
       "role": "gate",
       "rules": [
-        "ACTION-CARDINALITY-001",
-        "PENDING-SNAPSHOT-001"
+        {
+          "id": "ACTION-CARDINALITY-001",
+          "title": "Declare action cardinality before wiring UI affordances",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/**/data/**",
+            "functions/src/**",
+            "design/features/**",
+            "docs/**"
+          ],
+          "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts."
+        },
+        {
+          "id": "PENDING-SNAPSHOT-001",
+          "title": "Protect the submitted request snapshot while an operation is pending",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "website/src/features/**",
+            "admin/src/features/**",
+            "design/features/**",
+            "design/screens/catch.screens.json",
+            "test/**"
+          ],
+          "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/build_feature_contracts.test.mjs",
-        "contains": [
-          "projects known implementation gaps and rejects enabling them",
-          "requires debt metadata only for known implementation gaps",
-          "compiles compact state matrices without weakening exact authority coverage",
-          "rejects compact state overrides outside the declared inventory",
-          "compiles multiple runtime projections into one shared feature identity",
-          "maps route review states to explicitly registered React previews",
-          "rejects explicit React previews outside the selected route registry",
-          "supports read-only projections without synthetic actions or bindings",
-          "rejects duplicate and missing surface-state mappings",
-          "rejects missing capture, preview, and test evidence",
-          "allows explicit evidence debt and rejects stale exceptions",
-          "validates surface-state, route, and side-effect action outcomes",
-          "rejects unknown action owners, actions, and dimensions",
-          "rejects runtime and authority mismatches"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -4900,16 +4636,7 @@
         "node --check tool/design/component_concepts.mjs",
         "node --test tool/design/component_concepts.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/component_concepts.test.mjs",
-        "contains": [
-          "normalization deliberately forces comparable names into one namespace",
-          "known-bad duplicate primaries and missing parents are rejected",
-          "metrics count concepts rather than public contracts"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "design:widget-catalog",
@@ -4997,18 +4724,9 @@
         "node tool/design/check_widget_classification.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "WIDGET-CATALOG-001"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/component_concepts.test.mjs",
-        "contains": [
-          "ungoverned normalized names and exact public duplicates fail",
-          "registered concept members may intentionally share a normalized collision",
-          "canonical and uncontracted public widgets cannot evade normalized collisions"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5032,17 +4750,20 @@
         "widgetbook/lib/main.directories.g.dart"
       ],
       "rules": [
-        "WIDGET-PATTERN-FAMILY-001"
+        {
+          "id": "WIDGET-PATTERN-FAMILY-001",
+          "title": "Consolidate UI through reviewed pattern families, not raw similarity pairs",
+          "appliesTo": [
+            "lib/contexts/*/parts/**",
+            "lib/pages/**",
+            "lib/**/presentation/**",
+            "widgetbook/**",
+            "docs/design_parity/widget_consolidation/**",
+            "tool/design/widgetbook_compare_server.mjs"
+          ],
+          "instruction": "Generated similarity pairs and clusters are discovery evidence only. Assign candidates to a stable pattern family, render every available member side by side, choose the strongest visual/API reference, and record per-member canonical, repair, unify, register, or discard dispositions plus accepted visual deltas before creating a work order. Apply K/R/D rules only as post-decision implementation tactics, then rerender and prove the full family."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_widget_pattern_families.test.mjs",
-        "contains": [
-          "rejects an invalid disposition",
-          "requires a target for unify",
-          "rejects a required preview missing from generated Widgetbook directories"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5084,21 +4805,33 @@
       ],
       "role": "gate",
       "rules": [
-        "WIDGET-CATALOG-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_new_widget_inventory.test.mjs",
-        "contains": [
-          "discovers direct and transitive widget subclasses without matching prose",
-          "generated exclusions are file-specific rather than directory-wide",
-          "discovers nullable, interface, generic, getter, and top-level widget helpers",
-          "moved widget classes and helpers remain blocking inventory items",
-          "an unavailable default merge base fails closed instead of using HEAD parent",
-          "an unavailable explicit base fails closed without scanning the working tree",
-          "new-widget gate uses exact registry and Widgetbook identities without reading markdown"
-        ]
-      }
+        {
+          "id": "WIDGET-CATALOG-001",
+          "title": "Keep widget catalog current when widget architecture changes",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**",
+            "apps/consumer/lib/**",
+            "apps/host/lib/**",
+            "docs/widget_catalog.md",
+            "widgetbook/**",
+            "design/components/catch.components.json",
+            "tool/design/check_new_widget_inventory.mjs",
+            "tool/design/check_new_widget_inventory.test.mjs",
+            "tool/design/lib/new_widget_inventory_declarations.mjs",
+            "tool/design/check_widget_classification.mjs",
+            "tool/design/generate_widget_classification.mjs",
+            "tool/design/component_concepts.mjs",
+            "tool/design/component_concepts.test.mjs",
+            "widgetbook/test/support/triage_inventory.dart",
+            "test/goldens/**",
+            "packages/catch_ui/lib/**",
+            "lib/platform/riverpod_ui/**"
+          ],
+          "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings."
+        }
+      ]
     },
     {
       "id": "design:widget-variant-inventory",
@@ -5124,15 +4857,7 @@
         "node --test tool/design/generate_widget_variant_inventory.test.mjs",
         "node tool/design/generate_widget_variant_inventory.mjs --check"
       ],
-      "role": "finder",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/generate_widget_variant_inventory.test.mjs",
-        "contains": [
-          "logical repository snapshot drives deterministic variant review candidates",
-          "CLI modes stay read-only while JSON remains available on demand"
-        ]
-      }
+      "role": "finder"
     },
     {
       "id": "design:comprehensive-todo-summary",
@@ -5172,14 +4897,6 @@
         "node --test tool/design/consolidation_gates.test.mjs"
       ],
       "role": "finder",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/consolidation_gates.test.mjs",
-        "contains": [
-          "bare markup counts HTML elements and ignores library components",
-          "screen_body misses a Widgetbook state; a headless control never counts as parity"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -5293,10 +5010,6 @@
         "widgetbook/lib/main.directories.g.dart"
       ],
       "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/design/check_widgetbook_coverage.mjs --self-test"
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5357,29 +5070,21 @@
       ],
       "impactPaths": [
         "tool/design/check_screen_top_bar_contracts.test.mjs",
-        "tool/architecture/pattern_adoption.json",
         "tool/design/root_screen_composition_contracts.json"
       ],
       "role": "gate",
       "rules": [
-        "SCREEN-CHROME-001"
+        {
+          "id": "SCREEN-CHROME-001",
+          "title": "Every screen declares one reviewed navigation-chrome owner",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "tool/design/check_screen_top_bar_contracts.mjs",
+            "tool/design/screen_top_bar_contracts.json"
+          ],
+          "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchTopBar.screen, compact detail/edit/utility navigation uses CatchTopBar.route, and identity navigation uses CatchTopBar.identity. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_screen_top_bar_contracts.test.mjs",
-        "contains": [
-          "flags the known-bad screen fixture when compact chrome replaces the screen title voice",
-          "flags a new app bar until its screen-chrome role is registered",
-          "flags a raw Material app bar even when a manifest entry tries to bless it",
-          "flags a pushed compact route that suppresses its required back action",
-          "flags a shell-covering editor pushed on a branch navigator",
-          "flags an unregistered body-owned manual screen header",
-          "flags raw sliver chrome until a durable hero exception is registered",
-          "flags a direct pill action in canonical top-bar actions",
-          "flags a direct pill hidden behind a local top-bar action list",
-          "fails closed when the canonical app-bar forwarder drifts"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5408,16 +5113,18 @@
       ],
       "role": "finder",
       "rules": [
-        "SCREEN-GUTTER-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_screen_gutters.test.mjs",
-        "contains": [
-          "flags the known-bad horizontal screen gutter fixture",
-          "covers presentation widgets, not only screen files"
-        ]
-      }
+        {
+          "id": "SCREEN-GUTTER-001",
+          "title": "Screen gutters use semantic body and section ownership",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "design/screens/**",
+            "docs/design_parity/**",
+            "tool/design/check_screen_gutters.mjs"
+          ],
+          "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchPageBody.screen, CatchSectionList.inset, CatchSection, CatchSectionList.sliver, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry."
+        }
+      ]
     },
     {
       "id": "design:host-event-field-contracts",
@@ -5434,19 +5141,23 @@
       ],
       "role": "gate",
       "rules": [
-        "DESIGN-PRIMITIVES-001",
+        {
+          "id": "DESIGN-PRIMITIVES-001",
+          "title": "Prefer shared design primitives over repeated local shells",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "lib/contexts/*/parts/**",
+            "lib/pages/**",
+            "packages/catch_ui/lib/**",
+            "lib/platform/riverpod_ui/**"
+          ],
+          "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under packages/catch_ui/lib/src for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review. Section titles have one owner: top-level groups route through CatchSection, contained card titles route through CatchSection.contained or a documented content primitive, and nested shared widgets must expose a content-only mode instead of repeating the parent section title. Underline tab/scope rails route through CatchPageTabBar or CatchChoiceInput.segmented; production code must not compose CatchChoiceButton directly because that forks divider, indicator, ink, and trailing-action alignment behavior."
+        }
+      ],
+      "alsoEnforces": [
         "DESIGN-TOKENS-001",
         "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_host_event_field_contracts.test.mjs",
-        "contains": [
-          "flags activity choice fields without itemAccentBuilder",
-          "flags initially open event create fields",
-          "flags event accordions seeded with an expanded field"
-        ]
-      }
+      ]
     },
     {
       "id": "design:section-dividers",
@@ -5465,22 +5176,11 @@
         "widgetbook/lib/**"
       ],
       "role": "finder",
-      "rules": [
+      "alsoEnforces": [
         "DESIGN-PRIMITIVES-001",
         "DESIGN-TOKENS-001",
         "UI-LINT-001"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_section_dividers.test.mjs",
-        "contains": [
-          "flags caller-owned internalDividerColor on divided sections",
-          "flags raw dividers using old row divider opacities",
-          "flags custom CatchField leading content without a declared extent",
-          "flags thin feature wrappers around CatchSection field rows",
-          "flags feature row groups that manually assign sibling field dividers"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5504,21 +5204,10 @@
         "widgetbook/lib/**"
       ],
       "role": "finder",
-      "rules": [
+      "alsoEnforces": [
         "DESIGN-PRIMITIVES-001",
         "UI-LINT-001"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_section_headers.test.mjs",
-        "contains": [
-          "flags a CatchSection title duplicated by a nested component header",
-          "flags standalone section headers followed by untitled CatchSection shells",
-          "honors explicit showHeader false on nested preview components",
-          "flags titled feature-local surface sections for review",
-          "flags feature-local card shells with a section header and actions"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5545,20 +5234,11 @@
         "node tool/design/check_rail_contracts.mjs --summary --max 25 --fail-on high"
       ],
       "role": "finder",
-      "rules": [
+      "alsoEnforces": [
         "DESIGN-PRIMITIVES-001",
         "SCREEN-GUTTER-001",
         "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_rail_contracts.test.mjs",
-        "contains": [
-          "flags old rail chrome zeroing in production code",
-          "allows embedded rail defaults",
-          "allows full-bleed rail opt-in"
-        ]
-      }
+      ]
     },
     {
       "id": "design:option-group-usage",
@@ -5574,19 +5254,10 @@
         "node tool/design/check_option_group_usage.mjs --summary --max 25 --fail-on high"
       ],
       "role": "finder",
-      "rules": [
+      "alsoEnforces": [
         "DESIGN-PRIMITIVES-001",
         "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_option_group_usage.test.mjs",
-        "contains": [
-          "flags direct CatchChoiceButton usage in production feature code",
-          "allows the canonical CatchChoiceInput.segmented implementation",
-          "ignores direct item usage outside production lib sources"
-        ]
-      }
+      ]
     },
     {
       "id": "design:reference-screens",
@@ -5687,16 +5358,15 @@
       ],
       "role": "gate",
       "rules": [
-        "FN-RATE-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/audit/check_fn_rate_limits.test.mjs",
-        "contains": [
-          "scanFunctionRateLimits flags checkRateLimit actions missing entries",
-          "scanFunctionRateLimits passes when actions have explicit entries"
-        ]
-      }
+        {
+          "id": "FN-RATE-001",
+          "title": "Every checkRateLimit call passes its own required limit; the shared module holds no per-action table",
+          "appliesTo": [
+            "functions/src/**"
+          ],
+          "instruction": "Declare each callable's limit where it calls checkRateLimit, inline or as a constant in a module only that callable family imports. The limit parameter is required, so no call falls back to a loose default. Never add a per-action limit table to functions/src/shared/rateLimit.ts: nearly every Function imports it, so editing it makes the backend deploy select every Function. Its frozen LEGACY_RATE_LIMITS table covers only callers whose module another task's claim holds; it may only shrink. demoOps and other privileged fan-out callables must declare dedicated limits."
+        }
+      ]
     },
     {
       "id": "contracts:organizer-nomenclature",
@@ -5713,19 +5383,22 @@
       ],
       "role": "gate",
       "rules": [
-        "ORGANIZER-AUTHORITY-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/check_organizer_nomenclature.test.mjs",
-        "contains": [
-          "organizer nomenclature gate rejects legacy authority and generic copy",
-          "organizer nomenclature gate passes a canonical fixture",
-          "organizer nomenclature gate rejects club in Flutter names but keeps the subtype and contract names",
-          "organizer nomenclature gate rejects club in wire names but keeps the subtype and snake_case code keys",
-          "organizer nomenclature gate rejects club in the warehouse except the column migration"
-        ]
-      }
+        {
+          "id": "ORGANIZER-AUTHORITY-001",
+          "title": "Organizer is the canonical entity and club is a subtype",
+          "appliesTo": [
+            "contracts/**",
+            "functions/src/**",
+            "lib/**",
+            "website/src/**",
+            "admin/src/**",
+            "firestore.rules",
+            "storage.rules",
+            "firestore.indexes.json"
+          ],
+          "instruction": "Use organizers, organizerId, organizer relationships, organizer callables, organizer media paths, and organizer product copy as the canonical authority. Club is allowed as organizerType club, real-world content, or an explicitly documented released-client compatibility projection only."
+        }
+      ]
     },
     {
       "id": "audit:fn-readme-inventory",
@@ -5746,19 +5419,17 @@
       ],
       "role": "ratchet",
       "rules": [
-        "FN-DOC-001"
+        {
+          "id": "FN-DOC-001",
+          "title": "functions/README.md inventory is CI-diffed against src/index.ts exports",
+          "appliesTo": [
+            "functions/README.md",
+            "functions/src/index.ts"
+          ],
+          "instruction": "The canonical functions/README.md function inventory must stay in sync with the actual exports in src/index.ts. Add a CI check that diffs the documented inventory against exports."
+        }
       ],
       "baseline": "tool/audit/fn_readme_inventory_baseline.json",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/audit/check_fn_readme_inventory.test.mjs",
-        "contains": [
-          "scanFunctionReadmeInventory flags exports missing from README",
-          "scanFunctionReadmeInventory passes documented exports",
-          "scanFunctionReadmeInventory ratchets baseline findings",
-          "scanFunctionReadmeInventory rejects stale active rows but permits historical mentions"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -5784,15 +5455,6 @@
       ],
       "role": "ratchet",
       "baseline": "tool/audit/unused_code_baseline.json",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/audit/check_unused_code.test.mjs",
-        "contains": [
-          "known-bad new unused export fails the check",
-          "a fixed finding still in the baseline fails until --update removes it",
-          "--update refuses to add findings to the baseline"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -5835,11 +5497,7 @@
       "checks": [
         "node --check tool/design/check_widget_dedupe_probes.mjs",
         "node tool/design/check_widget_dedupe_probes.mjs"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/design/check_widget_dedupe_probes.mjs"
-      }
+      ]
     },
     {
       "id": "design:widget-dedupe-fingerprints",
@@ -5890,13 +5548,9 @@
         "tool/contracts/generated/**"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "WEB-UI-COMPONENT-001"
       ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_shared_web_ui_adoption.mjs --self-test"
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -5920,12 +5574,19 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-CONTROLLER-TEST-001"
+        {
+          "id": "WEB-CONTROLLER-TEST-001",
+          "title": "React controller coverage uses explicit behavior-test targets",
+          "appliesTo": [
+            "admin/src/features/**",
+            "website/src/features/**",
+            "tool/web/check_react_controller_test_targets.mjs",
+            ".github/workflows/admin-website.yml",
+            ".github/workflows/marketing-website.yml"
+          ],
+          "instruction": "Every React feature controller or mutation hook needs a unit test that imports it and registers a test, normally beside it. Keep aggregate percentage reports informational."
+        }
       ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_react_controller_test_targets.mjs --self-test"
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -5946,12 +5607,18 @@
       ],
       "role": "ratchet",
       "rules": [
-        "WEB-FEATURE-SIZE-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_admin_feature_ui_size.mjs --self-test"
-      }
+        {
+          "id": "WEB-FEATURE-SIZE-001",
+          "title": "Admin feature UI remains decomposed into reviewable modules",
+          "appliesTo": [
+            "admin/src/features/**/*.tsx",
+            "admin/feature-ui-size-budget.json",
+            "tool/web/check_admin_feature_ui_size.mjs",
+            "admin/package.json"
+          ],
+          "instruction": "Keep route/workspace entries below 900 lines and feature-private panel modules below 1200 lines. Split by cohesive workflow before raising a ceiling; do not bypass the admin feature-export boundary with reusable-looking feature exports."
+        }
+      ]
     },
     {
       "id": "admin:callable-inventory",
@@ -5984,16 +5651,18 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-CALLABLE-VALIDATION-001"
+        {
+          "id": "WEB-CALLABLE-VALIDATION-001",
+          "title": "Admin callable requests and development responses are schema-validated",
+          "appliesTo": [
+            "admin/src/shared/api/adminApi.ts",
+            "admin/scripts/generateCallableValidators.mjs",
+            "contracts/callables/**",
+            "contracts/callable_responses/**"
+          ],
+          "instruction": "Every callable used by adminApi must have a generated top-level validator; schema-backed requests validate on every live call and schema-backed responses validate in development or when VITE_ADMIN_VALIDATE_RESPONSES is enabled. pretypecheck regenerates the validators from their sources, so they cannot be stale."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "admin/scripts/generateCallableValidators.mjs",
-        "contains": [
-          "simulated schema drift",
-          "Admin callable validator self-test passed."
-        ]
-      },
       "impactPaths": [
         "tool/admin/callable_inventory.test.mjs",
         "tool/admin/callable_inventory.mjs"
@@ -6039,16 +5708,21 @@
       ],
       "role": "gate",
       "rules": [
-        "DESIGN-LEXICON-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_component_lexicon.test.mjs",
-        "contains": [
-          "rejects a declared surface symbol that does not exist",
-          "__KnownMissingWebsiteSymbol__"
-        ]
-      }
+        {
+          "id": "DESIGN-LEXICON-001",
+          "title": "Cross-stack design-system implementations map to one checked component lexicon",
+          "appliesTo": [
+            "design/components/**",
+            "design/admin/**",
+            "design/website/**",
+            "lib/**",
+            "admin/src/shared/ui/**",
+            "website/src/shared/ui/**",
+            "packages/web-ui/**"
+          ],
+          "instruction": "Every declared component surface symbol must exist in its implementation owner. Surface registry entries marked lexicon=true must reference a real catch.components id and exactly match that contract's surface symbol. Adopted cross-stack form primitives must declare a valid Flutter-owned interaction mode, while each stack retains its native implementation."
+        }
+      ]
     },
     {
       "id": "admin:check-ci",
@@ -6083,12 +5757,20 @@
       ],
       "role": "ratchet",
       "rules": [
-        "WEB-BUNDLE-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node admin/scripts/checkBundleBudget.mjs --self-test"
-      }
+        {
+          "id": "WEB-BUNDLE-001",
+          "title": "Admin route boundaries preserve production bundle budgets",
+          "appliesTo": [
+            "admin/src/**",
+            "admin/vite.config.ts",
+            "admin/bundle-budget.json",
+            "admin/scripts/checkBundleBudget.mjs",
+            "admin/package.json",
+            "packages/web-config/vite-react.ts"
+          ],
+          "instruction": "Keep data/query controllers behind lazy route boundaries and fail the production build when the JavaScript entry or largest async chunk exceeds the reviewed byte budget."
+        }
+      ]
     },
     {
       "id": "web:admin-storybook-bundle-budget",
@@ -6105,12 +5787,20 @@
       ],
       "role": "ratchet",
       "rules": [
-        "WEB-STORYBOOK-BUNDLE-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node admin/scripts/checkStorybookBundleBudget.mjs --self-test"
-      }
+        {
+          "id": "WEB-STORYBOOK-BUNDLE-001",
+          "title": "Admin Storybook preserves app-authored feature chunk boundaries",
+          "appliesTo": [
+            "admin/.storybook/main.ts",
+            "admin/src/stories/**",
+            "admin/src/features/**",
+            "admin/storybook-bundle-budget.json",
+            "admin/scripts/checkStorybookBundleBudget.mjs",
+            "admin/package.json"
+          ],
+          "instruction": "Keep Catch-authored admin feature and route-story chunks within the reviewed Storybook budgets. Split feature code and large generated datasets with named Rollup boundaries; do not hide regressions by raising the general Vite warning limit."
+        }
+      ]
     },
     {
       "id": "web:storybook-visuals",
@@ -6139,12 +5829,21 @@
       ],
       "role": "gate",
       "rules": [
-        "WEB-VISUAL-001"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_storybook_visuals.mjs --self-test"
-      }
+        {
+          "id": "WEB-VISUAL-001",
+          "title": "Registry-ready React stories have deterministic visual baselines",
+          "appliesTo": [
+            "website/**",
+            "admin/**",
+            "packages/web-ui/**",
+            "design/visual_baselines/**",
+            "tool/web/check_storybook_visuals.mjs",
+            ".github/workflows/admin-website.yml",
+            ".github/workflows/marketing-website.yml"
+          ],
+          "instruction": "Every Storybook registry entry marked ready must resolve to a built story that renders with reduced motion and loaded fonts; a story that cannot render fails. Each desktop and mobile capture is compared with committed baselines for the current operating system at the configured pixel tolerance, and CI reports changed, missing or stale baselines in the job summary and diagnostics artifact without failing while the product is still changing visually. Never compare Darwin-authored system-ui pixels against Linux; CI uses reviewed Ubuntu 24.04 baselines."
+        }
+      ]
     },
     {
       "id": "operations:cli",
@@ -6175,7 +5874,7 @@
       "safety": "remote-read-write-apply-guarded",
       "status": "active",
       "role": "operator",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
       ],
       "description": "Invokes catalogued admin callables with strict requests, dry-run mutation defaults, exact action/target confirmations, App Check, and local plus remote hash-only receipts.",
@@ -6201,7 +5900,7 @@
       "safety": "local-readonly",
       "status": "active",
       "role": "ratchet",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
       ],
       "description": "Keeps every admin API callable aligned with one strict catalog action, Functions export, workflow membership, role set, schema-valid example, and explicit mutation confirmation policy.",
@@ -6214,14 +5913,6 @@
         "operations/test/admin-action-catalog.test.mjs",
         "operations/src/**"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "operations/test/admin-action-catalog.test.mjs",
-        "contains": [
-          "catalog checker rejects GUI callable and workflow membership drift",
-          "catalog checker rejects mutations without explicit confirmation"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -6235,7 +5926,7 @@
       "safety": "local-writes-generated",
       "status": "active",
       "role": "generator",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
       ],
       "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/actions/ on demand through the Admin and Functions npm lifecycles. --validate checks the catalog's own links; the views are never tracked.",
@@ -6244,11 +5935,7 @@
         "node tool/admin/generate_admin_action_catalog.mjs --validate",
         "node tool/admin/generate_admin_action_catalog.mjs --self-test",
         "node --test tool/admin/generate_admin_action_catalog.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/admin/generate_admin_action_catalog.mjs --self-test"
-      }
+      ]
     },
     {
       "id": "operations:import-admin-projection",
@@ -6258,7 +5945,7 @@
       "safety": "remote-write-explicit",
       "status": "active",
       "role": "operator",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
       ],
       "description": "Validates a Supply Intake admin export locally by default and, only with explicit apply, alias-bound environment/project, production, and run confirmation flags, imports or repairs the immutable shadow projection in server-owned Firestore collections.",
@@ -6268,18 +5955,9 @@
         "node --test functions/lib/operations/projectionImporter.test.js",
         "node --test functions/test/operations-import-shadow-projection.test.cjs"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "functions/src/operations/projectionImporter.test.ts",
-        "contains": [
-          "rejects projections that grant a shadow run unsafe authority",
-          "applies items before the run and replays the same artifact",
-          "replay repairs missing items without recreating the run",
-          "replay rejects tampered items with matching metadata",
-          "rejects inventory above its frozen work budget",
-          "rejects a changed artifact for an imported immutable run"
-        ]
-      }
+      "impactPaths": [
+        "functions/src/operations/projectionImporter.test.ts"
+      ]
     },
     {
       "id": "operations:review-event-messaging",
@@ -6289,7 +5967,7 @@
       "safety": "remote-readonly",
       "status": "active",
       "role": "operator",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
       ],
       "description": "Reads one explicit environment, project, event, organizer, channel, sender and purpose through the production setup readers, then prints a schema-validated, credential-free runtime, sender and budget review that grants no dispatch authority.",
@@ -6299,14 +5977,9 @@
         "(cd functions && node --test lib/eventSuccess/operations/messageSetupReview.test.js)",
         "node --test functions/test/operations-review-event-messaging.test.cjs"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "functions/src/eventSuccess/operations/messageSetupReview.test.ts",
-        "contains": [
-          "foreign or invalid WhatsApp provisioning cannot reveal its budgets",
-          "read failures and a billing-day rollover require another complete review"
-        ]
-      }
+      "impactPaths": [
+        "functions/src/eventSuccess/operations/messageSetupReview.test.ts"
+      ]
     },
     {
       "id": "operations:boundaries",
@@ -6317,7 +5990,24 @@
       "status": "active",
       "role": "ratchet",
       "rules": [
-        "OPERATIONS-PLATFORM-001"
+        {
+          "id": "OPERATIONS-PLATFORM-001",
+          "title": "Durable business workflows stay outside repository tooling",
+          "appliesTo": [
+            "operations/**",
+            "contracts/admin/**",
+            "contracts/operations/**",
+            "functions/src/operations/**",
+            "functions/scripts/operations/**",
+            "functions/src/admin/**",
+            "admin/src/features/intake/operations/**",
+            "admin/src/features/operations/**",
+            "tool/host_discovery/**",
+            "tool/tools_manifest.json",
+            "tool/remote_ops_manifest.json"
+          ],
+          "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Ordinary admin actions share one catalog across GUI and CLI; strict schemas, role-gated callables, dry-run mutation defaults, confirmations, and hash-only receipts must not drift. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution."
+        }
       ],
       "baseline": "operations/governance/legacy_tool_baseline.json",
       "description": "Keeps durable business workflows under operations/ by scanning every tool code root for runtime imports or orchestration markers, while ratcheting known legacy artifact producers.",
@@ -6330,19 +6020,6 @@
         "operations/test/boundaries.test.mjs",
         "operations/test/helpers.mjs"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "operations/test/boundaries.test.mjs",
-        "contains": [
-          "boundary checker rejects new orchestration code in a legacy tool root",
-          "boundary checker rejects operations imports in any new tool root",
-          "boundary checker rejects reimplemented workflow markers in tool code",
-          "boundary checker aggregates workflow markers across a new tool root",
-          "boundary checker rejects legacy path knowledge outside the declared adapter",
-          "boundary checker rejects executable tool imports from operations",
-          "computed dynamic imports"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -6356,7 +6033,7 @@
       "safety": "local-readonly",
       "status": "active",
       "role": "ratchet",
-      "rules": [
+      "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
       ],
       "description": "Binds each durable workflow manifest to its live CLI commands, ordered stage and lifecycle contracts, source profiles, disabled capabilities, and platform capacity.",
@@ -6369,15 +6046,6 @@
         "operations/test/workflow-manifest.test.mjs",
         "operations/src/**"
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "operations/test/workflow-manifest.test.mjs",
-        "contains": [
-          "workflow manifest fails when a live CLI command is omitted",
-          "workflow manifest fails on stage or lifecycle ordering drift",
-          "workflow manifest fails when the loaded source inventory drifts"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -6407,11 +6075,7 @@
       "description": "Runs fingerprint extractor regression tests for seeded widget dedupe fixtures and state-class folding.",
       "checks": [
         "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
-      }
+      ]
     },
     {
       "id": "audit:provider-graph",
@@ -6439,21 +6103,28 @@
       ],
       "role": "gate",
       "rules": [
-        "DEPENDENCY-DIRECTION-001",
-        "PROVIDER-SEAM-001",
-        "PROVIDER-TOPOLOGY-001"
+        {
+          "id": "PROVIDER-SEAM-001",
+          "title": "Use feature-owned provider seams",
+          "appliesTo": [
+            "lib/**"
+          ],
+          "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider. Use generated overridable repository factories for dependency injection and generated Notifier/AsyncNotifier/StreamNotifier owners according to synchronous, loaded or streaming state responsibility. A generated wrapper around a business ChangeNotifier does not make its state lifecycle declarative. Pure imperative service helpers, local Flutter mechanics and named framework bridges remain valid. The AST graph requires exact path/symbol/operation reviews with bounded callsites; planned debt and watch signals are not compliance, and new owners or replacement operations cannot inherit a file/count exception. Its parsed-source limits still require manual lifecycle and domain-fence review."
+        },
+        {
+          "id": "PROVIDER-TOPOLOGY-001",
+          "title": "Keep the static Riverpod topology current and reviewed",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "tool/architecture/provider_graph.dart",
+            "tool/architecture/provider_graph_reviews.json"
+          ],
+          "instruction": "Derive and check the complete live Riverpod source graph from Dart ASTs. Keep providers, families, consumers, aliases, overrides, and Mutations resolvable; reject duplicate or dangling providers, provider-internal unresolved refs, reactive cycles, unreviewed architecture candidates, and stale review decisions. Do not commit generated graph views; emit deterministic JSON or summary evidence only on demand. Core-owned providers must not orchestrate feature data, and provider aliases should be removed when the canonical owner can be used directly."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "test/tool/provider_graph_test.dart",
-        "contains": [
-          "provider graph check failures match cycles and unresolved provider refs",
-          "provider graph JSON and summary are deterministic",
-          "provider graph CLI rejects retired and conflicting output flags",
-          "provider graph requires current architecture review decisions",
-          "provider graph rejects planned reviews without stable debt ids"
-        ]
-      }
+      "alsoEnforces": [
+        "DEPENDENCY-DIRECTION-001"
+      ]
     },
     {
       "id": "firebase:storage-rules-firestore-iam",
@@ -6469,15 +6140,19 @@
       ],
       "role": "gate",
       "rules": [
-        "STORAGE-IAM-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/storage_rules_firestore_iam.test.mjs",
-        "contains": [
-          "known-bad missing binding is detected"
-        ]
-      }
+        {
+          "id": "STORAGE-IAM-001",
+          "title": "Storage rules cross-service dependencies stay provisioned and live-probed",
+          "appliesTo": [
+            "storage.rules",
+            "tool/firebase/storage_rules_firestore_iam.mjs",
+            "tool/firebase/probe_chat_storage_rules.mjs",
+            "tool/deploy_firebase_targets.sh",
+            "docs/release_operations.md"
+          ],
+          "instruction": "Storage rules that call firestore.get or firestore.exists require roles/firebaserules.firestoreServiceAgent on every environment's Firebase Storage service agent. Storage deploys must fail their IAM preflight when it is absent, and authenticated upload/delete behavior must remain live-probeable without weakening participant rules."
+        }
+      ]
     },
     {
       "id": "firebase:probe-chat-storage-rules",
@@ -6492,16 +6167,9 @@
         "node --test tool/firebase/probe_chat_storage_rules.test.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "STORAGE-IAM-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/probe_chat_storage_rules.test.mjs",
-        "contains": [
-          "unauthorized upload is reported at the upload stage"
-        ]
-      }
+      ]
     },
     {
       "id": "firebase:synthetic-backend-probe",
@@ -6515,14 +6183,7 @@
         "node --check tool/firebase/synthetic_backend_probe.mjs",
         "node --test tool/firebase/synthetic_backend_probe.test.mjs"
       ],
-      "role": "operator",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/synthetic_backend_probe.test.mjs",
-        "contains": [
-          "callable steps fail when undeployed, denied, or outside main's contract"
-        ]
-      }
+      "role": "operator"
     },
     {
       "id": "design:field-facade-inventory",
@@ -6538,19 +6199,10 @@
         "node tool/design/generate_field_inventory.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "DESIGN-PRIMITIVES-001",
         "DESIGN-LEXICON-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/generate_field_inventory.test.mjs",
-        "contains": [
-          "known-bad deleted facade changes generated inventory",
-          "known-bad added slot parameter changes generated inventory",
-          "rejects a facade without owner-reviewed use-when metadata"
-        ]
-      }
+      ]
     },
     {
       "id": "design:terminal-padding",
@@ -6573,17 +6225,9 @@
         "node tool/design/check_terminal_padding.mjs --check"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "ROOT-SCREEN-COMPOSITION-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_terminal_padding.test.mjs",
-        "contains": [
-          "flags hand-rolled safe-area bottom padding in product code",
-          "flags viewPadding bottom but allows keyboard insets and core ownership"
-        ]
-      }
+      ]
     },
     {
       "id": "design:root-screen-composition-contracts",
@@ -6604,20 +6248,18 @@
       ],
       "role": "gate",
       "rules": [
-        "ROOT-SCREEN-COMPOSITION-001"
+        {
+          "id": "ROOT-SCREEN-COMPOSITION-001",
+          "title": "Root screens declare semantic composition and clear adaptive shell chrome",
+          "appliesTo": [
+            "lib/routing/go_router.dart",
+            "lib/**/presentation/**",
+            "lib/routing/shell/**",
+            "packages/catch_ui/lib/src/components/catch_section.dart"
+          ],
+          "instruction": "Every direct consumer and host StatefulShellBranch must be registered in tool/design/root_screen_composition_contracts.json. Exact route-to-layout ownership belongs in design/screens/catch.screens.json and is enforced by the analyzer-backed UI composition gate. Ordinary roots select CatchRootScreenScaffold.standard, .sections, or .fullBleed, or the matching CatchRootScreenScrollView constructor. Section roots use .sections for full-width rows with the canonical title-to-body rhythm. Roots with pinned peer navigation use .withPrimaryRail plus one of CatchRootScreenPageScrollView.standard, .fullBleed, or .embeddedViewport. These semantic constructors centralize SafeArea(bottom: false), title-to-body rhythm, gutters, responsive content width, field obstruction, refresh, and terminal clearance. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchStateViewport.sliver, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center."
+        }
       ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_root_screen_composition_contracts.test.mjs",
-        "contains": [
-          "accepts a registered adaptive shell branch",
-          "rejects the superseded parallel tabbed-root API",
-          "accepts lifecycle-owned StatefulShellBranch key member access",
-          "flags a shell that bypasses the shared adaptive scaffold",
-          "flags a new StatefulShellBranch until it is registered",
-          "flags a raw SliverFillRemaining empty state in presentation code"
-        ]
-      },
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node"]
@@ -6641,17 +6283,23 @@
         "tool/lib/path_glob.test.mjs"
       ],
       "role": "gate",
-      "description": "Enforces manifest-backed root ownership, retired duplicate-impact-authority absence, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
+      "description": "Enforces manifest-backed root ownership, retired duplicate-impact-authority absence, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links. Every *_baseline.json names its owning document and a target-zero phase heading.",
       "checks": [
         "node --test tool/check_repository_root_hygiene.test.mjs",
         "node tool/check_repository_root_hygiene.mjs"
       ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/check_repository_root_hygiene.test.mjs"
-      },
       "rules": [
-        "REPO-ROOT-HYGIENE-001"
+        {
+          "id": "REPO-ROOT-HYGIENE-001",
+          "title": "Repository-root entries have explicit owners and safe cleanup contracts",
+          "appliesTo": [
+            "*",
+            "tool/repository_root_manifest.json",
+            "tool/repository_hygiene.mjs",
+            "docs/**/*.md"
+          ],
+          "instruction": "Every root entry must match exactly one manifest classification. Cleanup is dry-run first and mutates only an explicit allowlisted scope; tracked files, protected paths, worktrees, symlinks, path escapes, and machine-local Markdown links are rejected."
+        }
       ]
     },
     {
@@ -6684,16 +6332,7 @@
         "node packages/brand/generate.mjs --check",
         "node --test packages/brand/brand.test.mjs",
         "node packages/brand/check_brand_literals.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "packages/brand/brand.test.mjs",
-        "contains": [
-          "the guard derives its patterns from the record",
-          "the allowlist may only shrink",
-          "a rebrand rewrites every managed surface and leaves the noun exceptions alone"
-        ]
-      }
+      ]
     },
     {
       "id": "meta:repository-hygiene-cleaner",
@@ -6721,11 +6360,7 @@
       "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
       "checks": [
         "node --test tool/firebase_functions.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/firebase_functions.test.mjs"
-      }
+      ]
     },
     {
       "id": "design:loading-composition",
@@ -6746,18 +6381,10 @@
         "node tool/design/check_loading_composition.mjs"
       ],
       "role": "gate",
-      "rules": [
+      "alsoEnforces": [
         "UI-LINT-001",
         "ASYNC-LOADING-PRESENTATION-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_loading_composition.test.mjs",
-        "contains": [
-          "rejects hand-built loading rows on protected Host and Consumer screens",
-          "rejects root typography overrides while ignoring comments and strings"
-        ]
-      }
+      ]
     },
     {
       "id": "demo:rsvp-fixture-builder",
@@ -6876,15 +6503,7 @@
       "checks": [
         "node --check tool/harness/compare_selectors.mjs",
         "node --test tool/harness/compare_selectors.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/harness/compare_selectors.test.mjs",
-        "contains": [
-          "a head engine that falsely claims complete narrow coverage cannot suppress trusted-base obligations",
-          "actual fanout cannot suppress obligations found by independent comparison"
-        ]
-      }
+      ]
     },
     {
       "id": "ci:main-marketing-validation",
@@ -6912,16 +6531,7 @@
         "node --check tool/ci/wait_main_marketing_validation.mjs",
         "node --test tool/ci/wait_main_marketing_validation.test.mjs"
       ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/wait_main_marketing_validation.test.mjs",
-        "contains": [
-          "missing jobs and a completed run without evidence fail closed",
-          "a newer merge cancelling CI during the final identity recheck keeps succeeded evidence",
-          "failure during the final identity recheck revokes reuse"
-        ]
-      }
+      "role": "gate"
     },
     {
       "id": "design:host-section-composition",
@@ -6971,17 +6581,7 @@
       "checks": [
         "node --check tool/ci/generated_inventories.mjs",
         "node --test tool/ci/generated_inventories.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/generated_inventories.test.mjs",
-        "contains": [
-          "actual generators replace stale outputs while preserving authored guidance, decisions and goldens",
-          "wrong or mutable source identity and dirty authored inputs fail before either output changes",
-          "a newly generated route still fails the actual authored capture coverage gate",
-          "partial sparse checkout fails even when every production root still exists"
-        ]
-      }
+      ]
     },
     {
       "id": "marketing:hosted-capture-import",
@@ -7024,17 +6624,7 @@
         "node --check tool/marketing/import_hosted_captures.mjs",
         "node --test tool/marketing/import_hosted_captures.test.mjs",
         "node --test tool/marketing/export_hosted_captures.test.mjs"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/marketing/import_hosted_captures.test.mjs",
-        "contains": [
-          "artifact identity distinguishes capture source from the controller event and binds the current attempt",
-          "artifact download uses only its exact id and rejects attempt races and digest tampering",
-          "ZIP rejects missing, duplicate, extra, traversal, absolute, directory and symlink entries",
-          "ZIP validates local names and CRCs and rejects prefixed or truncated archives"
-        ]
-      }
+      ]
     },
     {
       "id": "design:icon-catalog",
@@ -7071,17 +6661,24 @@
       },
       "role": "generator",
       "rules": [
-        "ICON-ROLES-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/generate_icon_catalog.test.mjs",
-        "contains": [
-          "a glyph missing from the vendored font fails",
-          "Flutter and React must draw the same family version",
-          "every activity kind needs exactly one correctly named role"
-        ]
-      }
+        {
+          "id": "ICON-ROLES-001",
+          "title": "Features draw catalogued icon roles through the shared icon layer",
+          "appliesTo": [
+            "design/tokens/catch.icons*",
+            "packages/catch_ui/**",
+            "lib/**",
+            "apps/**",
+            "widgetbook/**",
+            "test/**",
+            "integration_test/**",
+            "website/**",
+            "admin/**",
+            "packages/web-ui/**"
+          ],
+          "instruction": "Features name semantic icon roles from the shared catalog. Keep the vendored Flutter font and React icon family at the catalogued version, with exactly one role per activity kind. Existing direct family references and legacy CatchIcons aliases may only decrease; record each reduction rather than increasing an allowance. The catalog owns glyph selection, so changing a family does not require feature code to select glyphs."
+        }
+      ]
     },
     {
       "id": "design:icon-family-usage",
@@ -7120,19 +6717,10 @@
         ]
       },
       "role": "ratchet",
-      "rules": [
+      "alsoEnforces": [
         "ICON-ROLES-001"
       ],
-      "baseline": "tool/design/icon_family_usage_baseline.json",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_icon_family_usage.test.mjs",
-        "contains": [
-          "Dart references to Material, Cupertino and Phosphor glyphs are counted",
-          "each glyph imported from an icon-family package is counted in React",
-          "a count may only fall, and a fall must be recorded"
-        ]
-      }
+      "baseline": "tool/design/icon_family_usage_baseline.json"
     },
     {
       "id": "cloudflare:edge-policy",

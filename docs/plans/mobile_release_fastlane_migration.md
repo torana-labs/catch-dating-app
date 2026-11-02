@@ -1,7 +1,7 @@
 ---
 doc_id: mobile_release_fastlane_migration
-version: 1.1.0
-updated: 2026-10-30
+version: 1.1.1
+updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -178,9 +178,8 @@ From the coupling audit (appendix C, §2):
   `functions-lib` upload.
 - Registries: `ci:mobile-*`, `ci:firebase-delivery-package`,
   `ci:finalize-ci-plan` and the receipt and Xcode Cloud entries in
-  `tool/tools_manifest.json`; the matching `tool/remote_ops_manifest.json`,
-  `tool/architecture/pattern_adoption.json` and `tool/policy/rules.json`
-  entries; `releasePolicy` and release-mode targets in `tool/app_targets.json`
+  `tool/tools_manifest.json`; the matching `tool/remote_ops_manifest.json`
+  entries and the `APP-TARGET-IDENTITY-001` rule text on `platform:app-targets`; `releasePolicy` and release-mode targets in `tool/app_targets.json`
   and `tool/harness/component_graph.json`.
 - Rewrite, not delete: `tool/platform/check_app_targets.mjs` release-ownership
   checks, and the tests that slice the deleted jobs.
@@ -750,7 +749,7 @@ else consumes it). Confidence H/M/L.
 | C-71 | `tools_manifest.json:3759-3782` `platform:mobile-package-policy` | Size budget, forbidden assets/plugins, cross-role compare | `rules.json:2772` | KEEP; run nightly | Size/plugin regressions | n/a | H |
 | C-72 | `tools_manifest.json:4214-4262` `platform:app-targets` | Runs `check_app_targets.test.mjs`, `mobile_release_target_contract.test.mjs`, `check_app_targets.mjs --check` | Contract | KEEP; EDIT impactPaths `:4221` and checks to drop the contract test | n/a | n/a | H |
 | C-73 | `tool/ci/check_toolchain_consistency.sh:96-107` | Every Apple-native workflow uses `APPLE_CI_RUNNER` | Xcode floor | KEEP; EDIT list (drop the two mobile workflows, add the fastlane workflow if it runs on macOS). Mirror in `check_toolchain_consistency.test.mjs:10-20` and `tools-ci.yml:82-83` sparse checkout | Xcode/runner drift | n/a | H |
-| C-74 | `tool/policy/rules.json:2717-2793` `APP-TARGET-IDENTITY-001` | Target contract rule; enforcement includes package policy and identity verifiers; doc anchor `#mobile-internal-release-ownership` (`:2789`) | Governance | KEEP; EDIT anchor if the heading changes; `sunset_when` "three consecutive complete release receipts" (`:2742`) and note `:2753` refer to old receipts | Enforcement-integrity failure if anchor breaks | n/a | H |
+| C-74 | `APP-TARGET-IDENTITY-001` on `platform:app-targets` in `tool/tools_manifest.json` | Target contract rule; enforcement includes package policy and identity verifiers; doc anchor `#mobile-internal-release-ownership` (`:2789`) | Governance | KEEP; EDIT anchor if the heading changes; `sunset_when` "three consecutive complete release receipts" (`:2742`) and note `:2753` refer to old receipts | Enforcement-integrity failure if anchor breaks | n/a | H |
 | C-75 | `tool/remote_ops_manifest.json:683-812` `mobile-internal-stores` | Inventory of the mobile remote surface: tool ids, workflows, manual gates #218/#199, required checks, run-id history | Remote-ops governance | REPLACE (fastlane workflow, ASC/Play secrets, production-lane guardrail); keep a short history line | n/a | n/a | H |
 | C-76 | `remote_ops_manifest.json:160-162` (Firebase backend entry notes) | Describes "Delivery" queue, v4 cursor, v3 authority | Stale since `0c14b06cf` (#799) | DROP | None | n/a | H |
 | C-77 | `tool/architecture/pattern_adoption.json:1158-1262` `ARCH-APP-TARGET-001` | prototypeFiles (`:1169-1178` incl. build-number, app-store, testflight, package, promotion tools), adopters (`:1206-1241` incl. both mobile workflows), exceptions (`:1243-1254`), requiredChecks (`:1259`) | Architecture exhibit | EDIT (keep app-target core; replace release adopters with the fastlane workflow) | `check_app_architecture_exhibits` / freshness drift | n/a | M |
@@ -808,8 +807,7 @@ else consumes it). Confidence H/M/L.
 - `tool/harness/component_graph.json`: remove `releaseTargets`/`releaseRoles` from the 19 main entries and all `release` entries (C-47/C-48), mode `"release"` at `:5`, `deployGroupRequirements` `:24-29` and `deployGroups` (C-50); edit `:182-189`, `:816-825`, `:843-849`; optionally align main `ciTargets` with merge_group (C-49).
 - `tool/harness/component_graph.schema.json:196-220`, `tool/harness/lib/component_graph.mjs:8,10,13-18,484-520,542-547`, `tool/harness.mjs:64-69,242-243`: drop release/deploy operations once the graph no longer uses them.
 - `tool/remote_ops_manifest.json`: replace `:683-812`; delete notes `:160-162`.
-- `tool/architecture/pattern_adoption.json:1158-1262`: edit prototypeFiles, adopters, exceptions, requiredChecks.
-- `tool/policy/rules.json:2742,2753,2789`: update sunset wording and anchor.
+- `tool/tools_manifest.json`, `APP-TARGET-IDENTITY-001` on `platform:app-targets`: update the wording.
 - `tool/app_targets.json`: rewrite `:25-61`; trim `:386-394`, `:447-455`; drop `testFlightDistributionPolicy` `:85,108` (with `check_app_targets.mjs:129-134`).
 - `tool/app_target_external_gates.json`: retire or re-scope both gates (with `check_app_targets.mjs:13-28`).
 - `tool/ci/check_toolchain_consistency.sh:96-101`, `tool/ci/check_toolchain_consistency.test.mjs:16-19`, `.github/workflows/tools-ci.yml:82-83`: replace the two mobile workflows with the new one (if macOS) or remove them.

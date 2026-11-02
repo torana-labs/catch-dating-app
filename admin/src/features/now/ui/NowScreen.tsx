@@ -87,6 +87,8 @@ export function NowScreen({
         <Stat label="Over 2 days" value={model.overTwoDays} />
         {model.completedPayments !== null ? <Stat label="Completed payments" value={model.completedPayments} /> : null}
         {model.activeHosts !== null ? <Stat label="Active host claims" value={model.activeHosts} /> : null}
+        {model.signupsThisWeek !== null ? <Stat label="Signups this week" value={model.signupsThisWeek} /> : null}
+        {model.completedProfiles !== null ? <Stat label="Completed profiles" value={model.completedProfiles} /> : null}
       </CatchGap>
       <CatchGap size="related">
         <CatchText as="h2" variant="sectionTitle">Oldest first</CatchText>

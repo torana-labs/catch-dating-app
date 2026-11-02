@@ -63,8 +63,8 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
     "admin/src/app/App.mutationSession.test.tsx", "admin/src/app/App.session.test.tsx",
     "admin/src/app/App.test.tsx", "admin/src/app/App.tsx", "admin/src/app/sessionRequests.test.tsx",
     "admin/src/app/useAdminSession.test.tsx", "admin/src/app/useAdminSession.ts",
-    "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
-    "admin/src/features/finance/controllers/useFinanceOpsController.ts", "admin/src/main.tsx",
+    "admin/src/features/money/controllers/useBillsController.test.tsx",
+    "admin/src/features/money/controllers/useBillsController.ts", "admin/src/main.tsx",
     "admin/src/shared/query/queryClient.test.tsx", "admin/src/shared/query/queryClient.tsx",
     "admin/src/shared/query/queryKeys.ts",
   ];
@@ -245,11 +245,8 @@ const consumedInputs = new Map([
     "web:admin-pending-operations"]],
   ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
     "design:screen-contracts"]],
-  ["tool/architecture/pattern_adoption.json", ["audit:adopted-architecture-boundaries",
-    "audit:app-architecture-exhibits", "design:screen-top-bar-contracts"]],
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
     "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
-  ["tool/policy/rules.json", ["agent:context-pack", "agent:harness-v2"]],
   ["tool/data/lib/recompute_cli_test_support.mjs", ["data:repair-club-hosts",
     "data:repair-club-member-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
   ["packages/web-config/firebase.ts", ["web:react-controller-test-targets",
@@ -936,7 +933,7 @@ test("mixed dedicated workflow changes retain policy wiring in the affected Tool
     });
     assert.equal(plan.mode, "affected", workflow);
     assert.ok(plan.toolIds.includes("agent:harness-v2"), workflow);
-    assert.ok(plan.toolIds.includes("meta:enforcement-integrity"), workflow);
+    assert.ok(plan.toolIds.includes("meta:tool-manifest"), workflow);
   }
 });
 

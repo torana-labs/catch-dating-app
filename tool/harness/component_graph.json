@@ -42,6 +42,7 @@
         "/tool/lib/repo_paths.mjs",
         "/tool/lib/repository_snapshot.mjs",
         "/tool/lib/tool_impact.mjs",
+        "/tool/lib/tool_manifest_rules.mjs",
         "/tool/lib/tool_platform.mjs",
         "/tool/run.mjs",
         "/tool/tools_manifest.json",
@@ -84,10 +85,10 @@
     },
     "ci-workflow-capture": {
       "direct": {
-        "pr": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["capture_freshness", "policy_docs"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
@@ -158,10 +159,10 @@
     },
     "policy": {
       "direct": {
-        "pr": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata"]},
+        "merge_group": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata"]},
+        "main": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata"]},
+        "nightly": {"ciTargets": ["policy_docs"], "checkIds": ["docs:metadata"]}
       },
       "affected": {}
     },
@@ -185,91 +186,91 @@
     },
     "ci-workflow-app-builds": {
       "direct": {
-        "pr": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]},
-        "merge_group": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]},
-        "main": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]},
-        "nightly": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]}
+        "pr": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","env:ci-toolchain"]},
+        "merge_group": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","env:ci-toolchain"]},
+        "main": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","env:ci-toolchain"]},
+        "nightly": {"ciTargets":["flutter_build_android","flutter_build_ios","flutter_build_web","flutter_web_smoke","policy_docs","tools"],"buildTargets":["consumer-android","consumer-ios","consumer-web","host-android","host-ios","host-web"],"checkIds":["agent:harness-v2","env:ci-toolchain"]}
       },
       "affected": {}
     },
     "ci-native-dependency-cache": {
       "direct": {
-        "pr": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]},
-        "merge_group": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]},
-        "main": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]},
-        "nightly": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","meta:enforcement-integrity","env:ci-toolchain"]}
+        "pr": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","env:ci-toolchain"]},
+        "merge_group": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","env:ci-toolchain"]},
+        "main": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","env:ci-toolchain"]},
+        "nightly": {"ciTargets":["flutter_build_ios","policy_docs","tools","visual_integration"],"buildTargets":["consumer-ios","host-ios"],"checkIds":["agent:harness-v2","env:ci-toolchain"]}
       },
       "affected": {}
     },
     "ci-workflow-react": {
       "direct": {
-        "pr": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
-        "merge_group": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
-        "main": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]},
-        "nightly": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity", "ci:web-hosting-delivery-workflow"]}
+        "pr": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:web-hosting-delivery-workflow"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:web-hosting-delivery-workflow"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:web-hosting-delivery-workflow"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "marketing", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:web-hosting-delivery-workflow"]}
       },
       "affected": {}
     },
     "harness-scoped": {
       "direct": {
-        "pr": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["policy_docs", "tools"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
     "ci-workflow-rules": {
       "direct": {
-        "pr": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
     "ci-workflow-contracts": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["contracts", "policy_docs"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
     "ci-workflow-functions": {
       "direct": {
-        "pr": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["functions", "policy_docs"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
     "ci-workflow-operations": {
       "direct": {
-        "pr": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["operations", "policy_docs"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
     "ci-workflow-flutter": {
       "direct": {
-        "pr": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["flutter", "policy_docs"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
     "ci-workflow-visual": {
       "direct": {
-        "pr": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "merge_group": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "main": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]},
-        "nightly": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2", "meta:enforcement-integrity"]}
+        "pr": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "merge_group": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "main": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2"]},
+        "nightly": {"ciTargets": ["policy_docs", "visual_integration"], "checkIds": ["agent:harness-v2"]}
       },
       "affected": {}
     },
@@ -752,7 +753,6 @@
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
-        "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
         "admin/src/features/safety/controllers/useSafetyTriageController.ts",
         "admin/src/features/users/controllers/useUserAnalyticsController.ts"
