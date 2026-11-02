@@ -20,6 +20,7 @@ import {
 import {useMemo, useState} from "react";
 import {launchMarkets} from "../../../shared/config/launchMarkets";
 import type {
+  ClaimEvidence,
   InboxItem,
   InboxItemDetail,
   InboxScope,
@@ -29,6 +30,7 @@ import type {
   ListingEventReview,
   ListingReview,
 } from "../api/inboxRepository";
+import {claimApprovalIssue, claimChecks} from "../controllers/claimEvidence";
 import {
   emptyListingEventForm,
   eventCheckReasons,
@@ -142,6 +144,36 @@ function facts(item: InboxItem): CatchMetaEntry[] {
   return entries;
 }
 
+/** Who is asking and how to reach them, added to a claim's facts. */
+function claimFacts(evidence: ClaimEvidence): CatchMetaEntry[] {
+  const {organizer} = evidence;
+  return [
+    {label: "Who", value: `${evidence.requesterName}, ${evidence.requesterRole}`},
+    {label: "Email", value: evidence.businessEmail ?? "Not given"},
+    {label: "Phone", value: evidence.businessPhone ?? "Not given"},
+    {label: "Page", value: organizer.name ?? evidence.organizerId, href: `/organizers/${encodeURIComponent(evidence.organizerId)}`},
+    ...(evidence.message ? [{label: "Their message", value: evidence.message, wide: true}] : []),
+  ];
+}
+
+/** The requester's proof links and the checks a reviewer weighs. Nothing here decides the claim. */
+function ClaimChecks({evidence}: {evidence: ClaimEvidence}) {
+  return (
+    <>
+      {evidence.proofUrls.length ? (
+        <CatchGap size="inline" direction="horizontal">
+          {evidence.proofUrls.map((url) => <CatchButton key={url} href={url} newTab label={url.replace(/^https?:\/\/(?:www\.)?/u, "").replace(/\/$/u, "")}
+            onPressed={() => undefined} size="sm" variant="secondary" />)}
+        </CatchGap>
+      ) : null}
+      <CatchSection title="Checks" dividers="none">
+        {claimChecks(evidence).map((check) => <CatchIndexRow key={check.title} title={check.title} titleVariant="bodyM" subtitle={check.detail}
+          trailing={<CatchBadge recipe="status" tone={check.passed ? "success" : "warning"} label={check.passed ? "Fine" : "Check this"} />} />)}
+      </CatchSection>
+    </>
+  );
+}
+
 /** The journey as the timeline draws it: every recorded step, then where it is now. */
 function timeline(item: InboxItem, journey: readonly JourneyStep[]): CatchSectionStep[] {
   const steps: CatchSectionStep[] = journey.map((step) => ({
@@ -191,6 +223,8 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
   const holdIt = {label: item.assigneeUid === uid ? "Snooze a day" : "Pick it up", isLoading: busy,
     onPressed: item.assigneeUid === uid ? snooze : pickUp};
 
+  const evidence = item.type === "claim" && controller.claimEvidence?.requestId === item.sourceId ? controller.claimEvidence : null;
+  const approvalIssue = evidence ? claimApprovalIssue(evidence) : null;
   let dock = null;
   let picker = null;
   if (item.state.code === "dismissed") {
@@ -200,13 +234,13 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
     const next = controller.nextItem ? `Then ${controller.nextItem.title}` : "Then the inbox is clear";
     if (item.type === "claim" && canDecideClaim) {
       dock = <CatchDock recipe="pane"
-        primary={{label: "Approve claim", isLoading: busy, onPressed: () => void controller.decideClaim({requestId: item.sourceId,
-          decision: "approve", decisionReason: noteText || null})}}
+        primary={{label: "Approve claim", isLoading: busy, onPressed: evidence && !approvalIssue && noteText ? () => void controller.decideClaim({
+          requestId: item.sourceId, decision: "approve", decisionReason: noteText}) : null}}
         danger={{label: "Reject", onPressed: noteText ? () => void controller.decideClaim({requestId: item.sourceId,
           decision: "reject", decisionReason: noteText}) : null}}
         secondary={{label: "Snooze a day", onPressed: snooze}}
-        note={{label: "Note for the record", placeholder: "Why. Required to reject.", value: note, onChanged: setNote}}
-        next={next} />;
+        note={{label: "Note for the record", placeholder: "What you checked", value: note, onChanged: setNote, required: true}}
+        next={approvalIssue ?? next} />;
     } else if (item.type === "claim") {
       dock = <CatchDock recipe="pane"
         primary={{label: "Recommend approval", isLoading: busy, onPressed: noteText ? () => void controller.recommendClaim({
@@ -267,7 +301,9 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
           ...(controller.previousItem ? {previous: {label: "Previous", onPressed: controller.selectPrevious}} : {}),
           ...(controller.nextItem ? {next: {label: "Next", onPressed: controller.selectNext}} : {})}} : {})}
       />
-      <CatchMetaRow entries={facts(item)} columns={2} />
+      <CatchMetaRow entries={evidence ? [...facts(item).filter((entry) => entry.label !== "About"), ...claimFacts(evidence)] : facts(item)} columns={2} />
+      {evidence ? <ClaimChecks evidence={evidence} /> : null}
+      {item.type === "claim" && controller.claimEvidenceFailed ? <CatchEmptyState title="Their evidence could not be loaded" message="Try again before deciding." /> : null}
       {picker}
       <CatchSection title="How it got here" timeline={timeline(item, journey)} dividers="none" />
       {controller.listingReviewFailed || controller.eventReviewFailed ? <CatchEmptyState title="The review could not be opened" message="It may have been decided already. Try again." /> : null}

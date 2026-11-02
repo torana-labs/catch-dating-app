@@ -34,7 +34,7 @@ const dataQualityRows: DataQualityRow[] = [
     updatedAt: "2026-07-03T08:30:00.000Z",
     freshness: "current",
     timestampLabel: "Current by 7-day heuristic",
-    owningWorkflowPath: "/organizers/claims",
+    owningWorkflowPath: "/inbox",
   },
   {
     id: "host-analytics-booking-window",

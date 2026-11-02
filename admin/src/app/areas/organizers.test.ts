@@ -2,19 +2,15 @@ import {describe, expect, it} from "vitest";
 import {resolveAdminRoute} from "../adminRoutes";
 
 describe("Organizer routes", () => {
-  it.each([
-    ["/organizers/afterfly", "organizerId", "afterfly"],
-    ["/organizers/claims/request-1", "claimRequestId", "request-1"],
-  ])("resolves %s", (path, key, value) => {
-    const route = resolveAdminRoute(path);
+  it("resolves an organizer record", () => {
+    const route = resolveAdminRoute("/organizers/afterfly");
     expect(route.nav).toBe("organizers");
-    expect(route.params[key]).toBe(value);
+    expect(route.params.organizerId).toBe("afterfly");
   });
 
-  it("does not mistake the claims workspace for a record", () => {
-    const route = resolveAdminRoute("/organizers/claims");
-    expect(route.organizerWorkspace).toBe("claims");
-    expect(route.params.organizerId).toBeUndefined();
+  it("sends old claim links to the Inbox", () => {
+    expect(resolveAdminRoute("/organizers/claims").redirect).toBe("/inbox");
+    expect(resolveAdminRoute("/organizers/claims/request-1").redirect).toBe("/inbox");
   });
 
   it("keeps unknown nested paths in their workspace without borrowing a record", () => {

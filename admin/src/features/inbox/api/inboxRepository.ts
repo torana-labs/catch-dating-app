@@ -19,7 +19,7 @@ import type {AdminPublishListingEventsCallablePayload} from
   "../../../generated/contracts/adminPublishListingEventsCallablePayload";
 import type {AdminPublishListingEventsCallableResponse} from
   "../../../generated/contracts/adminPublishListingEventsCallableResponse";
-import {decideAccessApplication, decideOrganizerClaim, listOrganizerDetails} from "../../../shared/api/adminApi";
+import {decideAccessApplication, decideOrganizerClaim, getOrganizerClaimRequestDetails, listOrganizerDetails} from "../../../shared/api/adminApi";
 import type {AdminApproveOrganizerListingCallablePayload} from
   "../../../generated/contracts/adminApproveOrganizerListingCallablePayload";
 import type {AdminApproveOrganizerListingCallableResponse} from
@@ -28,7 +28,8 @@ import type {AdminGetOrganizerListingReviewCallableResponse} from
   "../../../generated/contracts/adminGetOrganizerListingReviewCallableResponse";
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
-import {sampleEventReviews, sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
+import type {AdminOrganizerClaimRequestDetails} from "../../../shared/types/adminTypes";
+import {sampleClaimEvidence, sampleEventReviews, sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
 
 export type InboxPage = AdminListInboxItemsCallableResponse;
 export type InboxQuery = AdminListInboxItemsCallablePayload;
@@ -42,6 +43,7 @@ export type ClaimRecommendationInput = AdminRecommendOrganizerClaimCallablePaylo
 export type ListingReviewDetail = AdminGetOrganizerListingReviewCallableResponse;
 export type ListingReview = ListingReviewDetail["review"];
 export type ListingApprovalInput = AdminApproveOrganizerListingCallablePayload;
+export type ClaimEvidence = AdminOrganizerClaimRequestDetails;
 export type ListingEventReview = AdminGetListingEventReviewCallableResponse;
 export type ListingEventRef = NonNullable<InboxItem["listingEvent"]>;
 export type ListingEventPublishInput = AdminPublishListingEventsCallablePayload;
@@ -120,6 +122,14 @@ export async function updateInboxItem(input: InboxUpdate): Promise<AdminUpdateIn
   sampleUpdates.set(item.itemId, [...(sampleUpdates.get(item.itemId) ?? []), {stepId: `staff-${Date.now()}`,
     occurredAt: new Date().toISOString(), title: titles[input.action], detail: input.note, actorUid: "sample-owner", tone: "ink"}]);
   return {item};
+}
+
+/** What a claim's requester sent: who they are, how to reach them, their proof, and the page they want. */
+export async function getClaimEvidence(requestId: string): Promise<ClaimEvidence> {
+  if (dataMode() !== "sample") return (await getOrganizerClaimRequestDetails({requestId})).request;
+  const evidence = sampleClaimEvidence[requestId];
+  if (!evidence) throw new Error("Organizer claim request not found.");
+  return evidence;
 }
 
 /** Ops recommend a claim; the owner decides it. */

@@ -1,4 +1,4 @@
-import type {InboxItem, JourneyStep, ListingEventReview} from "./inboxRepository";
+import type {ClaimEvidence, InboxItem, JourneyStep, ListingEventReview} from "./inboxRepository";
 
 /** The canvas boards' inbox, so sample mode shows every type. */
 export const sampleNow = Date.parse("2026-10-31T12:00:00.000Z");
@@ -65,4 +65,16 @@ export const sampleEventReviews: Record<string, ListingEventReview> = {
       priceLabel: "₹499", state: "needs_resolution", publishedBy: null, blockers: ["missing_exact_coordinates"],
       resolvableBlockers: ["missing_exact_coordinates"], automatedFindings: [{check: "dating_framing", field: "title", match: "Singles"}]},
   },
+};
+
+/** The claim sample mode opens, with its evidence. */
+export const sampleClaimEvidence: Record<string, ClaimEvidence> = {
+  bhag: {requestId: "bhag", targetPath: "organizerClaimRequests/bhag", organizerId: "bhag", requesterUid: "sample-arjun",
+    requesterName: "Arjun Bhagat", requesterRole: "manager", contact: "arjun@example.com", proofCount: 1, status: "pending",
+    createdAt: hoursAgo(50), updatedAt: hoursAgo(50), businessEmail: "arjun@example.com", businessPhone: "+91 98200 00000",
+    proofUrls: ["https://www.instagram.com/bhag.club/"],
+    message: "I run Bhag Club with two friends. Instagram is @bhag.club; I can post a code there if you need.",
+    requesterProfile: {exists: true, profileComplete: true},
+    organizer: {exists: true, name: "Bhag Club", claimState: "claimPending", ownershipState: "programmatic", ownerUserId: null,
+      canonicalPath: "/organizers/bhag/"}},
 };

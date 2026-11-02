@@ -72,10 +72,6 @@ import {
   type OrganizerPublishingFilter,
   useOrganizerPublishingController,
 } from "../controllers/useOrganizerPublishingController";
-import {
-  type OrganizerClaimReviewController,
-  useOrganizerClaimReviewController,
-} from "../controllers/useOrganizerClaimReviewController";
 import type {
   OrganizerDiffRow,
   OrganizerPublishingFormState,
@@ -83,7 +79,6 @@ import type {
   PublishChecklistState,
 } from "../controllers/organizerPublishingHelpers";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
-import {organizerDirectoryPanels} from "./organizerDirectoryPanels";
 import {organizerDetailPanels} from "./organizerDetailPanels";
 import {brand} from "@catch/brand";
 
@@ -96,23 +91,13 @@ const publicSiteOrigin = String(
 ).replace(/\/+$/u, "");
 
 export function OrganizerPublishingScreen({
-  activeWorkspace = "directory",
   onBackToList,
-  onBackToClaims,
-  onSelectClaimRequestId,
   onSelectOrganizerId,
-  onWorkspaceChange,
-  selectedClaimRequestId,
   selectedOrganizerId,
 }: {
-  activeWorkspace?: "directory" | "claims";
   selectedOrganizerId?: string | null;
   onBackToList?: () => void;
-  onBackToClaims?: () => void;
-  onSelectClaimRequestId?: (requestId: string) => void;
   onSelectOrganizerId?: (organizerId: string) => void;
-  onWorkspaceChange?: (workspace: "directory" | "claims") => void;
-  selectedClaimRequestId?: string | null;
 }) {
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
   const controller = useOrganizerPublishingController({
@@ -122,51 +107,9 @@ export function OrganizerPublishingScreen({
     onSelectOrganizerId,
     selectedOrganizerId,
   });
-  const claimReviewController = useOrganizerClaimReviewController({
-    enabled: activeWorkspace === "claims",
-    onError,
-    onNotice,
-    onSelectedRequestIdChange: (requestId) => {
-      if (requestId) {
-        onSelectClaimRequestId?.(requestId);
-      } else {
-        onBackToClaims?.();
-      }
-    },
-    selectedRequestId: selectedClaimRequestId,
-  });
-  return (
-    <OrganizerPublishingWorkspace
-      activeWorkspace={activeWorkspace}
-      claimReviewController={claimReviewController}
-      controller={controller}
-      onBackToClaims={onBackToClaims}
-      onWorkspaceChange={onWorkspaceChange}
-    />
-  );
+  return <OrganizerPublishingWorkspace controller={controller} />;
 }
-export function OrganizerPublishingWorkspace({
-  activeWorkspace = "directory",
-  claimReviewController,
-  controller,
-  onBackToClaims = () => undefined,
-}: {
-  activeWorkspace?: "directory" | "claims";
-  claimReviewController?: OrganizerClaimReviewController;
-  controller: OrganizerPublishingController;
-  onBackToClaims?: () => void;
-  onWorkspaceChange?: (workspace: "directory" | "claims") => void;
-}) {
-  if (activeWorkspace === "claims" && claimReviewController) {
-    return (
-      <AdminWorkbenchStack compact>
-        <organizerDirectoryPanels.OrganizerClaimReviewWorkspace
-          controller={claimReviewController}
-          onBackToList={onBackToClaims}
-        />
-      </AdminWorkbenchStack>
-    );
-  }
+export function OrganizerPublishingWorkspace({controller}: {controller: OrganizerPublishingController}) {
   if (controller.view === "detail") {
     return <organizerDetailPanels.OrganizerDetailView controller={controller} />;
   }

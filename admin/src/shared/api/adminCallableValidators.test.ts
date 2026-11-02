@@ -37,7 +37,6 @@ describe("generated admin callable validators", () => {
         "adminRecordMarketingReviewDecision",
         "adminCreateOrganizerDraftFromCandidate",
         "adminGetOrganizerClaimRequestDetails",
-        "adminListOrganizerClaimRequests",
         "adminSetOrganizerIndexStatus",
         "adminReviewEventMessagingBudget",
         "adminDecideEventMessagingBudget",
