@@ -1,9 +1,6 @@
+# The Riverpod and Catch plugins load only from the workspace root, whose
+# analysis covers this package; a plugins section here is an analyzer warning.
 include: ../../../analysis_options.yaml
-
-plugins:
-  riverpod_lint: %%riverpodLint%%
-  catch_ui_lints:
-    path: ../../catch_ui_lints
 
 linter:
   rules:

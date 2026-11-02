@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {spawnSync} from "node:child_process";
 import {createHash} from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -27,8 +28,8 @@ const pascalName = /^(?:[A-Z][a-z0-9]*)+$/u;
 class UsageError extends Error {}
 class RefusalError extends Error {}
 
-const pascal = (snake) => snake.split("_").map((word) => word[0].toUpperCase() + word.slice(1)).join("");
-const camel = (snake) => pascal(snake)[0].toLowerCase() + pascal(snake).slice(1);
+const pascal = (name) => name.split("_").map((word) => word[0].toUpperCase() + word.slice(1)).join("");
+const camel = (name) => pascal(name)[0].toLowerCase() + pascal(name).slice(1);
 const snake = (name) => name.replace(/([a-z0-9])([A-Z])/gu, "$1_$2").toLowerCase();
 const dartImports = (uris) => [...new Set(uris)].sort().map((uri) => `import '${uri}';`).join("\n");
 
@@ -65,13 +66,11 @@ function contextPlan(options) {
     throw new RefusalError(`pub name '${name}' is already taken: pubspec.lock holds a package of that name (blueprint D25).`);
   }
   const rootPubspec = fs.readFileSync(fromRepo("pubspec.yaml"), "utf8");
-  const rootOptions = fs.readFileSync(fromRepo("analysis_options.yaml"), "utf8");
   const values = {
     name,
     Name: pascal(name),
     sdk: rootConstraint(rootPubspec, "sdk"),
     flutterLints: rootConstraint(rootPubspec, "flutter_lints"),
-    riverpodLint: rootConstraint(rootOptions, "riverpod_lint"),
     imports: dartImports(["package:flutter_test/flutter_test.dart", `package:${name}/${name}.dart`]),
   };
   const root = `packages/contexts/${name}`;
@@ -218,7 +217,6 @@ function registryRecord({id, symbol, file, tier, useCase, roleNoun, components})
     status: "active",
     kind: "primitive",
     tier,
-    aliases: [],
     summary: `State what ${symbol} shows and when to use it.`,
     dart: {symbol, file, constructors: [symbol]},
     verification: {
@@ -278,6 +276,7 @@ function refuseRegisteredName(symbol, components) {
 
 function insertSorted(source, line) {
   const lines = source.split("\n");
+  if (lines.includes(line)) return source;
   const at = lines.findIndex((existing) => existing.startsWith("export '") && existing > line);
   const index = at === -1 ? lines.findLastIndex((existing) => existing.startsWith("export '")) + 1 : at;
   lines.splice(index, 0, line);
@@ -306,9 +305,14 @@ function componentPlan(options) {
   const record = registryRecord({
     id, symbol, file: componentFile, tier, useCase: name.slice(0, -roleNoun.length), roleNoun, components,
   });
-  const reactNote = tier === "T1"
-    ? [`A T1 ships in both frameworks now: node tool/scaffold.mjs web-component --name ${symbol}, and add the react record it prints.`]
-    : [];
+  const reactNote = [
+    ...(tier === "T1"
+      ? [`A T1 ships in both frameworks now: node tool/scaffold.mjs web-component --name ${symbol}, and add the react record it prints.`]
+      : []),
+    ...(tier === "T1" || tier === "T2"
+      ? ["node tool/run.mjs check web:shared-ui-adoption, and record the comparisons it asks of website and admin exports with the same role noun."]
+      : []),
+  ];
   return {
     summary: `catch_ui component ${symbol} (${tier})`,
     files: [
@@ -322,11 +326,12 @@ function componentPlan(options) {
       apply: (source) => insertSorted(source, `export 'src/components/${fileStem}.dart';`),
     }],
     next: [
-      `design/components/catch.components.json, under components (a registry record, tier and aliases land in the same PR):\n${JSON.stringify(record, null, 2)}`,
+      `design/components/catch.components.json, under components:\n${JSON.stringify(record, null, 2)}`,
+      `Add "aliases" to that record: the other names an agent would write for ${symbol}. They land in this PR, and the schema rejects an empty list.`,
       ...reactNote,
-      `Move the use case in ${useCaseFile} to the Widgetbook group it belongs in, then run Widgetbook's build_runner so widgetbook/lib/main.directories.g.dart lists it.`,
-      "Raise the count in widgetbook/test/primitive_goldens_test.dart by one and regenerate the goldens with --update-goldens.",
-      "node tool/design/generate_widget_catalog.mjs --write",
+      `Move the use case in ${useCaseFile} to the Widgetbook group it belongs in, then (cd widgetbook && dart run build_runner build) so widgetbook/lib/main.directories.g.dart lists it.`,
+      "Raise the count in widgetbook/test/primitive_goldens_test.dart by one and regenerate its goldens with --update-goldens.",
+      "node tool/design/generate_widget_catalog.mjs --write, then node tool/design/check_component_enforcement_coverage.mjs",
     ],
   };
 }
@@ -392,6 +397,12 @@ function writePlan(plan) {
   }
   for (const edit of plan.edits ?? []) {
     fs.writeFileSync(fromRepo(edit.file), edit.apply(fs.readFileSync(fromRepo(edit.file), "utf8")));
+  }
+  // A long name moves line breaks, in the generated provider as well.
+  const dartFiles = plan.files.map(([file]) => file).filter((file) => file.endsWith(".dart"));
+  const format = spawnSync("dart", ["format", ...dartFiles.map((file) => fromRepo(file))], {encoding: "utf8"});
+  if (format.error || format.status !== 0) {
+    console.error(`dart format did not run (${format.error?.message ?? format.stderr.trim()}); format the new files before committing.`);
   }
 }
 

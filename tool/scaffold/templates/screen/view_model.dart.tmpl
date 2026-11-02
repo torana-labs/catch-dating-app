@@ -7,8 +7,8 @@ class %%Name%%ViewModel {
   const %%Name%%ViewModel();
 }
 
-/// Composes context providers into this screen's state, read-only and free of
-/// side effects.
+// Composes context providers into this screen's state, read-only and free of
+// side effects. A plain comment: Riverpod copies a doc comment into its output.
 @riverpod
 AsyncValue<%%Name%%ViewModel> %%camel%%ViewModel(Ref ref) =>
     const AsyncData(%%Name%%ViewModel());
