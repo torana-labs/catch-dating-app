@@ -6,9 +6,9 @@ const OrganizerBillsRouteWorkspace = lazy(() => import("../../features/money/ui/
 const OrganizersRouteScreen = lazy(() => import("../../features/organizers/ui/OrganizersRouteScreen").then((m) => ({default: m.OrganizersRouteScreen})));
 const OrganizerEventsRouteWorkspace = lazy(() => import("../../features/events/ui/EventsRouteScreen").then((m) => ({default: m.OrganizerEventsRouteWorkspace})));
 
-const render: AdminAreaRender = ({canOpen, navigate, route}) => (
+const render: AdminAreaRender = ({canManageCommercialTerms, canOpen, navigate, route}) => (
   <OrganizersRouteScreen
-    canChangeTerms={canOpen("payment-setup")}
+    canChangeTerms={canManageCommercialTerms}
     claimRequestId={route.params.claimRequestId ?? null}
     onNavigate={navigate}
     organizerId={route.params.organizerId ?? null}

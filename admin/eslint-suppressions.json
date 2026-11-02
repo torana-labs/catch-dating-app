@@ -24,16 +24,6 @@
       "count": 3
     }
   },
-  "src/features/finance/ui/FinanceOpsScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 3
-    }
-  },
-  "src/features/finance/ui/organizerEntitlementPanel.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/features/growth/ui/GrowthKpiScreen.tsx": {
     "react/forbid-elements": {
       "count": 4

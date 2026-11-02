@@ -1,28 +1,35 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import type {ReactNode} from "react";
 import {
   draftFromTerms,
   platformTermsDiff,
-} from "../features/commercial-terms/controllers/commercialTermsForm";
+} from "../features/settings/controllers/commercialTermsForm";
 import type {
   CommercialTermsController,
-} from "../features/commercial-terms/controllers/useCommercialTermsController";
-import {CommercialTermsWorkspace} from "../features/commercial-terms/ui/CommercialTermsScreen";
+} from "../features/settings/controllers/useCommercialTermsController";
 import {
   draftFromPolicy,
   requiredConfirmations,
   routingDiff,
   type RoutingPolicy,
-} from "../features/payment-routing/controllers/paymentRoutingForm";
+} from "../features/settings/controllers/paymentRoutingForm";
 import type {
   PaymentRoutingController,
-} from "../features/payment-routing/controllers/usePaymentRoutingController";
-import {PaymentRoutingWorkspace} from "../features/payment-routing/ui/PaymentRoutingScreen";
+} from "../features/settings/controllers/usePaymentRoutingController";
+import type {
+  PaymentSettingsController,
+} from "../features/settings/controllers/usePaymentSettingsController";
+import {
+  renderPaymentsOverview,
+  renderRoutingEditor,
+  renderTermsEditor,
+} from "../features/settings/ui/paymentsSettingsPanels";
+import {SettingsScreen} from "../features/settings/ui/SettingsScreen";
 import type {CommercialTerms} from "../generated/contracts/commercialTerms";
 import {ownerDecisionCommercialTerms} from "../shared/domain/commercialTermsDecision";
-import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
 
 const meta = {
-  title: "Admin Dashboard/Finance settings",
+  title: "Admin Dashboard/Settings Payments",
   parameters: {
     catchComponentRegistry: {
       path: "design/admin/components.json",
@@ -175,89 +182,54 @@ const routingPreviewController: PaymentRoutingController = {
   },
 };
 
-export const CommercialTermsRouteStory: Story = {
-  name: "Commercial terms",
-  parameters: {
-    catchComponent: {
-      id: "route_commercial_terms",
-      states: ["commercial-terms"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <CommercialTermsWorkspace
-        controller={platformController}
-        onOpenOrganizer={noop}
-        onOpenPlatform={noop}
-      />
-    </AdminWorkspace>
-  ),
+const moneyController: PaymentSettingsController = {
+  state: {revision: 1, settings: {gstRegistered: false, gstRateBasisPoints: 1800,
+    billDueDayOfMonth: 15, nominatorCredit: {rateBasisPoints: 1000, months: 12,
+      lapseDays: 90, minimumPayoutMinor: 50_000, payoutDayOfMonth: 10,
+      earningRoles: ["partner", "guest", "organizer"]}},
+  updatedAtMillis: savedAt, updatedByUid: "admin-owner", nextInvoiceNumber: "2026-27/032"},
+  loadState: "ready",
+  loadError: null,
+  isSaving: false,
+  saveError: null,
+  save: async () => true,
 };
 
-export const CommercialTermsWorkspaceStory: Story = {
-  name: "Commercial terms: first save preview",
-  parameters: {
-    catchComponent: {
-      id: "workspace_commercial_terms",
-      states: ["unsaved-platform", "change-preview"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <CommercialTermsWorkspace
-        controller={unsavedPreviewController}
-        onOpenOrganizer={noop}
-        onOpenPlatform={noop}
-      />
-    </AdminWorkspace>
-  ),
+function PaymentsPage({children}: {children: ReactNode}) {
+  return (
+    <SettingsScreen
+      onSelectPage={noop}
+      pages={[{id: "payments", title: "Payments", subtitle: "Terms, partner credit, GST"}]}
+      selectedPage="payments"
+    >
+      {children}
+    </SettingsScreen>
+  );
+}
+
+const paymentsOverview = (terms: CommercialTermsController) => renderPaymentsOverview({
+  terms, routing: routingController, money: moneyController, isExporting: false,
+  lastMonthLabel: "October", onEdit: noop, onExport: noop,
+});
+
+export const SettingsPaymentsRouteStory: Story = {
+  name: "Settings · Payments",
+  render: () => <PaymentsPage>{paymentsOverview(platformController)}</PaymentsPage>,
 };
 
-export const CommercialTermsOrganizerStory: Story = {
-  name: "Commercial terms: organizer override",
-  parameters: {
-    catchComponent: {
-      id: "workspace_commercial_terms",
-      states: ["organizer-override"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <CommercialTermsWorkspace
-        controller={organizerController}
-        onOpenOrganizer={noop}
-        onOpenPlatform={noop}
-      />
-    </AdminWorkspace>
-  ),
+export const SettingsTermsReviewStory: Story = {
+  name: "Settings · Payments, terms to review",
+  render: () => <PaymentsPage>{renderTermsEditor(unsavedPreviewController, noop)}</PaymentsPage>,
 };
 
-export const PaymentRoutingRouteStory: Story = {
-  name: "Payment routing",
-  parameters: {
-    catchComponent: {
-      id: "route_payment_routing",
-      states: ["payment-routing"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <PaymentRoutingWorkspace controller={routingController} />
-    </AdminWorkspace>
-  ),
+export const SettingsOrganizerTermsStory: Story = {
+  name: "Settings · Payments, an organizer's own terms",
+  render: () => <PaymentsPage>{renderTermsEditor({...organizerController, editor: {
+    baseRevision: 1, draft: {rate: "3", trialDays: "60"}, reason: "", errors: [], preview: null, unconfirmed: null,
+  }}, noop)}</PaymentsPage>,
 };
 
-export const PaymentRoutingWorkspaceStory: Story = {
-  name: "Payment routing: typed confirmation",
-  parameters: {
-    catchComponent: {
-      id: "workspace_payment_routing",
-      states: ["change-preview", "typed-confirmation"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <PaymentRoutingWorkspace controller={routingPreviewController} />
-    </AdminWorkspace>
-  ),
+export const SettingsRoutingReviewStory: Story = {
+  name: "Settings · Payments, who collects to review",
+  render: () => <PaymentsPage>{renderRoutingEditor(routingPreviewController, noop)}</PaymentsPage>,
 };

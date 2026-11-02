@@ -17,7 +17,7 @@ import {
   loadMessagingBudgetReview,
   recordMessagingBudgetDecision,
   stageApprovedMessagingBudget,
-} from "../api/financeOpsRepository";
+} from "../api/grantedPlansRepository";
 
 export type MessagingBudgetDecisionKind = "approve" | "hold" | "reject";
 export type MessagingBudgetRoute =

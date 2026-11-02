@@ -47,7 +47,7 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
           `/events/${encodeURIComponent(eventId)}` : `/events/external/${encodeURIComponent(eventId)}`),
         onOpenSales: () => onNavigate(`/sales/hosts/${encodeURIComponent(organizerId)}`),
         onOpenTerms: canChangeTerms ?
-          () => onNavigate(`/payment-setup/commercial-terms/organizers/${encodeURIComponent(organizerId)}`) : null,
+          () => onNavigate(`/settings/payments/organizer-terms/${encodeURIComponent(organizerId)}`) : null,
         onOpenClaim: (requestId) => onNavigate(`/organizers/claims/${encodeURIComponent(requestId)}`),
         publicPageUrl: (canonicalPath) => `${publicSiteOrigin}${canonicalPath}`,
       }}

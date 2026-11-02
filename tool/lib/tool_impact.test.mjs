@@ -63,8 +63,8 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
     "admin/src/app/App.mutationSession.test.tsx", "admin/src/app/App.session.test.tsx",
     "admin/src/app/App.test.tsx", "admin/src/app/App.tsx", "admin/src/app/sessionRequests.test.tsx",
     "admin/src/app/useAdminSession.test.tsx", "admin/src/app/useAdminSession.ts",
-    "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
-    "admin/src/features/finance/controllers/useFinanceOpsController.ts", "admin/src/main.tsx",
+    "admin/src/features/money/controllers/useBillsController.test.tsx",
+    "admin/src/features/money/controllers/useBillsController.ts", "admin/src/main.tsx",
     "admin/src/shared/query/queryClient.test.tsx", "admin/src/shared/query/queryClient.tsx",
     "admin/src/shared/query/queryKeys.ts",
   ];

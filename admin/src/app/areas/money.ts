@@ -34,7 +34,7 @@ export default defineArea({
     route("/money/issues/:moneyIssueId", "money", {title: "Payment issue"}),
     route("/money/bills/*", "money", {moneyView: "bills", title: "Bills"}),
     route("/money/bills/:billId", "money", {moneyView: "bills", title: "Bill"}),
-    // The older payment setup screens moved off /finance; old links keep working.
+    // The old Finance address; Settings keeps the redirects for terms and routing.
     route("/finance/*", "money", {redirect: "/money"}),
   ],
 });
