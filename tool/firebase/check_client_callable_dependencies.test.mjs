@@ -250,3 +250,41 @@ test("derives deployable client callables from a source checkout", () => {
   assert.equal(dormant.ok, false);
   assert.deepEqual(dormant.dormantReferences, ["expireEventWaitlistOffers"]);
 });
+
+test("a dropped connection is retried, and a wrong answer is not", async () => {
+  const probe = (fetchImpl) => probeCallable({
+    projectId: "demo",
+    region: "asia-south1",
+    callable: "sendEventBroadcast",
+    fetchImpl,
+    wait: async () => {},
+  });
+  let attempts = 0;
+  const live = await probe(async () => {
+    attempts += 1;
+    if (attempts < 3) throw new TypeError("fetch failed", {cause: {code: "ECONNRESET"}});
+    return new Response(
+      JSON.stringify({error: {status: "UNAUTHENTICATED"}}),
+      {status: 401, headers: {"content-type": "application/json"}},
+    );
+  });
+  assert.equal(live.callableStatus, "UNAUTHENTICATED");
+  assert.equal(attempts, 3);
+
+  await assert.rejects(
+    probe(async () => {
+      throw new TypeError("fetch failed", {cause: {code: "ECONNRESET"}});
+    }),
+    /fetch failed \(ECONNRESET\) after 3 attempts/,
+  );
+
+  attempts = 0;
+  await assert.rejects(
+    probe(async () => {
+      attempts += 1;
+      return new Response("not found", {status: 404});
+    }),
+    /did not return.*JSON/,
+  );
+  assert.equal(attempts, 1);
+});
