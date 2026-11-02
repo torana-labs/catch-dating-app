@@ -117,6 +117,12 @@ export function salesErrorMessage(error: unknown): string {
   return message || "The change could not be saved. Your edits are still here.";
 }
 
+/** A select's values and labels, from a list of both. */
+export function selectChoices(options: ReadonlyArray<{value: string; label: string}>) {
+  return {values: options.map((option) => option.value),
+    itemLabelBuilder: (value: string) => options.find((option) => option.value === value)?.label ?? value};
+}
+
 export function stageLabel(stage: string): string {
   const words = stage.replace(/_/gu, " ");
   return words[0]?.toUpperCase() + words.slice(1);

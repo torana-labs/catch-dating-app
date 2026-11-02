@@ -54,11 +54,6 @@
       "count": 2
     }
   },
-  "src/features/sales/ui/SalesDemoPanel.tsx": {
-    "react/forbid-elements": {
-      "count": 3
-    }
-  },
   "src/features/sales/ui/SalesFitQueueWorkspace.tsx": {
     "react/forbid-elements": {
       "count": 3

@@ -5,7 +5,7 @@ import {SalesWorkspaceScreen} from "./SalesWorkspaceScreen";
 
 const controllerMock = vi.hoisted(() => ({use: vi.fn()}));
 const childMocks = vi.hoisted(() => ({
-  demo: vi.fn(), fitQueue: vi.fn(), funnel: vi.fn(),
+  fitQueue: vi.fn(), funnel: vi.fn(),
   history: vi.fn(), intelligence: vi.fn(), privacy: vi.fn(), records: vi.fn(),
   settings: vi.fn(),
 }));
@@ -27,7 +27,6 @@ vi.mock("../controllers/useSalesWorkspaceController", () => ({
   toLocalDateTimeInput: () => "2026-10-07T09:30",
   useSalesWorkspaceController: controllerMock.use,
 }));
-vi.mock("./SalesDemoPanel", () => ({SalesDemoWorkspace: childMocks.demo}));
 vi.mock("./SalesFitQueueWorkspace", () => ({
   renderSalesFitQueueWorkspace: childMocks.fitQueue,
 }));

@@ -1,11 +1,12 @@
 import {CatchEmptyState, CatchPageTabBar, CatchPaneLayout, CatchTopBar, CatchWorkspaceHeader} from "@catch/web-ui";
-import {useSalesDealsController, useSalesHostNames} from "../controllers/useSalesDealsController";
+import {useSalesDealsController, useSalesHostName, useSalesHostNames} from "../controllers/useSalesDealsController";
 import {useSalesHostCommercialController} from "../controllers/useSalesHostCommercialController";
 import {useSalesHostsController} from "../controllers/useSalesHostsController";
 import {useSalesTodayController} from "../controllers/useSalesTodayController";
 import {useMyNominationsController} from "../controllers/useMyNominationsController";
 import {MyNominationsScreen} from "./MyNominationsScreen";
 import {SalesDealsScreen} from "./SalesDealsScreen";
+import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesHostsScreen} from "./SalesHostsScreen";
 import {SalesPartnerOfferWorkspace} from "./SalesPartnerOfferWorkspace";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
@@ -21,11 +22,11 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
-  /** The older host page: fit and demos. */
+  /** The older host page: fit and outreach. */
   onOpenHostTools: (organizerId: string) => void;
-  onOpenHostPrivacy: (organizerId: string) => void;
+  onOpenHostPage: (organizerId: string, page: "privacy" | "demo") => void;
   /** Which of one host's own pages is open. */
-  hostPage: "main" | "privacy";
+  hostPage: "main" | "privacy" | "demo";
   onOpenOrganizer: (organizerId: string) => void;
   onAddHost: () => void;
   onError: (message: string | null) => void;
@@ -40,19 +41,29 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
     onSelect={onSelect} selectedTaskId={selectedId} />;
 }
 
-function HostPrivacy({uid, isAdminOwner, selectedId, onOpenHost}: Props) {
+/** A host's own page. Privacy asks the owner to type the host's name, so nothing draws until that name is known. */
+function HostOwnPage({uid, isAdminOwner, selectedId, hostPage, onOpenHost}: Props) {
+  const organizerId = selectedId as string;
+  const {name, isLoading} = useSalesHostName(organizerId);
+  let body = null;
+  if (!isAdminOwner) body = <CatchEmptyState title="Only the owner can open this" />;
+  else if (!isLoading && hostPage === "demo") {
+    body = <SalesDemoWorkspace key={`${uid}:${organizerId}`} organizerId={organizerId} organizerName={name ?? ""} isAdminOwner currentUserUid={uid ?? ""} />;
+  } else if (!isLoading) {
+    body = renderSalesPrivacyWorkspace({actorUid: uid ?? "", isAdminOwner, organizerId, ...(name ? {organizerName: name} : {})});
+  }
   return <CatchPaneLayout pattern="reading" main={<>
-    <CatchWorkspaceHeader title="Privacy" kicker="Sales · Hosts" back={{label: "Back to the host", onPressed: () => onOpenHost(selectedId as string)}} />
-    {isAdminOwner ? renderSalesPrivacyWorkspace({actorUid: uid ?? "", isAdminOwner, organizerId: selectedId as string}) :
-      <CatchEmptyState title="Only the owner can open this" />}
+    <CatchWorkspaceHeader title={hostPage === "demo" ? "Private demo" : "Privacy"} kicker={name ? `Sales · ${name}` : "Sales · Hosts"}
+      back={{label: "Back to the host", onPressed: () => onOpenHost(organizerId)}} />
+    {body}
   </>} />;
 }
 
-function Hosts({uid, ownWorkOnly, isAdminOwner, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenHostPrivacy, onAddHost, onError, onNotice}: Props) {
+function Hosts({uid, ownWorkOnly, isAdminOwner, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenHostPage, onAddHost, onError, onNotice}: Props) {
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
   const commercial = useSalesHostCommercialController({organizerId: selectedId, opportunities: controller.host?.opportunities ?? [],
     enabled: !ownWorkOnly, onError, onNotice});
-  return <SalesHostsScreen onOpenPrivacy={onOpenHostPrivacy} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
+  return <SalesHostsScreen onOpenPrivacy={(id) => onOpenHostPage(id, "privacy")} onOpenDemo={(id) => onOpenHostPage(id, "demo")} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
     renderPartnerOffer: ownWorkOnly ? null : (organizerId, organizerName) =>
       <SalesPartnerOfferWorkspace key={`${uid}:${organizerId}`} actorUid={uid ?? ""} organizerId={organizerId} organizerName={organizerName} />}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }
@@ -78,7 +89,7 @@ const areaTabs = [
  * associate has each area in the navigation; the owner has one Sales entry and these tabs.
  */
 export function SalesRouteScreen({area, ...props}: Props & {area: SalesScreenArea}) {
-  const screen = area === "hosts" ? (props.hostPage === "privacy" && props.selectedId ? <HostPrivacy {...props} /> : <Hosts {...props} />) : area === "deals" ? <Deals {...props} /> :
+  const screen = area === "hosts" ? (props.hostPage !== "main" && props.selectedId ? <HostOwnPage {...props} /> : <Hosts {...props} />) : area === "deals" ? <Deals {...props} /> :
     area === "nominations" ? <Nominations {...props} /> : <Today {...props} />;
   if (props.ownWorkOnly || area === "nominations") return screen;
   return <>
