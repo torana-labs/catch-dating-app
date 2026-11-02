@@ -10,7 +10,7 @@ Widget _button({required bool expanded, int badgeCount = 3}) => MaterialApp(
       child: CatchNavigationButton<int>.rail(
         item: CatchTabBarItem<int>(
           id: 1,
-          icon: Icons.people_outline,
+          icon: CatchIcons.people,
           label: 'People',
           badgeCount: badgeCount,
         ),

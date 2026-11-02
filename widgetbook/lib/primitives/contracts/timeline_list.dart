@@ -3,21 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/contract_preview.dart';
 
-const _copy = CatchSectionTimelineCopy(
-  done: 'Done',
-  current: 'Now',
-  next: 'Next',
-);
+const _copy = CatchTimelineListCopy(done: 'Done', current: 'Now', next: 'Next');
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchSectionTimeline,
+  type: CatchTimelineList,
   path: '[Core patterns]/Sections',
 )
-Widget catchSectionTimelineContractStates(BuildContext context) =>
+Widget catchTimelineListContractStates(BuildContext context) =>
     WidgetbookContractFrame(
-      title: 'CatchSectionTimeline',
-      contractId: 'catch.section.timeline',
+      title: 'CatchTimelineList',
+      contractId: 'catch.section.timeline_list',
       states: const [
         'done',
         'current',
@@ -33,7 +29,7 @@ Widget catchSectionTimelineContractStates(BuildContext context) =>
         ])
           WidgetbookContractStateCard(
             label: label,
-            child: CatchSectionTimeline(
+            child: CatchTimelineList(
               copy: _copy,
               steps: [
                 const CatchSectionStep(

@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-/// Where one step of a [CatchSectionTimeline] stands.
+/// Where one step of a [CatchTimelineList] stands.
 enum CatchSectionStepStatus { done, current, next }
 
 /// The tone of a [CatchSectionStepStatus.current] step that waits on something.
@@ -28,8 +28,8 @@ class CatchSectionStep {
 }
 
 /// What a screen reader says before each step's title.
-class CatchSectionTimelineCopy {
-  const CatchSectionTimelineCopy({
+class CatchTimelineListCopy {
+  const CatchTimelineListCopy({
     required this.done,
     required this.current,
     required this.next,
@@ -43,19 +43,15 @@ class CatchSectionTimelineCopy {
 /// A journey drawn as joined markers: a filled marker for a step that is done,
 /// a heavy ring for the step now, and a light ring for what comes next. The line
 /// under a done step is ink; every other line is quiet.
-class CatchSectionTimeline extends StatelessWidget {
-  const CatchSectionTimeline({
-    super.key,
-    required this.steps,
-    required this.copy,
-  });
+class CatchTimelineList extends StatelessWidget {
+  const CatchTimelineList({super.key, required this.steps, required this.copy});
 
   static const double _markerSize = 16;
   static const double _lineWidth = 2;
   static const double _markerTop = 2;
 
   final List<CatchSectionStep> steps;
-  final CatchSectionTimelineCopy copy;
+  final CatchTimelineListCopy copy;
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +106,7 @@ class CatchSectionTimeline extends StatelessWidget {
                           if (!last)
                             Expanded(
                               child: Container(
-                                key: const ValueKey(
-                                  'catch-section-timeline-line',
-                                ),
+                                key: const ValueKey('catch-timeline-list-line'),
                                 width: _lineWidth,
                                 color: done ? t.ink : t.line2,
                               ),

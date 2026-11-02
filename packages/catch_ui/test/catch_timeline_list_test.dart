@@ -2,11 +2,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _copy = CatchSectionTimelineCopy(
-  done: 'Done',
-  current: 'Now',
-  next: 'Next',
-);
+const _copy = CatchTimelineListCopy(done: 'Done', current: 'Now', next: 'Next');
 
 const _steps = [
   CatchSectionStep(
@@ -34,13 +30,13 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _app(const CatchSectionTimeline(steps: _steps, copy: _copy)),
+      _app(const CatchTimelineList(steps: _steps, copy: _copy)),
     );
     expect(find.text('Your page went live'), findsOneWidget);
     expect(find.text('Hidden from search'), findsOneWidget);
     expect(find.text('Thu 31 Oct'), findsOneWidget);
     expect(
-      find.byKey(const ValueKey('catch-section-timeline-line')),
+      find.byKey(const ValueKey('catch-timeline-list-line')),
       findsNWidgets(_steps.length - 1),
     );
   });
@@ -48,7 +44,7 @@ void main() {
   testWidgets('a screen reader hears where each step stands', (tester) async {
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(
-      _app(const CatchSectionTimeline(steps: _steps, copy: _copy)),
+      _app(const CatchTimelineList(steps: _steps, copy: _copy)),
     );
     expect(find.bySemanticsLabel(RegExp('^Done: Your page')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('^Now: You asked')), findsOneWidget);

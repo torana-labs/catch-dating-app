@@ -471,8 +471,6 @@ import 'package:widgetbook_workspace/primitives/contracts/section.dart'
     as _widgetbook_workspace_primitives_contracts_section;
 import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
     as _widgetbook_workspace_primitives_contracts_section_lists;
-import 'package:widgetbook_workspace/primitives/contracts/section_timeline.dart'
-    as _widgetbook_workspace_primitives_contracts_section_timeline;
 import 'package:widgetbook_workspace/primitives/contracts/sheets.dart'
     as _widgetbook_workspace_primitives_contracts_sheets;
 import 'package:widgetbook_workspace/primitives/contracts/steps.dart'
@@ -485,6 +483,8 @@ import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
     as _widgetbook_workspace_primitives_contracts_tabs;
 import 'package:widgetbook_workspace/primitives/contracts/text.dart'
     as _widgetbook_workspace_primitives_contracts_text;
+import 'package:widgetbook_workspace/primitives/contracts/timeline_list.dart'
+    as _widgetbook_workspace_primitives_contracts_timeline_list;
 import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
     as _widgetbook_workspace_primitives_contracts_toolbar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
@@ -2439,13 +2439,13 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionTimeline',
+            name: 'CatchTimelineList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_contracts_section_timeline
-                        .catchSectionTimelineContractStates,
+                    _widgetbook_workspace_primitives_contracts_timeline_list
+                        .catchTimelineListContractStates,
               ),
             ],
           ),
