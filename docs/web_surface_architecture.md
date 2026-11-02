@@ -806,28 +806,27 @@ local-data context, and sign-out live in the account disclosure.
 
 Operational directories and record review use URL-owned master-detail routes.
 Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
-`/organizers`, `/organizers/claims`, `/events`,
-`/events/external`, `/users`, `/finance`, `/quality`, `/operations`, and
-`/admin-roles`.
+`/organizers`, `/inbox`, `/events`,
+`/events/external`, `/users`, `/finance`, `/system`, and `/admin-roles`.
 
-Intake owns `/intake/organizers`, `/intake/events`, and `/intake/operations`.
+The Inbox owns `/inbox`; old `/intake/*` addresses and `/organizers/claims` open it.
 Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 `/marketing/new`, `/marketing/events`, `/marketing/media`,
 `/marketing/activity`, and `/marketing/diagnostics`; draft composition uses
 `/marketing/drafts/{draftId}/{source|copy|compliance|export}`.
 
 URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
-`/organizers/{organizerId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
+`/organizers/{organizerId}`, `/inbox/{itemId}`, `/events/{eventId}`,
 `/events/external/{candidateId}`,
-`/growth/nominators/{nominatorUid}`, `/finance/issues/{issueId}`,
-`/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
+`/growth/nominators/{nominatorUid}`, `/finance/issues/{issueId}`, and
+`/admin-roles/{uid}`. A missing direct record
 stays unavailable; controllers must never auto-select another row to make a
 deep link appear valid.
 
 Route shells own path and search-param parsing. Feature controllers accept
 explicit selected ids and navigation callbacks, while repositories keep remote
 sources independent where partial results are useful. Overview, Growth,
-Finance, and Data quality therefore retain successful source data when another
+Finance, and System therefore retain successful source data when another
 query fails and expose retry at the smallest truthful source boundary.
 
 Loaded lists must disclose their scope. A returned preview, local search result,
@@ -853,89 +852,20 @@ behavior. The UI must not imply direct social publishing, money movement,
 canonical intake promotion, rollback, scheduler execution history, or broad
 member/Auth search without dedicated contracts.
 
-## Admin Intake Batch Workbench
+## Admin Inbox
 
-All three Intake routes use one full-height batch-review primitive. The queue is
-the primary scroll region; its compact table, stable snapshot order,
-multi-selection, partial-safe bulk actions, keyboard shortcuts, and
-resolution-first inspector are shared. The inspector is closed by default and
-uses consumer-supplied ordered sections, so a workflow does not render empty
-policy or diagnostics filler. Loading, retryable error, filter-empty,
-stage-empty, and unavailable projection states remain distinct. The route shell,
-workspace frame, and pending-operation fieldset form one `min-height: 0` flex
-chain, so the table consumes available viewport height without a component-owned
-height cap or viewport arithmetic.
-
-The first command row contains the workbench title, count-free segmented stage
-control, four operator metrics, and inspector toggle. The fixed-height second
-row swaps domain filters for explicit bulk actions when selection begins,
-keeping the table stationary. Every partially eligible action states the
-eligible fraction; every disabled action renders its gate as adjacent text.
-Keyboard and mouse controls are equivalent and named, while the ten-second undo
-receipt remains visible without changing table order.
-
-Organizer Intake uses the standard Name, kind, market, source, top-blocker,
-age, and status columns. Event Intake supplies stage-specific columns:
-Incoming shows source provenance and risk, while candidate stages show the
-Operations expiry, attributed organizer, venue, source, top blocker, and
-status. Candidate stages are mutually exclusive. Passed events are retained in
-a separate filter, fail `event_has_not_passed`, and never compete with active
-upcoming review work. Upcoming candidates sort by their projected event start
-time; the distinct Operations-projected expiry remains visible provenance and
-is never replaced by a client-invented TTL.
-
-Event editing occurs inside the inspector. Review payloads contain changed
-fields only as `{before, after}` pairs; the server overlays only each `after`
-value while preserving the immutable target id and continues to read older
-flat decisions for compatibility. An attributed organizer's Firestore
-`appVisibility` is projected as a fail-closed event ceiling. Orphan events link
-to the organizer discovery lead that Supply Intake created from the same
-evidence. Duplicate resolution keeps the selected candidate and records one
-rejection decision per duplicate, reporting partial failures.
-
-## Admin Intake Operations Projection
-
-`/intake/operations` is the third Intake workspace, labelled Automation. It is
-a read-only projection of canonical `operationRuns` and `operationWorkItems`;
-it does not derive execution state from the older Event or Organizer Intake tab
-filters. The UI displays the same exclusive Incoming, Verify, Resolve, and
-Ready stage values persisted by the operations worker, with task flags and
-blockers rendered as overlapping review concerns.
-
-The feature follows the standard repository/controller/workspace split under
-`admin/src/features/intake/operations/`. Live data crosses only
-`adminListIntakeOperations`; sample mode uses a contract-shaped fixture. The
-browser offers refresh, search, stage/entity filters, and hash-bound evidence
-inspection, but intentionally exposes no Run, model, deploy-rule, or Publish
-action. Those capabilities require separate trusted-worker and policy
-boundaries rather than a browser toggle.
-
-The callable orders runs by persisted `updatedAt` plus document id and reads
-whole-run stage, work-item, and human-review aggregates from the imported run
-metadata and fails closed when they are absent or inconsistent. The controller
-pins that run, loads one ordinary page, and drains only the server-filtered
-human-exception cursor before rendering. Every counted active exception can be
-opened immediately; ordinary items advance through **Load 200 more**, preserve
-already-loaded exceptions, and cannot overwrite a newer refresh. Published and
-terminal history is excluded from the active stage rail. Run pagination is
-separate: `loadedRunCount`, `nextRunCursor`, `nextWorkItemCursor`, and the
-workspace copy describe loaded pages rather than a false persisted total. The
-query disables automatic retry so the 10,000-item/200-page/120-per-minute
-capacity contract remains bounded. The separate apply-guarded importer is a
-trusted operator, not a browser route or callable.
-
-An exception is resolved in the owning Event or Organizer Intake surface. The
-Automation workspace does not write an `OperationDecision` or resume the same
-run. The owning review decision stays durable in its audited Firestore
-collection; no repository artifact regeneration is part of the live workflow.
-Any later Supply Intake reconciliation must read that persisted decision
-explicitly and create a separate immutable child run for expiry and
-stale-evidence changes rather than editing an already imported run.
+The Inbox is one queue of everything waiting on a person: listings, imported
+events, claims, enquiries, launch access and stuck nominations, oldest first. It
+reads the `adminInboxItems` read model, and each item carries the journey that
+brought it there. Decisions happen in the inspector beside the queue. The old
+Event, Organizer and Automation Intake tabs retired on 2026-11-02. Candidates
+from command-line discovery runs have no review screen until discovery is built
+into Admin.
 
 ## Admin Live Data Source Contract
 
 `contracts/admin/admin_live_data_sources.json` inventories every Admin route,
-including the three Intake workspaces, and names its authenticated live reads
+including the Inbox, and names its authenticated live reads
 and mutations. `web:admin-live-data-sources` reconciles that inventory with the
 navigation, Admin API boundary, and Functions exports. It also rejects
 generated operational JSON imports from production feature code; such imports
@@ -946,16 +876,8 @@ unreachable backend. The live Admin bundle gate also rejects generated Event
 Intake, Organizer Intake, Marketing Ops, and external-event plan fixtures, so
 those artifacts cannot ship as dormant production assets.
 
-Organizer Intake live mode reads the latest completed organizer-only Supply
-Intake run for each launch market through `adminListIntakeOperations`. Its
-search candidates and bounded publication-review packets therefore come from
-`operationRuns` and `operationWorkItems`. The packet shape is validated at the
-workflow, operations-schema, and Admin loader boundaries. Live counters are
-derived only when packet records exist; otherwise Verify, Resolve, and Ready
-show the run-bound unavailable state rather than a fabricated zero. Sample and
-Storybook views use typed synthetic operation records; no operational JSON
-snapshot is retained or packaged. The browser does not upload a generated file
-or reconstruct a queue from repository state.
+The Inbox reads the `adminInboxItems` read model. Sample and Storybook views use
+typed synthetic records; no operational JSON snapshot is retained or packaged.
 
 The Admin loader has one bounded rolling-data compatibility rule for immutable
 publication packets written before publish and index controls were separated.
@@ -980,17 +902,17 @@ Ready. The candidate queue and detail pane scroll independently inside a
 viewport-bounded workbench so a 25-candidate market does not stretch the entire
 Admin page.
 
-## Admin Agent Activity Monitor
+## Admin Activity Log
 
-`/operations` is the read-only employee monitor for catalogued CLI/agent
-actions. `admin/src/features/operations/` uses the standard
-repository/controller/workspace split and reads only the bounded
-`adminListActionExecutions` callable. It filters the loaded page by action,
-status, actor, target, or error text and exposes explicit pagination. The table
-shows hash-bound metadata, including transport-ambiguous actions that need
-reconciliation, never request or response bodies. Manual actions
-remain in their owning routes; this route does not reproduce their mutation
-forms or authority decisions.
+`/system` holds the read-only activity log of catalogued Admin actions, by
+people and by CLI agents, beside data health. `admin/src/features/system/` uses
+the standard repository/controller/screen split and reads only the bounded
+`adminListActionExecutions` callable. It filters the loaded pages by who acted
+and by problems, searches every field on a receipt, and exposes explicit
+paging. A row opens its receipt: hash-bound metadata, never request or response
+bodies. An action whose result was lost in transit reads as "Unclear" and
+counts as a problem. Manual actions remain in their owning routes; System does
+not reproduce their mutation forms or authority decisions.
 
 `contracts/admin/actions/` binds every admin API callable to a
 stable CLI action id, request schema, roles, workflow, GUI path, and
@@ -1896,7 +1818,7 @@ subsequent slices of this workflow; this initial surface exposes no send control
 The partner route is a scoped projection of existing Intake and Sales services.
 Phase one owns bounded membership, private nominations, canonical assignment
 reservation and acceptance. It does not grant employee roles or mutate organizer
-claim/publication state. Existing Intake review links nominations to one canonical
+claim/publication state. Listing approval in the Inbox links nominations to one canonical
 organizer, rather than creating another organizer store.
 
 The next phase extends existing Sales evidence, tasks, opportunities and reviewed

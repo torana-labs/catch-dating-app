@@ -35,7 +35,6 @@ describe("generated admin callable validators", () => {
         "adminDecideSafetyTriageItem",
         "adminCreateMarketingContentDraft",
         "adminRecordMarketingReviewDecision",
-        "adminCreateOrganizerDraftFromCandidate",
         "adminGetOrganizerClaimRequestDetails",
         "adminSetOrganizerIndexStatus",
         "adminReviewEventMessagingBudget",
@@ -47,7 +46,7 @@ describe("generated admin callable validators", () => {
     );
     expect(adminCallableValidationCoverage.strictResponses).toEqual(
       expect.arrayContaining([
-        "adminLinkOrganizerIntakeToSales", "adminAttestSalesHostSettlement",
+        "adminAttestSalesHostSettlement",
         "adminGetSalesIntelligenceCatalog", "adminGenerateSalesOutreachDraft",
         "adminCopySalesOutreachDraft",
       ])
@@ -61,7 +60,6 @@ describe("generated admin callable validators", () => {
         "adminDecideSafetyTriageItem",
         "adminCreateMarketingContentDraft",
         "adminRecordMarketingReviewDecision",
-        "adminCreateOrganizerDraftFromCandidate",
         "adminReviewEventMessagingBudget",
         "adminDecideEventMessagingBudget",
         "adminApplyEventMessagingBudget",

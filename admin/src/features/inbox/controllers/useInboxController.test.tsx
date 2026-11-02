@@ -17,6 +17,7 @@ const repository = vi.hoisted(() => ({
   getClaimEvidence: vi.fn(),
   getListingEventReview: vi.fn(),
   publishListingEvent: vi.fn(),
+  nominateOrganizer: vi.fn(),
 }));
 vi.mock("../api/inboxRepository", () => repository);
 
@@ -175,6 +176,26 @@ describe("useInboxController", () => {
     rerender({selected: "bhag"});
     await waitFor(() => expect(result.current.claimEvidence).toEqual(evidence));
     expect(repository.getClaimEvidence).toHaveBeenCalledWith("bhag");
+  });
+
+  it("fills in a stuck nomination, and a retry after a failed close keeps the same request", async () => {
+    repository.nominateOrganizer.mockResolvedValue(undefined);
+    repository.updateInboxItem.mockRejectedValueOnce(new Error("offline")).mockResolvedValue({});
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => useInboxController({onError: vi.fn(), onNotice: vi.fn(),
+      selectedItemId: "afterfly", onSelect: vi.fn()}), {wrapper});
+    await waitFor(() => expect(result.current.items).toHaveLength(2));
+    const details = {name: "Sunday Table", market: "Mumbai", urls: [], notes: null, categories: []};
+    await act(async () => {
+      expect(await result.current.fillInByHand(details, "afterfly")).toBe(false);
+    });
+    await act(async () => {
+      expect(await result.current.fillInByHand(details, "afterfly")).toBe(true);
+    });
+    const [first, second] = repository.nominateOrganizer.mock.calls.map(([input]) => input);
+    expect(first).toMatchObject(details);
+    expect(second.requestId).toBe(first.requestId);
+    expect(repository.updateInboxItem).toHaveBeenLastCalledWith(expect.objectContaining({itemId: "afterfly", action: "dismiss"}), expect.anything());
   });
 
   it("reports a failed action and stays on the item", async () => {

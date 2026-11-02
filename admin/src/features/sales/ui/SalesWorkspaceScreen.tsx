@@ -1,13 +1,12 @@
-import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchButton, CatchField, CatchText} from "@catch/web-ui";
 import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
   AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
-  AdminForm, AdminTableRow, AdminToolbar, DataTable, EmptyState,
-  PageHeader, Panel, SearchField, SegmentedControl, selectOptions, StateRow,
-  TableActionButton,
-} from "../../../shared/ui/AdminPrimitives";
+  AdminForm, AdminToolbar, DataTable, EmptyState,
+  PageHeader, Panel, SegmentedControl, selectOptions, StateRow,
+  } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
@@ -34,7 +33,7 @@ import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
 import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
-type DetailTab = "overview" | "people" | "workflow" | "activity" |
+type DetailTab = "overview" | "workflow" | "activity" |
   "opportunities" | "research" | "demo" | "commercial" | "intelligence";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
@@ -49,7 +48,6 @@ const staffAreaOptions = areaOptions.filter((option) =>
   option.id === "today" || option.id === "hosts" || option.id === "pipeline");
 const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "overview", label: "Overview"},
-  {id: "people", label: "People"},
   {id: "workflow", label: "Workflow"},
   {id: "demo", label: "Private demo"},
   {id: "activity", label: "Activity"},
@@ -282,9 +280,9 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
   {!assignedStaffOnly && opened === "add-host" ? <Panel title="Add a host" icon={<Search size={18} />}>
     <CatchText as="p" variant="supporting">First find the existing organizer identity. Adding it to Sales creates a
       private record and does not publish a listing or approve a claim.</CatchText>
-    <SearchField ariaLabel="Search existing organizers" icon={<Search size={16} />}
-      value={controller.canonicalSearch} placeholder="Organizer name"
-      onChange={(value) => {
+    <CatchField recipe="input" title="Search existing organizers"
+      value={controller.canonicalSearch} inputHint="Organizer name"
+      onChanged={(value) => {
         controller.setCanonicalSearch(value); setSelectedCanonicalId("");
       }} />
     {controller.canonicalMatches.isPending ? <CatchText as="p" variant="supporting">Searching organizers…</CatchText> : null}
@@ -307,7 +305,7 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
           if (saved) onOpenHost(selectedCanonicalId);
         })}>Add selected host to Sales</AdminButton>
       <AdminButton onClick={() => setOpened("nominate")}>Nominate a new organizer</AdminButton>
-      <AdminButton onClick={onOpenIntake}>Review a new organizer in Intake</AdminButton>
+      <AdminButton onClick={onOpenIntake}>Review new organizers in the Inbox</AdminButton>
       <AdminButton onClick={() => setOpened(null)}>Cancel</AdminButton>
     </AdminToolbar>
   </Panel> : null}
@@ -317,10 +315,9 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
       {assignedStaffOnly ? null : <AdminButton onClick={() => setOpened("add-host")}>Add host</AdminButton>}
     </>}>
     <AdminToolbar>
-      <SearchField ariaLabel="Search a name, city, or market word"
-        icon={<Search size={16} />}
-        placeholder="One word, at least two letters" value={controller.query}
-        onChange={(query) => controller.setAccountFilters({query})} />
+      <CatchField recipe="input" title="Search a name, city, or market word"
+        inputHint="One word, at least two letters" value={controller.query}
+        onChanged={(query) => controller.setAccountFilters({query})} />
       {!controller.validAccountQuery ? <CatchText as="p" variant="supporting" role="status">
         Search one word of 2–80 letters or numbers.</CatchText> : null}
       <CatchField recipe="select" title="Research status" value={controller.researchStatus}
@@ -342,7 +339,7 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
         <th>Host</th><th>Market</th><th>Events</th><th>Fit</th>
         <th>Research</th><th>Stage</th><th>Owner</th><th>Next step</th><th />
       </tr></thead><tbody>
-        {rows.map((row) => <AdminTableRow key={row.organizerId}>
+        {rows.map((row) => <tr key={row.organizerId}>
           <td><strong>{row.name}</strong></td>
           <td>{[row.city, row.marketLabel].filter(Boolean).join(", ") || "Not recorded"}</td>
           <td>{row.eventTypes?.join(", ") || "Not recorded"}</td>
@@ -351,10 +348,8 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
           <td>{labelFor(row.stage)}</td>
           <td>{ownerLabel(row.assignedOwnerUid, currentUserUid)}</td>
           <td>{row.nextAction || "Not set"}</td>
-          <td><TableActionButton onClick={() => onOpenHost(row.organizerId)}>
-            Open
-          </TableActionButton></td>
-        </AdminTableRow>)}
+          <td><CatchButton label="Open" onPressed={() => onOpenHost(row.organizerId)} recipe="text" /></td>
+        </tr>)}
       </tbody>
     </DataTable> : null}
     <Pagination hasPrevious={controller.hasPreviousPage}
@@ -390,15 +385,13 @@ function PipelineView({controller, currentUserUid, onOpenHost}: {
     {rows.length ? <DataTable ariaLabel="Sales opportunities">
       <thead><tr><th>Motion</th><th>Stage</th><th>Owner</th>
         <th>Next step</th><th>Due</th><th /></tr></thead>
-      <tbody>{rows.map((row) => <AdminTableRow key={row.opportunityId}>
+      <tbody>{rows.map((row) => <tr key={row.opportunityId}>
         <td>{labelFor(row.motion)}</td><td>{labelFor(row.stage)}</td>
         <td>{ownerLabel(row.ownerUid, currentUserUid)}</td>
         <td>{row.nextStep || "Not set"}</td>
         <td>{dateLabel(row.nextStepAt)}</td>
-        <td><TableActionButton onClick={() => onOpenHost(row.organizerId)}>
-          Open host
-        </TableActionButton></td>
-      </AdminTableRow>)}</tbody>
+        <td><CatchButton label="Open host" onPressed={() => onOpenHost(row.organizerId)} recipe="text" /></td>
+      </tr>)}</tbody>
     </DataTable> : null}
     <Pagination hasPrevious={controller.hasPreviousOpportunityPage}
       hasNext={Boolean(controller.opportunities.data?.nextCursor)}
@@ -480,10 +473,10 @@ function InboundReview({controller, onOpenIntake}: {
       onNext={controller.nextInboundPage} />
     {selected ? <AdminForm onSubmit={(event) => {event.preventDefault(); void link();}}>
       <CatchText as="h3" variant="sectionTitle">Match enquiry from {selected.fullName}</CatchText>
-      <SearchField ariaLabel="Search existing hosts for this enquiry"
-        icon={<Search size={16} />} placeholder="One name, city, or market word"
+      <CatchField recipe="input" title="Search existing hosts for this enquiry"
+        inputHint="One name, city, or market word"
         value={controller.identitySearch}
-        onChange={(value) => {controller.setIdentitySearch(value); setMatchId("");}} />
+        onChanged={(value) => {controller.setIdentitySearch(value); setMatchId("");}} />
       <CatchField recipe="select" title="Existing host" value={matchId}
         onChanged={(value) => setMatchId(value ?? "")}
         {...selectOptions([{value: "", label: "Choose a reviewed match"},
@@ -583,8 +576,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
     {visibleTab === "commercial" && !assignedStaffOnly ? renderSalesCommercialWorkspace(detail,
       controller.evidence.data?.rows ?? [], isAdminOwner) : null}
-    {visibleTab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
-      controller={controller} assignedStaffOnly={assignedStaffOnly} /> : null}
     {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
       key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
       organizerId={detail.account.organizerId}

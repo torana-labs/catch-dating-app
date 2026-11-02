@@ -91,8 +91,8 @@ export const onOrganizerGrowthParticipationWritten = onDocumentWritten({
 });
 
 /**
- * A paid booking or refund on a checkout that names its organizer (website
- * and offer checkouts, paid into the organizer's own account).
+ * A captured payment or refund on a checkout that names its organizer
+ * (website, offer and form checkouts).
  * @param {PaymentFact["source"]} source Payment collection.
  * @param {string} paymentId Payment document id.
  * @param {Raw} before Payment before the write.
@@ -116,7 +116,8 @@ export function checkoutPaymentFacts(source: PaymentFact["source"],
   const previously = Number(before?.refundedAmountPaise ?? 0);
   if (refunded > previously) {
     facts.push({...base, kind: "refund", occurredAt: updatedAt(after),
-      amountMinor: refunded - previously, feeMinor: null, taxMinor: null});
+      amountMinor: refunded - previously, refundedToMinor: refunded,
+      feeMinor: null, taxMinor: null});
   }
   return facts;
 }

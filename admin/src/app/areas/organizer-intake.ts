@@ -18,5 +18,8 @@ export default defineArea({
   routes: [
     route("/inbox/*", "organizer-intake"),
     route("/inbox/:inboxItemId", "organizer-intake", {title: "Inbox item"}),
+    // The old Intake review retired; its work is in the Inbox.
+    route("/intake/*", "organizer-intake", {redirect: "/inbox"}),
+    route("/organizer-intake/*", "organizer-intake", {redirect: "/inbox"}),
   ],
 });

@@ -751,9 +751,9 @@ Use TanStack Query as the default async/server-state layer for both React apps.
 
 - Providers are wired at both React roots. Query-key factories live under
   `shared/query/queryKeys.ts` in each app.
-- `admin/src/features/data-quality/controllers/useDataQualityController.ts` is
-  the reference migration: it uses `useQuery`, preserves the existing
-  controller return shape, and keeps UI-local filters/selection in React state.
+- `admin/src/features/system/controllers/useSystemController.ts` is a good
+  reference: it uses `useQuery` per source, so one failed read leaves the others
+  on screen, and keeps UI-local filters and selection in React state.
 - In `admin/`, start with the repeated controller pattern: `useEffect`,
   `isLoading`, `error`, manual refresh, callable invocation, and post-mutation
   reloads. Convert one small controller first, then reuse the query-key and

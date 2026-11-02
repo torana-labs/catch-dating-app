@@ -6,7 +6,6 @@ const operatorWorkflowSources = [
   "../../features/events/ui/eventPublishingDirectoryPanels.tsx",
   "../../features/events/ui/eventPublishingEditorPanels.tsx",
   "../../features/events/ui/eventPublishingSupplyPanels.tsx",
-  "../../features/intake/events/ui/EventIntakeWorkspace.tsx",
 ];
 
 const implementationTelemetry = [

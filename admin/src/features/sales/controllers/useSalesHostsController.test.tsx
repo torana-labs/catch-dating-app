@@ -4,7 +4,7 @@ import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {useSalesHostsController} from "./useSalesHostsController";
 
 const repository = vi.hoisted(() => ({addSalesEvidence: vi.fn(), listSalesEvidence: vi.fn(), listSalesEvidenceProposals: vi.fn(),
-  reviewSalesEvidenceProposal: vi.fn(), setSalesAccountSuppression: vi.fn(), listSalesAccounts: vi.fn(), getSalesAccount: vi.fn(), listSalesContacts: vi.fn(),
+  reviewSalesEvidenceProposal: vi.fn(), setSalesAccountSuppression: vi.fn(), setSalesContactability: vi.fn(), listSalesAccounts: vi.fn(), getSalesAccount: vi.fn(), listSalesContacts: vi.fn(),
   recordSalesActivity: vi.fn(), upsertSalesTask: vi.fn(), upsertSalesOpportunity: vi.fn(), updateSalesAccount: vi.fn(), upsertSalesContact: vi.fn()}));
 vi.mock("../api/salesRepository", () => repository);
 
@@ -89,6 +89,22 @@ describe("useSalesHostsController", () => {
     const person = {contact: {displayName: "Kavya"}, relationship: {role: "Founder", decisionInfluence: "decision_maker" as const, primary: true}};
     await act(async () => { await result.current.addPerson(person); });
     expect(repository.upsertSalesContact.mock.calls[0][0]).toMatchObject({...person, organizerId: "harbor", expectedRevision: 0});
+  });
+
+  it("pages through people and records a contact review against the revision the person read", async () => {
+    repository.listSalesContacts.mockImplementation(async (_organizerId: string, cursor?: string) => cursor ?
+      {rows: [{contactId: "c2", displayName: "Ishaan"}]} : {rows: [{contactId: "c1", displayName: "Kavya"}], nextCursor: "next"});
+    repository.setSalesContactability.mockResolvedValue({});
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "dev", onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+    await waitFor(() => expect(result.current.hasMoreContacts).toBe(true));
+    act(() => result.current.moreContacts());
+    await waitFor(() => expect(result.current.contacts.map((contact) => contact.contactId)).toEqual(["c1", "c2"]));
+    await act(async () => { await result.current.reviewContact(result.current.contacts[0]!, 4, "draft_reviewed", "Checked", "e1"); });
+    expect(repository.setSalesContactability.mock.calls[0][0]).toMatchObject({organizerId: "harbor", contactId: "c1", expectedRevision: 4,
+      status: "draft_reviewed", reason: "Checked", evidenceId: "e1"});
+    await act(async () => { await result.current.reviewContact(result.current.contacts[0]!, 5, "held", "Asked us to wait", null); });
+    expect(repository.setSalesContactability.mock.calls[1][0]).not.toHaveProperty("evidenceId");
   });
 
   it("reports a refused write and leaves the sheet open", async () => {

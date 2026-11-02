@@ -9,11 +9,6 @@
       "count": 1
     }
   },
-  "src/features/data-quality/ui/DataQualityScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 4
-    }
-  },
   "src/features/events/ui/eventPublishingEditorPanels.tsx": {
     "react/forbid-elements": {
       "count": 5
@@ -22,21 +17,6 @@
   "src/features/events/ui/eventPublishingSupplyPanels.tsx": {
     "react/forbid-elements": {
       "count": 3
-    }
-  },
-  "src/features/intake/events/ui/eventIntakeWorkbench.tsx": {
-    "react/forbid-elements": {
-      "count": 10
-    }
-  },
-  "src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx": {
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx": {
-    "react/forbid-elements": {
-      "count": 2
     }
   },
   "src/features/marketing/ui/marketingComposerPanels.tsx": {
@@ -57,11 +37,6 @@
   "src/features/marketing/ui/marketingWorkflowPanels.tsx": {
     "react/forbid-elements": {
       "count": 19
-    }
-  },
-  "src/features/operations/ui/AdminActionExecutionsScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 9
     }
   },
   "src/features/organizers/ui/organizerDetailPanels.tsx": {
@@ -114,18 +89,18 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 8
+      "count": 7
     },
     "react/forbid-elements": {
-      "count": 11
+      "count": 9
     }
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 12
     },
     "react/forbid-elements": {
-      "count": 16
+      "count": 15
     }
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
@@ -133,10 +108,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 12
+      "count": 11
     },
     "react/forbid-elements": {
-      "count": 19
+      "count": 18
     }
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {

@@ -7,6 +7,7 @@ import {hostRawViews, inspectHostExtensions, inspectHostSchedule} from "./host_a
 const expectedTables = [
   "host_analytics_events",
   "mart_host_event_daily",
+  "organizer_growth_events",
 ];
 
 const expectedFunctions = [

@@ -40995,6 +40995,231 @@ abstract class AppLocalizations {
   /// **'Ticket, membership and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.'**
   String get hostPayoutsRazorpayIntroBody;
 
+  /// Payments screen: heading of Catch's monthly bills to the organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills from Catch'**
+  String get hostBillsTitle;
+
+  /// Payments screen: no bill has been sent.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet'**
+  String get hostBillsEmptyTitle;
+
+  /// Payments screen: what happens when a bill is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'When Catch sends you a bill, it shows here with its payment link.'**
+  String get hostBillsEmptyBody;
+
+  /// Bill row: the month and what it costs.
+  ///
+  /// In en, this message translates to:
+  /// **'{month}: {amount}'**
+  String hostBillsRowTitle({required String month, required String amount});
+
+  /// Bill row: a month in the free trial.
+  ///
+  /// In en, this message translates to:
+  /// **'{month}: free'**
+  String hostBillsRowTitleFree({required String month});
+
+  /// Bill row: the month's ticket sales.
+  ///
+  /// In en, this message translates to:
+  /// **'{sales} in ticket sales'**
+  String hostBillsRowBody({required String sales});
+
+  /// Bill row: ticket sales and the due date of an unpaid bill.
+  ///
+  /// In en, this message translates to:
+  /// **'{sales} in ticket sales · due {date}'**
+  String hostBillsRowBodyDue({required String sales, required String date});
+
+  /// Bill status: sent, not yet due or paid.
+  ///
+  /// In en, this message translates to:
+  /// **'To pay'**
+  String get hostBillsStatusToPay;
+
+  /// Bill status: past its due date.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get hostBillsStatusOverdue;
+
+  /// Bill status: paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get hostBillsStatusPaid;
+
+  /// Bill status: Catch closed it unpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Written off'**
+  String get hostBillsStatusWrittenOff;
+
+  /// Bill status: nothing due because of the free trial.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get hostBillsStatusFree;
+
+  /// Bill statement: invoice number.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {number}'**
+  String hostBillsInvoice({required String number});
+
+  /// Bill statement: heading of the bill's lines.
+  ///
+  /// In en, this message translates to:
+  /// **'The bill'**
+  String get hostBillsSectionBill;
+
+  /// Bill statement: heading of what the organizer kept that month.
+  ///
+  /// In en, this message translates to:
+  /// **'What you kept'**
+  String get hostBillsSectionKept;
+
+  /// Bill statement: ticket sales after refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket sales'**
+  String get hostBillsTicketSales;
+
+  /// Bill statement: tickets sold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 ticket} other{{count} tickets}}'**
+  String hostBillsTickets({required int count});
+
+  /// Bill statement: events with sales.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 event} other{{count} events}}'**
+  String hostBillsEvents({required int count});
+
+  /// Bill statement: tickets, events and refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'{counts}, after {refunded} refunded'**
+  String hostBillsSalesRefunded({
+    required String counts,
+    required String refunded,
+  });
+
+  /// Bill statement: sales already exclude refunds.
+  ///
+  /// In en, this message translates to:
+  /// **'After refunds'**
+  String get hostBillsSalesAfterRefunds;
+
+  /// Bill statement: commission line.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch’s commission'**
+  String get hostBillsCommission;
+
+  /// Bill statement: what commission is charged on.
+  ///
+  /// In en, this message translates to:
+  /// **'On this month’s ticket sales'**
+  String get hostBillsCommissionBody;
+
+  /// Bill statement: the monthly cap applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Capped at {cap}'**
+  String hostBillsCommissionCapped({required String cap});
+
+  /// Bill statement: commission the free trial removed.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} waived in your free trial'**
+  String hostBillsCommissionWaived({required String amount});
+
+  /// Bill statement: GST line, shown only when Catch is registered.
+  ///
+  /// In en, this message translates to:
+  /// **'GST'**
+  String get hostBillsGst;
+
+  /// Bill statement: what GST applies to.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to Catch’s commission'**
+  String get hostBillsGstBody;
+
+  /// Bill statement: the amount of the bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get hostBillsTotal;
+
+  /// Bill statement: due date.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String hostBillsDue({required String date});
+
+  /// Bill statement: payment date.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid {date}'**
+  String hostBillsPaidOn({required String date});
+
+  /// Bill statement: Catch closed the bill unpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Written off, so nothing to pay'**
+  String get hostBillsWrittenOffBody;
+
+  /// Bill statement: nothing due because of the free trial.
+  ///
+  /// In en, this message translates to:
+  /// **'Free trial, so nothing to pay'**
+  String get hostBillsFreeBody;
+
+  /// Bill statement: Razorpay's fees for the month.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay fees'**
+  String get hostBillsRazorpayFees;
+
+  /// Bill statement: who takes Razorpay's fees.
+  ///
+  /// In en, this message translates to:
+  /// **'Taken by Razorpay from your account. Catch never sees this money.'**
+  String get hostBillsRazorpayFeesBody;
+
+  /// Bill statement: the bill, in what the organizer kept.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch’s bill'**
+  String get hostBillsCatchBill;
+
+  /// Bill statement: what is left after fees and the bill.
+  ///
+  /// In en, this message translates to:
+  /// **'You kept'**
+  String get hostBillsKept;
+
+  /// Bill statement: how the amount kept is worked out.
+  ///
+  /// In en, this message translates to:
+  /// **'After Razorpay’s fees and Catch’s bill'**
+  String get hostBillsKeptBody;
+
+  /// Bill statement: opens the Razorpay payment page.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount}'**
+  String hostBillsPay({required String amount});
+
   /// Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.
   ///
   /// In en, this message translates to:

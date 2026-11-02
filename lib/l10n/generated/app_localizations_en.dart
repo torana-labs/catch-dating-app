@@ -25443,6 +25443,160 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ticket, membership and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.';
 
   @override
+  String get hostBillsTitle => 'Bills from Catch';
+
+  @override
+  String get hostBillsEmptyTitle => 'No bills yet';
+
+  @override
+  String get hostBillsEmptyBody =>
+      'When Catch sends you a bill, it shows here with its payment link.';
+
+  @override
+  String hostBillsRowTitle({required String month, required String amount}) {
+    return '$month: $amount';
+  }
+
+  @override
+  String hostBillsRowTitleFree({required String month}) {
+    return '$month: free';
+  }
+
+  @override
+  String hostBillsRowBody({required String sales}) {
+    return '$sales in ticket sales';
+  }
+
+  @override
+  String hostBillsRowBodyDue({required String sales, required String date}) {
+    return '$sales in ticket sales · due $date';
+  }
+
+  @override
+  String get hostBillsStatusToPay => 'To pay';
+
+  @override
+  String get hostBillsStatusOverdue => 'Overdue';
+
+  @override
+  String get hostBillsStatusPaid => 'Paid';
+
+  @override
+  String get hostBillsStatusWrittenOff => 'Written off';
+
+  @override
+  String get hostBillsStatusFree => 'Free';
+
+  @override
+  String hostBillsInvoice({required String number}) {
+    return 'Invoice $number';
+  }
+
+  @override
+  String get hostBillsSectionBill => 'The bill';
+
+  @override
+  String get hostBillsSectionKept => 'What you kept';
+
+  @override
+  String get hostBillsTicketSales => 'Ticket sales';
+
+  @override
+  String hostBillsTickets({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets',
+      one: '1 ticket',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostBillsEvents({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostBillsSalesRefunded({
+    required String counts,
+    required String refunded,
+  }) {
+    return '$counts, after $refunded refunded';
+  }
+
+  @override
+  String get hostBillsSalesAfterRefunds => 'After refunds';
+
+  @override
+  String get hostBillsCommission => 'Catch’s commission';
+
+  @override
+  String get hostBillsCommissionBody => 'On this month’s ticket sales';
+
+  @override
+  String hostBillsCommissionCapped({required String cap}) {
+    return 'Capped at $cap';
+  }
+
+  @override
+  String hostBillsCommissionWaived({required String amount}) {
+    return '$amount waived in your free trial';
+  }
+
+  @override
+  String get hostBillsGst => 'GST';
+
+  @override
+  String get hostBillsGstBody => 'Added to Catch’s commission';
+
+  @override
+  String get hostBillsTotal => 'Total';
+
+  @override
+  String hostBillsDue({required String date}) {
+    return 'Due $date';
+  }
+
+  @override
+  String hostBillsPaidOn({required String date}) {
+    return 'Paid $date';
+  }
+
+  @override
+  String get hostBillsWrittenOffBody => 'Written off, so nothing to pay';
+
+  @override
+  String get hostBillsFreeBody => 'Free trial, so nothing to pay';
+
+  @override
+  String get hostBillsRazorpayFees => 'Razorpay fees';
+
+  @override
+  String get hostBillsRazorpayFeesBody =>
+      'Taken by Razorpay from your account. Catch never sees this money.';
+
+  @override
+  String get hostBillsCatchBill => 'Catch’s bill';
+
+  @override
+  String get hostBillsKept => 'You kept';
+
+  @override
+  String get hostBillsKeptBody => 'After Razorpay’s fees and Catch’s bill';
+
+  @override
+  String hostBillsPay({required String amount}) {
+    return 'Pay $amount';
+  }
+
+  @override
   String get hostPayoutsRazorpayUnavailable =>
       'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.';
 

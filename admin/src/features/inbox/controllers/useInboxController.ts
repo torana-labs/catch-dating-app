@@ -11,6 +11,7 @@ import {
   linkEnquiry,
   searchOrganizers,
   listInboxItems,
+  nominateOrganizer,
   publishListingEvent,
   recommendOrganizerClaim,
   updateInboxItem,
@@ -21,6 +22,7 @@ import {
   type InboxUpdate,
   type ListingApprovalInput,
   type ListingEventRef,
+  type NominationInput,
 } from "../api/inboxRepository";
 import {blockerLabel, type ListingEventPublishRequest} from "./listingEventPublish";
 
@@ -89,6 +91,9 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
   const eventPublish = useMutation({mutationFn: publishListingEvent});
   // A retry of the same publish keeps its key, so the server replays it.
   const publishKeys = useRef(new Map<string, string>());
+  const nomination = useMutation({mutationFn: nominateOrganizer});
+  // A retry of the same details keeps its request id, so Intake builds one listing.
+  const nominationRequestIds = useRef(new Map<string, string>());
   const [hostQuery, setHostQuery] = useState("");
   const hostSearch = useQuery({
     queryKey: [...inboxKey, "host-search", hostQuery.trim()],
@@ -188,6 +193,20 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
       return done;
     },
     isPublishingEvent: eventPublish.isPending,
+    /** A stuck nomination starts again from typed details: Intake builds a new listing, and this item closes. */
+    fillInByHand: async (input: Pick<NominationInput, "name" | "market" | "urls" | "notes" | "categories">, itemId: string) => {
+      const key = JSON.stringify([itemId, input]);
+      const requestId = nominationRequestIds.current.get(key) ?? crypto.randomUUID();
+      nominationRequestIds.current.set(key, requestId);
+      const done = await run(async () => {
+        await nomination.mutateAsync({...input, requestId});
+        await update.mutateAsync({itemId, action: "dismiss", assigneeUid: null, snoozedUntil: null,
+          note: "Filled in by hand. Intake is building a new listing."});
+      }, "Intake is building a new listing. It comes back here for review.", true);
+      if (done) nominationRequestIds.current.delete(key);
+      return done;
+    },
+    isFillingIn: nomination.isPending,
     hostQuery,
     setHostQuery,
     hostMatches: hostQuery.trim().length >= 2 ? hostSearch.data ?? [] : [],

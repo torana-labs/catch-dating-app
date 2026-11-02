@@ -7,6 +7,7 @@ import {
   listingChannel,
   newGrowthFacts,
   paidCampaign,
+  paymentEventId,
   provenanceChannel,
   recordOrganizerMilestones,
   recordOrganizerPayment,
@@ -126,6 +127,20 @@ test("checkout payments yield one paid booking and refund deltas", () => {
   assert.equal(refund.length, 1);
   assert.equal(refund[0].kind, "refund");
   assert.equal(refund[0].amountMinor, 20_000);
+});
+
+test("two equal partial refunds on one payment stay two rows", () => {
+  const paid = {organizerId: "org", eventId: "ev", currency: "INR",
+    amountPaise: 50_000, capturedAt: at(10_000), refundedAmountPaise: 10_000,
+    updatedAt: at(11_000)};
+  const [second] = checkoutPaymentFacts("publicEventPayments", "pp_1", paid,
+    {...paid, refundedAmountPaise: 20_000, updatedAt: at(12_000)});
+  const [first] = checkoutPaymentFacts("publicEventPayments", "pp_1",
+    {...paid, refundedAmountPaise: 0}, paid);
+  assert.equal(first.amountMinor, second.amountMinor);
+  assert.notEqual(paymentEventId(first), paymentEventId(second));
+  assert.equal(paymentEventId(second),
+    "publicEventPayments:pp_1:refund:20000");
 });
 
 test("native payments yield a paid booking when completed", () => {

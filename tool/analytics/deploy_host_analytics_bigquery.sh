@@ -259,6 +259,7 @@ find_existing_schedule_config() {
 dataset="catch_analytics"
 ddl_events="$repo_root/analytics/sql/ddl/host_analytics_events.sql"
 ddl_mart="$repo_root/analytics/sql/ddl/mart_host_event_daily.sql"
+ddl_growth="$repo_root/analytics/sql/ddl/organizer_growth_events.sql"
 refresh_sql="$repo_root/analytics/sql/marts/refresh_mart_host_event_daily.sql"
 
 if [[ "$refresh_only" != true ]]; then
@@ -272,6 +273,7 @@ if [[ "$refresh_only" != true ]]; then
     "link_id" "organizer_id,link_id"
   query_file "$ddl_events" "host_analytics_events DDL"
   query_file "$ddl_mart" "mart_host_event_daily DDL"
+  query_file "$ddl_growth" "organizer_growth_events DDL"
 fi
 
 if [[ "$skip_refresh" != true ]]; then

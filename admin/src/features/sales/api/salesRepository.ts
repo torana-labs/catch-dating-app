@@ -94,8 +94,16 @@ const sampleDetails = new Map<string, SalesAccountDetail>(sampleNames.map(
 
 const sampleReceipts = new Map<string, unknown>();
 const sampleCustomFields: SalesCustomFieldDefinition[] = [];
-const sampleContacts = new Map<string, SalesContact[]>();
-const sampleEvidence = new Map<string, SalesEvidence[]>();
+const sampleHostIds = [...sampleDetails.keys()];
+const sampleContacts = new Map<string, SalesContact[]>(sampleHostIds.slice(0, 3).map((organizerId) => [organizerId, [{
+  contactId: `${organizerId}-founder`, displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker",
+    primary: true, contactabilityStatus: "unknown", contactabilityReason: null, draftReviewEvidenceId: null, sendAuthority: false,
+    endpoints: [{kind: "email", value: "kavya@example.com", verificationStatus: "unverified"}]},
+}]]));
+const sampleEvidence = new Map<string, SalesEvidence[]>(sampleHostIds.slice(0, 3).map((organizerId) => [organizerId, [{
+  evidenceId: `${organizerId}-founder-evidence`, organizerId, contactId: `${organizerId}-founder`, claimKey: "identity", sourceType: "public_web",
+  sourceRef: "https://example.com/about", observedAt: "2026-10-28T09:00:00.000Z", confidence: "high", normalizedValue: "Kavya Rao runs the events",
+} as SalesEvidence]]));
 const sampleProposals = new Map<string, SalesEvidenceProposal[]>([...sampleDetails.keys()].slice(0, 3).map((organizerId, index) => [organizerId, [{
   proposalId: `sample-proposal-${index + 1}`, organizerId, revision: 1, status: "pending", clientId: "sample-assistant",
   createdAt: "2026-10-30T09:00:00.000Z", reviewReason: null,

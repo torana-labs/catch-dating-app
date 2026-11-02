@@ -4470,7 +4470,9 @@ the earliest time observed, and stream them, with paid bookings and refunds, to
 BigQuery `catch_analytics.organizer_growth_events`. The triggers are not retried
 on failure (a retrying trigger needs a forced deploy); `reconcileOrganizerGrowthDaily`
 recomputes the steps nightly from organizers, claim requests, booked events and
-captured checkouts and records any that were missed.
+captured checkouts and records any that were missed. The same job creates the
+table if it is missing and sends whatever BigQuery lacks, including form payments
+under their own event names (`analytics/sql/README.md`).
 
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment
@@ -4492,6 +4494,10 @@ is on. A bill is `toSend`, `sent` (overdue past `dueAtMillis`), `paid`,
 Sending takes the next number of `moneyInvoiceCounters/{financialYear}`, one
 unbroken sequence per April–March year (`2026-27/031`). All are server-only and
 reached through `adminManageOrganizerBills` and `adminManageMoneySettings`.
+
+Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
+owner reads their own through `listOrganizerBills`, which leaves out unsent
+bills and everything only staff need (reminders, history, terms revisions).
 
 `nominatorCredits/{billId}` is written in the transaction that marks a bill
 paid: the organizer's first nominator earns the credit rate on what was paid

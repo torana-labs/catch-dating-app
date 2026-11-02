@@ -1761,8 +1761,6 @@
         "admin/src/features/safety/controllers/useAccessReviewController.ts",
         "admin/src/features/settings/controllers/useTeamController.ts",
         "admin/src/features/events/controllers/useEventPublishingController.ts",
-        "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
-        "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
         "admin/src/features/safety/controllers/useSafetyTriageController.ts",
@@ -5952,8 +5950,7 @@
             "functions/src/operations/**",
             "functions/scripts/operations/**",
             "functions/src/admin/**",
-            "admin/src/features/intake/operations/**",
-            "admin/src/features/operations/**",
+            "admin/src/features/system/**",
             "tool/host_discovery/**",
             "tool/tools_manifest.json",
             "tool/remote_ops_manifest.json"

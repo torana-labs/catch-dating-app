@@ -34674,7 +34674,7 @@ export const organizerGrowthEventSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/bigquery/organizer_growth_event.schema.json",
   "title": "OrganizerGrowthEvent",
-  "description": "One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment. The insert id is the growth event id, and readers count distinct ids, so a retried insert never counts twice.",
+  "description": "One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment, and form_payment and form_refund once per form payment, so form fees never count as bookings. The insert id is the growth event id, the same fact always has the same id, and readers count distinct ids, so a retried insert never counts twice.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -34707,7 +34707,9 @@ export const organizerGrowthEventSchema = {
         "first_event",
         "first_paid_booking",
         "paid_booking",
-        "refund"
+        "refund",
+        "form_payment",
+        "form_refund"
       ]
     },
     "occurred_at": {
@@ -34759,7 +34761,7 @@ export const organizerGrowthEventSchema = {
       "maxLength": 180
     },
     "payment_source": {
-      "description": "The payment record collection a paid_booking or refund came from.",
+      "description": "The payment record collection a payment or refund row came from.",
       "type": [
         "string",
         "null"
@@ -34768,6 +34770,7 @@ export const organizerGrowthEventSchema = {
         "payments",
         "publicEventPayments",
         "organizerEventOfferPayments",
+        "organizerFormPayments",
         null
       ]
     },
@@ -230614,6 +230617,26 @@ export const listMyHostAssignmentsCallablePayloadSchema = {
   }
 };
 
+export const listOrganizerBillsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_bills_payload.schema.json",
+  "title": "ListOrganizerBillsCallablePayload",
+  "description": "An organizer's owner reads Catch's monthly bills to that organizer in the host app.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Organizer owners (Host app Payments)",
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
 export const createOrganizerProgramCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_organizer_program_payload.schema.json",
@@ -234849,6 +234872,395 @@ export const listMyHostAssignmentsCallableResponseSchema = {
         "none"
       ],
       "description": "The app shell the caller should land in: managers always get managerShell even when they also hold staff assignments; staff get workShell only while at least one assignment is live."
+    }
+  }
+};
+
+export const listOrganizerBillsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_bills_response.schema.json",
+  "title": "ListOrganizerBillsCallableResponse",
+  "description": "Catch's bills to one organizer as its owner sees them, newest month first: bills sent or closed and free months. A bill not yet sent is left out, and so are its reminders, history, terms revisions and who acted on it, which stay with Catch's staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bills"
+  ],
+  "definitions": {
+    "minor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000000
+    },
+    "nullableMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "bill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "billId",
+        "month",
+        "status",
+        "sales",
+        "commission",
+        "gst",
+        "totalMinor",
+        "invoiceNumber",
+        "dueAtMillis",
+        "paymentUrl",
+        "paidAtMillis",
+        "paidMinor"
+      ],
+      "properties": {
+        "billId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "month": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+        },
+        "status": {
+          "enum": [
+            "sent",
+            "paid",
+            "writtenOff",
+            "free"
+          ]
+        },
+        "sales": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentCount",
+            "eventCount",
+            "grossMinor",
+            "refundedMinor",
+            "providerFeeMinor"
+          ],
+          "properties": {
+            "paymentCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "grossMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            "refundedMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            "providerFeeMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000,
+              "description": "Razorpay's fees on these sales including their tax, taken from the organizer's account."
+            }
+          }
+        },
+        "commission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "amountMinor",
+            "capMinor",
+            "capped",
+            "trialWaivedMinor"
+          ],
+          "properties": {
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            "capMinor": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "capped": {
+              "type": "boolean"
+            },
+            "trialWaivedMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            }
+          }
+        },
+        "gst": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "registered",
+            "amountMinor"
+          ],
+          "properties": {
+            "registered": {
+              "type": "boolean"
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            }
+          }
+        },
+        "totalMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000000
+        },
+        "invoiceNumber": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "dueAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "paymentUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^https://",
+          "maxLength": 300,
+          "description": "The Razorpay payment link, only while the bill is unpaid."
+        },
+        "paidAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "paidMinor": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "bills": {
+      "type": "array",
+      "maxItems": 240,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "billId",
+          "month",
+          "status",
+          "sales",
+          "commission",
+          "gst",
+          "totalMinor",
+          "invoiceNumber",
+          "dueAtMillis",
+          "paymentUrl",
+          "paidAtMillis",
+          "paidMinor"
+        ],
+        "properties": {
+          "billId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "month": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          },
+          "status": {
+            "enum": [
+              "sent",
+              "paid",
+              "writtenOff",
+              "free"
+            ]
+          },
+          "sales": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "paymentCount",
+              "eventCount",
+              "grossMinor",
+              "refundedMinor",
+              "providerFeeMinor"
+            ],
+            "properties": {
+              "paymentCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "eventCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "grossMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "refundedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "providerFeeMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000,
+                "description": "Razorpay's fees on these sales including their tax, taken from the organizer's account."
+              }
+            }
+          },
+          "commission": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "amountMinor",
+              "capMinor",
+              "capped",
+              "trialWaivedMinor"
+            ],
+            "properties": {
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              "capMinor": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capped": {
+                "type": "boolean"
+              },
+              "trialWaivedMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              }
+            }
+          },
+          "gst": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "registered",
+              "amountMinor"
+            ],
+            "properties": {
+              "registered": {
+                "type": "boolean"
+              },
+              "amountMinor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              }
+            }
+          },
+          "totalMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          },
+          "invoiceNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 40
+          },
+          "dueAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paymentUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^https://",
+            "maxLength": 300,
+            "description": "The Razorpay payment link, only while the bill is unpaid."
+          },
+          "paidAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paidMinor": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
     }
   }
 };
