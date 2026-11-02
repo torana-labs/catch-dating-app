@@ -326,14 +326,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawSurfaceShell = LintCode(
     'catch_no_raw_surface_shell',
-    'Drawing belongs in catch_ui. Arrange existing Catch components instead of adding an SDK drawing constructor or subclass.',
+    'Drawing belongs in catch_ui. Arrange existing Catch components instead of adding an SDK drawing constructor or subclass, or reading a Theme.',
     severity: DiagnosticSeverity.INFO,
-  );
-
-  static const noThemeRead = LintCode(
-    'catch_no_theme_read',
-    'A file under apps/*/lib or lib/pages reads no Theme. Take the value from a catch_ui component or a token.',
-    severity: DiagnosticSeverity.WARNING,
   );
 
   static const noRawStrokeWidth = LintCode(
@@ -549,7 +543,6 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     noRawMotion,
     noRawBreakpoint,
     noRawSurfaceShell,
-    noThemeRead,
     noRawStrokeWidth,
     noRawAssetPath,
     noNestedRoundedRectangles,
@@ -842,7 +835,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final sites = _NewRootSites();
     node.accept(sites);
     for (final read in sites.themeReads) {
-      rule.reportAtNode(read, diagnosticCode: CatchUiLayoutRules.noThemeRead);
+      rule.reportAtNode(
+        read,
+        diagnosticCode: CatchUiLayoutRules.noRawSurfaceShell,
+      );
     }
     for (final text in sites.rawText) {
       if (namedTextSites.contains(text)) continue;

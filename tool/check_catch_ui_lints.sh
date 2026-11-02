@@ -1254,10 +1254,10 @@ while IFS='|' read -r zero_path zero_code zero_count zero_source; do
   stage_probe "new root $zero_path $zero_code" <<< "$(printf '%b' "$new_root_prelude$zero_source")"
   expect_probe exact "$zero_code" "$zero_count"
 done <<'ZERO'
-apps/host/lib/today/today_screen.dart|catch_no_theme_read|1|Object read(BuildContext context) => Theme.of(context);
-apps/consumer/lib/explore/explore_screen.dart|catch_no_theme_read|1|Object read(BuildContext context) => Theme.of(context);
-lib/pages/welcome/welcome_screen.dart|catch_no_theme_read|1|Object read(BuildContext context) => Theme.of(context);
-apps/host/lib/today/today_screen.dart|catch_no_theme_read|1|Object read(BuildContext context) => CupertinoTheme.of(context);
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => Theme.of(context);
+apps/consumer/lib/explore/explore_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => Theme.of(context);
+lib/pages/welcome/welcome_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => Theme.of(context);
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => CupertinoTheme.of(context);
 apps/host/lib/today/today_screen.dart|catch_no_raw_text_style|1|const style = TextStyle();
 apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|const box = BoxDecoration();
 apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|final box = Container();
@@ -1352,7 +1352,6 @@ Widget control(BuildContext context) {
   );
 }
 DART
-expect_probe exact catch_no_theme_read 0
 expect_probe exact catch_no_raw_ui_spacing 0
 expect_probe exact catch_no_allow_debt 0
 expect_probe exact catch_no_raw_surface_shell 0
@@ -1370,7 +1369,6 @@ Widget splash(BuildContext context) {
   return ColoredBox(color: theme.cardColor);
 }
 DART
-expect_probe exact catch_no_theme_read 0
 expect_probe exact catch_no_allow_debt 0
 expect_probe exact catch_no_raw_surface_shell 0
 probe_path="$probe_root/lib/pages/celebration/celebration_screen.dart"
@@ -1391,7 +1389,7 @@ import 'package:flutter/material.dart';
 Object read(BuildContext context) => Theme.of(context);
 Color fade(Color tone) => tone.withValues(alpha: 0.2);
 DART
-expect_probe exact catch_no_theme_read 1
+expect_probe exact catch_no_raw_surface_shell 1
 expect_probe exact catch_no_raw_alpha 1
 
 # Outside lib/ and apps/*/lib/ the rules place nothing.
@@ -1432,10 +1430,9 @@ DART
   while read -r real_code real_count; do
     printf '%s\texact\t%s\t%s\n' "$real_app_probe" "$real_code" "$real_count"
   done <<'REAL'
-catch_no_theme_read 1
 catch_no_raw_text_style 1
 catch_text_requires_style 1
-catch_no_raw_surface_shell 3
+catch_no_raw_surface_shell 4
 catch_no_raw_ui_spacing 3
 catch_no_allow_debt 1
 catch_arch_provider_free_boundary 1

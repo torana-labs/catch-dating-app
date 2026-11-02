@@ -4,7 +4,11 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collisionKeyFor} from "./component_concepts.mjs";
-import {featureWidgetNamingIssues, isAppSharedWidgetSource} from "./lib/component_naming.mjs";
+import {
+  featureWidgetNamingIssues,
+  isAppSharedWidgetSource,
+  isNewRootCompositionFile,
+} from "./lib/component_naming.mjs";
 import {
   buildLineStarts,
   collectClassDeclarations,
@@ -276,12 +280,12 @@ function isComposition(name, file) {
   );
 }
 
-function catalogStatusFor(entry, contract, visibility, widgetbookNames) {
+export function catalogStatusFor(entry, contract, visibility, widgetbookNames) {
   if (contract) return "contracted";
   if (entry.classKind === "widget-state") return "not-applicable";
   if (widgetbookNames.has(entry.name)) return "cataloged";
   if (visibility === "private") return "uncataloged";
-  if (isScreen(entry.name, entry.file)) return widgetbookNames.has(entry.name) ? "cataloged" : "route-covered";
+  if (isScreen(entry.name, entry.file) || isNewRootCompositionFile(entry.file)) return "route-covered";
   return "uncataloged";
 }
 

@@ -3013,14 +3013,16 @@ These hold from PR 1.4, with seeded probes in `tool/check_catch_ui_lints.sh`, on
 of them a real file under `apps/host/lib`. `newRootPath` in
 `packages/catch_ui_lints/lib/src/migration_scope.dart` names the roots, and every
 screen rule runs there whatever the folder is called. `catch_no_raw_surface_shell`
-also rejects a raw `Icon` here; `catch_text_requires_style` any raw `Text`,
-`RichText` or `SelectableText`; `catch_no_theme_read` `Theme.of`;
-`catch_no_raw_ui_spacing` any number in `SizedBox` or `EdgeInsets`, and a non-zero
-one in a spacing argument of any widget; `catch_no_raw_color` `Colors.transparent`;
-and `catch_no_allow_debt` every `ignore` of a Catch code.
+also rejects `Theme.of` and a raw `Icon` here; `catch_text_requires_style` any raw
+`Text`, `RichText` or `SelectableText`; `catch_no_raw_ui_spacing` any number in
+`SizedBox` or `EdgeInsets`, and a non-zero one in a spacing argument of any widget;
+`catch_no_raw_color` `Colors.transparent`; and `catch_no_allow_debt` every `ignore`
+of a Catch code.
 `catch_arch_provider_free_boundary` holds `*_body.dart`, `*_state.dart` and
 `widgets/` by path, `catch_arch_parts_provider_coupling` holds `parts/`, and
-`tool/design/check_library_shims.mjs` refuses a deprecated `catch_ui` symbol. Two
+`tool/design/check_library_shims.mjs` refuses a deprecated `catch_ui` symbol.
+Screens, bodies, states and `widgets/` here take no Widgetbook case: captures and
+body render tests cover them, and Widgetbook cannot import an app package. Two
 files under `lib/pages` predate D24 and are listed shrink-only in `migration_scope.dart`
 until their P6 redraw (`splash_screen.dart`, `celebration_screen.dart`); the list
 cannot grow, and `apps/*/lib` stays at zero with no list.
