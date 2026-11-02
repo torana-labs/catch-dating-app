@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
-import {listSalesAccounts, listSalesOpportunities} from "../api/salesRepository";
+import {getSalesAccount, listSalesAccounts, listSalesOpportunities} from "../api/salesRepository";
 import type {SalesOpportunity} from "../api/salesTypes";
 import {dealColumn, dealColumns} from "./salesLabels";
 
@@ -63,6 +63,12 @@ export function useSalesDealsController({uid}: {uid: string | null}) {
 export type SalesDealsController = ReturnType<typeof useSalesDealsController>;
 
 /** Host names by organizer id, for lists that hold only ids (tasks, deals). */
+/** One host's name, for a page that must say it. A restricted host can't be read, so it has none. */
+export function useSalesHostName(organizerId: string) {
+  const account = useQuery({queryKey: ["sales", "account", organizerId], queryFn: () => getSalesAccount(organizerId)});
+  return {name: account.data?.organizerSummary.name ?? null, isLoading: account.isPending};
+}
+
 export function useSalesHostNames() {
   const accounts = useQuery({
     queryKey: ["sales", "deal-names"],
