@@ -9,6 +9,7 @@ typedef OrganizerHostDefaultsWriter =
     Future<void> Function(OrganizerHostDefaults defaults);
 typedef OrganizerHostDefaultsErrorMessage = String Function(Object error);
 
+// provider-graph: ownership-listenable:HostOrganizerDefaultsSaver:reactive-state planned CAT156 -- HostOrganizerDefaultsSaver is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Serialized optimistic writer for club-level host defaults.
 ///
 /// Rapid functional updates coalesce behind one in-flight write. A failed

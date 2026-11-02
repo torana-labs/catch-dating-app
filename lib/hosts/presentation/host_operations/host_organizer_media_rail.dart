@@ -138,6 +138,7 @@ class _HostOrganizerLogoManagerHeaderState
   }
 
   Future<void> _pickLogo() async {
+    // provider-graph: ownership-widget-async-callback:_HostOrganizerLogoManagerHeaderState._pickLogo:await:widget.onPickLogo watch CAT156 -- Existing bounded review signal at _HostOrganizerLogoManagerHeaderState._pickLogo (await:widget.onPickLogo). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final logo = await widget.onPickLogo();
     if (!mounted || logo == null) return;
     setState(() {
@@ -147,6 +148,7 @@ class _HostOrganizerLogoManagerHeaderState
   }
 
   Future<void> _removeLogo() async {
+    // provider-graph: ownership-widget-async-callback:_HostOrganizerLogoManagerHeaderState._removeLogo:await:widget.onRemoveLogo watch CAT156 -- Existing bounded review signal at _HostOrganizerLogoManagerHeaderState._removeLogo (await:widget.onRemoveLogo). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     await widget.onRemoveLogo();
     if (!mounted) return;
     setState(() {
@@ -196,6 +198,7 @@ class _HostOrganizerMediaManagerDockState
       _saving = true;
       _showError = false;
     });
+    // provider-graph: ownership-widget-async-callback:_HostOrganizerMediaManagerDockState._save:await:widget.onSave watch CAT156 -- Existing bounded review signal at _HostOrganizerMediaManagerDockState._save (await:widget.onSave). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final saved = await widget.onSave();
     if (!mounted) return;
     if (saved) {

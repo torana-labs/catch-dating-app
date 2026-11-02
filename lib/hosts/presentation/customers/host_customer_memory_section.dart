@@ -213,12 +213,14 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
       final controller = ref.read(hostCustomersControllerProvider);
       final note = widget.note;
       if (note == null) {
+        // provider-graph: ownership-widget-async:_HostCustomerNoteSheetState._save:await:hostCustomersControllerProvider.createNote watch CAT156 -- Existing bounded review signal at _HostCustomerNoteSheetState._save (await:hostCustomersControllerProvider.createNote). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
         await controller.createNote(
           organizerId: widget.customer.organizerId,
           contactId: widget.customer.contactId,
           body: body,
         );
       } else {
+        // provider-graph: ownership-widget-async:_HostCustomerNoteSheetState._save:await:hostCustomersControllerProvider.editNote watch CAT156 -- Existing bounded review signal at _HostCustomerNoteSheetState._save (await:hostCustomersControllerProvider.editNote). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
         await controller.editNote(
           organizerId: widget.customer.organizerId,
           contactId: widget.customer.contactId,
@@ -417,6 +419,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
           if (_selectedIds.contains(tag.tagId)) tag.label,
         ..._newLabels,
       ];
+      // provider-graph: ownership-widget-async:_HostCustomerTagsSheetState._save:await:hostCustomersControllerProvider.mutateCustomer watch CAT156 -- Existing bounded review signal at _HostCustomerTagsSheetState._save (await:hostCustomersControllerProvider.mutateCustomer). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostCustomersControllerProvider)
           .mutateCustomer(

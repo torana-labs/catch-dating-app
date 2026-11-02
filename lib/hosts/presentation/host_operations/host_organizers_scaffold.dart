@@ -400,6 +400,7 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
     setState(() => _legalLinkPending = true);
     var opened = false;
     try {
+      // provider-graph: ownership-widget-async:_HostOrganizersScaffoldState._openLegalLink:await:externalLinkControllerProvider.openExternal watch CAT156 -- Host account-menu launch of the public Privacy, Terms or Help page. The only widget-owned field is _legalLinkPending, an in-flight latch that joins the account menu's exclusive pending state with the sign-out and deletion mutations while the platform launch is awaited; false and thrown outcomes become a transient notice. No loaded data, authorization or retry identity is held. It mirrors _SettingsScreenState._launchExternalLink, which has the same watch disposition. This watch disposition does not certify compliance; move the latch into a generated owner if the account surface gains one under CAT156.
       opened = await ref.read(externalLinkControllerProvider).openExternal(uri);
     } catch (_) {
       // ExternalLinkController retains the backend context; the account menu

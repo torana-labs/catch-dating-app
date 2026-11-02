@@ -72,12 +72,14 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
     setState(() => _saving = true);
     try {
       final controller = ref.read(hostAudienceControllerProvider);
+      // provider-graph: ownership-widget-async:_HostSaveAudienceSheetState._save:await:hostAudienceControllerProvider.saveAudience watch CAT156 -- Existing bounded review signal at _HostSaveAudienceSheetState._save (await:hostAudienceControllerProvider.saveAudience). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final audience = await controller.saveAudience(
         organizerId: widget.organizerId,
         requestId: '${DateTime.now().microsecondsSinceEpoch}-customers',
         name: name,
         definition: widget.definition,
       );
+      // provider-graph: ownership-widget-async:_HostSaveAudienceSheetState._save:await:hostAudienceControllerProvider.previewAudience watch CAT156 -- Existing bounded review signal at _HostSaveAudienceSheetState._save (await:hostAudienceControllerProvider.previewAudience). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final preview = await controller.previewAudience(
         organizerId: widget.organizerId,
         audience: audience,

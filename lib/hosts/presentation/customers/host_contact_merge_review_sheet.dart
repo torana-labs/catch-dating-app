@@ -37,6 +37,7 @@ class _HostContactMergeReviewSheetState
   }
 
   Future<HostContactMergeCandidatePage> _load({required bool reset}) async {
+    // provider-graph: ownership-widget-async:_HostContactMergeReviewSheetState._load:await:hostCustomersControllerProvider.listMergeCandidates planned CAT156 -- Owns loaded merge candidate arrays, pagination cursor and a widget future; move loaded/continuation ownership while preserving deduplication and retry semantics.
     final page = await ref
         .read(hostCustomersControllerProvider)
         .listMergeCandidates(
@@ -299,6 +300,7 @@ class _HostContactMergeCandidateCardState
   Future<bool> _run(Future<void> Function() action) async {
     setState(() => _saving = true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostContactMergeCandidateCardState._run:await:action watch CAT156 -- Existing bounded review signal at _HostContactMergeCandidateCardState._run (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await action();
       return true;
     } on Object catch (error) {
@@ -374,6 +376,7 @@ class _HostDismissedMergeCandidateCardState
   Future<void> _reopen() async {
     setState(() => _saving = true);
     try {
+      // provider-graph: ownership-widget-async:_HostDismissedMergeCandidateCardState._reopen:await:hostCustomersControllerProvider.reopenMergeCandidate watch CAT156 -- Existing bounded review signal at _HostDismissedMergeCandidateCardState._reopen (await:hostCustomersControllerProvider.reopenMergeCandidate). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostCustomersControllerProvider)
           .reopenMergeCandidate(

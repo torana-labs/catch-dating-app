@@ -319,6 +319,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
     if (input == null || !mounted) return;
     setState(() => _creatingLink = true);
     try {
+      // provider-graph: ownership-widget-async:_HostFormShareScreenState._createTrackedLink:await:hostFormsControllerProvider.createShareLink watch CAT156 -- Existing bounded review signal at _HostFormShareScreenState._createTrackedLink (await:hostFormsControllerProvider.createShareLink). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final link = await ref
           .read(hostFormsControllerProvider)
           .createShareLink(

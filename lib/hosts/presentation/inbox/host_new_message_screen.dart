@@ -193,10 +193,12 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
     if (accountId == null) return;
     setState(() => _opening = true);
     try {
+      // provider-graph: ownership-widget-async:_HostNewMessageScreenState._startCatch:await:hostCustomersControllerProvider.startConversation watch CAT156 -- Existing bounded review signal at _HostNewMessageScreenState._startCatch (await:hostCustomersControllerProvider.startConversation). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final matchId = await ref
           .read(hostCustomersControllerProvider)
           .startConversation(organizerId: widget.organizerId, contactId: id);
       if (!mounted) return;
+      // provider-graph: ownership-widget-async:_HostNewMessageScreenState._startCatch:await:matchStreamProvider.future watch CAT156 -- Existing bounded review signal at _HostNewMessageScreenState._startCatch (await:matchStreamProvider.future). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final match = await ref.read(matchStreamProvider(matchId).future);
       if (!mounted) return;
       final uid = catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value;
