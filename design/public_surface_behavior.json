@@ -1,9 +1,9 @@
 {
   "$schema": "./public_surface_behavior.schema.json",
   "version": 1,
-  "updated": "2026-11-01",
+  "updated": "2026-11-02",
   "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
-  "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the design-parity state matrix; event eligibility remains owned by the viewer availability resolver.",
+  "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the screen state contracts in design/screens/catch.screens.json; event eligibility remains owned by the viewer availability resolver.",
   "inventorySources": {
     "appRoutes": "lib/routing/route_contract.dart",
     "appScreens": "design/screens/catch.screens.json",
@@ -27,15 +27,15 @@
         "app.ownAccountRoutes"
       ],
       "evidence": {
-        "path": "docs/design_parity/state_matrix.json",
+        "path": "design/screens/catch.screens.json",
         "contains": [
-          "\"requiredStateKinds\"",
+          "\"requiredStates\"",
           "\"loading\"",
           "\"offline\"",
           "\"accessibility\""
         ]
       },
-      "notes": "The behavior configurations are evaluated within populated/readable content. The existing design-parity contract continues to own async, mutation, visual-theme, and accessibility variants."
+      "notes": "The behavior configurations are evaluated within populated/readable content. The screen state contracts continue to own async, mutation, visual-theme, and accessibility variants."
     },
     {
       "id": "booking.viewerEventAvailability",
