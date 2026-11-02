@@ -1,9 +1,10 @@
-import type {ErrorEvent} from "@sentry/browser";
 import {expect, test, vi} from "vitest";
 import {reportCaughtError, scrubErrorEvent, startErrorReporting} from "@catch/web-config/errorReporting";
 
 const sentry = vi.hoisted(() => ({reportToSentry: vi.fn(), startSentry: vi.fn()}));
 vi.mock("../../../packages/web-config/sentryReporter", () => sentry);
+
+type ErrorEvent = Parameters<typeof scrubErrorEvent>[0];
 
 const page = {origin: "https://example.test", pathname: "/users/Xk29sLq0aZpW7mTn4bVc1dEf/edit"};
 
@@ -41,6 +42,13 @@ test("an ordinary page name and message pass through unchanged", () => {
   );
   expect(scrubbed.exception?.values?.[0]?.value).toBe("Cannot read properties of undefined (reading 'title')");
   expect(scrubbed.request?.url).toBe("https://example.test/hosts/running-clubs");
+});
+
+test("a hostile message is cut short rather than scanned in full", () => {
+  for (const hostile of ["http://".repeat(50_000), "#".repeat(300_000), `https://a/${"#".repeat(300_000)}`]) {
+    const value = scrub({exception: {values: [{value: hostile, stacktrace: {frames: [{filename: hostile}]}}]}}).exception?.values?.[0];
+    expect(value?.value?.length).toBeLessThanOrEqual(2000);
+  }
 });
 
 test("reporting stays off on any other host and holds early errors on a listed one", async () => {

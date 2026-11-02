@@ -1,5 +1,7 @@
 import type {ErrorEvent} from "@sentry/browser";
 
+const longestReportedText = 2000;
+
 export function scrubErrorEvent(
   event: ErrorEvent,
   page: Pick<Location, "origin" | "pathname">,
@@ -32,13 +34,20 @@ function looksLikeId(part: string) {
 }
 
 function scrubText(text: string) {
-  return text
-    .replace(/https?:\/\/[^\s"'`?#]+[?#][^\s"'`]*/gu, withoutQuery)
+  return scrubUrls(text.slice(0, longestReportedText))
     .replace(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/gu, "[email]")
     .replace(/\+?\d[\d\s-]{8,}\d/gu, "[number]")
     .replace(/\b(?=[a-z]*\d)[a-z\d]{20,}\b/giu, "[id]");
 }
 
+/** Part by part, because one pattern across a hostile message can take very long. */
+function scrubUrls(text: string) {
+  return text.split(/([\s"'`]+)/u)
+    .map(part => /^https?:\/\//u.test(part) ? withoutQuery(part) : part)
+    .join("");
+}
+
 function withoutQuery(url: string) {
-  return url.replace(/[?#].*$/u, "");
+  const end = url.search(/[?#]/u);
+  return end < 0 ? url : url.slice(0, end);
 }
