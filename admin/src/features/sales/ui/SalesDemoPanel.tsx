@@ -4,6 +4,7 @@ import {useSalesDemoPartnerReviewController} from "../controllers/useSalesDemoPa
 import type {SalesDemoPartnerReviewApi} from "../api/salesDemoPartnerReview";
 import type {DemoReviewWording} from "../../../shared/domain/salesDemoReview";
 import {useCallback, useEffect, useState} from "react";
+import {dataMode} from "../../../shared/api/dataMode";
 import {selectChoices} from "../controllers/salesLabels";
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
@@ -67,6 +68,7 @@ export function SalesDemoWorkspace({organizerId, organizerName, isAdminOwner,
   currentUserUid, api}: {organizerId: string; organizerName: string;
   isAdminOwner: boolean; currentUserUid: string; api?: DemoManagementApi}) {
   if (!isAdminOwner) return <CatchEmptyState title="Private workflow example" message="An Admin owner can prepare and issue private demos." />;
+  if (!api && dataMode() === "sample") return <CatchEmptyState title="Private workflow example" message="Private demos require live Admin records. Sample hosts can't issue them." />;
   return <OwnerDemoPanel key={`${currentUserUid}:${organizerId}`}
     organizerId={organizerId} organizerName={organizerName}
     currentUserUid={currentUserUid} api={api} />;
