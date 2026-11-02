@@ -35,7 +35,7 @@ const model = (overrides: Partial<SalesHostsModel> = {}): SalesHostsModel => ({q
   hasMoreSuggestions: false, moreSuggestions: vi.fn(), reviewSuggestion: vi.fn().mockResolvedValue(true), canEditResearch: true, isAdminOwner: true, commercial: null, renderPartnerOffer: null, isSaving: false, ...overrides});
 
 const screenFor = (current: SalesHostsModel) => <SalesHostsScreen model={current} selectedOrganizerId="harbor" onSelect={noop}
-  onOpenHostTools={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
+  onOpenHostTools={noop} onOpenFit={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
 
 it("reviews the version the person read, and a refreshed version clears the reason", async () => {
   const current = model();
@@ -120,7 +120,7 @@ const aboutKavya = {evidenceId: "e1", organizerId: "harbor", contactId: "kavya",
   sourceRef: "https://example.test/about", observedAt: "2026-10-29T09:00:00.000Z", confidence: "high", normalizedValue: "Founder"} as SalesEvidence;
 const peopleModel = (overrides: Partial<SalesHostsModel> = {}) => model({suggestions: [], contacts: [person()], evidence: [aboutKavya], ...overrides});
 const peopleScreen = (current: SalesHostsModel, revision = 1) => <SalesHostsScreen model={{...current, host: host(revision)}} selectedOrganizerId="harbor" onSelect={noop}
-  onOpenHostTools={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
+  onOpenHostTools={noop} onOpenFit={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
 const save = () => screen.getByRole<HTMLButtonElement>("button", {name: "Save"});
 
 it("a review for drafts needs evidence about that person and a reason", async () => {

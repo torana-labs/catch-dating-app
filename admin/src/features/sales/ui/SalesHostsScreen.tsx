@@ -458,12 +458,13 @@ type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "perso
   {kind: "contact"; contactId: string};
 
 /** One host: its facts and history beside what's next and who's involved. Everything rarer is in All tools. */
-function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenPrivacy, onOpenDemo}: {
+function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit, onOpenPrivacy, onOpenDemo}: {
   model: SalesHostsModel;
   host: SalesAccountDetail;
   onBack: () => void;
   onOpenOrganizer: () => void;
   onOpenTools: () => void;
+  onOpenFit: () => void;
   onOpenPrivacy: () => void;
   onOpenDemo: () => void;
 }) {
@@ -559,7 +560,8 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenPriv
           {model.renderPartnerOffer?.(host.account.organizerId, host.organizerSummary.name)}
           <CatchIndexRow title="Account hold" titleVariant="bodyM" subtitle={holdLabels[host.account.suppressionStatus ?? "clear"]}
             trailing={model.canEditResearch ? <CatchButton label="Change" variant="secondary" size="sm" onPressed={() => setSheet({kind: "hold"})} /> : undefined} />
-          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Fit and outreach" onTap={onOpenTools} />
+          <CatchIndexRow title="Fit and outreach" titleVariant="bodyM" subtitle="Fit, reviewed wording and drafts to copy" onTap={onOpenFit} />
+          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Custom fields and imported history" onTap={onOpenTools} />
           {model.isAdminOwner ? <CatchIndexRow title="Private demo" titleVariant="bodyM" subtitle="A synthetic example to show this host" onTap={onOpenDemo} /> : null}
           {model.isAdminOwner ? <CatchIndexRow title="Privacy" titleVariant="bodyM" subtitle="Restrict this host's private Sales records" onTap={onOpenPrivacy} /> : null}
         </CatchSection>
@@ -568,12 +570,13 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenPriv
 }
 
 /** Hosts: the accounts in Sales, searchable, and one host's page with four tabs. */
-export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenPrivacy, onOpenDemo, onAddHost}: {
+export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenFit, onOpenPrivacy, onOpenDemo, onAddHost}: {
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
-  /** The older host page: fit and outreach. */
+  /** The older host page: custom fields and imported history. */
   onOpenHostTools: (organizerId: string) => void;
+  onOpenFit: (organizerId: string) => void;
   onOpenPrivacy: (organizerId: string) => void;
   onOpenDemo: (organizerId: string) => void;
   /** The older form to add a host or nominate an organizer. */
@@ -582,7 +585,7 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
 }) {
   if (selectedOrganizerId && model.host) {
     return <HostPage key={selectedOrganizerId} model={model} host={model.host} onBack={() => onSelect(null)}
-      onOpenOrganizer={() => onOpenOrganizer(selectedOrganizerId)} onOpenTools={() => onOpenHostTools(selectedOrganizerId)} onOpenPrivacy={() => onOpenPrivacy(selectedOrganizerId)} onOpenDemo={() => onOpenDemo(selectedOrganizerId)} />;
+      onOpenOrganizer={() => onOpenOrganizer(selectedOrganizerId)} onOpenTools={() => onOpenHostTools(selectedOrganizerId)} onOpenFit={() => onOpenFit(selectedOrganizerId)} onOpenPrivacy={() => onOpenPrivacy(selectedOrganizerId)} onOpenDemo={() => onOpenDemo(selectedOrganizerId)} />;
   }
   const rows: Row[] = model.rows.map((row) => {
     const research = researchLabels[row.researchStatus];

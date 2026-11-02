@@ -6,7 +6,7 @@ import {SalesWorkspaceScreen} from "./SalesWorkspaceScreen";
 const controllerMock = vi.hoisted(() => ({use: vi.fn()}));
 const childMocks = vi.hoisted(() => ({
   fitQueue: vi.fn(), funnel: vi.fn(),
-  history: vi.fn(), intelligence: vi.fn(), privacy: vi.fn(), records: vi.fn(),
+  history: vi.fn(), privacy: vi.fn(), records: vi.fn(),
   settings: vi.fn(),
 }));
 
@@ -35,9 +35,6 @@ vi.mock("./SalesFunnelWorkspace", () => ({
 }));
 vi.mock("./SalesImportedHistoryPanel", () => ({
   renderSalesImportedHistory: childMocks.history,
-}));
-vi.mock("./SalesIntelligenceWorkspace", () => ({
-  SalesIntelligenceWorkspace: childMocks.intelligence,
 }));
 vi.mock("./SalesPrivacyWorkspace", () => ({
   renderSalesPrivacyWorkspace: childMocks.privacy,

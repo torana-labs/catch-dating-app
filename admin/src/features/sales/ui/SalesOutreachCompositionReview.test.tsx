@@ -76,7 +76,7 @@ it("edits every composition selection and submits the exact existing request", a
   fireEvent.change(screen.getByLabelText("Draft channel"),
     {target: {value: "message"}});
   expect(screen.getByText("Second Contact")).toBeTruthy();
-  fireEvent.click(screen.getByRole("button", {name: "Prepare private draft"}));
+  fireEvent.click(screen.getByRole("button", {name: "Review plan and prepare private draft"}));
   await waitFor(() => expect(props.onGenerate).toHaveBeenCalledOnce());
   expect(vi.mocked(props.onGenerate).mock.calls[0][0]).toEqual({
     organizerId: "org-one", contactId: "contact-two",
@@ -92,9 +92,9 @@ it("keeps an incomplete composition plan disabled", () => {
   render(salesOutreachCompositionReview(props));
   fireEvent.change(screen.getByLabelText("Reviewed contact"),
     {target: {value: "contact-one"}});
-  expect(screen.getByRole("button", {name: "Prepare private draft"}))
+  expect(screen.getByRole("button", {name: "Review plan and prepare private draft"}))
     .toHaveProperty("disabled", true);
-  fireEvent.click(screen.getByRole("button", {name: "Prepare private draft"}));
+  fireEvent.click(screen.getByRole("button", {name: "Review plan and prepare private draft"}));
   expect(props.onGenerate).not.toHaveBeenCalled();
   expect(screen.getByText("Complete every required selection")).toBeTruthy();
 });
@@ -104,7 +104,7 @@ it("blocks suppressed or otherwise ineligible Sales records", () => {
   render(salesOutreachCompositionReview(props));
   chooseRequired();
   expect(screen.getByRole("alert").textContent).toContain("clear contact restrictions");
-  expect(screen.getByRole("button", {name: "Prepare private draft"}))
+  expect(screen.getByRole("button", {name: "Review plan and prepare private draft"}))
     .toHaveProperty("disabled", true);
   expect(props.onGenerate).not.toHaveBeenCalled();
 });
@@ -128,14 +128,14 @@ it("submits one frozen plan while a repeated action is pending", async () => {
     new Promise<{status: string}>((done) => {resolve = done;}))};
   render(salesOutreachCompositionReview(props));
   chooseRequired();
-  const button = screen.getByRole("button", {name: "Prepare private draft"});
+  const button = screen.getByRole("button", {name: "Review plan and prepare private draft"});
   fireEvent.click(button);
   fireEvent.click(button);
   expect(props.onGenerate).toHaveBeenCalledOnce();
   expect(screen.getByRole("button", {name: "Submitting composition plan"}))
     .toHaveProperty("disabled", true);
   await act(async () => {resolve({status: "completed"});});
-  expect(screen.getByRole("button", {name: "Prepare private draft"}))
+  expect(screen.getByRole("button", {name: "Review plan and prepare private draft"}))
     .toHaveProperty("disabled", true);
 });
 
@@ -145,7 +145,7 @@ it("does not surface a prior account completion after the composition unmounts",
     new Promise<{status: string}>((done) => {resolve = done;}))};
   const view = render(salesOutreachCompositionReview(first));
   chooseRequired();
-  fireEvent.click(screen.getByRole("button", {name: "Prepare private draft"}));
+  fireEvent.click(screen.getByRole("button", {name: "Review plan and prepare private draft"}));
   const second = {...baseProps(), organizerId: "org-two",
     contacts: [contact("contact-one", "New Account Contact")],
     opportunities: [{...opportunity("opportunity-one", "new_account"),
@@ -161,7 +161,7 @@ it("reports an unconfirmed result through the existing unchanged-request recover
   const props = {...baseProps(), onGenerate: vi.fn(async () => null)};
   render(salesOutreachCompositionReview(props));
   chooseRequired();
-  fireEvent.click(screen.getByRole("button", {name: "Prepare private draft"}));
+  fireEvent.click(screen.getByRole("button", {name: "Review plan and prepare private draft"}));
   expect((await screen.findByRole("alert")).textContent).toContain(
     "Retry the unchanged request above");
 });
