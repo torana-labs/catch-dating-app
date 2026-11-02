@@ -210,9 +210,11 @@ abstract final class GeneratedCatchFontFamilyTokens {
   static const String voice = 'Archivo';
   static const String head = 'Archivo';
   static const String function = 'system-ui';
+  @Deprecated('Alias of font.family.function; P7 deletes it.')
   static const String data = 'system-ui';
   static const String serif = 'Archivo';
   static const String sans = 'system-ui';
+  @Deprecated('Alias of font.family.function; P7 deletes it.')
   static const String mono = 'system-ui';
 }
 

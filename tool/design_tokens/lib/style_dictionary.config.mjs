@@ -384,7 +384,7 @@ function buildDart({tokens, document}) {
     dartClass("GeneratedCatchRadiusTokens", inGroup(tokens, "radius", 2).map(dimension)),
     dartClass("GeneratedCatchFontFamilyTokens", inGroup(tokens, "font", 3)
       .filter(({path}) => path[1] === "family")
-      .map(dartMembers("String", lastKey, ({$value}) => dartStringLiteral(String($value))))),
+      .map(dartMembers("String", lastKey, ({$value}) => dartStringLiteral(String($value)), document))),
     dartClass("GeneratedCatchActivityPigmentTokens", tokens.filter(isActivityColor)
       .map(dartMembers("Color", ({path}) => path[1], ({$value}) => dartColor($value)))),
     colorGroup(tokens, "palette", "GeneratedCatchPaletteTokens", document),
