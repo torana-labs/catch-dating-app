@@ -812,7 +812,8 @@ function validateOrganizerMemberCountAggregates(
 
   for (const doc of organizers) {
     const expected = activeCounts.get(doc.id) ?? 0;
-    if (doc.data.memberCount !== expected) {
+    // memberCount is a legacy field: an organizer without one has nothing to drift.
+    if (doc.data.memberCount !== undefined && doc.data.memberCount !== expected) {
       issue(currentReport, "error", doc.path, "member-count-drift",
         `memberCount is ${doc.data.memberCount}, but active ` +
         `organizerMemberships count is ${expected}.`);

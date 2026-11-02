@@ -67,6 +67,15 @@ function privateEvent() {
 }
 const organizer = () => doc("clubs/club-1", {...fixture("organizer_doc.json"), memberCount: 0});
 
+test("an organizer with no memberCount has nothing to drift, and a wrong one still fails", () => {
+  const without = organizer();
+  delete without.data.memberCount;
+  assert.equal(reportFor({organizers: [without]}).issues.some((entry) => entry.code === "member-count-drift"), false);
+  const wrong = organizer();
+  wrong.data.memberCount = 3;
+  assert.equal(reportFor({organizers: [wrong]}).issues.some((entry) => entry.code === "member-count-drift"), true);
+});
+
 test("generated membership contract accepts owner and rejects unknown roles and missing fields", () => {
   const membershipPath = "organizerMemberships/club-1_runner-1";
   for (const role of ["owner", "host", "member"]) {
