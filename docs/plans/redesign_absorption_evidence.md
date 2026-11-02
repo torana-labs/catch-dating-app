@@ -244,9 +244,9 @@ which (`choiceGroup`) the registry's `dart.constructors` omits:
   `CatchSection` from 21 constructors to six, not removing those classes.
 - 15 of the 21 constructors map onto the base constructor's options in the table
   above, which is what the system's `dividers` and `container` express.
-- The Flutter side of `timeline` is `CatchTimelineList`, arriving in
-  [#1478](https://github.com/torana-labs/catch-dating-app/pull/1478) as a child of
-  `CatchSection.content`. It would fold into the `timeline` option.
+- The Flutter side of `timeline` is `CatchTimelineList`, merged in
+  [#1478](https://github.com/torana-labs/catch-dating-app/pull/1478) after these
+  counts, as a child of `CatchSection.content`. It would fold into the `timeline` option.
 - `catch_use_named_catch_section_constructor` steers callers to the named
   constructors, so it inverts when this lands.
 
