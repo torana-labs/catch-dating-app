@@ -367,14 +367,14 @@ export function audienceWorkspacePresentationFindings({
     });
   }
   for (const anchor of [
-    "enum HostAudienceView { people, audiences, forms, responses }",
+    "enum HostAudienceView { people, audiences, forms, responses, requests }",
     "class HostAudienceTabRail",
     "ValueKey<String>('host-audience-view-tabs')",
   ]) {
     if (!audienceViewSource.includes(anchor)) findings.push({
       path: audienceViewPath,
       line: 1,
-      reason: `Audience must expose all four peer workspaces: ${anchor}`,
+      reason: `Audience must expose all five peer workspaces: ${anchor}`,
     });
   }
   if (customersSource.includes("savedAudiences") ||

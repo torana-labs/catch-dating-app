@@ -208,6 +208,44 @@ jobs:
             --indexes firestore.indexes.json --project "$project_id" \
             --timeout-seconds 1800 --poll-seconds 20
 
+      # A Function removed from source stops a broad deploy, and --force would
+      # delete whatever is missing. So removals are named in
+      # functions/retired-functions.json: this deletes exactly those that are
+      # live in this environment, in every kind of run, and nothing else. A name
+      # still in this commit's source is refused before any deletion.
+      - name: Retire named Functions
+        if: ${{ steps.guard.outputs.skip != 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          retired="$(jq -r '.[]' functions/retired-functions.json)"
+          if [[ -z "$retired" ]]; then exit 0; fi
+          while IFS= read -r name; do
+            if [[ ! "$name" =~ ^[A-Za-z][A-Za-z0-9_]*$ ]]; then
+              echo "::error::'$name' is not a Function name."
+              exit 1
+            fi
+            if grep -qF "Object.defineProperty(exports, \"$name\"," build/functions-codebases/*/index.js; then
+              echo "::error::'$name' is listed as retired but this commit still deploys it."
+              exit 1
+            fi
+          done <<< "$retired"
+          live="$(./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" functions:list --json | jq -r '.result[].id')"
+          present=()
+          while IFS= read -r name; do
+            # The CLI's filter also takes a Function group of this name.
+            if grep -q "^$name-" <<< "$live"; then
+              echo "::error::'$name' is also a live Function group; delete by exact name is not possible."
+              exit 1
+            fi
+            if grep -qxF "$name" <<< "$live"; then present+=("$name"); fi
+          done <<< "$retired"
+          if [[ "${#present[@]}" == "0" ]]; then exit 0; fi
+          echo "::notice::Retiring from $DEPLOY_ENVIRONMENT: ${present[*]}"
+          ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" functions:delete "${present[@]}" --force --non-interactive
+          echo "Retired from $DEPLOY_ENVIRONMENT: ${present[*]}" >> "$GITHUB_STEP_SUMMARY"
+
       # Naming codebases (full) or Functions (named) makes the CLI deploy them
       # even when unchanged. After a failed full deploy the second attempt uses
       # plain `functions`, so whatever succeeded is skipped and only what

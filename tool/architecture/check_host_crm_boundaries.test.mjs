@@ -201,7 +201,7 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
   assert.ok(findings.some((item) => /typed row section/u.test(item.reason)));
   assert.ok(findings.some((item) => /exactly one/u.test(item.reason)));
   assert.ok(findings.some((item) => /parallel modal/u.test(item.reason)));
-  assert.ok(findings.some((item) => /all four peer workspaces/u.test(item.reason)));
+  assert.ok(findings.some((item) => /all five peer workspaces/u.test(item.reason)));
   assert.equal(
     findings.filter((item) => /full-page Audience routes/u.test(item.reason))
       .length,
@@ -213,7 +213,7 @@ test("saved-audience directories require the canonical typed row APIs", () => {
   const scanWorkspace = (workspaceSource) => audienceWorkspacePresentationFindings({
     audienceViewPath: "audience_view.dart",
     audienceViewSource: [
-      "enum HostAudienceView { people, audiences, forms, responses }",
+      "enum HostAudienceView { people, audiences, forms, responses, requests }",
       "class HostAudienceTabRail {}",
       "ValueKey<String>('host-audience-view-tabs')",
     ].join("\n"),
