@@ -1,4 +1,4 @@
-import {CatchAdminIntakeSectionTitle, CatchBadge, CatchField} from "@catch/web-ui";
+import {CatchAdminIntakeSectionTitle, CatchBadge, CatchField, CatchGap} from "@catch/web-ui";
 import {
   BarChart3,
   Clock3,
@@ -25,13 +25,11 @@ import {
   AdminEditorGrid,
   AdminEditorPanel,
   AdminFieldGrid,
-  AdminIntakeSection,
   AdminMetricCard,
   AdminMetricGrid,
   AdminRoadmapList,
   AdminRoadmapListItem,
   AdminSecondaryDisclosure,
-  AdminTagList,
   AdminToolbar,
   AdminWorkbenchNote,
   AdminWorkbenchStack,
@@ -273,22 +271,22 @@ function UserLookupContractPanel({
           <StateRow label="Allowed source" value={contract.allowedSources.join(", ")} />
         </QualityList>
         <AdminWorkbenchStack compact>
-          <AdminIntakeSection>
+          <CatchGap size="related">
             <CatchAdminIntakeSectionTitle>Unavailable here</CatchAdminIntakeSectionTitle>
-            <AdminTagList>
+            <CatchGap size="inline" direction="horizontal" wrap>
               {contract.unavailableDomains.map((domain) => (
                 <CatchBadge key={domain} label={domain} />
               ))}
-            </AdminTagList>
-          </AdminIntakeSection>
-          <AdminIntakeSection>
+            </CatchGap>
+          </CatchGap>
+          <CatchGap size="related">
             <CatchAdminIntakeSectionTitle>Blocked actions</CatchAdminIntakeSectionTitle>
-            <AdminTagList>
+            <CatchGap size="inline" direction="horizontal" wrap>
               {contract.blockedActions.map((action) => (
                 <CatchBadge key={action} label={action} />
               ))}
-            </AdminTagList>
-          </AdminIntakeSection>
+            </CatchGap>
+          </CatchGap>
         </AdminWorkbenchStack>
       </AdminSecondaryDisclosure>
     </Panel>

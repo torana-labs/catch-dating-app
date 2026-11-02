@@ -199,17 +199,17 @@ function timeline(item: InboxItem, journey: readonly JourneyStep[]): CatchSectio
  * can be dismissed, with a reason, and come back. Every type can be picked up
  * or snoozed for a day.
  */
-function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
+function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
   controller: InboxScreenModel;
   detail: InboxItemDetail;
   uid: string | null;
   onClose: () => void;
-  /** Stuck intake is still filled in by hand in the review workspace. */
-  onOpenReview: () => void;
+  canFillIn: boolean;
 }) {
   const {item, journey, canWork, canDecideClaim} = detail;
   const [note, setNote] = useState("");
   const [hostId, setHostId] = useState<string | null>(null);
+  const [fillingIn, setFillingIn] = useState(false);
   const noteText = note.trim();
   const busy = controller.isWorking;
   const position = controller.position;
@@ -280,10 +280,16 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
         secondary={holdIt}
         note={{label: "Note for the record", placeholder: "Why. Required to dismiss.", value: note, onChanged: setNote}}
         next={next} />;
+    } else if (item.type === "stuck" && !canFillIn) {
+      dock = <CatchDock recipe="pane"
+        primary={holdIt}
+        danger={dismiss}
+        note={{label: "Note for the record", placeholder: "Why. Required to dismiss.", value: note, onChanged: setNote}}
+        next="Only the owner or Sales can fill this in by hand" />;
     } else {
       dock = <CatchDock recipe="pane"
         primary={item.type === "listing" ? {label: "Review and approve", onPressed: () => controller.openListingReview(item.sourceId)} :
-          {label: "Fill in by hand", onPressed: onOpenReview}}
+          {label: "Fill in by hand", onPressed: () => setFillingIn(true)}}
         {...(item.type === "stuck" ? {danger: dismiss} : {})}
         secondary={holdIt}
         note={{label: "Note for the record", placeholder: item.type === "stuck" ? "Why. Required to dismiss." : "Optional", value: note, onChanged: setNote}}
@@ -316,6 +322,7 @@ function InboxInspector({controller, detail, uid, onClose, onOpenReview}: {
         <EventPublishSheet key={item.itemId} controller={controller} intakeRequestId={item.listingEvent.intakeRequestId}
           review={controller.eventReview} onClose={() => controller.openEventReview(null)} />
       ) : null}
+      {fillingIn ? <FillInSheet key={item.itemId} controller={controller} item={item} onClose={() => setFillingIn(false)} /> : null}
     </>
   );
 }
@@ -431,6 +438,38 @@ function ListingApprovalSheet({controller, requestId, review, canApprove, onClos
   );
 }
 
+/** Starts a stuck nomination again from what a person typed. The listing it builds comes back for the usual review. */
+function FillInSheet({controller, item, onClose}: {
+  controller: InboxScreenModel;
+  item: InboxItem;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(item.title);
+  const [city, setCity] = useState(item.city ? cityLabel(item.city) : "");
+  const [links, setLinks] = useState("");
+  const [notes, setNotes] = useState("");
+  const urls = [...new Set(links.split("\n").map((line) => line.trim()).filter(Boolean))];
+  const badLink = urls.find((url) => !/^https?:\/\/\S+$/u.test(url));
+  const ready = Boolean(name.trim() && city.trim() && !badLink && urls.length <= 10);
+  const submit = async () => {
+    const done = await controller.fillInByHand({name: name.trim(), market: city.trim(), urls, notes: notes.trim() || null, categories: []}, item.itemId);
+    if (done) onClose();
+  };
+  return (
+    <CatchSheet recipe="standard" pinFooter open onClose={onClose} title={`Fill in ${item.title}`} subtitle="Inbox"
+      footer={<CatchButton label={controller.isFillingIn ? "Saving" : "Build a new listing"}
+        onPressed={ready && !controller.isFillingIn ? () => void submit() : null} />}>
+      <CatchGap size="related">
+        <CatchField recipe="input" title="Organizer name" maxLength={160} value={name} onChanged={setName} />
+        <CatchField recipe="input" title="City" maxLength={80} value={city} onChanged={setCity} />
+        <CatchField recipe="input" title="Links, one per line" maxLines={4} value={links} onChanged={setLinks}
+          helperText={badLink ? `Links start with https://. Check "${badLink}".` : "Optional. Leave out any page Catch could not read."} />
+        <CatchField recipe="input" title="What should the reviewer know?" maxLines={3} maxLength={2000} value={notes} onChanged={setNotes} />
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
 const eventWhen = (iso: string) => new Date(iso).toLocaleString("en-IN",
   {dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata"});
 
@@ -510,13 +549,13 @@ export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refres
  * selected item open beside it (the queue pattern). On a narrow screen the
  * item replaces the list and Back returns to it.
  */
-export function InboxScreen({model, selectedItemId, onSelect, uid, onOpenReview}: {
+export function InboxScreen({model, selectedItemId, onSelect, uid, canFillIn}: {
   model: InboxScreenModel;
   selectedItemId: string | null;
   onSelect: (itemId: string | null) => void;
   uid: string | null;
-  /** Stuck intake is still filled in by hand in Intake review. */
-  onOpenReview: () => void;
+  /** Filling in starts a new nomination, which the owner and Sales can do and ops cannot. */
+  canFillIn: boolean;
 }) {
   const detail = model.detail;
   return (
@@ -526,7 +565,7 @@ export function InboxScreen({model, selectedItemId, onSelect, uid, onOpenReview}
       main={<InboxQueue controller={model} selectedItemId={selectedItemId} onSelect={onSelect} />}
       detail={selectedItemId === null ? <CatchEmptyState title="Pick an item" message="What it is, how it got here and the decision open here." /> :
         detail && detail.item.itemId === selectedItemId ?
-        <InboxInspector controller={model} detail={detail} uid={uid} onClose={() => onSelect(null)} onOpenReview={onOpenReview} /> :
+        <InboxInspector controller={model} detail={detail} uid={uid} onClose={() => onSelect(null)} canFillIn={canFillIn} /> :
         model.detailError ?
           <CatchEmptyState title="This item could not be opened" message="It may have been decided already. Pick another." /> :
           null}

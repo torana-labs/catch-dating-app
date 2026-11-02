@@ -47,6 +47,8 @@ describe("systemSignals", () => {
     const signals = systemSignals({overview: sampleOverview, hostAnalytics: sampleHostAnalytics, nowMs});
     expect(signals.find((signal) => signal.id === "overview-finance-ledger")?.path).toBe("/money");
     expect(signals.find((signal) => signal.sourceId === "host-analytics")?.path).toBe("/growth");
+    const intake = systemSignals({eventIntake: sampleEventIntakeBridge, nowMs});
+    expect(intake.map((signal) => signal.path)).toEqual(["/inbox", "/inbox"]);
   });
 });
 

@@ -1,3 +1,0 @@
-# The legacy generator may materialize this transiently for compatibility checks.
-# Admin runtime, previews, and review state must not retain or import it.
-organizerIntakeBridge.json

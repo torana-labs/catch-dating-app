@@ -1,17 +1,22 @@
-import {fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {AdminPendingOperationProvider} from
   "../../../shared/pendingOperation";
 import {resetSampleSafety} from "../../../shared/api/sampleSafety";
 import {SafetyRouteScreen} from "./SafetyRouteScreen";
 import type {SafetyView} from "./SafetyScreen";
 
+// One client per test. No read or render may outlive the test: React work that
+// runs after jsdom is torn down fails the run with "window is not defined",
+// even when every test passed.
+let queryClient: QueryClient;
+
 function mount(props: {view?: SafetyView; selectedTargetPath?: string | null;
   selectedActionId?: string | null; adminRoles?: string[]}) {
   const onNavigate = vi.fn();
   render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <AdminPendingOperationProvider>
         <SafetyRouteScreen
           adminRoles={props.adminRoles ?? ["support"]}
@@ -29,7 +34,17 @@ function mount(props: {view?: SafetyView; selectedTargetPath?: string | null;
 }
 
 describe("SafetyScreen", () => {
-  beforeEach(() => resetSampleSafety());
+  beforeEach(() => {
+    resetSampleSafety();
+    queryClient = new QueryClient();
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0),
+      {timeout: 5000});
+    queryClient.clear();
+  });
 
   it("lists open cases with launch access and opens one in the URL",
     async () => {

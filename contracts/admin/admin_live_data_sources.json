@@ -23,36 +23,11 @@
       "liveMutations": ["adminDecideAccessApplication"]
     },
     {
-      "routeId": "event-intake",
-      "navId": "organizer-intake",
-      "paths": ["/intake/events"],
-      "liveReads": ["adminGetEventIntakeDashboard"],
-      "liveMutations": ["adminRecordEventIntakeReviewDecision"]
-    },
-    {
       "routeId": "inbox",
       "navId": "organizer-intake",
       "paths": ["/inbox"],
       "liveReads": ["adminGetOrganizerClaimRequestDetails"],
-      "liveMutations": ["adminDecideOrganizerClaim"]
-    },
-    {
-      "routeId": "organizer-intake",
-      "navId": "organizer-intake",
-      "paths": ["/intake/organizers"],
-      "liveReads": ["adminListIntakeOperations"],
-      "liveMutations": [
-        "adminCreateOrganizerDraftFromCandidate",
-        "adminDecideOrganizerIntake",
-        "adminDecideOrganizerPolicyGap",
-        "adminRecordOrganizerCuration"
-      ]
-    },
-    {
-      "routeId": "intake-operations",
-      "navId": "organizer-intake",
-      "paths": ["/intake/operations"],
-      "liveReads": ["adminListIntakeOperations"]
+      "liveMutations": ["adminDecideOrganizerClaim", "adminDecideOrganizerPolicyGap"]
     },
     {
       "routeId": "organizers",

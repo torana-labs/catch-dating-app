@@ -213,8 +213,8 @@ export function systemSignals({
         evidence: `${eventIntake.eventCandidates?.length ?? 0} candidates from ` +
           `${eventIntake.sourceResults?.length ?? 0} source results`,
         owner: "Events intake",
-        runbook: "Admin, Intake, Events",
-        path: "/intake/events",
+        runbook: "Admin, Inbox",
+        path: "/inbox",
         nowMs,
       }),
       runPlanSignal({
@@ -223,8 +223,8 @@ export function systemSignals({
         label: "Event intake crawl plan",
         runPlan: eventIntake.runPlan,
         owner: "Events intake",
-        runbook: "Admin, Intake, Crawl setup",
-        path: "/intake/events",
+        runbook: "Admin, Inbox",
+        path: "/inbox",
       })
     );
   }

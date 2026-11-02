@@ -282,12 +282,7 @@
           "summary"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.section",
-        "catch.metric_strip"
-      ],
-      "comparisonReason": "Variant-styled layout region of the intake screens with no heading or section anatomy."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_link_button",
@@ -680,12 +675,7 @@
           "tags"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.journey_steps",
-        "catch.form_step_list"
-      ],
-      "comparisonReason": "Wrap container for badges; not a step sequence, and it has no step selection or completion status like CatchFormStepList."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_tag_row",

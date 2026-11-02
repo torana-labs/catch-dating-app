@@ -234,7 +234,7 @@ overwritten. Every request records its `origin`.
 - **Message nominations.** A sales associate or partner forwards organizers to
   Catch's WhatsApp number from their phone: a profile shared from Instagram, a
   Luma link, a website or an `@handle`. Staff register who may do this, by
-  WhatsApp number or Instagram username, in Admin → Intake with
+  WhatsApp number or Instagram username, in Admin → Settings → Intake with
   `adminSetSupplyNominator` (roles `admin`, `adminOwner`), which checks the
   account holds a sales role or a current partner membership and stores the
   number only as the WhatsApp endpoint hash plus its last four digits
@@ -349,7 +349,7 @@ Staff approve a listing with `adminApproveOrganizerListing`
 (`functions/src/admin/organizerListingApproval.ts`; roles `admin`,
 `adminOwner`, because approval opens Sales records). The reviewer confirms
 the name, public slug, an open launch market and the organizer type, ticks the
-public-web checklist that Organizer Intake decisions use, and quotes the
+public-web checklist, and quotes the
 listing's `contentHash`; a listing rebuilt since the review is refused. One
 transaction then:
 
@@ -439,8 +439,7 @@ auto-publishes, the plan has no blocker, and the automated checks pass:
 
 The plan's own blockers still apply: an end time, a venue or address, map
 coordinates, no duplicate, a start in the future, not cancelled, and a
-platform the `externalEvents` contract lists. Everything else waits in Admin
-Organizer Intake under "Imported events", where `adminListListingEventImports`
+platform the `externalEvents` contract lists. Everything else waits in the Admin Inbox, which
 shows each approved listing's events as published (by the policy or staff),
 withdrawn, ready, needing a check, or blocked, with the reasons.
 
@@ -470,8 +469,8 @@ fetching the pages a request names (`on_demand_page_fetch_policy`),
 scheduled refresh through a crawl provider (`recurring_event_crawl_policy`),
 finding organizers through web search (`batch_web_search_policy`), agent
 research (`agent_research_policy`) and model extraction
-(`llm_extraction_fallback_policy`). Admin Organizer Intake lists them under
-"Supply Intake policies" (`adminListSupplyIntakePolicies`): what each would
+(`llm_extraction_fallback_policy`). Admin Settings → Intake lists them
+(`adminListSupplyIntakePolicies`): what each would
 do, its limits, the recorded decision and whether its policy file switches it
 on. The owner records accept, hold or reject with `adminDecideOrganizerPolicyGap`
 (decision id `policy-<gap id with dashes>`). A decision changes nothing by
@@ -533,7 +532,7 @@ contracts/admin/                   admin action/workflow catalog
 functions/src/operations/          trusted persistence and worker-side adapters
 functions/scripts/operations/      trusted, apply-guarded projection operators
 functions/src/admin/               admin-authenticated read/decision adapters
-admin/src/features/intake/         task-first human-review presentation
+admin/src/features/inbox/          task-first human-review presentation
 admin/src/features/system/         activity log of action receipts
 ```
 
@@ -680,9 +679,9 @@ Supply Intake declares `active` as active, `published` as published, and
 `expired` as expired; those literal values are workflow vocabulary, not a
 generic platform requirement.
 
-The Event and Organizer Intake tabs remain the human-review surfaces. The
-operations projection adds run health and exception inventory without replacing
-their source evidence or backed decision callables.
+The Admin Inbox is the human-review surface. The Event, Organizer and Automation
+Intake tabs retired on 2026-11-02, so discovery candidates, orphan events and run
+inventory have no Admin screen until discovery is built into Admin.
 
 Supply Intake `0.4.0` makes missing organizer attribution representable without
 weakening publication. A source-backed event capture must explicitly choose

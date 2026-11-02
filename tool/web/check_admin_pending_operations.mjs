@@ -10,8 +10,6 @@ const expectedControllerFiles = new Set([
   "admin/src/features/safety/controllers/useAccessReviewController.ts",
   "admin/src/features/settings/controllers/useTeamController.ts",
   "admin/src/features/events/controllers/useEventPublishingController.ts",
-  "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
-  "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
   "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
   "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
   "admin/src/features/safety/controllers/useSafetyTriageController.ts",

@@ -306,7 +306,7 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
           if (saved) onOpenHost(selectedCanonicalId);
         })}>Add selected host to Sales</AdminButton>
       <AdminButton onClick={() => setOpened("nominate")}>Nominate a new organizer</AdminButton>
-      <AdminButton onClick={onOpenIntake}>Review a new organizer in Intake</AdminButton>
+      <AdminButton onClick={onOpenIntake}>Review new organizers in the Inbox</AdminButton>
       <AdminButton onClick={() => setOpened(null)}>Cancel</AdminButton>
     </AdminToolbar>
   </Panel> : null}

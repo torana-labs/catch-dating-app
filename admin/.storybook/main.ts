@@ -23,9 +23,6 @@ const config: StorybookConfig = {
           output: {
             manualChunks(id: string) {
               const normalized = id.replaceAll("\\", "/");
-              if (normalized.includes("/intake/organizer/generated/organizerIntakeBridge.json")) {
-                return "admin-organizer-intake-data";
-              }
               const feature = normalized.match(/\/admin\/src\/features\/([^/]+)\//u)?.[1];
               if (feature) return `admin-feature-${feature}`;
               if (normalized.includes("/node_modules/firebase/")) return "vendor-firebase";

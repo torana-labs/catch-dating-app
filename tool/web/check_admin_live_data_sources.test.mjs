@@ -17,19 +17,9 @@ const base = {
       paths: ["/overview"],
       liveReads: ["adminGetOverview"],
     }, {
-      routeId: "event-intake",
+      routeId: "inbox",
       navId: "organizer-intake",
-      paths: ["/intake/events"],
-      liveReads: ["adminGetOverview"],
-    }, {
-      routeId: "organizer-intake",
-      navId: "organizer-intake",
-      paths: ["/intake/organizers"],
-      liveReads: ["adminGetOverview"],
-    }, {
-      routeId: "intake-operations",
-      navId: "organizer-intake",
-      paths: ["/intake/operations"],
+      paths: ["/inbox"],
       liveReads: ["adminGetOverview"],
     }],
   },

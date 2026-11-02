@@ -46,18 +46,6 @@ Files inspected:
 - `admin/src/features/marketing/renderers/marketingFeatureDropRenderer.ts`
 - `admin/src/features/marketing/ui/MarketingOpsScreen.tsx`
 - `admin/src/shared/controllers/marketingReviewDecisionHelpers.ts`
-- `admin/src/features/intake/events/api/eventIntakeRepository.ts`
-- `admin/src/features/intake/events/controllers/useEventIntakeController.ts`
-- `admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx`
-- `admin/src/features/intake/operations/api/intakeOperationsRepository.ts`
-- `admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts`
-- `admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx`
-- `admin/src/features/intake/organizer/api/organizerIntakeRepository.ts`
-- `admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts`
-- `admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts`
-- `admin/src/shared/operations/sampleIntakeOperations.ts`
-- `admin/src/features/intake/organizer/types/organizerIntakeTypes.ts`
-- `admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx`
 - `admin/src/features/safety/api/safetyTriageRepository.ts`
 - `admin/src/features/safety/controllers/useSafetyTriageController.ts`
 - `admin/src/features/safety/ui/SafetyRouteScreen.tsx`
@@ -135,7 +123,7 @@ old analytics/intake/marketing registry: the root Events tab is now a canonical
 `adminUpdateEventDetails` writes. It also lists read-only external event supply
 from `externalEvents/{id}` through `adminListExternalEventDetails`, keeping
 source-backed candidate supply separate from Catch-hosted event documents.
-Imported events publish from Organizer Intake's "Imported events" panels
+Imported events publish from the Inbox
 through `adminPublishListingEvents`; the retired `eventSupplyReadiness/current`
 readiness workspace is gone. Its
 Indore + Mumbai default uses the same bounded launch-city pattern.
@@ -153,7 +141,7 @@ placeholder screen structure.
 | Launch access | `features/access`; Overview provides route-only queue previews | `adminGetOverview` capped access queue; direct `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | URL-owned list/detail review, inspect source evidence, enter a required note/cohort, choose exact backed outcomes, receive completion feedback | Real launch-gate review workflow; full directory, cohort catalogue, invitation, notification, and durable history still need contracts |
 | Growth | `features/growth` | `adminGetGrowth` over organizer growth facts, bills, credit and ad spend; `adminManageNominatorCredits` | read cohorts, channels and ads, nominators and best organizers over a range; approve nominator credit and record it paid | Per-campaign ad tables and export remain absent |
 | Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
-| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake and Automation read canonical operations records through `adminListIntakeOperations`; reviewed organizer candidates create fail-closed drafts through `adminCreateOrganizerDraftFromCandidate`; typed synthetic records support sample/Storybook views without operational snapshots | review event and organizer intake, create an unclaimed hidden organizer draft, inspect persisted shadow runs and human exceptions | Strong but dense; candidate handoffs persist through curation receipts, while Automation remains read-only and publication/crawling/ownership stay separately gated |
+| Inbox | `features/inbox` | `adminListInboxItems` and `adminGetInboxItem` read the inbox read model; decisions use each record type's own callable; stuck nominations start again through `adminNominateOrganizer` | decide listings, imported events, claims, enquiries and launch access; fill in or dismiss stuck nominations | Inbox queue and inspector |
 | Organizers | `features/organizers` | canonical `organizers/{id}` plus `clubs/{id}` compatibility list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, receive an Intake draft handoff, inspect one record, edit governed enum and launch-market fields, follow field-targeted blockers and evidence-checklist tasks, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake can scaffold a hidden draft but cannot publish, index, crawl, or assign ownership |
 | Events | `features/events` | canonical `events/{id}` list/detail and bounded `externalEvents/{id}` supply | URL-owned canonical/external workspaces, URL filters, safe listing edits, backed performance, audited external-event takedown | Complete approved event workflow; external point read, organizer-owned lifecycle mutations, and Intake handoff remain contract-first |
 | Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
@@ -439,101 +427,26 @@ Recommended next work:
 - Add a route-transition dirty-state guard only after the shell has a shared,
   tested navigation-blocking contract.
 
-### Intake
+### Inbox
 
-As an intake operator, I need one place to review event and organizer inputs
-before they become canonical, public, or available to Marketing.
+As an intake operator, I need one place to review what is waiting on a person
+before it becomes canonical, public, or available to Marketing.
 
 Acceptance criteria:
 
-- Separate but adjacent event, organizer, and automation workspaces.
-- Explicit status gates for source evidence, duplication, location, policy,
-  publication, and claim handoff.
-- Review decisions with notes and audit trail.
-- Clear boundary between approved intake records and canonical app/website
-  consumable records.
+- One queue, oldest first, across listings, imported events, claims, enquiries,
+  launch access and stuck nominations.
+- Each item shows the journey that brought it there.
+- Decisions with notes and an audit trail.
+- A stuck nomination can be filled in by hand or dismissed.
 
 Current adherence:
 
-- Good: Intake now covers Event Intake, Organizer Intake, and the durable
-  Automation projection.
-- Good: Automation displays canonical run/work-item inventory using the same
-  four persisted primary stages as the CLI, rather than inferring run progress
-  from the overlapping Event and Organizer review tabs.
-- Good: the Automation workspace is explicitly read-only. It exposes evidence,
-  blockers, run receipts, and human exceptions without browser controls for
-  source fetches, models, rule deployment, or publication.
-- Good: stage and exception totals come from the complete imported run rather
-  than the current 200-item page. The controller drains the run-pinned,
-  server-filtered human-exception lane before rendering, validates it against
-  authoritative aggregates, and pages ordinary items only through **Load 200
-  more**. Active stage queues exclude published/terminal history; run and item
-  pages remain explicitly labelled as loaded when another cursor exists.
-- Good: expiry and stale-evidence reconciliation produces a new lineage-bound
-  run instead of mutating an immutable imported snapshot.
-- Good: the default experience is now a task-first review workbench rather than
-  the generated diagnostic wall. Both workspaces expose backed search and
-  filters, Incoming/Verify/Resolve/Ready stages, a selectable queue, source
-  evidence, readiness gates, downstream impact, notes, and the existing real
-  decision actions.
-- Good: the stage spine deliberately maps only durable operator states. It does
-  not cosmetically present Crawl or Promote as live jobs when the backend has
-  no persisted job state or canonical promotion contract.
-- Good: generated pipeline, policy, crawl, curation, and import diagnostics are
-  preserved behind a deliberate Diagnostics handoff with a clear return to the
-  review queue.
-- Good: event and organizer decisions retain their existing controller and
-  callable boundaries. Event approval remains decision-only; organizer approval
-  remains a publication handoff; neither implies ownership, app visibility,
-  recurring crawl, or a canonical event write.
-- Good: Organizer Intake exposes the deterministic discovery search plan,
-  launch-city search terms, source config files, and operator commands, so
-  search-term iteration is visible even though edits still happen in repo-owned
-  JSON rather than a live web form.
-- Good: Event Intake now uses event-owned read and review-decision callables.
-- Good: Event Intake source and candidate cards now expose deterministic
-  provenance from the bridge, including source profile ids, query template ids,
-  observed timestamps, and linked source-result ids.
-- Good: Event Intake is projected from completed Supply Intake runs and work
-  items, so operational review state no longer depends on a generated
-  Marketing bridge or a separate dashboard publication step.
-- Good: the Intake entry point now shows a publication-boundary panel for both
-  Event leads and Organizers, making the active read model, permitted decision
-  writes, blocked canonical/app-facing writes, and required review gates visible
-  before an operator enters the dense generated workspaces.
-- Good: the Intake route now delegates to the prop-driven `IntakeWorkspace`,
-  and Event Intake exposes `EventIntakePreviewWorkspace`, giving Storybook
-  deterministic route/workspace coverage for the generated bridge, run plan,
-  source-result review, and decision-only intake boundary without live reads or
-  writes in previews.
-- Good: Organizer Intake now delegates to the prop-driven
-  `OrganizerIntakeWorkspace`, giving Storybook deterministic route/workspace
-  coverage for workflow readiness, publication review packets, generated bridge
-  guardrails, and mutation callback boundaries without live writes in previews.
-- Good: organizer source freshness and discovery planning are owned by Supply
-  Intake runs and immutable normalized input snapshots rather than generated
-  bridge artifacts.
-- Weak: Event Intake approvals remain decision records only; canonical import
-  and external event promotion still need a dedicated reviewed write path.
-- Weak: Automation does not yet join reviewed decisions into a follow-up run
-  automatically; the worker still needs a reviewed normalized input step.
-- Weak: no production worker currently persists Supply Intake runs; live mode
-  remains empty until worker IAM, source policy, model budget, and publication
-  authority are approved and deployed.
-
-Recommended next work:
-
-- Add a safe admin edit/publish path for discovery search config only after
-  the repo-file workflow is stable enough to replace with audited mutations.
-- Define a discovery-job contract with durable progress, failure, retry,
-  generated-at, and output receipts before adding a Run discovery action.
-- Activate the `operations/` worker in shadow mode first, measure correction and
-  escalation rates, and keep the browser read-only while calibration is below
-  the documented promotion thresholds.
-- Define canonical event import and promotion side effects before adding a
-  Promote action to the stage spine.
-- Keep organizer publication, app visibility, and public website listing output
-  aligned with shared contracts to avoid schema drift.
+- Good: the Inbox replaced the Event, Organizer and Automation Intake tabs, which
+  retired on 2026-11-02.
+- Gap: candidates from command-line discovery runs have no review screen until
+  discovery is built into Admin.
+- Gap: "Ask for a link" on a stuck nomination is not built.
 
 ### Organizers
 
