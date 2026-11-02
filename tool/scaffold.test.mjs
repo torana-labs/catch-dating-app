@@ -398,6 +398,18 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     assertOk(run(process.execPath, ["tool/design/check_component_lexicon.mjs", "--surfaces-only"], tree), "component lexicon");
   });
 
+  test("the printed top-bar contract satisfies its check", () => {
+    const manifestPath = inTree("tool/design/screen_top_bar_contracts.json");
+    const before = run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree);
+    assert.notEqual(before.status, 0, "a new screen should need a contract");
+    assert.match(before.stdout + before.stderr, /page_probe_screen\.dart: unregistered-app-bar/u);
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    const printed = /screen_top_bar_contracts\.json, under contracts:\n {2}(\{.*\})/u.exec(outputs.get("screen:--page:page_probe"))[1];
+    manifest.contracts.push(JSON.parse(printed));
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+    assertOk(run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree), "top-bar contracts");
+  });
+
   test("the web component typechecks and its test passes", () => {
     const webUi = inTree("packages/web-ui");
     const binary = (name) => inTree("node_modules/.bin", name);
