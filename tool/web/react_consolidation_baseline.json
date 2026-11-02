@@ -53,7 +53,6 @@
       "admin/src/shared/ui/AdminPrimitives/actions.tsx::SegmentedControl",
       "admin/src/shared/ui/AdminPrimitives/data.tsx::AdminEditorSection",
       "admin/src/shared/ui/AdminPrimitives/data.tsx::AlertRow",
-      "admin/src/shared/ui/AdminPrimitives/data.tsx::DataTable",
       "admin/src/shared/ui/AdminPrimitives/data.tsx::Panel",
       "admin/src/shared/ui/AdminPrimitives/data.tsx::StateRow",
       "admin/src/shared/ui/AdminPrimitives/forms.tsx::AdminEditorPanel",

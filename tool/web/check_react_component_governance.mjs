@@ -84,7 +84,7 @@ const componentFamilies = [
     createElementPattern:
       /(?:^|[^\w$.])(?:React\.)?createElement\(\s*["']table["']/gu,
     createElementDescription: "React.createElement(\"table\")",
-    guidance: "Use the surface DataTable primitive instead of rendering a table shell directly.",
+    guidance: "Use the surface table primitive (CatchTable in Admin, DataTable on the website) instead of rendering a table shell directly.",
   },
   {
     family: "admin-workbench-table",
@@ -104,7 +104,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use DataTable variant=\"workbench\" instead of class-configuring admin workbench table shells directly.",
+    guidance: "Use CatchTable instead of class-configuring admin workbench table shells directly.",
   },
   {
     family: "form-shell",

@@ -39,6 +39,13 @@ describe("CatchIndexRow parity", () => {
     expect(ts).toContain("titleMaxLines = 1,");
   });
 
+  it("draws the design system's selected block, which Flutter only announces", () => {
+    expect(row).toContain("selected: selected,");
+    expect(css).toMatch(/\.row\[aria-current\] \{[^}]*background: var\(--catch-theme-bg\);/);
+    expect(css).toMatch(/\.row\[aria-current\] \{[^}]*--catch-row-radius: var\(--catch-radius-md\);/);
+    expect(css).toContain("margin-inline: calc(-1 * var(--catch-row-inset, 0px));");
+  });
+
   it("uses CatchRowPressSurface's overlays", () => {
     expect(opacity).toMatch(/controlOverlayPressed = 0\.08;/);
     expect(css).toContain(":active::after { opacity: 0.08; }");
