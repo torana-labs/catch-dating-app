@@ -102,6 +102,10 @@ class HostRequestsScreen extends ConsumerWidget {
 
 enum _Filter { all, asked, waitlist }
 
+const _filterChipExemption =
+    'Host-only queue filter over a callable-owned list; selection is ephemeral '
+    'and is never persisted.';
+
 /// The queue itself; prop-driven so Widgetbook can show every state. When a
 /// decision removes the selected person, the next one takes their place.
 class HostRequestsWorkspace extends StatefulWidget {
@@ -174,18 +178,21 @@ class _HostRequestsWorkspaceState extends State<HostRequestsWorkspace> {
               label: l10n.hostRequestsFilterAll(count: all.length),
               selected: _filter == _Filter.all,
               onChanged: (_) => select(_Filter.all),
+              contractExemption: _filterChipExemption,
             ),
             CatchChip.selectable(
               key: const ValueKey('host-requests-filter-asked'),
               label: l10n.hostRequestsFilterAsked(count: asked.length),
               selected: _filter == _Filter.asked,
               onChanged: (_) => select(_Filter.asked),
+              contractExemption: _filterChipExemption,
             ),
             CatchChip.selectable(
               key: const ValueKey('host-requests-filter-waitlist'),
               label: l10n.hostRequestsFilterWaitlist(count: waiting.length),
               selected: _filter == _Filter.waitlist,
               onChanged: (_) => select(_Filter.waitlist),
+              contractExemption: _filterChipExemption,
             ),
           ],
         ),
