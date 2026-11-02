@@ -1,16 +1,7 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchMetaRow, CatchSection, CatchText} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useRef, useState} from "react";
-import {ClipboardList, Sparkles} from "lucide-react";
-import {
-  AdminButton,
-  AdminEditorSection,
-  AdminForm,
-  CheckboxField,
-  EmptyState,
-  Panel,
-  selectOptions,
-  StateRow,
-} from "../../../shared/ui/AdminPrimitives";
+import {dataMode} from "../../../shared/api/dataMode";
+import {selectChoices} from "../controllers/salesLabels";
 import type {ApprovedClause, IntelligenceApi,
   IntelligenceFactor, IntelligencePolicy,
   EvidenceClaim} from "../api/salesIntelligenceTypes";
@@ -20,6 +11,7 @@ import {salesOutreachCompositionReview} from
   "./SalesOutreachCompositionReview";
 
 type Controller = ReturnType<typeof useSalesIntelligenceController>;
+const small = {variant: "secondary", size: "sm"} as const;
 function label(value: string): string {
   return value.replaceAll("_", " ").replace(/\b\w/gu,
     (letter) => letter.toUpperCase());
@@ -31,7 +23,7 @@ function date(value: string): string {
       year: "numeric"});
 }
 function QueryProblem({message, retry}: {message: string; retry: () => void}) {
-  return <CatchText as="p" variant="bodyL" color="inherit" role="alert">{message} <AdminButton onClick={retry}>Try again</AdminButton></CatchText>;
+  return <CatchEmptyState title={message} actions={<CatchButton {...small} label="Try again" onPressed={retry} />} />;
 }
 
 const claimOptions: Array<{value: EvidenceClaim; label: string}> = [
@@ -93,6 +85,7 @@ export function SalesIntelligenceWorkspace({organizerId, organizerName,
   currentUserUid, isAdminOwner, api}: {organizerId: string;
     organizerName: string; currentUserUid: string; isAdminOwner: boolean;
     api?: IntelligenceApi}) {
+  if (!api && dataMode() === "sample") return <CatchEmptyState title="Fit and private outreach" message="Fit and drafts require live Admin records. Sample hosts can't be scored." />;
   return <IntelligenceBody key={`${currentUserUid}:${organizerId}`}
     organizerId={organizerId} organizerName={organizerName}
     currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} api={api} />;
@@ -103,22 +96,22 @@ function IntelligenceBody({organizerId, organizerName, currentUserUid,
     currentUserUid: string; isAdminOwner: boolean; api?: IntelligenceApi}) {
   const c = useSalesIntelligenceController({actorUid: currentUserUid,
     organizerId, api});
-  return <>
-    <Panel title="Fit and private outreach" icon={<Sparkles size={18} />}>
-      <CatchText as="p" variant="supporting">Evidence, reviewed wording and current contact restrictions decide what
-        can be drafted for {organizerName}. Nothing here sends a message.</CatchText>
-      {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
-      {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
-      {c.pending ? <AdminButton disabled={c.busy}
-        onClick={() => void c.retry()}>Retry unchanged request</AdminButton> : null}
-      <AdminButton disabled={c.busy || Boolean(c.pending)}
-        onClick={() => void c.refresh()}>Refresh current source</AdminButton>
-    </Panel>
+  return <CatchGap size="section">
+    <CatchSection title="Fit and private outreach" dividers="none">
+      <CatchGap size="related">
+        <CatchText as="p" variant="supporting">Evidence, reviewed wording and current contact restrictions decide what
+          can be drafted for {organizerName}. Nothing here sends a message.</CatchText>
+        {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
+        {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
+        {c.pending ? <CatchButton {...small} label="Retry unchanged request" onPressed={c.busy ? null : () => void c.retry()} /> : null}
+        <CatchButton {...small} label="Refresh current source" onPressed={c.busy || c.pending ? null : () => void c.refresh()} />
+      </CatchGap>
+    </CatchSection>
     {isAdminOwner ? <PolicyPanel c={c} /> : null}
     <FitPanel c={c} organizerId={organizerId} />
     <WordingPanel c={c} isAdminOwner={isAdminOwner} />
     <DraftPanel c={c} organizerId={organizerId} />
-  </>;
+  </CatchGap>;
 }
 
 function PolicyPanel({c}: {c: Controller}) {
@@ -154,107 +147,55 @@ function PolicyPanel({c}: {c: Controller}) {
     if (!candidate || stale || c.busy || c.pending) return;
     await c.savePolicy(candidate, formRevision);
   };
-  return <Panel title="Private fit policy" icon={<Sparkles size={18} />}>
-    <CatchText as="p" variant="supporting">An Admin owner sets the seven reviewed factors, evidence kinds and
-      thresholds. No weights or host strategy are supplied by this page.</CatchText>
-    {existing ? <StateRow label="Current policy"
-      value={`${label(existing.status)} · revision ${existing.revision}`} /> :
-      <CatchText as="p" variant="supporting">No private fit policy has been saved yet.</CatchText>}
-    {stale ? <CatchText as="p" variant="supporting" role="alert">This policy changed since it was opened.
-      Refresh and compare before saving.</CatchText> : null}
-    {!editing ? <AdminButton disabled={c.busy || Boolean(c.pending)}
-      onClick={() => setEditing(true)}>{existing ? "Review policy settings" :
-        "Set up private fit policy"}</AdminButton> : null}
-    {editing ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <CatchText as="h3" variant="sectionTitle">Seven factors</CatchText>
-      {form.factors.map((row, index) => <AdminEditorSection key={index}>
-        <legend>Factor {index + 1}</legend>
-        <CatchField
-          recipe="input"
-          title={`Factor ${index + 1} name`}
-          value={row.name}
-          onChanged={(name) => changeFactor(index, {name})}
-          inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-        />
-        <CatchField
-          recipe="input"
-          title={`Factor ${index + 1} weight out of 100`}
-          min="1"
-          max="100"
-          value={row.weight}
-          onChanged={(weight) => changeFactor(index, {weight})}
-          inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-          keyboardType="number"
-        />
-        <CatchField
-          recipe="input"
-          title={`Factor ${index + 1} evidence age limit in days`}
-          min="1"
-          max="365"
-          value={row.maxAgeDays}
-          onChanged={(maxAgeDays) => changeFactor(index, {maxAgeDays})}
-          inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-          keyboardType="number"
-        />
-        <CatchText as="p" variant="supporting">Evidence kinds for factor {index + 1}</CatchText>
-        {claimOptions.map((option) => <CheckboxField
-          key={`${index}-${option.value}`} checked={row.claimKeys.includes(option.value)}
-          disabled={c.busy || Boolean(c.pending)}
-          label={`${option.label} · factor ${index + 1}`}
-          onChange={(checked) => changeFactor(index, {claimKeys: checked ?
-            [...row.claimKeys, option.value] : row.claimKeys.filter((key) =>
-              key !== option.value)})} />)}
-      </AdminEditorSection>)}
-      <CatchText as="p" variant="supporting">Weights must total 100. Current total: {form.factors.reduce((sum,
-        row) => sum + (Number(row.weight) || 0), 0)}.</CatchText>
-      <CatchField
-        recipe="input"
-        title="High priority begins at"
-        min="0"
-        max="100"
-        value={form.high}
-        onChanged={(high) => update({high})}
-        inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-        keyboardType="number"
-      />
-      <CatchField
-        recipe="input"
-        title="Medium priority begins at"
-        min="0"
-        max="100"
-        value={form.medium}
-        onChanged={(medium) => update({medium})}
-        inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-        keyboardType="number"
-      />
-      <CatchField
-        recipe="select"
-        title="Policy availability"
-        value={form.status}
-        onChanged={(status) => update({status: (status ?? "") as PolicyForm["status"]})}
-        inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-        {...selectOptions([
-          {value: "paused", label: "Paused · no scoring or drafting"},
-          {value: "active", label: "Active after owner review"},
-        ])}
-      />
-      {existing && form.factors.some((row, index) => resolvedFactorId(
-        row.name, existing.factors[index]?.id) !==
-        existing.factors[index]?.id) ? <CatchText as="p" variant="supporting" role="alert">Changing a factor name
-        creates a new factor. Its previous ratings will not carry over.</CatchText> : null}
-      {!candidate ? <CatchText as="p" variant="supporting" role="alert">Enter seven distinct factor names,
-        evidence kinds, freshness limits and weights totaling 100. High
-        priority must be above medium priority.</CatchText> : null}
-      <AdminButton type="submit" variant="primary" disabled={!candidate ||
-        stale || c.busy || Boolean(c.pending) || (Boolean(existing) && !dirty)}>
-        Save reviewed policy</AdminButton>
-      <AdminButton disabled={c.busy || Boolean(c.pending)}
-        onClick={() => {setEditing(false); setDirty(false);
-          if (existing) {setForm(formFromPolicy(existing));
-            setFormRevision(existing.revision);} else setForm(blankPolicyForm());}}>
-        Cancel changes</AdminButton>
-    </AdminForm> : null}
-  </Panel>;
+  const locked = c.busy || Boolean(c.pending);
+  const mode = locked ? "inactive" : "editable";
+  return <CatchSection title="Private fit policy" dividers="none">
+    <CatchGap size="related">
+      <CatchText as="p" variant="supporting">An Admin owner sets the seven reviewed factors, evidence kinds and
+        thresholds. No weights or host strategy are supplied by this page.</CatchText>
+      {existing ? <CatchMetaRow entries={[{label: "Current policy", value: `${label(existing.status)} · revision ${existing.revision}`}]} /> :
+        <CatchText as="p" variant="supporting">No private fit policy has been saved yet.</CatchText>}
+      {stale ? <CatchText as="p" variant="supporting" role="alert">This policy changed since it was opened.
+        Refresh and compare before saving.</CatchText> : null}
+      {!editing ? <CatchButton {...small} label={existing ? "Review policy settings" : "Set up private fit policy"} onPressed={locked ? null : () => setEditing(true)} /> : null}
+      {editing ? <>
+        <CatchText as="h3" variant="sectionTitle">Seven factors</CatchText>
+        {form.factors.map((row, index) => <CatchSection key={index} title={`Factor ${index + 1}`} dividers="none">
+          <CatchGap size="related">
+            <CatchField recipe="input" title={`Factor ${index + 1} name`} value={row.name} onChanged={(name) => changeFactor(index, {name})} inputMode={mode} />
+            <CatchField recipe="input" title={`Factor ${index + 1} weight out of 100`} min="1" max="100" value={row.weight}
+              onChanged={(weight) => changeFactor(index, {weight})} inputMode={mode} keyboardType="number" />
+            <CatchField recipe="input" title={`Factor ${index + 1} evidence age limit in days`} min="1" max="365" value={row.maxAgeDays}
+              onChanged={(maxAgeDays) => changeFactor(index, {maxAgeDays})} inputMode={mode} keyboardType="number" />
+            <CatchText as="p" variant="supporting">Evidence kinds for factor {index + 1}</CatchText>
+            {claimOptions.map((option) => <CatchCheckboxInput key={`${index}-${option.value}`} value={row.claimKeys.includes(option.value)}
+              label={`${option.label} · factor ${index + 1}`}
+              onChanged={locked ? null : (checked) => changeFactor(index, {claimKeys: checked ?
+                [...row.claimKeys, option.value] : row.claimKeys.filter((key) => key !== option.value)})} />)}
+          </CatchGap>
+        </CatchSection>)}
+        <CatchText as="p" variant="supporting">Weights must total 100. Current total: {form.factors.reduce((sum,
+          row) => sum + (Number(row.weight) || 0), 0)}.</CatchText>
+        <CatchField recipe="input" title="High priority begins at" min="0" max="100" value={form.high} onChanged={(high) => update({high})} inputMode={mode} keyboardType="number" />
+        <CatchField recipe="input" title="Medium priority begins at" min="0" max="100" value={form.medium} onChanged={(medium) => update({medium})} inputMode={mode} keyboardType="number" />
+        <CatchField recipe="select" title="Policy availability" value={form.status} inputMode={mode}
+          onChanged={(status) => update({status: (status ?? "") as PolicyForm["status"]})}
+          {...selectChoices([{value: "paused", label: "Paused · no scoring or drafting"}, {value: "active", label: "Active after owner review"}])} />
+        {existing && form.factors.some((row, index) => resolvedFactorId(row.name, existing.factors[index]?.id) !== existing.factors[index]?.id) ?
+          <CatchText as="p" variant="supporting" role="alert">Changing a factor name creates a new factor. Its previous ratings will not carry over.</CatchText> : null}
+        {!candidate ? <CatchText as="p" variant="supporting" role="alert">Enter seven distinct factor names,
+          evidence kinds, freshness limits and weights totaling 100. High
+          priority must be above medium priority.</CatchText> : null}
+        <CatchGap size="inline" direction="horizontal" wrap>
+          <CatchButton size="sm" label="Save reviewed policy" onPressed={!candidate || stale || locked || (Boolean(existing) && !dirty) ? null : () => void save()} />
+          <CatchButton {...small} label="Cancel changes" onPressed={locked ? null : () => {
+            setEditing(false); setDirty(false);
+            if (existing) {setForm(formFromPolicy(existing)); setFormRevision(existing.revision);} else setForm(blankPolicyForm());
+          }} />
+        </CatchGap>
+      </> : null}
+    </CatchGap>
+  </CatchSection>;
 }
 
 function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
@@ -295,97 +236,53 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       evidenceIds: state === "known" ? [evidenceId] : [],
       reason: state === "known" ? null : reason.trim()});
   };
-  return <Panel title="Evidence-backed fit" icon={<ClipboardList size={18} />}>
-    {c.catalog.isPending || c.score.isPending ? <CatchText as="p" variant="supporting">Checking current fit…</CatchText> : null}
-    {c.catalog.isError ? <QueryProblem message="Current fit policy could not load."
-      retry={() => void c.catalog.refetch()} /> : null}
-    {c.score.isError ? <QueryProblem message="Current fit could not be evaluated."
-      retry={() => void c.score.refetch()} /> : null}
-    {!policy && !c.catalog.isPending && !c.catalog.isError ?
-      <EmptyState>An Admin owner must add a reviewed private fit policy before
-        this host can be scored.</EmptyState> : null}
-    {policy ? <>
-      <StateRow label="Policy" value={`${policy.version} · ${label(policy.status)}`} />
-      <StateRow label="Current fit" value={score?.score === null ||
-        score?.score === undefined ? "Unknown · more reviewed evidence needed" :
-        `${score.score.toFixed(1)} / 100 · ${label(score.priority)} priority`} />
-      {score?.status === "review_required" ? <CatchText as="p" variant="supporting" role="alert">A factor needs
-        review before a priority can be assigned.</CatchText> : null}
-      {policy.factors.map((item: IntelligenceFactor) => {
-        const current = c.catalog.data?.assessments.find((row) =>
-          row.factorId === item.id);
-        return <StateRow key={item.id} label={label(item.id)} value={
-          current?.state === "known" ? `${current.value} of 5 · reviewed` :
-            current?.state === "disputed" ? "Disputed · review needed" :
-              "Unknown · evidence needed"} />;
-      })}
-      <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
+  return <CatchSection title="Evidence-backed fit" dividers="none">
+    <CatchGap size="related">
+      {c.catalog.isPending || c.score.isPending ? <CatchText as="p" variant="supporting">Checking current fit…</CatchText> : null}
+      {c.catalog.isError ? <QueryProblem message="Current fit policy could not load." retry={() => void c.catalog.refetch()} /> : null}
+      {c.score.isError ? <QueryProblem message="Current fit could not be evaluated." retry={() => void c.score.refetch()} /> : null}
+      {!policy && !c.catalog.isPending && !c.catalog.isError ?
+        <CatchEmptyState title="An Admin owner must add a reviewed private fit policy before this host can be scored." /> : null}
+      {policy ? <>
+        <CatchMetaRow columns={2} entries={[
+          {label: "Policy", value: `${policy.version} · ${label(policy.status)}`},
+          {label: "Current fit", value: score?.score === null || score?.score === undefined ? "Unknown · more reviewed evidence needed" :
+            `${score.score.toFixed(1)} / 100 · ${label(score.priority)} priority`},
+          ...policy.factors.map((item: IntelligenceFactor) => {
+            const current = c.catalog.data?.assessments.find((row) => row.factorId === item.id);
+            return {label: label(item.id), value: current?.state === "known" ? `${current.value} of 5 · reviewed` :
+              current?.state === "disputed" ? "Disputed · review needed" : "Unknown · evidence needed"};
+          }),
+        ]} />
+        {score?.status === "review_required" ? <CatchText as="p" variant="supporting" role="alert">A factor needs
+          review before a priority can be assigned.</CatchText> : null}
         <CatchText as="h3" variant="sectionTitle">Review one fit factor</CatchText>
-        {stale ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">This factor or policy changed during your review.
-          Your edits are retained. Compare the current review before saving.
-          <AdminButton onClick={() => selectFactor(factorId)}>
-            Use current factor review</AdminButton>
-        </CatchText> : null}
-        <CatchField
-          recipe="select"
-          title="Factor"
-          value={factorId}
-          onChanged={(value) => selectFactor(value ?? "")}
-          {...selectOptions([{value: "", label: "Choose factor"},
-            ...policy.factors.map((item) => ({value: item.id,
-              label: label(item.id)}))])}
-        />
+        {stale ? <CatchGap size="inline">
+          <CatchText as="p" variant="bodyM" role="alert">This factor or policy changed during your review.
+            Your edits are retained. Compare the current review before saving.</CatchText>
+          <CatchButton {...small} label="Use current factor review" onPressed={() => selectFactor(factorId)} />
+        </CatchGap> : null}
+        <CatchField recipe="select" title="Factor" value={factorId} onChanged={(value) => selectFactor(value ?? "")}
+          {...selectChoices([{value: "", label: "Choose factor"}, ...policy.factors.map((item) => ({value: item.id, label: label(item.id)}))])} />
         {factor ? <>
-          <CatchField
-            recipe="select"
-            title="What is known?"
-            value={state}
-            onChanged={(value) => setState((value ?? "") as typeof state)}
-            {...selectOptions([
-              {value: "unknown", label: "Not known yet"},
-              {value: "known", label: "Supported by evidence"},
-              {value: "disputed", label: "Conflicting evidence"},
-            ])}
-          />
+          <CatchField recipe="select" title="What is known?" value={state} onChanged={(value) => setState((value ?? "") as typeof state)}
+            {...selectChoices([{value: "unknown", label: "Not known yet"}, {value: "known", label: "Supported by evidence"}, {value: "disputed", label: "Conflicting evidence"}])} />
           {state === "known" ? <>
-            <CatchField
-              recipe="select"
-              title="Rating"
-              value={rating}
-              onChanged={(value) => setRating(value ?? "")}
-              {...selectOptions([0, 1, 2, 3, 4, 5].map((value) => ({
-                value: String(value), label: `${value} of 5`})))}
-            />
-            <CatchField
-              recipe="select"
-              title="Reviewed host evidence on this page"
-              value={evidenceId}
-              onChanged={(value) => setEvidenceId(value ?? "")}
-              {...selectOptions([
-                {value: "", label: "Choose evidence"}, ...relevant.map((row) => ({
-                  value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
-              ])}
-            />
-          </> : <CatchField
-            recipe="input"
-            title="Why is this unknown or disputed?"
-            maxLines={2}
-            value={reason}
-            onChanged={setReason}
-          />}
-          <AdminButton type="submit" variant="primary" disabled={c.busy ||
-            Boolean(c.pending) || stale || (state === "known" ? !evidenceId :
-            !reason.trim())}>Record review</AdminButton>
+            <CatchField recipe="select" title="Rating" value={rating} onChanged={(value) => setRating(value ?? "")}
+              {...selectChoices([0, 1, 2, 3, 4, 5].map((value) => ({value: String(value), label: `${value} of 5`})))} />
+            <CatchField recipe="select" title="Reviewed host evidence on this page" value={evidenceId} onChanged={(value) => setEvidenceId(value ?? "")}
+              {...selectChoices([{value: "", label: "Choose evidence"}, ...relevant.map((row) => ({value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`}))])} />
+          </> : <CatchField recipe="input" title="Why is this unknown or disputed?" maxLines={2} value={reason} onChanged={setReason} />}
+          <CatchButton size="sm" label="Record review" onPressed={c.busy || c.pending || stale || (state === "known" ? !evidenceId : !reason.trim()) ? null : () => void save()} />
         </> : null}
-      </AdminForm>
-    </> : null}
-    {c.evidence.data?.nextCursor ? <AdminButton onClick={() =>
-      c.nextEvidencePage(c.evidence.data!.nextCursor!)}>More evidence</AdminButton> : null}
-    {c.evidenceHistory.length ? <AdminButton onClick={c.previousEvidencePage}>
-      Previous evidence</AdminButton> : null}
-    {c.evidence.isError ? <QueryProblem message="Evidence could not load."
-      retry={() => void c.evidence.refetch()} /> : null}
-  </Panel>;
+      </> : null}
+      <CatchGap size="inline" direction="horizontal" wrap>
+        {c.evidence.data?.nextCursor ? <CatchButton {...small} label="More evidence" onPressed={() => c.nextEvidencePage(c.evidence.data!.nextCursor!)} /> : null}
+        {c.evidenceHistory.length ? <CatchButton {...small} label="Previous evidence" onPressed={c.previousEvidencePage} /> : null}
+      </CatchGap>
+      {c.evidence.isError ? <QueryProblem message="Evidence could not load." retry={() => void c.evidence.refetch()} /> : null}
+    </CatchGap>
+  </CatchSection>;
 }
 
 function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean}) {
@@ -404,78 +301,45 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
       validUntil: expiry.toISOString()});
     if (result) {setWording(""); setEvidenceId(""); setExpires("");}
   };
-  return <Panel title="Reviewed wording" icon={<ClipboardList size={18} />}>
-    <CatchText as="p" variant="supporting">Only approved, current sentences can appear in a draft. A reference
-      needs explicit private-mention permission.</CatchText>
-    {catalog?.clauses.length ? catalog.clauses.map((row) =>
-      <StateRow key={row.clauseId} label={`${label(row.kind)} · ${row.text}`}
-        value={<>{label(row.state)} · valid until {date(row.validUntil)}{" "}
-          {isAdminOwner && row.state === "draft" ? (row.partnerCitationOptions ?? []).map((citation) => {
-            const selectionKey = `${row.clauseId}:${row.revision}`;
-            const selected = citationSelections[selectionKey] ?? [];
-            return <CheckboxField key={`${citation.evidenceId}:${citation.sourceHash}`}
-              label={`Share this exact public citation with assigned partners: ${citation.sourceRef}. Excerpt: ${citation.excerpt ?? "No excerpt"}`}
-              checked={selected.includes(citation.sourceHash)} disabled={c.busy || Boolean(c.pending)}
-              onChange={(checked) => setCitationSelections((current) => ({...current,
-                [selectionKey]: checked ? [...(current[selectionKey] ?? []), citation.sourceHash] :
-                  (current[selectionKey] ?? []).filter((value) => value !== citation.sourceHash)}))} />;
-          }) : null}
-          {isAdminOwner && row.state === "draft" ? <AdminButton
-            disabled={c.busy || Boolean(c.pending)} onClick={() => void
+  const locked = c.busy || Boolean(c.pending);
+  return <CatchSection title="Reviewed wording" dividers="none">
+    <CatchGap size="related">
+      <CatchText as="p" variant="supporting">Only approved, current sentences can appear in a draft. A reference
+        needs explicit private-mention permission.</CatchText>
+      {catalog?.clauses.length ? catalog.clauses.map((row) => {
+        const selectionKey = `${row.clauseId}:${row.revision}`;
+        const selected = citationSelections[selectionKey] ?? [];
+        return <CatchGap key={row.clauseId} size="inline">
+          <CatchIndexRow title={`${label(row.kind)} · ${row.text}`} titleVariant="bodyM" subtitle={`${label(row.state)} · valid until ${date(row.validUntil)}`}
+            {...(isAdminOwner && row.state === "draft" ? {trailing: <CatchButton {...small} label="Approve wording" onPressed={locked ? null : () => void
               c.reviewClause(row.clauseId, row.revision, "approve",
-                (row.partnerCitationOptions ?? []).filter((citation) =>
-                  (citationSelections[`${row.clauseId}:${row.revision}`] ?? []).includes(citation.sourceHash))
-                  .map((citation) => ({evidenceId: citation.evidenceId, sourceHash: citation.sourceHash})))}>
-              Approve wording</AdminButton> : null}
-          {isAdminOwner && row.state === "approved" ? <AdminButton
-            disabled={c.busy || Boolean(c.pending)} onClick={() => void
-              c.reviewClause(row.clauseId, row.revision, "withdraw")}>
-              Withdraw wording</AdminButton> : null}</>} />) :
-      <EmptyState>No reviewed wording is available for this host.</EmptyState>}
-    {isAdminOwner ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <CatchText as="h3" variant="sectionTitle">Prepare an exact sentence for review</CatchText>
-      <CatchField
-        recipe="select"
-        title="Sentence purpose"
-        value={kind}
-        onChanged={(value) => setKind((value ?? "") as typeof kind)}
-        {...selectOptions([
-          {value: "observation", label: "Host observation"},
-          {value: "capability", label: "Catch capability"},
-          {value: "reference", label: "Private reference"},
-          {value: "cta", label: "Question or next step"},
-        ])}
-      />
-      <CatchField
-        recipe="input"
-        title="Exact wording"
-        maxLines={3}
-        value={wording}
-        onChanged={setWording}
-      />
-      <CatchField
-        recipe="select"
-        title="Reviewed evidence on this page"
-        value={evidenceId}
-        onChanged={(value) => setEvidenceId(value ?? "")}
-        {...selectOptions([
-          {value: "", label: kind === "cta" ? "No evidence needed" :
-            "Choose evidence"}, ...(c.evidence.data?.rows ?? []).map((row) => ({
-            value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
-        ])}
-      />
-      <CatchField
-        recipe="input"
-        title="Valid until"
-        value={expires}
-        onChanged={setExpires}
-        keyboardType="datetime"
-      />
-      <AdminButton type="submit" disabled={c.busy || Boolean(c.pending) ||
-        !wording.trim() || !expires || (kind !== "cta" && !evidenceId)}>
-        Save sentence for approval</AdminButton>
-    </AdminForm> : null}
-  </Panel>;
+                (row.partnerCitationOptions ?? []).filter((citation) => selected.includes(citation.sourceHash))
+                  .map((citation) => ({evidenceId: citation.evidenceId, sourceHash: citation.sourceHash})))} />} : {})}
+            {...(isAdminOwner && row.state === "approved" ? {trailing: <CatchButton {...small} label="Withdraw wording" onPressed={locked ? null : () => void
+              c.reviewClause(row.clauseId, row.revision, "withdraw")} />} : {})} />
+          {isAdminOwner && row.state === "draft" ? (row.partnerCitationOptions ?? []).map((citation) =>
+            <CatchCheckboxInput key={`${citation.evidenceId}:${citation.sourceHash}`}
+              label={`Share this exact public citation with assigned partners: ${citation.sourceRef}. Excerpt: ${citation.excerpt ?? "No excerpt"}`}
+              value={selected.includes(citation.sourceHash)}
+              onChanged={locked ? null : (checked) => setCitationSelections((current) => ({...current,
+                [selectionKey]: checked ? [...(current[selectionKey] ?? []), citation.sourceHash] :
+                  (current[selectionKey] ?? []).filter((value) => value !== citation.sourceHash)}))} />) : null}
+        </CatchGap>;
+      }) : <CatchEmptyState title="No reviewed wording is available for this host." />}
+      {isAdminOwner ? <>
+        <CatchText as="h3" variant="sectionTitle">Prepare an exact sentence for review</CatchText>
+        <CatchField recipe="select" title="Sentence purpose" value={kind} onChanged={(value) => setKind((value ?? "") as typeof kind)}
+          {...selectChoices([{value: "observation", label: "Host observation"}, {value: "capability", label: "Catch capability"},
+            {value: "reference", label: "Private reference"}, {value: "cta", label: "Question or next step"}])} />
+        <CatchField recipe="input" title="Exact wording" maxLines={3} value={wording} onChanged={setWording} />
+        <CatchField recipe="select" title="Reviewed evidence on this page" value={evidenceId} onChanged={(value) => setEvidenceId(value ?? "")}
+          {...selectChoices([{value: "", label: kind === "cta" ? "No evidence needed" : "Choose evidence"},
+            ...(c.evidence.data?.rows ?? []).map((row) => ({value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`}))])} />
+        <CatchField recipe="input" title="Valid until" value={expires} onChanged={setExpires} keyboardType="datetime" />
+        <CatchButton {...small} label="Save sentence for approval" onPressed={locked || !wording.trim() || !expires || (kind !== "cta" && !evidenceId) ? null : () => void save()} />
+      </> : null}
+    </CatchGap>
+  </CatchSection>;
 }
 
 function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
@@ -513,68 +377,57 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       setCopyStatus("Copy was reviewed, but the browser clipboard failed. Select the text below manually.");
     }
   };
-  return <Panel title="Draft for manual review" icon={<ClipboardList size={18} />}>
-    {c.account.isError ? <QueryProblem message="Host details could not load."
-      retry={() => void c.account.refetch()} /> : null}
-    {c.contacts.isError ? <QueryProblem message="Contacts could not load."
-      retry={() => void c.contacts.refetch()} /> : null}
-    {salesOutreachCompositionReview({organizerId, evaluatedAt: now,
-      eligible: Boolean(eligible), blocked: c.busy || Boolean(c.pending),
-      contacts: c.contacts.data?.rows ?? [],
-      opportunities: c.account.data?.opportunities ?? [],
-      clauses: c.catalog.data?.clauses ?? [],
-      nextContactCursor: c.contacts.data?.nextCursor ?? null,
-      hasPreviousContacts: c.contactHistory.length > 0,
-      onNextContacts: c.nextContactPage,
-      onPreviousContacts: c.previousContactPage,
-      onGenerate: c.generate})}
-    {c.jobRequestId ? <CatchText as="p" variant="bodyL" color="inherit" role="status">Preparation status: {
-      c.job.data?.status === "completed" ? "Ready for review" :
-        c.job.data?.status === "running" ? "Still preparing" :
-          c.job.isError ? "Could not confirm status" : "Checking"}{" "}
-      <AdminButton onClick={() => void c.job.refetch()}>Check again</AdminButton></CatchText> : null}
-    <CatchText as="h3" variant="sectionTitle">Saved drafts</CatchText>
-    {c.drafts.isError ? <QueryProblem message="Saved drafts could not load."
-      retry={() => void c.drafts.refetch()} /> : null}
-    {c.drafts.data?.rows.length ? c.drafts.data.rows.map((row) =>
-      <StateRow key={row.draftId} label={row.subject ?? "Message draft"}
-        value={<>{label(row.status)} · {date(row.createdAt)}{" "}
-          <AdminButton disabled={c.busy || Boolean(c.pending)}
-            onClick={() => {c.setSelectedDraftId(row.draftId);
-              setFactsChecked(false); setToneChecked(false); setCopyStatus("");}}>
-              Open draft</AdminButton></>} />) :
-      <EmptyState>No drafts have been prepared for this host.</EmptyState>}
-    {c.draft.isError ? <QueryProblem message="This draft is no longer current."
-      retry={() => void c.draft.refetch()} /> : null}
-    {selected ? <>
-      <CatchText as="h3" variant="sectionTitle">Review exact draft</CatchText>
-      {selected.draft.subject ? <StateRow label="Subject"
-        value={selected.draft.subject} /> : null}
-      <CatchField
-        recipe="input"
-        title="Draft text"
-        maxLines={8}
-        value={selected.draft.text}
-        onChanged={() => undefined}
-        inputMode="readOnly"
-      />
-      <StateRow label="Source" value="Reviewed evidence and approved wording" />
-      <StateRow label="Model use" value="None · deterministic wording" />
-      <StateRow label="Status" value={label(selected.status)} />
-      {selected.status === "pending_review" ? <>
-        <CheckboxField checked={factsChecked && acknowledgedDraftKey === reviewKey}
-          onChange={(checked) => {setFactsChecked(checked); setAcknowledgedDraftKey(reviewKey);}}
-          label="I checked every factual claim against the current source." />
-        <CheckboxField checked={toneChecked && acknowledgedDraftKey === reviewKey}
-          onChange={(checked) => {setToneChecked(checked); setAcknowledgedDraftKey(reviewKey);}}
-          label="I approve the tone and understand this is manual copy only." />
-        <AdminButton disabled={!factsChecked || !toneChecked || acknowledgedDraftKey !== reviewKey ||
-          c.busy || Boolean(c.pending)} onClick={() => void c.review(
-          selected.draftId, selected.draft.contentHash)}>
-          Approve exact draft</AdminButton>
-      </> : <AdminButton disabled={c.busy || Boolean(c.pending)}
-        onClick={() => void copy()}>Copy approved text</AdminButton>}
-      {copyStatus ? <CatchText as="p" variant="supporting" role="status">{copyStatus}</CatchText> : null}
-    </> : null}
-  </Panel>;
+  const locked = c.busy || Boolean(c.pending);
+  return <CatchSection title="Draft for manual review" dividers="none">
+    <CatchGap size="related">
+      {c.account.isError ? <QueryProblem message="Host details could not load." retry={() => void c.account.refetch()} /> : null}
+      {c.contacts.isError ? <QueryProblem message="Contacts could not load." retry={() => void c.contacts.refetch()} /> : null}
+      {salesOutreachCompositionReview({organizerId, evaluatedAt: now,
+        eligible: Boolean(eligible), blocked: locked,
+        contacts: c.contacts.data?.rows ?? [],
+        opportunities: c.account.data?.opportunities ?? [],
+        clauses: c.catalog.data?.clauses ?? [],
+        nextContactCursor: c.contacts.data?.nextCursor ?? null,
+        hasPreviousContacts: c.contactHistory.length > 0,
+        onNextContacts: c.nextContactPage,
+        onPreviousContacts: c.previousContactPage,
+        onGenerate: c.generate})}
+      {c.jobRequestId ? <CatchGap size="inline">
+        <CatchText as="p" variant="bodyM" role="status">Preparation status: {
+          c.job.data?.status === "completed" ? "Ready for review" :
+            c.job.data?.status === "running" ? "Still preparing" :
+              c.job.isError ? "Could not confirm status" : "Checking"}</CatchText>
+        <CatchButton {...small} label="Check again" onPressed={() => void c.job.refetch()} />
+      </CatchGap> : null}
+      <CatchText as="h3" variant="sectionTitle">Saved drafts</CatchText>
+      {c.drafts.isError ? <QueryProblem message="Saved drafts could not load." retry={() => void c.drafts.refetch()} /> : null}
+      {c.drafts.data?.rows.length ? c.drafts.data.rows.map((row) => <CatchIndexRow key={row.draftId} title={row.subject ?? "Message draft"} titleVariant="bodyM"
+        subtitle={`${label(row.status)} · ${date(row.createdAt)}`}
+        trailing={<CatchButton {...small} label="Open draft" onPressed={locked ? null : () => {
+          c.setSelectedDraftId(row.draftId); setFactsChecked(false); setToneChecked(false); setCopyStatus("");
+        }} />} />) : <CatchEmptyState title="No drafts have been prepared for this host." />}
+      {c.draft.isError ? <QueryProblem message="This draft is no longer current." retry={() => void c.draft.refetch()} /> : null}
+      {selected ? <>
+        <CatchText as="h3" variant="sectionTitle">Review exact draft</CatchText>
+        {selected.draft.subject ? <CatchMetaRow entries={[{label: "Subject", value: selected.draft.subject}]} /> : null}
+        <CatchField recipe="input" title="Draft text" maxLines={8} value={selected.draft.text} onChanged={() => undefined} inputMode="readOnly" />
+        <CatchMetaRow columns={2} entries={[
+          {label: "Source", value: "Reviewed evidence and approved wording"},
+          {label: "Model use", value: "None · deterministic wording"},
+          {label: "Status", value: label(selected.status)},
+        ]} />
+        {selected.status === "pending_review" ? <>
+          <CatchCheckboxInput value={factsChecked && acknowledgedDraftKey === reviewKey}
+            onChanged={(checked) => {setFactsChecked(checked); setAcknowledgedDraftKey(reviewKey);}}
+            label="I checked every factual claim against the current source." />
+          <CatchCheckboxInput value={toneChecked && acknowledgedDraftKey === reviewKey}
+            onChanged={(checked) => {setToneChecked(checked); setAcknowledgedDraftKey(reviewKey);}}
+            label="I approve the tone and understand this is manual copy only." />
+          <CatchButton {...small} label="Approve exact draft" onPressed={!factsChecked || !toneChecked || acknowledgedDraftKey !== reviewKey || locked ? null :
+            () => void c.review(selected.draftId, selected.draft.contentHash)} />
+        </> : <CatchButton {...small} label="Copy approved text" onPressed={locked ? null : () => void copy()} />}
+        {copyStatus ? <CatchText as="p" variant="supporting" role="status">{copyStatus}</CatchText> : null}
+      </> : null}
+    </CatchGap>
+  </CatchSection>;
 }

@@ -80,7 +80,7 @@ it("selects current approved sources and prepares a real private draft request",
     {target: {value: "capability-one"}});
   fireEvent.change(screen.getByLabelText("Question or next step"),
     {target: {value: "cta-one"}});
-  fireEvent.click(screen.getByRole("button", {name: "Prepare private draft"}));
+  fireEvent.click(screen.getByRole("button", {name: "Review plan and prepare private draft"}));
   await waitFor(() => expect(api.generate).toHaveBeenCalledOnce());
   expect(vi.mocked(api.generate).mock.calls[0][0].sourceRequest).toEqual({
     organizerId: "org-one", contactId: "contact-one",
@@ -128,10 +128,10 @@ it("lets an owner configure seven factors without seeded strategy", async () => 
     {name: "Set up private fit policy"}));
   expect(screen.getByLabelText("Factor 1 name")).toHaveProperty("value", "");
   for (let number = 1; number <= 7; number++) {
-    // Scope lookups to the factor's fieldset: label and role queries scan every
+    // Scope lookups to the factor's section: label and role queries scan every
     // element of this large form, which made the test brush its timeout.
-    const factor = within(screen.getByText(`Factor ${number}`, {selector: "legend"})
-      .closest("fieldset")!);
+    const factor = within(screen.getByRole("heading", {name: `Factor ${number}`})
+      .closest("section")!);
     fireEvent.change(factor.getByLabelText(`Factor ${number} name`),
       {target: {value: `Factor ${number}`}});
     fireEvent.change(factor.getByLabelText(`Factor ${number} weight out of 100`),
