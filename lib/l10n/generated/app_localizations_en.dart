@@ -25597,6 +25597,138 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get hostRequestsTab => 'Requests';
+
+  @override
+  String get hostRequestsEmptyTitle => 'No one is waiting';
+
+  @override
+  String get hostRequestsEmptyBody =>
+      'Join requests and your waitlists show here, across your coming events.';
+
+  @override
+  String hostRequestsFilterAll({required int count}) {
+    return 'All $count';
+  }
+
+  @override
+  String hostRequestsFilterAsked({required int count}) {
+    return 'Asked to join $count';
+  }
+
+  @override
+  String hostRequestsFilterWaitlist({required int count}) {
+    return 'Waitlist $count';
+  }
+
+  @override
+  String get hostRequestsPartial =>
+      'Showing the first people waiting. Open an event to see all of its guests.';
+
+  @override
+  String get hostRequestsGuest => 'A guest';
+
+  @override
+  String get hostRequestsNew => 'New';
+
+  @override
+  String hostRequestsEvents({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostRequestsWithYou({required String events}) {
+    return '$events with you';
+  }
+
+  @override
+  String hostRequestsAsked({required String history, required String date}) {
+    return '$history · asked $date';
+  }
+
+  @override
+  String hostRequestsPosition({required int position}) {
+    return 'Number $position on the waitlist';
+  }
+
+  @override
+  String hostRequestsOffered({required String date}) {
+    return 'Offered until $date';
+  }
+
+  @override
+  String get hostRequestsBack => 'Back to requests';
+
+  @override
+  String get hostRequestsFactEvent => 'Event';
+
+  @override
+  String get hostRequestsFactWhen => 'When';
+
+  @override
+  String get hostRequestsFactPlaces => 'Places left';
+
+  @override
+  String hostRequestsPlacesLeft({required int left, required int capacity}) {
+    return '$left of $capacity';
+  }
+
+  @override
+  String get hostRequestsFactWithYou => 'With you';
+
+  @override
+  String get hostRequestsJourney => 'How it got here';
+
+  @override
+  String get hostRequestsStepDone => 'Done';
+
+  @override
+  String get hostRequestsStepNow => 'Now';
+
+  @override
+  String get hostRequestsStepNext => 'Next';
+
+  @override
+  String hostRequestsCameBefore({required String events}) {
+    return 'Came to $events with you';
+  }
+
+  @override
+  String hostRequestsAskedStep({required String event}) {
+    return 'Asked to join $event';
+  }
+
+  @override
+  String hostRequestsWaitlistStep({required String event}) {
+    return 'Joined the waitlist for $event';
+  }
+
+  @override
+  String hostRequestsHears({required String name}) {
+    return '$name gets a notification';
+  }
+
+  @override
+  String hostRequestsHearsThen({required String name, required String next}) {
+    return '$name gets a notification · then $next';
+  }
+
+  @override
+  String get hostRequestsLetIn => 'Let them in';
+
+  @override
+  String get hostRequestsDecline => 'Decline';
+
+  @override
+  String get hostRequestsOffer => 'Offer a spot';
+
+  @override
   String get hostPayoutsRazorpayUnavailable =>
       'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.';
 

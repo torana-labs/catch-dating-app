@@ -466,6 +466,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `functions/src/shared/generated/listOrganizerProgramsCallablePayload.ts` | yes |
 | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallablePayload.ts` | yes |
 | ListOrganizerBillsCallablePayload | `callables/list_organizer_bills_payload.schema.json` | `functions/src/shared/generated/listOrganizerBillsCallablePayload.ts` | yes |
+| ListOrganizerRequestsCallablePayload | `callables/list_organizer_requests_payload.schema.json` | `functions/src/shared/generated/listOrganizerRequestsCallablePayload.ts` | yes |
 | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `functions/src/shared/generated/createOrganizerProgramCallablePayload.ts` | yes |
 | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `functions/src/shared/generated/updateOrganizerProgramCallablePayload.ts` | yes |
 | ArchiveProgramCallablePayload | `callables/archive_program_payload.schema.json` | `functions/src/shared/generated/archiveProgramCallablePayload.ts` | yes |
@@ -517,6 +518,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ProgramAccessCallableResponse | `callable_responses/program_access_response.schema.json` | `functions/src/shared/generated/programAccessCallableResponse.ts` | no |
 | ListMyHostAssignmentsCallableResponse | `callable_responses/list_my_host_assignments_response.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallableResponse.ts` | no |
 | ListOrganizerBillsCallableResponse | `callable_responses/list_organizer_bills_response.schema.json` | `functions/src/shared/generated/listOrganizerBillsCallableResponse.ts` | yes |
+| ListOrganizerRequestsCallableResponse | `callable_responses/list_organizer_requests_response.schema.json` | `functions/src/shared/generated/listOrganizerRequestsCallableResponse.ts` | yes |
 | OrganizerProgramCallableResponse | `callable_responses/organizer_program_response.schema.json` | `functions/src/shared/generated/organizerProgramCallableResponse.ts` | no |
 | ArchiveProgramCallableResponse | `callable_responses/archive_program_response.schema.json` | `functions/src/shared/generated/archiveProgramCallableResponse.ts` | no |
 | UnarchiveProgramCallableResponse | `callable_responses/unarchive_program_response.schema.json` | `functions/src/shared/generated/unarchiveProgramCallableResponse.ts` | no |
@@ -1193,6 +1195,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ListOrganizerProgramsCallableRequest | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_programs_callable_request.g.dart` |
 | ListMyHostAssignmentsCallableRequest | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_my_host_assignments_callable_request.g.dart` |
 | ListOrganizerBillsCallableRequest | ListOrganizerBillsCallablePayload | `callables/list_organizer_bills_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_bills_callable_request.g.dart` |
+| ListOrganizerRequestsCallableRequest | ListOrganizerRequestsCallablePayload | `callables/list_organizer_requests_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_requests_callable_request.g.dart` |
 | CreateOrganizerProgramCallableRequest | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_organizer_program_callable_request.g.dart` |
 | UpdateOrganizerProgramCallableRequest | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/update_organizer_program_callable_request.g.dart` |
 | ArchiveProgramCallableRequest | ArchiveProgramCallablePayload | `callables/archive_program_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/archive_program_callable_request.g.dart` |

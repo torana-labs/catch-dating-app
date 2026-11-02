@@ -233,6 +233,8 @@ import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_phone_import_use_cases;
+import 'package:widgetbook_workspace/hosts/host_requests_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_requests_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
     as _widgetbook_workspace_hosts_host_response_export_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
@@ -12106,6 +12108,36 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_payout_connection_use_cases
                             .hostRazorpayConnectionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRequestBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A request and a live waitlist offer',
+                    builder: _widgetbook_workspace_hosts_host_requests_use_cases
+                        .hostRequestBodyPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRequestsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reads who is waiting',
+                    builder: _widgetbook_workspace_hosts_host_requests_use_cases
+                        .hostRequestsScreenPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRequestsWorkspace',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Requests, waitlist and no one waiting',
+                    builder: _widgetbook_workspace_hosts_host_requests_use_cases
+                        .hostRequestsWorkspacePreview,
                   ),
                 ],
               ),
