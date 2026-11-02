@@ -2,7 +2,7 @@ import {defineArea, route} from "../adminAreaKit";
 
 declare module "../adminAreaKit" {
   interface AdminNavIds {"sales-hosts": true}
-  interface AdminRouteFields {salesHostPage: "main" | "privacy"}
+  interface AdminRouteFields {salesHostPage: "main" | "privacy" | "demo"}
 }
 
 export default defineArea({
@@ -20,5 +20,6 @@ export default defineArea({
     route("/sales/hosts/*", "sales-hosts"),
     route("/sales/hosts/:salesOrganizerId", "sales-hosts", {title: "Host"}),
     route("/sales/hosts/:salesOrganizerId/privacy", "sales-hosts", {title: "Privacy", salesHostPage: "privacy"}),
+    route("/sales/hosts/:salesOrganizerId/demo", "sales-hosts", {title: "Private demo", salesHostPage: "demo"}),
   ],
 });

@@ -1,19 +1,10 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchMetaRow, CatchSection, CatchText} from "@catch/web-ui";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useSalesDemoPartnerReviewController} from "../controllers/useSalesDemoPartnerReviewController";
 import type {SalesDemoPartnerReviewApi} from "../api/salesDemoPartnerReview";
 import type {DemoReviewWording} from "../../../shared/domain/salesDemoReview";
 import {useCallback, useEffect, useState} from "react";
-import {ClipboardList} from "lucide-react";
-import {
-  AdminButton,
-  AdminForm,
-  CheckboxField,
-  EmptyState,
-  Panel,
-  selectOptions,
-  StateRow,
-} from "../../../shared/ui/AdminPrimitives";
+import {selectChoices} from "../controllers/salesLabels";
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
   "../api/salesDemoManagement";
@@ -75,10 +66,7 @@ function validOrigin(): string | null {
 export function SalesDemoWorkspace({organizerId, organizerName, isAdminOwner,
   currentUserUid, api}: {organizerId: string; organizerName: string;
   isAdminOwner: boolean; currentUserUid: string; api?: DemoManagementApi}) {
-  if (!isAdminOwner) return <Panel title="Private workflow example"
-    icon={<ClipboardList size={18} />}>
-    <CatchText as="p" variant="supporting">An Admin owner can prepare and issue private demos.</CatchText>
-  </Panel>;
+  if (!isAdminOwner) return <CatchEmptyState title="Private workflow example" message="An Admin owner can prepare and issue private demos." />;
   return <OwnerDemoPanel key={`${currentUserUid}:${organizerId}`}
     organizerId={organizerId} organizerName={organizerName}
     currentUserUid={currentUserUid} api={api} />;
@@ -200,142 +188,105 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
     } catch {setCopyNotice("The link could not be copied. Try again.");}
   };
 
-  return <Panel title="Private workflow example" icon={<ClipboardList size={18} />}>
-    <CatchText as="p" variant="supporting">Build a private, synthetic example for {organizerName}. No real guests,
-      messages, charges, membership, or publication are changed.</CatchText>
-    {controller.capability.isPending ? <CatchText as="p" variant="supporting">Checking supported example…</CatchText> : null}
-    {!capabilityReady ? <CatchText as="p" variant="supporting" role="alert">The supported demo capability is
-      unavailable. The demo has not been enabled for this environment.</CatchText> : null}
-    {controller.error ? <CatchText as="p" variant="supporting" role="alert">{controller.error}</CatchText> : null}
-    {controller.notice ? <CatchText as="p" variant="supporting" role="status">{controller.notice}</CatchText> : null}
-    {controller.pending ? <AdminButton disabled={controller.busy}
-      onClick={() => void controller.retry()}>Retry unchanged request</AdminButton> : null}
-    {controller.blueprintExists && <AdminButton disabled={controller.busy || controller.blueprint.isFetching}
-      onClick={() => {void controller.blueprint.refetch(); void controller.capability.refetch();}}>Refresh example and access</AdminButton>}
-    {!sourceCurrent && <CatchText as="p" variant="supporting">Current example access is being checked or was denied. Refresh to review it.</CatchText>}
-    {sourceCurrent && <>
-    <CatchText as="h3" variant="sectionTitle">Saved examples</CatchText>
-    {controller.blueprintList.isError ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Saved examples could not be
-      loaded. <AdminButton onClick={() => void controller.blueprintList.refetch()}>
-        Try again</AdminButton></CatchText> : null}
-    {controller.blueprintList.data?.rows.map((item) =>
-      <StateRow key={item.blueprintId} label={item.preview.headline}
-        value={<>{item.state} · revision {item.revision}{" "}
-          <AdminButton disabled={locked}
-            onClick={() => selectBlueprint(item)}>Open</AdminButton></>} />)}
-    {controller.blueprintList.data?.nextCursor ? <AdminButton disabled={locked}
-      onClick={() => controller.nextBlueprintPage(
-        controller.blueprintList.data!.nextCursor!)}>
-        More examples</AdminButton> : null}
-    {controller.blueprintHistory.length ? <AdminButton disabled={locked}
-      onClick={controller.previousBlueprintPage}>Previous examples</AdminButton> : null}
-    {controller.blueprintHistory.length > 1 ? <AdminButton disabled={locked}
-      onClick={controller.firstBlueprintPage}>First examples</AdminButton> : null}
-    <AdminButton disabled={locked || !capabilityReady}
-      onClick={beginNew}>New example</AdminButton>
-    </>}
-    {selected && <SalesDemoPartnerSharePanel key={`${currentUserUid}:${organizerId}:${selected.blueprintId}`}
-      actorUid={currentUserUid} organizerId={organizerId} blueprintId={selected.blueprintId} blueprintRevision={selected.revision}
-      parentAccessCurrent={selected.state === "reviewed" && controller.blueprint.isSuccess && !controller.blueprint.isFetching &&
-        !controller.blueprint.isError && !dirty && !stale && !controller.busy && !controller.pending}
-      onPendingChange={reportSharingPending} onLoadWording={(wording) => edit({...form, preview: {...form.preview, ...wording}})} />}
-    {active && sourceCurrent ? <>
-      <CatchText as="h3" variant="sectionTitle">{selected ? "Edit example" : "New example"}</CatchText>
-      {controller.blueprint.isError ? <CatchText as="p" variant="supporting" role="alert">This blueprint could not
-        be loaded. Choose it again from the list.</CatchText> : null}
-      {stale ? <CatchText as="p" variant="supporting" role="alert">This blueprint changed while you were editing.
-        Review the current version before saving.</CatchText> : null}
-      <BlueprintEditor form={form} edit={edit} templateOptions={
-        controller.capability.data?.templateOptions ?? []} disabled={locked ||
-        selected?.state === "withdrawn"} />
-      <AdminButton variant="primary" disabled={locked || !capabilityReady ||
-        !previewValid || !setupValid || stale || selected?.state === "withdrawn" ||
-        (controller.blueprintExists && !dirty)} onClick={() => void save()}>
-        Save draft</AdminButton>
-      {selected?.state === "draft" ? <AdminButton disabled={locked || dirty ||
-        stale} onClick={() => void controller.change("review",
-        selected.blueprintId, formRevision)}>Mark reviewed</AdminButton> : null}
-      {selected && selected.state !== "withdrawn" ? <AdminButton
-        disabled={locked || dirty || stale}
-        onClick={() => void controller.change("withdraw",
-          selected.blueprintId, formRevision)}>Withdraw example</AdminButton> : null}
-      {selected?.state === "reviewed" && !dirty ? <>
-        <CatchText as="h3" variant="sectionTitle">Issue private invitation</CatchText>
-        <CatchText as="p" variant="supporting">An unbound link shows the preview only. Interactive access requires
-          an intended email or verified phone.</CatchText>
-        <AdminForm onSubmit={(event) => {event.preventDefault(); void issue();}}>
-          <CatchField
-            recipe="select"
-            title="Who may try it?"
-            value={contactKind}
-            onChanged={(value) => setContactKind((value ?? "") as typeof contactKind)}
-            inputMode={locked ? "inactive" : "editable"}
-            {...selectOptions([
-              {value: "preview", label: "Preview only"},
-              {value: "email", label: "Verified email"},
-              {value: "phone", label: "Verified phone"},
-            ])}
-          />
-          {contactKind !== "preview" ? <CatchField recipe="input" title={contactKind === "email" ?
-            "Intended email" : "Intended phone (+country code)"}
-          keyboardType={contactKind === "email" ? "emailAddress" : "phone"}
-          value={contactValue} onChanged={setContactValue} inputMode={locked ? "inactive" : "editable"} /> : null}
-          <CatchField
-            recipe="input"
-            title="Expires (within seven days)"
-            value={expiresAt}
-            onChanged={setExpiresAt}
-            inputMode={locked ? "inactive" : "editable"}
-            keyboardType="datetime"
-          />
-          {expiresAt && !expiryValid ? <CatchText as="p" variant="supporting" role="alert">Choose a future expiry
-            within seven days.</CatchText> : null}
-          <CatchField
-            recipe="select"
-            title="Maximum trial sessions"
-            value={sessionCap}
-            onChanged={(value) => setSessionCap(value ?? "")}
-            inputMode={locked ? "inactive" : "editable"}
-            {...selectOptions([
-              {value: "1", label: "One"}, {value: "2", label: "Two"},
-              {value: "3", label: "Three"},
-            ])}
-          />
-          <AdminButton type="submit" variant="primary" disabled={locked ||
-            !expiryValid || (contactKind !== "preview" && !contactValue.trim())}>
-            Issue invitation</AdminButton>
-        </AdminForm>
+  const small = {variant: "secondary", size: "sm"} as const;
+  return <CatchSection title="Private workflow example" dividers="none">
+    <CatchGap size="section">
+      <CatchGap size="related">
+        <CatchText as="p" variant="supporting">Build a private, synthetic example for {organizerName}. No real guests,
+          messages, charges, membership, or publication are changed.</CatchText>
+        {controller.capability.isPending ? <CatchText as="p" variant="supporting">Checking supported example…</CatchText> : null}
+        {!capabilityReady ? <CatchText as="p" variant="supporting" role="alert">The supported demo capability is
+          unavailable. The demo has not been enabled for this environment.</CatchText> : null}
+        {controller.error ? <CatchText as="p" variant="supporting" role="alert">{controller.error}</CatchText> : null}
+        {controller.notice ? <CatchText as="p" variant="supporting" role="status">{controller.notice}</CatchText> : null}
+        {controller.pending ? <CatchButton {...small} label="Retry unchanged request" onPressed={controller.busy ? null : () => void controller.retry()} /> : null}
+        {controller.blueprintExists ? <CatchButton {...small} label="Refresh example and access" onPressed={controller.busy || controller.blueprint.isFetching ? null :
+          () => {void controller.blueprint.refetch(); void controller.capability.refetch();}} /> : null}
+        {!sourceCurrent ? <CatchText as="p" variant="supporting">Current example access is being checked or was denied. Refresh to review it.</CatchText> : null}
+      </CatchGap>
+      {sourceCurrent ? <CatchGap size="related">
+        <CatchSection title="Saved examples" dividers="none"
+          {...(controller.blueprintList.isError ? {empty: <CatchEmptyState title="Saved examples could not be loaded"
+            actions={<CatchButton {...small} label="Try again" onPressed={() => void controller.blueprintList.refetch()} />} />} : {})}>
+          {controller.blueprintList.data?.rows.map((item) => <CatchIndexRow key={item.blueprintId} title={item.preview.headline} titleVariant="bodyM"
+            subtitle={`${item.state} · revision ${item.revision}`}
+            trailing={<CatchButton {...small} label="Open" onPressed={locked ? null : () => selectBlueprint(item)} />} />)}
+        </CatchSection>
+        <CatchGap size="inline" direction="horizontal" wrap>
+          {controller.blueprintList.data?.nextCursor ? <CatchButton {...small} label="More examples" onPressed={locked ? null :
+            () => controller.nextBlueprintPage(controller.blueprintList.data!.nextCursor!)} /> : null}
+          {controller.blueprintHistory.length ? <CatchButton {...small} label="Previous examples" onPressed={locked ? null : controller.previousBlueprintPage} /> : null}
+          {controller.blueprintHistory.length > 1 ? <CatchButton {...small} label="First examples" onPressed={locked ? null : controller.firstBlueprintPage} /> : null}
+          <CatchButton {...small} label="New example" onPressed={locked || !capabilityReady ? null : beginNew} />
+        </CatchGap>
+      </CatchGap> : null}
+      {selected ? <SalesDemoPartnerSharePanel key={`${currentUserUid}:${organizerId}:${selected.blueprintId}`}
+        actorUid={currentUserUid} organizerId={organizerId} blueprintId={selected.blueprintId} blueprintRevision={selected.revision}
+        parentAccessCurrent={selected.state === "reviewed" && controller.blueprint.isSuccess && !controller.blueprint.isFetching &&
+          !controller.blueprint.isError && !dirty && !stale && !controller.busy && !controller.pending}
+        onPendingChange={reportSharingPending} onLoadWording={(wording) => edit({...form, preview: {...form.preview, ...wording}})} /> : null}
+      {active && sourceCurrent ? <>
+        <CatchSection title={selected ? "Edit example" : "New example"} dividers="none">
+          <CatchGap size="related">
+            {controller.blueprint.isError ? <CatchText as="p" variant="supporting" role="alert">This blueprint could not
+              be loaded. Choose it again from the list.</CatchText> : null}
+            {stale ? <CatchText as="p" variant="supporting" role="alert">This blueprint changed while you were editing.
+              Review the current version before saving.</CatchText> : null}
+            <BlueprintEditor form={form} edit={edit} templateOptions={controller.capability.data?.templateOptions ?? []}
+              disabled={locked || selected?.state === "withdrawn"} />
+            <CatchGap size="inline" direction="horizontal" wrap>
+              <CatchButton size="sm" label="Save draft" onPressed={locked || !capabilityReady || !previewValid || !setupValid || stale ||
+                selected?.state === "withdrawn" || (controller.blueprintExists && !dirty) ? null : () => void save()} />
+              {selected?.state === "draft" ? <CatchButton {...small} label="Mark reviewed" onPressed={locked || dirty || stale ? null :
+                () => void controller.change("review", selected.blueprintId, formRevision)} /> : null}
+              {selected && selected.state !== "withdrawn" ? <CatchButton {...small} label="Withdraw example" onPressed={locked || dirty || stale ? null :
+                () => void controller.change("withdraw", selected.blueprintId, formRevision)} /> : null}
+            </CatchGap>
+          </CatchGap>
+        </CatchSection>
+        {selected?.state === "reviewed" && !dirty ? <CatchSection title="Issue private invitation" dividers="none">
+          <CatchGap size="related">
+            <CatchText as="p" variant="supporting">An unbound link shows the preview only. Interactive access requires
+              an intended email or verified phone.</CatchText>
+            <CatchField recipe="select" title="Who may try it?" value={contactKind} inputMode={locked ? "inactive" : "editable"}
+              onChanged={(value) => setContactKind((value ?? "") as typeof contactKind)}
+              {...selectChoices([{value: "preview", label: "Preview only"}, {value: "email", label: "Verified email"}, {value: "phone", label: "Verified phone"}])} />
+            {contactKind !== "preview" ? <CatchField recipe="input" title={contactKind === "email" ? "Intended email" : "Intended phone (+country code)"}
+              keyboardType={contactKind === "email" ? "emailAddress" : "phone"} value={contactValue} onChanged={setContactValue}
+              inputMode={locked ? "inactive" : "editable"} /> : null}
+            <CatchField recipe="input" title="Expires (within seven days)" value={expiresAt} onChanged={setExpiresAt}
+              inputMode={locked ? "inactive" : "editable"} keyboardType="datetime" />
+            {expiresAt && !expiryValid ? <CatchText as="p" variant="supporting" role="alert">Choose a future expiry within seven days.</CatchText> : null}
+            <CatchField recipe="select" title="Maximum trial sessions" value={sessionCap} onChanged={(value) => setSessionCap(value ?? "")}
+              inputMode={locked ? "inactive" : "editable"}
+              {...selectChoices([{value: "1", label: "One"}, {value: "2", label: "Two"}, {value: "3", label: "Three"}])} />
+            <CatchButton size="sm" label="Issue invitation" onPressed={locked || !expiryValid || (contactKind !== "preview" && !contactValue.trim()) ? null : () => void issue()} />
+          </CatchGap>
+        </CatchSection> : null}
+        <CatchSection title="Invitations" dividers="none"
+          {...(controller.invitationList.isError ? {empty: <CatchEmptyState title="Invitations could not be loaded"
+            actions={<CatchButton {...small} label="Try again" onPressed={() => void controller.invitationList.refetch()} />} />} : {})}
+          {...(controller.invitationList.isPending ? {note: "Loading invitations…"} : {})}>
+          {controller.invitationList.data?.rows.map((item) => <CatchIndexRow key={item.invitationId} titleVariant="bodyM"
+            title={item.revoked ? "Revoked invitation" : "Active invitation"}
+            subtitle={`Expires ${new Date(item.expiresAt).toLocaleString()} · ${item.sessionCount}/${item.sessionCap} sessions`}
+            {...(!item.revoked ? {trailing: <CatchButton {...small} label="Revoke" onPressed={locked ? null : () => void controller.revoke(item.invitationId, item.revision)} />} : {})} />)}
+        </CatchSection>
+        <CatchGap size="inline" direction="horizontal" wrap>
+          {controller.invitationList.data?.nextCursor ? <CatchButton {...small} label="More invitations" onPressed={locked ? null :
+            () => controller.nextInvitationPage(controller.invitationList.data!.nextCursor!)} /> : null}
+          {controller.invitationHistory.length ? <CatchButton {...small} label="Previous invitations" onPressed={locked ? null : controller.previousInvitationPage} /> : null}
+          {controller.invitationHistory.length > 1 ? <CatchButton {...small} label="First invitations" onPressed={locked ? null : controller.firstInvitationPage} /> : null}
+        </CatchGap>
+        {controller.issuedGrant ? <CatchText as="p" variant="supporting" role="status">Invitation issued.
+          The private link is available here until you leave this view.</CatchText> : null}
+        {controller.issuedGrant && validOrigin() ? <CatchButton {...small} label="Copy private link" onPressed={locked ? null : () => void copyLink()} /> : null}
+        {controller.issuedGrant && !validOrigin() ? <CatchText as="p" variant="supporting" role="alert">
+          Public site origin is unavailable; link copying is disabled.</CatchText> : null}
+        {copyNotice ? <CatchText as="p" variant="supporting" role="status">{copyNotice}</CatchText> : null}
       </> : null}
-      <CatchText as="h3" variant="sectionTitle">Invitations</CatchText>
-      {controller.invitationList.isPending ? <CatchText as="p" variant="supporting">Loading invitations…</CatchText> : null}
-      {controller.invitationList.isError ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Invitations could not
-        be loaded. <AdminButton onClick={() => void controller.invitationList.refetch()}>
-          Try again</AdminButton></CatchText> : null}
-      {controller.invitationList.data?.rows.map((item) =>
-        <StateRow key={item.invitationId} label={item.revoked ?
-          "Revoked invitation" : "Active invitation"} value={<>
-          Expires {new Date(item.expiresAt).toLocaleString()} ·
-          {item.sessionCount}/{item.sessionCap} sessions{" "}
-          {!item.revoked ? <AdminButton disabled={locked}
-            onClick={() => void controller.revoke(item.invitationId,
-              item.revision)}>Revoke</AdminButton> : null}</>} />)}
-      {controller.invitationList.data?.nextCursor ? <AdminButton
-        disabled={locked} onClick={() => controller.nextInvitationPage(
-          controller.invitationList.data!.nextCursor!)}>
-          More invitations</AdminButton> : null}
-      {controller.invitationHistory.length ? <AdminButton disabled={locked}
-        onClick={controller.previousInvitationPage}>Previous invitations</AdminButton> : null}
-      {controller.invitationHistory.length > 1 ? <AdminButton disabled={locked}
-        onClick={controller.firstInvitationPage}>First invitations</AdminButton> : null}
-      {controller.issuedGrant ? <CatchText as="p" variant="supporting" role="status">Invitation issued.
-        The private link is available here until you leave this view.</CatchText> : null}
-      {controller.issuedGrant && validOrigin() ? <AdminButton disabled={locked}
-        onClick={() => void copyLink()}>Copy private link</AdminButton> : null}
-      {controller.issuedGrant && !validOrigin() ? <CatchText as="p" variant="supporting" role="alert">
-        Public site origin is unavailable; link copying is disabled.</CatchText> : null}
-      {copyNotice ? <CatchText as="p" variant="supporting" role="status">{copyNotice}</CatchText> : null}
-    </> : null}
-  </Panel>;
+    </CatchGap>
+  </CatchSection>;
 }
 
 function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormState;
@@ -343,7 +294,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
   templateOptions: Array<{templateId: string; title: string}>}) {
   const setPreview = (patch: Partial<DemoPreviewCopy>) => edit({...form,
     preview: {...form.preview, ...patch}});
-  return <AdminForm onSubmit={(event) => event.preventDefault()}>
+  return <CatchGap size="related">
     <CatchText as="h4" variant="titleS">After the sample</CatchText>
     <CatchText as="p" variant="supporting">This plan is reviewed separately. It never publishes a form or copies
       sample answers into a real form.</CatchText>
@@ -352,7 +303,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       title="Setup approach"
       value={form.setupPlan.mode}
       inputMode={disabled ? "inactive" : "editable"}
-      {...selectOptions([{value: "manual", label: "Manual handoff"},
+      {...selectChoices([{value: "manual", label: "Manual handoff"},
         {value: "template", label: "Prepare a reviewed form template"}])}
       onChanged={(value) => edit({...form, setupPlan: (value ?? "") === "template" ?
         {mode: "template", requirements: form.setupPlan.requirements,
@@ -365,7 +316,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
         title="Reviewed form template"
         inputMode={disabled ? "inactive" : "editable"}
         value={form.setupPlan.templateId}
-        {...selectOptions([{value: "", label: "Choose a template"},
+        {...selectChoices([{value: "", label: "Choose a template"},
           ...templateOptions.map((item) => ({value: item.templateId,
             label: item.title}))])}
         onChanged={(templateId) => {
@@ -455,49 +406,24 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       title={label}
       value={form.review[area]}
       inputMode={disabled ? "inactive" : "editable"}
-      {...selectOptions(dispositions)}
+      {...selectChoices(dispositions)}
       onChanged={(value) => edit({...form,
         review: {...form.review, [area]: (value ?? "") as DemoDisposition}})}
     />)}
     <CatchText as="h4" variant="titleS">Field mapping</CatchText>
-    {form.mappings.map((mapping, index) => <div key={index}>
-      <CatchField
-        recipe="input"
-        title={`Source field ${index + 1}`}
-        value={mapping.sourceField}
-        inputMode={disabled ? "inactive" : "editable"}
-        onChanged={(sourceField) => edit({...form,
-          mappings: form.mappings.map((part, at) => at === index ?
-            {...part, sourceField} : part)})}
-      />
-      <CatchField
-        recipe="input"
-        title={`Catch field ${index + 1} (if supported)`}
-        value={mapping.catchField ?? ""}
-        inputMode={disabled ? "inactive" : "editable"}
-        onChanged={(catchField) => edit({...form,
-          mappings: form.mappings.map((part, at) => at === index ?
-            {...part, catchField: catchField || null} : part)})}
-      />
-      <CatchField
-        recipe="select"
-        title={`Mapping outcome ${index + 1}`}
-        value={mapping.disposition}
-        inputMode={disabled ? "inactive" : "editable"}
-        {...selectOptions(dispositions)}
-        onChanged={(value) => edit({...form,
-          mappings: form.mappings.map((part, at) => at === index ?
-            {...part, disposition: (value ?? "") as DemoDisposition} : part)})}
-      />
-      <AdminButton disabled={disabled} onClick={() => edit({...form,
-        mappings: form.mappings.filter((_, at) => at !== index)})}>
-        Remove mapping</AdminButton>
-    </div>)}
-    <AdminButton disabled={disabled || form.mappings.length >= 30}
-      onClick={() => edit({...form, mappings: [...form.mappings,
-        {sourceField: "", catchField: null, disposition: "manual"}]})}>
-      Add field mapping</AdminButton>
-  </AdminForm>;
+    {form.mappings.map((mapping, index) => <CatchGap key={index} size="related">
+      <CatchField recipe="input" title={`Source field ${index + 1}`} value={mapping.sourceField} inputMode={disabled ? "inactive" : "editable"}
+        onChanged={(sourceField) => edit({...form, mappings: form.mappings.map((part, at) => at === index ? {...part, sourceField} : part)})} />
+      <CatchField recipe="input" title={`Catch field ${index + 1} (if supported)`} value={mapping.catchField ?? ""} inputMode={disabled ? "inactive" : "editable"}
+        onChanged={(catchField) => edit({...form, mappings: form.mappings.map((part, at) => at === index ? {...part, catchField: catchField || null} : part)})} />
+      <CatchField recipe="select" title={`Mapping outcome ${index + 1}`} value={mapping.disposition} inputMode={disabled ? "inactive" : "editable"}
+        {...selectChoices(dispositions)}
+        onChanged={(value) => edit({...form, mappings: form.mappings.map((part, at) => at === index ? {...part, disposition: (value ?? "") as DemoDisposition} : part)})} />
+      <CatchButton variant="secondary" size="sm" label="Remove mapping" onPressed={disabled ? null : () => edit({...form, mappings: form.mappings.filter((_, at) => at !== index)})} />
+    </CatchGap>)}
+    <CatchButton variant="secondary" size="sm" label="Add field mapping" onPressed={disabled || form.mappings.length >= 30 ? null : () => edit({...form,
+      mappings: [...form.mappings, {sourceField: "", catchField: null, disposition: "manual"}]})} />
+  </CatchGap>;
 }
 
 function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: string; blueprintId: string;
@@ -513,39 +439,47 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
   const expiryValid = value && Number.isFinite(expiry) && expiry > Date.now() && expiry <= Date.parse(value.maximumExpiresAt);
   const blocked = operationPending || c.busy || !!c.ticket;
   if (!props.parentAccessCurrent) return null;
-  return <Panel title="Share a preview with the assigned partner" icon={<ClipboardList />}>
-    <CatchText as="p" variant="supporting">Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</CatchText>
-    {c.error && <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText>}{c.notice && <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText>}
-    <AdminButton disabled={operationPending || c.busy} onClick={() => void c.refresh()}>Refresh sharing scope</AdminButton>
-    {c.ticket && <AdminButton disabled={operationPending || c.busy || !value} onClick={() => void c.retry()}>Retry unchanged sharing action</AdminButton>}
-    {!value ? <EmptyState>A current accepted partner and reviewed canonical preview are required.</EmptyState> : <>
-      <StateRow label="Recipient account" value={value.partnerUid} /><StateRow label="Assignment revision" value={value.assignmentRevision} />
-      <StateRow label="Preview fingerprint" value={value.previewHash} />
-      <CatchText as="h3" variant="sectionTitle">{value.preview.headline}</CatchText><CatchText as="p" variant="supporting">{value.preview.scenario}</CatchText>
-      <ol>{value.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
-      {value.preview.retainedTools.map((tool, i) => <CatchText as="p" variant="supporting" key={i}>Keep: {tool}</CatchText>)}
-      {value.preview.limitations.map((limit, i) => <CatchText as="p" variant="supporting" key={i}>{limit}</CatchText>)}<CatchText as="p" variant="supporting">{value.preview.cta}</CatchText>
-      <StateRow label="Current sharing" value={value.sharingCurrent ? `Active until ${value.expiresAt}` : value.sharingState} />
-      <CatchField
-        recipe="input"
-        title="Share until (UTC)"
-        value={expires}
-        inputMode={blocked ? "inactive" : "editable"}
-        onChanged={(v) => {setExpires(v); setReviewKey(null);}}
-        keyboardType="datetime"
-      />
-      <CatchText as="p" variant="supporting">Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</CatchText>
-      <CheckboxField label="I approve this exact synthetic preview for this assigned partner" checked={!!key && reviewKey === key}
-        disabled={blocked} onChange={(checked) => setReviewKey(checked ? key : null)} />
-      <AdminButton disabled={blocked || !key || reviewKey !== key || !expiryValid} onClick={() => {
-        setReviewKey(null); void c.share("share", new Date(expiry).toISOString());}}>Share this preview</AdminButton>
-      <AdminButton disabled={blocked || value.sharingState === "none" || !key || reviewKey !== key} onClick={() => {
-        setReviewKey(null); void c.share("withdraw", null);}}>Withdraw partner sharing</AdminButton>
-      {value.proposedWording && <>
-        <CatchText as="h3" variant="sectionTitle">Pending partner wording</CatchText><CatchText as="p" variant="supporting">{value.proposedWording.headline}</CatchText><CatchText as="p" variant="supporting">{value.proposedWording.scenario}</CatchText><CatchText as="p" variant="supporting">{value.proposedWording.cta}</CatchText>
-        <AdminButton disabled={blocked} onClick={() => props.onLoadWording(value.proposedWording!)}>Load proposal into draft editor</AdminButton>
-        <CatchText as="p" variant="supporting">Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</CatchText>
+  const small = {variant: "secondary", size: "sm"} as const;
+  return <CatchSection title="Share a preview with the assigned partner" dividers="none">
+    <CatchGap size="related">
+      <CatchText as="p" variant="supporting">Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</CatchText>
+      {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
+      {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
+      <CatchButton {...small} label="Refresh sharing scope" onPressed={operationPending || c.busy ? null : () => void c.refresh()} />
+      {c.ticket ? <CatchButton {...small} label="Retry unchanged sharing action" onPressed={operationPending || c.busy || !value ? null : () => void c.retry()} /> : null}
+      {!value ? <CatchEmptyState title="A current accepted partner and reviewed canonical preview are required." /> : <>
+        <CatchMetaRow columns={2} entries={[
+          {label: "Recipient account", value: value.partnerUid},
+          {label: "Assignment revision", value: String(value.assignmentRevision)},
+          {label: "Preview fingerprint", value: value.previewHash, wide: true},
+          {label: "Current sharing", value: value.sharingCurrent ? `Active until ${value.expiresAt}` : value.sharingState, wide: true},
+        ]} />
+        <CatchText as="h3" variant="sectionTitle">{value.preview.headline}</CatchText>
+        <CatchText as="p" variant="supporting">{value.preview.scenario}</CatchText>
+        {value.preview.steps.map((step, i) => <CatchText as="p" variant="supporting" key={i}>{i + 1}. {step}</CatchText>)}
+        {value.preview.retainedTools.map((tool, i) => <CatchText as="p" variant="supporting" key={i}>Keep: {tool}</CatchText>)}
+        {value.preview.limitations.map((limit, i) => <CatchText as="p" variant="supporting" key={i}>{limit}</CatchText>)}
+        <CatchText as="p" variant="supporting">{value.preview.cta}</CatchText>
+        <CatchField recipe="input" title="Share until (UTC)" value={expires} inputMode={blocked ? "inactive" : "editable"}
+          onChanged={(v) => {setExpires(v); setReviewKey(null);}} keyboardType="datetime" />
+        <CatchText as="p" variant="supporting">Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</CatchText>
+        <CatchCheckboxInput label="I approve this exact synthetic preview for this assigned partner" value={!!key && reviewKey === key}
+          onChanged={blocked ? null : (checked) => setReviewKey(checked ? key : null)} />
+        <CatchGap size="inline" direction="horizontal" wrap>
+          <CatchButton size="sm" label="Share this preview" onPressed={blocked || !key || reviewKey !== key || !expiryValid ? null : () => {
+            setReviewKey(null); void c.share("share", new Date(expiry).toISOString());}} />
+          <CatchButton {...small} label="Withdraw partner sharing" onPressed={blocked || value.sharingState === "none" || !key || reviewKey !== key ? null : () => {
+            setReviewKey(null); void c.share("withdraw", null);}} />
+        </CatchGap>
+        {value.proposedWording ? <>
+          <CatchText as="h3" variant="sectionTitle">Pending partner wording</CatchText>
+          <CatchText as="p" variant="supporting">{value.proposedWording.headline}</CatchText>
+          <CatchText as="p" variant="supporting">{value.proposedWording.scenario}</CatchText>
+          <CatchText as="p" variant="supporting">{value.proposedWording.cta}</CatchText>
+          <CatchButton {...small} label="Load proposal into draft editor" onPressed={blocked ? null : () => props.onLoadWording(value.proposedWording!)} />
+          <CatchText as="p" variant="supporting">Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</CatchText>
+        </> : null}
       </>}
-    </>}
-  </Panel>;
+    </CatchGap>
+  </CatchSection>;
 }
