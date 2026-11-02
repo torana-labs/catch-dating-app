@@ -73,7 +73,7 @@ const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPa
       observedAt: "2026-10-29T09:00:00.000Z", confidence: "medium" as const, normalizedValue: "About four events a month"}}],
   suggestionsFailed: false, retrySuggestions: noop, hasMoreSuggestions: false, moreSuggestions: noop, reviewSuggestion: async () => true, setHold: async () => true,
   contactsFailed: false, retryContacts: noop, hasMoreContacts: false, moreContacts: noop, reviewContact: async () => true,
-  canEditResearch: true, uid: "sample-owner", isSaving: false, isAdminOwner: true, commercial: null,
+  canEditResearch: true, uid: "sample-owner", isSaving: false, isAdminOwner: true, commercial: null, renderPartnerOffer: null,
   rows: hosts.map(([organizerId, name], index) => ({organizerId, name, city: "Mumbai",
     researchStatus: index < 2 ? "qualified" as const : "needs_research" as const, stage: index < 3 ? "in_conversation" : null,
     nextAction: index === 0 ? "Demo call on Tuesday" : null}))};
@@ -82,13 +82,13 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenPrivacy={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenPrivacy={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
 };
 
 const quoteTerms = {currency: "INR", amountMinor: 500_000, billingCadence: "monthly" as const, scope: "Booking pages and guest messages for one host",

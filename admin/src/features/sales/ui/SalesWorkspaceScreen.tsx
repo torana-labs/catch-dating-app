@@ -1,5 +1,4 @@
 import {CatchBadge, CatchButton, CatchField, CatchText} from "@catch/web-ui";
-import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
@@ -111,9 +110,6 @@ export function SalesWorkspaceScreen({
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   const {setError, setNotice} = useAdminFeedback();
-  const operationPending = useAdminOperationPending();
-  const [showPrivacy, setShowPrivacy] = useState(false);
-  useEffect(() => setShowPrivacy(false), [selectedOrganizerId, currentUserUid]);
   const controller = useSalesWorkspaceController({
     area, selectedOrganizerId, assignedStaffOnly,
     onError: setError, onNotice: setNotice,
@@ -145,20 +141,10 @@ export function SalesWorkspaceScreen({
       ) : null}
       {selectedOrganizerId ? (
         <>
-          {isAdminOwner ? <AdminToolbar>
-            <AdminButton disabled={operationPending}
-              onClick={() => setShowPrivacy((value) => !value)}>
-              {showPrivacy ? "Back to host details" : "Privacy controls"}
-            </AdminButton>
-          </AdminToolbar> : null}
-          {showPrivacy && isAdminOwner ? renderSalesPrivacyWorkspace({
-            actorUid: currentUserUid, isAdminOwner,
-            organizerId: selectedOrganizerId,
-            organizerName: controller.detail.data?.organizerSummary.name,
-          }) : <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
+          <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
             controller={controller} currentUserUid={currentUserUid}
             isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
-            onOpenOrganizer={onOpenOrganizer} />}
+            onOpenOrganizer={onOpenOrganizer} />
         </>
       ) : assignedStaffOnly && !staffAreaAllowed ? (
         <Panel title="Assigned Sales access" icon={<ClipboardList size={18} />}>
@@ -582,8 +568,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
       <HostCustomFields
       detail={detail} controller={controller} /> : null}
-    {!assignedStaffOnly && visibleTab === "overview" ? renderSalesPartnerOffer(
-      currentUserUid, detail.account.organizerId, detail.organizerSummary.name) : null}
     <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}
       currentUserUid={currentUserUid} assignedStaffOnly={assignedStaffOnly} />
   </AdminDetailScreenStack>;
