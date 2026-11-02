@@ -1066,6 +1066,7 @@ export {
   adminManageOrganizerBills,
   generateOrganizerBillsMonthly,
 } from "./money/organizerBills";
+export {listOrganizerBills} from "./money/organizerOwnBills";
 export {adminManageMoneySettings} from "./money/moneySettings";
 export {adminManageNominatorCredits} from "./money/nominatorCredits";
 export {adminManagePlatformCosts} from "./money/platformCosts";
