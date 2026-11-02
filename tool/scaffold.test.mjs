@@ -328,41 +328,19 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
   });
 
   test("build_runner writes the same provider, whatever the name's length", () => {
-    const lock = fs.readFileSync(inTree("pubspec.lock"), "utf8");
-    const pinned = (name) => new RegExp(`^ {2}${name}:\\n(?: {4}.*\\n)*? {4}version: "([^"]+)"`, "mu").exec(lock)[1];
-    const probe = fs.mkdtempSync(path.join(os.tmpdir(), "catch-scaffold-generator-"));
-    try {
-      fs.mkdirSync(path.join(probe, "lib"));
-      fs.writeFileSync(path.join(probe, "pubspec.yaml"), [
-        "name: scaffold_generator_probe",
-        "publish_to: none",
-        "environment:",
-        "  sdk: ^3.12.0",
-        "dependencies:",
-        `  riverpod_annotation: ${pinned("riverpod_annotation")}`,
-        "dev_dependencies:",
-        `  build_runner: ${pinned("build_runner")}`,
-        `  riverpod_generator: ${pinned("riverpod_generator")}`,
-        "",
-      ].join("\n"));
-      const screens = [
-        ["apps/host/lib/today_probe", "today_probe"],
-        ["apps/consumer/lib/discover_probe", "event_setup_review_probe"],
-      ];
-      for (const [folder, name] of screens) {
-        fs.copyFileSync(inTree(folder, `${name}_view_model.dart`), path.join(probe, "lib", `${name}_view_model.dart`));
-      }
-      assertOk(run("dart", ["pub", "get", "--offline"], probe), "generator pub get");
-      assertOk(run("dart", ["run", "build_runner", "build", "--delete-conflicting-outputs"], probe), "build_runner");
-      for (const [folder, name] of screens) {
-        assert.equal(
-          fs.readFileSync(inTree(folder, `${name}_view_model.g.dart`), "utf8"),
-          fs.readFileSync(path.join(probe, "lib", `${name}_view_model.g.dart`), "utf8"),
-          `${name}_view_model.g.dart differs from build_runner's output; update tool/scaffold/templates/screen/view_model.g.dart.tmpl`,
-        );
-      }
-    } finally {
-      fs.rmSync(probe, {recursive: true, force: true});
+    const screens = [
+      ["apps/host", "lib/today_probe", "today_probe"],
+      ["apps/consumer", "lib/discover_probe", "event_setup_review_probe"],
+    ];
+    for (const [app, folder, name] of screens) {
+      const generated = inTree(app, folder, `${name}_view_model.g.dart`);
+      const scaffolded = fs.readFileSync(generated, "utf8");
+      assertOk(run("dart", ["run", "build_runner", "build", "--delete-conflicting-outputs"], inTree(app)), `build_runner in ${app}`);
+      assert.equal(
+        fs.readFileSync(generated, "utf8"),
+        scaffolded,
+        `${name}_view_model.g.dart differs from build_runner's output; update tool/scaffold/templates/screen/view_model.g.dart.tmpl`,
+      );
     }
   });
 
@@ -398,14 +376,18 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     assertOk(run(process.execPath, ["tool/design/check_component_lexicon.mjs", "--surfaces-only"], tree), "component lexicon");
   });
 
-  test("the printed top-bar contract satisfies its check", () => {
+  test("the printed top-bar contracts satisfy their check", () => {
     const manifestPath = inTree("tool/design/screen_top_bar_contracts.json");
-    const before = run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree);
-    assert.notEqual(before.status, 0, "a new screen should need a contract");
-    assert.match(before.stdout + before.stderr, /page_probe_screen\.dart: unregistered-app-bar/u);
+    const unregistered = run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree);
+    assert.notEqual(unregistered.status, 0, "a new screen should need a contract");
+    for (const screen of ["today_probe_screen", "event_setup_review_probe_screen", "page_probe_screen"]) {
+      assert.match(unregistered.stdout + unregistered.stderr, new RegExp(`${screen}\\.dart: unregistered-app-bar`, "u"));
+    }
     const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-    const printed = /screen_top_bar_contracts\.json, under contracts:\n {2}(\{.*\})/u.exec(outputs.get("screen:--page:page_probe"))[1];
-    manifest.contracts.push(JSON.parse(printed));
+    for (const stdout of outputs.values()) {
+      const printed = /screen_top_bar_contracts\.json, under contracts:\n {2}(\{.*\})/u.exec(stdout)?.[1];
+      if (printed) manifest.contracts.push(JSON.parse(printed));
+    }
     fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
     assertOk(run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree), "top-bar contracts");
   });
