@@ -28,6 +28,45 @@ void main() {
     expect(_findings('apps/host/lib/today/today_state.dart', source), 1);
   });
 
+  test('the new roots make the promise by path for composition files', () {
+    const riverpod =
+        "import 'package:flutter_riverpod/flutter_riverpod.dart';\n";
+    const router = "import 'package:go_router/go_router.dart';\n";
+    for (final path in const [
+      'apps/host/lib/today/today_body.dart',
+      'apps/host/lib/today/widgets/today_row.dart',
+      'apps/consumer/lib/explore/widgets/map/map_row.dart',
+      'lib/pages/welcome/welcome_body.dart',
+      'lib/pages/welcome/widgets/welcome_row.dart',
+      // A file at the top of an app package has no destination, and still counts.
+      'apps/host/lib/today_body.dart',
+    ]) {
+      expect(_findings(path, riverpod), 1, reason: path);
+      expect(_findings(path, router), 1, reason: path);
+    }
+    // Riverpod in a *_state.dart under a destination is the state-file rule's.
+    for (final path in const [
+      'apps/host/lib/today/today_state.dart',
+      'apps/host/lib/today/no_shifts_empty_state.dart',
+      'lib/pages/welcome/welcome_state.dart',
+    ]) {
+      expect(_findings(path, router), 1, reason: path);
+      expect(_findings(path, riverpod), 0, reason: path);
+    }
+    expect(_findings('apps/host/lib/today_state.dart', riverpod), 1);
+    // Screens, view models and flows watch; legacy bodies stay opt-in.
+    for (final path in const [
+      'apps/host/lib/today/today_screen.dart',
+      'apps/host/lib/today/today_view_model.dart',
+      'lib/pages/welcome/welcome_flow.dart',
+      'lib/explore/presentation/widgets/explore_body.dart',
+      'lib/explore/presentation/widgets/explore_row.dart',
+      'lib/kernel/widgets/row.dart',
+    ]) {
+      expect(_findings(path, riverpod), 0, reason: path);
+    }
+  });
+
   test('flags provider, routing, data and repository imports', () {
     for (final uri in const [
       'package:flutter_riverpod/flutter_riverpod.dart',

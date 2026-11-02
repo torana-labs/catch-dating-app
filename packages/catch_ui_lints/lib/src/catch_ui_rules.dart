@@ -12,7 +12,9 @@ import 'catch_drawing_migration.dart';
 import 'catch_text_migration.dart';
 import 'catch_ui_rules_tables.g.dart';
 import 'catch_ui_surface_geometry.dart';
+import 'migration_scope.dart';
 
+part 'catch_new_root_rules.dart';
 part 'catch_ui_test_rules.dart';
 part 'catch_ui_mutation_rules.dart';
 part 'catch_ui_feedback_rules.dart';
@@ -328,6 +330,12 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const noThemeRead = LintCode(
+    'catch_no_theme_read',
+    'A file under apps/*/lib or lib/pages reads no Theme. Take the value from a catch_ui component or a token.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
   static const noRawStrokeWidth = LintCode(
     'catch_no_raw_stroke_width',
     'Use CatchBorder semantic roles, CatchStroke, or a primitive-owned stroke contract instead of a raw stroke width.',
@@ -541,6 +549,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     noRawMotion,
     noRawBreakpoint,
     noRawSurfaceShell,
+    noThemeRead,
     noRawStrokeWidth,
     noRawAssetPath,
     noNestedRoundedRectangles,
@@ -589,6 +598,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     }
     if (!_isAppPath(path)) return;
 
+    // Every screen rule holds under the D24 roots, whatever the folder is named.
+    final isZeroDrawingPath = zeroDrawingPath(path);
     final visitor = _CatchUiLayoutVisitor(
       this,
       ruleContext: context,
@@ -596,10 +607,13 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       path: path,
       isEventDetailPath: _isEventDetailPath(path),
       isColorExemptPath: false,
-      isFeaturePresentationPath: _isFeaturePresentationPath(path),
-      isPresentationPath: _isPresentationPath(path),
+      isFeaturePresentationPath:
+          isZeroDrawingPath || _isFeaturePresentationPath(path),
+      isPresentationPath: isZeroDrawingPath || _isPresentationPath(path),
       isSizingScannerPath: _isSizingScannerPath(path),
-      isUiSystemScannerPath: _isUiSystemScannerPath(path),
+      isUiSystemScannerPath: isZeroDrawingPath || _isUiSystemScannerPath(path),
+      isZeroDrawingPath: isZeroDrawingPath,
+      isNewRootLegacyPath: newRootLegacyPath(path),
       allowRawControlConstructors: _isRawChromeExceptionPath(path),
     );
     registry.addInstanceCreationExpression(this, visitor);
@@ -655,14 +669,12 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   // Shared app UI lives in context parts, shared pages, the platform media
   // and dialog helpers and the app shells; feature screens live in
-  // presentation folders. The celebration page predates the scan (it was
-  // lib/pages/celebration) and joins it when it is redrawn.
+  // presentation folders.
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
     return path.contains('/packages/catch_ui/lib/src/') ||
         RegExp(r'/lib/contexts/[^/]+/parts/').hasMatch(path) ||
-        (path.contains('/lib/pages/') &&
-            !path.contains('/lib/pages/celebration/')) ||
+        path.contains('/lib/pages/') ||
         path.contains('/lib/platform/media/') ||
         path.contains('/lib/platform/dialogs/') ||
         path.contains('/lib/routing/shell/') ||
@@ -691,6 +703,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     required this.isPresentationPath,
     required this.isSizingScannerPath,
     required this.isUiSystemScannerPath,
+    required this.isZeroDrawingPath,
+    required this.isNewRootLegacyPath,
     required this.allowRawControlConstructors,
   }) : _lineStarts = _computeLineStarts(source);
 
@@ -704,6 +718,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isPresentationPath;
   final bool isSizingScannerPath;
   final bool isUiSystemScannerPath;
+  final bool isZeroDrawingPath;
+  final bool isNewRootLegacyPath;
   final bool allowRawControlConstructors;
   final List<int> _lineStarts;
   Set<String> _locallyShadowedTokenNames = const <String>{};
@@ -716,7 +732,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     final currentPath =
         ruleContext.currentUnit?.file.path.replaceAll(r'\', '/') ?? path;
-    for (final site in newTextMigrationSites(node, currentPath)) {
+    final namedTextSites = newTextMigrationSites(node, currentPath);
+    for (final site in namedTextSites) {
       rule.reportAtNode(
         site.node,
         diagnosticCode: CatchUiLayoutRules.textRequiresStyle,
@@ -725,9 +742,19 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         ],
       );
     }
+    if (isZeroDrawingPath) {
+      _reportNewRootSites(
+        node,
+        namedTextSites.map((site) => site.node).toSet(),
+      );
+    }
 
     final reportedDrawing = <AstNode>[];
-    for (final site in newDrawingMigrationSites(node, currentPath)) {
+    for (final site in newDrawingMigrationSites(
+      node,
+      currentPath,
+      activeKinds: isZeroDrawingPath ? newRootDrawingKinds : null,
+    )) {
       final drawing = site.node;
       if (drawing is InstanceCreationExpression) {
         // Keep one boundary diagnostic where an existing rule already fires.
@@ -748,25 +775,36 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         diagnosticCode: CatchUiLayoutRules.noRawSurfaceShell,
       );
     }
-    for (final comment in invalidDrawingIgnores(
-      node,
-      ruleContext.currentUnit?.content ?? source,
-      reportedDrawing,
-    )) {
-      rule.reportAtOffset(
-        comment.offset,
-        comment.length,
-        diagnosticCode: CatchUiLayoutRules.noAllowDebt,
-      );
-    }
+    if (isZeroDrawingPath) {
+      final content = ruleContext.currentUnit?.content ?? source;
+      for (final match in _newRootDebtPattern.allMatches(content)) {
+        rule.reportAtOffset(
+          match.start,
+          match.end - match.start,
+          diagnosticCode: CatchUiLayoutRules.noAllowDebt,
+        );
+      }
+    } else {
+      for (final comment in invalidDrawingIgnores(
+        node,
+        ruleContext.currentUnit?.content ?? source,
+        reportedDrawing,
+      )) {
+        rule.reportAtOffset(
+          comment.offset,
+          comment.length,
+          diagnosticCode: CatchUiLayoutRules.noAllowDebt,
+        );
+      }
 
-    for (final match in _allowDebtPattern.allMatches(source)) {
-      if (_isThemeIndependentArtAllow(match.start)) continue;
-      rule.reportAtOffset(
-        match.start,
-        match.end - match.start,
-        diagnosticCode: CatchUiLayoutRules.noAllowDebt,
-      );
+      for (final match in _allowDebtPattern.allMatches(source)) {
+        if (_isThemeIndependentArtAllow(match.start)) continue;
+        rule.reportAtOffset(
+          match.start,
+          match.end - match.start,
+          diagnosticCode: CatchUiLayoutRules.noAllowDebt,
+        );
+      }
     }
 
     if (isFeaturePresentationPath) {
@@ -792,6 +830,33 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           );
         }
       }
+    }
+  }
+
+  void _reportNewRootSites(
+    CompilationUnit node,
+    Set<InstanceCreationExpression> namedTextSites,
+  ) {
+    final sites = _NewRootSites();
+    node.accept(sites);
+    for (final read in sites.themeReads) {
+      rule.reportAtNode(read, diagnosticCode: CatchUiLayoutRules.noThemeRead);
+    }
+    for (final text in sites.rawText) {
+      if (namedTextSites.contains(text)) continue;
+      rule.reportAtNode(
+        text,
+        diagnosticCode: CatchUiLayoutRules.textRequiresStyle,
+        arguments: [
+          'Use CatchText: a file under apps/*/lib or lib/pages draws no raw text.',
+        ],
+      );
+    }
+    for (final literal in sites.spacingLiterals) {
+      rule.reportAtNode(
+        literal,
+        diagnosticCode: CatchUiLayoutRules.rawUiSpacing,
+      );
     }
   }
 
@@ -923,6 +988,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (isUiSystemScannerPath &&
+        !isZeroDrawingPath &&
         typeName == 'Text' &&
         !_textOwnsStyle(node) &&
         !_hasSanctionedAmbientTextAncestor(node)) {
@@ -942,7 +1008,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (typeName == 'SizedBox') {
-      _checkSizedBoxSpacing(node);
+      if (!isZeroDrawingPath) _checkSizedBoxSpacing(node);
     } else if (_isEdgeInsetsConstructor(typeName)) {
       _checkEdgeInsetsSpacing(node);
     }
@@ -1021,7 +1087,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node, CatchUiLayoutRules.noRawLetterSpacing);
     }
 
-    if (_spacingNamedArguments.contains(name) &&
+    if (!isZeroDrawingPath &&
+        _spacingNamedArguments.contains(name) &&
         _isPositiveNumberLiteral(node.expression) &&
         _isSpacingContext(node)) {
       rule.reportAtNode(
@@ -1034,11 +1101,17 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node.expression, CatchUiLayoutRules.noRawContentDimension);
     }
 
-    if (isUiSystemScannerPath && _isRawIconSizeNamedArgument(node)) {
+    // The scan runs on the files that predate D24; what it found there when it
+    // reached them is these two rules, and the list holds them until the redraw.
+    if (isUiSystemScannerPath &&
+        !isNewRootLegacyPath &&
+        _isRawIconSizeNamedArgument(node)) {
       _reportAtNode(node.expression, CatchUiLayoutRules.noRawIconSize);
     }
 
-    if (isUiSystemScannerPath && _isRawAlphaNamedArgument(node)) {
+    if (isUiSystemScannerPath &&
+        !isNewRootLegacyPath &&
+        _isRawAlphaNamedArgument(node)) {
       _reportAtNode(node.expression, CatchUiLayoutRules.noRawAlpha);
     }
 
@@ -1731,6 +1804,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node, CatchUiLayoutRules.preferSemanticInsets);
     }
 
+    if (isZeroDrawingPath) return;
     for (final argument in node.argumentList.arguments) {
       if (argument is NamedExpression) {
         if (_isPositiveNumberLiteral(argument.expression)) {
@@ -1903,7 +1977,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final prefix = node.prefix.name;
     if (prefix != 'Colors' && prefix != 'CupertinoColors') return false;
 
-    return node.identifier.name != 'transparent';
+    return isZeroDrawingPath || node.identifier.name != 'transparent';
   }
 
   bool _isRawColorPropertyAccess(PropertyAccess node) {
@@ -1913,7 +1987,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       return false;
     }
 
-    return node.propertyName.name != 'transparent';
+    return isZeroDrawingPath || node.propertyName.name != 'transparent';
   }
 
   bool _isFontFamilyNamedArgument(SimpleStringLiteral node) {
