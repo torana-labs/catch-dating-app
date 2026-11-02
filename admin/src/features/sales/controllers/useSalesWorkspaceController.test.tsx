@@ -180,23 +180,6 @@ describe("useSalesWorkspaceController", () => {
     }
   });
 
-  it("pages contacts by organizer without an all-record scan", async () => {
-    const {wrapper} = createQueryHarness();
-    repository.getSalesAccount.mockResolvedValue({account: {organizerId: "host-one"},
-      organizerSummary: {}, activities: [], opportunities: [], tasks: []});
-    repository.listSalesContacts.mockResolvedValueOnce({rows: [],
-      nextCursor: "contact-page-two"}).mockResolvedValue({rows: [], nextCursor: null});
-    const {result} = renderHook(() => useSalesWorkspaceController({
-      area: "hosts", selectedOrganizerId: "host-one",
-      onError: vi.fn(), onNotice: vi.fn(),
-    }), {wrapper});
-    await waitFor(() => expect(result.current.contacts.data?.nextCursor)
-      .toBe("contact-page-two"));
-    act(() => {result.current.nextContactPage();});
-    await waitFor(() => expect(repository.listSalesContacts)
-      .toHaveBeenCalledWith("host-one", "contact-page-two"));
-  });
-
   it("does not report an import apply success when the server rejects the reviewed hash", async () => {
     const {wrapper} = createQueryHarness();
     const onError = vi.fn();

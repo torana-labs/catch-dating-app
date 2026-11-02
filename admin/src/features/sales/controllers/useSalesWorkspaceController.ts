@@ -88,9 +88,6 @@ export function useSalesWorkspaceController({
   const [taskCursor, setTaskCursor] = useState<string | undefined>();
   const [taskPreviousCursors, setTaskPreviousCursors] =
     useState<Array<string | undefined>>([]);
-  const [contactCursor, setContactCursor] = useState<string | undefined>();
-  const [contactPreviousCursors, setContactPreviousCursors] =
-    useState<Array<string | undefined>>([]);
   const pendingRequestIds = useRef(new Map<string, string>());
 
   useEffect(() => {
@@ -108,8 +105,6 @@ export function useSalesWorkspaceController({
     return () => window.clearTimeout(timer);
   }, [canonicalSearch]);
   useEffect(() => {
-    setContactCursor(undefined);
-    setContactPreviousCursors([]);
   }, [selectedOrganizerId]);
 
   const listInput = useMemo<SalesListAccountsInput>(() => ({
@@ -173,8 +168,8 @@ export function useSalesWorkspaceController({
   });
   const contacts = useQuery({
     enabled: Boolean(selectedOrganizerId),
-    queryKey: ["sales", "contacts", selectedOrganizerId, contactCursor],
-    queryFn: () => listSalesContacts(selectedOrganizerId!, contactCursor),
+    queryKey: ["sales", "contacts", selectedOrganizerId],
+    queryFn: () => listSalesContacts(selectedOrganizerId!),
   });
   const evidence = useQuery({
     enabled: Boolean(selectedOrganizerId),
@@ -401,22 +396,12 @@ export function useSalesWorkspaceController({
     setTaskPreviousCursors((stack) => stack.slice(0, -1));
   }, [taskPreviousCursors]);
 
-  const nextContactPage = useCallback(() => {
-    if (!contacts.data?.nextCursor) return;
-    setContactPreviousCursors((stack) => [...stack, contactCursor]);
-    setContactCursor(contacts.data.nextCursor);
-  }, [contactCursor, contacts.data?.nextCursor]);
-  const previousContactPage = useCallback(() => {
-    setContactCursor(contactPreviousCursors.at(-1));
-    setContactPreviousCursors((stack) => stack.slice(0, -1));
-  }, [contactPreviousCursors]);
 
   return {
     accounts, tasks, opportunities, inboundIntents, identityMatches,
     canonicalMatches, canonicalSearch, setCanonicalSearch,
     customFields,
-    contacts, evidence, nextContactPage, previousContactPage,
-    hasPreviousContactPage: contactPreviousCursors.length > 0,
+    contacts, evidence,
     identitySearch, setIdentitySearch, detail, query,
     researchStatus, ownerUid, validAccountQuery,
     opportunityStage, setStageFilter, nextOpportunityPage, previousOpportunityPage,
