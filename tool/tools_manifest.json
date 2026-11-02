@@ -4567,6 +4567,10 @@
       ],
       "role": "finder",
       "impactPaths": [
+        "tool/design/check_component_contracts.test.mjs",
+        "design/components/README.md",
+        "tool/design/lib/system_components.mjs",
+        "design/components/system/**",
         "tool/design/check_host_section_composition.mjs",
         "test/tool/host_section_composition_test.mjs",
         "lib/programs/presentation/program_workspace_screen.dart",
@@ -4991,6 +4995,7 @@
         "node tool/design/check_widgetbook_contract_refs.mjs --check"
       ],
       "impactPaths": [
+        "tool/design/check_widgetbook_contract_refs.test.mjs",
         "widgetbook/lib/**"
       ],
       "role": "finder",
