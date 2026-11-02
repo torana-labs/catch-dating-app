@@ -1,9 +1,10 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {sampleNominations} from "../features/sales/api/myNominationsRepository";
-import type {SalesAccountDetail, SalesOpportunity, SalesTask} from "../features/sales/api/salesTypes";
+import type {SalesAccountDetail, SalesEvidence, SalesOpportunity, SalesTask} from "../features/sales/api/salesTypes";
 import {dealColumn, dealColumns} from "../features/sales/controllers/salesLabels";
 import {MyNominationsScreen} from "../features/sales/ui/MyNominationsScreen";
 import {SalesDealsScreen} from "../features/sales/ui/SalesDealsScreen";
+import {SalesHostCommercialWorkspace, type SalesHostCommercialModel} from "../features/sales/ui/SalesHostCommercialWorkspace";
 import {SalesHostsScreen} from "../features/sales/ui/SalesHostsScreen";
 import {SalesTodayScreen} from "../features/sales/ui/SalesTodayScreen";
 
@@ -58,7 +59,7 @@ export const SalesTodayStory: Story = {
   ),
 };
 
-const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
+const hostsModel = {query: "", setQuery: noop, validSearch: true, researchStatus: null, setResearchStatus: noop, mineOnly: false, setMineOnly: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
   tab: "overview" as const, setTab: noop,
   contacts: [{contactId: "c1", displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker" as const,
     primary: true, contactabilityStatus: "unknown" as const, sendAuthority: false as const}}],
@@ -72,7 +73,7 @@ const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPa
       observedAt: "2026-10-29T09:00:00.000Z", confidence: "medium" as const, normalizedValue: "About four events a month"}}],
   suggestionsFailed: false, retrySuggestions: noop, hasMoreSuggestions: false, moreSuggestions: noop, reviewSuggestion: async () => true, setHold: async () => true,
   contactsFailed: false, retryContacts: noop, hasMoreContacts: false, moreContacts: noop, reviewContact: async () => true,
-  canEditResearch: true, uid: "sample-owner", isSaving: false,
+  canEditResearch: true, uid: "sample-owner", isSaving: false, isAdminOwner: true, commercial: null, renderPartnerOffer: null,
   rows: hosts.map(([organizerId, name], index) => ({organizerId, name, city: "Mumbai",
     researchStatus: index < 2 ? "qualified" as const : "needs_research" as const, stage: index < 3 ? "in_conversation" : null,
     nextAction: index === 0 ? "Demo call on Tuesday" : null}))};
@@ -81,13 +82,40 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+};
+
+const quoteTerms = {currency: "INR", amountMinor: 500_000, billingCadence: "monthly" as const, scope: "Booking pages and guest messages for one host",
+  validUntil: iso(20), sourceFactRefs: ["e1"]};
+const dealEvidence = [{evidenceId: "e1", organizerId: "harbor", contactId: null, claimKey: "operation" as const, sourceType: "first_party" as const,
+  sourceRef: "Call with Kavya", observedAt: iso(-2), confidence: "high" as const}] as SalesEvidence[];
+const commercialModel: SalesHostCommercialModel = {dealId: "o1", selectDeal: noop, recordFailed: false, retryRecord: noop, reportFailed: false, retryReport: noop,
+  hasMoreReport: false, moreReport: noop, savePilot: done, reviseQuote: done, approveQuote: done, acceptQuote: done, attestCollection: done, closeWon: done, isSaving: false,
+  reportRows: [{opportunityId: "o1", stage: "pilot_running", ownerUid: "sample-owner", pilotStatus: "active", pilotRevision: 2, quoteStatus: "accepted_reviewed", quoteRevision: 3,
+    termVersion: 1, paymentStatus: "unknown", manuallyAttestedHostRevenue: null, bookedHostRevenueMinor: null}],
+  record: {opportunity: {opportunityId: "o1", organizerId: "harbor", stage: "pilot_running", revision: 4, motion: "first_workflow_pilot", ownerUid: "sample-owner",
+    nextStep: "Week two check-in", nextStepAt: iso(3)},
+  pilotPlan: {organizerId: "harbor", opportunityId: "o1", revision: 2, status: "active", workflowId: "guest-applications", objective: "Fill two quiz nights through Catch",
+    successMeasures: ["Forty guests apply", "Host runs check-in on Catch"], startsAt: iso(-7), endsAt: iso(21),
+    reviewEvidence: {evidenceId: "e1", sourceRef: "Call with Kavya", contentHash: "sample", observedAt: iso(-2)}, outcomeEvidence: null},
+  quote: {organizerId: "harbor", opportunityId: "o1", quoteId: "q1", revision: 3, termVersion: 1, status: "accepted_reviewed", approvedDecisionId: "d1", acceptedDecisionId: "d2"},
+  quoteVersion: {termVersion: 1, terms: quoteTerms, termsHash: "sample"},
+  approvedDecision: {decisionId: "d1", evidence: {evidenceId: "e1", sourceRef: "Call with Kavya", contentHash: "sample", observedAt: iso(-2)}},
+  acceptedDecision: {decisionId: "d2", evidence: {evidenceId: "e2", sourceRef: "Signed terms from Kavya", contentHash: "sample", observedAt: iso(-1)}},
+  settlementAttestation: null, history: [{fromStage: "demo_done", toStage: "pilot_running", reason: null, changedAt: iso(-7)}], historyTruncated: false,
+  paymentStatus: "unknown", bookedHostRevenueMinor: null}};
+
+export const SalesHostCommercialStory: Story = {
+  name: "Hosts · a deal's pilot, quote and payment",
+  beforeEach: pinClock,
+  parameters: {catchComponent: {id: "workspace_sales_host_commercial", states: ["pilot", "quote", "payment-unknown", "stage-history", "every-deal"]}},
+  render: () => <SalesHostCommercialWorkspace model={commercialModel} deals={harbor.opportunities} evidence={dealEvidence} hasMoreEvidence={false} moreEvidence={noop} isAdminOwner />,
 };
 
 const deals: SalesOpportunity[] = [

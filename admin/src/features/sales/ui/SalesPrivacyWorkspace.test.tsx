@@ -79,9 +79,7 @@ it("finds a canonical organizer after its Sales account is absent", async () => 
   fireEvent.change(screen.getByLabelText("Host name"),
     {target: {value: "Sample"}});
   fireEvent.click(screen.getByRole("button", {name: "Search hosts"}));
-  await waitFor(() => expect(screen.getByRole("button",
-    {name: /Sample Harbor/u})).toBeTruthy());
-  fireEvent.click(screen.getByRole("button", {name: /Sample Harbor/u}));
+  fireEvent.click(await screen.findByRole("button", {name: "Open"}));
   await waitFor(() => expect(api.getCase).toHaveBeenCalledWith("org-a"));
   expect(screen.getByText(/does not delete product organizers/u)).toBeTruthy();
 });

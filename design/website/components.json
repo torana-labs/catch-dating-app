@@ -148,9 +148,10 @@
       "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
       "comparedWith": [
         "catch.step_header",
+        "catch.top_bar",
         "catch.workspace_header"
       ],
-      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory."
+      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today."
     },
     {
       "id": "route_home",
@@ -1435,9 +1436,10 @@
       "exportName": "SiteHeader",
       "comparedWith": [
         "catch.step_header",
+        "catch.top_bar",
         "catch.workspace_header"
       ],
-      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header. Not a workspace pane header: site chrome above the page, not a pane title row.",
+      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header. Not a workspace pane header: site chrome above the page, not a pane title row. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today.",
       "css": [
         "website/src/styles/site-footer.css",
         "website/src/styles/site-shell.css"
@@ -3147,6 +3149,10 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchBand.tsx",
       "exportName": "CatchBand",
+      "comparedWith": [
+        "catch.surface"
+      ],
+      "comparisonReason": "A full-width section of a web page, which CatchSurface does not draw today. The redesign folds it into Surface block band when its first redesigned consumer lands.",
       "css": [
         "packages/web-ui/src/components/CatchBand.module.css"
       ],
@@ -3481,6 +3487,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
       "exportName": "CatchGroundCard",
+      "comparedWith": [
+        "catch.surface"
+      ],
+      "comparisonReason": "A card on a named ground, which CatchSurface does not draw today. The redesign folds it into Surface when its first redesigned consumer lands.",
       "css": [
         "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],

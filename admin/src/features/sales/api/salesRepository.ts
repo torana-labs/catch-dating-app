@@ -103,6 +103,9 @@ const sampleContacts = new Map<string, SalesContact[]>(sampleHostIds.slice(0, 3)
 const sampleEvidence = new Map<string, SalesEvidence[]>(sampleHostIds.slice(0, 3).map((organizerId) => [organizerId, [{
   evidenceId: `${organizerId}-founder-evidence`, organizerId, contactId: `${organizerId}-founder`, claimKey: "identity", sourceType: "public_web",
   sourceRef: "https://example.com/about", observedAt: "2026-10-28T09:00:00.000Z", confidence: "high", normalizedValue: "Kavya Rao runs the events",
+} as SalesEvidence, {
+  evidenceId: `${organizerId}-terms-evidence`, organizerId, contactId: null, claimKey: "operation", sourceType: "first_party",
+  sourceRef: "Email from the host agreeing terms", observedAt: "2026-10-30T09:00:00.000Z", confidence: "high", normalizedValue: "The host agreed the terms",
 } as SalesEvidence]]));
 const sampleProposals = new Map<string, SalesEvidenceProposal[]>([...sampleDetails.keys()].slice(0, 3).map((organizerId, index) => [organizerId, [{
   proposalId: `sample-proposal-${index + 1}`, organizerId, revision: 1, status: "pending", clientId: "sample-assistant",
@@ -197,21 +200,6 @@ export async function listSalesOpportunities(
     .sort((a, b) => (a.nextStepAt ?? "").localeCompare(b.nextStepAt ?? "") ||
       a.opportunityId.localeCompare(b.opportunityId));
   return pageRows(rows, input.cursor, input.limit ?? 25);
-}
-
-export async function listSalesInboundIntents(
-  input: SalesListInboundIntentsInput
-): Promise<SalesPage<SalesInboundIntent>> {
-  if (dataMode() !== "sample") return call("adminListSalesInboundIntents", input);
-  return {rows: [], nextCursor: null};
-}
-
-export async function linkSalesInboundIntent(
-  input: SalesLinkInboundIntentInput
-): Promise<{intent: SalesInboundIntent; task: SalesTask;
-  activity: SalesActivity; receipt: MutationReceipt}> {
-  if (dataMode() !== "sample") return call("adminLinkSalesInboundIntent", input);
-  throw new Error("Sample mode has no website enquiries to link.");
 }
 
 export async function listSalesCustomFields(): Promise<{

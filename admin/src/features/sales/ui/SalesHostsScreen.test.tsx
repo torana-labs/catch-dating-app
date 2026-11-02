@@ -26,16 +26,16 @@ const host = (revision: number, suppressionStatus: "clear" | "held" = "clear") =
   ({account: {organizerId: "harbor", revision, researchStatus: "qualified", suppressionStatus},
     organizerSummary: {name: "Harbor"}, activities: [], opportunities: [], tasks: []}) as unknown as SalesAccountDetail;
 
-const model = (overrides: Partial<SalesHostsModel> = {}): SalesHostsModel => ({query: "", setQuery: noop, rows: [], hasNextPage: false,
+const model = (overrides: Partial<SalesHostsModel> = {}): SalesHostsModel => ({query: "", setQuery: noop, validSearch: true, researchStatus: null, setResearchStatus: vi.fn(), mineOnly: false, setMineOnly: vi.fn(), rows: [], hasNextPage: false,
   hasPreviousPage: false, nextPage: noop, previousPage: noop, tab: "overview", setTab: noop, logActivity: vi.fn(), addNextStep: vi.fn(),
   completeNextStep: vi.fn(), saveDeal: vi.fn(), saveHost: vi.fn(), addPerson: vi.fn(), setHold: vi.fn().mockResolvedValue(true), uid: "dev", host: host(1),
   contacts: [], contactsFailed: false, retryContacts: vi.fn(), hasMoreContacts: false, moreContacts: vi.fn(),
   reviewContact: vi.fn().mockResolvedValue(true), evidence: [], evidenceFailed: false,
   retryEvidence: vi.fn(), hasMoreEvidence: false, moreEvidence: vi.fn(), addEvidence: vi.fn().mockResolvedValue(true), suggestions: [proposal()], suggestionsFailed: false, retrySuggestions: vi.fn(),
-  hasMoreSuggestions: false, moreSuggestions: vi.fn(), reviewSuggestion: vi.fn().mockResolvedValue(true), canEditResearch: true, isSaving: false, ...overrides});
+  hasMoreSuggestions: false, moreSuggestions: vi.fn(), reviewSuggestion: vi.fn().mockResolvedValue(true), canEditResearch: true, isAdminOwner: true, commercial: null, renderPartnerOffer: null, isSaving: false, ...overrides});
 
 const screenFor = (current: SalesHostsModel) => <SalesHostsScreen model={current} selectedOrganizerId="harbor" onSelect={noop}
-  onOpenHostTools={noop} onAddHost={noop} onOpenOrganizer={noop} />;
+  onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
 
 it("reviews the version the person read, and a refreshed version clears the reason", async () => {
   const current = model();
@@ -120,7 +120,7 @@ const aboutKavya = {evidenceId: "e1", organizerId: "harbor", contactId: "kavya",
   sourceRef: "https://example.test/about", observedAt: "2026-10-29T09:00:00.000Z", confidence: "high", normalizedValue: "Founder"} as SalesEvidence;
 const peopleModel = (overrides: Partial<SalesHostsModel> = {}) => model({suggestions: [], contacts: [person()], evidence: [aboutKavya], ...overrides});
 const peopleScreen = (current: SalesHostsModel, revision = 1) => <SalesHostsScreen model={{...current, host: host(revision)}} selectedOrganizerId="harbor" onSelect={noop}
-  onOpenHostTools={noop} onAddHost={noop} onOpenOrganizer={noop} />;
+  onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
 const save = () => screen.getByRole<HTMLButtonElement>("button", {name: "Save"});
 
 it("a review for drafts needs evidence about that person and a reason", async () => {
@@ -165,6 +165,7 @@ it("a sales associate can add someone and sees their status, but can't review th
   render(peopleScreen(peopleModel({canEditResearch: false, contacts: [person(1, "held")]})));
   expect(screen.getByText("On hold")).toBeTruthy();
   expect(screen.queryByRole("button", {name: "Review"})).toBeNull();
+  expect(screen.queryByText("Fit and outreach")).toBeNull();
 });
 
 it("a follow-up names someone reviewed for drafts; other kinds of step don't need anyone", async () => {
@@ -184,4 +185,24 @@ it("a follow-up names someone reviewed for drafts; other kinds of step don't nee
   fireEvent.change(screen.getByLabelText(/^Kind/u), {target: {value: "research"}});
   fireEvent.click(add());
   await waitFor(() => expect(current.addNextStep).toHaveBeenLastCalledWith(expect.not.objectContaining({contactId: expect.anything()})));
+});
+
+it("filters the list by research and whose hosts, and says when a search can't run", () => {
+  const current = model({suggestions: [], validSearch: false});
+  render(<SalesHostsScreen model={{...current, host: null}} selectedOrganizerId={null} onSelect={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop}
+    onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />);
+  fireEvent.click(screen.getByRole("button", {name: /^Needs research/u}));
+  expect(current.setResearchStatus).toHaveBeenCalledWith("needs_research");
+  fireEvent.click(screen.getByRole("button", {name: /^Mine/u}));
+  expect(current.setMineOnly).toHaveBeenCalledWith(true);
+  expect(screen.getByText(/search one word of 2 to 80/u)).toBeTruthy();
+});
+
+it("a sales associate has no Mine filter or reviewed fit queue", () => {
+  const current = model({suggestions: [], canEditResearch: false});
+  render(<SalesHostsScreen model={{...current, host: null}} selectedOrganizerId={null} onSelect={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={null}
+    onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />);
+  expect(screen.queryByRole("button", {name: /^Mine/u})).toBeNull();
+  expect(screen.queryByRole("button", {name: "Reviewed fit"})).toBeNull();
+  expect(screen.getByRole("button", {name: "Add or nominate"})).toBeTruthy();
 });

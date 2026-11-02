@@ -13,6 +13,14 @@ export const conceptQualifiers = new Set([
   "layout",
 ]);
 
+/**
+ * A registered component with no code yet. Only checks that a symbol exists
+ * exempt it; every other contract rule still applies.
+ */
+export function isPlannedWithoutDart(component) {
+  return component.status === "planned" && !component.dart;
+}
+
 export function normalizeSymbol(value) {
   return String(value ?? "")
     .replace(/^_+/u, "")
@@ -74,12 +82,13 @@ export function componentAliasIndex(components) {
   };
   for (const component of components) {
     const file = component.dart?.file;
+    const symbol = component.dart?.symbol ?? component.name;
     const owner = {
       id: component.id,
-      symbol: component.dart?.symbol,
-      identity: `${file}::${component.dart?.symbol}`,
+      symbol,
+      identity: `${file}::${symbol}`,
     };
-    add(component.dart?.symbol, owner);
+    add(symbol, owner);
     for (const alias of component.aliases ?? []) add(alias, owner);
     for (const member of component.contract?.members ?? []) {
       const memberOwner = {
@@ -127,6 +136,40 @@ export function componentAliasProblems(components) {
     }
   }
   return [...new Set(problems)].sort();
+}
+
+/**
+ * `absorbs` lists names a component takes over when its first redesigned consumer
+ * lands and that `aliases` cannot hold, because a name an alias may not shadow is
+ * already claimed: a registered symbol or another record's alias.
+ */
+export function componentAbsorptionProblems(components) {
+  const problems = [];
+  const claimed = new Set();
+  for (const component of components) {
+    if (component.dart?.symbol) claimed.add(normalizeSymbol(component.dart.symbol));
+    for (const alias of component.aliases ?? []) claimed.add(normalizeSymbol(alias));
+    for (const member of component.contract?.members ?? []) {
+      claimed.add(normalizeSymbol(member.symbol));
+      for (const alias of member.aliases ?? []) claimed.add(normalizeSymbol(alias));
+    }
+  }
+  const owners = new Map();
+  for (const component of components) {
+    for (const symbol of component.absorbs ?? []) {
+      if (!claimed.has(normalizeSymbol(symbol))) {
+        problems.push(`${component.id}: absorbs ${symbol}, which no record claims; list it in aliases`);
+      }
+      if (normalizeSymbol(symbol) === normalizeSymbol(component.dart?.symbol)) {
+        problems.push(`${component.id}: absorbs its own symbol ${symbol}`);
+      }
+      if (owners.has(symbol)) {
+        problems.push(`${component.id}: ${symbol} is already absorbed by ${owners.get(symbol)}`);
+      }
+      owners.set(symbol, component.id);
+    }
+  }
+  return problems.sort();
 }
 
 /** Redirect keys are off-vocabulary nouns; every target is a role noun. */
@@ -264,7 +307,7 @@ export function conceptTopologyProblems(components) {
         problems.push(`${component.id}: duplicate concept primary ${governance.conceptId}`);
       }
       primaries.set(governance.conceptId, component.id);
-      if (!/^Catch[A-Z0-9]/u.test(component.dart?.symbol ?? "") && !governance.decisionRef) {
+      if (!/^Catch[A-Z0-9]/u.test(component.dart?.symbol ?? component.name ?? "") && !governance.decisionRef) {
         problems.push(`${component.id}: non-canonical concept name requires decisionRef`);
       }
     }

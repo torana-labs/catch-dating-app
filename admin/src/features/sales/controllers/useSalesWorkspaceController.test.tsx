@@ -1,7 +1,8 @@
 import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
-import {salesErrorMessage, toLocalDateTimeInput,
+import {salesErrorMessage} from "./salesLabels";
+import {toLocalDateTimeInput,
   useSalesWorkspaceController} from
   "./useSalesWorkspaceController";
 
@@ -9,22 +10,15 @@ const repository = vi.hoisted(() => ({
   getSalesAccount: vi.fn(),
   createSalesAccount: vi.fn(),
   nominateSalesOrganizer: vi.fn(),
-  listSalesAccounts: vi.fn(),
-  listSalesTasks: vi.fn(),
-  listSalesOpportunities: vi.fn(),
-  listSalesInboundIntents: vi.fn(),
   linkSalesInboundIntent: vi.fn(),
   listSalesCustomFields: vi.fn(),
   createSalesCustomField: vi.fn(),
   setSalesCustomFieldValue: vi.fn(),
-  searchCanonicalOrganizers: vi.fn(),
   recordSalesActivity: vi.fn(),
   updateSalesAccount: vi.fn(),
   upsertSalesTask: vi.fn(),
   upsertSalesOpportunity: vi.fn(),
   listSalesContacts: vi.fn(),
-  listSalesEvidence: vi.fn(),
-  listSalesEvidenceProposals: vi.fn(),
   reviewSalesEvidenceProposal: vi.fn(),
   addSalesEvidence: vi.fn(),
   setSalesAccountSuppression: vi.fn(),
@@ -47,72 +41,17 @@ describe("useSalesWorkspaceController", () => {
 
   beforeEach(() => {
     Object.values(repository).forEach((mock) => mock.mockReset());
-    repository.listSalesAccounts.mockResolvedValue(firstPage);
-    repository.listSalesTasks.mockResolvedValue({rows: [], nextCursor: null});
-    repository.listSalesOpportunities.mockResolvedValue({rows: [], nextCursor: null});
-    repository.listSalesInboundIntents.mockResolvedValue({rows: [], nextCursor: null});
     repository.listSalesCustomFields.mockResolvedValue({rows: []});
-    repository.searchCanonicalOrganizers.mockResolvedValue([]);
     repository.listSalesContacts.mockResolvedValue({rows: [], nextCursor: null});
-    repository.listSalesEvidence.mockResolvedValue({rows: [], nextCursor: null});
-    repository.listSalesEvidenceProposals.mockResolvedValue({rows: [], nextCursor: null});
   });
 
-  it("passes filters and the opaque cursor to the bounded server query", async () => {
+  it("doesn't read custom fields for a sales associate", async () => {
     const {wrapper} = createQueryHarness();
-    const {result} = renderHook(() => useSalesWorkspaceController({
-      area: "hosts", selectedOrganizerId: null,
-      onError: vi.fn(), onNotice: vi.fn(),
-    }), {wrapper});
-    await waitFor(() => expect(result.current.accounts.data?.rows).toHaveLength(1));
-    act(() => result.current.setAccountFilters({researchStatus: "needs_research"}));
-    await waitFor(() => expect(repository.listSalesAccounts).toHaveBeenCalledWith({
-      limit: 25, cursor: undefined, query: undefined, ownerUid: undefined,
-      researchStatus: "needs_research",
-    }));
-    await waitFor(() => expect(result.current.accounts.data?.nextCursor)
-      .toBe("opaque-page-two"));
-    act(() => result.current.nextPage());
-    await waitFor(() => expect(repository.listSalesAccounts).toHaveBeenCalledWith({
-      limit: 25, cursor: "opaque-page-two", query: undefined,
-      ownerUid: undefined, researchStatus: "needs_research",
-    }));
-  });
-
-  it("does not start global identity, inbound, canonical, or field queries for assigned staff", async () => {
-    const hostsHarness = createQueryHarness();
-    const hosts = renderHook(() => useSalesWorkspaceController({
-      area: "hosts", selectedOrganizerId: null, assignedStaffOnly: true,
-      onError: vi.fn(), onNotice: vi.fn(),
-    }), {wrapper: hostsHarness.wrapper});
-    await waitFor(() => expect(hosts.result.current.accounts.data?.rows)
-      .toHaveLength(1));
-    act(() => hosts.result.current.setCanonicalSearch("Sample"));
-    await act(async () => new Promise((resolve) => window.setTimeout(resolve, 300)));
-    expect(repository.searchCanonicalOrganizers).not.toHaveBeenCalled();
-    hosts.unmount();
-
-    const researchHarness = createQueryHarness();
-    const research = renderHook(() => useSalesWorkspaceController({
-      area: "research", selectedOrganizerId: null, assignedStaffOnly: true,
-      onError: vi.fn(), onNotice: vi.fn(),
-    }), {wrapper: researchHarness.wrapper});
-    act(() => research.result.current.setIdentitySearch("Sample"));
-    await act(async () => new Promise((resolve) => window.setTimeout(resolve, 300)));
-    expect(repository.listSalesInboundIntents).not.toHaveBeenCalled();
-    expect(repository.listSalesAccounts).toHaveBeenCalledTimes(1);
-    research.unmount();
-
-    repository.getSalesAccount.mockResolvedValue({
-      account: {organizerId: "host-one"}, organizerSummary: {},
-      activities: [], opportunities: [], tasks: [],
-    });
-    const detailHarness = createQueryHarness();
-    const detail = renderHook(() => useSalesWorkspaceController({
+    renderHook(() => useSalesWorkspaceController({
       area: "hosts", selectedOrganizerId: "host-one", assignedStaffOnly: true,
       onError: vi.fn(), onNotice: vi.fn(),
-    }), {wrapper: detailHarness.wrapper});
-    await waitFor(() => expect(detail.result.current.detail.isSuccess).toBe(true));
+    }), {wrapper});
+    await waitFor(() => expect(repository.getSalesAccount).toHaveBeenCalledWith("host-one"));
     expect(repository.listSalesCustomFields).not.toHaveBeenCalled();
   });
 
@@ -139,26 +78,6 @@ describe("useSalesWorkspaceController", () => {
     const secondRequest = repository.updateSalesAccount.mock.calls[1][0].requestId;
     expect(secondRequest).toBe(firstRequest);
     expect(onNotice).toHaveBeenCalledWith("Host research saved.");
-  });
-
-  it("retries a nomination under the same request ID so the server replays it", async () => {
-    const {wrapper} = createQueryHarness();
-    const onNotice = vi.fn();
-    repository.nominateSalesOrganizer.mockRejectedValueOnce(new Error("deadline-exceeded"))
-      .mockResolvedValueOnce({requestId: `nom-${"a".repeat(40)}`, created: false,
-        status: "queued"});
-    const {result} = renderHook(() => useSalesWorkspaceController({
-      area: "hosts", selectedOrganizerId: null, onError: vi.fn(), onNotice,
-    }), {wrapper});
-    const input = {name: "The Bhag", market: "Bengaluru",
-      urls: ["https://lu.ma/thebhag"], notes: null, categories: []};
-    await act(async () => { await result.current.nominateOrganizer(input); });
-    await act(async () => { await result.current.nominateOrganizer(input); });
-    const [first, second] = repository.nominateSalesOrganizer.mock.calls
-      .map(([request]) => request.requestId);
-    expect(second).toBe(first);
-    expect(onNotice).toHaveBeenCalledWith(
-      "Nomination queued. Its listing appears in the Inbox for review.");
   });
 
   it("explains revision conflicts without losing the operator's edit", () => {

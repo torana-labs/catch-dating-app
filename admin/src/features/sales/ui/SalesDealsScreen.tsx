@@ -1,4 +1,5 @@
 import {CatchIndexRow, CatchPaneLayout, CatchRail, CatchSection, CatchWorkspaceHeader} from "@catch/web-ui";
+import type {ReactNode} from "react";
 import {dueLabel, stageLabel} from "../controllers/salesLabels";
 import type {SalesDealsController} from "../controllers/useSalesDealsController";
 
@@ -9,9 +10,11 @@ export type SalesDealsModel = Pick<SalesDealsController,
  * The Deals board: pipeline and pilots together, one column per stage. A
  * board is a rail of sections of rows (no hand-made grid); a row opens its host.
  */
-export function SalesDealsScreen({model, onOpenHost}: {
+export function SalesDealsScreen({model, onOpenHost, companyTotals}: {
   model: SalesDealsModel;
   onOpenHost: (organizerId: string) => void;
+  /** The company pipeline totals, with their own controller; left out for a sales associate. */
+  companyTotals?: ReactNode;
 }) {
   return (
     <CatchPaneLayout pattern="wide-table" main={<>
@@ -31,6 +34,7 @@ export function SalesDealsScreen({model, onOpenHost}: {
           </CatchSection>
         ))}
       </CatchRail>
+      {companyTotals}
     </>} />
   );
 }

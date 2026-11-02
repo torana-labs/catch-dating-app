@@ -1,4 +1,4 @@
-import {act, cleanup, fireEvent, render, screen, waitFor, within} from
+import {act, cleanup, fireEvent, render, screen, waitFor} from
   "@testing-library/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {afterEach, expect, it, vi} from "vitest";
@@ -80,7 +80,7 @@ it("selects current approved sources and prepares a real private draft request",
     {target: {value: "capability-one"}});
   fireEvent.change(screen.getByLabelText("Question or next step"),
     {target: {value: "cta-one"}});
-  fireEvent.click(screen.getByRole("button", {name: "Prepare private draft"}));
+  fireEvent.click(screen.getByRole("button", {name: "Review plan and prepare private draft"}));
   await waitFor(() => expect(api.generate).toHaveBeenCalledOnce());
   expect(vi.mocked(api.generate).mock.calls[0][0].sourceRequest).toEqual({
     organizerId: "org-one", contactId: "contact-one",
@@ -127,20 +127,19 @@ it("lets an owner configure seven factors without seeded strategy", async () => 
   fireEvent.click(await screen.findByRole("button",
     {name: "Set up private fit policy"}));
   expect(screen.getByLabelText("Factor 1 name")).toHaveProperty("value", "");
-  for (let number = 1; number <= 7; number++) {
-    // Scope lookups to the factor's fieldset: label and role queries scan every
-    // element of this large form, which made the test brush its timeout.
-    const factor = within(screen.getByText(`Factor ${number}`, {selector: "legend"})
-      .closest("fieldset")!);
-    fireEvent.change(factor.getByLabelText(`Factor ${number} name`),
-      {target: {value: `Factor ${number}`}});
-    fireEvent.change(factor.getByLabelText(`Factor ${number} weight out of 100`),
-      {target: {value: number === 7 ? "16" : "14"}});
-    fireEvent.change(factor.getByLabelText(
-      `Factor ${number} evidence age limit in days`),
-    {target: {value: "30"}});
-    fireEvent.click(factor.getByLabelText(`Current operations · factor ${number}`));
-  }
+  // Query this large form once and keep the elements: repeating label and role queries for all
+  // seven factors took most of the test's time, which made it time out on a busy machine.
+  const names = screen.getAllByLabelText(/^Factor \d name$/u);
+  const weights = screen.getAllByLabelText(/^Factor \d weight out of 100$/u);
+  const ages = screen.getAllByLabelText(/^Factor \d evidence age limit in days$/u);
+  const evidenceKinds = screen.getAllByLabelText(/^Current operations · factor \d$/u);
+  expect(names).toHaveLength(7);
+  names.forEach((name, index) => {
+    fireEvent.change(name, {target: {value: `Factor ${index + 1}`}});
+    fireEvent.change(weights[index]!, {target: {value: index === 6 ? "16" : "14"}});
+    fireEvent.change(ages[index]!, {target: {value: "30"}});
+    fireEvent.click(evidenceKinds[index]!);
+  });
   fireEvent.change(screen.getByLabelText("High priority begins at"),
     {target: {value: "80"}});
   fireEvent.change(screen.getByLabelText("Medium priority begins at"),

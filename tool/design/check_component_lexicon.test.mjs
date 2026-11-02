@@ -21,6 +21,17 @@ test("component lexicon rejects a React implementation symbol that does not exis
   assert.match(result.stderr, /react symbol '__KnownMissingReactSymbol__' was not found/u);
 });
 
+test("only a planned record may have no Dart implementation", () => {
+  const result = run(["--known-bad-active-without-dart", "--surfaces-only"]);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /dart\.symbol 'undefined' is not declared/u);
+  const planned = readJson("design/components/catch.components.json").components
+    .filter((component) => component.status === "planned");
+  assert.ok(planned.length > 0);
+  assert.ok(planned.every((component) => !component.dart));
+  assert.equal(run(["--surfaces-only"]).status, 0);
+});
+
 test("component lexicon rejects a declared surface symbol that does not exist", () => {
   const result = run(["--known-bad-website", "--surfaces-only"]);
   assert.equal(result.status, 1);

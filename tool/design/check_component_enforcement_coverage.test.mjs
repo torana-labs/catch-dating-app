@@ -136,3 +136,28 @@ test("primary enforcement code must match its declared vehicle", () => {
     "catch.mismatched: primary code catch_plugin_mismatch is not implemented by declared checker vehicle",
   ]);
 });
+
+test("a planned record with no Dart symbol defers its Widgetbook contract, and only that", () => {
+  const verification = {vehicle: "widgetbook-contract", reason: "Planned: it arrives with the first code."};
+  const result = checkComponentEnforcementCoverage({
+    registry: {
+      components: [
+        {id: "catch.planned", status: "planned", verification},
+        {id: "catch.active_no_symbol", status: "active", verification},
+        {id: "catch.planned_with_code", status: "planned", dart: {symbol: "CatchPlanned"}, verification},
+        {id: "catch.planned_undecided", status: "planned"},
+      ],
+    },
+    pluginCodes: new Set(),
+    checkerCodes: new Set(),
+    harnessSource: "",
+    generatedProbeMinimums: {},
+    widgetbookNames: new Set(),
+    today: "2026-11-02",
+  });
+  assert.deepEqual(result.failures, [
+    "catch.active_no_symbol: verification requires generated Widgetbook contract <missing Dart symbol>",
+    "catch.planned_with_code: verification requires generated Widgetbook contract CatchPlanned",
+    "catch.planned_undecided: exactly one of enforcement, verification, or waiver is required",
+  ]);
+});

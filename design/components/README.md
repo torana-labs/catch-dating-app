@@ -1,6 +1,6 @@
 ---
 doc_id: component_contract_registry
-version: 1.11.2
+version: 1.12.0
 updated: 2026-11-02
 owner: ui_elevation_initiative
 status: active
@@ -174,6 +174,81 @@ every recipe and state, each entry has a screenshot baseline in its own
 framework, a generated side-by-side sheet joins the two catalogs on registry
 id, and metrics are asserted from the same contract values in both test suites.
 
+## Planned Components
+
+A record with `"status": "planned"` is a registered component with no code yet.
+It has no `dart` field, because there is no file to point at, and no `react`
+field. Its `name` holds the symbol it will have. The planned status exempts a
+record from checks that a symbol exists, and from nothing else: the lexicon,
+Widgetbook-contract, widget-catalog and enforcement-coverage checks and the T1 React
+ratchets skip it while it has no Dart symbol, and every other contract rule still
+applies. A planned
+record still declares its one governance decision, usually the
+`verification.vehicle: widgetbook-contract` that takes effect with its first code.
+The first code sets `status` to `active` and adds `dart` in the same PR.
+
+A planned record's `name` already belongs to it: a new widget of that name outside
+its registered home fails the new-widget gate.
+
+## The System Block
+
+`system` records what the design system declares for a record: its name there,
+its `states`, the `slots` that are its named composition regions, and its own
+`props` as `{name, tsType, required}`. `parts` lists exports the component
+documents that have no registry symbol of their own, such as `DateTile` on
+`catch.index_row`.
+
+`node tool/design/import_ds_props.mjs` writes this block from the design source;
+nobody edits it by hand. `tool/design/lib/system_components.mjs` says which records
+carry which system component, as the redesign programme's component matrix assigns
+them. `check_component_contracts.mjs` requires a T1 or T2 record the table assigns
+to keep its block, and fails a block whose name `system/index.d.ts` does not declare.
+
+The block is informational for Dart. Parity is on names, states and slots; Dart
+props stay idiomatic, and `dart` and `contract` are never rewritten from it.
+
+- **Slots** are props that take content or an action, plus `children` where the
+  component takes them. A list of data, such as `items`, is not a slot.
+- **States** come from the README's "States and motion" text and the preview's part
+  titles. Most READMEs describe motion and name no discrete states, which leaves
+  `rest`. Storybook `Contract` states replace them as each component is ported.
+- `design/components/system/index.d.ts` is a committed copy of the design source's
+  types, because CI has no design source. `--check` compares props, slots and Flutter
+  sections there, and states and guideline text too where the source is present.
+
+## Guidelines
+
+`guidelines/<registry-id>.md` holds each system component's usage guidance, moved
+from the design source's READMEs. A component's guideline is named after the first
+record the table assigns it. Its Flutter section sits between
+`<!-- generated:flutter:start -->` and `<!-- generated:flutter:end -->` and comes
+from the records' `dart.symbol` and `dart.constructors`, so it cannot name a
+constructor that does not exist. Everything else is the README's text. Where the
+design source has no README of a component's own, the tool writes a short guideline
+from its type declaration.
+
+## The Publishing Loop
+
+The repo is the source of the design system and the canvas is downstream:
+
+1. **Tokens.** `design/tokens/catch.tokens.json` goes through Style Dictionary to the
+   Dart tokens in `packages/catch_tokens`, the CSS in `packages/web-config`, and the
+   artifact's `tokens.json` and `tokens.css`. The artifact's format is an output,
+   never a second source.
+2. **React.** `packages/web-ui` goes through an esbuild bundle, with React external, to
+   the artifact's `bundle.js`, `bundle.css` and `index.d.ts`, and on to the canvas.
+3. **The canvas.** Storybook and Widgetbook are the living canvas. The artifact is the
+   published Storybook build with each component's guideline beside it, and a Storybook
+   `Contract` story's states are its preview states. Flutter mirrors the same state list
+   as Widgetbook use cases.
+4. **Boards.** The generators in `catch-design-source/gen` and `harness` render a board
+   only until its screen ships. The shipped board then freezes as a reference image
+   beside the route's capture. No generator moves into this repo.
+
+Publishing is a release step, run after a library PR merges: the system first, then
+the canvas. Until the first publish from `packages/web-ui`, the canvas keeps mounting
+the frozen system v15 bundle, and `import_ds_props.mjs` reads from that source.
+
 ## Aliases And Redirects
 
 `aliases` on a component or member lists the other names an agent unaware of
@@ -184,6 +259,12 @@ this. The generated widget catalog prints them as "Also called", and the
 new-widget gate
 (`node tool/design/check_new_widget_inventory.mjs --check`) rejects a new widget
 whose name matches a registered name or alias and names the component to use.
+
+`absorbs` lists names a component takes over when its first redesigned consumer
+lands that an alias cannot hold, such as `CatchBanner` on `catch.notice`. An alias
+may not shadow a registered symbol or repeat another record's alias, so a name
+already claimed goes here and any other absorbed name goes in `aliases`. The contract
+check holds each entry to one owner and rejects one that `aliases` could hold.
 
 `roleNounRedirects` maps nouns agents commonly write but the grammar spells
 differently (Panel, Content, View, ...) to the role nouns to use. Naming
@@ -201,6 +282,9 @@ fixed finding that is still listed also fails until
 |---|---|
 | `catch.components.json` | Authoritative component contract registry. |
 | `catch.components.schema.json` | JSON Schema for the registry shape. |
+| `component_matrix.md` | Generated: every system component, what each framework exports today, and what is left to align, port or absorb. `node tool/design/component_matrix.mjs` writes it. |
+| `guidelines/<registry-id>.md` | Per-component usage guidance, with a generated Flutter section. |
+| `system/index.d.ts` | Committed copy of the design source's component types, written by `import_ds_props.mjs`. |
 | `widget_naming_baseline.json` | Decrease-only ratchet of existing naming debt. |
 | `../../tool/design/generated/enforcement_expectations.json` | Generated code ownership and anti-vacuity expectations for repository gates. |
 

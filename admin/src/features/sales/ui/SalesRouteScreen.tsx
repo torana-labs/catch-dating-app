@@ -1,11 +1,19 @@
-import {CatchPageTabBar, CatchTopBar} from "@catch/web-ui";
-import {useSalesDealsController, useSalesHostNames} from "../controllers/useSalesDealsController";
+import {CatchEmptyState, CatchPageTabBar, CatchPaneLayout, CatchTopBar, CatchWorkspaceHeader} from "@catch/web-ui";
+import {useSalesDealsController, useSalesHostName, useSalesHostNames} from "../controllers/useSalesDealsController";
+import {useSalesHostCommercialController} from "../controllers/useSalesHostCommercialController";
 import {useSalesHostsController} from "../controllers/useSalesHostsController";
 import {useSalesTodayController} from "../controllers/useSalesTodayController";
 import {useMyNominationsController} from "../controllers/useMyNominationsController";
 import {MyNominationsScreen} from "./MyNominationsScreen";
+import {SalesAddHostWorkspace} from "./SalesAddHostWorkspace";
 import {SalesDealsScreen} from "./SalesDealsScreen";
+import {SalesDemoWorkspace} from "./SalesDemoPanel";
+import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
+import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 import {SalesHostsScreen} from "./SalesHostsScreen";
+import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
+import {SalesPartnerOfferWorkspace} from "./SalesPartnerOfferWorkspace";
+import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {SalesTodayScreen} from "./SalesTodayScreen";
 
 export type SalesScreenArea = "today" | "hosts" | "deals" | "nominations";
@@ -14,13 +22,18 @@ interface Props {
   uid: string | null;
   /** A sales associate sees their own work; the owner sees the team's. */
   ownWorkOnly: boolean;
+  isAdminOwner: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
-  /** The older host page: editing, stage moves, pilots, quotes, people and evidence. */
+  /** The older host page: custom fields and imported history. */
   onOpenHostTools: (organizerId: string) => void;
+  onOpenHostPage: (organizerId: string, page: "fit" | "privacy" | "demo") => void;
+  /** Which of one host's own pages is open. */
+  hostPage: "main" | "fit" | "privacy" | "demo" | "add" | "fit-queue";
   onOpenOrganizer: (organizerId: string) => void;
   onAddHost: () => void;
+  onOpenFitQueue: () => void;
   onError: (message: string | null) => void;
   onNotice: (message: string) => void;
 }
@@ -33,14 +46,48 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
     onSelect={onSelect} selectedTaskId={selectedId} />;
 }
 
-function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost, onError, onNotice}: Props) {
-  const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
-  return <SalesHostsScreen model={{...controller, uid}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
+/** A host's own page. Privacy asks the owner to type the host's name, so nothing draws until that name is known. */
+function HostOwnPage({uid, ownWorkOnly, isAdminOwner, selectedId, hostPage, onOpenHost}: Props) {
+  const organizerId = selectedId as string;
+  const {name, isLoading} = useSalesHostName(organizerId);
+  let body = null;
+  if (hostPage === "fit") {
+    if (ownWorkOnly) body = <CatchEmptyState title="Only the owner and admins can open this" />;
+    else if (!isLoading) body = <SalesIntelligenceWorkspace organizerId={organizerId} organizerName={name ?? ""} currentUserUid={uid ?? ""} isAdminOwner={isAdminOwner} />;
+  } else if (!isAdminOwner) body = <CatchEmptyState title="Only the owner can open this" />;
+  else if (!isLoading && hostPage === "demo") {
+    body = <SalesDemoWorkspace key={`${uid}:${organizerId}`} organizerId={organizerId} organizerName={name ?? ""} isAdminOwner currentUserUid={uid ?? ""} />;
+  } else if (!isLoading) {
+    body = renderSalesPrivacyWorkspace({actorUid: uid ?? "", isAdminOwner, organizerId, ...(name ? {organizerName: name} : {})});
+  }
+  return <CatchPaneLayout pattern="reading" main={<>
+    <CatchWorkspaceHeader title={hostPage === "fit" ? "Fit and outreach" : hostPage === "demo" ? "Private demo" : "Privacy"} kicker={name ? `Sales · ${name}` : "Sales · Hosts"}
+      back={{label: "Back to the host", onPressed: () => onOpenHost(organizerId)}} />
+    {body}
+  </>} />;
 }
 
-function Deals({uid, onOpenHost}: Props) {
+function FitQueue({uid, ownWorkOnly, onOpenHost, onSelect}: Props) {
+  return <CatchPaneLayout pattern="wide-table" main={<>
+    <CatchWorkspaceHeader title="Reviewed fit" kicker="Sales · Hosts" back={{label: "Back to hosts", onPressed: () => onSelect(null)}} />
+    {ownWorkOnly ? <CatchEmptyState title="Only the owner and admins can open this" /> : renderSalesFitQueueWorkspace(uid ?? "", onOpenHost)}
+  </>} />;
+}
+
+function Hosts({uid, ownWorkOnly, isAdminOwner, hostPage, selectedId, onSelect, onOpenHost, onOpenOrganizer, onOpenHostTools, onOpenHostPage, onOpenFitQueue, onAddHost, onError, onNotice}: Props) {
+  const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
+  const commercial = useSalesHostCommercialController({organizerId: selectedId, opportunities: controller.host?.opportunities ?? [],
+    enabled: !ownWorkOnly, onError, onNotice});
+  return <><SalesHostsScreen onOpenFitQueue={ownWorkOnly ? null : onOpenFitQueue} onOpenPrivacy={(id) => onOpenHostPage(id, "privacy")} onOpenDemo={(id) => onOpenHostPage(id, "demo")} onOpenFit={(id) => onOpenHostPage(id, "fit")} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
+    renderPartnerOffer: ownWorkOnly ? null : (organizerId, organizerName) =>
+      <SalesPartnerOfferWorkspace key={`${uid}:${organizerId}`} actorUid={uid ?? ""} organizerId={organizerId} organizerName={organizerName} />}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />
+    {hostPage === "add" ? <SalesAddHostWorkspace canAddExisting={!ownWorkOnly} onAdded={onOpenHost} onClose={() => onSelect(null)} onError={onError} onNotice={onNotice} /> : null}
+  </>;
+}
+
+function Deals({uid, ownWorkOnly, onOpenHost}: Props) {
   const controller = useSalesDealsController({uid});
-  return <SalesDealsScreen model={controller} onOpenHost={onOpenHost} />;
+  return <SalesDealsScreen model={controller} onOpenHost={onOpenHost} {...(ownWorkOnly ? {} : {companyTotals: renderSalesFunnelWorkspace(uid ?? "")})} />;
 }
 
 function Nominations({selectedId, onSelect, onAddHost}: Props) {
@@ -59,7 +106,8 @@ const areaTabs = [
  * associate has each area in the navigation; the owner has one Sales entry and these tabs.
  */
 export function SalesRouteScreen({area, ...props}: Props & {area: SalesScreenArea}) {
-  const screen = area === "hosts" ? <Hosts {...props} /> : area === "deals" ? <Deals {...props} /> :
+  const screen = area === "hosts" ? (props.hostPage === "fit-queue" ? <FitQueue {...props} /> :
+    props.selectedId && props.hostPage !== "main" && props.hostPage !== "add" ? <HostOwnPage {...props} /> : <Hosts {...props} />) : area === "deals" ? <Deals {...props} /> :
     area === "nominations" ? <Nominations {...props} /> : <Today {...props} />;
   if (props.ownWorkOnly || area === "nominations") return screen;
   return <>
