@@ -109,7 +109,7 @@ function runPlanSignal(input: {
   runPlan: MarketingRunPlan;
   owner: string;
   runbook: string;
-  path: string;
+  path: string | null;
 }): SystemSignal {
   const {runPlan, ...rest} = input;
   const notConfigured = runPlan.automationPolicy.searchProvider === "not_configured" ||
@@ -124,7 +124,7 @@ function runPlanSignal(input: {
       `${runPlan.automationPolicy.networkFetchesEnabled ? "on" : "off"}.`,
     meaning: "This is how the crawl is set up, not whether its last run worked. Runs aren't recorded here.",
     nextAction: notConfigured ?
-      "Set the search provider and network policy where this is handled. This isn't a failed job." :
+      "Set the search provider and network policy for this crawl. This isn't a failed job." :
       "Nothing to do.",
     readAt: runPlan.generatedAt,
   };
@@ -223,8 +223,9 @@ export function systemSignals({
         label: "Event intake crawl plan",
         runPlan: eventIntake.runPlan,
         owner: "Events intake",
-        runbook: "Admin, Inbox",
-        path: "/inbox",
+        runbook: "functions/src/admin/eventIntakeDashboard.ts",
+        // No Admin page sets this plan since the old Intake pages retired.
+        path: null,
       })
     );
   }

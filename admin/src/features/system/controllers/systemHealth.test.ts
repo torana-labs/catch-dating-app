@@ -48,7 +48,8 @@ describe("systemSignals", () => {
     expect(signals.find((signal) => signal.id === "overview-finance-ledger")?.path).toBe("/money");
     expect(signals.find((signal) => signal.sourceId === "host-analytics")?.path).toBe("/growth");
     const intake = systemSignals({eventIntake: sampleEventIntakeBridge, nowMs});
-    expect(intake.map((signal) => signal.path)).toEqual(["/inbox", "/inbox"]);
+    expect(intake.find((signal) => signal.id === "event-intake-freshness")?.path).toBe("/inbox");
+    expect(intake.find((signal) => signal.id === "event-intake-run-plan")?.path).toBeNull();
   });
 });
 
