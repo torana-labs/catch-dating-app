@@ -3,7 +3,7 @@ import {defineArea, route} from "../adminAreaKit";
 declare module "../adminAreaKit" {
   interface AdminNavIds {sales: true}
   interface AdminRouteFields {
-    salesArea: "today" | "hosts" | "settings";
+    salesArea: "today" | "hosts";
   }
 }
 
@@ -23,8 +23,8 @@ export default defineArea({
     route("/sales/*", "sales"),
     route("/sales/today/*", "sales", {salesArea: "today"}),
     route("/sales/today/:salesTaskId", "sales", {salesArea: "today", title: "Task"}),
-    route("/sales/settings/*", "sales", {salesArea: "settings", title: "Sales settings"}),
-    // The older Sales pages keep what the new screens don't have yet: a host's custom fields and imported history.
+    route("/sales/settings/*", "sales", {redirect: "/settings/sales"}),
+    // The older Sales page keeps what the new screens don't have yet: a host's custom fields and imported history.
     route("/sales/hosts/:salesOrganizerId/tools", "sales", {salesArea: "hosts", title: "Host tools"}),
     // These became the Deals board and the Hosts filters.
     route("/sales/pipeline/*", "sales", {redirect: "/sales/deals"}),

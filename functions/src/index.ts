@@ -904,6 +904,8 @@ export {
   adminListSalesTasks,
   adminListSalesOpportunities,
   adminListSalesCustomFields,
+  adminListSalesImports,
+  adminListSalesImportHosts,
   adminGetSalesReceipt,
   adminListSalesInboundIntents,
   adminPreviewSalesImport, adminPreviewSalesImportCompensation,

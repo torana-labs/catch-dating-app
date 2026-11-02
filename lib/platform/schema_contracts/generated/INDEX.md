@@ -1486,6 +1486,8 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminCreateOrganizerDraftFromCandidateCallableRequest | AdminCreateOrganizerDraftFromCandidateCallablePayload | `callables/admin_create_organizer_draft_from_candidate_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_create_organizer_draft_from_candidate_callable_request.g.dart` |
 | AdminCreateMarketingContentDraftCallableRequest | AdminCreateMarketingContentDraftCallablePayload | `callables/admin_create_marketing_content_draft_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_create_marketing_content_draft_callable_request.g.dart` |
 | AdminRecordMarketingReviewDecisionCallableRequest | AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_record_marketing_review_decision_callable_request.g.dart` |
+| AdminListSalesImportHostsCallableRequest | AdminListSalesImportHostsCallablePayload | `callables/admin_sales_imports_hosts_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_sales_import_hosts_callable_request.g.dart` |
+| AdminListSalesImportsCallableRequest | AdminListSalesImportsCallablePayload | `callables/admin_sales_imports_list_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_sales_imports_callable_request.g.dart` |
 
 ## Callable Schemas Still Hand-Written In Dart
 

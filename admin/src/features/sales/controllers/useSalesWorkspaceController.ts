@@ -3,23 +3,19 @@ import {salesErrorMessage} from "./salesLabels";
 import {useCallback, useRef} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
-  createSalesCustomField, getSalesAccount,
+  getSalesAccount,
   listSalesCustomFields,
   recordSalesActivity, setSalesCustomFieldValue,
   updateSalesAccount,
   upsertSalesOpportunity, upsertSalesTask,
-  applySalesImport, listSalesContacts,
-  applySalesImportCompensation, previewSalesImportCompensation,
-  previewSalesImport,
+  listSalesContacts,
 } from "../api/salesRepository";
 import type {
-  SalesAccount, SalesCreateCustomFieldInput,
+  SalesAccount,
   SalesRecordActivityInput,
   SalesResearchStatus, SalesSetCustomFieldValueInput, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput,
   SalesUpsertTaskInput,
-  SalesImportPacket, SalesImportPreview,
-  SalesImportCompensationInput, SalesImportCompensationPreview,
 } from "../api/salesTypes";
 
 export const researchStatusOptions: Array<{value: SalesResearchStatus; label: string}> = [
@@ -39,13 +35,11 @@ export function toLocalDateTimeInput(date: Date): string {
 }
 
 export function useSalesWorkspaceController({
-  area,
   selectedOrganizerId,
   assignedStaffOnly = false,
   onError,
   onNotice,
 }: {
-  area: "hosts" | "settings";
   selectedOrganizerId: string | null;
   assignedStaffOnly?: boolean;
   onError: (message: string | null) => void;
@@ -56,8 +50,7 @@ export function useSalesWorkspaceController({
   const pendingRequestIds = useRef(new Map<string, string>());
 
   const customFields = useQuery({
-    enabled: !assignedStaffOnly &&
-      (area === "settings" || Boolean(selectedOrganizerId)),
+    enabled: !assignedStaffOnly && Boolean(selectedOrganizerId),
     queryKey: ["sales", "custom-fields"],
     queryFn: listSalesCustomFields,
   });
@@ -76,14 +69,7 @@ export function useSalesWorkspaceController({
   const taskMutation = useMutation({mutationFn: upsertSalesTask});
   const activityMutation = useMutation({mutationFn: recordSalesActivity});
   const opportunityMutation = useMutation({mutationFn: upsertSalesOpportunity});
-  const createCustomFieldMutation = useMutation({mutationFn: createSalesCustomField});
   const setCustomValueMutation = useMutation({mutationFn: setSalesCustomFieldValue});
-  const importPreviewMutation = useMutation({mutationFn: previewSalesImport});
-  const importApplyMutation = useMutation({mutationFn: applySalesImport});
-  const compensationPreviewMutation = useMutation({
-    mutationFn: previewSalesImportCompensation});
-  const compensationApplyMutation = useMutation({
-    mutationFn: applySalesImportCompensation});
 
   const invalidate = useCallback(async () => {
     await Promise.all([
@@ -168,46 +154,11 @@ export function useSalesWorkspaceController({
     opportunityMutation.mutateAsync({...input, requestId}), "Opportunity saved."),
   [execute, opportunityMutation]);
 
-  const addCustomField = useCallback((
-    input: Omit<SalesCreateCustomFieldInput, "requestId">
-  ) => execute("custom-field", input, (requestId) =>
-    createCustomFieldMutation.mutateAsync({...input, requestId}),
-  "Field added."), [createCustomFieldMutation, execute]);
-
   const saveCustomValue = useCallback((
     input: Omit<SalesSetCustomFieldValueInput, "requestId">
   ) => execute("custom-value", input, (requestId) =>
     setCustomValueMutation.mutateAsync({...input, requestId}),
   "Field value saved."), [execute, setCustomValueMutation]);
-
-  const previewImport = useCallback(async (packet: SalesImportPacket):
-    Promise<SalesImportPreview | null> => {
-    onError(null);
-    try {return await importPreviewMutation.mutateAsync(packet);} catch (error) {
-      onError(salesErrorMessage(error)); return null;
-    }
-  }, [importPreviewMutation, onError]);
-  const applyImport = useCallback((packet: SalesImportPacket, previewHash: string) =>
-    execute("import", {packet, previewHash}, (requestId) =>
-      importApplyMutation.mutateAsync({...packet, previewHash, requestId}),
-    "Reviewed import applied."), [execute, importApplyMutation]);
-  const previewCompensation = useCallback(async (
-    input: SalesImportCompensationInput
-  ): Promise<SalesImportCompensationPreview | null> => {
-    onError(null);
-    try {
-      return await compensationPreviewMutation.mutateAsync(input);
-    } catch (error) {
-      onError(salesErrorMessage(error));
-      return null;
-    }
-  }, [compensationPreviewMutation, onError]);
-  const applyCompensation = useCallback((
-    input: SalesImportCompensationInput & {previewHash: string; reason: string}
-  ) => execute("import-compensation", input, (requestId) =>
-    compensationApplyMutation.mutateAsync({...input, requestId}),
-  "Reviewed import correction recorded. Refresh the account before new work."),
-  [execute, compensationApplyMutation]);
 
   return {
     customFields,
@@ -215,15 +166,10 @@ export function useSalesWorkspaceController({
     detail,
     saveAccount, saveTask, logActivity,
     saveOpportunity,
-    addCustomField, saveCustomValue,
-    previewImport, applyImport, importPreviewPending: importPreviewMutation.isPending,
-    previewCompensation, applyCompensation,
-    compensationPreviewPending: compensationPreviewMutation.isPending,
+    saveCustomValue,
     isSaving: accountMutation.isPending || taskMutation.isPending ||
       activityMutation.isPending || opportunityMutation.isPending ||
-      createCustomFieldMutation.isPending ||
-      setCustomValueMutation.isPending || importApplyMutation.isPending ||
-      compensationApplyMutation.isPending,
+      setCustomValueMutation.isPending,
   };
 }
 
