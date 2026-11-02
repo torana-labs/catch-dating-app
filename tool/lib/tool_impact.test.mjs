@@ -247,7 +247,6 @@ const consumedInputs = new Map([
     "design:screen-contracts"]],
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
     "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
-  ["tool/policy/rules.json", ["agent:context-pack", "agent:harness-v2"]],
   ["tool/data/lib/recompute_cli_test_support.mjs", ["data:repair-club-hosts",
     "data:repair-club-member-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
   ["packages/web-config/firebase.ts", ["web:react-controller-test-targets",
@@ -934,7 +933,7 @@ test("mixed dedicated workflow changes retain policy wiring in the affected Tool
     });
     assert.equal(plan.mode, "affected", workflow);
     assert.ok(plan.toolIds.includes("agent:harness-v2"), workflow);
-    assert.ok(plan.toolIds.includes("meta:enforcement-integrity"), workflow);
+    assert.ok(plan.toolIds.includes("meta:tool-manifest"), workflow);
   }
 });
 

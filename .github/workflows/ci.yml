@@ -96,6 +96,7 @@ jobs:
             /tool/lib/repo_paths.mjs
             /tool/lib/repository_snapshot.mjs
             /tool/lib/tool_impact.mjs
+            /tool/lib/tool_manifest_rules.mjs
             /tool/lib/tool_platform.mjs
             /tool/run.mjs
             /tool/tools_manifest.json
@@ -544,9 +545,9 @@ jobs:
         env:
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
         run: node tool/docs/check_doc_metadata.mjs --base "$BASE_SHA"
-      - name: Check agent policy enforcement
+      - name: Validate the tool manifest and baseline ownership
         if: ${{ needs.plan.outputs.policy_docs == 'true' }}
-        run: node tool/run.mjs check meta:enforcement-integrity
+        run: node tool/run.mjs check meta:tool-manifest meta:repository-root-hygiene
       - name: Validate CI wiring in the policy lane
         if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
         run: node tool/run.mjs check agent:harness-v2

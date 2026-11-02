@@ -197,7 +197,7 @@ skipped, failed or cancelled preflight. Full tests and analysis remain required.
 `docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
 also rejects surviving references to deleted or renamed documents: Markdown
 links and code spans, plus literal repository paths in any tracked
-non-Markdown text such as `tool/policy/rules.json`, `tool/tools_manifest.json`,
+non-Markdown text such as `tool/tools_manifest.json`,
 workflows, scripts and generated packs. For each document the change edits, it
 also rejects `path.md#heading` references whose heading the change removed;
 anchors that were already unresolved before the change are printed as
@@ -296,7 +296,7 @@ enum/path handling, subcommands, and every apply or production confirmation
 boundary. Do not broaden this helper by moving product or remote-write policy
 into a generic parser.
 
-`meta:enforcement-integrity` discovers every repository `*_baseline.json`
+`meta:repository-root-hygiene` discovers every repository `*_baseline.json`
 and requires an `owner` identifying its source document plus a `targetPhase` Markdown heading
 reference. Fixture baselines obey the same rule. Baseline refreshers must emit
 both fields; metadata belongs in the existing baseline, not a separate ledger.
@@ -442,8 +442,13 @@ It checks static backend query shapes and validates declared shapes against
 review. Block comments support readable multiline field lists. Run it through
 `node tool/run.mjs check contracts:firestore-query-indexes`.
 
-New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a
-test containing a known-bad fixture.
+New scanners must ship with a manifest `role`, the rule they enforce, and a test
+containing a known-bad fixture. A tool's `rules` entries hold the rule's `id`,
+`title`, `appliesTo` paths and `instruction`; each rule sits on one active tool,
+and any other tool that helps enforce it names the id in `alsoEnforces`.
+`node tool/run.mjs check --manifest-only`, registered as `meta:tool-manifest`,
+validates them, along with each tool's role and that a gate or ratchet has a
+check that executes it.
 
 ## Riverpod Provider Graph
 

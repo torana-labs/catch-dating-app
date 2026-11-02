@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 5.12.3
+version: 5.12.4
 updated: 2026-11-02
 owner: agent_operating_model
 status: active
@@ -111,7 +111,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Cross Paths | `cross_paths.md` | Approved people-in-Explore contract plus implementation receipts for roster privacy and fail-closed global/per-event consent; showcase readiness, sanitized suggestions, invitation, temporary event-plan, capacity, privacy, ranking, analytics, and phased rollout remain owned here. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
-| Enforcement rules | `../tool/policy/rules.json` | Authored recurring rules and their executable enforcement bindings. Historical audit receipts and generated pass/file/metric ledgers remain available only through Git history. |
+| Enforcement rules | `../tool/tools_manifest.json` | Rules a tool enforces, written on that tool. A rule no tool checks is a sentence in the document that owns its subject. Historical audit receipts and generated pass/file/metric ledgers remain available only through Git history. |
 
 ## Moved To catch-knowledge
 

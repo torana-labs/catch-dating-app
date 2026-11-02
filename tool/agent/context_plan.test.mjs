@@ -6,7 +6,7 @@ import {
   matchesScopePatterns,
   normalizeScopePaths,
   resolveCheckPlan,
-  selectActiveSourceRules,
+  selectSourceRules,
   selectSkills,
 } from "./lib/context_plan.mjs";
 
@@ -90,14 +90,13 @@ test("skill routing prefers path matches and uses task words only as a fallback"
   );
 });
 
-test("only active path-matched source rules are selected", () => {
+test("only path-matched source rules are selected", () => {
   const rules = {
-    "RULE-A": {status: "active", applies_to: ["tool/**"]},
-    "RULE-B": {status: "watch", applies_to: ["tool/**"]},
-    "RULE-C": {status: "active", applies_to: ["lib/**"]},
+    "RULE-A": {appliesTo: ["tool/**"]},
+    "RULE-C": {appliesTo: ["lib/**"]},
   };
   assert.deepEqual(
-    selectActiveSourceRules(rules, ["tool/example.mjs"]).map((entry) => entry.id),
+    selectSourceRules(rules, ["tool/example.mjs"]).map((entry) => entry.id),
     ["RULE-A"],
   );
 });
@@ -112,16 +111,8 @@ test("check selection comes only from matched skill and source-rule declarations
       required_tools: ["source-check", "full-check"],
     }],
     rules: {
-      "RULE-A": {
-        status: "active",
-        applies_to: ["tool/**"],
-        enforcement: [{tool: "source-check"}],
-      },
-      "RULE-B": {
-        status: "active",
-        applies_to: ["lib/**"],
-        enforcement: [{tool: "unrelated-check"}],
-      },
+      "RULE-A": {appliesTo: ["tool/**"], tools: ["source-check"]},
+      "RULE-B": {appliesTo: ["lib/**"], tools: ["unrelated-check"]},
     },
   });
   assert.deepEqual(selection.matchedSkills.map((entry) => entry.skill_id), ["catch-tooling"]);
@@ -219,7 +210,7 @@ test("unknown, duplicate, malformed, and non-executable checks stay unresolved",
 });
 
 test("malformed source inputs fail locally instead of manufacturing guidance", () => {
-  assert.throws(() => selectActiveSourceRules([], ["tool"]), /keyed by rule id/u);
+  assert.throws(() => selectSourceRules([], ["tool"]), /keyed by rule id/u);
   assert.throws(() => resolveCheckPlan({manifest: {}, requestedChecks: []}), /tools array/u);
   assert.throws(() => resolveCheckPlan({
     manifest,

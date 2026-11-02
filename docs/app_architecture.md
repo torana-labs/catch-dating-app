@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.98.1
+version: 1.98.2
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -33,11 +33,10 @@ This spec consolidates and normalizes guidance from:
   token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
-- `tool/policy/rules.json`: active enforceable rules such as
-  `ASYNC-UI-001`, `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
-  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
-  `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
-  `WIDGET-CATALOG-001`.
+- `tool/tools_manifest.json`: rules a tool enforces, on the tool that enforces
+  them, such as `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
+  `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
+  `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and `WIDGET-CATALOG-001`.
 
 ## Quick Decision Layer
 
@@ -272,6 +271,18 @@ Each layer should have one clear job:
 
 The rule is not "more layers are always better." The rule is "state and side
 effects have one predictable owner."
+
+Two habits reviewers hold every layer to:
+
+- A conditional whose arms produce identical values is dead logic, often left by
+  an incomplete rename or a forgotten variant. Remove the condition or fix the
+  arm that should differ.
+- A public widget, getter or enum value in `lib/` needs a live reference:
+  production code, route or config registration, or a Widgetbook use case or
+  capture-catalog entry for a component with a widget-catalog or contract entry.
+  Test-only references do not count, and Widgetbook alone does not count without
+  that entry. `lib/design_fixtures` and intentional in-dev features are exempt.
+  Delete orphaned symbols together with their dead tests.
 
 ## Bounded Context Contract
 
@@ -1377,7 +1388,9 @@ roles upward only when they recur.
 `lib/src/semantic`, and component token contracts in `lib/src/components`.
 `CatchWelcomeTokens` owns Welcome reel geometry and `CatchFormWorkspaceTokens`
 owns form-builder pane geometry. Import the public entrypoint instead of
-package internals. The package uses the repository Dart workspace and its only
+package internals. Read `CatchTokens.of(context)` inside the leaf widget rather
+than passing `CatchTokens` through constructors, unless the widget deliberately
+renders with a token set other than the current one. The package uses the repository Dart workspace and its only
 production dependency is the Flutter SDK, enforced by
 `platform:app-package-graphs` with seeded forbidden-dependency tests.
 The package also enables Flutter lints, including undeclared-package-import
@@ -1563,6 +1576,8 @@ For `NestedScrollView` plus pinned tab rows:
   title group.
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
+- A collapsible title followed by a pinned row moves upward as it collapses; the
+  pinned search, filter or tab row never scrolls over the title.
 - Route-owned tab pages use a semantic `CatchRootScreenPageScrollView`
   constructor. `standard` owns the responsive width clamp, 20 pt gutter, 16 pt
   body start, and terminal clearance. `fullBleed` removes only the outer body
@@ -1803,6 +1818,11 @@ empty, retry, stale data, and mutation failure are handled.
 | Optional enrichment failure | Repository/view model | keep primary UI alive, log through error context when useful |
 | Platform/plugin failure | Service/repository/controller seam | typed app error, transient CatchNotice for a brief user action failure |
 | Framework/runtime failure | Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, `CatchFrameworkErrorState` |
+
+An optional enrichment read may fail silently only when the primary surface
+stays correct and no primary CTA, paid action, safety action or host operation
+depends on it. Anything a primary action depends on is not enrichment and must
+surface its error.
 
 Use `CatchAsyncBoundary` for simple body screens with one async value.
 
@@ -2614,6 +2634,10 @@ inside the flow. Prefer auto-dispose unless the flow must survive route/tab
 changes. If `keepAlive` is used, reset or invalidate state on completion,
 sign-out, or cancellation.
 
+Do not change the durable step or navigate past the current one until the
+required repository write or external mutation has succeeded, unless the
+transition is deliberately optimistic with explicit rollback and error UI.
+
 ### Async State Controller
 
 Use `AsyncNotifier<T>` when state is loaded asynchronously and then mutated by
@@ -3247,6 +3271,13 @@ must have a bundled fallback, schema/version validation, cache policy, and
 rollback. Authentication, safety, legal, permission, error, and navigation copy
 must remain bundled and release-reviewed.
 
+An automated find-and-replace that can touch prose, such as a rename from run to
+event, needs a human review of the changed string literals before merge. Copy on
+high-traffic surfaces (onboarding, booking and CTA flows, dashboard, event
+detail, chat, notifications, catalog copy under `contracts/`) and any string that
+has regressed before should have a copy snapshot test; every other string need
+not.
+
 ### Exhibit ARCH-COPY-001: Product Copy Boundary
 
 <!-- exhibit-freshness: ARCH-COPY-001 owner=recursive_audit_loop -->
@@ -3849,18 +3880,17 @@ exemption.
 
 Use three enforcement levels.
 
-The enforcement registry is checked by
-`node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
-changes enforcement, update `tool/policy/rules.json`,
-`tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
-baseline reduction together. Manual enforcement is explicit with `stage: manual`;
-absence of an enforcement entry is drift.
+A rule a tool enforces is written on that tool in `tool/tools_manifest.json`:
+its `rules` holds the id, title, paths and instruction, and any other tool that
+helps enforce it names the id in `alsoEnforces`. `node tool/run.mjs check
+--manifest-only` validates those entries. A rule no tool checks is a sentence in
+the document that owns its subject, reviewed by hand.
 
 Every `*_baseline.json`, including checked-in test fixtures, declares `owner`
 (the owning source document's `doc_id`) and `targetPhase` (a repository Markdown
-heading reference to its target-zero phase). Enforcement integrity discovers
-these files directly, including unregistered baselines, and rejects missing
-metadata or broken phase references. Refresh commands retain this metadata.
+heading reference to its target-zero phase). `meta:repository-root-hygiene`
+discovers these files directly, including unregistered baselines, and rejects
+missing metadata or broken phase references. Refresh commands retain this metadata.
 The source-budget split targets Phase 5; remaining domain-owned debt targets
 Phase 6's continuous conformance lanes. A target is an outstanding obligation,
 not evidence that a baseline is already empty.

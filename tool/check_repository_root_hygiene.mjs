@@ -2,6 +2,7 @@
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {headingAnchors} from "./docs/check_doc_metadata.mjs";
 import {matchesGlobPath} from "./lib/path_glob.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 
@@ -76,6 +77,40 @@ export function retiredEvidenceViolations(snapshot) {
     .map((relativePath) => `${relativePath}: retired governance evidence must remain absent`);
 }
 
+export function baselineOwnershipViolations(snapshot) {
+  const errors = [];
+  for (const file of snapshot.listFiles().filter((name) => name.endsWith("_baseline.json"))) {
+    let baseline;
+    try {
+      baseline = snapshot.readJson(file, {required: true});
+    } catch (error) {
+      errors.push(`${file}: baseline must be readable JSON: ${error.message}`);
+      continue;
+    }
+    if (baseline == null || typeof baseline !== "object" || Array.isArray(baseline)) {
+      errors.push(`${file}: baseline must be an object with owner and targetPhase.`);
+      continue;
+    }
+    if (typeof baseline.owner !== "string" ||
+        !/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/u.test(baseline.owner) ||
+        /^(?:todo|tbd|unknown|unassigned)$/u.test(baseline.owner)) {
+      errors.push(`${file}: baseline must name its owning source document.`);
+    }
+    if (typeof baseline.targetPhase !== "string" ||
+        !/^[a-zA-Z0-9_/-]+\.md#[a-z0-9-]*phase-[a-z0-9-]+$/u.test(baseline.targetPhase)) {
+      errors.push(`${file}: baseline must name a target-zero phase as a Markdown heading reference.`);
+      continue;
+    }
+    const [doc, heading] = baseline.targetPhase.split("#");
+    if (!snapshot.exists(doc)) {
+      errors.push(`${file}: targetPhase document does not exist: ${doc}.`);
+    } else if (!headingAnchors(snapshot.readText(doc, {required: true})).has(heading)) {
+      errors.push(`${file}: targetPhase heading not found: ${baseline.targetPhase}.`);
+    }
+  }
+  return errors;
+}
+
 function git(args, {cwd = repoRoot, ...options} = {}) {
   return execFileSync("git", args, {cwd, encoding: "utf8", ...options}).trim();
 }
@@ -87,7 +122,7 @@ export function checkRepository({
 } = {}) {
   const manifest = snapshot.readJson("tool/repository_root_manifest.json", {required: true});
   const errors = [];
-  errors.push(...retiredEvidenceViolations(snapshot));
+  errors.push(...retiredEvidenceViolations(snapshot), ...baselineOwnershipViolations(snapshot));
   for (const pattern of directoryOnlyIgnorePatterns(
     snapshot.readText(".gitignore") ?? "",
   )) {

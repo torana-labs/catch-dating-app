@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.185.2
+version: 1.185.3
 updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
@@ -44,7 +44,7 @@ Read this before changing:
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
 | Human operation map | `docs/backend_operation_catalog.md` |
-| Active policy rules | `tool/policy/rules.json` |
+| Rules a tool enforces | `tool/tools_manifest.json` |
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
@@ -4711,6 +4711,24 @@ organisers in the city and whether the city is `live` or `launchingSoon`
   which read its sources before the stored `builtAt`.
 - The collection is server-only in `firestore.rules`.
 
+## Write Path Discipline
+
+- **Partial writes:** client and callable mutating writes change only the keys
+  that changed, with `update()`, `set(merge: true)` or `FieldValue` operations. A
+  full-document `set()` of a client-held snapshot is allowed only in a
+  transaction-guarded create; elsewhere it loses Timestamp precision, trips rules
+  `diff()` and lets independent fields overwrite each other.
+- **Denormalized fields:** when source data is copied into another document, the
+  write path names the source field, the projection fields and how they stay in
+  sync. Prefer backend triggers or callable-owned fan-out over client best effort,
+  test that the projection updates when the source changes, and add repair tooling
+  when existing data has drifted.
+- **Denormalized counts:** event check-in, booked and gender counts, organizer
+  member counts, invite paid counts and match unread counts are read and changed
+  inside one `db.runTransaction`, with the increment conditioned on the state
+  transition observed there. A non-transactional read-modify-write or a
+  `batch.set` over a shared count is forbidden.
+
 ## Read Path Discipline
 
 Firestore reads use an explicit surface policy instead of ad-hoc unbounded
@@ -4723,6 +4741,9 @@ queries:
 - **Rosters and bounded working sets** require a reviewed limit based on the
   product's real domain bound. If the domain is not actually bounded, they use
   the feed/history policy.
+- **Display-only data on lists and rosters** resolves through one batched
+  `whereIn` or `getAll` provider that shares a chunking helper across repositories,
+  never one realtime listener per tile or sequential per-id awaits.
 - **Point lookups** use deterministic document ids whenever the schema owns
   one. A `where(...).limit(1)` query is not a substitute for a known document
   id.

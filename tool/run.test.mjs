@@ -470,6 +470,19 @@ test("multiple categories keep order, deduplicate commands and reject any unknow
   assert.doesNotMatch(noValue.stdout, /==>/u);
 });
 
+test("the manifest-only check also holds tools to their role and rules", (context) => {
+  const fixture = createRunnerFixture(context);
+  assert.equal(run(["check", "fixture:check"], {cwd: fixture}).status, 0);
+  mutateFixtureManifest(fixture, (manifest) => {
+    delete manifest.tools[0].role;
+    manifest.tools[0].alsoEnforces = ["RULE-404"];
+  });
+  const result = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /fixture:check: active checked tool must declare role/u);
+  assert.match(result.stderr, /fixture:check: alsoEnforces names unknown rule RULE-404/u);
+});
+
 test("manifest validation rejects vacuous tools before dispatch", (context) => {
   const fixture = createRunnerFixture(context);
   mutateFixtureManifest(fixture, (manifest) => {
@@ -528,6 +541,7 @@ function createRunnerFixture(context) {
     "tool/lib/repo_paths.mjs",
     "tool/lib/repository_snapshot.mjs",
     "tool/lib/tool_impact.mjs",
+    "tool/lib/tool_manifest_rules.mjs",
     "tool/lib/tool_platform.mjs",
   ]) {
     const destination = path.join(root, relativePath);
@@ -574,6 +588,7 @@ function fixtureManifest() {
         status: "active",
         checks: ["node tool/check.mjs"],
         command: "node tool/check.mjs",
+        role: "gate",
         checkSafety: "local-readonly",
         ciRequirements: requirements,
       },
