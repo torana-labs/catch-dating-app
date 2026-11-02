@@ -1,5 +1,5 @@
 {
-  "$description": "Canonical Catch design tokens. DTCG-shaped source for website CSS and Flutter primitive generators.",
+  "$description": "Canonical Catch design tokens. DTCG-shaped source for website CSS, Flutter primitive generators and the design-system artifact.",
   "$extensions": {
     "org.catch": {
       "version": 1,
@@ -84,6 +84,644 @@
           "gutter": "{space.s5}",
           "radius": "{radius.sm}",
           "header-height": "{website.header.height}"
+        }
+      },
+      "artifact": {
+        "name": "Catch",
+        "version": 1,
+        "meta": {
+          "source": "repo",
+          "canvas": "https://claude.ai/artifact/S6RC4qZwMpNhyUrtxQ2xKf",
+          "registry": "design/components/catch.components.json",
+          "tokens": "design/tokens/catch.tokens.json"
+        },
+        "themes": [
+          {
+            "id": "day",
+            "name": "Day"
+          },
+          {
+            "id": "night",
+            "name": "Night"
+          }
+        ],
+        "colors": [
+          {
+            "name": "ground",
+            "role": "ground"
+          },
+          {
+            "name": "tile",
+            "role": "tile"
+          },
+          {
+            "name": "nested",
+            "role": "nested"
+          },
+          {
+            "name": "paper",
+            "role": "paper"
+          },
+          {
+            "name": "map",
+            "role": "map"
+          },
+          {
+            "name": "scrim",
+            "role": "scrim"
+          },
+          {
+            "name": "ink",
+            "role": "ink"
+          },
+          {
+            "name": "ink-2",
+            "role": "ink2"
+          },
+          {
+            "name": "ink-3",
+            "role": "ink3"
+          },
+          {
+            "name": "on-primary",
+            "role": "onPrimary"
+          },
+          {
+            "name": "primary",
+            "role": "primary"
+          },
+          {
+            "name": "line",
+            "role": "line"
+          },
+          {
+            "name": "control-line",
+            "role": "controlLine"
+          },
+          {
+            "name": "field-line",
+            "role": "fieldLine"
+          },
+          {
+            "name": "focus",
+            "role": "focus"
+          },
+          {
+            "name": "track",
+            "role": "track"
+          },
+          {
+            "name": "switch-off",
+            "role": "switchOff"
+          },
+          {
+            "name": "format-run",
+            "role": "formatRun"
+          },
+          {
+            "name": "format-dinner",
+            "role": "formatDinner"
+          },
+          {
+            "name": "format-games",
+            "role": "formatGames"
+          },
+          {
+            "name": "format-courts",
+            "role": "formatCourts"
+          },
+          {
+            "name": "format-nights-out",
+            "role": "formatNightsOut"
+          },
+          {
+            "name": "indigo",
+            "role": "indigo"
+          },
+          {
+            "name": "on-format",
+            "role": "onFormat"
+          },
+          {
+            "name": "tint-mint",
+            "role": "tintMint"
+          },
+          {
+            "name": "tint-yellow",
+            "role": "tintYellow"
+          },
+          {
+            "name": "tint-coral",
+            "role": "tintCoral"
+          },
+          {
+            "name": "tint-indigo",
+            "role": "tintIndigo"
+          },
+          {
+            "name": "tint-pink",
+            "role": "tintPink"
+          },
+          {
+            "name": "deep-mint",
+            "role": "deepMint"
+          },
+          {
+            "name": "deep-yellow",
+            "role": "deepYellow"
+          },
+          {
+            "name": "deep-coral",
+            "role": "deepCoral"
+          },
+          {
+            "name": "deep-indigo",
+            "role": "deepIndigo"
+          },
+          {
+            "name": "deep-pink",
+            "role": "deepPink"
+          }
+        ],
+        "fonts": [
+          {
+            "family": "Archivo",
+            "file": "fonts/Archivo-Roman-VF.ttf",
+            "weight": "100 900",
+            "style": "normal",
+            "stretch": "62% 125%"
+          }
+        ],
+        "families": {
+          "display": "font.stack.display",
+          "sans": "font.stack.sans"
+        },
+        "type": [
+          {
+            "name": "Display",
+            "family": "display",
+            "styles": [
+              {
+                "name": "display-hero",
+                "role": "displayHero",
+                "sample": "Meet people at things you would go to anyway"
+              },
+              {
+                "name": "display-xl",
+                "role": "displayXl",
+                "sample": "Tuesday Trivia Night"
+              },
+              {
+                "name": "display-lg",
+                "role": "displayLg",
+                "sample": "You are checked in"
+              },
+              {
+                "name": "display-title",
+                "role": "displayTitle",
+                "sample": "Carter Road Social Run"
+              },
+              {
+                "name": "display-section",
+                "role": "displaySection",
+                "sample": "Tonight"
+              },
+              {
+                "name": "display-sm",
+                "role": "displaySm",
+                "sample": "Where you have met"
+              },
+              {
+                "name": "display-xs",
+                "role": "displayXs",
+                "sample": "Sat 31 Oct · 7:30 PM"
+              }
+            ]
+          },
+          {
+            "name": "Body",
+            "family": "sans",
+            "styles": [
+              {
+                "name": "body-lead",
+                "role": "bodyLead",
+                "sample": "Book once, show up, and meet the regulars."
+              },
+              {
+                "name": "body-input",
+                "role": "bodyInput",
+                "sample": "Vegetarian, no nuts"
+              },
+              {
+                "name": "body",
+                "role": "body",
+                "sample": "Eight questions on Mumbai food. Scores go up before the last step."
+              },
+              {
+                "name": "body-small",
+                "role": "bodySmall",
+                "sample": "Same team · Harbour Lights came second"
+              },
+              {
+                "name": "body-meta",
+                "role": "bodyMeta",
+                "sample": "2 days ago"
+              }
+            ]
+          },
+          {
+            "name": "Titles",
+            "family": "sans",
+            "styles": [
+              {
+                "name": "title-bar",
+                "role": "titleBar",
+                "sample": "Payments and billing"
+              },
+              {
+                "name": "title-row",
+                "role": "titleRow",
+                "sample": "Rhea Kapoor"
+              }
+            ]
+          },
+          {
+            "name": "Labels",
+            "family": "sans",
+            "styles": [
+              {
+                "name": "label-button",
+                "role": "labelButton",
+                "sample": "Book 1 · ₹499"
+              },
+              {
+                "name": "label-action",
+                "role": "labelAction",
+                "sample": "See all"
+              },
+              {
+                "name": "label-kicker",
+                "role": "labelKicker",
+                "sample": "Step 4 of 5 · now"
+              },
+              {
+                "name": "label-badge",
+                "role": "labelBadge",
+                "sample": "Live · 9:04 PM"
+              },
+              {
+                "name": "label-code",
+                "role": "labelCode",
+                "sample": "K7Q-42M"
+              }
+            ]
+          }
+        ],
+        "spacing": [
+          {
+            "name": "space-2",
+            "token": "space.micro2"
+          },
+          {
+            "name": "space-4",
+            "token": "space.s1"
+          },
+          {
+            "name": "space-6",
+            "token": "space.micro6"
+          },
+          {
+            "name": "space-8",
+            "token": "space.s2"
+          },
+          {
+            "name": "space-12",
+            "token": "space.s3"
+          },
+          {
+            "name": "space-16",
+            "token": "space.s4"
+          },
+          {
+            "name": "space-20",
+            "token": "space.s5"
+          },
+          {
+            "name": "space-24",
+            "token": "space.s6"
+          },
+          {
+            "name": "space-28",
+            "token": "space.s7"
+          },
+          {
+            "name": "space-32",
+            "token": "space.s8"
+          },
+          {
+            "name": "space-40",
+            "token": "space.s10"
+          },
+          {
+            "name": "space-48",
+            "token": "space.s12"
+          },
+          {
+            "name": "space-64",
+            "token": "space.s16"
+          }
+        ],
+        "radius": [
+          {
+            "name": "radius-xs",
+            "token": "radius.xs"
+          },
+          {
+            "name": "radius-sm",
+            "token": "radius.sm"
+          },
+          {
+            "name": "radius-md",
+            "token": "radius.md"
+          },
+          {
+            "name": "radius-lg",
+            "token": "radius.lg"
+          },
+          {
+            "name": "radius-xl",
+            "token": "radius.xl"
+          },
+          {
+            "name": "radius-pill",
+            "token": "radius.pill"
+          }
+        ],
+        "shadow": {
+          "note": "Only floating things cast shadows.",
+          "tokens": [
+            {
+              "name": "shadow-float",
+              "role": "float"
+            },
+            {
+              "name": "shadow-sheet",
+              "role": "sheet"
+            },
+            {
+              "name": "shadow-dialog",
+              "role": "dialog"
+            }
+          ]
+        },
+        "size": [
+          {
+            "name": "control-lg",
+            "token": "size.controlLg"
+          },
+          {
+            "name": "control-md",
+            "token": "size.controlMd"
+          },
+          {
+            "name": "control-sm",
+            "token": "size.controlSm"
+          },
+          {
+            "name": "field-lg",
+            "token": "size.fieldLg"
+          },
+          {
+            "name": "field-md",
+            "token": "size.fieldMd"
+          },
+          {
+            "name": "chip-md",
+            "token": "size.chipMd"
+          },
+          {
+            "name": "chip-sm",
+            "token": "size.chipSm"
+          },
+          {
+            "name": "badge-md",
+            "token": "size.badgeMd"
+          },
+          {
+            "name": "badge-sm",
+            "token": "size.badgeSm"
+          },
+          {
+            "name": "icon-button-lg",
+            "token": "size.iconButtonLg"
+          },
+          {
+            "name": "touch-min",
+            "token": "size.touchMin"
+          },
+          {
+            "name": "avatar-xs",
+            "token": "size.avatarXs"
+          },
+          {
+            "name": "avatar-sm",
+            "token": "size.avatarSm"
+          },
+          {
+            "name": "avatar-md",
+            "token": "size.avatarMd"
+          },
+          {
+            "name": "avatar-lg",
+            "token": "size.avatarLg"
+          },
+          {
+            "name": "avatar-xl",
+            "token": "size.avatarXl"
+          },
+          {
+            "name": "avatar-xxl",
+            "token": "size.avatarXxl"
+          },
+          {
+            "name": "switch-w",
+            "token": "size.switchW"
+          },
+          {
+            "name": "switch-h",
+            "token": "size.switchH"
+          }
+        ],
+        "stroke": [
+          {
+            "name": "stroke-hairline",
+            "token": "stroke.hairline"
+          },
+          {
+            "name": "stroke-control",
+            "token": "stroke.control"
+          },
+          {
+            "name": "stroke-focus",
+            "token": "stroke.focus"
+          },
+          {
+            "name": "stroke-selected",
+            "token": "stroke.selected"
+          },
+          {
+            "name": "stroke-meter-sm",
+            "token": "stroke.meterSm"
+          },
+          {
+            "name": "stroke-meter-md",
+            "token": "stroke.meterMd"
+          },
+          {
+            "name": "stroke-meter-lg",
+            "token": "stroke.meterLg"
+          }
+        ],
+        "duration": [
+          {
+            "name": "duration-instant",
+            "token": "duration.instant"
+          },
+          {
+            "name": "duration-quick",
+            "token": "duration.quick"
+          },
+          {
+            "name": "duration-standard",
+            "token": "duration.standard"
+          },
+          {
+            "name": "duration-emphasized",
+            "token": "duration.emphasized"
+          },
+          {
+            "name": "duration-slow",
+            "token": "duration.slow"
+          },
+          {
+            "name": "duration-pulse",
+            "token": "duration.pulse"
+          },
+          {
+            "name": "duration-shimmer",
+            "token": "duration.shimmer"
+          }
+        ],
+        "easing": [
+          {
+            "name": "ease-standard",
+            "token": "easing.standard"
+          },
+          {
+            "name": "ease-enter",
+            "token": "easing.enter"
+          },
+          {
+            "name": "ease-exit",
+            "token": "easing.exit"
+          },
+          {
+            "name": "ease-spring",
+            "token": "easing.spring"
+          }
+        ],
+        "layout": [
+          {
+            "name": "bp-medium",
+            "token": "windowSize.mediumMinWidth"
+          },
+          {
+            "name": "bp-expanded",
+            "token": "windowSize.expandedMinWidth"
+          },
+          {
+            "name": "rail-w",
+            "token": "layout.rail"
+          },
+          {
+            "name": "sidebar-w",
+            "token": "layout.sidebar"
+          },
+          {
+            "name": "pane-list",
+            "token": "layout.paneList"
+          },
+          {
+            "name": "pane-lane",
+            "token": "layout.paneLane"
+          },
+          {
+            "name": "pane-preview",
+            "token": "layout.panePreview"
+          },
+          {
+            "name": "pane-live",
+            "token": "layout.paneLive"
+          },
+          {
+            "name": "live-cap",
+            "token": "layout.liveCap"
+          },
+          {
+            "name": "gutter-compact",
+            "token": "layout.gutterCompact"
+          },
+          {
+            "name": "gutter-medium",
+            "token": "layout.gutterMedium"
+          },
+          {
+            "name": "gutter-expanded",
+            "token": "layout.gutterExpanded"
+          },
+          {
+            "name": "section-gap-compact",
+            "token": "layout.sectionGapCompact"
+          },
+          {
+            "name": "section-gap-wide",
+            "token": "layout.sectionGapWide"
+          }
+        ],
+        "opacity": [
+          {
+            "name": "opacity-disabled",
+            "token": "opacity.disabled"
+          },
+          {
+            "name": "opacity-hover",
+            "token": "opacity.hover"
+          },
+          {
+            "name": "opacity-pressed",
+            "token": "opacity.pressed"
+          },
+          {
+            "name": "opacity-on-colour",
+            "token": "opacity.onColour"
+          }
+        ]
+      },
+      "typeVariants": {
+        "pageTitle": {
+          "compact": "displayTitle",
+          "medium": "displayLg",
+          "expanded": "displayXl"
+        },
+        "sectionTitle": {
+          "compact": "displaySm",
+          "medium": "displaySm",
+          "expanded": "displaySection"
+        },
+        "hero": {
+          "compact": "displayLg",
+          "medium": "displayXl",
+          "expanded": "displayHero"
         }
       },
       "platformFoundation": {
@@ -1539,284 +2177,487 @@
   "theme": {
     "light": {
       "color": {
-        "bg": {
+        "ground": {
           "$type": "color",
+          "$description": "Page background. Day screens are white; night screens (door, live console, staff) are ink.",
+          "$value": "{palette.white}"
+        },
+        "tile": {
+          "$type": "color",
+          "$description": "The grey tile block (Surface tile) and segmented tracks. Night: the raised dark tile.",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.9568627451,
-              0.9568627451,
+              0.9529411765,
+              0.9529411765,
               0.9450980392
             ],
-            "hex": "#F4F4F1"
+            "hex": "#F3F3F1"
           }
         },
-        "surface": {
+        "nested": {
           "$type": "color",
+          "$description": "Anything sitting inside a tile: chips, fields, nested boxes. Set automatically by Surface.",
+          "$value": "{palette.white}"
+        },
+        "paper": {
+          "$type": "color",
+          "$description": "Warm paper ground for website bands and the night primary button. Repo palette.paper.",
+          "$value": "{palette.paper}"
+        },
+        "map": {
+          "$type": "color",
+          "$description": "Map ground behind pins and routes.",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              1,
-              1,
-              1
+              0.9294117647,
+              0.9215686275,
+              0.9019607843
             ],
-            "hex": "#FFFFFF"
+            "hex": "#EDEBE6"
           }
         },
-        "raised": {
+        "scrim": {
           "$type": "color",
+          "$description": "Dims the screen behind sheets and dialogs.",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.9803921569,
-              0.9803921569,
-              0.9725490196
-            ],
-            "hex": "#FAFAF8"
-          }
-        },
-        "overlay": {
-          "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0862745098,
               0.0784313725,
-              0.0588235294
+              0.0666666667,
+              0.0784313725
             ],
-            "alpha": 0.55,
-            "hex": "#16140F"
+            "alpha": 0.45
           }
         },
         "ink": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0862745098,
-              0.0784313725,
-              0.0588235294
-            ],
-            "hex": "#16140F"
-          }
+          "$description": "Primary text and icons on ground, tile and nested; also on format colours (both themes). 18.8:1 on white, 16.4:1 on the night ground.",
+          "$value": "{palette.ink}"
         },
         "ink2": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.3294117647,
-              0.3098039216,
-              0.2784313725
-            ],
-            "hex": "#544F47"
-          }
+          "$description": "Secondary text: kickers, second lines, meta. 7.5:1 on white, 6.7:1 on tile; 9.1:1 on the night ground, 7.9:1 on the night tile.",
+          "$value": "{palette.inkSecondary}"
         },
         "ink3": {
           "$type": "color",
+          "$description": "Tertiary text: placeholders, disabled labels, timestamps. 4.9:1 on white, 5.5:1 on the night ground. Only 4.4:1 on tile, so never small text on a tile.",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.6117647059,
-              0.5843137255,
-              0.5411764706
+              0.462745098,
+              0.4392156863,
+              0.4117647059
             ],
-            "hex": "#9C958A"
+            "hex": "#767069"
           }
         },
-        "line": {
+        "onPrimary": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0862745098,
-              0.0784313725,
-              0.0588235294
-            ],
-            "alpha": 0.08,
-            "hex": "#16140F"
-          }
-        },
-        "line2": {
-          "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0862745098,
-              0.0784313725,
-              0.0588235294
-            ],
-            "alpha": 0.14,
-            "hex": "#16140F"
-          }
+          "$description": "Label on a primary button (ink on day, paper on night).",
+          "$value": "{palette.white}"
         },
         "primary": {
           "$type": "color",
+          "$description": "Primary button fill and selected chips: ink on day, warm paper on night.",
+          "$value": "{palette.ink}"
+        },
+        "line": {
+          "$type": "color",
+          "$description": "Hairline between list rows. Lines belong to lists only.",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.0862745098,
               0.0784313725,
-              0.0588235294
+              0.0666666667,
+              0.0784313725
             ],
-            "hex": "#16140F"
+            "alpha": 0.1
           }
+        },
+        "controlLine": {
+          "$type": "color",
+          "$description": "Outline of secondary buttons, chips, icon buttons and choice cards. Below 3:1 on purpose: every outlined control also carries a label or icon.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0784313725,
+              0.0666666667,
+              0.0784313725
+            ],
+            "alpha": 0.18
+          }
+        },
+        "fieldLine": {
+          "$type": "color",
+          "$description": "Text field outline at rest.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0784313725,
+              0.0666666667,
+              0.0784313725
+            ],
+            "alpha": 0.22
+          }
+        },
+        "focus": {
+          "$type": "color",
+          "$description": "Focus ring, 2px, offset 2px. Solid ink so it reaches 3:1 on every ground and format colour.",
+          "$value": "{palette.ink}"
+        },
+        "track": {
+          "$type": "color",
+          "$description": "Meter and slider tracks on white; on a tile the track turns white.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9333333333,
+              0.9294117647,
+              0.9176470588
+            ],
+            "hex": "#EEEDEA"
+          }
+        },
+        "switchOff": {
+          "$type": "color",
+          "$description": "Switch track when off.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8509803922,
+              0.8392156863,
+              0.8196078431
+            ],
+            "hex": "#D9D6D1"
+          }
+        },
+        "formatRun": {
+          "$type": "color",
+          "$description": "Runs and walks. Spotlights, posters, chips and markers for run events. Ink text on it.",
+          "$value": "{format.run.accent}"
+        },
+        "formatDinner": {
+          "$type": "color",
+          "$description": "Suppers and dinners.",
+          "$value": "{format.dinner.accent}"
+        },
+        "formatGames": {
+          "$type": "color",
+          "$description": "Games, quizzes and trivia. Workshops and classes have no format colour yet.",
+          "$value": "{format.games.accent}"
+        },
+        "formatCourts": {
+          "$type": "color",
+          "$description": "Racket sports and courts.",
+          "$value": "{format.courts.accent}"
+        },
+        "formatNightsOut": {
+          "$type": "color",
+          "$description": "Parties, crawls and nights out.",
+          "$value": "{format.nightsOut.accent}"
+        },
+        "indigo": {
+          "$type": "color",
+          "$description": "Repo palette indigo. Never an event colour: person colours for avatars, placeholders and charts only.",
+          "$value": "{palette.indigo}"
+        },
+        "onFormat": {
+          "$type": "color",
+          "$description": "Text and icons on any format colour: 6.8:1 on run coral, the lowest.",
+          "$value": "{palette.ink}"
+        },
+        "tintMint": {
+          "$type": "color",
+          "$description": "Success and \"on Catch\" badges, confirmed rows.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8666666667,
+              0.9529411765,
+              0.9176470588
+            ],
+            "hex": "#DDF3EA"
+          }
+        },
+        "tintYellow": {
+          "$type": "color",
+          "$description": "Warning and \"so far\" badges.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              0.9568627451,
+              0.8392156863
+            ],
+            "hex": "#FFF4D6"
+          }
+        },
+        "tintCoral": {
+          "$type": "color",
+          "$description": "Danger and refund notes.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9921568627,
+              0.9058823529,
+              0.8745098039
+            ],
+            "hex": "#FDE7DF"
+          }
+        },
+        "tintIndigo": {
+          "$type": "color",
+          "$description": "Information and \"imported from\" badges.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9098039216,
+              0.9215686275,
+              0.9921568627
+            ],
+            "hex": "#E8EBFD"
+          }
+        },
+        "tintPink": {
+          "$type": "color",
+          "$description": "Social labels (reel, new), soft highlights.",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9921568627,
+              0.8941176471,
+              0.9176470588
+            ],
+            "hex": "#FDE4EA"
+          }
+        },
+        "deepMint": {
+          "$type": "color",
+          "$description": "Text and icons on tint-mint. 4.5:1 day, 6.2:1 night.",
+          "$value": "{palette.mintDeep}"
+        },
+        "deepYellow": {
+          "$type": "color",
+          "$description": "Text on tint-yellow. 4.9:1 day, 7.8:1 night.",
+          "$value": "{palette.yellowDeep}"
+        },
+        "deepCoral": {
+          "$type": "color",
+          "$description": "Text on tint-coral and destructive text actions. 4.6:1 on the tint, 5.5:1 on white, 5.2:1 night.",
+          "$value": "{palette.coralDeep}"
+        },
+        "deepIndigo": {
+          "$type": "color",
+          "$description": "Text on tint-indigo. 4.9:1 day, 5.7:1 night.",
+          "$value": "{palette.indigoDeep}"
+        },
+        "deepPink": {
+          "$type": "color",
+          "$description": "Text on tint-pink. 4.8:1 day, 6.2:1 night.",
+          "$value": "{palette.pinkDeep}"
+        },
+        "bg": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.tile; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.tile}"
+        },
+        "surface": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.ground; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.ground}"
+        },
+        "raised": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.nested; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.nested}"
+        },
+        "overlay": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.scrim; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.scrim}"
+        },
+        "line2": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.controlLine; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.controlLine}"
         },
         "primaryInk": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9568627451,
-              0.9568627451,
-              0.9450980392
-            ],
-            "hex": "#F4F4F1"
-          }
+          "$description": "Deprecated alias of theme.light.color.onPrimary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.onPrimary}"
         },
         "primarySoft": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9254901961,
-              0.9176470588,
-              0.8941176471
-            ],
-            "hex": "#ECEAE4"
-          }
+          "$description": "Deprecated alias of theme.light.color.tile; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.tile}"
         },
         "accent": {
           "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.primary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
           "$value": "{theme.light.color.primary}"
         },
         "accentInk": {
           "$type": "color",
-          "$value": "{theme.light.color.primaryInk}"
+          "$description": "Deprecated alias of theme.light.color.onPrimary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.onPrimary}"
         },
         "success": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.1843137255,
-              0.4901960784,
-              0.3333333333
-            ],
-            "hex": "#2F7D55"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepMint; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepMint}"
         },
         "warning": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.7254901961,
-              0.4666666667,
-              0.0588235294
-            ],
-            "hex": "#B9770F"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepYellow}"
         },
         "danger": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.7607843137,
-              0.1490196078,
-              0.1019607843
-            ],
-            "hex": "#C2261A"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepCoral; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepCoral}"
         },
         "like": {
           "$type": "color",
+          "$description": "Deprecated alias of theme.light.color.primary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
           "$value": "{theme.light.color.primary}"
         },
         "pass": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.6117647059,
-              0.5843137255,
-              0.5411764706
-            ],
-            "hex": "#9C958A"
-          }
+          "$description": "Deprecated alias of theme.light.color.ink3; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.ink3}"
         },
         "gold": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.7882352941,
-              0.6352941176,
-              0.2901960784
-            ],
-            "hex": "#C9A24A"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepYellow}"
         },
         "positiveText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.13725490196078433,
-              0.4196078431372549,
-              0.27058823529411763
-            ],
-            "hex": "#236B45"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepMint; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepMint}"
         },
         "attentionText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.592156862745098,
-              0.27058823529411763,
-              0.10980392156862745
-            ],
-            "hex": "#97451C"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepYellow}"
         },
         "affinityText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.4666666666666667,
-              0.3215686274509804,
-              0.615686274509804
-            ],
-            "hex": "#77529D"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepPink; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepPink}"
         },
         "dangerText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.6274509803921569,
-              0.12156862745098039,
-              0.08627450980392157
-            ],
-            "hex": "#A01F16"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepCoral; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepCoral}"
         },
         "goldText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.4627450980392157,
-              0.3411764705882353,
-              0.09803921568627451
-            ],
-            "hex": "#765719"
-          }
+          "$description": "Deprecated alias of theme.light.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.light.color.deepYellow}"
         }
       },
       "gradient": {
@@ -1878,48 +2719,174 @@
               }
             }
           ]
+        },
+        "float": {
+          "$type": "shadow",
+          "$description": "Floating block: popovers, the booking card, pinned bars.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0784313725,
+                  0.0666666667,
+                  0.0784313725
+                ],
+                "alpha": 0.06
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 1,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 2,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0784313725,
+                  0.0666666667,
+                  0.0784313725
+                ],
+                "alpha": 0.1
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 10,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 28,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "sheet": {
+          "$type": "shadow",
+          "$description": "Bottom sheets and docks over content.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0784313725,
+                  0.0666666667,
+                  0.0784313725
+                ],
+                "alpha": 0.16
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": -8,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 32,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "dialog": {
+          "$type": "shadow",
+          "$description": "Dialogs and toasts.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0784313725,
+                  0.0666666667,
+                  0.0784313725
+                ],
+                "alpha": 0.24
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 24,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 64,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
         }
       }
     },
     "dark": {
       "color": {
-        "bg": {
+        "ground": {
+          "$type": "color",
+          "$value": "{palette.ink}"
+        },
+        "tile": {
+          "$type": "color",
+          "$value": "{palette.nightSurface}"
+        },
+        "nested": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.0588235294,
-              0.0549019608,
-              0.062745098
+              0.1803921569,
+              0.1490196078,
+              0.1882352941
             ],
-            "hex": "#0F0E10"
+            "hex": "#2E2630"
           }
         },
-        "surface": {
+        "paper": {
+          "$type": "color",
+          "$value": "{palette.paper}"
+        },
+        "map": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.0941176471,
-              0.0901960784,
-              0.1019607843
+              0.1647058824,
+              0.1450980392,
+              0.1647058824
             ],
-            "hex": "#18171A"
+            "hex": "#2A252A"
           }
         },
-        "raised": {
-          "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.1294117647,
-              0.1215686275,
-              0.137254902
-            ],
-            "hex": "#211F23"
-          }
-        },
-        "overlay": {
+        "scrim": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
@@ -1928,239 +2895,408 @@
               0,
               0
             ],
-            "alpha": 0.72,
-            "hex": "#000000"
+            "alpha": 0.6
           }
         },
         "ink": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9568627451,
-              0.9411764706,
-              0.9098039216
-            ],
-            "hex": "#F4F0E8"
-          }
+          "$value": "{palette.nightInk}"
         },
         "ink2": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.7294117647,
-              0.6980392157,
-              0.6549019608
-            ],
-            "hex": "#BAB2A7"
-          }
+          "$value": "{palette.nightSecondary}"
         },
         "ink3": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.4941176471,
-              0.4666666667,
-              0.4274509804
+              0.5803921569,
+              0.5411764706,
+              0.5019607843
             ],
-            "hex": "#7E776D"
+            "hex": "#948A80"
           }
+        },
+        "onPrimary": {
+          "$type": "color",
+          "$value": "{palette.ink}"
+        },
+        "primary": {
+          "$type": "color",
+          "$value": "{palette.nightInk}"
         },
         "line": {
           "$type": "color",
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.9568627451,
-              0.9411764706,
-              0.9098039216
+              0.9647058824,
+              0.937254902,
+              0.9019607843
             ],
-            "alpha": 0.13,
-            "hex": "#F4F0E8"
+            "alpha": 0.12
           }
+        },
+        "controlLine": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9647058824,
+              0.937254902,
+              0.9019607843
+            ],
+            "alpha": 0.28
+          }
+        },
+        "fieldLine": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9647058824,
+              0.937254902,
+              0.9019607843
+            ],
+            "alpha": 0.25
+          }
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{palette.nightInk}"
+        },
+        "track": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9647058824,
+              0.937254902,
+              0.9019607843
+            ],
+            "alpha": 0.14
+          }
+        },
+        "switchOff": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9647058824,
+              0.937254902,
+              0.9019607843
+            ],
+            "alpha": 0.22
+          }
+        },
+        "formatRun": {
+          "$type": "color",
+          "$value": "{format.run.accent}"
+        },
+        "formatDinner": {
+          "$type": "color",
+          "$value": "{format.dinner.accent}"
+        },
+        "formatGames": {
+          "$type": "color",
+          "$value": "{format.games.accent}"
+        },
+        "formatCourts": {
+          "$type": "color",
+          "$value": "{format.courts.accent}"
+        },
+        "formatNightsOut": {
+          "$type": "color",
+          "$value": "{format.nightsOut.accent}"
+        },
+        "indigo": {
+          "$type": "color",
+          "$value": "{palette.indigo}"
+        },
+        "onFormat": {
+          "$type": "color",
+          "$value": "{palette.ink}"
+        },
+        "tintMint": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1215686275,
+              0.2274509804,
+              0.1803921569
+            ],
+            "hex": "#1F3A2E"
+          }
+        },
+        "tintYellow": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2274509804,
+              0.1960784314,
+              0.1019607843
+            ],
+            "hex": "#3A321A"
+          }
+        },
+        "tintCoral": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2274509804,
+              0.1411764706,
+              0.1254901961
+            ],
+            "hex": "#3A2420"
+          }
+        },
+        "tintIndigo": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1333333333,
+              0.1490196078,
+              0.2470588235
+            ],
+            "hex": "#22263F"
+          }
+        },
+        "tintPink": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.2274509804,
+              0.1294117647,
+              0.1607843137
+            ],
+            "hex": "#3A2129"
+          }
+        },
+        "deepMint": {
+          "$type": "color",
+          "$value": "{palette.mint}"
+        },
+        "deepYellow": {
+          "$type": "color",
+          "$value": "{palette.yellow}"
+        },
+        "deepCoral": {
+          "$type": "color",
+          "$value": "{palette.coral}"
+        },
+        "deepIndigo": {
+          "$type": "color",
+          "$value": "{palette.indigo}"
+        },
+        "deepPink": {
+          "$type": "color",
+          "$value": "{palette.pink}"
+        },
+        "bg": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.dark.color.tile; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.tile}"
+        },
+        "surface": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.dark.color.ground; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.ground}"
+        },
+        "raised": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.dark.color.nested; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.nested}"
+        },
+        "overlay": {
+          "$type": "color",
+          "$description": "Deprecated alias of theme.dark.color.scrim; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.scrim}"
         },
         "line2": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9568627451,
-              0.9411764706,
-              0.9098039216
-            ],
-            "alpha": 0.22,
-            "hex": "#F4F0E8"
-          }
-        },
-        "primary": {
-          "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9568627451,
-              0.9411764706,
-              0.9098039216
-            ],
-            "hex": "#F4F0E8"
-          }
+          "$description": "Deprecated alias of theme.dark.color.controlLine; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.controlLine}"
         },
         "primaryInk": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0862745098,
-              0.0784313725,
-              0.0588235294
-            ],
-            "hex": "#16140F"
-          }
+          "$description": "Deprecated alias of theme.dark.color.onPrimary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.onPrimary}"
         },
         "primarySoft": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.1647058824,
-              0.1568627451,
-              0.1411764706
-            ],
-            "hex": "#2A2824"
-          }
+          "$description": "Deprecated alias of theme.dark.color.tile; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.tile}"
         },
         "accent": {
           "$type": "color",
+          "$description": "Deprecated alias of theme.dark.color.primary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
           "$value": "{theme.dark.color.primary}"
         },
         "accentInk": {
           "$type": "color",
-          "$value": "{theme.dark.color.primaryInk}"
+          "$description": "Deprecated alias of theme.dark.color.onPrimary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.onPrimary}"
         },
         "success": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.3568627451,
-              0.7529411765,
-              0.4862745098
-            ],
-            "hex": "#5BC07C"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepMint; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepMint}"
         },
         "warning": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.8980392157,
-              0.6509803922,
-              0.3333333333
-            ],
-            "hex": "#E5A655"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepYellow}"
         },
         "danger": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.8980392157,
-              0.337254902,
-              0.2941176471
-            ],
-            "hex": "#E5564B"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepCoral; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepCoral}"
         },
         "like": {
           "$type": "color",
+          "$description": "Deprecated alias of theme.dark.color.primary; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
           "$value": "{theme.dark.color.primary}"
         },
         "pass": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.4941176471,
-              0.4666666667,
-              0.4274509804
-            ],
-            "hex": "#7E776D"
-          }
+          "$description": "Deprecated alias of theme.dark.color.ink3; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.ink3}"
         },
         "gold": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.8784313725,
-              0.7058823529,
-              0.368627451
-            ],
-            "hex": "#E0B45E"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepYellow}"
         },
         "positiveText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.3568627450980392,
-              0.7529411764705882,
-              0.48627450980392156
-            ],
-            "hex": "#5BC07C"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepMint; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepMint}"
         },
         "attentionText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9411764705882353,
-              0.6862745098039216,
-              0.5019607843137255
-            ],
-            "hex": "#F0AF80"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepYellow}"
         },
         "affinityText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.7725490196078432,
-              0.6509803921568628,
-              0.9058823529411765
-            ],
-            "hex": "#C5A6E7"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepPink; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepPink}"
         },
         "dangerText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9411764705882353,
-              0.5019607843137255,
-              0.4588235294117647
-            ],
-            "hex": "#F08075"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepCoral; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepCoral}"
         },
         "goldText": {
           "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.8784313725490196,
-              0.7058823529411765,
-              0.3686274509803922
-            ],
-            "hex": "#E0B45E"
-          }
+          "$description": "Deprecated alias of theme.dark.color.deepYellow; P7 deletes it.",
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true
+            }
+          },
+          "$value": "{theme.dark.color.deepYellow}"
         }
       },
       "gradient": {
@@ -2198,9 +3334,9 @@
               "color": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0,
-                  0.0,
-                  0.0
+                  0,
+                  0,
+                  0
                 ],
                 "alpha": 0.55
               },
@@ -2214,6 +3350,129 @@
               },
               "blur": {
                 "value": 22,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "float": {
+          "$type": "shadow",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 0.4
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 1,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 2,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 0.45
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 12,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 32,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "sheet": {
+          "$type": "shadow",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 0.5
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": -8,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 32,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "dialog": {
+          "$type": "shadow",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 0.6
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 30,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 80,
                 "unit": "px"
               },
               "spread": {
@@ -2972,48 +4231,56 @@
       }
     },
     "s1": {
+      "$description": "Icon to label inside small controls.",
       "$value": {
         "value": 4,
         "unit": "px"
       }
     },
     "s2": {
+      "$description": "Gaps between chips and buttons.",
       "$value": {
         "value": 8,
         "unit": "px"
       }
     },
     "s3": {
+      "$description": "The gap inside a section. Tile padding (small).",
       "$value": {
         "value": 12,
         "unit": "px"
       }
     },
     "s4": {
+      "$description": "Tile padding. Gap between a title and its body.",
       "$value": {
         "value": 16,
         "unit": "px"
       }
     },
     "s5": {
+      "$description": "Phone gutter. Spotlight padding.",
       "$value": {
         "value": 20,
         "unit": "px"
       }
     },
     "s6": {
+      "$description": "Sheet padding.",
       "$value": {
         "value": 24,
         "unit": "px"
       }
     },
     "s7": {
+      "$description": "Gap between sections on phones.",
       "$value": {
         "value": 28,
         "unit": "px"
       }
     },
     "s8": {
+      "$description": "Tablet gutter.",
       "$value": {
         "value": 32,
         "unit": "px"
@@ -3026,6 +4293,7 @@
       }
     },
     "s10": {
+      "$description": "Gap between sections on tablets and desktops.",
       "$value": {
         "value": 40,
         "unit": "px"
@@ -3038,12 +4306,14 @@
       }
     },
     "s12": {
+      "$description": "Desktop gutter.",
       "$value": {
         "value": 48,
         "unit": "px"
       }
     },
     "s16": {
+      "$description": "Website band padding.",
       "$value": {
         "value": 64,
         "unit": "px"
@@ -3057,6 +4327,7 @@
       }
     },
     "micro2": {
+      "$description": "Hairline gaps: title to second line.",
       "$value": {
         "value": 2,
         "unit": "px"
@@ -3069,6 +4340,7 @@
       }
     },
     "micro6": {
+      "$description": "Chip gaps, badge padding.",
       "$value": {
         "value": 6,
         "unit": "px"
@@ -3114,8 +4386,13 @@
       "$description": "Controls in one form or settings group."
     },
     "section": {
-      "$value": "{space.s6}",
-      "$description": "Peer sections in a page body."
+      "$description": "Deprecated alias of layout.sectionGapCompact; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{layout.sectionGapCompact}"
     },
     "majorSection": {
       "$value": "{space.s8}",
@@ -3131,37 +4408,51 @@
       }
     },
     "xs": {
+      "$description": "Checkboxes only: a 22px box needs a tighter corner than buttons to stay square.",
       "$value": {
-        "value": 4,
+        "value": 6,
         "unit": "px"
       }
     },
     "sm": {
+      "$description": "Buttons, squares under 64px (date tiles, icon tiles), fields.",
       "$value": {
-        "value": 8,
+        "value": 10,
         "unit": "px"
       }
     },
     "md": {
+      "$description": "Anything nested inside a tile; choice cards.",
       "$value": {
-        "value": 14,
+        "value": 16,
         "unit": "px"
       }
     },
     "lg": {
+      "$description": "Tiles.",
       "$value": {
         "value": 20,
         "unit": "px"
       }
     },
-    "interactiveTile": {
-      "$description": "Active field and interactive tile corners: CatchRadius.interactiveTile.",
+    "xl": {
+      "$description": "Spotlights, floating blocks, sheets.",
       "$value": {
-        "value": 12,
+        "value": 24,
         "unit": "px"
       }
     },
+    "interactiveTile": {
+      "$description": "Deprecated alias of radius.sm; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{radius.sm}"
+    },
     "pill": {
+      "$description": "Chips, badges, avatars, switches, segmented items.",
       "$value": {
         "value": 999,
         "unit": "px"
@@ -3169,10 +4460,148 @@
     },
     "$description": "Catch selected shape scale. Android native shape defaults remain separate references; native rounded-rectangle radii are not mandates to reskin existing Catch materials. Pill999 is a full-round sentinel, never a device radius."
   },
+  "size": {
+    "$type": "dimension",
+    "$description": "Component sizes from the system (blueprint D22). Web: --catch-size-*. Flutter: GeneratedCatchSizeTokens.",
+    "controlLg": {
+      "$description": "Large button and icon-button height; dock actions.",
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      }
+    },
+    "controlMd": {
+      "$description": "Medium buttons.",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      }
+    },
+    "controlSm": {
+      "$description": "Small buttons and pills in rows.",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "fieldLg": {
+      "$description": "Text fields.",
+      "$value": {
+        "value": 52,
+        "unit": "px"
+      }
+    },
+    "fieldMd": {
+      "$description": "Search and compact fields.",
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      }
+    },
+    "chipMd": {
+      "$description": "Chips.",
+      "$value": {
+        "value": 38,
+        "unit": "px"
+      }
+    },
+    "chipSm": {
+      "$description": "Small chips.",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "badgeMd": {
+      "$description": "Badges on posters.",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      }
+    },
+    "badgeSm": {
+      "$description": "Badges in rows.",
+      "$value": {
+        "value": 22,
+        "unit": "px"
+      }
+    },
+    "iconButtonLg": {
+      "$description": "Back, close and share circles.",
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      }
+    },
+    "touchMin": {
+      "$description": "Smallest touch target.",
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      }
+    },
+    "avatarXs": {
+      "$description": "Avatar stacks in rows.",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "avatarSm": {
+      "$description": "Small avatars.",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      }
+    },
+    "avatarMd": {
+      "$description": "Row avatars.",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      }
+    },
+    "avatarLg": {
+      "$description": "Person rows, chat.",
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      }
+    },
+    "avatarXl": {
+      "$description": "Live screens, cards.",
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      }
+    },
+    "avatarXxl": {
+      "$description": "Profiles.",
+      "$value": {
+        "value": 104,
+        "unit": "px"
+      }
+    },
+    "switchW": {
+      "$description": "Switch width.",
+      "$value": {
+        "value": 52,
+        "unit": "px"
+      }
+    },
+    "switchH": {
+      "$description": "Switch height.",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    }
+  },
   "stroke": {
     "$type": "dimension",
     "$description": "Stroke widths that are part of reusable component geometry: CatchStroke in Flutter, --catch-stroke-* on the web. Hairline is the default border width.",
     "hairline": {
+      "$description": "List lines.",
       "$value": {
         "value": 1,
         "unit": "px"
@@ -3218,6 +4647,48 @@
     "passProgress": {
       "$value": {
         "value": 2.6,
+        "unit": "px"
+      }
+    },
+    "control": {
+      "$description": "Control outlines.",
+      "$value": {
+        "value": 1.5,
+        "unit": "px"
+      }
+    },
+    "focus": {
+      "$description": "Focus ring.",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "selected": {
+      "$description": "Selected choice cards and avatar rings.",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "meterSm": {
+      "$description": "Thin meters.",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "meterMd": {
+      "$description": "Default meter.",
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "meterLg": {
+      "$description": "The cap meter and big progress.",
+      "$value": {
+        "value": 8,
         "unit": "px"
       }
     }
@@ -3335,15 +4806,98 @@
       "$type": "dimension",
       "$value": "{space.s5}"
     },
-    "$description": "Shared Catch geometry, not a claim that either OS prescribes one universal margin. Page20/16 and record40/12/8/4 values preserve reviewed shell/record composition; text containers are content-driven and hit targets are independent."
+    "$description": "Shared Catch geometry, not a claim that either OS prescribes one universal margin. Page20/16 and record40/12/8/4 values preserve reviewed shell/record composition; text containers are content-driven and hit targets are independent.",
+    "rail": {
+      "$type": "dimension",
+      "$description": "Navigation rail.",
+      "$value": {
+        "value": 96,
+        "unit": "px"
+      }
+    },
+    "sidebar": {
+      "$type": "dimension",
+      "$description": "Navigation sidebar.",
+      "$value": {
+        "value": 240,
+        "unit": "px"
+      }
+    },
+    "paneList": {
+      "$type": "dimension",
+      "$description": "List pane beside a detail.",
+      "$value": {
+        "value": 360,
+        "unit": "px"
+      }
+    },
+    "paneLane": {
+      "$type": "dimension",
+      "$description": "Reading and form lane.",
+      "$value": {
+        "value": 600,
+        "unit": "px"
+      }
+    },
+    "panePreview": {
+      "$type": "dimension",
+      "$description": "Create preview pane, from 1180px.",
+      "$value": {
+        "value": 320,
+        "unit": "px"
+      }
+    },
+    "paneLive": {
+      "$type": "dimension",
+      "$description": "Live side pane, from 900px.",
+      "$value": {
+        "value": 360,
+        "unit": "px"
+      }
+    },
+    "liveCap": {
+      "$type": "dimension",
+      "$description": "Live console max width.",
+      "$value": {
+        "value": 1040,
+        "unit": "px"
+      }
+    },
+    "sectionGapCompact": {
+      "$type": "dimension",
+      "$description": "Between sections on phones.",
+      "$value": "{space.s7}"
+    },
+    "sectionGapWide": {
+      "$type": "dimension",
+      "$description": "Between sections on wider screens.",
+      "$value": "{space.s10}"
+    },
+    "gutterCompact": {
+      "$type": "dimension",
+      "$description": "Phone gutter.",
+      "$value": "{space.s5}"
+    },
+    "gutterMedium": {
+      "$type": "dimension",
+      "$description": "Tablet gutter.",
+      "$value": "{space.s8}"
+    },
+    "gutterExpanded": {
+      "$type": "dimension",
+      "$description": "Desktop gutter.",
+      "$value": "{space.s12}"
+    }
   },
   "windowSize": {
     "$type": "dimension",
     "$description": "Material 3 window size class lower bounds: CatchWindowSize in Flutter. Compact is everything below medium. CSS custom properties cannot appear in @media, so web stylesheets get these values through the lint preset's media-query allowed list.",
     "mediumMinWidth": {
+      "$description": "From here: tablet, rail navigation.",
       "$value": "{platformReference.android.window.widthDpMediumLowerBound}"
     },
     "expandedMinWidth": {
+      "$description": "From here: desktop, sidebar navigation.",
       "$value": "{platformReference.android.window.widthDpExpandedLowerBound}"
     },
     "largeMinWidth": {
@@ -3355,6 +4909,22 @@
   },
   "opacity": {
     "$type": "number",
+    "disabled": {
+      "$description": "Disabled controls.",
+      "$value": 0.4
+    },
+    "hover": {
+      "$description": "Hover layer (ink over the control).",
+      "$value": 0.04
+    },
+    "pressed": {
+      "$description": "Pressed layer.",
+      "$value": 0.08
+    },
+    "onColour": {
+      "$description": "White over a format colour for nested chips and tracks.",
+      "$value": 0.55
+    },
     "badgePigmentInk": {
       "$description": "Theme ink weight over an arbitrary soft badge pigment; mirrored by Flutter alphaBlend and CSS color-mix for AA small labels.",
       "$value": 0.75
@@ -3363,8 +4933,13 @@
       "$value": 0.3
     },
     "controlOverlayHover": {
-      "$description": "Ink tint over a row or control on hover: CatchOpacity.controlOverlayHover.",
-      "$value": 0.04
+      "$description": "Deprecated alias of opacity.hover; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{opacity.hover}"
     },
     "activityArtworkPattern": {
       "$description": "Pattern marks over activity artwork: the EventBackdropImage.patternOpacity default in lib/contexts/events/parts/event_backdrop_image.dart.",
@@ -3383,13 +4958,31 @@
     "$type": "number",
     "$description": "Field row state values: CatchFieldTokens in Flutter, --catch-field-* on the web. Tint alphas apply to ink over the row surface.",
     "activeTintAlpha": {
-      "$value": 0.04
+      "$description": "Deprecated alias of opacity.hover; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{opacity.hover}"
     },
     "pressedTintAlpha": {
-      "$value": 0.06
+      "$description": "Deprecated alias of opacity.pressed; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{opacity.pressed}"
     },
     "disabledOpacity": {
-      "$value": 0.4
+      "$description": "Deprecated alias of opacity.disabled; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{opacity.disabled}"
     },
     "restLineAlpha": {
       "$description": "Website v2: ground-ink alpha of a resting field's box when a CatchGroundCard holds it, the WebOrgV2 board's boxed input. Flutter's fields have no ground card yet.",
@@ -3424,6 +5017,16 @@
       "mono": {
         "$value": "IBM Plex Mono"
       }
+    },
+    "stack": {
+      "$type": "fontFamily",
+      "$description": "System font stacks (blueprint D22): the display family and the sans every other role uses.",
+      "display": {
+        "$value": "\"Archivo\", \"Arial Narrow\", sans-serif"
+      },
+      "sans": {
+        "$value": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
+      }
     }
   },
   "website": {
@@ -3447,7 +5050,561 @@
     }
   },
   "typography": {
-    "$description": "Catch function scale selected through Audience review. Ratified eleven roles remain explicit composition choices, not native defaults. iOS context13/18 follows Footnote, NOT Caption1(12/16). Native default reference metrics and provenance live in platformReference; Catch keeps compact16/24 body and zero functional tracking.",
+    "$description": "Catch function scale. System v15 (blueprint D22) replaces it: roles with a system twin take that role's metrics on every platform and are deprecated, and the rest stay until the library drops them. Native default reference metrics and provenance live in platformReference.",
+    "role": {
+      "$description": "The 19 system type roles (blueprint D22). Display roles use Archivo at its one width; every other role uses the system sans. Tracking in em scales with the size.",
+      "displayHero": {
+        "$description": "Website hero lines.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 96,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 0.9
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.045,
+            "unit": "em"
+          }
+        }
+      },
+      "displayXl": {
+        "$description": "Page titles on desktop; celebration numbers.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 64,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 0.95
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.04,
+            "unit": "em"
+          }
+        }
+      },
+      "displayLg": {
+        "$description": "Page titles on tablets; moments.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.03,
+            "unit": "em"
+          }
+        }
+      },
+      "displayTitle": {
+        "$description": "Page titles on phones; subject titles.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 38,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.03,
+            "unit": "em"
+          }
+        }
+      },
+      "displaySection": {
+        "$description": "Tab-home section titles and step titles.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 30,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.05
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.02,
+            "unit": "em"
+          }
+        }
+      },
+      "displaySm": {
+        "$description": "Section titles; big numbers in stats.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.01,
+            "unit": "em"
+          }
+        }
+      },
+      "displayXs": {
+        "$description": "Titles on small posters and cards.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "em"
+          }
+        }
+      },
+      "bodyLead": {
+        "$description": "Website lead paragraphs.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.5
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "bodyInput": {
+        "$description": "Typed text in fields; long reading.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.5
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "body": {
+        "$description": "Body copy.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.45
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "bodySmall": {
+        "$description": "Second lines and notes.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.43
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "bodyMeta": {
+        "$description": "Meta lines and timestamps.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.38
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 400
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "titleBar": {
+        "$description": "Top bar titles and card titles.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 17,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.3
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "titleRow": {
+        "$description": "List row titles and names.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.35
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "labelButton": {
+        "$description": "Large and medium button labels.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.3
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "labelAction": {
+        "$description": "Small buttons, chips, text links.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.3
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "labelKicker": {
+        "$description": "Kickers above titles, field labels, small grey labels.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.35
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "labelBadge": {
+        "$description": "Badges and counts. Nothing is set smaller.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.2
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "labelCode": {
+        "$description": "Ticket and join codes.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.function}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.35
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 500
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.12,
+            "unit": "em"
+          }
+        }
+      }
+    },
     "ios": {
       "headline": {
         "size": {
@@ -3483,47 +5640,60 @@
         }
       },
       "title": {
+        "$description": "Deprecated alias of typography.role.titleBar; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.title3",
+            "decision": "D22: takes typography.role.titleBar. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.title3.size}"
+          "$value": "{typography.role.titleBar.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.title3.lineHeight}"
+          "$value": {
+            "value": 22.1,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.titleBar.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.title3",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "name": {
+        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.callout",
+            "decision": "D22: takes typography.role.titleRow. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.callout.size}"
+          "$value": "{typography.role.titleRow.size}"
         },
         "lineHeight": {
           "$type": "dimension",
           "$value": {
-            "value": 20,
+            "value": 21.6,
             "unit": "px"
           }
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.titleRow.weight}"
         },
         "tracking": {
           "$type": "dimension",
@@ -3531,21 +5701,20 @@
             "value": 0,
             "unit": "px"
           }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.callout",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
-          }
         }
       },
       "body": {
+        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.body",
+            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 16,
-            "unit": "px"
-          }
+          "$value": "{typography.role.bodyInput.size}"
         },
         "lineHeight": {
           "$type": "dimension",
@@ -3556,133 +5725,141 @@
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.ios.typography.body.weight}"
+          "$value": "{typography.role.bodyInput.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.body",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "secondary": {
+        "$description": "Deprecated alias of typography.role.bodySmall; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "decision": "D22: takes typography.role.bodySmall. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 14,
-            "unit": "px"
-          }
+          "$value": "{typography.role.bodySmall.size}"
         },
         "lineHeight": {
           "$type": "dimension",
           "$value": {
-            "value": 20,
+            "value": 20.02,
             "unit": "px"
           }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.ios.typography.footnote.weight}"
+          "$value": "{typography.role.bodySmall.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.footnote",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "context": {
+        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "decision": "D22: takes typography.role.bodyMeta. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.footnote.size}"
+          "$value": "{typography.role.bodyMeta.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.footnote.lineHeight}"
+          "$value": {
+            "value": 17.94,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.ios.typography.footnote.weight}"
+          "$value": "{typography.role.bodyMeta.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.footnote",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "control": {
+        "$description": "Deprecated alias of typography.role.labelButton; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.subhead",
+            "decision": "D22: takes typography.role.labelButton. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.subhead.size}"
+          "$value": "{typography.role.labelButton.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.subhead.lineHeight}"
+          "$value": {
+            "value": 19.5,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.ios.typography.subhead.weight}"
+          "$value": "{typography.role.labelButton.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.subhead",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "status": {
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.caption1",
+            "decision": "D22: takes typography.role.labelBadge. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.caption1.size}"
+          "$value": "{typography.role.labelBadge.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.caption1.lineHeight}"
+          "$value": {
+            "value": 14.4,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.labelBadge.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.caption1",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -3720,12 +5897,17 @@
         }
       },
       "fieldValue": {
+        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.body",
+            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 16,
-            "unit": "px"
-          }
+          "$value": "{typography.role.bodyInput.size}"
         },
         "lineHeight": {
           "$type": "dimension",
@@ -3736,46 +5918,45 @@
         },
         "weight": {
           "$type": "number",
-          "$value": 500
+          "$value": "{typography.role.bodyInput.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.body",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "fieldLabel": {
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "decision": "D22: takes typography.role.labelKicker. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.footnote.size}"
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.ios.typography.footnote.lineHeight}"
+          "$value": {
+            "value": 17.55,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 500
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.footnote",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -3922,191 +6103,226 @@
         }
       },
       "title": {
-        "size": {
-          "$type": "dimension",
-          "$value": {
-            "value": 20,
-            "unit": "px"
-          }
-        },
-        "lineHeight": {
-          "$type": "dimension",
-          "$value": "{platformReference.android.typography.titleLarge.lineHeight}"
-        },
-        "weight": {
-          "$type": "number",
-          "$value": 500
-        },
-        "tracking": {
-          "$type": "dimension",
-          "$value": "{platformReference.android.typography.titleLarge.tracking}"
-        },
+        "$description": "Deprecated alias of typography.role.titleBar; P7 deletes it. lineHeight is that role's size times its lineHeight.",
         "$extensions": {
           "org.catch": {
             "reference": "platformReference.android.typography.titleLarge",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
+            "decision": "D22: takes typography.role.titleBar. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.role.titleBar.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": {
+            "value": 22.1,
+            "unit": "px"
+          }
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.role.titleBar.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
           }
         }
       },
       "name": {
+        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.titleMedium",
+            "decision": "D22: takes typography.role.titleRow. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.titleMedium.size}"
+          "$value": "{typography.role.titleRow.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.titleMedium.lineHeight}"
+          "$value": {
+            "value": 21.6,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.android.typography.titleMedium.weight}"
+          "$value": "{typography.role.titleRow.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.titleMedium",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "body": {
+        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodyLarge",
+            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodyLarge.size}"
+          "$value": "{typography.role.bodyInput.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodyLarge.lineHeight}"
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.android.typography.bodyLarge.weight}"
+          "$value": "{typography.role.bodyInput.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodyLarge",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "secondary": {
+        "$description": "Deprecated alias of typography.role.bodySmall; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodyMedium",
+            "decision": "D22: takes typography.role.bodySmall. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodyMedium.size}"
+          "$value": "{typography.role.bodySmall.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodyMedium.lineHeight}"
+          "$value": {
+            "value": 20.02,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.android.typography.bodyMedium.weight}"
+          "$value": "{typography.role.bodySmall.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodyMedium",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "context": {
+        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodySmall",
+            "decision": "D22: takes typography.role.bodyMeta. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodySmall.size}"
+          "$value": "{typography.role.bodyMeta.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodySmall.lineHeight}"
+          "$value": {
+            "value": 17.94,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": "{platformReference.android.typography.bodySmall.weight}"
+          "$value": "{typography.role.bodyMeta.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodySmall",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "control": {
+        "$description": "Deprecated alias of typography.role.labelButton; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.labelLarge",
+            "decision": "D22: takes typography.role.labelButton. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.labelLarge.size}"
+          "$value": "{typography.role.labelButton.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.labelLarge.lineHeight}"
+          "$value": {
+            "value": 19.5,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 400
+          "$value": "{typography.role.labelButton.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.labelLarge",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "status": {
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.labelMedium",
+            "decision": "D22: takes typography.role.labelBadge. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.labelMedium.size}"
+          "$value": "{typography.role.labelBadge.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.labelMedium.lineHeight}"
+          "$value": {
+            "value": 14.4,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.labelBadge.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.labelMedium",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -4135,56 +6351,66 @@
         }
       },
       "fieldValue": {
+        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodyLarge",
+            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodyLarge.size}"
+          "$value": "{typography.role.bodyInput.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodyLarge.lineHeight}"
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 500
+          "$value": "{typography.role.bodyInput.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodyLarge",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "fieldLabel": {
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it. lineHeight is that role's size times its lineHeight.",
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodySmall",
+            "decision": "D22: takes typography.role.labelKicker. Deprecated role; P7 deletes it.",
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodySmall.size}"
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": "{platformReference.android.typography.bodySmall.lineHeight}"
+          "$value": {
+            "value": 17.55,
+            "unit": "px"
+          }
         },
         "weight": {
           "$type": "number",
-          "$value": 500
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
-          }
-        },
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodySmall",
-            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -4326,6 +6552,12 @@
         }
       },
       "title": {
+        "$description": "Deprecated alias of typography.role.titleBar; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.title.size}"
@@ -4344,6 +6576,12 @@
         }
       },
       "name": {
+        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.name.size}"
@@ -4362,6 +6600,12 @@
         }
       },
       "body": {
+        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.body.size}"
@@ -4380,6 +6624,12 @@
         }
       },
       "secondary": {
+        "$description": "Deprecated alias of typography.role.bodySmall; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.secondary.size}"
@@ -4398,6 +6648,12 @@
         }
       },
       "context": {
+        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.context.size}"
@@ -4416,6 +6672,12 @@
         }
       },
       "control": {
+        "$description": "Deprecated alias of typography.role.labelButton; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.control.size}"
@@ -4434,6 +6696,12 @@
         }
       },
       "status": {
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.status.size}"
@@ -4470,6 +6738,12 @@
         }
       },
       "fieldValue": {
+        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.fieldValue.size}"
@@ -4488,6 +6762,12 @@
         }
       },
       "fieldLabel": {
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.fieldLabel.size}"
@@ -4579,493 +6859,401 @@
       }
     },
     "brand": {
-      "$description": "Platform-free brand text roles: Archivo voice and IBM Plex Mono data. Names match CatchTextStyles in Flutter and CatchText variants on the web. lineHeight is a unitless multiplier.",
+      "$description": "Deprecated: the D19 display steps and the IBM Plex Mono roles. Each role aliases its D22 system role; P7 deletes this group.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
       "displayXs": {
-        "$description": "D19 display step. Smallest step; replaces headlineS and the small club and event display sizes. Archivo at 78% width and weight 760; tracking is in em.",
+        "$description": "Deprecated alias of typography.role.displaySm; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.voice}"
+          "$value": "{typography.role.displaySm.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 24,
-            "unit": "px"
-          }
+          "$value": "{typography.role.displaySm.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.1
+          "$value": "{typography.role.displaySm.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 760
+          "$value": "{typography.role.displaySm.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": -0.02,
-            "unit": "em"
-          }
+          "$value": "{typography.role.displaySm.tracking}"
         }
       },
       "displayS": {
-        "$description": "D19 display step. Replaces the large club and event display size. Archivo at 78% width and weight 760; tracking is in em.",
+        "$description": "Deprecated alias of typography.role.displaySection; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.voice}"
+          "$value": "{typography.role.displaySection.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 30,
-            "unit": "px"
-          }
+          "$value": "{typography.role.displaySection.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.05
+          "$value": "{typography.role.displaySection.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 760
+          "$value": "{typography.role.displaySection.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": -0.025,
-            "unit": "em"
-          }
+          "$value": "{typography.role.displaySection.tracking}"
         }
       },
       "displayM": {
-        "$description": "D19 display step. Replaces the extra-large club and event display size, eventTitle and the welcome reel. Archivo at 78% width and weight 760; tracking is in em.",
+        "$description": "Deprecated alias of typography.role.displayTitle; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.voice}"
+          "$value": "{typography.role.displayTitle.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 38,
-            "unit": "px"
-          }
+          "$value": "{typography.role.displayTitle.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.05
+          "$value": "{typography.role.displayTitle.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 760
+          "$value": "{typography.role.displayTitle.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": -0.03,
-            "unit": "em"
-          }
+          "$value": "{typography.role.displayTitle.tracking}"
         }
       },
       "displayL": {
-        "$description": "D19 display step. Replaces the old display role: onboarding, celebration, live countdowns. Archivo at 78% width and weight 760; tracking is in em.",
+        "$description": "Deprecated alias of typography.role.displayLg; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.voice}"
+          "$value": "{typography.role.displayLg.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 48,
-            "unit": "px"
-          }
+          "$value": "{typography.role.displayLg.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1
+          "$value": "{typography.role.displayLg.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 760
+          "$value": "{typography.role.displayLg.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": -0.035,
-            "unit": "em"
-          }
+          "$value": "{typography.role.displayLg.tracking}"
         }
       },
       "displayXl": {
-        "$description": "D19 display step. Second-largest step, for hero moments. Archivo at 78% width and weight 760; tracking is in em.",
+        "$description": "Deprecated alias of typography.role.displayXl; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.voice}"
+          "$value": "{typography.role.displayXl.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 60,
-            "unit": "px"
-          }
+          "$value": "{typography.role.displayXl.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1
+          "$value": "{typography.role.displayXl.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 760
+          "$value": "{typography.role.displayXl.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": -0.04,
-            "unit": "em"
-          }
+          "$value": "{typography.role.displayXl.tracking}"
         }
       },
       "displayXxl": {
-        "$description": "D19 display step. Largest step, for hero moments. Archivo at 78% width and weight 760; tracking is in em.",
+        "$description": "Deprecated alias of typography.role.displayHero; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.voice}"
+          "$value": "{typography.role.displayHero.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 72,
-            "unit": "px"
-          }
+          "$value": "{typography.role.displayHero.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1
+          "$value": "{typography.role.displayHero.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 760
+          "$value": "{typography.role.displayHero.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": -0.04,
-            "unit": "em"
-          }
+          "$value": "{typography.role.displayHero.tracking}"
         }
       },
       "kicker": {
-        "$description": "Uppercase data kicker; tracking is 0.16em at 11px.",
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelKicker.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 11,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.15
+          "$value": "{typography.role.labelKicker.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 700
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 1.76,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.tracking}"
         }
       },
       "kickerLg": {
-        "$description": "Large kicker; tracking is 0.18em at 12px.",
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelKicker.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 12,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.1
+          "$value": "{typography.role.labelKicker.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 700
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 2.16,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.tracking}"
         }
       },
       "fieldSectionKicker": {
-        "$description": "Field section kicker.",
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelKicker.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 11,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.15
+          "$value": "{typography.role.labelKicker.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 1.43,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.tracking}"
         }
       },
       "sectionCount": {
-        "$description": "Count beside a field section kicker.",
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelBadge.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 9.5,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.15
+          "$value": "{typography.role.labelBadge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.labelBadge.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0.76,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.tracking}"
         }
       },
       "monoLabel": {
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelKicker.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 11,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.15
+          "$value": "{typography.role.labelKicker.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.tracking}"
         }
       },
       "monoCapsLabel": {
-        "$description": "Uppercase mono label; tracking is 0.13em at 11px.",
+        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelKicker.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 11,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.15
+          "$value": "{typography.role.labelKicker.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.labelKicker.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 1.43,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelKicker.tracking}"
         }
       },
       "monoLabelS": {
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelBadge.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 10,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.15
+          "$value": "{typography.role.labelBadge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 700
+          "$value": "{typography.role.labelBadge.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.tracking}"
         }
       },
       "meta": {
+        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.bodyMeta.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 10.5,
-            "unit": "px"
-          }
+          "$value": "{typography.role.bodyMeta.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.2
+          "$value": "{typography.role.bodyMeta.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": "{typography.role.bodyMeta.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
-          }
+          "$value": "{typography.role.bodyMeta.tracking}"
         }
       },
       "badge": {
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelBadge.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 9,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.1
+          "$value": "{typography.role.labelBadge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 700
+          "$value": "{typography.role.labelBadge.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.tracking}"
         }
       },
       "badgeCaps": {
-        "$description": "Uppercase badge; tracking is 0.08em at 9px.",
+        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.labelBadge.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 9,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.1
+          "$value": "{typography.role.labelBadge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 700
+          "$value": "{typography.role.labelBadge.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0.72,
-            "unit": "px"
-          }
+          "$value": "{typography.role.labelBadge.tracking}"
         }
       },
       "numericLarge": {
+        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it.",
         "family": {
           "$type": "fontFamily",
-          "$value": "{font.family.mono}"
+          "$value": "{typography.role.titleRow.family}"
         },
         "size": {
           "$type": "dimension",
-          "$value": {
-            "value": 16,
-            "unit": "px"
-          }
+          "$value": "{typography.role.titleRow.size}"
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 1.2
+          "$value": "{typography.role.titleRow.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": 700
+          "$value": "{typography.role.titleRow.weight}"
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
-          }
+          "$value": "{typography.role.titleRow.tracking}"
         }
       }
     }
@@ -9215,59 +11403,73 @@
     "$description": "Selected Catch animation timings. Native Material and SwiftUI references do not imply equivalent springs or a mandate to change reviewed motion. Workflow timers are not design-system animations.",
     "fast": {
       "$type": "duration",
-      "$value": {
-        "value": 120,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.instant}",
+      "$description": "Deprecated alias of duration.instant; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "micro": {
       "$type": "duration",
-      "$value": {
-        "value": 180,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.quick}",
+      "$description": "Deprecated alias of duration.quick; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "chatScroll": {
       "$type": "duration",
-      "$value": {
-        "value": 200,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.standard}",
+      "$description": "Deprecated alias of duration.standard; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "base": {
       "$type": "duration",
-      "$value": {
-        "value": 220,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.standard}",
+      "$description": "Deprecated alias of duration.standard; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "pageStep": {
       "$type": "duration",
-      "$value": {
-        "value": 280,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.emphasized}",
+      "$description": "Deprecated alias of duration.emphasized; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "calendarScroll": {
       "$type": "duration",
-      "$value": {
-        "value": 320,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.emphasized}",
+      "$description": "Deprecated alias of duration.emphasized; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "slow": {
       "$type": "duration",
-      "$value": {
-        "value": 420,
-        "unit": "ms"
-      },
-      "$description": "Explicit Catch timing retained; not claimed to be a platform default."
+      "$value": "{duration.slow}",
+      "$description": "Deprecated alias of duration.slow; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
     },
     "spinnerPeriod": {
       "$type": "duration",
@@ -9279,55 +11481,151 @@
     },
     "standardCurve": {
       "$type": "cubicBezier",
-      "$value": [
-        0.2,
-        0,
-        0,
-        1
-      ],
+      "$value": "{easing.standard}",
+      "$description": "Deprecated alias of easing.standard; P7 deletes it.",
       "$extensions": {
         "org.catch": {
           "reference": "platformReference.android.motion.easingStandard",
-          "decision": "Material standard curve selected on both platforms for Catch transitions; iOS native spring parameters are not equivalent cubic curves."
+          "decision": "Material standard curve selected on both platforms for Catch transitions; iOS native spring parameters are not equivalent cubic curves.",
+          "deprecated": true
         }
       }
     },
     "springCurve": {
       "$type": "cubicBezier",
+      "$value": "{easing.spring}",
+      "$description": "Deprecated alias of easing.spring; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      }
+    }
+  },
+  "duration": {
+    "$type": "duration",
+    "$description": "System durations (blueprint D22). Web: --catch-duration-*. Flutter: GeneratedCatchDurationTokens.",
+    "instant": {
+      "$description": "Press feedback.",
+      "$value": {
+        "value": 100,
+        "unit": "ms"
+      }
+    },
+    "quick": {
+      "$description": "Selection, toggles, small fades.",
+      "$value": {
+        "value": 160,
+        "unit": "ms"
+      }
+    },
+    "standard": {
+      "$description": "Sliding indicators, list changes, banners.",
+      "$value": {
+        "value": 240,
+        "unit": "ms"
+      }
+    },
+    "emphasized": {
+      "$description": "Sheets, page transitions.",
+      "$value": {
+        "value": 360,
+        "unit": "ms"
+      }
+    },
+    "slow": {
+      "$description": "Meters filling, numbers ticking.",
+      "$value": {
+        "value": 500,
+        "unit": "ms"
+      }
+    },
+    "pulse": {
+      "$description": "Live dots.",
+      "$value": {
+        "value": 1600,
+        "unit": "ms"
+      }
+    },
+    "shimmer": {
+      "$description": "Skeletons.",
+      "$value": {
+        "value": 1200,
+        "unit": "ms"
+      }
+    }
+  },
+  "easing": {
+    "$type": "cubicBezier",
+    "$description": "System easings (blueprint D22). Web: --catch-easing-*. Flutter: GeneratedCatchEasingTokens.",
+    "standard": {
+      "$description": "Things that move on screen.",
+      "$value": [
+        0.2,
+        0,
+        0,
+        1
+      ]
+    },
+    "enter": {
+      "$description": "Things arriving.",
+      "$value": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "exit": {
+      "$description": "Things leaving.",
+      "$value": [
+        0.3,
+        0,
+        1,
+        1
+      ]
+    },
+    "spring": {
+      "$description": "Sheets settling, switches, pops.",
       "$value": [
         0.34,
-        1.4,
+        1.36,
         0.64,
         1
-      ],
-      "$description": "Explicit Catch overshoot curve for press and success feedback; not claimed to be a platform spring."
+      ]
     }
   },
   "elevation": {
     "$description": "Hairline-first lift shared by Flutter BoxShadow lists and website box-shadow values. Shadow ink is warm (26, 20, 16), not the text ink.",
     "card": {
       "$type": "shadow",
-      "$description": "Content cards that read as above the page while keeping the hairline border style.",
-      "$value": [
-        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.06}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 4, "unit": "px"}, "blur": {"value": 14, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
-        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.04}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
-      ]
+      "$description": "Deprecated alias of theme.light.elevation.float; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{theme.light.elevation.float}"
     },
     "raised": {
       "$type": "shadow",
-      "$description": "Bottom sheets, floating actions and popovers.",
-      "$value": [
-        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.1}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 8, "unit": "px"}, "blur": {"value": 24, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
-        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.06}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
-      ]
+      "$description": "Deprecated alias of theme.light.elevation.sheet; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{theme.light.elevation.sheet}"
     },
     "overlay": {
       "$type": "shadow",
-      "$description": "Toasts, snackbars and dropdown overlays.",
-      "$value": [
-        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.18}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 16, "unit": "px"}, "blur": {"value": 40, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
-        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.08}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 4, "unit": "px"}, "blur": {"value": 8, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
-      ]
+      "$description": "Deprecated alias of theme.light.elevation.dialog; P7 deletes it.",
+      "$extensions": {
+        "org.catch": {
+          "deprecated": true
+        }
+      },
+      "$value": "{theme.light.elevation.dialog}"
     }
   },
   "layer": {

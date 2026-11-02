@@ -5,64 +5,164 @@
 import 'package:flutter/material.dart';
 
 abstract final class GeneratedCatchColorTokens {
-  static const Color lightBg = Color(0xFFF4F4F1);
+  static const Color lightGround = Color(0xFFFFFFFF);
+  static const Color lightTile = Color(0xFFF3F3F1);
+  static const Color lightNested = Color(0xFFFFFFFF);
+  static const Color lightPaper = Color(0xFFF6F0E8);
+  static const Color lightMap = Color(0xFFEDEBE6);
+  static const Color lightScrim = Color.fromRGBO(20, 17, 20, 0.45);
+  static const Color lightInk = Color(0xFF141114);
+  static const Color lightInk2 = Color(0xFF5A5450);
+  static const Color lightInk3 = Color(0xFF767069);
+  static const Color lightOnPrimary = Color(0xFFFFFFFF);
+  static const Color lightPrimary = Color(0xFF141114);
+  static const Color lightLine = Color.fromRGBO(20, 17, 20, 0.1);
+  static const Color lightControlLine = Color.fromRGBO(20, 17, 20, 0.18);
+  static const Color lightFieldLine = Color.fromRGBO(20, 17, 20, 0.22);
+  static const Color lightFocus = Color(0xFF141114);
+  static const Color lightTrack = Color(0xFFEEEDEA);
+  static const Color lightSwitchOff = Color(0xFFD9D6D1);
+  static const Color lightFormatRun = Color(0xFFF07A55);
+  static const Color lightFormatDinner = Color(0xFFF08AA0);
+  static const Color lightFormatGames = Color(0xFFF5C451);
+  static const Color lightFormatCourts = Color(0xFF5CCB9F);
+  static const Color lightFormatNightsOut = Color(0xFFE58AC8);
+  static const Color lightIndigo = Color(0xFF8C9BF2);
+  static const Color lightOnFormat = Color(0xFF141114);
+  static const Color lightTintMint = Color(0xFFDDF3EA);
+  static const Color lightTintYellow = Color(0xFFFFF4D6);
+  static const Color lightTintCoral = Color(0xFFFDE7DF);
+  static const Color lightTintIndigo = Color(0xFFE8EBFD);
+  static const Color lightTintPink = Color(0xFFFDE4EA);
+  static const Color lightDeepMint = Color(0xFF1F7A57);
+  static const Color lightDeepYellow = Color(0xFF8A6410);
+  static const Color lightDeepCoral = Color(0xFFB5451F);
+  static const Color lightDeepIndigo = Color(0xFF4C5BC4);
+  static const Color lightDeepPink = Color(0xFFB23A5A);
+  @Deprecated('Alias of theme.light.color.tile; P7 deletes it.')
+  static const Color lightBg = Color(0xFFF3F3F1);
+  @Deprecated('Alias of theme.light.color.ground; P7 deletes it.')
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightRaised = Color(0xFFFAFAF8);
-  static const Color lightOverlay = Color.fromRGBO(22, 20, 15, 0.55);
-  static const Color lightInk = Color(0xFF16140F);
-  static const Color lightInk2 = Color(0xFF544F47);
-  static const Color lightInk3 = Color(0xFF9C958A);
-  static const Color lightLine = Color.fromRGBO(22, 20, 15, 0.08);
-  static const Color lightLine2 = Color.fromRGBO(22, 20, 15, 0.14);
-  static const Color lightPrimary = Color(0xFF16140F);
-  static const Color lightPrimaryInk = Color(0xFFF4F4F1);
-  static const Color lightPrimarySoft = Color(0xFFECEAE4);
-  static const Color lightAccent = Color(0xFF16140F);
-  static const Color lightAccentInk = Color(0xFFF4F4F1);
-  static const Color lightSuccess = Color(0xFF2F7D55);
-  static const Color lightWarning = Color(0xFFB9770F);
-  static const Color lightDanger = Color(0xFFC2261A);
-  static const Color lightLike = Color(0xFF16140F);
-  static const Color lightPass = Color(0xFF9C958A);
-  static const Color lightGold = Color(0xFFC9A24A);
-  static const Color lightPositiveText = Color(0xFF236B45);
-  static const Color lightAttentionText = Color(0xFF97451C);
-  static const Color lightAffinityText = Color(0xFF77529D);
-  static const Color lightDangerText = Color(0xFFA01F16);
-  static const Color lightGoldText = Color(0xFF765719);
-  static const Color darkBg = Color(0xFF0F0E10);
-  static const Color darkSurface = Color(0xFF18171A);
-  static const Color darkRaised = Color(0xFF211F23);
-  static const Color darkOverlay = Color.fromRGBO(0, 0, 0, 0.72);
-  static const Color darkInk = Color(0xFFF4F0E8);
-  static const Color darkInk2 = Color(0xFFBAB2A7);
-  static const Color darkInk3 = Color(0xFF7E776D);
-  static const Color darkLine = Color.fromRGBO(244, 240, 232, 0.13);
-  static const Color darkLine2 = Color.fromRGBO(244, 240, 232, 0.22);
-  static const Color darkPrimary = Color(0xFFF4F0E8);
-  static const Color darkPrimaryInk = Color(0xFF16140F);
-  static const Color darkPrimarySoft = Color(0xFF2A2824);
-  static const Color darkAccent = Color(0xFFF4F0E8);
-  static const Color darkAccentInk = Color(0xFF16140F);
-  static const Color darkSuccess = Color(0xFF5BC07C);
-  static const Color darkWarning = Color(0xFFE5A655);
-  static const Color darkDanger = Color(0xFFE5564B);
-  static const Color darkLike = Color(0xFFF4F0E8);
-  static const Color darkPass = Color(0xFF7E776D);
-  static const Color darkGold = Color(0xFFE0B45E);
-  static const Color darkPositiveText = Color(0xFF5BC07C);
-  static const Color darkAttentionText = Color(0xFFF0AF80);
-  static const Color darkAffinityText = Color(0xFFC5A6E7);
-  static const Color darkDangerText = Color(0xFFF08075);
-  static const Color darkGoldText = Color(0xFFE0B45E);
+  @Deprecated('Alias of theme.light.color.nested; P7 deletes it.')
+  static const Color lightRaised = Color(0xFFFFFFFF);
+  @Deprecated('Alias of theme.light.color.scrim; P7 deletes it.')
+  static const Color lightOverlay = Color.fromRGBO(20, 17, 20, 0.45);
+  @Deprecated('Alias of theme.light.color.controlLine; P7 deletes it.')
+  static const Color lightLine2 = Color.fromRGBO(20, 17, 20, 0.18);
+  @Deprecated('Alias of theme.light.color.onPrimary; P7 deletes it.')
+  static const Color lightPrimaryInk = Color(0xFFFFFFFF);
+  @Deprecated('Alias of theme.light.color.tile; P7 deletes it.')
+  static const Color lightPrimarySoft = Color(0xFFF3F3F1);
+  @Deprecated('Alias of theme.light.color.primary; P7 deletes it.')
+  static const Color lightAccent = Color(0xFF141114);
+  @Deprecated('Alias of theme.light.color.onPrimary; P7 deletes it.')
+  static const Color lightAccentInk = Color(0xFFFFFFFF);
+  @Deprecated('Alias of theme.light.color.deepMint; P7 deletes it.')
+  static const Color lightSuccess = Color(0xFF1F7A57);
+  @Deprecated('Alias of theme.light.color.deepYellow; P7 deletes it.')
+  static const Color lightWarning = Color(0xFF8A6410);
+  @Deprecated('Alias of theme.light.color.deepCoral; P7 deletes it.')
+  static const Color lightDanger = Color(0xFFB5451F);
+  @Deprecated('Alias of theme.light.color.primary; P7 deletes it.')
+  static const Color lightLike = Color(0xFF141114);
+  @Deprecated('Alias of theme.light.color.ink3; P7 deletes it.')
+  static const Color lightPass = Color(0xFF767069);
+  @Deprecated('Alias of theme.light.color.deepYellow; P7 deletes it.')
+  static const Color lightGold = Color(0xFF8A6410);
+  @Deprecated('Alias of theme.light.color.deepMint; P7 deletes it.')
+  static const Color lightPositiveText = Color(0xFF1F7A57);
+  @Deprecated('Alias of theme.light.color.deepYellow; P7 deletes it.')
+  static const Color lightAttentionText = Color(0xFF8A6410);
+  @Deprecated('Alias of theme.light.color.deepPink; P7 deletes it.')
+  static const Color lightAffinityText = Color(0xFFB23A5A);
+  @Deprecated('Alias of theme.light.color.deepCoral; P7 deletes it.')
+  static const Color lightDangerText = Color(0xFFB5451F);
+  @Deprecated('Alias of theme.light.color.deepYellow; P7 deletes it.')
+  static const Color lightGoldText = Color(0xFF8A6410);
+  static const Color darkGround = Color(0xFF141114);
+  static const Color darkTile = Color(0xFF231E23);
+  static const Color darkNested = Color(0xFF2E2630);
+  static const Color darkPaper = Color(0xFFF6F0E8);
+  static const Color darkMap = Color(0xFF2A252A);
+  static const Color darkScrim = Color.fromRGBO(0, 0, 0, 0.6);
+  static const Color darkInk = Color(0xFFF6EFE6);
+  static const Color darkInk2 = Color(0xFFBDB3A7);
+  static const Color darkInk3 = Color(0xFF948A80);
+  static const Color darkOnPrimary = Color(0xFF141114);
+  static const Color darkPrimary = Color(0xFFF6EFE6);
+  static const Color darkLine = Color.fromRGBO(246, 239, 230, 0.12);
+  static const Color darkControlLine = Color.fromRGBO(246, 239, 230, 0.28);
+  static const Color darkFieldLine = Color.fromRGBO(246, 239, 230, 0.25);
+  static const Color darkFocus = Color(0xFFF6EFE6);
+  static const Color darkTrack = Color.fromRGBO(246, 239, 230, 0.14);
+  static const Color darkSwitchOff = Color.fromRGBO(246, 239, 230, 0.22);
+  static const Color darkFormatRun = Color(0xFFF07A55);
+  static const Color darkFormatDinner = Color(0xFFF08AA0);
+  static const Color darkFormatGames = Color(0xFFF5C451);
+  static const Color darkFormatCourts = Color(0xFF5CCB9F);
+  static const Color darkFormatNightsOut = Color(0xFFE58AC8);
+  static const Color darkIndigo = Color(0xFF8C9BF2);
+  static const Color darkOnFormat = Color(0xFF141114);
+  static const Color darkTintMint = Color(0xFF1F3A2E);
+  static const Color darkTintYellow = Color(0xFF3A321A);
+  static const Color darkTintCoral = Color(0xFF3A2420);
+  static const Color darkTintIndigo = Color(0xFF22263F);
+  static const Color darkTintPink = Color(0xFF3A2129);
+  static const Color darkDeepMint = Color(0xFF5CCB9F);
+  static const Color darkDeepYellow = Color(0xFFF5C451);
+  static const Color darkDeepCoral = Color(0xFFF07A55);
+  static const Color darkDeepIndigo = Color(0xFF8C9BF2);
+  static const Color darkDeepPink = Color(0xFFF08AA0);
+  @Deprecated('Alias of theme.dark.color.tile; P7 deletes it.')
+  static const Color darkBg = Color(0xFF231E23);
+  @Deprecated('Alias of theme.dark.color.ground; P7 deletes it.')
+  static const Color darkSurface = Color(0xFF141114);
+  @Deprecated('Alias of theme.dark.color.nested; P7 deletes it.')
+  static const Color darkRaised = Color(0xFF2E2630);
+  @Deprecated('Alias of theme.dark.color.scrim; P7 deletes it.')
+  static const Color darkOverlay = Color.fromRGBO(0, 0, 0, 0.6);
+  @Deprecated('Alias of theme.dark.color.controlLine; P7 deletes it.')
+  static const Color darkLine2 = Color.fromRGBO(246, 239, 230, 0.28);
+  @Deprecated('Alias of theme.dark.color.onPrimary; P7 deletes it.')
+  static const Color darkPrimaryInk = Color(0xFF141114);
+  @Deprecated('Alias of theme.dark.color.tile; P7 deletes it.')
+  static const Color darkPrimarySoft = Color(0xFF231E23);
+  @Deprecated('Alias of theme.dark.color.primary; P7 deletes it.')
+  static const Color darkAccent = Color(0xFFF6EFE6);
+  @Deprecated('Alias of theme.dark.color.onPrimary; P7 deletes it.')
+  static const Color darkAccentInk = Color(0xFF141114);
+  @Deprecated('Alias of theme.dark.color.deepMint; P7 deletes it.')
+  static const Color darkSuccess = Color(0xFF5CCB9F);
+  @Deprecated('Alias of theme.dark.color.deepYellow; P7 deletes it.')
+  static const Color darkWarning = Color(0xFFF5C451);
+  @Deprecated('Alias of theme.dark.color.deepCoral; P7 deletes it.')
+  static const Color darkDanger = Color(0xFFF07A55);
+  @Deprecated('Alias of theme.dark.color.primary; P7 deletes it.')
+  static const Color darkLike = Color(0xFFF6EFE6);
+  @Deprecated('Alias of theme.dark.color.ink3; P7 deletes it.')
+  static const Color darkPass = Color(0xFF948A80);
+  @Deprecated('Alias of theme.dark.color.deepYellow; P7 deletes it.')
+  static const Color darkGold = Color(0xFFF5C451);
+  @Deprecated('Alias of theme.dark.color.deepMint; P7 deletes it.')
+  static const Color darkPositiveText = Color(0xFF5CCB9F);
+  @Deprecated('Alias of theme.dark.color.deepYellow; P7 deletes it.')
+  static const Color darkAttentionText = Color(0xFFF5C451);
+  @Deprecated('Alias of theme.dark.color.deepPink; P7 deletes it.')
+  static const Color darkAffinityText = Color(0xFFF08AA0);
+  @Deprecated('Alias of theme.dark.color.deepCoral; P7 deletes it.')
+  static const Color darkDangerText = Color(0xFFF07A55);
+  @Deprecated('Alias of theme.dark.color.deepYellow; P7 deletes it.')
+  static const Color darkGoldText = Color(0xFFF5C451);
 }
 
 abstract final class GeneratedCatchGradientTokens {
+  @Deprecated('Retiring; P7 deletes it.')
   static const Gradient lightHeroGrad = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: <Color>[Color(0xFF2A2620), Color(0xFF16140F)],
   );
+  @Deprecated('Retiring; P7 deletes it.')
   static const Gradient darkHeroGrad = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -96,11 +196,13 @@ abstract final class GeneratedCatchSpacingTokens {
 
 abstract final class GeneratedCatchRadiusTokens {
   static const double none = 0.0;
-  static const double xs = 4.0;
-  static const double sm = 8.0;
-  static const double md = 14.0;
+  static const double xs = 6.0;
+  static const double sm = 10.0;
+  static const double md = 16.0;
   static const double lg = 20.0;
-  static const double interactiveTile = 12.0;
+  static const double xl = 24.0;
+  @Deprecated('Alias of radius.sm; P7 deletes it.')
+  static const double interactiveTile = 10.0;
   static const double pill = 999.0;
 }
 
@@ -265,14 +367,14 @@ abstract final class GeneratedCatchTypographyTokens {
       letterSpacing: 0.0,
     ),
     title: TextStyle(
-      fontSize: 20.0,
-      height: 25.0 / 20.0,
-      fontWeight: FontWeight.w600,
+      fontSize: 17.0,
+      height: 22.1 / 17.0,
+      fontWeight: FontWeight.w700,
       letterSpacing: 0.0,
     ),
     name: TextStyle(
       fontSize: 16.0,
-      height: 20.0 / 16.0,
+      height: 21.6 / 16.0,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
@@ -284,26 +386,26 @@ abstract final class GeneratedCatchTypographyTokens {
     ),
     secondary: TextStyle(
       fontSize: 14.0,
-      height: 20.0 / 14.0,
+      height: 20.02 / 14.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     context: TextStyle(
       fontSize: 13.0,
-      height: 18.0 / 13.0,
+      height: 17.94 / 13.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     control: TextStyle(
       fontSize: 15.0,
-      height: 20.0 / 15.0,
-      fontWeight: FontWeight.w400,
+      height: 19.5 / 15.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     status: TextStyle(
       fontSize: 12.0,
-      height: 16.0 / 12.0,
-      fontWeight: FontWeight.w600,
+      height: 14.4 / 12.0,
+      fontWeight: FontWeight.w700,
       letterSpacing: 0.0,
     ),
     metric: TextStyle(
@@ -315,13 +417,13 @@ abstract final class GeneratedCatchTypographyTokens {
     fieldValue: TextStyle(
       fontSize: 16.0,
       height: 24.0 / 16.0,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     fieldLabel: TextStyle(
       fontSize: 13.0,
-      height: 18.0 / 13.0,
-      fontWeight: FontWeight.w500,
+      height: 17.55 / 13.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     displayLarge: TextStyle(
@@ -357,15 +459,15 @@ abstract final class GeneratedCatchTypographyTokens {
       letterSpacing: 0.0,
     ),
     title: TextStyle(
-      fontSize: 20.0,
-      height: 28.0 / 20.0,
-      fontWeight: FontWeight.w500,
+      fontSize: 17.0,
+      height: 22.1 / 17.0,
+      fontWeight: FontWeight.w700,
       letterSpacing: 0.0,
     ),
     name: TextStyle(
       fontSize: 16.0,
-      height: 24.0 / 16.0,
-      fontWeight: FontWeight.w500,
+      height: 21.6 / 16.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     body: TextStyle(
@@ -376,26 +478,26 @@ abstract final class GeneratedCatchTypographyTokens {
     ),
     secondary: TextStyle(
       fontSize: 14.0,
-      height: 20.0 / 14.0,
+      height: 20.02 / 14.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     context: TextStyle(
-      fontSize: 12.0,
-      height: 16.0 / 12.0,
+      fontSize: 13.0,
+      height: 17.94 / 13.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     control: TextStyle(
-      fontSize: 14.0,
-      height: 20.0 / 14.0,
-      fontWeight: FontWeight.w400,
+      fontSize: 15.0,
+      height: 19.5 / 15.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     status: TextStyle(
       fontSize: 12.0,
-      height: 16.0 / 12.0,
-      fontWeight: FontWeight.w600,
+      height: 14.4 / 12.0,
+      fontWeight: FontWeight.w700,
       letterSpacing: 0.0,
     ),
     metric: TextStyle(
@@ -407,13 +509,13 @@ abstract final class GeneratedCatchTypographyTokens {
     fieldValue: TextStyle(
       fontSize: 16.0,
       height: 24.0 / 16.0,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     fieldLabel: TextStyle(
-      fontSize: 12.0,
-      height: 16.0 / 12.0,
-      fontWeight: FontWeight.w500,
+      fontSize: 13.0,
+      height: 17.55 / 13.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     displayLarge: TextStyle(
@@ -443,6 +545,142 @@ abstract final class GeneratedCatchTypographyTokens {
   );
 }
 
+abstract final class GeneratedCatchTypeRoleTokens {
+  static const TextStyle displayHero = TextStyle(
+    fontSize: 96.0,
+    height: 0.9,
+    fontWeight: FontWeight(760),
+    letterSpacing: -4.32,
+  );
+  static const TextStyle displayXl = TextStyle(
+    fontSize: 64.0,
+    height: 0.95,
+    fontWeight: FontWeight(760),
+    letterSpacing: -2.56,
+  );
+  static const TextStyle displayLg = TextStyle(
+    fontSize: 48.0,
+    height: 1.0,
+    fontWeight: FontWeight(760),
+    letterSpacing: -1.44,
+  );
+  static const TextStyle displayTitle = TextStyle(
+    fontSize: 38.0,
+    height: 1.0,
+    fontWeight: FontWeight(760),
+    letterSpacing: -1.14,
+  );
+  static const TextStyle displaySection = TextStyle(
+    fontSize: 30.0,
+    height: 1.05,
+    fontWeight: FontWeight(760),
+    letterSpacing: -0.6,
+  );
+  static const TextStyle displaySm = TextStyle(
+    fontSize: 24.0,
+    height: 1.1,
+    fontWeight: FontWeight(760),
+    letterSpacing: -0.24,
+  );
+  static const TextStyle displayXs = TextStyle(
+    fontSize: 20.0,
+    height: 1.1,
+    fontWeight: FontWeight(760),
+    letterSpacing: 0.0,
+  );
+  static const TextStyle bodyLead = TextStyle(
+    fontSize: 20.0,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle bodyInput = TextStyle(
+    fontSize: 16.0,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle body = TextStyle(
+    fontSize: 15.0,
+    height: 1.45,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 14.0,
+    height: 1.43,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle bodyMeta = TextStyle(
+    fontSize: 13.0,
+    height: 1.38,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle titleBar = TextStyle(
+    fontSize: 17.0,
+    height: 1.3,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle titleRow = TextStyle(
+    fontSize: 16.0,
+    height: 1.35,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle labelButton = TextStyle(
+    fontSize: 15.0,
+    height: 1.3,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle labelAction = TextStyle(
+    fontSize: 14.0,
+    height: 1.3,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle labelKicker = TextStyle(
+    fontSize: 13.0,
+    height: 1.35,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle labelBadge = TextStyle(
+    fontSize: 12.0,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.0,
+  );
+  static const TextStyle labelCode = TextStyle(
+    fontSize: 13.0,
+    height: 1.35,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 1.56,
+  );
+}
+
+abstract final class GeneratedCatchTypeVariantTokens {
+  static const TextStyle pageTitleCompact =
+      GeneratedCatchTypeRoleTokens.displayTitle;
+  static const TextStyle pageTitleMedium =
+      GeneratedCatchTypeRoleTokens.displayLg;
+  static const TextStyle pageTitleExpanded =
+      GeneratedCatchTypeRoleTokens.displayXl;
+  static const TextStyle sectionTitleCompact =
+      GeneratedCatchTypeRoleTokens.displaySm;
+  static const TextStyle sectionTitleMedium =
+      GeneratedCatchTypeRoleTokens.displaySm;
+  static const TextStyle sectionTitleExpanded =
+      GeneratedCatchTypeRoleTokens.displaySection;
+  static const TextStyle heroCompact = GeneratedCatchTypeRoleTokens.displayLg;
+  static const TextStyle heroMedium = GeneratedCatchTypeRoleTokens.displayXl;
+  static const TextStyle heroExpanded =
+      GeneratedCatchTypeRoleTokens.displayHero;
+}
+
 abstract final class GeneratedCatchLayoutTokens {
   static const double activityMapPinRestingSize = 26.0;
   static const double activityMapPinSelectedSize = 38.0;
@@ -462,6 +700,18 @@ abstract final class GeneratedCatchLayoutTokens {
   static const double pageGutter = 20.0;
   static const double pageBodyStart = 16.0;
   static const double pageBodyEnd = 20.0;
+  static const double rail = 96.0;
+  static const double sidebar = 240.0;
+  static const double paneList = 360.0;
+  static const double paneLane = 600.0;
+  static const double panePreview = 320.0;
+  static const double paneLive = 360.0;
+  static const double liveCap = 1040.0;
+  static const double sectionGapCompact = 28.0;
+  static const double sectionGapWide = 40.0;
+  static const double gutterCompact = 20.0;
+  static const double gutterMedium = 32.0;
+  static const double gutterExpanded = 48.0;
 }
 
 abstract final class GeneratedCatchInteractionTokens {
@@ -470,53 +720,72 @@ abstract final class GeneratedCatchInteractionTokens {
 }
 
 abstract final class GeneratedCatchMotionTokens {
-  static const Duration fast = Duration(milliseconds: 120);
-  static const Duration micro = Duration(milliseconds: 180);
-  static const Duration chatScroll = Duration(milliseconds: 200);
-  static const Duration base = Duration(milliseconds: 220);
-  static const Duration pageStep = Duration(milliseconds: 280);
-  static const Duration calendarScroll = Duration(milliseconds: 320);
-  static const Duration slow = Duration(milliseconds: 420);
+  @Deprecated('Alias of duration.instant; P7 deletes it.')
+  static const Duration fast = Duration(milliseconds: 100);
+  @Deprecated('Alias of duration.quick; P7 deletes it.')
+  static const Duration micro = Duration(milliseconds: 160);
+  @Deprecated('Alias of duration.standard; P7 deletes it.')
+  static const Duration chatScroll = Duration(milliseconds: 240);
+  @Deprecated('Alias of duration.standard; P7 deletes it.')
+  static const Duration base = Duration(milliseconds: 240);
+  @Deprecated('Alias of duration.emphasized; P7 deletes it.')
+  static const Duration pageStep = Duration(milliseconds: 360);
+  @Deprecated('Alias of duration.emphasized; P7 deletes it.')
+  static const Duration calendarScroll = Duration(milliseconds: 360);
+  @Deprecated('Alias of duration.slow; P7 deletes it.')
+  static const Duration slow = Duration(milliseconds: 500);
   static const Duration spinnerPeriod = Duration(milliseconds: 800);
+  @Deprecated('Alias of easing.standard; P7 deletes it.')
   static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
-  static const Curve springCurve = Cubic(0.34, 1.4, 0.64, 1.0);
+  @Deprecated('Alias of easing.spring; P7 deletes it.')
+  static const Curve springCurve = Cubic(0.34, 1.36, 0.64, 1.0);
+}
+
+abstract final class GeneratedCatchDurationTokens {
+  static const Duration instant = Duration(milliseconds: 100);
+  static const Duration quick = Duration(milliseconds: 160);
+  static const Duration standard = Duration(milliseconds: 240);
+  static const Duration emphasized = Duration(milliseconds: 360);
+  static const Duration slow = Duration(milliseconds: 500);
+  static const Duration pulse = Duration(milliseconds: 1600);
+  static const Duration shimmer = Duration(milliseconds: 1200);
+}
+
+abstract final class GeneratedCatchEasingTokens {
+  static const Curve standard = Cubic(0.2, 0.0, 0.0, 1.0);
+  static const Curve enter = Cubic(0.0, 0.0, 0.0, 1.0);
+  static const Curve exit = Cubic(0.3, 0.0, 1.0, 1.0);
+  static const Curve spring = Cubic(0.34, 1.36, 0.64, 1.0);
 }
 
 abstract final class GeneratedCatchElevationTokens {
+  @Deprecated('Alias of theme.light.elevation.float; P7 deletes it.')
   static const List<BoxShadow> card = <BoxShadow>[
     BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.06),
-      blurRadius: 14.0,
-      offset: Offset(0.0, 4.0),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.04),
+      color: Color.fromRGBO(20, 17, 20, 0.06),
       blurRadius: 2.0,
       offset: Offset(0.0, 1.0),
     ),
+    BoxShadow(
+      color: Color.fromRGBO(20, 17, 20, 0.1),
+      blurRadius: 28.0,
+      offset: Offset(0.0, 10.0),
+    ),
   ];
+  @Deprecated('Alias of theme.light.elevation.sheet; P7 deletes it.')
   static const List<BoxShadow> raised = <BoxShadow>[
     BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.1),
-      blurRadius: 24.0,
-      offset: Offset(0.0, 8.0),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.06),
-      blurRadius: 2.0,
-      offset: Offset(0.0, 1.0),
+      color: Color.fromRGBO(20, 17, 20, 0.16),
+      blurRadius: 32.0,
+      offset: Offset(0.0, -8.0),
     ),
   ];
+  @Deprecated('Alias of theme.light.elevation.dialog; P7 deletes it.')
   static const List<BoxShadow> overlay = <BoxShadow>[
     BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.18),
-      blurRadius: 40.0,
-      offset: Offset(0.0, 16.0),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.08),
-      blurRadius: 8.0,
-      offset: Offset(0.0, 4.0),
+      color: Color.fromRGBO(20, 17, 20, 0.24),
+      blurRadius: 64.0,
+      offset: Offset(0.0, 24.0),
     ),
   ];
 }
@@ -532,13 +801,19 @@ abstract final class GeneratedCatchGapTokens {
   static const double headerTitleToSubtitle = 4.0;
   static const double related = 12.0;
   static const double formField = 16.0;
-  static const double section = 24.0;
+  @Deprecated('Alias of layout.sectionGapCompact; P7 deletes it.')
+  static const double section = 28.0;
   static const double majorSection = 32.0;
 }
 
 abstract final class GeneratedCatchOpacityTokens {
+  static const double disabled = 0.4;
+  static const double hover = 0.04;
+  static const double pressed = 0.08;
+  static const double onColour = 0.55;
   static const double badgePigmentInk = 0.75;
   static const double activityMapPinShadow = 0.3;
+  @Deprecated('Alias of opacity.hover; P7 deletes it.')
   static const double controlOverlayHover = 0.04;
   static const double activityArtworkPattern = 0.22;
   static const double activityArtworkGlyph = 0.2;
@@ -546,8 +821,11 @@ abstract final class GeneratedCatchOpacityTokens {
 }
 
 abstract final class GeneratedCatchFieldTokens {
+  @Deprecated('Alias of opacity.hover; P7 deletes it.')
   static const double activeTintAlpha = 0.04;
-  static const double pressedTintAlpha = 0.06;
+  @Deprecated('Alias of opacity.pressed; P7 deletes it.')
+  static const double pressedTintAlpha = 0.08;
+  @Deprecated('Alias of opacity.disabled; P7 deletes it.')
   static const double disabledOpacity = 0.4;
   static const double restLineAlpha = 0.25;
   static const double restTintOnDarkAlpha = 0.04;
@@ -561,11 +839,63 @@ abstract final class GeneratedCatchThemeElevationTokens {
       offset: Offset(0.0, 6.0),
     ),
   ];
+  static const List<BoxShadow> lightFloat = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(20, 17, 20, 0.06),
+      blurRadius: 2.0,
+      offset: Offset(0.0, 1.0),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(20, 17, 20, 0.1),
+      blurRadius: 28.0,
+      offset: Offset(0.0, 10.0),
+    ),
+  ];
+  static const List<BoxShadow> lightSheet = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(20, 17, 20, 0.16),
+      blurRadius: 32.0,
+      offset: Offset(0.0, -8.0),
+    ),
+  ];
+  static const List<BoxShadow> lightDialog = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(20, 17, 20, 0.24),
+      blurRadius: 64.0,
+      offset: Offset(0.0, 24.0),
+    ),
+  ];
   static const List<BoxShadow> darkFieldActive = <BoxShadow>[
     BoxShadow(
       color: Color.fromRGBO(0, 0, 0, 0.55),
       blurRadius: 22.0,
       offset: Offset(0.0, 8.0),
+    ),
+  ];
+  static const List<BoxShadow> darkFloat = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.4),
+      blurRadius: 2.0,
+      offset: Offset(0.0, 1.0),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.45),
+      blurRadius: 32.0,
+      offset: Offset(0.0, 12.0),
+    ),
+  ];
+  static const List<BoxShadow> darkSheet = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.5),
+      blurRadius: 32.0,
+      offset: Offset(0.0, -8.0),
+    ),
+  ];
+  static const List<BoxShadow> darkDialog = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.6),
+      blurRadius: 80.0,
+      offset: Offset(0.0, 30.0),
     ),
   ];
 }
@@ -579,6 +909,34 @@ abstract final class GeneratedCatchStrokeTokens {
   static const double avatarRing = 2.0;
   static const double selection = 3.0;
   static const double passProgress = 2.6;
+  static const double control = 1.5;
+  static const double focus = 2.0;
+  static const double selected = 2.0;
+  static const double meterSm = 4.0;
+  static const double meterMd = 6.0;
+  static const double meterLg = 8.0;
+}
+
+abstract final class GeneratedCatchSizeTokens {
+  static const double controlLg = 48.0;
+  static const double controlMd = 40.0;
+  static const double controlSm = 32.0;
+  static const double fieldLg = 52.0;
+  static const double fieldMd = 44.0;
+  static const double chipMd = 38.0;
+  static const double chipSm = 32.0;
+  static const double badgeMd = 28.0;
+  static const double badgeSm = 22.0;
+  static const double iconButtonLg = 44.0;
+  static const double touchMin = 44.0;
+  static const double avatarXs = 24.0;
+  static const double avatarSm = 28.0;
+  static const double avatarMd = 40.0;
+  static const double avatarLg = 48.0;
+  static const double avatarXl = 64.0;
+  static const double avatarXxl = 104.0;
+  static const double switchW = 52.0;
+  static const double switchH = 32.0;
 }
 
 abstract final class GeneratedCatchWindowSizeTokens {

@@ -1,6 +1,14 @@
 // Style Dictionary reads and resolves `design/tokens/catch.tokens.json`; these
-// two formats write the website stylesheet and the Flutter constants.
+// formats write the website stylesheet, the Flutter constants and the artifact's
+// token files.
 import {spawnSync} from "node:child_process";
+import {
+  artifactCss,
+  artifactCssPath,
+  artifactJson,
+  artifactJsonPath,
+  buildArtifact,
+} from "./artifact.mjs";
 import {
   camel,
   cssTokenValue,
@@ -57,6 +65,19 @@ export function assertTokenTree(document) {
 
 export const catchExtension = (document) => document.$extensions?.["org.catch"] ?? {};
 
+/** A token is deprecated when it, or a group above it, says so. */
+export function isDeprecated(document, {path}) {
+  let node = document;
+  for (const key of path) {
+    node = node?.[key];
+    if (node?.$extensions?.["org.catch"]?.deprecated === true) return true;
+  }
+  return false;
+}
+
+const deprecationBanner = (indent) =>
+  `${indent}/* Deprecated aliases of the system v15 roles (blueprint D22). P7 deletes them. */`;
+
 export function fontFaces(document) {
   const raw = catchExtension(document).website?.fontFaces;
   if (raw == null) return [];
@@ -80,7 +101,7 @@ export function fontFaces(document) {
   });
 }
 
-function cssThemeRoles(tokens) {
+function cssThemeRoles(tokens, document) {
   const roles = (mode, group) => tokens
     .filter(({path}) => path.length === 4 && path[0] === "theme" && path[1] === mode && path[2] === group)
     .map(({path}) => path[3]);
@@ -100,10 +121,15 @@ function cssThemeRoles(tokens) {
     [':root,\n[data-catch-theme="light"]', "light"],
     ['[data-catch-theme="dark"]', "dark"],
   ].map(([selector, mode]) => {
-    const lines = Object.entries(groups).flatMap(([group, prefix]) =>
-      roles("light", group).map((role) =>
-        `  ${prefix}${kebab(role)}: var(${cssVariableName(["theme", mode, group, role])});`));
-    return `\n${selector} {\n${lines.join("\n")}\n}\n`;
+    const lines = (wanted) => Object.entries(groups).flatMap(([group, prefix]) =>
+      roles("light", group)
+        .filter((role) => isDeprecated(document, {path: ["theme", mode, group, role]}) === wanted)
+        .map((role) => `  ${prefix}${kebab(role)}: var(${cssVariableName(["theme", mode, group, role])});`));
+    const deprecated = lines(true);
+    return `\n${selector} {\n${[
+      ...lines(false),
+      ...(deprecated.length === 0 ? [] : ["", deprecationBanner("  "), ...deprecated]),
+    ].join("\n")}\n}\n`;
   }).join("");
 }
 
@@ -123,10 +149,13 @@ function buildCss({tokens, document}) {
   ].join("\n")).join("");
   // Pinned native research is input to semantic decisions, not a second public
   // stylesheet/API that feature code can use to bypass those decisions.
-  const variables = tokens.filter(({path}) => path[0] !== "platformReference").flatMap((token) => {
-    const value = cssTokenValue(token.$type, token.$value);
-    return value == null ? [] : [`  ${cssVariableName(token.path)}: ${value};`];
-  });
+  const variables = (wanted) => tokens
+    .filter((token) => token.path[0] !== "platformReference" && isDeprecated(document, token) === wanted)
+    .flatMap((token) => {
+      const value = cssTokenValue(token.$type, token.$value);
+      return value == null ? [] : [`  ${cssVariableName(token.path)}: ${value};`];
+    });
+  const deprecated = variables(true);
   const swatches = tokens.filter(isActivityColor).flatMap((token) =>
     Object.entries(derivedActivitySwatches(token.$value)).map(([role, hex]) =>
       `  --catch-activity-${kebab(token.path[1])}-${role}: ${hex};`));
@@ -144,23 +173,66 @@ function buildCss({tokens, document}) {
     " */",
     "",
     `${faces}:root {`,
-    ...variables,
+    ...variables(false),
     ...swatches,
+    ...(deprecated.length === 0 ? [] : ["", deprecationBanner("  "), ...deprecated]),
     ...(aliases.length === 0 ? [] : [
       "",
       "  /* Temporary compatibility aliases for website/styles.css. */",
       ...aliases,
     ]),
-    `}\n${cssThemeRoles(tokens)}`,
+    `}\n${cssTypeVariants(tokens, document)}${cssThemeRoles(tokens, document)}`,
   ].join("\n");
+}
+
+/** D22's responsive text variants: each resolves to a role by size class. */
+function typeVariants(document) {
+  const variants = catchExtension(document).typeVariants;
+  if (!isPlainObject(variants)) throw new Error("Missing typeVariants.");
+  return Object.entries(variants);
+}
+
+const typeVariantLeaves = ["family", "size", "lineHeight", "weight", "tracking"];
+
+function cssTypeVariants(tokens, document) {
+  const byPath = new Map(tokens.map((token) => [token.path.join("."), token]));
+  const block = (sizeClass) => typeVariants(document).flatMap(([variant, classes]) => {
+    const role = classes[sizeClass];
+    return typeVariantLeaves.map((leaf) => {
+      const name = ["typography", "role", role, leaf];
+      if (!byPath.has(name.join("."))) throw new Error(`Unknown type variant role: ${role}`);
+      return `${cssVariableName(["typography", "variant", variant, leaf])}: var(${cssVariableName(name)});`;
+    });
+  });
+  const width = (name) => {
+    const token = byPath.get(`windowSize.${name}`);
+    if (token == null) throw new Error(`Missing windowSize.${name}.`);
+    return cssTokenValue(token.$type, token.$value);
+  };
+  const rule = (lines, indent) => lines.map((line) => `${indent}${line}`).join("\n");
+  return [
+    `\n:root {\n${rule(block("compact"), "  ")}\n}\n`,
+    `\n@media (min-width: ${width("mediumMinWidth")}) {\n  :root {\n${rule(block("medium"), "    ")}\n  }\n}\n`,
+    `\n@media (min-width: ${width("expandedMinWidth")}) {\n  :root {\n${rule(block("expanded"), "    ")}\n  }\n}\n`,
+  ].join("");
 }
 
 const dartClass = (name, members) => `\nabstract final class ${name} {\n${members.join("\n")}\n}\n`;
 
 const dartThemeName = ({path}) => `${path[1]}${pascal(path[3])}`;
 
-const dartMembers = (type, name, render) => (token) =>
-  `static const ${type} ${name(token)} = ${render(token)};`;
+/** The annotation for a deprecated member, naming what it aliases. */
+function dartDeprecation(document, token) {
+  if (!isDeprecated(document, token)) return "";
+  const {$value} = token.original ?? {};
+  const target = typeof $value === "string" && $value.startsWith("{")
+    ? `Alias of ${$value.slice(1, -1)}`
+    : "Retiring";
+  return `@Deprecated(${dartStringLiteral(`${target}; P7 deletes it.`)})\n`;
+}
+
+const dartMembers = (type, name, render, document) => (token) =>
+  `${document == null ? "" : dartDeprecation(document, token)}static const ${type} ${name(token)} = ${render(token)};`;
 
 const lastKey = ({path}) => path.at(-1);
 
@@ -168,26 +240,26 @@ function unsupported(group, token) {
   return new Error(`Unsupported ${group} token: ${token.path.join(".")}`);
 }
 
-function colorGroup(tokens, group, className) {
+function colorGroup(tokens, group, className, document) {
   const members = tokens.filter(({path}) => path.length > 1 && path[0] === group);
   if (members.length === 0) throw new Error(`Missing ${group} tokens.`);
   return dartClass(className, members.map((token) => {
     if (token.$type !== "color") throw unsupported(group, token);
-    return `static const Color ${camel(token.path.slice(1))} = ${dartColor(token.$value)};`;
+    return `${dartDeprecation(document, token)}static const Color ${camel(token.path.slice(1))} = ${dartColor(token.$value)};`;
   }));
 }
 
-function numberGroup(tokens, group, className) {
+function numberGroup(tokens, group, className, document) {
   return dartClass(className, requireGroup(tokens, group, 2).map((token) => {
     if (token.$type !== "number" || typeof token.$value !== "number") throw unsupported(group, token);
-    return `static const double ${lastKey(token)} = ${formatDartNumber(token.$value)};`;
+    return `${dartDeprecation(document, token)}static const double ${lastKey(token)} = ${formatDartNumber(token.$value)};`;
   }));
 }
 
-function dimensionGroup(tokens, group, className) {
+function dimensionGroup(tokens, group, className, document) {
   return dartClass(className, requireGroup(tokens, group, 2).map((token) => {
     if (token.$type !== "dimension") throw unsupported(group, token);
-    return `static const double ${lastKey(token)} = ${dartDimension(token.$value)};`;
+    return `${dartDeprecation(document, token)}static const double ${lastKey(token)} = ${dartDimension(token.$value)};`;
   }));
 }
 
@@ -234,7 +306,9 @@ function dartTypography(tokens) {
   ].join("\n");
 }
 
-function dartMotion(token) {
+const dartMotion = (document) => (token) => `${dartDeprecation(document, token)}${dartMotionMember(token)}`;
+
+function dartMotionMember(token) {
   const name = token.path.join(".");
   if (token.$type === "duration") {
     const {unit, value} = token.$value ?? {};
@@ -248,9 +322,9 @@ function dartMotion(token) {
   throw new Error(`Unsupported motion token: ${name}`);
 }
 
-const dartShadow = (name, tokenName) => (token) => {
+const dartShadow = (name, tokenName, document) => (token) => {
   if (token.$type !== "shadow") throw new Error(`Unsupported ${name}: ${token.path.join(".")}`);
-  return `static const List<BoxShadow> ${tokenName(token)} = <BoxShadow>[\n${dartShadowLayers(token.$value)}\n];`;
+  return `${dartDeprecation(document, token)}static const List<BoxShadow> ${tokenName(token)} = <BoxShadow>[\n${dartShadowLayers(token.$value)}\n];`;
 };
 
 function dartAccessibility(token) {
@@ -260,17 +334,52 @@ function dartAccessibility(token) {
   return `static const double ${lastKey(token)} = ${formatDartNumber(token.$value)};`;
 }
 
-function buildDart({tokens}) {
+const dartWeight = (weight) => (weight % 100 === 0 ? `FontWeight.w${weight}` : `FontWeight(${weight})`);
+
+const trimNumber = (value) => Number(value.toFixed(4));
+
+/** The system's type roles as metrics; the library adds family and colour. */
+function dartTypeRoles(tokens, document) {
+  const byPath = new Map(tokens.map((token) => [token.path.join("."), token]));
+  const roles = [...new Set(tokens
+    .filter(({path}) => path.length === 4 && path[0] === "typography" && path[1] === "role")
+    .map(({path}) => path[2]))];
+  if (roles.length === 0) throw new Error("Missing typography.role tokens.");
+  const members = roles.map((role) => {
+    const leaf = (key) => {
+      const name = `typography.role.${role}.${key}`;
+      if (!byPath.has(name)) throw new Error(`Missing ${name}.`);
+      return byPath.get(name).$value;
+    };
+    const size = leaf("size");
+    const tracking = leaf("tracking");
+    if (size.unit !== "px" || !["px", "em"].includes(tracking.unit)) {
+      throw new Error(`Invalid type role units: ${role}.`);
+    }
+    const spacing = tracking.unit === "em" ? trimNumber(tracking.value * size.value) : tracking.value;
+    return `static const TextStyle ${role} = TextStyle(fontSize: ${formatDartNumber(size.value)}, ` +
+      `height: ${formatDartNumber(leaf("lineHeight"))}, fontWeight: ${dartWeight(leaf("weight"))}, ` +
+      `letterSpacing: ${formatDartNumber(spacing)});`;
+  });
+  const variants = typeVariants(document).flatMap(([variant, classes]) =>
+    Object.entries(classes).map(([sizeClass, role]) => {
+      if (!roles.includes(role)) throw new Error(`Unknown type variant role: ${role}`);
+      return `static const TextStyle ${variant}${pascal(sizeClass)} = GeneratedCatchTypeRoleTokens.${role};`;
+    }));
+  return dartClass("GeneratedCatchTypeRoleTokens", members) + dartClass("GeneratedCatchTypeVariantTokens", variants);
+}
+
+function buildDart({tokens, document}) {
   const isTheme = (group, type) => ({path, $type}) =>
     path.length === 4 && path[0] === "theme" && path[2] === group && (type == null || $type === type);
-  const dimension = dartMembers("double", lastKey, ({$value}) => dartDimension($value));
-  const prefixedDimension = dartMembers("double", ({path}) => camel(path.slice(1)), ({$value}) => dartDimension($value));
+  const dimension = dartMembers("double", lastKey, ({$value}) => dartDimension($value), document);
+  const prefixedDimension = dartMembers("double", ({path}) => camel(path.slice(1)), ({$value}) => dartDimension($value), document);
   return [
     `// ${generatedBy}\n// Source: ${tokenPath}\n// Do not edit by hand.\n\nimport 'package:flutter/material.dart';\n`,
     dartClass("GeneratedCatchColorTokens", tokens.filter(isTheme("color", "color"))
-      .map(dartMembers("Color", dartThemeName, ({$value}) => dartColor($value)))),
+      .map(dartMembers("Color", dartThemeName, ({$value}) => dartColor($value), document))),
     dartClass("GeneratedCatchGradientTokens", tokens.filter(isTheme("gradient", "gradient"))
-      .map(dartMembers("Gradient", dartThemeName, ({$value}) => dartGradient($value)))),
+      .map(dartMembers("Gradient", dartThemeName, ({$value}) => dartGradient($value), document))),
     dartClass("GeneratedCatchSpacingTokens", inGroup(tokens, "space", 2).map(dimension)),
     dartClass("GeneratedCatchRadiusTokens", inGroup(tokens, "radius", 2).map(dimension)),
     dartClass("GeneratedCatchFontFamilyTokens", inGroup(tokens, "font", 3)
@@ -278,27 +387,31 @@ function buildDart({tokens}) {
       .map(dartMembers("String", lastKey, ({$value}) => dartStringLiteral(String($value))))),
     dartClass("GeneratedCatchActivityPigmentTokens", tokens.filter(isActivityColor)
       .map(dartMembers("Color", ({path}) => path[1], ({$value}) => dartColor($value)))),
-    colorGroup(tokens, "palette", "GeneratedCatchPaletteTokens"),
-    colorGroup(tokens, "ground", "GeneratedCatchGroundTokens"),
-    colorGroup(tokens, "format", "GeneratedCatchFormatTokens"),
+    colorGroup(tokens, "palette", "GeneratedCatchPaletteTokens", document),
+    colorGroup(tokens, "ground", "GeneratedCatchGroundTokens", document),
+    colorGroup(tokens, "format", "GeneratedCatchFormatTokens", document),
     dartClass("GeneratedCatchWebsiteTokens", inGroup(tokens, "website", 3)
       .filter(({$type}) => $type === "dimension").map(prefixedDimension)),
     dartTypography(tokens),
+    dartTypeRoles(tokens, document),
     dartClass("GeneratedCatchLayoutTokens", inGroup(tokens, "layout", 2).map(dimension)),
     dartClass("GeneratedCatchInteractionTokens", inGroup(tokens, "interaction", 3).map(prefixedDimension)),
     // Only semantic foundations reach the runtime API. Platform reference tables
     // stay source data; an explicit alias promotes one into a Catch contract.
-    dartClass("GeneratedCatchMotionTokens", inGroup(tokens, "motion", 2).map(dartMotion)),
+    dartClass("GeneratedCatchMotionTokens", inGroup(tokens, "motion", 2).map(dartMotion(document))),
+    dartClass("GeneratedCatchDurationTokens", requireGroup(tokens, "duration", 2).map(dartMotion(document))),
+    dartClass("GeneratedCatchEasingTokens", requireGroup(tokens, "easing", 2).map(dartMotion(document))),
     dartClass("GeneratedCatchElevationTokens", inGroup(tokens, "elevation", 2)
-      .map(dartShadow("elevation token", lastKey))),
+      .map(dartShadow("elevation token", lastKey, document))),
     dartClass("GeneratedCatchAccessibilityTokens", inGroup(tokens, "accessibility", 2).map(dartAccessibility)),
-    dimensionGroup(tokens, "gap", "GeneratedCatchGapTokens"),
-    numberGroup(tokens, "opacity", "GeneratedCatchOpacityTokens"),
-    numberGroup(tokens, "field", "GeneratedCatchFieldTokens"),
+    dimensionGroup(tokens, "gap", "GeneratedCatchGapTokens", document),
+    numberGroup(tokens, "opacity", "GeneratedCatchOpacityTokens", document),
+    numberGroup(tokens, "field", "GeneratedCatchFieldTokens", document),
     dartClass("GeneratedCatchThemeElevationTokens", tokens.filter(isTheme("elevation"))
-      .map(dartShadow("theme elevation", dartThemeName))),
-    dimensionGroup(tokens, "stroke", "GeneratedCatchStrokeTokens"),
-    dimensionGroup(tokens, "windowSize", "GeneratedCatchWindowSizeTokens"),
+      .map(dartShadow("theme elevation", dartThemeName, document))),
+    dimensionGroup(tokens, "stroke", "GeneratedCatchStrokeTokens", document),
+    dimensionGroup(tokens, "size", "GeneratedCatchSizeTokens", document),
+    dimensionGroup(tokens, "windowSize", "GeneratedCatchWindowSizeTokens", document),
   ].join("");
 }
 
@@ -333,7 +446,11 @@ export function styleDictionaryConfig({document, root}) {
       formats: {
         "catch/css": ({dictionary}) => buildCss({tokens: dictionary.allTokens, document}),
         "catch/dart": ({dictionary}) =>
-          formatDart(buildDart({tokens: dictionary.allTokens}), dartPath, root),
+          formatDart(buildDart({tokens: dictionary.allTokens, document}), dartPath, root),
+        "catch/artifact-json": ({dictionary}) =>
+          artifactJson(buildArtifact({tokens: dictionary.allTokens, document})),
+        "catch/artifact-css": ({dictionary}) =>
+          artifactCss(buildArtifact({tokens: dictionary.allTokens, document}), catchExtension(document).artifact),
       },
     },
     platforms: {
@@ -342,6 +459,14 @@ export function styleDictionaryConfig({document, root}) {
         files: [
           {destination: cssPath, format: "catch/css"},
           {destination: dartPath, format: "catch/dart"},
+        ],
+      },
+      // Ignored build output, read by the design-system publish step.
+      artifact: {
+        transforms: ["catch/path-name"],
+        files: [
+          {destination: artifactJsonPath, format: "catch/artifact-json"},
+          {destination: artifactCssPath, format: "catch/artifact-css"},
         ],
       },
     },

@@ -23,7 +23,8 @@ abstract final class CatchGaps {
   /// Standard gap between controls in one form or settings group.
   static const double formField = GeneratedCatchGapTokens.formField;
 
-  /// Default gap between peer sections in a page body.
+  /// Gap between peer sections on phones (`layout.sectionGapCompact`); P7
+  /// deletes this alias.
   static const double section = GeneratedCatchGapTokens.section;
 
   /// Extra separation between major page regions.
