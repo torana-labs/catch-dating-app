@@ -34,7 +34,7 @@ import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
 import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
-type DetailTab = "overview" | "people" | "workflow" | "activity" |
+type DetailTab = "overview" | "workflow" | "activity" |
   "opportunities" | "research" | "demo" | "commercial" | "intelligence";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
@@ -49,7 +49,6 @@ const staffAreaOptions = areaOptions.filter((option) =>
   option.id === "today" || option.id === "hosts" || option.id === "pipeline");
 const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "overview", label: "Overview"},
-  {id: "people", label: "People"},
   {id: "workflow", label: "Workflow"},
   {id: "demo", label: "Private demo"},
   {id: "activity", label: "Activity"},
@@ -583,8 +582,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
     {visibleTab === "commercial" && !assignedStaffOnly ? renderSalesCommercialWorkspace(detail,
       controller.evidence.data?.rows ?? [], isAdminOwner) : null}
-    {visibleTab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
-      controller={controller} assignedStaffOnly={assignedStaffOnly} /> : null}
     {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
       key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
       organizerId={detail.account.organizerId}

@@ -71,6 +71,7 @@ const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPa
     evidence: {organizerId: "harbor", claimKey: "recurrence" as const, sourceType: "public_web" as const, sourceRef: "harborsocial.in/events",
       observedAt: "2026-10-29T09:00:00.000Z", confidence: "medium" as const, normalizedValue: "About four events a month"}}],
   suggestionsFailed: false, retrySuggestions: noop, hasMoreSuggestions: false, moreSuggestions: noop, reviewSuggestion: async () => true, setHold: async () => true,
+  contactsFailed: false, retryContacts: noop, hasMoreContacts: false, moreContacts: noop, reviewContact: async () => true,
   canEditResearch: true, uid: "sample-owner", isSaving: false,
   rows: hosts.map(([organizerId, name], index) => ({organizerId, name, city: "Mumbai",
     researchStatus: index < 2 ? "qualified" as const : "needs_research" as const, stage: index < 3 ? "in_conversation" : null,
