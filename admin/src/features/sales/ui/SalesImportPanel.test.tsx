@@ -21,7 +21,7 @@ it("discards a late preview when the operator changes the import", async () => {
     text: {value: async () => csv},
     arrayBuffer: {value: async () => bytes.buffer},
   });
-  fireEvent.change(screen.getByLabelText("Choose Sales CSV"), {target: {files: [file]}});
+  fireEvent.change(screen.getByLabelText("Choose CSV"), {target: {files: [file]}});
   const preview = await screen.findByRole("button", {name: "Preview batch on server"});
   fireEvent.click(preview);
   await waitFor(() => expect(controller.previewImport).toHaveBeenCalledOnce());

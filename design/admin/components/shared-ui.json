@@ -707,27 +707,6 @@
       "componentId": "catch.empty_state"
     },
     {
-      "id": "shared_file_picker_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
-      "exportName": "FilePickerButton",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "FilePickerButtonStory",
-        "states": [
-          "default",
-          "icon"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Ghost button that opens the native file input: a file-picker recipe of catch.button.",
-      "componentId": "catch.button"
-    },
-    {
       "id": "shared_page_header",
       "kind": "shared-primitive",
       "owner": "shared/ui",
