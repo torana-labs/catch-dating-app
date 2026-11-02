@@ -1130,8 +1130,6 @@
         "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
         "packages/catch_ui/lib/src/primitives/catch_text.dart",
         "packages/catch_ui/lib/src/primitives/catch_text_variant.dart",
-        "packages/web-config/tsconfig.react.json",
-        "packages/web-ui/tsconfig.json",
         "pubspec.lock",
         "widgetbook/lib/support/contract_preview.dart",
         "apps/host/build.yaml",
