@@ -241,8 +241,45 @@ export interface PaymentFact {
   occurredAt: Date;
   currency: string;
   amountMinor: number;
+  /** For a refund, the total refunded on the payment after it. */
+  refundedToMinor?: number;
   feeMinor: number | null;
   taxMinor: number | null;
+}
+
+/**
+ * The growth event id of a payment fact. The same fact always has the same
+ * id, wherever it is recorded from. A refund is named by the total refunded
+ * after it, so two equal partial refunds stay two rows.
+ * @param {PaymentFact} fact Captured payment or refund.
+ * @return {string} Growth event id.
+ */
+export function paymentEventId(fact: PaymentFact): string {
+  const prefix = `${fact.source}:${fact.paymentId}`;
+  return fact.kind === "paid_booking" ? `${prefix}:captured` :
+    `${prefix}:refund:${fact.refundedToMinor ?? fact.amountMinor}`;
+}
+
+/**
+ * The BigQuery row for a captured payment or refund. Form payments keep
+ * their own names so they never count as bookings.
+ * @param {OrganizerGrowthFactsDocument} facts The organizer's facts.
+ * @param {PaymentFact} fact Captured payment or refund.
+ * @param {Date} ingestedAt Stream time.
+ * @return {OrganizerGrowthEvent} Growth event row.
+ */
+export function paymentEvent(facts: OrganizerGrowthFactsDocument,
+  fact: PaymentFact, ingestedAt: Date): OrganizerGrowthEvent {
+  const form = fact.source === "organizerFormPayments";
+  const name = fact.kind === "paid_booking" ?
+    form ? "form_payment" : "paid_booking" :
+    form ? "form_refund" : "refund";
+  return {...rowBase(facts, paymentEventId(fact), name, fact.occurredAt,
+    ingestedAt),
+  booking_event_id: fact.eventId, payment_source: fact.source,
+  payment_id: fact.paymentId, currency: fact.currency,
+  amount_minor: fact.amountMinor, provider_fee_minor: fact.feeMinor,
+  provider_tax_minor: fact.taxMinor};
 }
 
 /**
@@ -263,15 +300,7 @@ export async function recordOrganizerPayment(deps: GrowthDeps,
     .doc(organizerId).get()).data() as OrganizerGrowthFactsDocument | undefined;
   if (!facts) return;
   const now = (deps.now ?? (() => new Date()))();
-  const id = fact.kind === "paid_booking" ?
-    `${fact.source}:${fact.paymentId}:captured` :
-    `${fact.source}:${fact.paymentId}:refund:${fact.amountMinor}`;
-  await streamGrowthEvents(deps, [{
-    ...rowBase(facts, id, fact.kind, fact.occurredAt, now),
-    booking_event_id: fact.eventId, payment_source: fact.source,
-    payment_id: fact.paymentId, currency: fact.currency,
-    amount_minor: fact.amountMinor, provider_fee_minor: fact.feeMinor,
-    provider_tax_minor: fact.taxMinor}]);
+  await streamGrowthEvents(deps, [paymentEvent(facts, fact, now)]);
 }
 
 function rowBase(facts: OrganizerGrowthFactsDocument, id: string,
@@ -286,8 +315,8 @@ function rowBase(facts: OrganizerGrowthFactsDocument, id: string,
 }
 
 /**
- * Streams growth events. Firestore holds every step, so a failed insert is
- * logged and can be replayed from the facts; it never fails the trigger.
+ * Streams growth events. A failed insert is logged and never fails the
+ * trigger: the nightly replay sends whatever BigQuery is missing.
  * @param {GrowthDeps} deps BigQuery client.
  * @param {OrganizerGrowthEvent[]} rows Rows to insert.
  * @return {Promise<void>} Resolves once attempted.

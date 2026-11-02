@@ -165,23 +165,53 @@ source/export parity checks before a live cutover.
 
 ## Organizer Growth
 
-- `catch_analytics.organizer_growth_events`: one row per dated organizer fact,
-  streamed by the `onOrganizerGrowth*` triggers. Steps (`listed`,
-  `claim_requested`, `claimed`, `first_event`, `first_paid_booking`) appear
-  once per organizer and mirror Firestore `organizerGrowthFacts/{organizerId}`;
-  `paid_booking` and `refund` appear once per payment, with Razorpay's fee and
-  tax when reported. Every row carries the organizer's one acquisition channel
-  (imported, sales_associate, partner, guest, organizer, came_to_us, ads), set
-  when its listing was made. Growth cohorts, channels and ticket sales per
-  organizer count from this table.
+- `catch_analytics.organizer_growth_events`: one row per dated organizer fact.
+  Steps (`listed`, `claim_requested`, `claimed`, `first_event`,
+  `first_paid_booking`) appear once per organizer and mirror Firestore
+  `organizerGrowthFacts/{organizerId}`; `paid_booking` and `refund` appear once
+  per payment, with Razorpay's fee and tax when reported; `form_payment` and
+  `form_refund` do the same for form fees, so they never count as bookings.
+  Every row carries the organizer's one acquisition channel (imported,
+  sales_associate, partner, guest, organizer, came_to_us, ads), set when its
+  listing was made.
 
-Readers count `DISTINCT growth_event_id` and take `MIN(occurred_at)` per id.
-Firestore holds every step, so a failed streaming insert is logged rather than
-failing the trigger, and can be replayed from the facts documents.
+This table is the SQL record of those facts. The Admin Growth screen doesn't
+read it: `adminGetGrowth` counts from Firestore.
 
-Deploy order: run `ddl/organizer_growth_events.sql` once per project, then
-deploy Functions. The Functions runtime already has insert access to
-`catch_analytics`; no new credential or extension is needed.
+Readers count `DISTINCT growth_event_id` and take `MIN(occurred_at)` per id. An
+earlier observation of a step streams a second row with the same id, so one id
+can have more than one row. A refund's id names the total refunded after it, so
+equal partial refunds stay separate. Sum `amount_minor` over distinct ids.
+
+The `onOrganizerGrowth*` triggers stream as facts happen, and a failed insert is
+logged rather than failing the trigger. Form payments have no trigger and arrive
+overnight. Each night `reconcileOrganizerGrowthDaily`:
+
+1. Creates the table if it is missing. Nothing has to be run by hand.
+   `ddl/organizer_growth_events.sql` is the same statement, and
+   `deploy_host_analytics_bigquery.sh` also runs it, for a project where the
+   Functions account can't create tables. A test keeps the two together.
+2. Works out the rows Firestore implies, reads the ids BigQuery has, and sends
+   the missing ones. This is how anything lost earlier gets recovered.
+
+The nightly replay doesn't send a row twice:
+
+- A fact's id comes from the same code on both paths, so a row the triggers sent
+  is recognised as already there.
+- If BigQuery or Firestore can't be read in full, nothing is sent. The BigQuery
+  client follows every page, and throws on a query that hasn't finished rather
+  than returning no rows.
+- A record written in the last hour waits for the next run, so a trigger still
+  handling that write can't be sending the same row.
+- The schedule runs one at a time (`maxInstances: 1`, `concurrency: 1`), and
+  each run reads BigQuery first. A retried batch or a lost answer is seen by the
+  next run.
+- A refund row is sent only while the rows BigQuery has add up to less than the
+  payment's refunded total.
+
+One limit: if an earlier observation of a step fails to stream, BigQuery keeps
+the later time, because the id is already there. Firestore keeps the earliest.
+The replay reads up to 10,000 records per source and logs when it reaches that.
 
 ## User Inputs
 

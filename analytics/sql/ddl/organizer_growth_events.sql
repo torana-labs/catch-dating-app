@@ -10,7 +10,8 @@ EXECUTE IMMEDIATE FORMAT(
 );
 
 -- One row per dated organizer fact, streamed by the organizer growth triggers.
--- Steps appear once per organizer; paid_booking and refund once per payment.
+-- Steps appear once per organizer; paid_booking and refund once per payment,
+-- form_payment and form_refund once per form payment.
 -- Count DISTINCT growth_event_id and take MIN(occurred_at) per id: streaming
 -- insert ids are best-effort, and an earlier observation of a step can arrive
 -- after a later one.
@@ -36,6 +37,6 @@ CREATE TABLE IF NOT EXISTS `%s.%s.organizer_growth_events` (
 PARTITION BY event_date
 CLUSTER BY organizer_id, event_name
 OPTIONS(
-  description = 'Organizer growth facts: dated steps (listed, claim asked, claimed, first event, first paid booking), paid bookings and refunds, each with the organizer''s one acquisition channel. Firestore organizerGrowthFacts holds the steps.'
+  description = 'Organizer growth facts: dated steps (listed, claim asked, claimed, first event, first paid booking), paid bookings, refunds and form payments, each with one acquisition channel per organizer. Firestore organizerGrowthFacts holds the steps.'
 )
 """, analytics_project, analytics_dataset);

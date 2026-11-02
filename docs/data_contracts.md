@@ -4470,7 +4470,9 @@ the earliest time observed, and stream them, with paid bookings and refunds, to
 BigQuery `catch_analytics.organizer_growth_events`. The triggers are not retried
 on failure (a retrying trigger needs a forced deploy); `reconcileOrganizerGrowthDaily`
 recomputes the steps nightly from organizers, claim requests, booked events and
-captured checkouts and records any that were missed.
+captured checkouts and records any that were missed. The same job creates the
+table if it is missing and sends whatever BigQuery lacks, including form payments
+under their own event names (`analytics/sql/README.md`).
 
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment

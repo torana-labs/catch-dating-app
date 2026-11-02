@@ -7,6 +7,8 @@ import {
   type ObservedMilestones,
   recordOrganizerMilestones,
 } from "./organizerGrowthFacts";
+import {ensureGrowthEventsTable, replayGrowthEvents} from
+  "./organizerGrowthReplay";
 
 /**
  * The growth triggers run once and are not retried, so a trigger that
@@ -126,8 +128,12 @@ export async function reconcileOrganizerGrowth(deps: GrowthDeps):
 
 export const reconcileOrganizerGrowthDaily = onSchedule({
   schedule: "40 3 * * *", timeZone: "Asia/Kolkata", timeoutSeconds: 540,
-  maxInstances: 1,
+  // One run at a time: a second can't read BigQuery while this one inserts.
+  maxInstances: 1, concurrency: 1,
 }, async () => {
-  const moved = await reconcileOrganizerGrowth({db: admin.firestore()});
-  logger.info("Organizer growth facts reconciled.", {moved});
+  const deps = {db: admin.firestore()};
+  await ensureGrowthEventsTable(deps);
+  const moved = await reconcileOrganizerGrowth(deps);
+  const replay = await replayGrowthEvents(deps);
+  logger.info("Organizer growth facts reconciled.", {moved, replay});
 });
