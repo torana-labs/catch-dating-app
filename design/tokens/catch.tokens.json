@@ -5006,7 +5006,13 @@
         "$value": "system-ui"
       },
       "data": {
-        "$value": "{font.family.mono}"
+        "$description": "Deprecated alias of font.family.function; IBM Plex Mono retires from UI labels (blueprint D22). P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
+        "$value": "{font.family.function}"
       },
       "serif": {
         "$value": "{font.family.voice}"
@@ -5015,7 +5021,13 @@
         "$value": "{font.family.function}"
       },
       "mono": {
-        "$value": "IBM Plex Mono"
+        "$description": "Deprecated alias of font.family.function; IBM Plex Mono retires from UI labels (blueprint D22). P7 deletes it.",
+        "$extensions": {
+          "org.catch": {
+            "deprecated": true
+          }
+        },
+        "$value": "{font.family.function}"
       }
     },
     "stack": {
@@ -5050,7 +5062,7 @@
     }
   },
   "typography": {
-    "$description": "Catch function scale. System v15 (blueprint D22) replaces it: roles with a system twin take that role's metrics on every platform and are deprecated, and the rest stay until the library drops them. Native default reference metrics and provenance live in platformReference.",
+    "$description": "Catch function scale, kept at its platform values until P2.1 moves CatchText onto the system roles in typography.role (blueprint D22). Native default reference metrics and provenance live in platformReference; Catch keeps compact16/24 body and zero functional tracking.",
     "role": {
       "$description": "The 19 system type roles (blueprint D22). Display roles use Archivo at its one width; every other role uses the system sans. Tracking in em scales with the size.",
       "displayHero": {
@@ -5640,60 +5652,47 @@
         }
       },
       "title": {
-        "$description": "Deprecated alias of typography.role.titleBar; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.title3",
-            "decision": "D22: takes typography.role.titleBar. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.titleBar.size}"
+          "$value": "{platformReference.ios.typography.title3.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 22.1,
-            "unit": "px"
-          }
+          "$value": "{platformReference.ios.typography.title3.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.titleBar.weight}"
+          "$value": 600
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.title3",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "name": {
-        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.callout",
-            "decision": "D22: takes typography.role.titleRow. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.titleRow.size}"
+          "$value": "{platformReference.ios.typography.callout.size}"
         },
         "lineHeight": {
           "$type": "dimension",
           "$value": {
-            "value": 21.6,
+            "value": 20,
             "unit": "px"
           }
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.titleRow.weight}"
+          "$value": 600
         },
         "tracking": {
           "$type": "dimension",
@@ -5701,20 +5700,21 @@
             "value": 0,
             "unit": "px"
           }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.callout",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
+          }
         }
       },
       "body": {
-        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.body",
-            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodyInput.size}"
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
         },
         "lineHeight": {
           "$type": "dimension",
@@ -5725,141 +5725,133 @@
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodyInput.weight}"
+          "$value": "{platformReference.ios.typography.body.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.body",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "secondary": {
-        "$description": "Deprecated alias of typography.role.bodySmall; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.footnote",
-            "decision": "D22: takes typography.role.bodySmall. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodySmall.size}"
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          }
         },
         "lineHeight": {
           "$type": "dimension",
           "$value": {
-            "value": 20.02,
+            "value": 20,
             "unit": "px"
           }
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodySmall.weight}"
+          "$value": "{platformReference.ios.typography.footnote.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "context": {
-        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.footnote",
-            "decision": "D22: takes typography.role.bodyMeta. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodyMeta.size}"
+          "$value": "{platformReference.ios.typography.footnote.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 17.94,
-            "unit": "px"
-          }
+          "$value": "{platformReference.ios.typography.footnote.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodyMeta.weight}"
+          "$value": "{platformReference.ios.typography.footnote.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "control": {
-        "$description": "Deprecated alias of typography.role.labelButton; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.subhead",
-            "decision": "D22: takes typography.role.labelButton. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.labelButton.size}"
+          "$value": "{platformReference.ios.typography.subhead.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 19.5,
-            "unit": "px"
-          }
+          "$value": "{platformReference.ios.typography.subhead.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.labelButton.weight}"
+          "$value": "{platformReference.ios.typography.subhead.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.subhead",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "status": {
-        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.caption1",
-            "decision": "D22: takes typography.role.labelBadge. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.labelBadge.size}"
+          "$value": "{platformReference.ios.typography.caption1.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 14.4,
-            "unit": "px"
-          }
+          "$value": "{platformReference.ios.typography.caption1.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.labelBadge.weight}"
+          "$value": 600
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.caption1",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -5897,17 +5889,12 @@
         }
       },
       "fieldValue": {
-        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.body",
-            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodyInput.size}"
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
         },
         "lineHeight": {
           "$type": "dimension",
@@ -5918,45 +5905,46 @@
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodyInput.weight}"
+          "$value": 500
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.body",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "fieldLabel": {
-        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.ios.typography.footnote",
-            "decision": "D22: takes typography.role.labelKicker. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.labelKicker.size}"
+          "$value": "{platformReference.ios.typography.footnote.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 17.55,
-            "unit": "px"
-          }
+          "$value": "{platformReference.ios.typography.footnote.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.labelKicker.weight}"
+          "$value": 500
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.ios.typography.footnote",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -6103,226 +6091,191 @@
         }
       },
       "title": {
-        "$description": "Deprecated alias of typography.role.titleBar; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.titleLarge",
-            "decision": "D22: takes typography.role.titleBar. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.titleBar.size}"
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 22.1,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.titleLarge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.titleBar.weight}"
+          "$value": 500
         },
         "tracking": {
           "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
+          "$value": "{platformReference.android.typography.titleLarge.tracking}"
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.titleLarge",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "name": {
-        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.titleMedium",
-            "decision": "D22: takes typography.role.titleRow. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.titleRow.size}"
+          "$value": "{platformReference.android.typography.titleMedium.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 21.6,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.titleMedium.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.titleRow.weight}"
+          "$value": "{platformReference.android.typography.titleMedium.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.titleMedium",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "body": {
-        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodyLarge",
-            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodyInput.size}"
+          "$value": "{platformReference.android.typography.bodyLarge.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 24,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.bodyLarge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodyInput.weight}"
+          "$value": "{platformReference.android.typography.bodyLarge.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodyLarge",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "secondary": {
-        "$description": "Deprecated alias of typography.role.bodySmall; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodyMedium",
-            "decision": "D22: takes typography.role.bodySmall. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodySmall.size}"
+          "$value": "{platformReference.android.typography.bodyMedium.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 20.02,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.bodyMedium.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodySmall.weight}"
+          "$value": "{platformReference.android.typography.bodyMedium.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodyMedium",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "context": {
-        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodySmall",
-            "decision": "D22: takes typography.role.bodyMeta. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodyMeta.size}"
+          "$value": "{platformReference.android.typography.bodySmall.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 17.94,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.bodySmall.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodyMeta.weight}"
+          "$value": "{platformReference.android.typography.bodySmall.weight}"
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodySmall",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "control": {
-        "$description": "Deprecated alias of typography.role.labelButton; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.labelLarge",
-            "decision": "D22: takes typography.role.labelButton. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.labelButton.size}"
+          "$value": "{platformReference.android.typography.labelLarge.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 19.5,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.labelLarge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.labelButton.weight}"
+          "$value": 400
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.labelLarge",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "status": {
-        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.labelMedium",
-            "decision": "D22: takes typography.role.labelBadge. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.labelBadge.size}"
+          "$value": "{platformReference.android.typography.labelMedium.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 14.4,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.labelMedium.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.labelBadge.weight}"
+          "$value": 600
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.labelMedium",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -6351,66 +6304,56 @@
         }
       },
       "fieldValue": {
-        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodyLarge",
-            "decision": "D22: takes typography.role.bodyInput. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.bodyInput.size}"
+          "$value": "{platformReference.android.typography.bodyLarge.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 24,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.bodyLarge.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.bodyInput.weight}"
+          "$value": 500
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodyLarge",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
       "fieldLabel": {
-        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it. lineHeight is that role's size times its lineHeight.",
-        "$extensions": {
-          "org.catch": {
-            "reference": "platformReference.android.typography.bodySmall",
-            "decision": "D22: takes typography.role.labelKicker. Deprecated role; P7 deletes it.",
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
-          "$value": "{typography.role.labelKicker.size}"
+          "$value": "{platformReference.android.typography.bodySmall.size}"
         },
         "lineHeight": {
           "$type": "dimension",
-          "$value": {
-            "value": 17.55,
-            "unit": "px"
-          }
+          "$value": "{platformReference.android.typography.bodySmall.lineHeight}"
         },
         "weight": {
           "$type": "number",
-          "$value": "{typography.role.labelKicker.weight}"
+          "$value": 500
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
             "value": 0,
             "unit": "px"
+          }
+        },
+        "$extensions": {
+          "org.catch": {
+            "reference": "platformReference.android.typography.bodySmall",
+            "decision": "Catch semantic choice: retain the reviewed size, leading and emphasis; zero tracking is deliberate. The reference is context, not an assertion of native equivalence."
           }
         }
       },
@@ -6552,12 +6495,6 @@
         }
       },
       "title": {
-        "$description": "Deprecated alias of typography.role.titleBar; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.title.size}"
@@ -6576,12 +6513,6 @@
         }
       },
       "name": {
-        "$description": "Deprecated alias of typography.role.titleRow; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.name.size}"
@@ -6600,12 +6531,6 @@
         }
       },
       "body": {
-        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.body.size}"
@@ -6624,12 +6549,6 @@
         }
       },
       "secondary": {
-        "$description": "Deprecated alias of typography.role.bodySmall; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.secondary.size}"
@@ -6648,12 +6567,6 @@
         }
       },
       "context": {
-        "$description": "Deprecated alias of typography.role.bodyMeta; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.context.size}"
@@ -6672,12 +6585,6 @@
         }
       },
       "control": {
-        "$description": "Deprecated alias of typography.role.labelButton; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.control.size}"
@@ -6696,12 +6603,6 @@
         }
       },
       "status": {
-        "$description": "Deprecated alias of typography.role.labelBadge; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.status.size}"
@@ -6738,12 +6639,6 @@
         }
       },
       "fieldValue": {
-        "$description": "Deprecated alias of typography.role.bodyInput; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.fieldValue.size}"
@@ -6762,12 +6657,6 @@
         }
       },
       "fieldLabel": {
-        "$description": "Deprecated alias of typography.role.labelKicker; P7 deletes it.",
-        "$extensions": {
-          "org.catch": {
-            "deprecated": true
-          }
-        },
         "size": {
           "$type": "dimension",
           "$value": "{typography.ios.fieldLabel.size}"

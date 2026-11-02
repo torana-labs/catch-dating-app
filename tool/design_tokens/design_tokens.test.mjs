@@ -159,6 +159,7 @@ test("old names resolve to their system role and are marked deprecated everywher
   assert.ok(css.includes("--catch-theme-bg: var(--catch-color-light-bg);"));
   assert.ok(css.includes("--catch-radius-interactive-tile: 10px;"));
   assert.ok(css.includes("--catch-motion-fast: 100ms;"));
+  assert.ok(css.includes("--catch-font-mono: system-ui;"));
   const banner = css.indexOf("Deprecated aliases of the system v15 roles");
   assert.ok(banner > 0 && banner < css.indexOf("--catch-color-light-bg:"));
   assert.match(dart, /@Deprecated\('Alias of theme\.light\.color\.tile; P7 deletes it\.'\)\s+static const Color lightBg/u);
@@ -177,14 +178,3 @@ test("the responsive text variants resolve by size class on both platforms", asy
   assert.match(dart, /pageTitleCompact =\s+GeneratedCatchTypeRoleTokens\.displayTitle;/u);
 });
 
-test("a platform profile role's line height is its system role's size times line height", () => {
-  for (const platform of ["ios", "android"]) {
-    for (const [name, role] of Object.entries(source.typography[platform])) {
-      const target = /^\{typography\.role\.(\w+)\.size\}$/u.exec(role?.size?.$value)?.[1];
-      if (target == null) continue;
-      const system = source.typography.role[target];
-      assert.equal(role.lineHeight.$value.value, Number((system.size.$value.value * system.lineHeight.$value).toFixed(4)),
-        `${platform}.${name}`);
-    }
-  }
-});

@@ -66,15 +66,11 @@ void main() {
             );
             final rowContext = tester.element(personRows.first);
             final tokens = CatchTokens.of(rowContext);
-            for (final foreground in [
-              tokens.affinityText,
-              tokens.positiveText,
-              tokens.attentionText,
+            for (final (foreground, background) in [
+              (tokens.deepPink, tokens.tintPink),
+              (tokens.deepMint, tokens.tintMint),
+              (tokens.deepYellow, tokens.tintYellow),
             ]) {
-              final background = Color.alphaBlend(
-                foreground.withValues(alpha: CatchOpacity.subtleFill),
-                tokens.bg,
-              );
               final a = foreground.computeLuminance();
               final b = background.computeLuminance();
               final contrast = (math.max(a, b) + .05) / (math.min(a, b) + .05);

@@ -22,7 +22,7 @@
   margin: 0;
   padding: var(--catch-space-s2) var(--catch-button-pad);
   border: var(--catch-stroke-hairline) solid var(--catch-button-border);
-  border-radius: var(--catch-radius-xs);
+  border-radius: var(--catch-radius-sm);
   background: var(--catch-button-bg);
   color: var(--catch-button-fg);
   font-family: var(--catch-font-function), system-ui, sans-serif;

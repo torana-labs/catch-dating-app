@@ -20,47 +20,49 @@ function contrast(a: RGB, b: RGB) {
   const [lo, hi] = [luminance(a), luminance(b)].sort((x, y) => x - y);
   return (hi + 0.05) / (lo + 0.05);
 }
-const inks: Record<string, string> = {neutral: "ink2", brand: "primary", success: "positive-text", warning: "attention-text", danger: "danger-text", gold: "gold-text", affinity: "affinity-text"};
+// The system's soft status pairs (D22): a pale tint under its deep ink.
+const tinted: Record<string, [ink: string, fill: string]> = {
+  success: ["deep-mint", "tint-mint"],
+  warning: ["deep-yellow", "tint-yellow"],
+  danger: ["deep-coral", "tint-coral"],
+  gold: ["deep-yellow", "tint-yellow"],
+  affinity: ["deep-pink", "tint-pink"],
+};
 const themes = ["light", "dark"];
 const grounds = (theme: string) => ["bg", "surface", "raised"].map((role) => token(`color-${theme}-${role}`))
   .concat(theme === "light" ? [token("palette-paper")] : []);
 
 describe("CatchBadge AA small text", () => {
-  it("keeps the original failure as a negative control, including v2 paper", () => {
-    const success = token("color-light-success"), paper = token("palette-paper");
-    expect(contrast(success, mix(success, paper, 0.12))).toBeCloseTo(3.82, 2);
-    for (const [role, alpha] of [["success", 0.12], ["warning", 0.14], ["gold", 0.12], ["danger", 0.12]] as const) {
-      const pigment = token(`color-light-${role}`);
-      expect(contrast(pigment, mix(pigment, paper, alpha)), `original ${role}`).toBeLessThan(4.5);
+  it("keeps the self-tinted recipe the tints replaced as a negative control", () => {
+    const paper = token("palette-paper");
+    for (const role of ["deep-mint", "deep-yellow", "deep-coral"]) {
+      const ink = token(`color-light-${role}`);
+      expect(contrast(ink, mix(ink, paper, 0.12)), `self-tinted ${role}`).toBeLessThan(4.5);
     }
-    const ink3 = token("color-light-ink3");
-    expect(contrast(ink3, paper), "original privacy").toBeLessThan(4.5);
-    expect(contrast(ink3, token("color-light-raised")), "original optional").toBeLessThan(4.5);
+    expect(contrast(token("color-light-ink3"), token("color-light-tile")), "ink3 on a tile").toBeLessThan(4.5);
     const ticket = [214, 92, 52].map((n) => n / 255);
     expect(contrast(ticket, mix(ticket, paper, 0.12)), "original ticket soft").toBeLessThan(4.5);
-    expect(contrast(token("color-dark-ink3"), token("color-dark-bg"))).toBeLessThan(4.5);
     expect(contrast([0, 0, 0], [1, 1, 1])).toBeCloseTo(21, 8);
   });
 
   it("measures all standard, functional and status tones on every supported ground", () => {
     let pairs = 0;
     for (const theme of themes) for (const ground of grounds(theme)) {
-      for (const [tone, role] of Object.entries(inks)) {
-        const ink = token(`color-${theme}-${role}`);
-        const pigment = token(`color-${theme}-${tone === "affinity" ? role : tone === "neutral" ? "ink2" : tone === "brand" ? "primary" : tone}`);
+      for (const tone of ["neutral", "brand", ...Object.keys(tinted)]) {
+        const pair = tinted[tone];
+        const ink = token(`color-${theme}-${pair?.[0] ?? (tone === "brand" ? "primary" : "ink2")}`);
         for (const recipe of ["standard", "functional", "status"]) {
-          const fill = recipe === "status" ? mix(ink, ground, 0.12)
-            : tone === "neutral" ? token(`color-${theme}-raised`)
-              : tone === "brand" ? token(`color-${theme}-primary-soft`)
-                : mix(pigment, ground, tone === "warning" ? 0.14 : tone === "danger" ? 0.1 : 0.12);
+          const fill = pair ? token(`color-${theme}-${pair[1]}`)
+            : recipe === "status" ? mix(ink, ground, 0.12)
+              : token(`color-${theme}-${tone === "brand" ? "primary-soft" : "raised"}`);
           expect(contrast(ink, fill), `${theme} ${recipe} ${tone}`).toBeGreaterThanOrEqual(4.5);
           pairs++;
         }
       }
-      const ink2 = token(`color-${theme}-ink2`), danger = token(`color-${theme}-danger-text`);
+      const ink2 = token(`color-${theme}-ink2`);
       expect(contrast(ink2, ground), `${theme} privacy`).toBeGreaterThanOrEqual(4.5);
       expect(contrast(ink2, token(`color-${theme}-raised`)), `${theme} optional`).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(danger, mix(token(`color-${theme}-danger`), ground, 0.08)), `${theme} optional error`).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(token(`color-${theme}-deep-coral`), token(`color-${theme}-tint-coral`)), `${theme} optional error`).toBeGreaterThanOrEqual(4.5);
     }
     expect(pairs).toBe(147);
   });

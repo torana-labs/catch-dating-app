@@ -210,10 +210,10 @@ abstract final class GeneratedCatchFontFamilyTokens {
   static const String voice = 'Archivo';
   static const String head = 'Archivo';
   static const String function = 'system-ui';
-  static const String data = 'IBM Plex Mono';
+  static const String data = 'system-ui';
   static const String serif = 'Archivo';
   static const String sans = 'system-ui';
-  static const String mono = 'IBM Plex Mono';
+  static const String mono = 'system-ui';
 }
 
 abstract final class GeneratedCatchActivityPigmentTokens {
@@ -367,14 +367,14 @@ abstract final class GeneratedCatchTypographyTokens {
       letterSpacing: 0.0,
     ),
     title: TextStyle(
-      fontSize: 17.0,
-      height: 22.1 / 17.0,
-      fontWeight: FontWeight.w700,
+      fontSize: 20.0,
+      height: 25.0 / 20.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     name: TextStyle(
       fontSize: 16.0,
-      height: 21.6 / 16.0,
+      height: 20.0 / 16.0,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
@@ -386,26 +386,26 @@ abstract final class GeneratedCatchTypographyTokens {
     ),
     secondary: TextStyle(
       fontSize: 14.0,
-      height: 20.02 / 14.0,
+      height: 20.0 / 14.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     context: TextStyle(
       fontSize: 13.0,
-      height: 17.94 / 13.0,
+      height: 18.0 / 13.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     control: TextStyle(
       fontSize: 15.0,
-      height: 19.5 / 15.0,
-      fontWeight: FontWeight.w600,
+      height: 20.0 / 15.0,
+      fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     status: TextStyle(
       fontSize: 12.0,
-      height: 14.4 / 12.0,
-      fontWeight: FontWeight.w700,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     metric: TextStyle(
@@ -417,13 +417,13 @@ abstract final class GeneratedCatchTypographyTokens {
     fieldValue: TextStyle(
       fontSize: 16.0,
       height: 24.0 / 16.0,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.0,
     ),
     fieldLabel: TextStyle(
       fontSize: 13.0,
-      height: 17.55 / 13.0,
-      fontWeight: FontWeight.w600,
+      height: 18.0 / 13.0,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.0,
     ),
     displayLarge: TextStyle(
@@ -459,15 +459,15 @@ abstract final class GeneratedCatchTypographyTokens {
       letterSpacing: 0.0,
     ),
     title: TextStyle(
-      fontSize: 17.0,
-      height: 22.1 / 17.0,
-      fontWeight: FontWeight.w700,
+      fontSize: 20.0,
+      height: 28.0 / 20.0,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.0,
     ),
     name: TextStyle(
       fontSize: 16.0,
-      height: 21.6 / 16.0,
-      fontWeight: FontWeight.w600,
+      height: 24.0 / 16.0,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.0,
     ),
     body: TextStyle(
@@ -478,26 +478,26 @@ abstract final class GeneratedCatchTypographyTokens {
     ),
     secondary: TextStyle(
       fontSize: 14.0,
-      height: 20.02 / 14.0,
+      height: 20.0 / 14.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     context: TextStyle(
-      fontSize: 13.0,
-      height: 17.94 / 13.0,
+      fontSize: 12.0,
+      height: 16.0 / 12.0,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     control: TextStyle(
-      fontSize: 15.0,
-      height: 19.5 / 15.0,
-      fontWeight: FontWeight.w600,
+      fontSize: 14.0,
+      height: 20.0 / 14.0,
+      fontWeight: FontWeight.w400,
       letterSpacing: 0.0,
     ),
     status: TextStyle(
       fontSize: 12.0,
-      height: 14.4 / 12.0,
-      fontWeight: FontWeight.w700,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w600,
       letterSpacing: 0.0,
     ),
     metric: TextStyle(
@@ -509,13 +509,13 @@ abstract final class GeneratedCatchTypographyTokens {
     fieldValue: TextStyle(
       fontSize: 16.0,
       height: 24.0 / 16.0,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.0,
     ),
     fieldLabel: TextStyle(
-      fontSize: 13.0,
-      height: 17.55 / 13.0,
-      fontWeight: FontWeight.w600,
+      fontSize: 12.0,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.0,
     ),
     displayLarge: TextStyle(
