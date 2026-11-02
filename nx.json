@@ -191,16 +191,9 @@
                   "{workspaceRoot}/artifacts/marketing/app-screenshots/**/*",
                   "{workspaceRoot}/tool/marketing/**/*",
                   "{workspaceRoot}/tool/ui_capture/**/*",
-                  "{workspaceRoot}/tool/demo/demo_seed/**/*",
-                  "{workspaceRoot}/lib/**/*",
-                  "{workspaceRoot}/test/**/*",
-                  "{workspaceRoot}/integration_test/**/*",
-                  "{workspaceRoot}/assets/**/*",
-                  "^production",
                   "{workspaceRoot}/design/website/**/*",
-                  "{workspaceRoot}/design/components/**/*",
                   "{workspaceRoot}/website/scripts/**/*",
-                  "!{workspaceRoot}/lib/platform/schema_contracts/generated/**/*",
+                  "^production",
                   "!{workspaceRoot}/**/*.md"
                 ]
               }
@@ -498,8 +491,6 @@
             "functions"
           ],
           "lane-capture-freshness": [
-            "catch_consumer_app",
-            "catch_host_app",
             "catch-marketing"
           ],
           "lane-build-android": [

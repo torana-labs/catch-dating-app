@@ -44,7 +44,7 @@ jobs:
       validate: ${{ steps.plan.outputs.validate }}
       source_sha: ${{ steps.plan.outputs.source_sha }}
     steps:
-      # Full history: the planner compares live with main's head.
+      # Full history: Nx compares live with main's head.
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
@@ -54,6 +54,7 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+      - run: npm ci --ignore-scripts --no-audit --no-fund
       - id: plan
         env:
           GH_TOKEN: ${{ github.token }}

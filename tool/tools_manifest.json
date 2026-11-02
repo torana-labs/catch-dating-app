@@ -56,6 +56,28 @@
       }
     },
     {
+      "id": "meta:nx-select-lanes",
+      "category": "meta",
+      "path": "tool/nx/select_lanes.mjs",
+      "command": "node --test tool/nx/select_lanes.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Nx chooses which CI lanes run for pull requests and queue groups. The planner's selection stands for main, nightly and full runs, and whenever Nx cannot answer.",
+      "checks": [
+        "node --check tool/nx/select_lanes.mjs",
+        "node --test tool/nx/select_lanes.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/select_lanes.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "meta:nx-project-graph",
       "category": "meta",
       "path": "tool/nx/catch_projects.mjs",

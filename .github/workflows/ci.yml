@@ -86,6 +86,8 @@ jobs:
             /tool/harness.mjs
             /tool/harness/verify_local.mjs
             /tool/harness/compare_selectors.mjs
+            /tool/nx/select_lanes.mjs
+            /tool/nx/shadow_plan.mjs
             /tool/ci/toolchain.env
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -108,6 +110,14 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+
+      # Nx chooses the lanes for pull requests and queue groups, and reads the
+      # whole tree to do it. Other runs keep the planner's selection.
+      - name: Install Nx
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+        run: |
+          git sparse-checkout disable
+          npm ci --ignore-scripts --no-audit --no-fund
 
       - id: plan
         name: Resolve fail-closed impact plan
@@ -198,6 +208,8 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
+          node tool/nx/select_lanes.mjs --plan build/ci/impact-plan.json --base "$base_sha" --head "$HEAD_SHA" \
+            --github-output "$GITHUB_OUTPUT"
           {
             echo "base_sha=$base_sha"
             echo "source_sha=$HEAD_SHA"

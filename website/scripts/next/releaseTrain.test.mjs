@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import {APPROVAL_ENVIRONMENT, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewRunTitle, selectDispatchedRun,
-  websiteChangedInPlan} from "./releaseTrain.mjs";
+  websiteChangedBetween} from "./releaseTrain.mjs";
 
 const mainSha = "a".repeat(40);
 const liveSha = "b".repeat(40);
@@ -74,16 +74,14 @@ test("an unvalidated head never releases without knowing whether the website cha
   assert.throws(() => planDecision({...base, validation: null}), /must be known/u);
 });
 
-test("the website changed when CI's planner would run Marketing validation, or cannot tell", () => {
-  const plan = (ciTargets, overrides = {}) => ({full: false, complete: true, operations: {ciTargets}, ...overrides});
-  assert.equal(websiteChangedInPlan(plan(["docs", "tools"])), false);
-  assert.equal(websiteChangedInPlan(plan(["capture_freshness", "flutter"])), false,
-    "app captures alone ride with the next website release, as before");
-  assert.equal(websiteChangedInPlan(plan(["marketing", "tools"])), true);
-  for (const unknown of [plan(["docs"], {full: true}), plan(["docs"], {complete: false}), plan(["docs"], {full: undefined}),
-    {full: false, complete: true}, null]) {
-    assert.equal(websiteChangedInPlan(unknown), true, JSON.stringify(unknown));
-  }
+test("the website changed only when Nx selects its lane, and an unanswerable question counts as changed", () => {
+  const lanes = (selected) => () => selected;
+  assert.equal(websiteChangedBetween("a", "b", lanes(["docs", "tools"])), false);
+  assert.equal(websiteChangedBetween("a", "b", lanes(["capture_freshness", "flutter"])), false);
+  assert.equal(websiteChangedBetween("a", "b", lanes(["marketing", "tools"])), true);
+  assert.equal(websiteChangedBetween("a", "b", () => {
+    throw new Error("no graph");
+  }), true);
 });
 
 test("the train follows only the run it dispatched", () => {

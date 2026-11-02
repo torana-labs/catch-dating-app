@@ -9,6 +9,7 @@ import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 import {currentReleaseLineage} from "./previewRelease.mjs";
 import {brand} from "../../../packages/brand/index.mjs";
+import {nxLanes} from "../../../tool/nx/select_lanes.mjs";
 
 // The website release train. After main CI completes (or on the hourly
 // fallback), it previews main's validated head through the existing preview
@@ -70,18 +71,16 @@ function skip(reason) {
 }
 
 /**
- * Whether the website changed between two commits of main, by the planner CI
- * uses to decide when to run Marketing validation. Anything it cannot place
- * counts as a change.
+ * Whether the website changed between two commits of main, by the lanes Nx
+ * selects. A CI configuration edit doesn't change the website, so it doesn't
+ * count here. If Nx cannot answer, that counts as a change.
  */
-export function websiteChangedInPlan(plan) {
-  const targets = plan?.operations?.ciTargets;
-  return plan?.full !== false || plan.complete !== true || !Array.isArray(targets) || targets.includes("marketing");
-}
-
-function websiteChangedBetween(baseSha, headSha) {
-  return websiteChangedInPlan(JSON.parse(command(process.execPath,
-    ["tool/harness.mjs", "plan", "--base", baseSha, "--head", headSha, "--mode", "merge_group", "--json"])));
+export function websiteChangedBetween(baseSha, headSha, lanes = nxLanes) {
+  try {
+    return lanes({base: baseSha, head: headSha, mode: "merge_group", controlPlane: false}).includes("marketing");
+  } catch {
+    return true;
+  }
 }
 
 /** The preview workflow's run-name for a source, by which the train finds its dispatch. */
