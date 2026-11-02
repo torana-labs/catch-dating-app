@@ -7,6 +7,8 @@
     "*.css"
   ],
   "scripts": {
+    "build": "node artifact/build.mjs",
+    "build:storybook": "HOME=/tmp/catch-web-ui-storybook-home STORYBOOK_DISABLE_TELEMETRY=1 storybook build --disable-telemetry --quiet",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
   },
