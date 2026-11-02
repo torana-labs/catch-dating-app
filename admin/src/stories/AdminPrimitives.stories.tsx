@@ -25,12 +25,10 @@ import {
   AdminDetailScreenStack,
   AdminDirectoryScreenStack,
   AdminEyebrow,
-  AdminFeatureLoadingState,
   AdminFieldGrid,
   AdminForm,
   AdminIconButton,
   AdminLinkButton,
-  AdminLoadingIcon,
   AdminMetricCard,
   AdminMetricGrid,
   AdminSectionCaption,
@@ -48,7 +46,6 @@ import {
   AdminTagList,
   AdminTagRow,
   AdminToolbar,
-  AdminTrendSeries,
   AdminWorkbenchNote,
   AdminWorkbenchStack,
   AdminWorkspace,
@@ -652,38 +649,6 @@ export const EmptyStateStory: Story = {
   ),
 };
 
-export const AdminLoadingIconStory: Story = {
-  name: "Loading icon",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_loading_icon",
-      states: ["active", "idle", "custom-size"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminLoadingIcon />
-      <AdminLoadingIcon active={false} />
-      <AdminLoadingIcon size={24} strokeWidth={2.4} />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminFeatureLoadingStateStory: Story = {
-  name: "Feature loading state",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_feature_loading_state",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminFeatureLoadingState label="Loading organizer bridge" />
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminEyebrowStory: Story = {
   name: "Eyebrow",
   parameters: {
@@ -776,33 +741,6 @@ export const AdminSecondaryDisclosureStory: Story = {
       <AdminSecondaryDisclosure open summary="Expanded diagnostics">
         <AdminWorkbenchNote>Source generated at 14 Jul 2026, 15:10.</AdminWorkbenchNote>
       </AdminSecondaryDisclosure>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminTrendSeriesStory: Story = {
-  name: "Accessible trend series",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_trend_series",
-      states: ["chart", "table-fallback", "empty"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTrendSeries
-        ariaLabel="Weekly activity summary"
-        emptyLabel="No activity buckets are available."
-        points={[
-          {label: "Week 1", values: {views: 12, chats: 2}},
-          {label: "Week 2", values: {views: 20, chats: 6}},
-          {label: "Week 3", values: {views: 16, chats: 5}},
-        ]}
-        series={[
-          {id: "views", label: "Profile views"},
-          {id: "chats", label: "Chats started"},
-        ]}
-      />
     </AdminWorkspace>
   ),
 };

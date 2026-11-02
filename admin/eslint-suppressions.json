@@ -240,12 +240,6 @@
   "src/shared/ui/AdminPrimitives/overview.tsx": {
     "react/forbid-component-props": {
       "count": 1
-    },
-    "react/forbid-dom-props": {
-      "count": 1
-    },
-    "react/forbid-elements": {
-      "count": 1
     }
   },
   "src/shared/ui/AdminPrimitives/shell.tsx": {
@@ -259,23 +253,15 @@
       "count": 6
     }
   },
-  "src/shared/ui/AdminPrimitives/trends.tsx": {
-    "react/forbid-dom-props": {
-      "count": 1
-    },
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/shared/ui/AdminPrimitives/workbench.tsx": {
     "react/forbid-component-props": {
-      "count": 5
+      "count": 4
     },
     "react/forbid-dom-props": {
-      "count": 11
+      "count": 10
     },
     "react/forbid-elements": {
-      "count": 15
+      "count": 14
     }
   }
 }

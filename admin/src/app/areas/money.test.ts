@@ -32,8 +32,7 @@ describe("Money routes", () => {
     }
   });
 
-  it("sends old Finance links to Money", () => {
-    expect(resolveAdminRoute("/finance").redirect).toBe("/money");
+  it("sends old Finance issue links to Money", () => {
     expect(resolveAdminRoute("/finance/issues/x").redirect).toBe("/money");
   });
 });

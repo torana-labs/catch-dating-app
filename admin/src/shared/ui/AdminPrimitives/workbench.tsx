@@ -12,7 +12,7 @@ import type {
   TextareaHTMLAttributes,
 } from "react";
 import {EmptyStateControl} from "@catch/web-ui";
-import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
+import {CheckCircle2, FileWarning, Lock} from "lucide-react";
 
 import {
   classNames,
@@ -232,22 +232,6 @@ export function AdminStatusGrid({
   );
 }
 
-export function AdminFilterBar({
-  ariaLabel,
-  children,
-  className = "",
-}: {
-  ariaLabel: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <section className={classNames("analytics-controls", className)} aria-label={ariaLabel}>
-      {children}
-    </section>
-  );
-}
-
 export function EmptyState({
   children,
   className = "",
@@ -296,39 +280,5 @@ export function AdminEventSupplyEmptyState({
     >
       {children}
     </EmptyState>
-  );
-}
-
-export function AdminFeatureLoadingState({
-  label,
-}: {
-  label: ReactNode;
-}) {
-  return (
-    <EmptyState
-      variant="marketing"
-      icon={<AdminLoadingIcon size={18} />}
-    >
-      {label}...
-    </EmptyState>
-  );
-}
-
-export function AdminLoadingIcon({
-  active = true,
-  size = 17,
-  strokeWidth = 1.9,
-}: {
-  active?: boolean;
-  size?: number;
-  strokeWidth?: number;
-}) {
-  return (
-    <RefreshCw
-      aria-hidden="true"
-      className={active ? "spin" : undefined}
-      size={size}
-      strokeWidth={strokeWidth}
-    />
   );
 }

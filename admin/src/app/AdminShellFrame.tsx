@@ -12,10 +12,10 @@ import {Suspense} from "react";
 import {AdminFeedbackProvider} from "../shared/feedback/AdminFeedbackContext";
 import {useAdminOperationPending} from "../shared/pendingOperation";
 import {
-  AdminFeatureLoadingState,
   AdminWorkspace,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
+import {AdminFeatureLoadingState} from "./AdminLoadingState";
 import type {AdminNavigationEntry} from "./adminAccess";
 import type {AdminAreaContext} from "./adminAreaKit";
 import {adminAreas} from "./adminAreas";

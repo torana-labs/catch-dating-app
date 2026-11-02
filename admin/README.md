@@ -232,16 +232,21 @@ channels and what they cost, nominators, and the best organizers. Nominator
 credit is approved and recorded as paid through `adminManageNominatorCredits`.
 Per-campaign ad tables and export are not built.
 
-The Finance tab is a read-only issue workspace over `adminGetOverview` payment
-queues and `adminGetHostAnalytics` event payment signals. It surfaces failed
-payments, event payment anomalies, payout restriction counts, and revenue
-summary only, with issue detail shown only after an operator explicitly selects
-a row. Selected rows include deterministic provider authority, source model,
-reconciliation status, required evidence, blocked actions, and mutation
-boundary, so operators can tell payment documents apart from event analytics or
-payout aggregates before leaving the admin console. Refunds, payout releases,
-settlement edits, and provider reconciliation need ledger/read-model contracts
-and audited finance callables before they are exposed here.
+Money is the working queue for money that needs a person. Payment issues come
+from `adminManagePaymentIssues` and the month's bills to organizers from
+`adminManageOrganizerBills`; every action is audited. Refunds still happen in
+the organizer's Razorpay and are recorded here, and reminders are recorded, not
+yet sent to organizers.
+
+Marketplace reads `adminGetMarketplace` over a range, optionally one city:
+events, how full they are, no-shows, guests who book again by month, bookings
+each week and organizers going quiet. It reads the warehouse, and says so when
+the warehouse can't be read rather than showing zeros.
+
+Finance reads `adminGetFinanceMonth` for one month line by line: sales, what
+Catch earned, what it cost and what isn't Catch's money. Costs other than ad
+spend are entered by hand through `adminManagePlatformCosts`, and the ledger
+downloads for the accountant through `adminExportMoneyLedger`.
 
 Production apply requires `--allow-prod`.
 The signed-in Firebase user must have at least one admin custom claim
@@ -274,7 +279,7 @@ After a claim is assigned, the blocked live-mode screen can force-refresh the
 user's ID token with Refresh claims.
 The sidebar filters tabs from the same current callable allowlists: support can
 see support-owned workflows, safety reviewers can see Safety and Overview,
-Growth, Users and Finance are the owner's, and Data
+Growth, Users, Money, Marketplace and Finance are the owner's, and Data
 quality is currently admin-owner only because it combines host analytics and
 marketing dashboard callables. The backend remains the authority for every
 read/write.

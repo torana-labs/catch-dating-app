@@ -47,9 +47,7 @@ import {
   AdminFeatureDropPreviewCard,
   AdminFeatureDropPreviewGrid,
   AdminFeatureDropWideField,
-  AdminFilterBar,
   AdminMutedCell,
-  AdminOverviewMainGrid,
   AdminPublishingLoadbar,
   AdminQueryList,
   AdminQueryRow,
@@ -87,31 +85,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const AdminOverviewMainGridStory: Story = {
-  name: "Overview main grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_main_grid",
-      states: ["summary-and-detail"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewMainGrid aria-label="Admin overview">
-        <AdminCard>
-          <AdminStateRow label="Queued" value="12" />
-          <AdminStateRow label="Escalated" value="3" />
-        </AdminCard>
-        <QualityList>
-          <QualityRow icon={<Activity size={16} />} tone="success">
-            Queue freshness under five minutes.
-          </QualityRow>
-        </QualityList>
-      </AdminOverviewMainGrid>
-    </AdminWorkspace>
-  ),
-};
 
 export const AdminPublishingLoadbarStory: Story = {
   name: "Publishing loadbar",
@@ -355,25 +328,6 @@ export const AdminEditorGridStory: Story = {
           onChanged={noop}
         />
       </AdminEditorGrid>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminFilterBarStory: Story = {
-  name: "Filter bar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_filter_bar",
-      states: ["controls"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminFilterBar ariaLabel="Overview filters">
-        <AdminButton selected>All</AdminButton>
-        <AdminButton>Blocked</AdminButton>
-        <AdminButton onClick={noop}>Reset</AdminButton>
-      </AdminFilterBar>
     </AdminWorkspace>
   ),
 };

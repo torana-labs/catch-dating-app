@@ -11,5 +11,4 @@ export * from "./intake";
 export * from "./marketing-editor";
 export * from "./media";
 export * from "./data";
-export * from "./trends";
 export * from "./forms";
