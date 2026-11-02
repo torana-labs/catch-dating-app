@@ -564,7 +564,7 @@ into a universal workflow DSL.
 
 ## Admin Action Command Surface
 
-`contracts/admin/admin_action_catalog.json` is the shared inventory for the
+`contracts/admin/actions/` is the shared inventory for the
 admin console and `operations/src/admin-cli/main.mjs`. It maps each stable
 action id to one existing role-gated Firebase callable, request schema, owning
 GUI path, workflow, risk, example, and confirmation policy. The parity gate

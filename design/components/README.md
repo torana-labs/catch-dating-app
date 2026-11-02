@@ -64,7 +64,7 @@ of `@catch/web-ui` lives in `react.storybook`, which the `webui` visual surface
 of `tool/web/check_storybook_visuals.mjs` reads.
 
 The website and admin registries (`design/website/components.json`,
-`design/admin/components.json`) own their routes, sections, and
+`design/admin/components/`) own their routes, sections, and
 surface-specific (T4) components. A surface adapter of a shared contract
 carries `componentId`, which must name a T1 or T2 contract. Under D18 the
 library draws: a React T4 component lives in `packages/web-ui/src/components/`

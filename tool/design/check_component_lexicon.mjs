@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {readDesignRegistry} from "../lib/admin_registries.mjs";
 import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
 import {reactSymbolFiles} from "./component_concepts.mjs";
 
@@ -61,7 +62,7 @@ for (const component of registry.components ?? []) {
 let adapterLinks = 0;
 const adapterComponentIds = new Map();
 for (const [surface, relativePath] of Object.entries(surfaceRegistries)) {
-  const document = readJson(relativePath);
+  const document = readDesignRegistry(relativePath);
   if (knownBadWebsite && surface === "website") {
     document.components.push({
       id: "known_bad_website_adapter",

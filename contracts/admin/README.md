@@ -1,7 +1,10 @@
 # Admin action contracts
 
-`admin_action_catalog.json` is the shared inventory for the callable-backed
-actions available in the React admin console and the agent CLI. Each entry owns
+`admin_action_catalog.json` and `actions/*.json` are the shared inventory for
+the callable-backed actions available in the React admin console and the agent
+CLI. `actions/` holds one file per workflow, so two PRs adding actions to
+different workflows do not collide; a new action goes in the file of its first
+workflow, and a workflow lists no actions of its own. Each entry owns
 the stable action id, callable name, roles, GUI route, request schema, risk,
 confirmation policy, and a schema-valid non-production example.
 

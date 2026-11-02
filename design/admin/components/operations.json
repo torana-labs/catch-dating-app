@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "id": "route_admin_action_executions",
+      "kind": "route",
+      "owner": "features/operations",
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "exportName": "AdminActionExecutionsScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "AdminActionExecutionsRouteStory",
+        "states": [
+          "bounded-receipt-register"
+        ]
+      },
+      "notes": "Route wrapper owns the bounded adminListActionExecutions query. The employee monitor is read-only and never exposes stored request or response bodies."
+    },
+    {
+      "id": "workspace_admin_action_executions",
+      "kind": "workspace",
+      "owner": "features/operations",
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "exportName": "AdminActionExecutionsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "AdminActionExecutionsWorkspaceStory",
+        "states": [
+          "bounded-receipt-register"
+        ]
+      },
+      "notes": "Prop-driven agent activity workspace used by the route and deterministic Storybook preview; paging and local filters remain controller-owned."
+    }
+  ]
+}

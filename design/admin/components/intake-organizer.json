@@ -1,0 +1,50 @@
+{
+  "components": [
+    {
+      "id": "route_organizer_intake",
+      "kind": "route",
+      "owner": "features/intake/organizer",
+      "source": "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+      "exportName": "OrganizerIntakeScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "OrganizerIntakeRouteStory",
+        "states": [
+          "default",
+          "workflow-readiness",
+          "publication-packets",
+          "scrollable-candidate-queue",
+          "organizer-draft-creation"
+        ]
+      },
+      "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage includes a 30-item independently scrollable candidate queue and fail-closed organizer draft creation."
+    },
+    {
+      "id": "workspace_organizer_intake",
+      "kind": "workspace",
+      "owner": "features/intake/organizer",
+      "source": "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+      "exportName": "OrganizerIntakeWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "OrganizerIntakeWorkspaceStory",
+        "states": [
+          "default",
+          "workflow-readiness",
+          "publication-packets",
+          "scrollable-candidate-queue",
+          "organizer-draft-creation"
+        ]
+      },
+      "notes": "Prop-driven Organizer Intake workspace used by the live route wrapper and deterministic Storybook previews; reviewed candidates can create an unclaimed hidden draft while publication, indexing, crawling, and ownership remain disabled."
+    }
+  ]
+}

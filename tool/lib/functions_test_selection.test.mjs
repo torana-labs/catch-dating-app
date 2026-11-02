@@ -46,12 +46,14 @@ test("contract files select the tests that read them as data", () => {
 test("the action catalog contract selects the tests that reach its generated module", () => {
   const importer = {source: "src/b/other.ts", dependencies: [
     {module: "../shared/generated/adminActionCatalog", couldNotResolve: true, coreModule: false}]};
-  const result = selectEmulatorTests({
-    changedPaths: ["contracts/admin/admin_action_catalog.json"], listed,
-    modules: modules.map((module) => module.source === importer.source ? importer : module),
-    readSource: (file) => sources[file] ?? "",
-  });
-  assert.ok(result.tests.includes("lib/b/other.test.js"), JSON.stringify(result));
+  for (const changed of ["contracts/admin/admin_action_catalog.json", "contracts/admin/actions/sales.json"]) {
+    const result = selectEmulatorTests({
+      changedPaths: [changed], listed,
+      modules: modules.map((module) => module.source === importer.source ? importer : module),
+      readSource: (file) => sources[file] ?? "",
+    });
+    assert.ok(result.tests.includes("lib/b/other.test.js"), JSON.stringify(result));
+  }
 });
 
 test("shared inputs and unexplained functions files run every listed test", () => {

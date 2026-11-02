@@ -2041,7 +2041,7 @@
       "command": "node tool/web/check_admin_components.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
+      "description": "Validates design/admin/components/ against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -6472,7 +6472,7 @@
       "rules": [
         "OPERATIONS-PLATFORM-001"
       ],
-      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/admin_action_catalog.json on demand through the Admin and Functions npm lifecycles. --validate checks the catalog's own links; the views are never tracked.",
+      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/actions/ on demand through the Admin and Functions npm lifecycles. --validate checks the catalog's own links; the views are never tracked.",
       "checks": [
         "node --check tool/admin/generate_admin_action_catalog.mjs",
         "node tool/admin/generate_admin_action_catalog.mjs --validate",

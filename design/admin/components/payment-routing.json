@@ -1,0 +1,43 @@
+{
+  "components": [
+    {
+      "id": "route_payment_routing",
+      "kind": "route",
+      "owner": "features/payment-routing",
+      "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+      "exportName": "PaymentRoutingScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+        "exportName": "PaymentRoutingRouteStory",
+        "states": [
+          "payment-routing"
+        ]
+      },
+      "notes": "Finance route at /finance/payment-routing for the app routing policy; the wrapper owns the TanStack Query controller."
+    },
+    {
+      "id": "workspace_payment_routing",
+      "kind": "workspace",
+      "owner": "features/payment-routing",
+      "source": "admin/src/features/payment-routing/ui/PaymentRoutingScreen.tsx",
+      "exportName": "PaymentRoutingWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminFinanceSettings.stories.tsx",
+        "exportName": "PaymentRoutingWorkspaceStory",
+        "states": [
+          "change-preview",
+          "typed-confirmation"
+        ]
+      },
+      "notes": "Prop-driven payment routing workspace: route and test/live mode per purpose, a preview against the saved revision, and typed confirmations before any purpose goes live, switches to the Route split, or turns off."
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import path from "node:path";
 import vm from "node:vm";
 import {chromium} from "playwright";
 import {PNG} from "pngjs";
+import {readDesignRegistry} from "../lib/admin_registries.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const args = parseArgs(process.argv.slice(2));
@@ -52,7 +53,7 @@ if (!fs.existsSync(indexPath)) {
   fail(`Built Storybook index not found: ${path.relative(fromRepo("."), indexPath)}`);
 }
 
-const registry = readJson(fromRepo(config.registry));
+const registry = readDesignRegistry(config.registry);
 const storyIndex = readJson(indexPath);
 const allReadyStories = readyStories(registry, config.preview);
 let expectedStories;

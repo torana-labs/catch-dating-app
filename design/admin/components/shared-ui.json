@@ -1,0 +1,1226 @@
+{
+  "components": [
+    {
+      "id": "shared_admin_button",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminButtonStory",
+        "states": [
+          "ghost",
+          "primary",
+          "selected",
+          "icon"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "exportName": "AdminButton",
+      "componentId": "catch.button"
+    },
+    {
+      "id": "shared_admin_decision_footer_shell",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminDecisionFooterShell",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminDecisionFooterShellStory",
+        "states": [
+          "default",
+          "compact"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "The intake decision footer. Not a pane layout: the decision bar at the foot of one pane; it retires when CatchDock placement=\"pane\" lands."
+    },
+    {
+      "id": "shared_admin_detail_screen_stack",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminDetailScreenStack",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminDetailScreenStackStory",
+        "states": [
+          "detail"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section_stack",
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
+    },
+    {
+      "id": "shared_admin_diff_list",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminDiffList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminDiffListStory",
+        "states": [
+          "rows"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.journey_steps",
+        "catch.form_step_list"
+      ],
+      "comparisonReason": "Unordered container of field diff rows; CatchStepList is a numbered journey and CatchFormStepList navigates form sections with completion status."
+    },
+    {
+      "id": "shared_admin_diff_row",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminDiffRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminDiffRowStory",
+        "states": [
+          "before-after"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Before/after comparison of one field for review; not passive metadata and not directory navigation."
+    },
+    {
+      "id": "shared_admin_directory_screen_stack",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminDirectoryScreenStack",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminDirectoryScreenStackStory",
+        "states": [
+          "directory"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section_stack",
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
+    },
+    {
+      "id": "shared_admin_editor_grid",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminEditorGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEditorGridStory",
+        "states": [
+          "section",
+          "div"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_editor_panel",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+      "exportName": "AdminEditorPanel",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEditorPanelStory",
+        "states": [
+          "editor",
+          "wide"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Panel with editor styling; same contract as Panel.",
+      "componentId": "catch.section"
+    },
+    {
+      "id": "shared_admin_editor_section",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AdminEditorSection",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEditorSectionStory",
+        "states": [
+          "fieldset"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Fieldset that groups editor fields: the form-rows recipe of catch.section.",
+      "componentId": "catch.section"
+    },
+    {
+      "id": "shared_admin_eyebrow",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminEyebrow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminEyebrowStory",
+        "states": [
+          "div",
+          "span"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "componentId": "catch.typography"
+    },
+    {
+      "id": "shared_admin_feature_loading_state",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminFeatureLoadingState",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminFeatureLoadingStateStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_field_grid",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AdminFieldGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminFieldGridStory",
+        "states": [
+          "two-column",
+          "three-column"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_form",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AdminForm",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminFormStory",
+        "states": [
+          "default",
+          "publishing"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_intake_section",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminIntakeSection",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeSectionStory",
+        "states": [
+          "summary"
+        ]
+      },
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "Variant-styled layout region of the intake screens with no heading or section anatomy."
+    },
+    {
+      "id": "shared_admin_link_button",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "exportName": "AdminLinkButton",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminLinkButtonStory",
+        "states": [
+          "ghost",
+          "icon"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Anchor rendered as the ghost or icon button, disabled while an operation is pending: a link recipe of catch.button.",
+      "componentId": "catch.button"
+    },
+    {
+      "id": "shared_admin_loading_icon",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminLoadingIcon",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminLoadingIconStory",
+        "states": [
+          "active",
+          "idle",
+          "custom-size"
+        ]
+      },
+      "comparedWith": [
+        "catch.icon"
+      ],
+      "comparisonReason": "Animated loading indicator that spins a glyph; it renders the loading icon role rather than implementing the icon contract.",
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_panel",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingPanel",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPanelStory",
+        "states": [
+          "default",
+          "action"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_section",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingSection",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingSectionStory",
+        "states": [
+          "with-meta",
+          "content"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_section_header",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingSectionHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingSectionHeaderStory",
+        "states": [
+          "title",
+          "meta"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_header",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioHeaderStory",
+        "states": [
+          "with-actions",
+          "copy"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_title_input",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingTitleInput",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingTitleInputStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_metric_card",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminMetricCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "MetricCardStory",
+        "states": [
+          "card",
+          "tile",
+          "attention",
+          "supporting-copy",
+          "ownership-footer"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: label, value and caption are CatchMetricTile, a member of catch.metric_strip. The footer slot and attention tone have no Flutter counterpart, and Flutter grid data requires an icon admin does not render; Phase 7e reconciles the contract.",
+      "componentId": "catch.metric_strip"
+    },
+    {
+      "id": "shared_admin_metric_grid",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminMetricGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "MetricGridStory",
+        "states": [
+          "default",
+          "attention",
+          "explicit-columns"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: a labelled grid of independent measurements is CatchMetricSection.grid.",
+      "componentId": "catch.metric_strip"
+    },
+    {
+      "id": "shared_admin_muted_cell",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminMutedCell",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminMutedCellStory",
+        "states": [
+          "inline"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_publishing_loadbar",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminPublishingLoadbar",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminPublishingLoadbarStory",
+        "states": [
+          "loaded"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_roadmap_list",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminRoadmapList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminRoadmapListStory",
+        "states": [
+          "items"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.journey_steps",
+        "catch.form_step_list"
+      ],
+      "comparisonReason": "Container of readiness checklist items with arbitrary content; not a numbered, line-traced journey, and it has no section selection or per-step completion status like CatchFormStepList."
+    },
+    {
+      "id": "shared_admin_roadmap_list_item",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminRoadmapListItem",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminRoadmapListItemStory",
+        "states": [
+          "single"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row",
+        "catch.icon_tile",
+        "catch.option_card",
+        "catch.analytics_metric"
+      ],
+      "comparisonReason": "Toned checklist item wrapping arbitrary content; none of the matched contracts is a blocker or warning checklist entry."
+    },
+    {
+      "id": "shared_admin_row_title",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminRowTitle",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminRowTitleStory",
+        "states": [
+          "default",
+          "compact"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_secondary_disclosure",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminSecondaryDisclosure",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminSecondaryDisclosureStory",
+        "states": [
+          "closed",
+          "open"
+        ]
+      },
+      "notes": "Keeps diagnostics, command details, and source-path material available without placing it in the primary task flow."
+    },
+    {
+      "id": "shared_admin_section_caption",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminSectionCaption",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminSectionCaptionStory",
+        "states": [
+          "eyebrow-and-scope"
+        ]
+      },
+      "notes": "Shared flat section caption pairs a mono eyebrow with concise scope or provenance copy so controls and metrics are not mistaken for global state."
+    },
+    {
+      "id": "shared_admin_sign_in_panel",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminSignInPanel",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminSignInPanelStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Bounded card around the sign-in form: per D13, card containment is a CatchSurface recipe.",
+      "componentId": "catch.surface"
+    },
+    {
+      "id": "shared_admin_sign_in_screen",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminSignInScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminSignInScreenStory",
+        "states": [
+          "default",
+          "phone-entry",
+          "phone-otp"
+        ]
+      },
+      "notes": "Phone-only admin authentication shell with deterministic phone-entry and phone-otp preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_status_grid",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminStatusGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminStatusGridStory",
+        "states": [
+          "default",
+          "compact"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_surface_preview",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminSurfacePreview",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminSurfacePreviewStory",
+        "states": [
+          "listing-preview"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_table_row",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AdminTableRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminTableRowStory",
+        "states": [
+          "default",
+          "selected"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Selectable table row: CatchTableRow, a member of catch.table.",
+      "componentId": "catch.table"
+    },
+    {
+      "id": "shared_admin_tag_list",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminTagList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminTagListStory",
+        "states": [
+          "tags"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.journey_steps",
+        "catch.form_step_list"
+      ],
+      "comparisonReason": "Wrap container for badges; not a step sequence, and it has no step selection or completion status like CatchFormStepList."
+    },
+    {
+      "id": "shared_admin_tag_row",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminTagRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminTagRowStory",
+        "states": [
+          "div",
+          "span"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Flex row that lays out badges; CatchMetaRow renders text metadata entries and CatchIndexRow is a navigation row."
+    },
+    {
+      "id": "shared_admin_toolbar",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminToolbar",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminToolbarStory",
+        "states": [
+          "default",
+          "compact"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.top_bar"
+      ],
+      "comparisonReason": "A legacy admin row of filter and action controls. Not a top bar: a row of controls inside a pane, not the top of a screen."
+    },
+    {
+      "id": "shared_admin_trend_series",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/trends.tsx",
+      "exportName": "AdminTrendSeries",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminTrendSeriesStory",
+        "states": [
+          "chart",
+          "table-fallback",
+          "empty"
+        ]
+      },
+      "notes": "Scales arbitrary backed count series and keeps exact chart values available through an accessible table fallback."
+    },
+    {
+      "id": "shared_admin_workbench_note",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminWorkbenchNote",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminWorkbenchNoteStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_workbench_stack",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminWorkbenchStack",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminWorkbenchStackStory",
+        "states": [
+          "default",
+          "compact"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.section_stack",
+        "catch.pane_layout"
+      ],
+      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Not a pane layout: one stacked column inside a pane; it retires with AdminPrimitives."
+    },
+    {
+      "id": "shared_alert_row",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AlertRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AlertRowStory",
+        "states": [
+          "neutral",
+          "warning",
+          "success",
+          "blocked"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Inline alert with icon, title, message and tone: CatchBanner, whose aliases include InlineAlert.",
+      "componentId": "catch.banner"
+    },
+    {
+      "id": "shared_checkbox_field",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+      "exportName": "CheckboxField",
+      "interactionContract": {
+        "concept": "field_row",
+        "mode": "toggle"
+      },
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "CheckboxFieldStory",
+        "states": [
+          "checked",
+          "unchecked"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of CheckboxControl, the one-boolean input.",
+      "componentId": "catch.toggle"
+    },
+    {
+      "id": "shared_data_table",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "DataTable",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "DataTableStory",
+        "states": [
+          "default",
+          "selected"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of the @catch/web-ui DataTableControl.",
+      "componentId": "catch.table"
+    },
+    {
+      "id": "shared_empty_state",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "EmptyStateStory",
+        "states": [
+          "row",
+          "workbench",
+          "editor",
+          "marketing",
+          "compact"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "exportName": "EmptyState",
+      "componentId": "catch.empty_state"
+    },
+    {
+      "id": "shared_file_picker_button",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "exportName": "FilePickerButton",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "FilePickerButtonStory",
+        "states": [
+          "default",
+          "icon"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Ghost button that opens the native file input: a file-picker recipe of catch.button.",
+      "componentId": "catch.button"
+    },
+    {
+      "id": "shared_inline_text_field",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "exportName": "InlineTextField",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "InlineTextFieldStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_page_header",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "PageHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "PageHeaderStory",
+        "states": [
+          "default",
+          "with-actions"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.step_header",
+        "catch.text",
+        "catch.workspace_header"
+      ],
+      "comparisonReason": "Page title header with eyebrow, copy and actions; no step navigation or progress. Composes CatchText title and supporting copy with an eyebrow and optional page actions; it does not implement the text-role atom. Retires with the PR 4 shell, which replaces it with CatchWorkspaceHeader."
+    },
+    {
+      "id": "shared_panel",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "Panel",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "PanelStory",
+        "states": [
+          "default",
+          "action"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Titled container with icon and action: the contained recipe of catch.section (aliases SectionPanel, TitledSection). D13 makes its box a CatchSurface recipe.",
+      "componentId": "catch.section"
+    },
+    {
+      "id": "shared_quality_list",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "QualityList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "QualityListStory",
+        "states": [
+          "rows"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.journey_steps",
+        "catch.form_step_list"
+      ],
+      "comparisonReason": "Unordered container of quality and alert rows; not a numbered journey, and it neither navigates form sections nor reports their completion like CatchFormStepList."
+    },
+    {
+      "id": "shared_quality_row",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "QualityRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "QualityRowStory",
+        "states": [
+          "base",
+          "success",
+          "warning",
+          "blocked"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Toned status row with icon and arbitrary content; meta rows are untoned factual entries and index rows navigate."
+    },
+    {
+      "id": "shared_search_field",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "SearchFieldStory",
+        "states": [
+          "empty",
+          "value",
+          "icon"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "exportName": "SearchField",
+      "componentId": "catch.search_field"
+    },
+    {
+      "id": "shared_segmented_control",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "SegmentedControlStory",
+        "states": [
+          "selected",
+          "disabled-option"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "exportName": "SegmentedControl",
+      "componentId": "catch.chip.field"
+    },
+    {
+      "id": "shared_state_row",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "StateRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "StateRowStory",
+        "states": [
+          "with-value",
+          "empty"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Passive label and strong value: the strong-trailing group recipe of CatchMetaRow.",
+      "componentId": "catch.meta_row"
+    },
+    {
+      "id": "shared_status_banner",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "StatusBanner",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "StatusBannerStory",
+        "states": [
+          "success",
+          "error"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Error or success band with icon and role alert or status: CatchBanner (2026-10-17 name match, confirmed).",
+      "componentId": "catch.banner"
+    },
+    {
+      "id": "shared_table_action_button",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "TableActionButton",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "TableActionButtonStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Raw button styled as a compact table action: a recipe of catch.button.",
+      "componentId": "catch.button"
+    }
+  ]
+}

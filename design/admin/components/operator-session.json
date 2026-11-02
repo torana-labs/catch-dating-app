@@ -1,0 +1,25 @@
+{
+  "components": [
+    {
+      "id": "route_operator_session",
+      "kind": "route",
+      "owner": "features/operator-session",
+      "source": "admin/src/features/operator-session/ui/OperatorSessionScreen.tsx",
+      "exportName": "OperatorSessionScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "unbound",
+          "review",
+          "transferred",
+          "cancelled",
+          "unavailable"
+        ]
+      },
+      "notes": "Exports only the already signed-in actor’s fresh Google session encrypted to an owner-protected helper pinned by its private launch file after explicit confirmation. No admin queries, role changes, sign-in or persistence migration."
+    }
+  ]
+}

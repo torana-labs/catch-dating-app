@@ -1,0 +1,25 @@
+{
+  "components": [
+    {
+      "id": "workspace_catch_whatsapp_trial",
+      "kind": "workspace",
+      "owner": "features/catch-support",
+      "source": "admin/src/features/catch-support/ui/CatchWhatsappTrialWorkspace.tsx",
+      "exportName": "CatchWhatsappTrialWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "disabled",
+          "reviewed",
+          "confirmed",
+          "unknown",
+          "sent"
+        ]
+      },
+      "notes": "Default-disabled DEV-only single support reply; explicit review and confirmation, current session and server readiness, no automatic retries."
+    }
+  ]
+}

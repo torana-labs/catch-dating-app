@@ -865,7 +865,7 @@ exists, `react` for `@catch/web-ui` (symbol, file, `api`, and Storybook
 coverage). Every declared symbol must exist in its named file, and React symbols
 must be exported from the package barrel. Website and admin adapters of a
 shared contract carry a `componentId` in `design/website/components.json` or
-`design/admin/components.json`; the id must name a T1 or T2 contract and the
+`design/admin/components/`; the id must name a T1 or T2 contract and the
 export must exist in the entry's source. New or moved design-system components
 must add the record in the same change.
 

@@ -1,0 +1,82 @@
+{
+  "components": [
+    {
+      "id": "shared_admin_brand_mark",
+      "kind": "feature-component",
+      "owner": "app",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminBrandMark",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminBrandMarkStory",
+        "states": [
+          "default",
+          "large"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_sign_in_actions",
+      "kind": "feature-component",
+      "owner": "app",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminSignInActions",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminSignInActionsStory",
+        "states": [
+          "primary",
+          "secondary"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_sign_in_meta",
+      "kind": "feature-component",
+      "owner": "app",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminSignInMeta",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminSignInMetaStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_workspace",
+      "kind": "feature-component",
+      "owner": "app",
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "exportName": "AdminWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminWorkspaceStory",
+        "states": [
+          "page-content"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "id": "route_data_quality",
+      "kind": "route",
+      "owner": "features/data-quality",
+      "source": "admin/src/features/data-quality/ui/DataQualityScreen.tsx",
+      "exportName": "DataQualityScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "DataQualityRouteStory",
+        "states": [
+          "source-register"
+        ]
+      },
+      "notes": "Route wrapper owns TanStack Query controller; preview renders the shared DataQualityScreen preview workspace with deterministic source/state/detail fixtures in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "workspace_data_quality",
+      "kind": "workspace",
+      "owner": "features/data-quality",
+      "source": "admin/src/features/data-quality/ui/DataQualityScreen.tsx",
+      "exportName": "DataQualityWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "DataQualityWorkspaceStory",
+        "states": [
+          "source-register"
+        ]
+      },
+      "notes": "Prop-driven Data Quality workspace surface used by the route wrapper and deterministic Storybook previews; controller-owned query logic stays in DataQualityScreen."
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "workflow": {
+    "workflowId": "inbox",
+    "label": "Inbox",
+    "guiPath": "/inbox"
+  },
+  "actions": [
+    {
+      "actionId": "inbox.get",
+      "callable": "adminGetInboxItem",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_get_inbox_item_payload.schema.json",
+      "summary": "Read one inbox item and every step it took; a sales associate may read only what they nominated.",
+      "example": {
+        "itemId": "supply-example-request"
+      }
+    },
+    {
+      "actionId": "inbox.get-listing-event-review",
+      "callable": "adminGetListingEventReview",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_listing_event_review_payload.schema.json",
+      "summary": "Read one imported event of an approved listing, with what a reviewer must check to publish it.",
+      "example": {
+        "intakeRequestId": "example-intake-request",
+        "eventWorkItemId": "example-event-work-item"
+      }
+    },
+    {
+      "actionId": "inbox.get-listing-review",
+      "callable": "adminGetOrganizerListingReview",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_organizer_listing_review_payload.schema.json",
+      "summary": "Read one Supply Intake listing awaiting approval, by its request, with what a reviewer needs to approve it.",
+      "example": {
+        "requestId": "example-request"
+      }
+    },
+    {
+      "actionId": "inbox.list",
+      "callable": "adminListInboxItems",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_inbox_items_payload.schema.json",
+      "summary": "List one page of the Admin inbox (listings, events, claims, enquiries, launch access and stuck intake), oldest first, with real totals per scope and type.",
+      "example": {
+        "scope": "waiting",
+        "type": null,
+        "city": null,
+        "limit": 25,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "inbox.update",
+      "callable": "adminUpdateInboxItem",
+      "workflowIds": [
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action",
+      "targetField": "itemId",
+      "requestSchema": "contracts/callables/admin_update_inbox_item_payload.schema.json",
+      "summary": "Assign, unassign, snooze or wake one inbox item; audited and recorded in its journey.",
+      "example": {
+        "itemId": "supply-example-request",
+        "action": "assign",
+        "assigneeUid": "example-ops-uid",
+        "snoozedUntil": null,
+        "note": null
+      }
+    }
+  ]
+}

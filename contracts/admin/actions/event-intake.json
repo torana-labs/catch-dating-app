@@ -1,0 +1,61 @@
+{
+  "workflow": {
+    "workflowId": "event-intake",
+    "label": "Event Intake",
+    "guiPath": "/intake/events"
+  },
+  "actions": [
+    {
+      "actionId": "event-intake.get",
+      "callable": "adminGetEventIntakeDashboard",
+      "workflowIds": [
+        "event-intake",
+        "data-quality"
+      ],
+      "guiPath": "/intake/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
+      "summary": "Load the current Supply Intake event review queue.",
+      "example": {}
+    },
+    {
+      "actionId": "event-intake.record-decision",
+      "callable": "adminRecordEventIntakeReviewDecision",
+      "workflowIds": [
+        "event-intake"
+      ],
+      "guiPath": "/intake/events",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "targetId",
+      "requestSchema": "contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
+      "summary": "Record one Event Intake review decision without publishing an event.",
+      "example": {
+        "targetType": "event_candidate",
+        "targetId": "example-candidate",
+        "decision": "hold",
+        "note": "Fixture review hold.",
+        "checklist": {
+          "sourceReviewed": true,
+          "dateReviewed": true,
+          "venueReviewed": true,
+          "copyReviewed": true,
+          "rightsReviewed": true,
+          "noCatchHostingImplied": true
+        }
+      }
+    }
+  ]
+}
