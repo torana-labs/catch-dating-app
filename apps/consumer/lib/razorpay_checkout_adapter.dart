@@ -145,6 +145,8 @@ final class PluginRazorpayGateway implements RazorpayGateway {
     try {
       result = await _coordinator._open(_lease, options);
     } catch (_) {
+      // Surfaced below through onFailure: the buyer must check the payment's
+      // status, because this failure cannot say whether the checkout completed.
       if (!_cleared) {
         onFailure?.call(
           PaymentFailureResponse(
