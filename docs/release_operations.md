@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.2.2
+version: 3.2.3
 updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
@@ -547,8 +547,8 @@ The current workflows are:
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
 | `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding frontend bytes, or rematerializing organizer data. |
 | `.github/workflows/marketing-website.yml` | Validates marketing source and Storybook accessibility, calls the exact build/promote adapters on matching `main` pushes, then requires production 404 and launch-route postconditions. |
-| `.github/workflows/admin-website.yml` | Validates Admin source and live callable dependencies, then calls the exact build/promote adapters for the production `admin` target. |
-| `.github/workflows/host-website.yml` | Validates the Host target, standalone roster tests, and Host-owned Flutter surfaces, then builds and promotes the independent production `host` target. |
+| `.github/workflows/admin-website.yml` | Reuses the merge queue's Admin validation of the exact commit, or validates Admin source itself when the queue did not run it, then calls the exact build/promote adapters, which check live callable dependencies, for the production `admin` target. |
+| `.github/workflows/host-website.yml` | Validates the Host target, then reuses the merge queue's Flutter validation of the exact commit, or runs standalone roster tests and Host-owned Flutter analysis itself when the queue did not run it, then builds and promotes the independent production `host` target. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/mobile-beta.yml` | Nightly (when app sources changed) and on-demand fastlane test builds: builds, verifies and uploads each app to TestFlight internal testers or the Play internal track in one job, with build provenance. See Mobile releases. |
 | `.github/workflows/mobile-production.yml` | Reviewer-gated fastlane promotion of a build testers already have: App Store review submission or a Play staged rollout, with no rebuild. See Mobile releases. |

@@ -290,7 +290,7 @@ test("main builds the deployable Vite output once while validation-only dispatch
     assert.match(source,
       /skip_deployable_build: \$\{\{ github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' \}\}/u);
     if (surface === "admin") assert.match(source,
-      /if: \$\{\{ github\.event_name != 'workflow_dispatch' \|\| inputs\.recovery_artifact_id == '' \}\}/u);
+      /\(github\.event_name != 'workflow_dispatch' \|\| inputs\.recovery_artifact_id == ''\) \}\}/u);
     assert.match(source,
       /if: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.recovery_artifact_id != '' \}\}/u);
     const packageJob = source.slice(source.indexOf("  package:"), source.indexOf("  promote:"));
@@ -1051,4 +1051,78 @@ test("native capture inputs retain the Marketing main publication trigger", () =
   }
   const recovery = caller("marketing").split("  recover:\n")[1];
   assert.doesNotMatch(recovery, /capture_binding|marketing-captures|react-surface-validation/u);
+});
+
+function runQueueLookup({runs, jobs, required = "admin / Validate admin website", runsFail = false}) {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "queue-validation-"));
+  const bin = path.join(directory, "bin");
+  fs.mkdirSync(bin);
+  const output = path.join(directory, "output");
+  fs.writeFileSync(path.join(directory, "runs.json"), JSON.stringify(runs ?? {}));
+  fs.writeFileSync(path.join(directory, "jobs.json"), JSON.stringify(jobs ?? {}));
+  fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env bash
+case "$*" in
+  *event=merge_group*) ${runsFail ? "exit 1" : `cat "${directory}/runs.json"`} ;;
+  *) cat "${directory}/jobs.json" ;;
+esac
+`, {mode: 0o755});
+  const result = spawnSync("bash", [path.join(repoRoot, ".github/actions/find-queue-validation/find_queue_validation.sh")], {
+    encoding: "utf8",
+    env: {...process.env, PATH: `${bin}:${process.env.PATH}`, GITHUB_REPOSITORY: "o/r", GITHUB_OUTPUT: output,
+      GITHUB_STEP_SUMMARY: path.join(directory, "summary"), SOURCE_SHA: "a".repeat(40), REQUIRED_JOBS: `${required}\n`},
+  });
+  assert.equal(result.status, 0, result.stderr);
+  return fs.readFileSync(output, "utf8").trim();
+}
+
+const queueRun = (extra = {}) => ({id: 7, event: "merge_group", head_sha: "a".repeat(40), conclusion: "success",
+  path: ".github/workflows/ci.yml", ...extra});
+const queueJob = (name, extra = {}) => ({name, head_sha: "a".repeat(40), conclusion: "success", ...extra});
+const passedQueueJobs = {jobs: [queueJob("Required CI"), queueJob("admin / Validate admin website")]};
+
+test("A release reuses the queue only when every required job passed on the exact commit", () => {
+  assert.equal(runQueueLookup({runs: {workflow_runs: [queueRun()]}, jobs: passedQueueJobs}), "validated=true");
+  for (const [name, input] of Object.entries({
+    "lookup failed": {runsFail: true},
+    "no queue run": {runs: {workflow_runs: []}},
+    "queue run failed": {runs: {workflow_runs: [queueRun({conclusion: "failure"})]}, jobs: passedQueueJobs},
+    "queue tested another commit": {runs: {workflow_runs: [queueRun({head_sha: "b".repeat(40)})]}, jobs: passedQueueJobs},
+    "another workflow": {runs: {workflow_runs: [queueRun({path: ".github/workflows/x.yml"})]}, jobs: passedQueueJobs},
+    "lane skipped": {runs: {workflow_runs: [queueRun()]},
+      jobs: {jobs: [queueJob("Required CI"), queueJob("admin", {conclusion: "skipped"})]}},
+    "lane failed": {runs: {workflow_runs: [queueRun()]},
+      jobs: {jobs: [queueJob("Required CI"), queueJob("admin / Validate admin website", {conclusion: "failure"})]}},
+    "Required CI missing": {runs: {workflow_runs: [queueRun()]}, jobs: {jobs: [queueJob("admin / Validate admin website")]}},
+  })) {
+    assert.equal(runQueueLookup(input), "validated=false", name);
+  }
+});
+
+test("Admin and Host releases validate for themselves unless the queue passed the same checks", () => {
+  const admin = caller("admin");
+  assert.match(admin.split("\n  queue-validation:\n")[1].split("\n  validate:")[0],
+    /find-queue-validation[\s\S]*admin \/ Validate admin website/u);
+  const adminValidate = admin.split("\n  validate:\n")[1].split("\n  package:")[0];
+  assert.match(adminValidate, /!cancelled\(\) && needs\.queue-validation\.outputs\.validated != 'true'/u);
+  assert.match(admin.split("\n  package:\n")[1].split("\n  promote:")[0],
+    /needs\.validate\.result == 'skipped' && needs\.queue-validation\.outputs\.validated == 'true'/u);
+
+  const host = caller("host");
+  const ci = workflow("flutter-ci.yml");
+  const lookup = host.split("\n  queue-validation:\n")[1].split("\n  validate:")[0];
+  for (const job of ["Flutter analysis and gates", "Catch UI, Consumer & Host package tests"]) {
+    assert.ok(lookup.includes(`flutter / ${job}`), job);
+    assert.ok(ci.includes(`name: ${job}`), `${job} no longer names a queue job`);
+  }
+  const hostValidate = host.split("\n  validate:\n")[1].split("\n  package:")[0];
+  assert.doesNotMatch(hostValidate.split("Validate Host target contracts")[1].split("\n      - ")[0], /if:/u);
+  assert.equal(hostValidate.match(/if: \$\{\{ needs\.queue-validation\.outputs\.validated != 'true' \}\}/gu).length, 4);
+
+  for (const release of [admin, host]) {
+    assert.match(release.split("\n  promote:\n")[1].split("\n    uses:")[0], /!cancelled\(\)/u);
+    assert.match(release.split("\n  recover:\n")[1], /recovery: true/u);
+  }
+  const ciAdmin = workflow("ci.yml").split("\n  admin:\n")[1].split("\n  marketing:")[0];
+  assert.match(ciAdmin, /react-surface-validation\.yml[\s\S]*surface: admin/u);
+  assert.match(workflow("_web-hosting-promote.yml"), /check_admin_live_data_sources\.mjs --check --verify-live/u);
 });
