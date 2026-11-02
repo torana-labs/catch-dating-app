@@ -90,7 +90,7 @@
         "prod-hosting",
         "prod"
       ],
-      "purpose": "Deploy an exact main commit's Firebase backend to dev on merge, to prod after one protected approval, and to staging monthly, in index, Functions, Firestore-rules and Storage-rules order, deploying only what changed since the environment's deployed/<env> tag.",
+      "purpose": "Deploy an exact main commit's Firebase backend to dev on merge, to prod once dev succeeds, and to staging when run by hand, in index, Functions, Firestore-rules and Storage-rules order, deploying only what changed since the environment's deployed/<env> tag.",
       "entrypoints": [
         {
           "kind": "tool-id",
