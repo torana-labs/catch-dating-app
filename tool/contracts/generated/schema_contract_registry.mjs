@@ -34674,7 +34674,7 @@ export const organizerGrowthEventSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/bigquery/organizer_growth_event.schema.json",
   "title": "OrganizerGrowthEvent",
-  "description": "One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment. The insert id is the growth event id, and readers count distinct ids, so a retried insert never counts twice.",
+  "description": "One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment, and form_payment and form_refund once per form payment, so form fees never count as bookings. The insert id is the growth event id, the same fact always has the same id, and readers count distinct ids, so a retried insert never counts twice.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -34707,7 +34707,9 @@ export const organizerGrowthEventSchema = {
         "first_event",
         "first_paid_booking",
         "paid_booking",
-        "refund"
+        "refund",
+        "form_payment",
+        "form_refund"
       ]
     },
     "occurred_at": {
@@ -34759,7 +34761,7 @@ export const organizerGrowthEventSchema = {
       "maxLength": 180
     },
     "payment_source": {
-      "description": "The payment record collection a paid_booking or refund came from.",
+      "description": "The payment record collection a payment or refund row came from.",
       "type": [
         "string",
         "null"
@@ -34768,6 +34770,7 @@ export const organizerGrowthEventSchema = {
         "payments",
         "publicEventPayments",
         "organizerEventOfferPayments",
+        "organizerFormPayments",
         null
       ]
     },

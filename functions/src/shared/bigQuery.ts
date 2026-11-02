@@ -23,6 +23,9 @@ export interface BigQueryClient {
 }
 
 interface BigQueryQueryResponse {
+  jobComplete?: boolean;
+  jobReference?: {jobId?: string; location?: string};
+  pageToken?: string;
   schema?: {
     fields?: Array<{name: string}>;
   };
@@ -42,6 +45,19 @@ interface BigQueryInsertResponse {
 }
 
 const bigQueryScope = "https://www.googleapis.com/auth/bigquery";
+const queryWaitMillis = 50_000;
+
+function assertQueryFinished(response: BigQueryQueryResponse): void {
+  if (response.errors?.length) {
+    throw new HttpsError(
+      "internal",
+      `BigQuery query failed: ${response.errors[0].message ?? "unknown"}`
+    );
+  }
+  if (response.jobComplete === false) {
+    throw new HttpsError("deadline-exceeded", "BigQuery query did not finish.");
+  }
+}
 
 export class BigQueryRestClient implements BigQueryClient {
   constructor(
@@ -53,29 +69,41 @@ export class BigQueryRestClient implements BigQueryClient {
     query: string,
     parameters: BigQueryQueryParameter[] = [],
   ): Promise<T[]> {
-    const response = await this.post<BigQueryQueryResponse>(
+    let response = await this.post<BigQueryQueryResponse>(
       "/queries",
       {
         query,
         useLegacySql: false,
         parameterMode: "NAMED",
         queryParameters: parameters,
+        timeoutMs: queryWaitMillis,
       }
     );
-    if (response.errors?.length) {
-      throw new HttpsError(
-        "internal",
-        `BigQuery query failed: ${response.errors[0].message ?? "unknown"}`
-      );
+    const pages = [response];
+    // Unfinished or partial results are never returned as if they were the
+    // whole answer: a caller would read a missing row as "not there".
+    assertQueryFinished(response);
+    while (response.pageToken) {
+      const job = response.jobReference ?? pages[0].jobReference;
+      if (!job?.jobId) {
+        throw new HttpsError("internal", "BigQuery query has no job to page.");
+      }
+      const search = new URLSearchParams({pageToken: response.pageToken,
+        timeoutMs: String(queryWaitMillis)});
+      if (job.location) search.set("location", job.location);
+      response = await this.send<BigQueryQueryResponse>(
+        `/queries/${encodeURIComponent(job.jobId)}?${search}`, "GET");
+      assertQueryFinished(response);
+      pages.push(response);
     }
-    const fields = response.schema?.fields ?? [];
-    return (response.rows ?? []).map((row) => {
+    const fields = pages[0].schema?.fields ?? [];
+    return pages.flatMap((page) => (page.rows ?? []).map((row) => {
       const values = row.f ?? [];
       return Object.fromEntries(fields.map((field, index) => [
         field.name,
         values[index]?.v ?? null,
       ])) as T;
-    });
+    }));
   }
 
   async insertRows(
@@ -103,9 +131,14 @@ export class BigQueryRestClient implements BigQueryClient {
     }
   }
 
-  private async post<T>(
+  private post<T>(path: string, body: Record<string, unknown>): Promise<T> {
+    return this.send<T>(path, "POST", body);
+  }
+
+  private async send<T>(
     path: string,
-    body: Record<string, unknown>,
+    method: "GET" | "POST",
+    body?: Record<string, unknown>,
   ): Promise<T> {
     const projectId = this.projectId ?? resolveBigQueryProjectId();
     const url =
@@ -120,9 +153,9 @@ export class BigQueryRestClient implements BigQueryClient {
       headers[key] = value;
     });
     const response = await fetch(url, {
-      method: "POST",
+      method,
       headers,
-      body: JSON.stringify(body),
+      ...(body ? {body: JSON.stringify(body)} : {}),
     });
     const json = await response.json().catch(() => ({})) as
       BigQueryQueryResponse & BigQueryInsertResponse;

@@ -126,6 +126,7 @@ forbidText(refresh, "FULL OUTER JOIN ga4_discovery_counts", "Ad events must not 
 
 requireText(deploy, "ddl/host_analytics_events.sql");
 requireText(deploy, "ddl/mart_host_event_daily.sql");
+requireText(deploy, "ddl/organizer_growth_events.sql");
 requireText(deploy, "marts/refresh_mart_host_event_daily.sql");
 // Pre-organizer tables are renamed in place before the DDL runs, and their
 // clustering follows the DDL's CLUSTER BY.

@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment. The insert id is the growth event id, and readers count distinct ids, so a retried insert never counts twice.
+ * One dated fact about an organizer, streamed to catch_analytics.organizer_growth_events so cohorts, channels and ticket sales can be counted. Steps (listed, claim_requested, claimed, first_event, first_paid_booking) mirror organizerGrowthFacts and appear once per organizer; paid_booking and refund appear once per payment, and form_payment and form_refund once per form payment, so form fees never count as bookings. The insert id is the growth event id, the same fact always has the same id, and readers count distinct ids, so a retried insert never counts twice.
  */
 export interface OrganizerGrowthEvent {
   growth_event_id: string;
@@ -15,7 +15,9 @@ export interface OrganizerGrowthEvent {
     | "first_event"
     | "first_paid_booking"
     | "paid_booking"
-    | "refund";
+    | "refund"
+    | "form_payment"
+    | "form_refund";
   occurred_at: string;
   event_date: string;
   /**
@@ -33,12 +35,13 @@ export interface OrganizerGrowthEvent {
   nominator_role?: "associate" | "partner" | "guest" | "organizer" | null;
   booking_event_id?: string | null;
   /**
-   * The payment record collection a paid_booking or refund came from.
+   * The payment record collection a payment or refund row came from.
    */
   payment_source?:
     | "payments"
     | "publicEventPayments"
     | "organizerEventOfferPayments"
+    | "organizerFormPayments"
     | null;
   payment_id?: string | null;
   currency?: string | null;
