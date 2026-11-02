@@ -49,7 +49,6 @@
     "screens.web_adapters": [
       "admin/src/shared/ui/AdminPrimitives/actions.tsx::AdminIconButton",
       "admin/src/shared/ui/AdminPrimitives/actions.tsx::AdminLinkButton",
-      "admin/src/shared/ui/AdminPrimitives/actions.tsx::FilePickerButton",
       "admin/src/shared/ui/AdminPrimitives/actions.tsx::SegmentedControl",
       "admin/src/shared/ui/AdminPrimitives/data.tsx::AdminEditorSection",
       "admin/src/shared/ui/AdminPrimitives/data.tsx::AlertRow",
@@ -161,7 +160,6 @@
       "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx::AdminMarketingStudioSummaryItem",
       "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx::AdminMarketingTabs",
       "admin/src/shared/ui/AdminPrimitives/media.tsx::AdminFeatureDropCaptureThumb",
-      "admin/src/shared/ui/AdminPrimitives/media.tsx::AdminMarketingFilePickerButton",
       "admin/src/shared/ui/AdminPrimitives/media.tsx::AdminMarketingImageControls",
       "admin/src/shared/ui/AdminPrimitives/media.tsx::AdminMarketingImageEditor",
       "admin/src/shared/ui/AdminPrimitives/media.tsx::AdminMarketingImageEditorHeader",

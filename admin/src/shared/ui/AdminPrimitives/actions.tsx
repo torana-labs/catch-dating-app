@@ -112,27 +112,6 @@ export function AdminLinkButton({
   );
 }
 
-export function FilePickerButton({
-  children,
-  className = "",
-  icon,
-  inputLabel,
-  ...props
-}: {
-  children: ReactNode;
-  className?: string;
-  icon?: ReactNode;
-  inputLabel: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "aria-label" | "type">) {
-  return (
-    <label className={`ghost-button ${className}`.trim()}>
-      {icon}
-      {children}
-      <input aria-label={inputLabel} type="file" {...props} />
-    </label>
-  );
-}
-
 export function InlineTextField({
   ariaLabel,
   className = "",

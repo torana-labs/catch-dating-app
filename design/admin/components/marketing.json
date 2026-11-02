@@ -672,25 +672,6 @@
       "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_marketing_file_picker_button",
-      "kind": "feature-component",
-      "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
-      "exportName": "AdminMarketingFilePickerButton",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingFilePickerButtonStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_marketing_guide_layout",
       "kind": "feature-component",
       "owner": "features/marketing",

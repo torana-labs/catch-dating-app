@@ -51,7 +51,6 @@ import {
   CheckboxField,
   DataTable,
   EmptyState,
-  FilePickerButton,
   InlineTextField,
   PageHeader,
   QualityList,
@@ -467,23 +466,6 @@ export const AdminLinkButtonStory: Story = {
     <AdminWorkspace>
       <AdminLinkButton href="#admin-link">Open route</AdminLinkButton>
       <AdminLinkButton href="#download" icon={<Download size={16} />} label="Download CSV" variant="icon" />
-    </AdminWorkspace>
-  ),
-};
-
-export const FilePickerButtonStory: Story = {
-  name: "File picker button",
-  parameters: {
-    catchComponent: {
-      id: "shared_file_picker_button",
-      states: ["default", "icon"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <FilePickerButton icon={<Download size={16} />} inputLabel="Upload CSV">
-        Upload CSV
-      </FilePickerButton>
     </AdminWorkspace>
   ),
 };

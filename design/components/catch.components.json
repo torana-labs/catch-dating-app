@@ -630,7 +630,8 @@
         "file": "packages/web-ui/src/components/CatchButton.tsx",
         "api": "styled",
         "additionalSymbols": [
-          "ButtonControl"
+          "ButtonControl",
+          "CatchFilePickerButton"
         ],
         "storybook": {
           "status": "ready",
