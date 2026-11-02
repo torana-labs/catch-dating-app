@@ -77,9 +77,32 @@ permissions:
   contents: read
 
 jobs:
+  queue-validation:
+    name: Find merge queue validation
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      validated: ${{ steps.queue.outputs.validated }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - id: queue
+        uses: ./.github/actions/find-queue-validation
+        with:
+          jobs: |
+            admin / Validate admin website
+
   validate:
     name: Validate admin website
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '' }}
+    needs: queue-validation
+    if: >-
+      ${{ !cancelled() && needs.queue-validation.outputs.validated != 'true' &&
+          (github.event_name != 'workflow_dispatch' || inputs.recovery_artifact_id == '') }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
@@ -88,8 +111,11 @@ jobs:
 
   package:
     name: Package exact admin Hosting bytes
-    needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [queue-validation, validate]
+    if: >-
+      ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+          (needs.validate.result == 'success' ||
+           (needs.validate.result == 'skipped' && needs.queue-validation.outputs.validated == 'true')) }}
     uses: ./.github/workflows/_web-hosting-build.yml
     with:
       surface: admin
@@ -101,7 +127,8 @@ jobs:
   promote:
     name: Promote exact admin Hosting bytes
     needs: package
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
+    # Validation reuse intentionally skips an ancestor; override implicit success().
+    if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.package.result == 'success' }}
     uses: ./.github/workflows/_web-hosting-promote.yml
     with:
       artifact_digest: ${{ needs.package.outputs.artifact_digest }}
