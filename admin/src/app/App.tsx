@@ -1,4 +1,4 @@
-import {CatchField, CatchText} from "@catch/web-ui";
+import {CatchField, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
 import {
   lazy,
   Suspense,
@@ -20,15 +20,14 @@ import {AdminRouteError} from "./AdminRouteError";
 import {
   AdminBrandMark,
   AdminButton,
-  AdminFeatureLoadingState,
   AdminForm,
-  AdminLoadingIcon,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
   AdminSignInScreen,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
+import {AdminFeatureLoadingState} from "./AdminLoadingState";
 import {
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
@@ -521,7 +520,7 @@ function AuthCheckScreen({
           </StatusBanner>
         ) : (
           <AdminSignInMeta>
-            <AdminLoadingIcon active={isPending} />
+            {isPending ? <CatchLoadingIndicator recipe="inline" size={17} /> : null}
             <span>Reading Firebase custom claims.</span>
           </AdminSignInMeta>
         )}

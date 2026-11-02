@@ -78,17 +78,3 @@ export function AdminButton({
     </ButtonControl>
   );
 }
-
-export function AdminOverviewMainGrid({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <section {...props} className={classNames("main-grid", className)}>
-      {children}
-    </section>
-  );
-}

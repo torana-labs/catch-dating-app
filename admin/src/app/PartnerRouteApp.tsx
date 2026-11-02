@@ -8,7 +8,6 @@ import {AdminQueryProvider} from "../shared/query/queryClient";
 import {AdminPendingOperationProvider} from "../shared/pendingOperation";
 import {
   AdminButton,
-  AdminFeatureLoadingState,
   AdminForm,
   AdminSignInActions,
   AdminSignInMeta,
@@ -16,6 +15,7 @@ import {
   AdminSignInScreen,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
+import {AdminFeatureLoadingState} from "./AdminLoadingState";
 const PartnerWorkspaceScreen = lazy(() => import("../features/partners/ui/PartnerWorkspaceScreen")
   .then((m) => ({default: m.PartnerWorkspaceScreen})));
 

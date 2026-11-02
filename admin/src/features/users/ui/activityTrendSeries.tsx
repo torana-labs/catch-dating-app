@@ -1,20 +1,20 @@
+import {CatchText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 
-import {DataTable} from "./data";
-import {AdminSecondaryDisclosure, EmptyState} from "./workbench";
+import {AdminSecondaryDisclosure, AdminWorkbenchStack, DataTable, EmptyState} from "../../../shared/ui/AdminPrimitives";
 
-export interface AdminTrendSeriesDefinition {
+interface TrendSeries {
   id: string;
   label: string;
-  formatValue?: (value: number) => ReactNode;
 }
 
-export interface AdminTrendPoint {
+interface TrendPoint {
   label: string;
   values: Record<string, number>;
 }
 
-export function AdminTrendSeries({
+/** User analytics' activity chart, with its values in a table beside it. */
+export function renderActivityTrendSeries({
   ariaLabel,
   emptyLabel,
   points,
@@ -22,8 +22,8 @@ export function AdminTrendSeries({
 }: {
   ariaLabel: string;
   emptyLabel: ReactNode;
-  points: AdminTrendPoint[];
-  series: AdminTrendSeriesDefinition[];
+  points: TrendPoint[];
+  series: TrendSeries[];
 }) {
   if (points.length === 0 || series.length === 0) {
     return <EmptyState variant="workbench">{emptyLabel}</EmptyState>;
@@ -43,8 +43,8 @@ export function AdminTrendSeries({
   }).join(" ");
 
   return (
-    <div className="admin-trend-series">
-      <figure aria-label={ariaLabel}>
+    <AdminWorkbenchStack>
+      <figure aria-label={ariaLabel} className="admin-trend-series">
         <svg aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 600 200">
           <line className="admin-trend-axis" x1="0" x2="600" y1="188" y2="188" />
           {series.map((definition, index) => (
@@ -57,10 +57,10 @@ export function AdminTrendSeries({
         </svg>
         <figcaption>
           {series.map((definition, index) => (
-            <span key={definition.id}>
+            <CatchText as="span" color="ink2" key={definition.id} variant="bodyS">
               <i className={`admin-trend-swatch admin-trend-swatch-${(index % 4) + 1}`} />
               {definition.label}
-            </span>
+            </CatchText>
           ))}
         </figcaption>
       </figure>
@@ -78,20 +78,15 @@ export function AdminTrendSeries({
             {points.map((point) => (
               <tr key={point.label}>
                 <td>{point.label}</td>
-                {series.map((definition) => {
-                  const value = safeTrendValue(point.values[definition.id]);
-                  return (
-                    <td key={definition.id}>
-                      {definition.formatValue?.(value) ?? value}
-                    </td>
-                  );
-                })}
+                {series.map((definition) => (
+                  <td key={definition.id}>{safeTrendValue(point.values[definition.id])}</td>
+                ))}
               </tr>
             ))}
           </tbody>
         </DataTable>
       </AdminSecondaryDisclosure>
-    </div>
+    </AdminWorkbenchStack>
   );
 }
 

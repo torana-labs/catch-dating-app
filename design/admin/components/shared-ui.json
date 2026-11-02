@@ -226,25 +226,6 @@
       "componentId": "catch.typography"
     },
     {
-      "id": "shared_admin_feature_loading_state",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminFeatureLoadingState",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminFeatureLoadingStateStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_field_grid",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -328,31 +309,6 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Anchor rendered as the ghost or icon button, disabled while an operation is pending: a link recipe of catch.button.",
       "componentId": "catch.button"
-    },
-    {
-      "id": "shared_admin_loading_icon",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminLoadingIcon",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminLoadingIconStory",
-        "states": [
-          "active",
-          "idle",
-          "custom-size"
-        ]
-      },
-      "comparedWith": [
-        "catch.icon"
-      ],
-      "comparisonReason": "Animated loading indicator that spins a glyph; it renders the loading icon role rather than implementing the icon contract.",
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_marketing_panel",
@@ -820,27 +776,6 @@
         "catch.top_bar"
       ],
       "comparisonReason": "A legacy admin row of filter and action controls. Not a top bar: a row of controls inside a pane, not the top of a screen."
-    },
-    {
-      "id": "shared_admin_trend_series",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/trends.tsx",
-      "exportName": "AdminTrendSeries",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTrendSeriesStory",
-        "states": [
-          "chart",
-          "table-fallback",
-          "empty"
-        ]
-      },
-      "notes": "Scales arbitrary backed count series and keeps exact chart values available through an accessible table fallback."
     },
     {
       "id": "shared_admin_workbench_note",

@@ -34,7 +34,6 @@ import {
   AdminSecondaryDisclosure,
   AdminTagList,
   AdminToolbar,
-  AdminTrendSeries,
   AdminWorkbenchNote,
   AdminWorkbenchStack,
   AlertRow,
@@ -52,6 +51,7 @@ import {
   type UserLookupContract,
   useUserAnalyticsController,
 } from "../controllers/useUserAnalyticsController";
+import {renderActivityTrendSeries} from "./activityTrendSeries";
 
 export function UserAnalyticsScreen({
   handoffRequestId,
@@ -353,22 +353,20 @@ function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
 }
 
 function ActivityTrend({points}: {points: UserAnalyticsTrendPoint[]}) {
-  return (
-    <AdminTrendSeries
-      ariaLabel="User activity summary"
-      emptyLabel="No activity buckets are available for this range."
-      points={points.map((point) => ({
-        label: `${formatDate(point.periodStart)} – ${formatDate(point.periodEnd)}`,
-        values: point.metrics,
-      }))}
-      series={[
-        {id: "profileViews", label: "Profile views"},
-        {id: "mutualCatches", label: "Mutual catches"},
-        {id: "chatsStarted", label: "Chats started"},
-        {id: "eventsAttended", label: "Events attended"},
-      ]}
-    />
-  );
+  return renderActivityTrendSeries({
+    ariaLabel: "User activity summary",
+    emptyLabel: "No activity buckets are available for this range.",
+    points: points.map((point) => ({
+      label: `${formatDate(point.periodStart)} – ${formatDate(point.periodEnd)}`,
+      values: point.metrics,
+    })),
+    series: [
+      {id: "profileViews", label: "Profile views"},
+      {id: "mutualCatches", label: "Mutual catches"},
+      {id: "chatsStarted", label: "Chats started"},
+      {id: "eventsAttended", label: "Events attended"},
+    ],
+  });
 }
 
 function SummaryPanel({

@@ -4,7 +4,7 @@ import {sampleUserAnalyticsReport} from "../shared/api/sampleData";
 import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
 import {UserAnalyticsWorkspace} from "../features/users/ui/UserAnalyticsScreen";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {noop, setGranularity, setRangePreset} from "./adminRouteStoryKit";
+import {noop} from "./adminRouteStoryKit";
 
 const meta = {
   title: "Admin Dashboard/Routes",

@@ -9,7 +9,7 @@ export default defineArea({
   path: "/marketplace",
   title: "Marketplace",
   icon: "insights",
-  frame: "legacy",
+  frame: "redrawn",
   roles: owner,
   navigation: {
     owner: {order: 110, section: "Insights"},

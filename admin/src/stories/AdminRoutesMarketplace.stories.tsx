@@ -1,8 +1,8 @@
-import {sampleHostAnalytics} from "../shared/api/sampleData";
-import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
+import {sampleMarketplace} from "../features/marketplace/api/marketplaceRepository";
+import type {MarketplaceController} from "../features/marketplace/controllers/useMarketplaceController";
 import {MarketplaceScreen} from "../features/marketplace/ui/MarketplaceScreen";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {installReviewedQueueClock, noop, setGranularity, setRangePreset} from "./adminRouteStoryKit";
+import {noop} from "./adminRouteStoryKit";
 
 const meta = {
   title: "Admin Dashboard/Routes",
@@ -17,37 +17,23 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const hostAnalytics = sampleHostAnalytics;
+const marketplaceController: MarketplaceController = {
+  rangeDays: 30,
+  marketId: null,
+  data: sampleMarketplace({rangeDays: 30, marketId: null}),
+  loadState: "ready",
+  loadError: null,
+  setRangeDays: noop,
+  setMarketId: noop,
+};
 
 export const MarketplaceRouteStory: Story = {
   name: "Marketplace",
-  beforeEach: installReviewedQueueClock,
   parameters: {
     catchComponent: {
       id: "route_marketplace",
-      states: ["default", "analytics-controls", "scoped-analytics"],
+      states: ["by-city", "guest-cohorts", "bookings-each-week", "going-quiet"],
     },
   },
-  render: () => (
-    <AdminWorkspace>
-      <MarketplaceScreen
-        analyticsOrganizerId=""
-        analyticsEndDate="2026-07-03"
-        analyticsEventId=""
-        analyticsGranularity="day"
-        analyticsRangePreset="30d"
-        analyticsStartDate="2026-06-04"
-        hostAnalytics={hostAnalytics}
-        isLoading={false}
-        onAnalyticsOrganizerIdChange={noop}
-        onAnalyticsEndDateChange={noop}
-        onAnalyticsEventIdChange={noop}
-        onAnalyticsGranularityChange={setGranularity}
-        onAnalyticsRangePresetChange={setRangePreset}
-        onAnalyticsStartDateChange={noop}
-        onClearAnalyticsScope={noop}
-        onRefresh={noop}
-      />
-    </AdminWorkspace>
-  ),
+  render: () => <MarketplaceScreen controller={marketplaceController} onOpenOrganizer={noop} />,
 };

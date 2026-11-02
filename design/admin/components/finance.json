@@ -1,0 +1,40 @@
+{
+  "components": [
+    {
+      "id": "route_finance",
+      "kind": "route",
+      "owner": "features/finance",
+      "source": "admin/src/features/finance/ui/FinanceScreen.tsx",
+      "exportName": "FinanceScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutesFinance.stories.tsx",
+        "exportName": "FinanceMonthRouteStory",
+        "states": [
+          "month-line-by-line",
+          "monthly-series",
+          "costs"
+        ]
+      },
+      "notes": "Finance: one month line by line (ticket sales, what Catch earned, what it cost, what is not Catch's money) beside monthly series, from adminGetFinanceMonth. Costs are entered by hand in a CatchDialog (adminManagePlatformCosts) and the month's ledger CSV downloads for Zoho Books (adminExportMoneyLedger). Backed by the sample in admin/src/features/finance/api/financeMonthRepository.ts."
+    },
+    {
+      "id": "route_finance_live_controller",
+      "kind": "route",
+      "owner": "features/finance",
+      "source": "admin/src/features/finance/ui/FinanceRouteScreen.tsx",
+      "exportName": "FinanceRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary",
+          "ledger-download"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Finance controller and the ledger download; deterministic prop-driven visual coverage remains on route_finance."
+    }
+  ]
+}

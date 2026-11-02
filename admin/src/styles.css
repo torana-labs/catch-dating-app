@@ -1186,17 +1186,6 @@ select {
   --metric-min: 260px;
 }
 
-.analytics-controls {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(140px, 1fr)) auto;
-  gap: var(--catch-space-micro10);
-  align-items: end;
-  margin-bottom: var(--catch-space-micro18);
-  padding: var(--catch-space-micro14);
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface);
-}
 
 .metric-tile,
 .metric-card {
@@ -1297,11 +1286,6 @@ select {
   letter-spacing: 0.06em;
 }
 
-.main-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
-  gap: var(--catch-space-micro14);
-}
 
 .panel {
   min-width: 0;
@@ -1430,11 +1414,6 @@ select {
 }
 
 .admin-trend-series {
-  display: grid;
-  gap: var(--catch-space-s3);
-}
-
-.admin-trend-series figure {
   display: grid;
   gap: var(--catch-space-micro10);
   margin: 0;
@@ -3346,13 +3325,7 @@ th {
     width: 100%;
   }
 
-  .analytics-controls {
-    grid-template-columns: repeat(3, minmax(140px, 1fr));
-  }
 
-  .main-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 
   .panel.span-2,
   .panel.span-3 {
@@ -3441,9 +3414,6 @@ th {
     min-width: min(100%, 280px);
   }
 
-  .analytics-controls {
-    grid-template-columns: minmax(0, 1fr);
-  }
 
   .intake-workspace-tabs {
     width: 100%;
