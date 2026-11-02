@@ -105,6 +105,30 @@ test('a new Consumer file cannot add a generic collection recipe', () => {
   }
 });
 
+test('an app-package screen cannot add a generic row or collection recipe', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'catch-loading-apps-'));
+  try {
+    const files = {
+      'apps/host/lib/today/today_body.dart': 'CatchSkeleton.rows(count: 2);\n',
+      'apps/consumer/lib/explore/explore_body.dart': 'CatchSkeleton.cards(count: 2);\n',
+    };
+    for (const [relativePath, source] of Object.entries(files)) {
+      const absolutePath = path.join(root, relativePath);
+      fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
+      fs.writeFileSync(absolutePath, source);
+    }
+    const result = checkLoadingComposition({root});
+    assert.equal(result.filesScanned, 2);
+    assert.deepEqual(result.findings.map((finding) => [finding.path, finding.code]).sort(), [
+      ['apps/consumer/lib/explore/explore_body.dart', 'LOADING-COMPOSITION-RATCHET'],
+      ['apps/host/lib/today/today_body.dart', 'LOADING-COMPOSITION-001'],
+      ['apps/host/lib/today/today_body.dart', 'LOADING-COMPOSITION-RATCHET'],
+    ]);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
 test('repository protected surfaces satisfy the loading contract', () => {
   const result = checkLoadingComposition();
   assert.deepEqual(result.findings, []);

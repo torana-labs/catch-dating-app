@@ -51,6 +51,21 @@ test("flags viewPadding bottom but allows keyboard insets and core ownership", (
   assert.equal(result.findings[0].path, "lib/hosts/bad.dart");
 });
 
+test("flags hand-rolled bottom padding in app packages", () => {
+  const root = fixtureRoot();
+  write(root, "lib/kept.dart", "class Kept {}");
+  write(root, "apps/host/lib/today/today_body.dart", "final bottom = MediaQuery.paddingOf(context).bottom;");
+  write(root, "apps/consumer/lib/explore/explore_body.dart", "final bottom = MediaQuery.viewPaddingOf(context).bottom;");
+
+  const result = checkTerminalPadding({root});
+
+  assert.equal(result.fileCount, 3);
+  assert.deepEqual(result.findings.map((finding) => finding.path).sort(), [
+    "apps/consumer/lib/explore/explore_body.dart",
+    "apps/host/lib/today/today_body.dart",
+  ]);
+});
+
 function fixtureRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "catch-terminal-padding-"));
 }

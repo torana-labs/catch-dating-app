@@ -311,6 +311,21 @@ test("inventories showHeader and showTitle widget flags as low advisory findings
   assert.equal(result.counts.medium, 0);
 });
 
+test("scanSectionHeaders covers app-package sources", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-headers-apps-"));
+  writeFile(
+    root,
+    "apps/consumer/lib/explore/explore_section.dart",
+    "Widget build(context) => CatchSection.divided(title: 'Reviews', child: Text('Reviews', style: CatchTextStyles.titleL(context)));",
+  );
+
+  const result = scanSectionHeaders({root});
+
+  assert.equal(result.filesScanned, 1);
+  assert.equal(result.counts.high, 1);
+  assert.equal(result.findings[0].path, "apps/consumer/lib/explore/explore_section.dart");
+});
+
 function scanSectionHeadersFromFixture(source) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-headers-"));
   writeFile(root, "lib/events/presentation/widgets/event_detail.dart", source);

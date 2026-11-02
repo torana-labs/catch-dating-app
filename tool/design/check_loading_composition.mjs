@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {isAppPackageSource, screenSourceRoots} from '../lib/flutter_source_roots.mjs';
 import {repoRoot} from '../lib/repo_paths.mjs';
 
 const legacyRows = /\bCatchSkeleton\.(?:rows|mediaRows|iconRows)\s*\(/gu;
@@ -52,6 +53,7 @@ export function scanLoadingCompositionSource({relativePath, source}) {
   let legacyCollectionCount = 0;
   const protectedPath =
     protectedHostPaths.some((prefix) => relativePath.startsWith(prefix)) ||
+    isAppPackageSource(relativePath) ||
     (relativePath.startsWith('lib/') &&
       !unresolvedHostPrefixes.some((prefix) => relativePath.startsWith(prefix)) &&
       relativePath !== 'lib/routing/go_router.dart');
@@ -92,7 +94,9 @@ export function checkLoadingComposition({root = repoRoot} = {}) {
   let legacyCollectionCount = 0;
   let filesScanned = 0;
   const scannedPaths = new Set();
-  for (const relativePath of dartFiles(path.join(root, 'lib'), root)) {
+  const sourcePaths = screenSourceRoots(root)
+    .flatMap((sourceRoot) => [...dartFiles(path.join(root, sourceRoot), root)]);
+  for (const relativePath of sourcePaths) {
     const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
     const result = scanLoadingCompositionSource({relativePath, source});
     findings.push(...result.findings);

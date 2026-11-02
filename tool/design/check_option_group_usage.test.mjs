@@ -73,6 +73,23 @@ test("scanOptionGroupUsage reports production files only", () => {
   assert.equal(result.findings[0].path, "lib/explore/presentation/widgets/example_filter_rail.dart");
 });
 
+test("flags direct CatchChoiceButton usage in both app packages", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-option-group-apps-"));
+  const source = "Widget build(context) => CatchChoiceButton<String>(option: option, selected: true);";
+  writeFile(root, "lib/core/kept.dart", "class Kept {}");
+  writeFile(root, "apps/host/lib/today/today_filter.dart", source);
+  writeFile(root, "apps/consumer/lib/explore/explore_filter.dart", source);
+  writeFile(root, "apps/host/test/today/today_filter_test.dart", source);
+
+  const result = scanOptionGroupUsage({root});
+
+  assert.equal(result.filesScanned, 3);
+  assert.deepEqual(result.findings.map((finding) => finding.path), [
+    "apps/consumer/lib/explore/explore_filter.dart",
+    "apps/host/lib/today/today_filter.dart",
+  ]);
+});
+
 function writeFile(root, relativePath, source) {
   const file = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(file), {recursive: true});

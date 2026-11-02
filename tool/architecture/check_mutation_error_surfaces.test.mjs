@@ -5,6 +5,14 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
+import {productionWidgetRoots} from "../design/lib/production_widget_roots.mjs";
+import {
+  appPackageSourceRoots,
+  isAppPackageSource,
+  isScreenSource,
+  screenSourceRoots,
+} from "../lib/flutter_source_roots.mjs";
+import {repoRoot} from "../lib/repo_paths.mjs";
 import {
   scanFile,
   scanMutationErrorSurfaces,
@@ -291,6 +299,48 @@ test("scanMutationErrorSurfaces scans lib Dart files and ignores generated files
     result.findings[0].path,
     "lib/events/presentation/event_detail_screen.dart",
   );
+});
+
+test("an app-package build method is held to the same mutation error surface", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-mutation-apps-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const violation = "class Screen { Widget build(context, ref) { final Mutation<void> save = ref.watch(Controller.saveMutation); return Text(save.isPending); } }";
+  writeFile(root, "lib/core/example.dart", "class DomainModel {}");
+  writeFile(root, "apps/host/lib/today/today_screen.dart", violation);
+  writeFile(root, "apps/host/lib/today/today_screen.g.dart", violation);
+  writeFile(root, "apps/consumer/lib/explore/explore_screen.dart", violation);
+  writeFile(root, "apps/host/test/today/today_screen_test.dart", violation);
+
+  const result = scanMutationErrorSurfaces({root});
+
+  assert.equal(result.checkedFiles, 3);
+  assert.deepEqual(result.findings.map((finding) => finding.path), [
+    "apps/consumer/lib/explore/explore_screen.dart",
+    "apps/host/lib/today/today_screen.dart",
+  ]);
+});
+
+test("app-package roots are read from disk, so a new package is covered on arrival", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-source-roots-"));
+  context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  assert.deepEqual(screenSourceRoots(root), ["lib"]);
+  writeFile(root, "apps/zeta/lib/main.dart", "");
+  writeFile(root, "apps/alpha/lib/main.dart", "");
+  writeFile(root, "apps/no_source/pubspec.yaml", "");
+  assert.deepEqual(screenSourceRoots(root), ["lib", "apps/alpha/lib", "apps/zeta/lib"]);
+
+  for (const file of ["lib/a.dart", "apps/host/lib/a.dart"]) assert.equal(isScreenSource(file), true, file);
+  for (const file of ["apps/host/test/a.dart", "packages/catch_ui/lib/a.dart", "test/a.dart"]) {
+    assert.equal(isScreenSource(file), false, file);
+  }
+  assert.equal(isAppPackageSource("lib/a.dart"), false);
+  assert.equal(isAppPackageSource("apps/host/lib/a.dart"), true);
+});
+
+test("the widget inventory's listed roots name every app package on disk", () => {
+  const apps = appPackageSourceRoots(repoRoot);
+  assert.ok(apps.length >= 2);
+  assert.deepEqual(apps.filter((root) => !productionWidgetRoots.includes(root)), []);
 });
 
 function writeFile(root, relativePath, source) {

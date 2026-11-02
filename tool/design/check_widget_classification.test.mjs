@@ -11,6 +11,7 @@ import {
   buildWidgetClassification,
   collectProductionWidgetClassificationDeclarations,
   collectWidgetClassificationDeclarations,
+  isScreen,
 } from "./generate_widget_classification.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -62,6 +63,13 @@ test("classification reports feature naming debt without treating app bootstraps
     widget.file === "apps/host/lib/host_platform_app.dart" && widget.name === "HostPlatformApp");
   assert.ok(bootstrap);
   assert.equal(bootstrap.flags.some((flag) => flag.includes("feature-widget")), false);
+});
+
+test("a private class in an app-package screen file classifies as screen, as it does under presentation", () => {
+  assert.equal(isScreen("_TodayContent", "lib/hosts/presentation/today_screen.dart"), true);
+  assert.equal(isScreen("_TodayContent", "apps/host/lib/today/today_screen.dart"), true);
+  assert.equal(isScreen("_TodayRow", "apps/host/lib/today/widgets/today_screen.dart"), false);
+  assert.equal(isScreen("_TodayRow", "apps/host/lib/today/today_body.dart"), false);
 });
 
 test("classification discovers indirect and nontraditional Widgets across roots", () => {

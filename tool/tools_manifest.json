@@ -1182,7 +1182,8 @@
           "id": "MUTATION-ERROR-SURFACE-001",
           "title": "A watched Mutation consumed for isPending must also surface hasError",
           "appliesTo": [
-            "lib/**/presentation/**"
+            "lib/**/presentation/**",
+            "apps/*/lib/**"
           ],
           "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError — via an inline ErrorBanner.fromError, a screen-level listenToCatchMutationErrors, or try/catch + showCatchNoticeError around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions."
         }
@@ -1262,6 +1263,7 @@
           "title": "Navigation outside routing config uses named routes or constants",
           "appliesTo": [
             "lib/**/presentation/**",
+            "apps/*/lib/**",
             "lib/**/application/**",
             "tool/architecture/check_route_string_literals.mjs"
           ],
@@ -2256,6 +2258,7 @@
             "tool/contracts/generate_schema_contracts.mjs",
             "tool/contracts/generate_flutter_form_contract_inventory.mjs",
             "lib/platform/schema_contracts/generated/field_constraints.g.dart",
+            "apps/*/lib/**",
             "packages/catch_ui/lib/src/components/catch_contract_field_constraints.dart",
             "packages/catch_ui/lib/src/components/catch_contract_field_policy.dart",
             "packages/catch_ui/lib/src/components/catch_chip*.dart",
@@ -2383,6 +2386,7 @@
       },
       "impactPaths": [
         "lib/**/*.dart",
+        "apps/*/lib/**/*.dart",
         "packages/**/*.dart",
         "widgetbook/lib/**/*.dart",
         "tool/architecture/check_flutter_source_size.test.mjs",
@@ -2401,6 +2405,7 @@
           "title": "Bound handwritten Dart sources; exceptions state their reason in the file",
           "appliesTo": [
             "lib/**/*.dart",
+            "apps/*/lib/**/*.dart",
             "packages/**/*.dart",
             "widgetbook/lib/**/*.dart"
           ],
@@ -4767,6 +4772,7 @@
           "title": "Consolidate UI through reviewed pattern families, not raw similarity pairs",
           "appliesTo": [
             "lib/contexts/*/parts/**",
+            "apps/*/lib/**",
             "lib/pages/**",
             "lib/**/presentation/**",
             "widgetbook/**",
@@ -5091,6 +5097,7 @@
           "title": "Every screen declares one reviewed navigation-chrome owner",
           "appliesTo": [
             "lib/**/*.dart",
+            "apps/*/lib/**/*.dart",
             "tool/design/check_screen_top_bar_contracts.mjs",
             "tool/design/screen_top_bar_contracts.json"
           ],
@@ -5130,6 +5137,7 @@
           "title": "Screen gutters use semantic body and section ownership",
           "appliesTo": [
             "lib/**/presentation/**",
+            "apps/*/lib/**",
             "design/screens/**",
             "docs/design_parity/**",
             "tool/design/check_screen_gutters.mjs"
@@ -6098,7 +6106,8 @@
       "impactPaths": [
         "tool/architecture/provider_graph.dart",
         "test/tool/provider_graph_test.dart",
-        "lib/**/*.dart"
+        "lib/**/*.dart",
+        "apps/*/lib/**/*.dart"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6119,7 +6128,8 @@
           "id": "PROVIDER-SEAM-001",
           "title": "Use feature-owned provider seams",
           "appliesTo": [
-            "lib/**"
+            "lib/**",
+            "apps/*/lib/**"
           ],
           "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider. Use generated overridable repository factories for dependency injection and generated Notifier/AsyncNotifier/StreamNotifier owners according to synchronous, loaded or streaming state responsibility. A generated wrapper around a business ChangeNotifier does not make its state lifecycle declarative. Pure imperative service helpers, local Flutter mechanics and named framework bridges remain valid. The AST graph requires exact path/symbol/operation reviews with bounded callsites; planned debt and watch signals are not compliance, and new owners or replacement operations cannot inherit a file/count exception. Its parsed-source limits still require manual lifecycle and domain-fence review."
         },
@@ -6128,6 +6138,7 @@
           "title": "Keep the static Riverpod topology current and reviewed",
           "appliesTo": [
             "lib/**/*.dart",
+            "apps/*/lib/**/*.dart",
             "tool/architecture/provider_graph.dart"
           ],
           "instruction": "Derive and check the complete live Riverpod source graph from Dart ASTs. Keep providers, families, consumers, aliases, overrides, and Mutations resolvable; reject duplicate or dangling providers, provider-internal unresolved refs, reactive cycles, unreviewed architecture candidates, and stale review decisions. Do not commit generated graph views; emit deterministic JSON or summary evidence only on demand. Core-owned providers must not orchestrate feature data, and provider aliases should be removed when the canonical owner can be used directly."
@@ -6264,6 +6275,7 @@
           "title": "Root screens declare semantic composition and clear adaptive shell chrome",
           "appliesTo": [
             "lib/routing/go_router.dart",
+            "apps/*/lib/**",
             "lib/**/presentation/**",
             "lib/routing/shell/**",
             "packages/catch_ui/lib/src/components/catch_section.dart"
@@ -6384,6 +6396,7 @@
       "impactPaths": [
         "tool/design/check_loading_composition.test.mjs",
         "lib/**",
+        "apps/*/lib/**",
         "packages/catch_ui/lib/src/patterns/catch_skeleton.dart"
       ],
       "checks": [

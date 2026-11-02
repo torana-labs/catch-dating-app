@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isAppPackageSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
 const defaultManifestPath = "tool/design/root_screen_composition_contracts.json";
@@ -128,9 +129,7 @@ function checkHostWorkspaceOwnership({root, findings}) {
 }
 
 function checkLegacyRootSymbols({root, findings}) {
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return;
-  for (const absolutePath of dartFiles(libRoot)) {
+  for (const absolutePath of screenDartFiles(root)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
     const source = fs.readFileSync(absolutePath, "utf8");
     for (const symbol of legacyRootSymbols) {
@@ -147,11 +146,9 @@ function checkLegacyRootSymbols({root, findings}) {
 }
 
 function checkStateViewportOwnership({root, findings}) {
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return;
-  for (const absolutePath of dartFiles(libRoot)) {
+  for (const absolutePath of screenDartFiles(root)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
-    if (!relativePath.includes("/presentation/")) continue;
+    if (!relativePath.includes("/presentation/") && !isAppPackageSource(relativePath)) continue;
     const source = fs.readFileSync(absolutePath, "utf8");
     for (const block of callBlocks(source, "SliverFillRemaining")) {
       if (!/Catch(?:Empty|Error)State(?:\.fromError)?\s*\(/u.test(block)) {
@@ -166,6 +163,13 @@ function checkStateViewportOwnership({root, findings}) {
           "geometry is applied consistently.",
       });
     }
+  }
+}
+
+function* screenDartFiles(root) {
+  for (const sourceRoot of screenSourceRoots(root)) {
+    const absolute = path.join(root, sourceRoot);
+    if (fs.existsSync(absolute)) yield* dartFiles(absolute);
   }
 }
 

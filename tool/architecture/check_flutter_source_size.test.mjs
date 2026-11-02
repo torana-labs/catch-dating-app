@@ -15,7 +15,7 @@ const row = (file, lines, exemption = null) => ({path: file, lines, exemption});
 const checker = fileURLToPath(new URL("./check_flutter_source_size.mjs", import.meta.url));
 
 test("a new source at 801 lines fails in every owned source root unless it states an exemption", () => {
-  for (const file of ["lib/feature/new_screen.dart", "packages/example/lib/new.dart", "widgetbook/lib/new_use_cases.dart"]) {
+  for (const file of ["lib/feature/new_screen.dart", "apps/host/lib/today/today_screen.dart", "packages/example/lib/new.dart", "widgetbook/lib/new_use_cases.dart"]) {
     assert.match(checkFlutterSourceSizes([row(file, 801)]).join("\n"), /801 lines exceeds 800; split it or add/u);
     assert.deepEqual(checkFlutterSourceSizes([row(file, 800)]), []);
     assert.deepEqual(checkFlutterSourceSizes([row(file, 801, "single route table")]), []);
@@ -35,10 +35,12 @@ test("generated exclusions follow known producer identities, not arbitrary gener
   for (const file of ["lib/data/value.g.dart", "lib/data/value.freezed.dart", "lib/l10n/generated/app_localizations_en.dart"]) {
     assert.equal(isHandwrittenSource(file), false);
   }
-  for (const file of ["lib/generated/handwritten.dart", "lib/example.dart", "packages/catch_ui/lib/src/handwritten.dart"]) {
+  for (const file of ["lib/generated/handwritten.dart", "lib/example.dart", "apps/consumer/lib/explore/explore_screen.dart", "packages/catch_ui/lib/src/handwritten.dart"]) {
     assert.equal(isHandwrittenSource(file), true);
   }
   assert.equal(isHandwrittenSource("test/example_test.dart"), false);
+  assert.equal(isHandwrittenSource("apps/host/lib/today/today_view_model.g.dart"), false);
+  assert.equal(isHandwrittenSource("apps/host/test/today/today_screen_test.dart"), false);
 });
 
 function fixture(t) {
@@ -57,6 +59,15 @@ function fixture(t) {
   const run = (...args) => spawnSync(process.execPath, [checker, "--root", root, ...args], {encoding: "utf8"});
   return {root, write, writeLines, commit, run};
 }
+
+test("CLI fails a screen over the limit in an app package", (t) => {
+  const f = fixture(t);
+  f.writeLines("lib/kept.dart", 10);
+  f.writeLines("apps/host/lib/today/today_screen.dart", 801);
+  assert.match(f.run("--check").stderr, /apps\/host\/lib\/today\/today_screen\.dart: 801 lines exceeds 800/u);
+  f.writeLines("apps/host/lib/today/today_screen.dart", 400);
+  assert.equal(f.run("--check").status, 0);
+});
 
 test("CLI reads the exemption from the file itself, including untracked source", (t) => {
   const f = fixture(t);

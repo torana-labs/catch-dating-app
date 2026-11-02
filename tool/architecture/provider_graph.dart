@@ -355,7 +355,7 @@ final class ProviderGraph {
     }
     return {
       'schemaVersion': providerGraphSchemaVersion,
-      'sourceRoots': ['lib'],
+      'sourceRoots': ['lib', 'apps/*/lib'],
       'summary': summary,
       'health': health,
       'providersByFeature': _countsBy(
@@ -471,16 +471,26 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
   if (!lib.existsSync()) {
     throw StateError('Expected a lib directory under ${absoluteRoot.path}.');
   }
-  final files = await lib
-      .list(recursive: true, followLinks: false)
-      .where((entity) => entity is File && entity.path.endsWith('.dart'))
-      .cast<File>()
-      .where(
-        (file) =>
-            !file.path.endsWith('.g.dart') &&
-            !file.path.endsWith('.freezed.dart'),
-      )
-      .toList();
+  final apps = Directory('${absoluteRoot.path}/apps');
+  final sourceRoots = [
+    lib,
+    if (apps.existsSync())
+      for (final app in apps.listSync().whereType<Directory>())
+        if (Directory('${app.path}/lib').existsSync())
+          Directory('${app.path}/lib'),
+  ];
+  final files = [
+    for (final sourceRoot in sourceRoots)
+      ...sourceRoot
+          .listSync(recursive: true, followLinks: false)
+          .whereType<File>()
+          .where(
+            (file) =>
+                file.path.endsWith('.dart') &&
+                !file.path.endsWith('.g.dart') &&
+                !file.path.endsWith('.freezed.dart'),
+          ),
+  ];
   files.sort((a, b) => a.path.compareTo(b.path));
   if (files.isEmpty) {
     throw StateError(
@@ -955,6 +965,14 @@ final class _OwnershipIndex {
       if (uri.startsWith('package:catch_dating_app/')) {
         imported.add(
           'lib/${uri.substring('package:catch_dating_app/'.length)}',
+        );
+      } else if (uri.startsWith('package:catch_host_app/')) {
+        imported.add(
+          'apps/host/lib/${uri.substring('package:catch_host_app/'.length)}',
+        );
+      } else if (uri.startsWith('package:catch_consumer_app/')) {
+        imported.add(
+          'apps/consumer/lib/${uri.substring('package:catch_consumer_app/'.length)}',
         );
       } else if (!uri.contains(':')) {
         imported.add(Uri.parse(file.path).resolve(uri).path);
@@ -1883,12 +1901,14 @@ bool _isPlatformFeature(String feature) =>
 String _featureFor(String relativePath) {
   final parts = relativePath.split('/');
   if (parts.length < 2) return 'root';
+  if (parts.first == 'apps') return 'apps/${parts[1]}';
   final value = parts[1];
   return value.endsWith('.dart') ? 'app' : value;
 }
 
 String _layerFor(String relativePath) {
   final parts = relativePath.split('/');
+  if (parts.first == 'apps') return 'presentation';
   for (final candidate in const ['domain', 'data', 'presentation', 'shared']) {
     if (parts.contains(candidate)) return candidate;
   }

@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
@@ -509,7 +510,7 @@ function startsNamedArgument(expression, index, name) {
 
 function collectDartFiles(root) {
   const files = [];
-  for (const top of ["lib", "test", "widgetbook/lib"]) {
+  for (const top of [...screenSourceRoots(root), "test", "widgetbook/lib"]) {
     const absolute = path.join(root, top);
     if (!fs.existsSync(absolute)) continue;
     walk(absolute, files, root);
