@@ -641,6 +641,38 @@ test("a reuse bundle verifies like a render bundle and cannot pass off renders o
   }
 });
 
+test("a release import refuses images rendered from older capture inputs", async t => {
+  const f = fixture(t);
+  const sha = f.options.sourceSha;
+  const request = {eventName: "merge_group", mode: "automatic", sourceSha: sha, workflowSha: sha, eventSha: sha, runHeadSha: sha,
+    workflowRef: `${f.options.repository}/.github/workflows/ci.yml@refs/heads/gh-readonly-queue/main/pr-1-${"b".repeat(40)}`,
+    workflowDefinitionSha: sha};
+  const options = {...f.options, workflowSha: sha, request};
+  const rendered = exportHostedCaptures(options);
+  const seeds = new Map(rendered.captures.map(c => [c.id, fs.readFileSync(path.join(options.outputDir, c.sourcePath))]));
+  f.git("checkout", "--", ".");
+  const outputDir = path.join(path.dirname(options.outputDir), "reused");
+  const receipt = exportHostedCaptures({...options, outputDir, platform: "linux", mode: "reuse", seeds});
+  const files = new Map([...receipt.files.map(file => [file.path, fs.readFileSync(path.join(outputDir, file.path))]),
+    ["capture-receipt.json", fs.readFileSync(path.join(outputDir, "capture-receipt.json"))]]);
+  // The app moved on, and the same images are offered for the new commit with
+  // every identity field current. Only the capture inputs can give them away.
+  f.write("lib/leaf.dart", "const title = 'Changed';\n");
+  f.git("add", "lib/leaf.dart");
+  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "Change render dependency");
+  const next = f.git("rev-parse", "HEAD");
+  const stale = structuredClone(receipt);
+  Object.assign(stale, {sourceSha: next, workflowSha: next, workflowDefinitionSha: next, sourceTree: f.git("rev-parse", "HEAD^{tree}")});
+  Object.assign(stale.request, {sourceSha: next, workflowSha: next, workflowDefinitionSha: next, eventSha: next, runHeadSha: next});
+  for (const capture of stale.captures) capture.verifiedSourceSha = next;
+  files.set("capture-receipt.json", Buffer.from(JSON.stringify(stale)));
+  const binding = {repository: options.repository, sourceSha: next, workflowRef: request.workflowRef, workflowSha: next,
+    workflowDefinitionSha: next, eventSha: next, runHeadSha: next, runId: receipt.runId, runAttempt: receipt.runAttempt,
+    artifactId: "100", artifactDigest: `sha256:${"0".repeat(64)}`};
+  const consumer = await import(pathToFileURL(path.join(f.root, "tool/marketing/import_hosted_captures.mjs")));
+  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Capture inputs changed/);
+});
+
 test("actual exporter bundle verifies before import and survives unchanged into website dist", async t => {
   const f = fixture(t);
   const tree = f.git("rev-parse", "HEAD^{tree}");

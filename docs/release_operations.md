@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.2.0
-updated: 2026-11-01
+version: 3.2.1
+updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -386,7 +386,7 @@ Preserve these contracts when narrowing work:
 | App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
 | Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
 | Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
-| Capture provenance and website image copies; marketing website | Conservative Flutter source/test/asset/package and capture-tool inputs select capture freshness; website/shared React inputs still select full React validation | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before checks/builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
+| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
 | Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
 
 Whole-product widget similarity is advisory and has no product acceptance
