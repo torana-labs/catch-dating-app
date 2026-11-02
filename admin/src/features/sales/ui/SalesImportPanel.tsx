@@ -1,11 +1,10 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchText, CatchField, CatchFilePickerButton} from "@catch/web-ui";
 import {useRef, useState} from "react";
 import {ClipboardList, Upload} from "lucide-react";
 import {
   AdminButton,
   AdminForm,
   EmptyState,
-  FilePickerButton,
   Panel,
   selectOptions,
   StateRow,
@@ -105,10 +104,8 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
       applying. Unresolved identities stay unresolved; the preview makes no changes.</CatchText>
     {dataMode() === "sample" ? <EmptyState>Imports require a live employee workspace.
       No sample import is applied.</EmptyState> : <>
-      <FilePickerButton inputLabel="Choose Sales CSV" accept=".csv,text/csv"
-        disabled={busy}
-        icon={<Upload size={16} />} onChange={(event) =>
-          void upload(event.target.files?.[0])}>Choose CSV</FilePickerButton>
+      <CatchFilePickerButton accept=".csv,text/csv" label="Choose CSV" leading={<Upload size={16} />}
+        onChanged={busy ? null : (file) => void upload(file ?? undefined)} />
       {fileName ? <CatchText as="p" variant="supporting" role="status">{fileName} · {rows.length - 1} rows ·
         {batchCount} batch{batchCount === 1 ? "" : "es"}</CatchText> : null}
       {rows.length ? <>

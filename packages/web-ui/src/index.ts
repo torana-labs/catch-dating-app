@@ -74,6 +74,8 @@ export type {
 } from "./components/CatchButton";
 export {CatchCheckboxInput} from "./components/CatchCheckboxInput";
 export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
+export {CatchFilePickerButton} from "./components/CatchFilePickerButton";
+export type {CatchFilePickerButtonProps} from "./components/CatchFilePickerButton";
 export {CatchChip} from "./components/CatchChip";
 export type {CatchChipData, CatchChipEmphasis, CatchChipMode, CatchChipProps} from "./components/CatchChip";
 export {CatchChoiceInput} from "./components/CatchChoiceInput";

@@ -39,7 +39,6 @@ import {
   type PanelProps,
 } from "./shared";
 
-import {FilePickerButton} from "./actions";
 
 export function AdminMarketingImageEditor({
   children,
@@ -80,23 +79,6 @@ export function AdminMarketingImageControls({
     <div {...props} className={classNames("marketing-image-controls", className)}>
       {children}
     </div>
-  );
-}
-
-export function AdminMarketingFilePickerButton({
-  className = "",
-  ...props
-}: {
-  children: ReactNode;
-  className?: string;
-  icon?: ReactNode;
-  inputLabel: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "aria-label" | "type">) {
-  return (
-    <FilePickerButton
-      {...props}
-      className={classNames("marketing-file-button", className)}
-    />
   );
 }
 

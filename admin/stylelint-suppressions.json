@@ -1,7 +1,7 @@
 {
   "src/styles.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 75
+      "count": 73
     },
     "declaration-property-value-allowed-list": {
       "count": 16

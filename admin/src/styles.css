@@ -1827,19 +1827,6 @@ th {
   align-items: end;
 }
 
-.marketing-file-button {
-  width: fit-content;
-  white-space: nowrap;
-}
-
-.marketing-file-button input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
-
 .marketing-image-thumb {
   width: 116px;
   aspect-ratio: 4 / 3;
