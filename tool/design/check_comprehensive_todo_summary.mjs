@@ -6,9 +6,9 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 
 // Progress is derived at consumption; authored priority and next-action decisions
 // remain in the Markdown owner. Full registry/schema checks retain their owners.
-export function deriveSummary(screenContracts, stateMatrix) {
-  if (!Array.isArray(screenContracts.screens) || !Array.isArray(stateMatrix.features)) {
-    throw new Error("Expected screen and matrix inventories.");
+export function deriveSummary(screenContracts) {
+  if (!Array.isArray(screenContracts.screens)) {
+    throw new Error("Expected a screen inventory.");
   }
   const counts = {open: 0, blocked: 0, closed: 0};
   const rows = screenContracts.screens.map(screen => {
@@ -22,11 +22,7 @@ export function deriveSummary(screenContracts, stateMatrix) {
     return {id: screen.id, priority: screen.priority,
       gaps: screen.openGaps.filter(gap => gap.status !== "closed")};
   });
-  const gaps = stateMatrix.features.flatMap(feature => [
-    ...(feature.lintCandidates ?? []), ...(feature.previewPlan ?? []),
-    ...(feature.screens ?? []).flatMap(screen => screen.gaps ?? []),
-  ]);
-  return {counts, rows, matrixOpen: gaps.filter(gap => gap.status !== "closed").length};
+  return {counts, rows};
 }
 
 export function validateAuthoredIndex(todo, screenContracts) {
@@ -58,20 +54,18 @@ function main(args) {
   node tool/design/check_comprehensive_todo_summary.mjs --summary
 
 Checks authored P1 decision coverage; --summary derives current migration counts
-and per-screen gaps from the screen registry and state matrix without writing
-Markdown or comparing copied counts. Full schemas remain owned by screen-contract
-and parity-matrix checks.`);
+and per-screen gaps from the screen registry without writing Markdown or
+comparing copied counts. The full schema remains owned by the screen-contract
+check.`);
     return;
   }
   if (!["--check", "check", "--summary", "summary"].includes(command)) throw new Error(`Unknown command: ${command}`);
   const screens = JSON.parse(fs.readFileSync(fromRepo("design/screens/catch.screens.json"), "utf8"));
-  const matrix = JSON.parse(fs.readFileSync(fromRepo("docs/design_parity/state_matrix.json"), "utf8"));
   const todo = fs.readFileSync(fromRepo("docs/design_parity/comprehensive_todo.md"), "utf8");
-  const summary = deriveSummary(screens, matrix);
+  const summary = deriveSummary(screens);
   const errors = validateAuthoredIndex(todo, screens);
   if (errors.length) throw new Error(errors.join("\n"));
   console.log(`Screen registry gaps: ${summary.counts.open} open, ${summary.counts.blocked} blocked, ${summary.counts.closed} closed`);
-  console.log(`Matrix open gaps: ${summary.matrixOpen}`);
   if (args.includes("--summary") || command === "summary") {
     console.log("| Priority | Screen | Open registry gaps |\n|---|---|---|");
     for (const row of summary.rows) {

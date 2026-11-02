@@ -173,7 +173,6 @@ test("design authority ledgers select their exact consuming checks", () => {
       "design/screens/catch.screens.json",
       [
         "architecture:ui-composition-contracts",
-        "design:parity-matrix",
         "design:screen-contracts",
         "design:screen-coverage",
       ],
@@ -194,7 +193,6 @@ test("design authority ledgers select their exact consuming checks", () => {
       "tool/ui_capture/route_inventory.json",
       [
         "architecture:ui-composition-contracts",
-        "design:parity-matrix",
         "design:screen-contracts",
         "design:screen-coverage",
         "ui-capture:coverage",
@@ -251,7 +249,7 @@ const consumedInputs = new Map([
   ["design/features/admin_finance_ops.feature.json", ["agent:harness-v2", "design:feature-contracts",
     "web:admin-pending-operations"]],
   ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
-    "design:parity-matrix", "design:screen-contracts"]],
+    "design:screen-contracts"]],
   ["tool/architecture/pattern_adoption.json", ["audit:adopted-architecture-boundaries",
     "audit:app-architecture-exhibits", "audit:dependency-direction", "design:screen-top-bar-contracts"]],
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",

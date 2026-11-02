@@ -9,9 +9,9 @@ status: active
 # Design Parity Tracker
 
 This folder owns the feature-by-feature contract for bringing Catch screens and
-widgets closer to the design specification. It connects product states, Flutter
-screens, reusable components, UI captures, future previews, and drift-prevention
-checks in one durable matrix.
+widgets closer to the design specification. `design/screens/catch.screens.json`
+connects product states, Flutter screens, reusable components, UI captures,
+previews, and drift-prevention checks.
 
 ## Source Files
 
@@ -39,16 +39,13 @@ checks in one durable matrix.
 | `tool/design/check_screen_gutters.mjs` | Advisory inventory for `EdgeInsets` constructors across `lib/**/presentation/**/*.dart` and contracted screen implementation files. Classifies likely screen-gutter candidates separately from lower-confidence local spacing so manual UI reviews have broad evidence instead of a narrow lint. |
 | `design/reference_screens/manifest.json` | Exported design-reference PNG manifest used for advisory pixel comparison. |
 | `tool/design/check_reference_screens.mjs` | Validates reference PNG metadata and can compare exported references against UI capture output. |
-| `state_matrix.json` | Machine-readable feature/state matrix for design parity passes. |
-| `state_matrix.schema.json` | JSON Schema for the matrix shape. |
-| `tool/design/check_design_parity_matrix.mjs` | Validates routes, captures, component ids, screen contracts, source paths, tests, and state entries. |
 | `widgetbook/` | Local Widgetbook workspace for reusable component and hard-to-reach state previews. |
 
 ## Pass Workflow
 
-1. Choose one feature from `state_matrix.json`.
-2. Read the feature's design refs, implementation paths, component ids, capture
-   ids, and open gaps.
+1. Choose one screen from `design/screens/catch.screens.json`.
+2. Read the screen's design refs, source bindings, components, captures, and
+   open gaps.
 3. Expand the state list before editing UI. Include loading, populated, empty,
    error, offline, permission, mutation, light/dark, text-scale, and reduced
    motion states when they apply.
@@ -108,9 +105,8 @@ ledgers in the same PR:
    `canonicalRouteId` and no rendered owner. Add focused router coverage for the
    actual redirect result; the composition gate checks typed alias metadata but
    does not traverse redirect expressions.
-7. For a new product screen, add the screen contract in
-   `design/screens/catch.screens.json` and a matching screen/state entry in
-   `docs/design_parity/state_matrix.json`.
+7. For a new product screen, add the screen contract and its states in
+   `design/screens/catch.screens.json`.
 8. Run the aggregate gate:
 
    ```bash
@@ -121,7 +117,7 @@ Flutter CI also runs this gate, so new product routes cannot pass CI without
 screen and capture coverage decisions.
 
 The router remains the source for path inventory only. Rich design metadata
-belongs in the portable `design/screens` and `docs/design_parity` ledgers so the
+belongs in the portable `design/screens` ledgers so the
 same contracts can serve Flutter, Widgetbook, website/social templates, and
 future design-tool exports without making Dart routing the design source of
 truth.

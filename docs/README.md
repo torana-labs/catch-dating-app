@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.12.1
-updated: 2026-11-01
+version: 5.12.2
+updated: 2026-11-02
 owner: agent_operating_model
 status: active
 ---
@@ -84,7 +84,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | Flutter app architecture | `app_architecture.md`, `../tool/architecture/pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json`, `plans/ui_system_blueprint_and_conformance_audit.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. The blueprint plan owns the ratified UI-system delivery program: package extraction, golden-asserted catalog, one identity registry, binding naming grammar, and Migration Protocol v2. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git owns catalog history. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
-| Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
+| Design parity inventory and composition migration | `design_parity/` | Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
 | Cross-surface feature contracts | `../design/features/feature_contract.schema.json` | Executable feature identities spanning Flutter, marketing, and admin authorities while keeping each runtime's routes, actions, components, data contracts, previews, captures, and tests explicit. |
 | Code, Figma, and Claude Design sync | `../design/components/README.md`, `../design/sync/README.md` | Canonical component/concept identity plus generated cross-tool mapping, contract digests, live capability evidence, and the Badge + Field rollout gate. |
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |

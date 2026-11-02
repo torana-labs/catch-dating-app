@@ -5,7 +5,6 @@ import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
-const stateMatrixPath = fromRepo("docs/design_parity/state_matrix.json");
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -107,18 +106,12 @@ function printSummary() {
 function collectContractFiles() {
   const files = new Set();
   const screenContracts = readJson(screenContractsPath);
-  const stateMatrix = readJson(stateMatrixPath);
 
   for (const screen of screenContracts.screens ?? []) {
     addBinding(files, screen.source);
     for (const binding of screen.stateController?.files ?? []) addBinding(files, binding);
     for (const binding of screen.stateController?.mutationOwners ?? []) addBinding(files, binding);
     for (const section of screen.composition?.sections ?? []) addBinding(files, section.flutter);
-  }
-  for (const feature of stateMatrix.features ?? []) {
-    for (const screen of feature.screens ?? []) {
-      for (const file of screen.implementationPaths ?? []) files.add(file);
-    }
   }
   return files;
 }

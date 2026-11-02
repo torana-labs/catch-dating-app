@@ -5253,34 +5253,6 @@
       }
     },
     {
-      "id": "design:parity-matrix",
-      "category": "design",
-      "path": "tool/design/check_design_parity_matrix.mjs",
-      "impactPaths": [
-        "docs/design_parity/state_matrix.json",
-        "tool/ui_capture/route_inventory.json",
-        "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "design/components/catch.components.json",
-        "design/screens/catch.screens.json",
-        "design/features/generated/**"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "command": "node tool/design/check_design_parity_matrix.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Validates the feature-by-feature design parity state matrix against routes, captures, components, screen contracts, and source paths.",
-      "checks": [
-        "node --check tool/design/check_design_parity_matrix.mjs",
-        "node tool/design/check_design_parity_matrix.mjs --check"
-      ],
-      "role": "finder"
-    },
-    {
       "id": "design:comprehensive-todo-summary",
       "category": "design",
       "path": "tool/design/check_comprehensive_todo_summary.mjs",
@@ -5302,8 +5274,7 @@
       },
       "impactPaths": [
         "docs/design_parity/comprehensive_todo.md",
-        "design/screens/catch.screens.json",
-        "docs/design_parity/state_matrix.json"
+        "design/screens/catch.screens.json"
       ]
     },
     {
@@ -5888,7 +5859,6 @@
         "node tool/ui_capture/check_route_inventory.mjs --check",
         "node tool/ui_capture/check_capture_coverage.mjs --check",
         "node tool/design/check_host_shell_coverage.mjs",
-        "node tool/design/check_design_parity_matrix.mjs --check",
         "node --test tool/design/check_comprehensive_todo_summary.test.mjs",
         "node tool/design/check_comprehensive_todo_summary.mjs --check",
         "node tool/design/check_screen_coverage.mjs --check",
