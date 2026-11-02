@@ -67,6 +67,7 @@ export const Contract: Story = {
     const canvas = within(canvasElement);
     const [selected] = canvas.getAllByRole("button", {name: "Social run 12"});
     await expect(selected).toHaveAttribute("aria-current", "true");
+    await expect(getComputedStyle(selected).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
     const [link] = canvas.getAllByRole("link", {name: /Sunday Long Run/});
     await userEvent.tab();
     await expect(canvas.getAllByRole("button", {name: "Dinner"})[0]).toHaveFocus();

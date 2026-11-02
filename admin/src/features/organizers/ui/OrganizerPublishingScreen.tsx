@@ -51,7 +51,6 @@ import {
   AdminToolbar,
   AdminWorkbenchStack,
   CheckboxField,
-  DataTable,
   EmptyState,
   PageHeader,
   Panel,

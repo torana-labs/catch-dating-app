@@ -24,7 +24,6 @@ import {
   type AdminOverviewQueueIntent,
   type AdminOverviewSignalTone,
   type AdminSignalTone,
-  type DataTableVariant,
   type AdminFormVariant,
   type AdminEditorGridElement,
   type AdminTagRowElement,

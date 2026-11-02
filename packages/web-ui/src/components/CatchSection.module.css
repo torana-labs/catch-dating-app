@@ -46,7 +46,19 @@
 .list[data-dividers="between"] > * + * { border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
 .list[data-dividers="all"] > * { border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
 
-/* A list you pick from is navigation: no lines once a row is chosen. */
+/*
+ * A list you pick from is navigation: no lines once a row is chosen, rows 2px
+ * apart, and every row keeps the chosen row's width and radius so a hover lines
+ * up with it. The row reads these two variables, which leaves other children
+ * (a search field above the rows) where they are.
+ */
+.list:has([aria-current="true"], [aria-current="page"]) {
+  --catch-row-inset: var(--catch-row-bleed, var(--catch-space-s3));
+  --catch-row-radius: var(--catch-radius-md);
+
+  gap: var(--catch-space-micro2);
+}
+
 .list:has([aria-current="true"], [aria-current="page"]) > * { border: 0; }
 
 .section[data-container="tile"] .list {

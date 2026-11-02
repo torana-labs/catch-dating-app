@@ -50,7 +50,6 @@ import {
   AdminWorkbenchNote,
   AlertRow,
   CheckboxField,
-  DataTable,
   EmptyState,
   PageHeader,
   Panel,

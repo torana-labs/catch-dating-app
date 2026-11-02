@@ -23,7 +23,6 @@ import {
   type QualityRowTone,
   type AdminOverviewQueueIntent,
   type AdminOverviewSignalTone,
-  type DataTableVariant,
   type AdminFormVariant,
   type AdminEditorGridElement,
   type AdminTagRowElement,

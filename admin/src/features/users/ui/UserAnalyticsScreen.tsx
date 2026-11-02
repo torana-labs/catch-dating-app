@@ -34,7 +34,6 @@ import {
   AdminWorkbenchNote,
   AdminWorkbenchStack,
   AlertRow,
-  DataTable,
   EmptyState,
   Panel,
   QualityList,

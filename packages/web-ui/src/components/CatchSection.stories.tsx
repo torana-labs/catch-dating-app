@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {CatchField} from "./CatchField";
 import {CatchIndexRow} from "./CatchIndexRow";
 import {CatchSection} from "./CatchSection";
 import {CatchViewport} from "./CatchViewport";
@@ -27,6 +28,11 @@ export const Contract: Story = {
           <CatchIndexRow onTap={noop} title="Intake" />
           <CatchIndexRow onTap={noop} selected title="Payments" />
           <CatchIndexRow onTap={noop} title="Safety" />
+        </CatchSection>
+        <CatchSection dividers="none" title="Which host is it?">
+          <CatchField onChanged={noop} recipe="input" title="Search organizers" value="Harbor" />
+          <CatchIndexRow onTap={noop} selected subtitle="Mumbai" title="Harbor Social Club" />
+          <CatchIndexRow onTap={noop} subtitle="Goa" title="Harbor Run Club" />
         </CatchSection>
         <CatchSection container="tile" note="3 of 4" title="Checks">
           <CatchIndexRow title="One real organizer" />
