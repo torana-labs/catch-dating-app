@@ -175,28 +175,30 @@ class CatchDock extends StatelessWidget {
                     CatchSpacing.s4,
                     CatchSpacing.s0,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        CatchIcons.spark,
-                        size: CatchIconSize.xs,
-                        color: action.catchLineAccent ?? t.ink2,
-                      ),
-                      const SizedBox(width: CatchSpacing.micro6),
-                      Flexible(
-                        child: Text(
-                          action.catchLine!.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: CatchTextStyles.monoLabel(
-                            context,
-                            color: t.ink2,
+                  child: _DockTextBound(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CatchIcons.spark,
+                          size: CatchIconSize.xs,
+                          color: action.catchLineAccent ?? t.ink2,
+                        ),
+                        const SizedBox(width: CatchSpacing.micro6),
+                        Flexible(
+                          child: Text(
+                            action.catchLine!.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: CatchTextStyles.monoLabel(
+                              context,
+                              color: t.ink2,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               Padding(
@@ -237,12 +239,14 @@ class CatchDock extends StatelessWidget {
                     ),
                     if (action.footnote != null) ...[
                       const SizedBox(height: CatchSpacing.s2),
-                      Text(
-                        action.footnote!,
-                        textAlign: TextAlign.center,
-                        style: CatchTextStyles.monoLabelS(
-                          context,
-                          color: t.ink3,
+                      _DockTextBound(
+                        child: Text(
+                          action.footnote!,
+                          textAlign: TextAlign.center,
+                          style: CatchTextStyles.monoLabelS(
+                            context,
+                            color: t.ink3,
+                          ),
                         ),
                       ),
                     ],
@@ -307,4 +311,22 @@ class CatchDock extends StatelessWidget {
         ? SafeArea(top: false, child: dock)
         : dock;
   }
+}
+
+/// Keeps the dock's own text from taking a screen's content away at large text
+/// sizes: past a fifth of the screen height, the text scrolls.
+class _DockTextBound extends StatelessWidget {
+  const _DockTextBound({required this.child});
+
+  static const double _maxScreenFraction = 1 / 5;
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.sizeOf(context).height * _maxScreenFraction,
+    ),
+    child: SingleChildScrollView(primary: false, child: child),
+  );
 }
