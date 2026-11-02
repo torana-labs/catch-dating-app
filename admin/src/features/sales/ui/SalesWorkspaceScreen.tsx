@@ -25,7 +25,6 @@ import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
 import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
-import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 import {renderSalesNominationWorkspace} from "./SalesNominationPanel";
 
@@ -34,7 +33,7 @@ import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "workflow" | "activity" |
-  "opportunities" | "research" | "demo" | "commercial" | "intelligence";
+  "opportunities" | "research" | "demo" | "intelligence";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "today", label: "Today"},
@@ -53,7 +52,6 @@ const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "activity", label: "Activity"},
   {id: "opportunities", label: "Opportunities"},
   {id: "intelligence", label: "Fit & outreach"},
-  {id: "commercial", label: "Pilot & terms"},
   {id: "research", label: "Research"},
 ];
 const stageOptions = [
@@ -543,8 +541,8 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     <AdminButton onClick={() => void controller.detail.refetch()}>Try again</AdminButton>
   </EmptyState>;
   const availableDetailTabs = assignedStaffOnly ? detailTabs.filter((item) =>
-    item.id !== "demo" && item.id !== "commercial") : detailTabs;
-  const visibleTab = assignedStaffOnly && (tab === "demo" || tab === "commercial") ?
+    item.id !== "demo") : detailTabs;
+  const visibleTab = assignedStaffOnly && tab === "demo" ?
     "overview" : tab;
   return <AdminDetailScreenStack>
     <AdminToolbar>
@@ -574,8 +572,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       organizerId={detail.account.organizerId}
       organizerName={detail.organizerSummary.name}
       currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
-    {visibleTab === "commercial" && !assignedStaffOnly ? renderSalesCommercialWorkspace(detail,
-      controller.evidence.data?.rows ?? [], isAdminOwner) : null}
     {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
       key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
       organizerId={detail.account.organizerId}

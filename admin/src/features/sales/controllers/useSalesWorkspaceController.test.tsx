@@ -1,7 +1,8 @@
 import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
-import {salesErrorMessage, toLocalDateTimeInput,
+import {salesErrorMessage} from "./salesLabels";
+import {toLocalDateTimeInput,
   useSalesWorkspaceController} from
   "./useSalesWorkspaceController";
 

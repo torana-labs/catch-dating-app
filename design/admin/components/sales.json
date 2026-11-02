@@ -137,6 +137,27 @@
       "notes": "Owner-reviewed private synthetic demo setup and revocable invitations; grants remain only in memory. Owner exact recipient/preview opt-in with independent sharing revision, explicit expiry and withdrawal; pending wording needs normal blueprint review."
     },
     {
+      "id": "workspace_sales_host_commercial",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesHostCommercialWorkspace.tsx",
+      "exportName": "SalesHostCommercialWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSales.stories.tsx",
+        "exportName": "SalesHostCommercialStory",
+        "states": [
+          "pilot",
+          "quote",
+          "payment-unknown",
+          "stage-history",
+          "every-deal"
+        ]
+      },
+      "notes": "One deal's pilot, quote, payment and close under Deals on a host's page, on CatchSection and CatchMetaRow with CatchSheet editors bound to the revision that was opened."
+    },
+    {
       "id": "workspace_sales_import",
       "kind": "workspace",
       "owner": "features/sales",
@@ -188,13 +209,11 @@
       "preview": {
         "status": "planned",
         "states": [
-          "contacts",
-          "evidence",
-          "suppression",
+          "next-steps",
           "draft-blocked"
         ]
       },
-      "notes": "Private contact and evidence views with explicit account/contact restriction decisions and draft readiness boundary."
+      "notes": "The older host page's next steps and draft readiness boundary, until those go."
     }
   ]
 }

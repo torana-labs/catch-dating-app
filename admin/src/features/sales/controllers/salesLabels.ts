@@ -7,6 +7,7 @@ import type {
   SalesTask,
   SalesTaskKind,
 } from "../api/salesTypes";
+import type {CommercialQuote, CommercialSettlementInput, CommercialStatus, CommercialTerms} from "../api/salesCommercialTypes";
 
 export const taskKindLabels: Record<SalesTaskKind, string> = {
   research: "Review", reply: "Reply", follow_up: "Follow-up", demo: "Demo", pilot: "Pilot",
@@ -108,6 +109,14 @@ export const contactReviewLabels: Record<SalesContact["relationship"]["contactab
   suppressed: {text: "Don't contact", tone: "danger"},
 };
 
+export function salesErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/aborted|revision mismatch|record changed since review/iu.test(message)) {
+    return "Someone updated this record. Compare the latest details before saving again. Your edits are still here.";
+  }
+  return message || "The change could not be saved. Your edits are still here.";
+}
+
 export function stageLabel(stage: string): string {
   const words = stage.replace(/_/gu, " ");
   return words[0]?.toUpperCase() + words.slice(1);
@@ -133,3 +142,19 @@ export const isoFrom = (local: string): string | null => {
   const at = new Date(local);
   return Number.isNaN(at.getTime()) ? null : at.toISOString();
 };
+
+/** A deal's pilot, quote and collection, in the words on the host page. */
+export const pilotStatusLabels: Record<CommercialStatus, string> = {
+  draft: "Draft", reviewed: "Reviewed", active: "Running", completed: "Finished", cancelled: "Cancelled",
+};
+export const quoteStatusLabels: Record<CommercialQuote["status"], string> = {
+  draft: "Draft", approved: "Approved", accepted_reviewed: "Accepted",
+};
+export const billingCadenceLabels: Record<CommercialTerms["billingCadence"], string> = {
+  one_time: "One time", monthly: "Monthly", annual: "Yearly", usage_based: "By usage",
+};
+export const settlementMethodLabels: Record<CommercialSettlementInput["settlementMethod"], string> = {
+  bank_transfer: "Bank transfer", cash: "Cash", other_external: "Another way, outside Catch",
+};
+export const moneyLabel = (amountMinor: number, currency: string) =>
+  new Intl.NumberFormat("en-IN", {style: "currency", currency}).format(amountMinor / 100);
