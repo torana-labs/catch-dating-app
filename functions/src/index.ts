@@ -82,6 +82,7 @@ export {
 export {onOrganizerContactEventEdgeInviteAttributed} from
   "./events/eventInviteAttributionProjection";
 export {decideEventJoinRequest} from "./events/decideEventJoinRequest";
+export {listOrganizerRequests} from "./events/organizerRequests";
 export {markEventAttendance} from "./events/markEventAttendance";
 export {
   importEventAttendees,

@@ -447,6 +447,8 @@
     "ListMyHostAssignmentsCallablePayload",
     "ListOrganizerBillsCallablePayload",
     "ListOrganizerBillsCallableResponse",
+    "ListOrganizerRequestsCallablePayload",
+    "ListOrganizerRequestsCallableResponse",
     "ListOfferEventTargetsCallablePayload",
     "ListOrganizerApplicationsCallablePayload",
     "ListOrganizerAttentionItemsCallablePayload",
