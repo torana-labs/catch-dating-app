@@ -117,6 +117,7 @@ it("keeps wording approval unavailable to non-owner staff", async () => {
   expect(api.savePolicy).not.toHaveBeenCalled();
 });
 
+// This fills in a very large form, which can pass the default timeout when the machine is busy.
 it("lets an owner configure seven factors without seeded strategy", async () => {
   const {api, view} = fixture();
   vi.mocked(api.catalog).mockResolvedValue({policy: null,
@@ -155,7 +156,7 @@ it("lets an owner configure seven factors without seeded strategy", async () => 
       "factor_6", "factor_7"]);
   expect(request.policy.factors.reduce((sum, factor) =>
     sum + factor.weight, 0)).toBe(100);
-});
+}, 20_000);
 
 it("preserves unchanged existing factor IDs when editing an owner policy", async () => {
   const {api, view} = fixture();

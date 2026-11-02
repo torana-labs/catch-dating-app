@@ -677,7 +677,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/hosts",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -970,7 +970,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/settings",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1003,7 +1003,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/imports",
+      "guiPath": "/sales/settings",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1029,7 +1029,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/imports",
+      "guiPath": "/sales/settings",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1162,7 +1162,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/sales/settings",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1700,7 +1700,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/inbox",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1722,9 +1722,10 @@
       "actionId": "sales.intents.list",
       "callable": "adminListSalesInboundIntents",
       "workflowIds": [
+        "inbox",
         "sales"
       ],
-      "guiPath": "/sales/research",
+      "guiPath": "/inbox",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1743,7 +1744,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/pipeline",
+      "guiPath": "/sales/deals",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1762,7 +1763,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/pipeline",
+      "guiPath": "/sales/hosts",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1985,7 +1986,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/pipeline",
+      "guiPath": "/sales/deals",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [

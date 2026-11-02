@@ -20,16 +20,17 @@ describe("Sales routes", () => {
     expect(resolveAdminRoute("/sales/hosts/host-1/privacy")).toMatchObject({nav: "sales-hosts", salesHostPage: "privacy", params: {salesOrganizerId: "host-1"}});
   });
 
-  it("keeps a host's full tools and adding a host reachable from the new Sales screens", () => {
-    expect(resolveAdminRoute("/sales/hosts/host-1/tools")).toMatchObject({nav: "sales", salesArea: "hosts",
-      params: {salesOrganizerId: "host-1"}});
-    expect(resolveAdminRoute("/sales/add-host")).toMatchObject({nav: "sales", salesArea: "hosts"});
+  it("keeps a host's remaining tools reachable, and adding a host opens over Hosts", () => {
+    expect(resolveAdminRoute("/sales/hosts/host-1/tools")).toMatchObject({nav: "sales", salesArea: "hosts", params: {salesOrganizerId: "host-1"}});
+    expect(resolveAdminRoute("/sales/add-host")).toMatchObject({nav: "sales-hosts", salesHostPage: "add"});
+    expect(resolveAdminRoute("/sales/fit-queue")).toMatchObject({nav: "sales-hosts", salesHostPage: "fit-queue"});
     expect(resolveAdminRoute("/sales/hosts/host-1").nav).toBe("sales-hosts");
+    expect(resolveAdminRoute("/sales/settings")).toMatchObject({nav: "sales", salesArea: "settings"});
   });
 
-  it("keeps the older Sales pages reachable until their tools move", () => {
-    for (const area of ["pipeline", "pilots", "research", "settings"] as const) {
-      expect(resolveAdminRoute(`/sales/${area}`)).toMatchObject({nav: "sales", salesArea: area});
-    }
+  it("sends the retired Sales pages to what replaced them", () => {
+    expect(resolveAdminRoute("/sales/pipeline").redirect).toBe("/sales/deals");
+    expect(resolveAdminRoute("/sales/pilots").redirect).toBe("/sales/deals");
+    expect(resolveAdminRoute("/sales/research").redirect).toBe("/sales/hosts");
   });
 });

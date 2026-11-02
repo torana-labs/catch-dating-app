@@ -5,7 +5,6 @@ import {SalesWorkspaceScreen} from "./SalesWorkspaceScreen";
 
 const controllerMock = vi.hoisted(() => ({use: vi.fn()}));
 const childMocks = vi.hoisted(() => ({
-  fitQueue: vi.fn(), funnel: vi.fn(),
   history: vi.fn(), privacy: vi.fn(), records: vi.fn(),
   settings: vi.fn(),
 }));
@@ -26,12 +25,6 @@ vi.mock("../controllers/useSalesWorkspaceController", () => ({
   ],
   toLocalDateTimeInput: () => "2026-10-07T09:30",
   useSalesWorkspaceController: controllerMock.use,
-}));
-vi.mock("./SalesFitQueueWorkspace", () => ({
-  renderSalesFitQueueWorkspace: childMocks.fitQueue,
-}));
-vi.mock("./SalesFunnelWorkspace", () => ({
-  renderSalesFunnelWorkspace: childMocks.funnel,
 }));
 vi.mock("./SalesImportedHistoryPanel", () => ({
   renderSalesImportedHistory: childMocks.history,
@@ -59,28 +52,9 @@ function controller() {
     marketLabel: "India", appVisibility: "private", claimStatus: "unclaimed"},
   activities: [], opportunities: [], tasks: [], customValues: []};
   return {
-    accounts: query({rows: [{...account, name: "Assigned Host", city: "Mumbai",
-      marketLabel: "India", eventTypes: ["social"], fitLabel: null, stage: null}],
-    nextCursor: null}),
-    tasks: query({rows: [], nextCursor: null}),
-    opportunities: query({rows: [], nextCursor: null}),
-    inboundIntents: query({rows: [], nextCursor: null}),
-    identityMatches: query({rows: [], nextCursor: null}),
-    canonicalMatches: query([]),
     customFields: query({rows: []}), contacts: query({rows: [], nextCursor: null}),
     detail: query(detail),
-    canonicalSearch: "", identitySearch: "", query: "", researchStatus: "all",
-    ownerUid: "", opportunityStage: "", validAccountQuery: true,
     isSaving: false,
-    hasPreviousPage: false, hasPreviousTaskPage: false,
-    hasPreviousOpportunityPage: false, hasPreviousInboundPage: false,
-    setCanonicalSearch: vi.fn(), setIdentitySearch: vi.fn(),
-    setAccountFilters: vi.fn(), setStageFilter: vi.fn(),
-    previousPage: vi.fn(), nextPage: vi.fn(), previousTaskPage: vi.fn(),
-    nextTaskPage: vi.fn(), previousOpportunityPage: vi.fn(),
-    nextOpportunityPage: vi.fn(), previousInboundPage: vi.fn(),
-    nextInboundPage: vi.fn(),
-    addAccount: vi.fn(), nominateOrganizer: vi.fn(async () => true),
     saveAccount: vi.fn(async () => true),
     logActivity: vi.fn(async () => true), saveOpportunity: vi.fn(), saveTask: vi.fn(),
     saveCustomValue: vi.fn(),
@@ -91,8 +65,7 @@ function renderWorkspace(next: Partial<Parameters<typeof SalesWorkspaceScreen>[0
   const props = {
     area: "hosts" as const, currentUserUid: "staff-one", isAdminOwner: false,
     assignedStaffOnly: true, selectedOrganizerId: null,
-    onAreaChange: vi.fn(), onOpenHost: vi.fn(), onBackToHosts: vi.fn(),
-    onOpenIntake: vi.fn(), onOpenOrganizer: vi.fn(), ...next,
+    onGoToToday: vi.fn(), onBackToHosts: vi.fn(), onOpenOrganizer: vi.fn(), ...next,
   };
   return {props, ...render(
     <AdminFeedbackProvider onError={vi.fn()} onNotice={vi.fn()}>
@@ -110,60 +83,15 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
   });
   afterEach(cleanup);
 
-  it("shows only assigned work areas and removes global host acquisition controls", () => {
-    renderWorkspace();
-
-    expect(screen.getByRole("heading", {name: "Assigned hosts"})).toBeTruthy();
-    expect(screen.getAllByRole("option").map((option) => option.textContent))
-      .toEqual(["Today", "Hosts", "Pipeline", "All research statuses",
-        "Needs research", "Ready for review"]);
-    expect(screen.queryByRole("button", {name: "Add host"})).toBeNull();
-    expect(screen.queryByLabelText("Owner")).toBeNull();
-    expect(childMocks.fitQueue).not.toHaveBeenCalled();
-    expect(controllerMock.use).toHaveBeenCalledWith(expect.objectContaining({
-      area: "hosts", assignedStaffOnly: true,
-    }));
-  });
-
-  it("lets assigned staff nominate an organizer Catch does not list yet", async () => {
-    renderWorkspace();
-
-    fireEvent.click(screen.getByRole("button", {name: "Nominate organizer"}));
-    const nominate = screen.getByRole("button", {name: "Nominate"});
-    expect(nominate).toHaveProperty("disabled", true);
-    fireEvent.change(screen.getByLabelText("City"), {target: {value: " Bengaluru "}});
-    fireEvent.change(screen.getByLabelText("Links, one per line"), {target: {value:
-      "https://lu.ma/thebhag\n\n lu.ma/thebhag \nhttps://lu.ma/thebhag"}});
-    expect(screen.getByRole("status").textContent).toContain('Check "lu.ma/thebhag"');
-    fireEvent.change(screen.getByLabelText("Links, one per line"), {target: {value:
-      "https://lu.ma/thebhag\n https://thebhag.in \nhttps://lu.ma/thebhag"}});
-    fireEvent.change(screen.getByLabelText("What should the reviewer know?"),
-      {target: {value: "  Sunday long runs  "}});
-    fireEvent.click(nominate);
-    await waitFor(() => expect(current.nominateOrganizer).toHaveBeenCalledWith({
-      name: null, market: "Bengaluru",
-      urls: ["https://lu.ma/thebhag", "https://thebhag.in"],
-      notes: "Sunday long runs", categories: [],
-    }));
-    await waitFor(() => expect(screen.queryByRole("button", {name: "Nominate"})).toBeNull());
-  });
-
-  it("keeps the assigned pipeline but does not render the global funnel", () => {
-    renderWorkspace({area: "pipeline"});
-
-    expect(screen.getByRole("heading", {name: "Opportunities"})).toBeTruthy();
-    expect(childMocks.funnel).not.toHaveBeenCalled();
-  });
-
   it("fails closed on a direct route to a global Sales area", () => {
-    const onAreaChange = vi.fn();
-    renderWorkspace({area: "settings", onAreaChange});
+    const onGoToToday = vi.fn();
+    renderWorkspace({area: "settings", onGoToToday});
 
     expect(screen.getByRole("heading", {name: "Assigned Sales access"})).toBeTruthy();
     expect(childMocks.settings).not.toHaveBeenCalled();
     expect(childMocks.privacy).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", {name: "Go to Today"}));
-    expect(onAreaChange).toHaveBeenCalledWith("today");
+    expect(onGoToToday).toHaveBeenCalled();
   });
 
   // "When" is a datetime-local wall clock read in the employee's browser zone.

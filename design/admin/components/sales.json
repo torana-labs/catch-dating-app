@@ -109,7 +109,23 @@
           "save-conflict"
         ]
       },
-      "notes": "Private Sales route with server-paged host, task and opportunity queries; account, task, activity and opportunity changes use revision checks and request receipts."
+      "notes": "The older Sales page, now only one host's custom fields and imported history and Sales settings; account, task, activity and opportunity changes use revision checks and request receipts."
+    },
+    {
+      "id": "workspace_sales_add_host",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesAddHostWorkspace.tsx",
+      "exportName": "SalesAddHostWorkspace",
+      "css": [],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "add-existing",
+          "nominate"
+        ]
+      },
+      "notes": "Adds a listed organizer to Sales or nominates a new one, in a CatchSheet over Hosts with its own controller."
     },
     {
       "id": "workspace_sales_demo",
