@@ -169,7 +169,10 @@ void main() {
     },
   );
 
-  for (final view in HostAudienceView.values) {
+  // Requests holds its own queue panes in CatchPaneLayout.
+  for (final view in HostAudienceView.values.where(
+    (view) => view != HostAudienceView.requests,
+  )) {
     testWidgets(
       'Audience ${view.name} keeps its detail slot before data loads',
       (tester) async {

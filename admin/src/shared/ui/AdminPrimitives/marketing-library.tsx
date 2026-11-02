@@ -40,7 +40,7 @@ import {
   type PanelProps,
 } from "./shared";
 
-import {AdminLinkButton, InlineTextField} from "./actions";
+import {AdminLinkButton} from "./actions";
 import {SelectableCardButton} from "./cards";
 import {AdminPanel} from "./data";
 import {AdminEyebrow} from "./shell";
@@ -259,66 +259,6 @@ export function AdminMarketingStackedSections({
     <div {...props} className={classNames("marketing-stacked-sections", className)}>
       {children}
     </div>
-  );
-}
-
-export function AdminMarketingPanel({
-  className = "",
-  ...props
-}: PanelProps) {
-  return (
-    <AdminPanel
-      {...props}
-      className={classNames("marketing-panel", className)}
-    />
-  );
-}
-
-export function AdminMarketingTitleInput({
-  className = "",
-  ...props
-}: Parameters<typeof InlineTextField>[0]) {
-  return (
-    <InlineTextField
-      {...props}
-      className={classNames("marketing-title-input", className)}
-    />
-  );
-}
-
-export function AdminMarketingSection({
-  children,
-  className = "",
-  meta,
-  title,
-  ...props
-}: Omit<HTMLAttributes<HTMLElement>, "title"> & {
-  children: ReactNode;
-  meta?: ReactNode;
-  title: ReactNode;
-}) {
-  return (
-    <section {...props} className={classNames("marketing-section", className)}>
-      <AdminMarketingSectionHeader meta={meta} title={title} />
-      {children}
-    </section>
-  );
-}
-
-export function AdminMarketingSectionHeader({
-  className = "",
-  meta,
-  title,
-  ...props
-}: Omit<HTMLAttributes<HTMLElement>, "title"> & {
-  meta?: ReactNode;
-  title: ReactNode;
-}) {
-  return (
-    <header {...props} className={classNames("marketing-section-header", className)}>
-      <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
-      {meta ? <span>{meta}</span> : null}
-    </header>
   );
 }
 

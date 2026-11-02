@@ -298,6 +298,7 @@ export 'callables/list_organizer_luma_events_callable_request.g.dart';
 export 'callables/list_organizer_manual_send_tasks_callable_request.g.dart';
 export 'callables/list_organizer_moments_callable_request.g.dart';
 export 'callables/list_organizer_programs_callable_request.g.dart';
+export 'callables/list_organizer_requests_callable_request.g.dart';
 export 'callables/list_organizer_saved_audiences_callable_request.g.dart';
 export 'callables/list_organizer_whatsapp_threads_callable_request.g.dart';
 export 'callables/list_participant_activity_callable_request.g.dart';

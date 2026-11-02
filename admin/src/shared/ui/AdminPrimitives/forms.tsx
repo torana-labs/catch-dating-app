@@ -74,18 +74,6 @@ export function CheckboxField({
   );
 }
 
-export function AdminOrganizerIntakeCheckboxField({
-  className = "",
-  ...props
-}: Parameters<typeof CheckboxField>[0]) {
-  return (
-    <CheckboxField
-      {...props}
-      className={classNames("intake-checkbox-row", className)}
-    />
-  );
-}
-
 export function DecisionFooter<TTargetType extends string = string>({
   approvalDisabledReason,
   compact = false,

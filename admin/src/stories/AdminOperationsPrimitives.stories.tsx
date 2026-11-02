@@ -54,8 +54,8 @@ import {
   AdminRoadmapList,
   AdminRoadmapListItem,
   AdminStateRow,
+  AdminTagRow,
   AdminSurfacePreview,
-  AdminTagList,
   AdminWorkspace,
   AlertRow,
   DataTable,
@@ -115,10 +115,10 @@ export const AdminSurfacePreviewStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminSurfacePreview>
-        <AdminTagList>
+        <AdminTagRow>
           <CatchBadge label="public listing" />
           <CatchBadge recipe="status" tone="success" label="claim CTA" />
-        </AdminTagList>
+        </AdminTagRow>
         <QualityRow icon={<Eye size={16} />} tone="success">
           Preview copy matches the generated route payload.
         </QualityRow>
@@ -470,10 +470,10 @@ export const AdminFeatureDropFeatureListStory: Story = {
       <AdminFeatureDropFeatureList>
         <AdminFeatureDropFeatureEditor>
           <strong>Organizer profiles</strong>
-          <AdminTagList>
+          <AdminTagRow>
             <CatchBadge recipe="status" tone="success" label="ready" />
             <CatchBadge label="public route" />
-          </AdminTagList>
+          </AdminTagRow>
         </AdminFeatureDropFeatureEditor>
       </AdminFeatureDropFeatureList>
     </AdminWorkspace>

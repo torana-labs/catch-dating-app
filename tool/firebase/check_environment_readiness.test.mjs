@@ -753,12 +753,13 @@ test("Deploy backend checks readiness before any mutation", () => {
   const order = ["Skip a commit older than the deployed one", "Authenticate to Google Cloud",
     "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
     "Choose the Functions to deploy", "Check this environment is ready", "Deploy Firestore indexes",
-    "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
+    "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
     "Verify the active rules match this commit", "Record the deployed commit"].map(step);
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
   assert.match(block("Check this environment is ready"), /check_environment_readiness\.mjs/u);
   for (const name of ["Authenticate to Google Cloud", "Materialize Functions parameters from this environment's variables",
-    "Check this environment is ready", "Deploy Functions", "Check callable access and Functions parity"]) {
+    "Check this environment is ready", "Retire named Functions", "Deploy Functions",
+    "Check callable access and Functions parity"]) {
     assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' \}\}/u,
       `${name} is skipped for a commit older than the deployed one`);
   }
@@ -825,6 +826,63 @@ test("Deploy backend skips a commit older than the deployed one", (t) => {
     assert.equal(result.status, 0, `${label}: ${result.stderr}`);
     assert.equal(fs.readFileSync(output, "utf8"), skipped ? "skip=true\n" : "", label);
   }
+});
+
+test("Deploy backend retires exactly the listed Functions that are live", (t) => {
+  const script = workflowStepShell(backendDeployWorkflow(), "Retire named Functions");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-retire-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  const {entrySource} = createRequire(import.meta.url)("../../functions/scripts/build-deploy-codebases.cjs");
+  fs.mkdirSync(path.join(cwd, "functions"));
+  fs.mkdirSync(path.join(cwd, "build/functions-codebases/admin"), {recursive: true});
+  fs.writeFileSync(path.join(cwd, "build/functions-codebases/admin/index.js"),
+    entrySource([{module: "x", names: [{name: "kept", symbol: "kept"}]}]));
+  fs.mkdirSync(path.join(cwd, "tool"));
+  const calls = path.join(cwd, "calls.txt");
+  fs.writeFileSync(path.join(cwd, "tool/firebase_with_env.sh"), `#!/usr/bin/env bash
+    echo "$*" >> "${calls}"
+    if [[ "$2" == "functions:list" ]]; then echo "$LIVE"; exit "$LIST_EXIT"; fi
+    if [[ "$2" == "functions:delete" ]]; then exit "$DELETE_EXIT"; fi
+  `, {mode: 0o755});
+  const run = (retired, live = ["kept", "goneHere", "alsoGone"], deleteExit = 0, listExit = 0) => {
+    fs.writeFileSync(path.join(cwd, "functions/retired-functions.json"), JSON.stringify(retired));
+    fs.writeFileSync(calls, "");
+    const result = spawnSync("bash", ["-c", script], {cwd, encoding: "utf8", env: {...process.env,
+      DEPLOY_ENVIRONMENT: "dev", GITHUB_STEP_SUMMARY: path.join(cwd, "summary.md"), DELETE_EXIT: String(deleteExit), LIST_EXIT: String(listExit),
+      LIVE: JSON.stringify({status: "success", result: live.map((id) => ({id}))})}});
+    return {status: result.status, stdout: result.stdout, calls: fs.readFileSync(calls, "utf8").trim().split("\n").filter(Boolean)};
+  };
+  const list = "dev functions:list --json";
+  assert.deepEqual(run([]).calls, [], "an empty list asks the environment nothing");
+  const both = run(["goneHere", "neverDeployed", "alsoGone"]);
+  assert.equal(both.status, 0, both.stdout);
+  assert.deepEqual(both.calls, [list, "dev functions:delete goneHere alsoGone --force --non-interactive"],
+    "only listed names that are live, by name, and never a broad selector");
+  const absent = run(["neverDeployed"]);
+  assert.equal(absent.status, 0, "a rerun after a deletion has nothing left to do");
+  assert.deepEqual(absent.calls, [list]);
+  const empty = run(["goneHere"], []);
+  assert.equal(empty.status, 0, "an environment with no Functions yet has nothing to retire");
+  assert.deepEqual(empty.calls, [list]);
+  for (const refused of [["goneHere", "kept"], ["kept-group"], ["functions:kept"]]) {
+    const result = run(refused);
+    assert.equal(result.status, 1, `${refused} is refused`);
+    assert.deepEqual(result.calls, [], "nothing is read or deleted when the list is wrong");
+  }
+  const group = run(["group", "goneHere"], ["group-child", "goneHere"]);
+  assert.equal(group.status, 1, "the CLI would also take the group's Functions");
+  assert.deepEqual(group.calls, [list]);
+  const unread = run(["goneHere"], undefined, 0, 4);
+  assert.equal(unread.status, 4, "an unreadable environment stops the deploy");
+  assert.deepEqual(unread.calls, [list]);
+  assert.equal(run(["goneHere"], undefined, 3).status, 3, "a failed deletion stops the deploy");
+});
+
+test("A retired Function is not exported from the Functions source", () => {
+  const retired = JSON.parse(fs.readFileSync(path.join(repoRoot, "functions/retired-functions.json"), "utf8"));
+  assert.ok(Array.isArray(retired) && retired.every((name) => typeof name === "string"));
+  const source = fs.readFileSync(path.join(repoRoot, "functions/src/index.ts"), "utf8");
+  assert.deepEqual(retired.filter((name) => new RegExp(`\\b${name}\\b`, "u").test(source)), []);
 });
 
 test("Deploy backend turns named Functions into exact codebase targets", (t) => {
