@@ -198,6 +198,23 @@
       "notes": "Reviewed private scoring, grounded draft preparation and manual copy; no messaging provider."
     },
     {
+      "id": "workspace_sales_partner_offer",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesPartnerOfferWorkspace.tsx",
+      "exportName": "SalesPartnerOfferWorkspace",
+      "css": [],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "not-offered",
+          "offer-sheet",
+          "offered"
+        ]
+      },
+      "notes": "Offers a host to a referral partner from More on the host page: one CatchIndexRow and a CatchSheet with its own controller."
+    },
+    {
       "id": "workspace_sales_records",
       "kind": "workspace",
       "owner": "features/sales",

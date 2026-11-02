@@ -13,6 +13,11 @@ describe("Sales routes", () => {
     expect(resolveAdminRoute("/sales/nominations/supply-req-1")).toMatchObject({nav: "nominations", params: {nominationItemId: "supply-req-1"}});
   });
 
+  it("gives a host its own privacy page", () => {
+    expect(resolveAdminRoute("/sales/hosts/host-1")).toMatchObject({salesHostPage: "main"});
+    expect(resolveAdminRoute("/sales/hosts/host-1/privacy")).toMatchObject({nav: "sales-hosts", salesHostPage: "privacy", params: {salesOrganizerId: "host-1"}});
+  });
+
   it("keeps a host's full tools and adding a host reachable from the new Sales screens", () => {
     expect(resolveAdminRoute("/sales/hosts/host-1/tools")).toMatchObject({nav: "sales", salesArea: "hosts",
       params: {salesOrganizerId: "host-1"}});

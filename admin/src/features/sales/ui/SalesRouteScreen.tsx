@@ -1,4 +1,4 @@
-import {CatchPageTabBar, CatchTopBar} from "@catch/web-ui";
+import {CatchEmptyState, CatchPageTabBar, CatchPaneLayout, CatchTopBar, CatchWorkspaceHeader} from "@catch/web-ui";
 import {useSalesDealsController, useSalesHostNames} from "../controllers/useSalesDealsController";
 import {useSalesHostCommercialController} from "../controllers/useSalesHostCommercialController";
 import {useSalesHostsController} from "../controllers/useSalesHostsController";
@@ -7,6 +7,8 @@ import {useMyNominationsController} from "../controllers/useMyNominationsControl
 import {MyNominationsScreen} from "./MyNominationsScreen";
 import {SalesDealsScreen} from "./SalesDealsScreen";
 import {SalesHostsScreen} from "./SalesHostsScreen";
+import {SalesPartnerOfferWorkspace} from "./SalesPartnerOfferWorkspace";
+import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {SalesTodayScreen} from "./SalesTodayScreen";
 
 export type SalesScreenArea = "today" | "hosts" | "deals" | "nominations";
@@ -19,8 +21,11 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
-  /** The older host page: fit, demos and privacy. */
+  /** The older host page: fit and demos. */
   onOpenHostTools: (organizerId: string) => void;
+  onOpenHostPrivacy: (organizerId: string) => void;
+  /** Which of one host's own pages is open. */
+  hostPage: "main" | "privacy";
   onOpenOrganizer: (organizerId: string) => void;
   onAddHost: () => void;
   onError: (message: string | null) => void;
@@ -35,11 +40,21 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
     onSelect={onSelect} selectedTaskId={selectedId} />;
 }
 
-function Hosts({uid, ownWorkOnly, isAdminOwner, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost, onError, onNotice}: Props) {
+function HostPrivacy({uid, isAdminOwner, selectedId, onOpenHost}: Props) {
+  return <CatchPaneLayout pattern="reading" main={<>
+    <CatchWorkspaceHeader title="Privacy" kicker="Sales · Hosts" back={{label: "Back to the host", onPressed: () => onOpenHost(selectedId as string)}} />
+    {isAdminOwner ? renderSalesPrivacyWorkspace({actorUid: uid ?? "", isAdminOwner, organizerId: selectedId as string}) :
+      <CatchEmptyState title="Only the owner can open this" />}
+  </>} />;
+}
+
+function Hosts({uid, ownWorkOnly, isAdminOwner, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenHostPrivacy, onAddHost, onError, onNotice}: Props) {
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
   const commercial = useSalesHostCommercialController({organizerId: selectedId, opportunities: controller.host?.opportunities ?? [],
     enabled: !ownWorkOnly, onError, onNotice});
-  return <SalesHostsScreen model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
+  return <SalesHostsScreen onOpenPrivacy={onOpenHostPrivacy} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
+    renderPartnerOffer: ownWorkOnly ? null : (organizerId, organizerName) =>
+      <SalesPartnerOfferWorkspace key={`${uid}:${organizerId}`} actorUid={uid ?? ""} organizerId={organizerId} organizerName={organizerName} />}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }
 
 function Deals({uid, onOpenHost}: Props) {
@@ -63,7 +78,7 @@ const areaTabs = [
  * associate has each area in the navigation; the owner has one Sales entry and these tabs.
  */
 export function SalesRouteScreen({area, ...props}: Props & {area: SalesScreenArea}) {
-  const screen = area === "hosts" ? <Hosts {...props} /> : area === "deals" ? <Deals {...props} /> :
+  const screen = area === "hosts" ? (props.hostPage === "privacy" && props.selectedId ? <HostPrivacy {...props} /> : <Hosts {...props} />) : area === "deals" ? <Deals {...props} /> :
     area === "nominations" ? <Nominations {...props} /> : <Today {...props} />;
   if (props.ownWorkOnly || area === "nominations") return screen;
   return <>
