@@ -12,7 +12,6 @@ const repository = vi.hoisted(() => ({
   nominateSalesOrganizer: vi.fn(),
   linkSalesInboundIntent: vi.fn(),
   listSalesCustomFields: vi.fn(),
-  createSalesCustomField: vi.fn(),
   setSalesCustomFieldValue: vi.fn(),
   recordSalesActivity: vi.fn(),
   updateSalesAccount: vi.fn(),
@@ -22,10 +21,6 @@ const repository = vi.hoisted(() => ({
   reviewSalesEvidenceProposal: vi.fn(),
   addSalesEvidence: vi.fn(),
   setSalesAccountSuppression: vi.fn(),
-  previewSalesImport: vi.fn(),
-  applySalesImport: vi.fn(),
-  previewSalesImportCompensation: vi.fn(),
-  applySalesImportCompensation: vi.fn(),
 }));
 vi.mock("../api/salesRepository", () => repository);
 
@@ -47,8 +42,7 @@ describe("useSalesWorkspaceController", () => {
 
   it("doesn't read custom fields for a sales associate", async () => {
     const {wrapper} = createQueryHarness();
-    renderHook(() => useSalesWorkspaceController({
-      area: "hosts", selectedOrganizerId: "host-one", assignedStaffOnly: true,
+    renderHook(() => useSalesWorkspaceController({ selectedOrganizerId: "host-one", assignedStaffOnly: true,
       onError: vi.fn(), onNotice: vi.fn(),
     }), {wrapper});
     await waitFor(() => expect(repository.getSalesAccount).toHaveBeenCalledWith("host-one"));
@@ -61,8 +55,7 @@ describe("useSalesWorkspaceController", () => {
     const onNotice = vi.fn();
     repository.updateSalesAccount.mockRejectedValueOnce(new Error("network unavailable"))
       .mockResolvedValueOnce({account: {}, receipt: {requestId: "saved", revision: 2}});
-    const {result} = renderHook(() => useSalesWorkspaceController({
-      area: "hosts", selectedOrganizerId: null, onError, onNotice,
+    const {result} = renderHook(() => useSalesWorkspaceController({ selectedOrganizerId: null, onError, onNotice,
     }), {wrapper});
     const input = {organizerId: "host-one", expectedRevision: 1,
       patch: {nextAction: "Follow up"}};
@@ -99,22 +92,4 @@ describe("useSalesWorkspaceController", () => {
     }
   });
 
-  it("does not report an import apply success when the server rejects the reviewed hash", async () => {
-    const {wrapper} = createQueryHarness();
-    const onError = vi.fn();
-    const onNotice = vi.fn();
-    repository.applySalesImport.mockRejectedValue(new Error(
-      "Import changed since the reviewed preview."));
-    const {result} = renderHook(() => useSalesWorkspaceController({
-      area: "settings", selectedOrganizerId: null, onError, onNotice,
-    }), {wrapper});
-    const packet = {sourceId: "file-a", contentHash: "a".repeat(64),
-      mappingVersion: "csv-v1", rows: [{sourceRowId: "row-2", organizerId: null,
-        name: "Host", researchStatus: "needs_research" as const}]};
-    let saved = true;
-    await act(async () => {saved = await result.current.applyImport(packet, "reviewed");});
-    expect(saved).toBe(false);
-    expect(onError).toHaveBeenCalledWith("Import changed since the reviewed preview.");
-    expect(onNotice).not.toHaveBeenCalledWith("Reviewed import applied.");
-  });
 });

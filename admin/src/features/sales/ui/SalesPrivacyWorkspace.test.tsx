@@ -8,15 +8,12 @@ import type {PrivacyApi, PrivacyCase} from "../api/salesPrivacyTypes";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 
 const mocks = vi.hoisted(() => ({mode: "live" as "live" | "sample",
-  search: vi.fn()}));
-vi.mock("../../../shared/api/dataMode", () => ({dataMode: () => mocks.mode}));
-vi.mock("../api/salesRepository", () => ({
-  searchCanonicalOrganizers: mocks.search,
 }));
+vi.mock("../../../shared/api/dataMode", () => ({dataMode: () => mocks.mode}));
 afterEach(() => {cleanup(); vi.clearAllMocks(); vi.unstubAllGlobals();
   mocks.mode = "live";});
 
-function fixture(organizerId?: string, initialCase?: PrivacyCase) {
+function fixture(organizerId = "org-a", initialCase?: PrivacyCase) {
   const api: PrivacyApi = {
     getCase: vi.fn().mockResolvedValue(initialCase ?? {organizerId: "org-a",
       restricted: false, plan: null, policy: null, completeDeletion: false}),
@@ -70,18 +67,6 @@ it("keeps sample privacy mutations unavailable", () => {
   const api = fixture("org-a");
   expect(screen.getByText(/Sample hosts cannot be restricted/u)).toBeTruthy();
   expect(api.getCase).not.toHaveBeenCalled();
-});
-
-it("finds a canonical organizer after its Sales account is absent", async () => {
-  mocks.search.mockResolvedValue([{organizerId: "org-a", name: "Sample Harbor",
-    cityName: "Example City"}]);
-  const api = fixture();
-  fireEvent.change(screen.getByLabelText("Host name"),
-    {target: {value: "Sample"}});
-  fireEvent.click(screen.getByRole("button", {name: "Search hosts"}));
-  fireEvent.click(await screen.findByRole("button", {name: "Open"}));
-  await waitFor(() => expect(api.getCase).toHaveBeenCalledWith("org-a"));
-  expect(screen.getByText(/does not delete product organizers/u)).toBeTruthy();
 });
 
 it("requires exact host-name confirmation before restriction", async () => {

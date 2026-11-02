@@ -750,7 +750,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -777,7 +777,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -970,7 +970,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1003,7 +1003,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1029,7 +1029,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1045,12 +1045,30 @@
       "controlPlane": true
     },
     {
+      "actionId": "sales.imports.hosts",
+      "callable": "adminListSalesImportHosts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/settings/sales",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_imports_hosts_payload.schema.json",
+      "summary": "List the hosts one applied import batch touched, so a correction picks a host.",
+      "example": {
+        "importId": "import-example"
+      }
+    },
+    {
       "actionId": "sales.imports.history.apply",
       "callable": "adminApplySalesImportHistory",
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1108,7 +1126,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1157,12 +1175,29 @@
       "controlPlane": true
     },
     {
+      "actionId": "sales.imports.list",
+      "callable": "adminListSalesImports",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/settings/sales",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_imports_list_payload.schema.json",
+      "summary": "List applied import batches, newest first, without their hosts.",
+      "example": {}
+    },
+    {
       "actionId": "sales.imports.preview",
       "callable": "adminPreviewSalesImport",
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1823,7 +1858,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1848,7 +1883,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1868,7 +1903,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1892,7 +1927,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [
@@ -1912,7 +1947,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1939,7 +1974,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "mutation",
       "risk": "high",
       "roles": [
@@ -1966,7 +2001,7 @@
       "workflowIds": [
         "sales"
       ],
-      "guiPath": "/sales/settings",
+      "guiPath": "/settings/sales",
       "kind": "read",
       "risk": "sensitive-read",
       "roles": [

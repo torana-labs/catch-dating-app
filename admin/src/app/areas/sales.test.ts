@@ -25,7 +25,7 @@ describe("Sales routes", () => {
     expect(resolveAdminRoute("/sales/add-host")).toMatchObject({nav: "sales-hosts", salesHostPage: "add"});
     expect(resolveAdminRoute("/sales/fit-queue")).toMatchObject({nav: "sales-hosts", salesHostPage: "fit-queue"});
     expect(resolveAdminRoute("/sales/hosts/host-1").nav).toBe("sales-hosts");
-    expect(resolveAdminRoute("/sales/settings")).toMatchObject({nav: "sales", salesArea: "settings"});
+    expect(resolveAdminRoute("/sales/settings").redirect).toBe("/settings/sales");
   });
 
   it("sends the retired Sales pages to what replaced them", () => {

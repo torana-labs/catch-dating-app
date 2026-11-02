@@ -1383,6 +1383,8 @@ import {
   hostAcquisitionConsentHTTPResponseSchema,
   joinWaitlistHTTPRequestSchema,
   joinWaitlistHTTPResponseSchema,
+  adminListSalesImportHostsCallablePayloadSchema,
+  adminListSalesImportsCallablePayloadSchema,
 } from "./schema_contract_registry.mjs";
 
 const requireFromRepo = createRequire(
@@ -2787,6 +2789,8 @@ export const validateHostAcquisitionConsentHTTPRequest = ajv.compile(hostAcquisi
 export const validateHostAcquisitionConsentHTTPResponse = ajv.compile(hostAcquisitionConsentHTTPResponseSchema);
 export const validateJoinWaitlistHTTPRequest = ajv.compile(joinWaitlistHTTPRequestSchema);
 export const validateJoinWaitlistHTTPResponse = ajv.compile(joinWaitlistHTTPResponseSchema);
+export const validateAdminListSalesImportHostsCallablePayload = ajv.compile(adminListSalesImportHostsCallablePayloadSchema);
+export const validateAdminListSalesImportsCallablePayload = ajv.compile(adminListSalesImportsCallablePayloadSchema);
 
 export function schemaErrorMessages(validator) {
   return (validator.errors ?? []).map((error) => {

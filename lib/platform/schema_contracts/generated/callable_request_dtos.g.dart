@@ -79,6 +79,8 @@ export 'callables/admin_list_sales_contacts_callable_request.g.dart';
 export 'callables/admin_list_sales_evidence_callable_request.g.dart';
 export 'callables/admin_list_sales_import_history_request.g.dart';
 export 'callables/admin_list_sales_import_history_rows_request.g.dart';
+export 'callables/admin_list_sales_import_hosts_callable_request.g.dart';
+export 'callables/admin_list_sales_imports_callable_request.g.dart';
 export 'callables/admin_list_sales_outreach_drafts_request.g.dart';
 export 'callables/admin_list_support_conversations_callable_request.g.dart';
 export 'callables/admin_nominate_organizer_callable_request.g.dart';
