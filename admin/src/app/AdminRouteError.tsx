@@ -1,5 +1,6 @@
+import {reportCaughtError} from "@catch/web-config/errorReporting";
 import {CatchErrorState} from "@catch/web-ui";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useRouteError} from "react-router";
 import {
   isStaleChunkError,
@@ -14,6 +15,9 @@ export function AdminRouteError() {
   // Renders nothing while the reload is under way, so the page doesn't flash.
   const [reloading] = useState(() =>
     isStaleChunkReloadPending() || (stale && reloadOnceForStaleChunk()));
+  useEffect(() => {
+    if (!stale) reportCaughtError(error);
+  }, [error, stale]);
   if (reloading) return null;
   return (
     <CatchErrorState
