@@ -915,7 +915,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminOverviewMainGrid, AdminOverviewQueueColumns, AdminOverviewAnalyticsClearButton, AdminOverviewLineChart, AdminOverviewBarChart, and AdminOverviewValueSignals instead of passing raw admin overview layout, chart, or signal classes from feature code.",
+    guidance: "Use AdminOverviewQueueColumns, AdminOverviewAnalyticsClearButton, AdminOverviewLineChart, AdminOverviewBarChart, and AdminOverviewValueSignals instead of passing raw admin overview layout, chart, or signal classes from feature code.",
   },
   {
     family: "field-layout",
@@ -1229,7 +1229,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminLoadingIcon or AdminFeatureLoadingState instead of passing the raw spin animation class from app or feature code.",
+    guidance: "Use CatchLoadingIndicator instead of passing the raw spin animation class from app or feature code.",
   },
   {
     family: "admin-app-auth-shell",
@@ -1294,7 +1294,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminFilterBar instead of rendering admin analytics/filter bar shells directly.",
+    guidance: "Use the filters on CatchWorkspaceHeader instead of rendering admin analytics/filter bar shells directly.",
   },
   {
     family: "admin-empty-state",
