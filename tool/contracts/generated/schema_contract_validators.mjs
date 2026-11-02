@@ -759,6 +759,7 @@ import {
   programIdCallablePayloadSchema,
   listOrganizerProgramsCallablePayloadSchema,
   listMyHostAssignmentsCallablePayloadSchema,
+  listOrganizerBillsCallablePayloadSchema,
   createOrganizerProgramCallablePayloadSchema,
   updateOrganizerProgramCallablePayloadSchema,
   archiveProgramCallablePayloadSchema,
@@ -809,6 +810,7 @@ import {
   organizerProgramListCallableResponseSchema,
   programAccessCallableResponseSchema,
   listMyHostAssignmentsCallableResponseSchema,
+  listOrganizerBillsCallableResponseSchema,
   organizerProgramCallableResponseSchema,
   archiveProgramCallableResponseSchema,
   unarchiveProgramCallableResponseSchema,
@@ -2159,6 +2161,7 @@ export const validateTransportOperationReceiptDocument = ajv.compile(transportOp
 export const validateProgramIdCallablePayload = ajv.compile(programIdCallablePayloadSchema);
 export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrganizerProgramsCallablePayloadSchema);
 export const validateListMyHostAssignmentsCallablePayload = ajv.compile(listMyHostAssignmentsCallablePayloadSchema);
+export const validateListOrganizerBillsCallablePayload = ajv.compile(listOrganizerBillsCallablePayloadSchema);
 export const validateCreateOrganizerProgramCallablePayload = ajv.compile(createOrganizerProgramCallablePayloadSchema);
 export const validateUpdateOrganizerProgramCallablePayload = ajv.compile(updateOrganizerProgramCallablePayloadSchema);
 export const validateArchiveProgramCallablePayload = ajv.compile(archiveProgramCallablePayloadSchema);
@@ -2209,6 +2212,7 @@ export const validateSubmitProgramHouseholdRsvpCallableResponse = ajv.compile(su
 export const validateOrganizerProgramListCallableResponse = ajv.compile(organizerProgramListCallableResponseSchema);
 export const validateProgramAccessCallableResponse = ajv.compile(programAccessCallableResponseSchema);
 export const validateListMyHostAssignmentsCallableResponse = ajv.compile(listMyHostAssignmentsCallableResponseSchema);
+export const validateListOrganizerBillsCallableResponse = ajv.compile(listOrganizerBillsCallableResponseSchema);
 export const validateOrganizerProgramCallableResponse = ajv.compile(organizerProgramCallableResponseSchema);
 export const validateArchiveProgramCallableResponse = ajv.compile(archiveProgramCallableResponseSchema);
 export const validateUnarchiveProgramCallableResponse = ajv.compile(unarchiveProgramCallableResponseSchema);

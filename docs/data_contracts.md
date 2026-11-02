@@ -4495,6 +4495,10 @@ Sending takes the next number of `moneyInvoiceCounters/{financialYear}`, one
 unbroken sequence per April–March year (`2026-27/031`). All are server-only and
 reached through `adminManageOrganizerBills` and `adminManageMoneySettings`.
 
+Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
+owner reads their own through `listOrganizerBills`, which leaves out unsent
+bills and everything only staff need (reminders, history, terms revisions).
+
 `nominatorCredits/{billId}` is written in the transaction that marks a bill
 paid: the organizer's first nominator earns the credit rate on what was paid
 before GST, when their role earns credit, the organizer claimed within the
