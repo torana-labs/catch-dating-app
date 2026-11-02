@@ -63,7 +63,7 @@ test("independently locked npm packages and source projects become projects", as
   assert.equal(nxJson.targetDefaults.check, undefined);
   for (const [project, generator, output] of [
     ["contracts", "{workspaceRoot}/tool/contracts/**/*", "{workspaceRoot}/admin/src/generated/**/*"],
-    ["design/tokens", "{workspaceRoot}/tool/design_tokens.dart", "{workspaceRoot}/packages/web-config/generated/**/*"],
+    ["design/tokens", "{workspaceRoot}/tool/design_tokens/**/*", "{workspaceRoot}/packages/web-config/generated/**/*"],
   ]) {
     assert.equal(projects[project].targets.check.cache, false);
     assert.ok(projects[project].targets.check.inputs.includes(generator));

@@ -1407,7 +1407,7 @@ tests, captures, Widgetbook, Git, and CI.
 - [x] `TODO-DRIFT-008` Keep token drift covered by CI. The design context pack
   that shared this item is retired.
   - Proof: `.github/workflows/flutter-ci.yml` now runs
-    `dart run tool/design_tokens.dart --check` after the design parity
+    `node tool/design_tokens.mjs --check` after the design parity
     gate. `.github/workflows/tools-ci.yml` now triggers for `design/**`,
     `docs/design_parity/**`, `widgetbook/**`,
     root package lockfiles, and Flutter pubspec changes so the full tool

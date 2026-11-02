@@ -10,7 +10,7 @@ Shared React web runtime configuration and tooling for Catch's web-native surfac
 - `tsconfig.*.json` owns the common TypeScript compiler options.
 - `styles/catch-web.css` imports generated design tokens and shared browser
   baseline styles.
-- `generated/` is written by `dart run tool/design_tokens.dart`.
+- `generated/` is written by `node tool/design_tokens.mjs`.
 
 Keep deployable apps separate (`website/`, `admin/`) and share platform
 plumbing here.
