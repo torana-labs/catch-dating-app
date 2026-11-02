@@ -39,7 +39,7 @@ export function isCanonicalPath(value) {
 export function deriveCheckSelection({task, paths, skills = [], rules = {}}) {
   const normalizedPaths = normalizeScopePaths(paths ?? []);
   const matchedSkills = selectSkills(skills, task, normalizedPaths);
-  const matchedRules = selectActiveSourceRules(rules, normalizedPaths);
+  const matchedRules = selectSourceRules(rules, normalizedPaths);
   const requests = new Map();
 
   for (const skill of matchedSkills) {
@@ -48,11 +48,7 @@ export function deriveCheckSelection({task, paths, skills = [], rules = {}}) {
     }
   }
   for (const rule of matchedRules) {
-    for (const enforcement of rule.enforcement ?? []) {
-      if (typeof enforcement?.tool === "string" && enforcement.tool !== "") {
-        addCheckRequest(requests, enforcement.tool, `rule:${rule.id}`);
-      }
-    }
+    for (const toolId of rule.tools ?? []) addCheckRequest(requests, toolId, `rule:${rule.id}`);
   }
 
   return {
@@ -83,13 +79,12 @@ export function selectSkills(skills, task, scopePaths) {
   });
 }
 
-export function selectActiveSourceRules(rules, scopePaths) {
+export function selectSourceRules(rules, scopePaths) {
   if (rules == null || typeof rules !== "object" || Array.isArray(rules)) {
     throw new Error("Source rules must be an object keyed by rule id.");
   }
   return Object.entries(rules)
-    .filter(([, rule]) => rule?.status === "active")
-    .filter(([, rule]) => matchesScopePatterns(scopePaths, rule.applies_to ?? []))
+    .filter(([, rule]) => matchesScopePatterns(scopePaths, rule?.appliesTo ?? []))
     .map(([id, rule]) => ({id, ...rule}));
 }
 

@@ -23,7 +23,7 @@ export async function cruiseToolImports({cwd = repoRoot, roots = ["tool"]} = {})
   return {version: depcruise.version, modules: cruiseModules(result)};
 }
 
-/** Files a tool executes: its script, every script its checks name, and its vacuity proof. */
+/** Files a tool executes: its script and every script its checks name. */
 export function toolEntryFiles(tool) {
   const entries = new Set([tool.path]);
   for (const command of tool.checks ?? []) {
@@ -31,7 +31,6 @@ export function toolEntryFiles(tool) {
       if (scriptPattern.test(token) && !token.startsWith("-")) entries.add(path.posix.normalize(token));
     }
   }
-  if (tool.vacuityProof?.path) entries.add(tool.vacuityProof.path);
   return [...entries].filter((entry) => scriptPattern.test(entry));
 }
 

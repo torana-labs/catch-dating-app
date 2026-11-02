@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.332
+version: 0.2.333
 updated: 2026-11-02
 owner: product_design_parity
 status: active
@@ -207,7 +207,7 @@ or an independent feature contract. Its domain state and route intents remain te
   now use shared async/layout primitives. Remaining direct async branches are
   dashboard view-model transformations and an optional Event Detail plan
   presence check; treat those as policy decisions before further migration.
-- Async UI policy is now explicit in `ASYNC-UI-001`: view-model
+- Async UI policy is now explicit in `docs/app_architecture.md`: view-model
   `AsyncValue.when` is allowed for non-widget display state, optional
   enrichment can stay silent only when the primary surface remains correct,
   fallback/initial data should render ahead of blocking skeletons, async errors
@@ -242,7 +242,7 @@ This section tracks the eight workstreams that must all close before the
 design-system migration goal is complete.
 
 - [x] `GOAL-DS-001` Finish loading-state parity.
-  - Status: complete for the current app-wide source audit. `ASYNC-UI-001` is active and the first
+  - Status: complete for the current app-wide source audit. The async state policy is active and the first
     content-shaped skeleton batches are complete for Payment History, Review
     History, Activity, Saved Events, Matches/Chat list and message loading, and
     Event Detail route loading when no credible `initialEvent` fallback is

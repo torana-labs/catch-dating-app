@@ -172,7 +172,6 @@ const livePolicyAuthorityPaths = [
   "docs/agent_operating_model.md",
   "docs/app_architecture.md",
   "tool/README.md",
-  "tool/policy/rules.json",
   "tool/tools_manifest.json",
 ];
 const liveReactDependencyGraphAuthorityPaths = [
@@ -418,10 +417,6 @@ test("resolved composition gate owns its authorities and both split suites", () 
       `test check omits ${suite}`,
     );
   }
-  assert.equal(
-    tool.vacuityProof.path,
-    "test/tool/ui_composition_ownership_test.dart",
-  );
 });
 
 test("Flutter l10n gate derives JSON live and uploads ephemeral evidence", () => {
@@ -744,7 +739,6 @@ test("policy-only CI wiring has one Harness owner with its required dependencies
       componentGraph: graph, mode: "pr"});
     assert.equal(tools.mode, "affected", file);
     assert.ok(tools.toolIds.includes("agent:harness-v2"), file);
-    assert.ok(tools.toolIds.includes("meta:enforcement-integrity"), file);
     assert.ok(tools.setupRequirements.includes("root-npm"), file);
   }
   const docs = planAffected({changedPaths: ["docs/example.md"], graph, mode: "pr"});

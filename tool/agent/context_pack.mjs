@@ -3,6 +3,7 @@ import {spawnSync} from "node:child_process";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {parseDocumentLifecycleStatus} from "../docs/check_doc_metadata.mjs";
+import {sourceRulesFromManifest} from "../lib/tool_manifest_rules.mjs";
 import {
   deriveCheckSelection,
   matchesScopePatterns,
@@ -22,14 +23,13 @@ const repositorySnapshot = createRepositorySnapshot();
 const task = args.task ?? "unspecified";
 const scopePaths = normalizeScopePaths(args.paths);
 const selectionPaths = expandSelectionPaths(scopePaths);
-const rulesFile = readJson("tool/policy/rules.json", {rules: {}});
 const skillManifest = readJson("docs/agent_skills/skills_manifest.json", {skills: []});
 const toolsManifest = readJson("tool/tools_manifest.json", {tools: []});
 const selection = deriveCheckSelection({
   task,
   paths: selectionPaths,
   skills: skillManifest.skills ?? [],
-  rules: rulesFile.rules ?? {},
+  rules: sourceRulesFromManifest(toolsManifest),
 });
 validateSelectedSkills(selection.matchedSkills);
 
@@ -93,10 +93,9 @@ function projectRule(rule) {
   return {
     id: rule.id,
     title: rule.title,
-    kind: rule.kind ?? null,
-    applies_to: [...(rule.applies_to ?? [])],
+    appliesTo: [...(rule.appliesTo ?? [])],
     instruction: rule.instruction,
-    enforcement: [...(rule.enforcement ?? [])],
+    tools: [...(rule.tools ?? [])],
   };
 }
 
@@ -115,6 +114,7 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
   if (matchesScopePatterns(selectionPaths, ["lib/**", "test/**"])) {
     addDoc(docs, "docs/app_architecture.md", "Canonical app architecture for lib/test changes.");
     addDoc(docs, "lib/README.md", "Feature map for lib/.");
+    addDoc(docs, "TESTS.md", "Test commands and test-writing rules.");
   }
   if (matchesScopePatterns(selectionPaths, [
     "docs/**", "PROJECT_CONTEXT.md", "README.md", "AGENTS.md",
@@ -138,6 +138,9 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
   ])) {
     addDoc(docs, "docs/data_contracts.md", "Data and rules contract source of truth.");
     addDoc(docs, "docs/backend_operation_catalog.md", "Backend operation ownership.");
+  }
+  if (matchesScopePatterns(selectionPaths, ["functions/**"])) {
+    addDoc(docs, "functions/README.md", "Cloud Functions inventory and backend write rules.");
   }
   if (matchesScopePatterns(selectionPaths, [
     "lib/**/presentation/**", "lib/contexts/*/parts/**", "lib/pages/**", "widgetbook/**",
