@@ -61,6 +61,13 @@ async function runCli() {
     return;
   }
 
+  // Features bind to this registry by path. It is built from contracts, not
+  // tracked, so this check compares against what the sources produce.
+  const {adminCallableValidatorRegistrySource} = await import(
+    "../../admin/scripts/generateCallableValidators.mjs");
+  const builtRegistryPath = "admin/src/generated/validators/adminCallableValidators.ts";
+  const builtRegistrySource = adminCallableValidatorRegistrySource();
+
   const schema = readJson(schemaPath);
   const ajv = new Ajv2020({allErrors: true, strict: false});
   const validate = ajv.compile(schema);
@@ -100,8 +107,10 @@ async function runCli() {
       sourcePath: relative(sourcePath),
       authorityRegistries,
       componentRegistries,
-      pathExists: (filePath) => fs.existsSync(fromRepo(filePath)),
-      readPath: (filePath) => fs.readFileSync(fromRepo(filePath), "utf8"),
+      pathExists: (filePath) =>
+        filePath === builtRegistryPath || fs.existsSync(fromRepo(filePath)),
+      readPath: (filePath) => filePath === builtRegistryPath ?
+        builtRegistrySource : fs.readFileSync(fromRepo(filePath), "utf8"),
     });
     outputs.push({
       path: path.join(

@@ -13,8 +13,7 @@ const logRoot = path.join(repoRoot, "build/admin-ci");
 
 // Admin checks that run in other CI lanes. They fail fast, so they go first.
 const otherLaneGates = [
-  {name: "Check the admin action catalog (contracts lane)", run: "node tool/admin/generate_admin_action_catalog.mjs --check"},
-  {name: "Check the callable validators (contracts lane)", run: "npm --workspace catch-admin run check:callable-validators"},
+  {name: "Validate the admin action catalog (contracts lane)", run: "node tool/admin/generate_admin_action_catalog.mjs --validate"},
   // CI's tools lane fetches these first; a fresh worktree has neither.
   {name: "Fetch Dart packages for design parity", run: "test -f tool/widget_dedupe/.dart_tool/package_config.json || (flutter pub get && dart pub get -C tool/widget_dedupe)"},
   {name: "Check design parity (tools lane)", run: "npm run design:parity:check"},

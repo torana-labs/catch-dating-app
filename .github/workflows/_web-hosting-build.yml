@@ -378,6 +378,7 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
         run: |
+          npm --workspace catch-admin run generate
           npm --workspace catch-admin exec -- vite build
           npm --workspace catch-admin run check:bundle-budget
 

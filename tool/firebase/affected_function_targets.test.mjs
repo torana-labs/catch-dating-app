@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import {renderFunctions} from "../admin/generate_admin_action_catalog.mjs";
 import {affectedFunctionTargets, backendDeployTargets, productionPromotionEnvironment} from "./affected_function_targets.mjs";
 
 const targets = ["functions:alpha", "functions:alphaAlias", "functions:beta", "functions:gamma"];
@@ -399,6 +400,67 @@ test("missing commits and a non-ancestor base fail before target selection", (t)
   assert.throws(() => affectedFunctionTargets({
     sourceRoot: f.root, baseSha: "f".repeat(40), sourceSha: source, authorizedTargets: targets,
   }));
+});
+
+function catalogFixture(t) {
+  const f = fixture(t);
+  const catalog = {actions: [{actionId: "a.read", callable: "alpha", kind: "read", roles: ["owner"], summary: "Reads"}]};
+  f.write("contracts/admin/admin_action_catalog.json", JSON.stringify(catalog));
+  const module = "functions/src/shared/generated/adminActionCatalog.ts";
+  f.write("functions/src/alpha.ts", 'import {ADMIN_ACTION_CATALOG} from "./shared/generated/adminActionCatalog"; export const alpha = ADMIN_ACTION_CATALOG;');
+  return {f, catalog, module};
+}
+
+test("the generated catalog is rebuilt from each commit's contract to select its consumers", (t) => {
+  const {f, catalog} = catalogFixture(t);
+  const base = f.commit();
+  const select = () => affectedFunctionTargets({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), authorizedTargets: targets,
+  });
+  catalog.actions[0].summary = "Words only the Admin view carries";
+  f.write("contracts/admin/admin_action_catalog.json", JSON.stringify(catalog));
+  assert.equal(select().mode, "no-op", "A contract edit outside the Functions view deploys nothing");
+  catalog.actions[0].roles = ["owner", "support"];
+  f.write("contracts/admin/admin_action_catalog.json", JSON.stringify(catalog));
+  const changed = select();
+  assert.equal(changed.mode, "affected");
+  assert.deepEqual(changed.targets, targets.slice(0, 2));
+});
+
+test("untracking the generated catalog redeploys nothing when its bytes are unchanged", (t) => {
+  const {f, catalog, module} = catalogFixture(t);
+  f.write(module, renderFunctions(catalog));
+  const tracked = f.commit();
+  fs.rmSync(path.join(f.root, module));
+  const untracked = f.commit();
+  const select = (baseSha, sourceSha) => affectedFunctionTargets({
+    sourceRoot: f.root, baseSha, sourceSha, authorizedTargets: targets,
+  });
+  assert.equal(select(tracked, untracked).mode, "no-op");
+  f.write(module, "export const ADMIN_ACTION_CATALOG = {};\n");
+  const hand = f.commit();
+  fs.rmSync(path.join(f.root, module));
+  const removed = f.commit();
+  assert.deepEqual(select(hand, removed).targets, targets.slice(0, 2),
+    "A tracked copy that differed from what the contract builds is a real change");
+});
+
+test("a changed catalog generator selects the catalog's consumers", (t) => {
+  const {f} = catalogFixture(t);
+  const base = f.commit();
+  f.write("tool/admin/generate_admin_action_catalog.mjs", "// A new renderer.\n");
+  const result = affectedFunctionTargets({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), authorizedTargets: targets,
+  });
+  assert.deepEqual(result.targets, targets.slice(0, 2));
+});
+
+test("a commit with neither the catalog nor its contract falls back to every Function", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/alpha.ts", 'import {ADMIN_ACTION_CATALOG} from "./shared/generated/adminActionCatalog"; export const alpha = ADMIN_ACTION_CATALOG;');
+  const result = f.select();
+  assert.equal(result.mode, "full");
+  assert.match(result.reason, /Conservative fallback/u);
 });
 
 test("whole type-only imports, exports and import-equals do not create runtime edges", (t) => {

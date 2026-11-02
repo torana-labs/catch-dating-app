@@ -106,6 +106,11 @@ export function selectEmulatorTests({changedPaths, listed, modules, readSource})
   const seeds = [];
   for (const changed of changedPaths) {
     if (fullInputs.some((pattern) => pattern.test(changed))) continue;
+    // The Functions build generates this module from the contract, so no diff names it.
+    // Before that build its importers' edges have no extension.
+    if (changed === "contracts/admin/admin_action_catalog.json") {
+      seeds.push("src/shared/generated/adminActionCatalog", "src/shared/generated/adminActionCatalog.ts");
+    }
     const data = dataInputs.find(({pattern}) => pattern.test(changed));
     if (data) {
       for (const test of listed) if (readsAny(test, data.mentions)) selected.add(test);

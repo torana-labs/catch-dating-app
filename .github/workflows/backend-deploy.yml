@@ -21,6 +21,7 @@ on:
       - storage.rules
       - firebase.json
       - .firebaserc
+      - tool/admin/generate_admin_action_catalog.mjs
       - tool/deploy_firebase_targets.sh
       - tool/firebase_with_env.sh
       - tool/firebase/**

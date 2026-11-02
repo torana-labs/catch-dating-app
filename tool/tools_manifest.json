@@ -440,7 +440,7 @@
         "contains": [
           "every catalogued committed compile generator has a staged-source trigger",
           "partially staged Dart fails before formatting can stage unrelated work",
-          "contract drift reports both exact regeneration commands"
+          "contract drift reports the exact regeneration command"
         ]
       }
     },
@@ -6212,15 +6212,14 @@
       "id": "web:admin-callable-validators",
       "category": "lint",
       "path": "admin/scripts/generateCallableValidators.mjs",
-      "command": "npm --workspace catch-admin run check:callable-validators",
+      "command": "node admin/scripts/generateCallableValidators.mjs --self-test",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks the generated admin callable request/response validator registry against current adminApi callables and schema contracts.",
+      "description": "Proves the admin callable validator generator covers every adminApi callable and keeps every schema rule through compaction. Its output is built on demand by the Admin npm lifecycle and never tracked.",
       "checks": [
         "node --test tool/admin/callable_inventory.test.mjs",
         "node --check admin/scripts/generateCallableValidators.mjs",
-        "node admin/scripts/generateCallableValidators.mjs --self-test",
-        "npm --workspace catch-admin run check:callable-validators"
+        "node admin/scripts/generateCallableValidators.mjs --self-test"
       ],
       "role": "gate",
       "rules": [
@@ -6231,7 +6230,7 @@
         "path": "admin/scripts/generateCallableValidators.mjs",
         "contains": [
           "simulated schema drift",
-          "Admin callable validator drift self-test passed."
+          "Admin callable validator self-test passed."
         ]
       },
       "impactPaths": [
@@ -6478,10 +6477,10 @@
       "rules": [
         "OPERATIONS-PLATFORM-001"
       ],
-      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/admin_action_catalog.json.",
+      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/admin_action_catalog.json on demand through the Admin and Functions npm lifecycles. --validate checks the catalog's own links; the views are never tracked.",
       "checks": [
         "node --check tool/admin/generate_admin_action_catalog.mjs",
-        "node tool/admin/generate_admin_action_catalog.mjs --check",
+        "node tool/admin/generate_admin_action_catalog.mjs --validate",
         "node tool/admin/generate_admin_action_catalog.mjs --self-test",
         "node --test tool/admin/generate_admin_action_catalog.test.mjs"
       ],

@@ -937,7 +937,6 @@ test("authored contracts expand to every declared validation consumer", () => {
     "operations",
   ]);
   assert.deepEqual(result.operations.codegenIds, [
-    "admin.callable-validators",
     "contracts.schema-projections",
   ]);
 });
@@ -945,7 +944,6 @@ test("authored contracts expand to every declared validation consumer", () => {
 test("callable contracts select both schema and admin validator codegen", () => {
   const result = plan("contracts/callables/update_event_payload.schema.json");
   assert.deepEqual(result.operations.codegenIds, [
-    "admin.callable-validators",
     "contracts.schema-projections",
   ]);
 });
@@ -1075,12 +1073,20 @@ test("graph validation rejects unknown tool check ids when the manifest is suppl
   assert.ok(errors.some((error) => error.includes('unknown tool check id "missing:check"')));
 });
 
+test("the build-time catalog generator validates every surface that compiles its output", () => {
+  const result = plan("tool/admin/generate_admin_action_catalog.mjs");
+  assert.equal(result.complete, true);
+  for (const target of ["admin", "functions", "tools"]) {
+    assert.ok(result.operations.ciTargets.includes(target), target);
+  }
+});
+
 test("generator scripts and generated outputs select their declared freshness checks", () => {
   const schemaScript = plan("tool/contracts/generate_schema_contracts.mjs");
   assert.deepEqual(schemaScript.operations.codegenIds, ["contracts.schema-projections"]);
 
   const adminScript = plan("admin/scripts/generateCallableValidators.mjs");
-  assert.deepEqual(adminScript.operations.codegenIds, ["admin.callable-validators"]);
+  assert.deepEqual(adminScript.operations.codegenIds, [], "Built on demand; nothing tracked can go stale");
 
   const notificationCatalog = plan("copy/notifications_en.json");
   assert.deepEqual(notificationCatalog.directComponents, ["content.notification"]);
@@ -1171,16 +1177,15 @@ test("Flutter UI package preserves app and visual checks with Marketing capture 
 
 test("freshness routing includes declared indirect inputs and preserves output obligations", () => {
   const cases = [
-    ["tool/admin/callable_inventory.mjs", ["admin.callable-validators"]],
-    ["contracts/admin/admin_action_catalog.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["contracts/operations/common.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["contracts/embedded/event_offer_row.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["contracts/firestore/sales_quotes.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["admin/src/features/sales/api/salesRepository.ts", ["admin.callable-validators"]],
-    ["admin/src/features/sales/ui/SalesWorkspaceScreen.tsx", ["admin.callable-validators"]],
+    ["tool/admin/callable_inventory.mjs", []],
+    ["contracts/admin/admin_action_catalog.json", ["contracts.schema-projections"]],
+    ["contracts/operations/common.schema.json", ["contracts.schema-projections"]],
+    ["contracts/embedded/event_offer_row.schema.json", ["contracts.schema-projections"]],
+    ["contracts/firestore/sales_quotes.schema.json", ["contracts.schema-projections"]],
+    ["admin/src/features/sales/api/salesRepository.ts", []],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.tsx", []],
     ["admin/src/features/sales/ui/SalesWorkspaceScreen.test.tsx", []],
     ["admin/src/features/sales/ui/SalesWorkspaceScreen.stories.tsx", []],
-    ["admin/src/generated/validators/adminCallableValidators.ts", ["admin.callable-validators"]],
     ["website/src/shared/contracts/generated/joinWaitlistSchemas.ts", ["contracts.schema-projections"]],
     ["tool/lib/repo_paths.mjs", ["copy.native", "copy.notification"]],
     ["functions/package-lock.json", ["contracts.schema-projections"]],
