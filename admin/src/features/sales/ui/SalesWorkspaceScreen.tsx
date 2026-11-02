@@ -1,12 +1,9 @@
-import {CatchBadge, CatchButton, CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {useEffect, useMemo, useState} from "react";
-import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
+import {ArrowLeft, ClipboardList} from "lucide-react";
 import {
-  AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
-  AdminForm, AdminToolbar, DataTable, EmptyState,
-  PageHeader, Panel, SegmentedControl, selectOptions, StateRow,
-  } from "../../../shared/ui/AdminPrimitives";
-import {useAdminOperationPending} from "../../../shared/pendingOperation";
+  AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack, AdminForm, AdminToolbar, EmptyState, PageHeader, Panel, SegmentedControl, selectOptions, StateRow,
+} from "../../../shared/ui/AdminPrimitives";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {dataMode} from "../../../shared/api/dataMode";
@@ -16,32 +13,15 @@ import {
   useSalesWorkspaceController,
 } from "../controllers/useSalesWorkspaceController";
 import type {
-  SalesAccountDetail, SalesCustomFieldDefinition,
-  SalesInboundIntent, SalesOpportunity,
-  SalesResearchStatus, SalesTask,
+  SalesAccountDetail, SalesCustomFieldDefinition, SalesOpportunity, SalesResearchStatus,
 } from "../api/salesTypes";
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
-import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
-import {renderSalesNominationWorkspace} from "./SalesNominationPanel";
-
 import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
-import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
-type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "workflow" | "activity" |
   "opportunities" | "research";
 
-const areaOptions: Array<{id: SalesArea; label: string}> = [
-  {id: "today", label: "Today"},
-  {id: "hosts", label: "Hosts"},
-  {id: "pipeline", label: "Pipeline"},
-  {id: "research", label: "Research"},
-  {id: "pilots", label: "Pilots"},
-  {id: "settings", label: "Settings"},
-];
-const staffAreaOptions = areaOptions.filter((option) =>
-  option.id === "today" || option.id === "hosts" || option.id === "pipeline");
 const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "overview", label: "Overview"},
   {id: "workflow", label: "Workflow"},
@@ -88,21 +68,17 @@ export function SalesWorkspaceScreen({
   isAdminOwner = false,
   assignedStaffOnly = false,
   selectedOrganizerId,
-  onAreaChange,
-  onOpenHost,
   onBackToHosts,
-  onOpenIntake,
+  onGoToToday,
   onOpenOrganizer,
 }: {
-  area: SalesArea;
+  area: "hosts" | "settings";
   currentUserUid: string;
   isAdminOwner?: boolean;
   assignedStaffOnly?: boolean;
   selectedOrganizerId: string | null;
-  onAreaChange: (area: SalesArea) => void;
-  onOpenHost: (organizerId: string) => void;
   onBackToHosts: () => void;
-  onOpenIntake: () => void;
+  onGoToToday: () => void;
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   const {setError, setNotice} = useAdminFeedback();
@@ -110,12 +86,9 @@ export function SalesWorkspaceScreen({
     area, selectedOrganizerId, assignedStaffOnly,
     onError: setError, onNotice: setNotice,
   });
-  const staffAreaAllowed = area === "today" || area === "hosts" ||
-    area === "pipeline";
   const pageTitle = selectedOrganizerId ?
     controller.detail.data?.organizerSummary.name ?? "Host" :
-    assignedStaffOnly && !staffAreaAllowed ? "Assigned Sales" :
-      areaOptions.find((option) => option.id === area)?.label ?? "Sales";
+    assignedStaffOnly ? "Assigned Sales" : "Settings";
 
   return (
     <AdminDirectoryScreenStack>
@@ -126,44 +99,20 @@ export function SalesWorkspaceScreen({
       ) : undefined}>
         {selectedOrganizerId ? "Private host workspace" : assignedStaffOnly ?
           "Work only on Sales records currently assigned to you." :
-          "Keep research, conversations, tasks and opportunities together."}
+          "Custom fields, reviewed imports and privacy."}
         {dataMode() === "sample" ? " Sample data is shown." : ""}
       </PageHeader>
-      {!selectedOrganizerId && (!assignedStaffOnly || staffAreaAllowed) ? (
-        <SegmentedControl ariaLabel="Sales area" mobileLayout="content"
-          mobileSelectLabel="Sales area"
-          options={assignedStaffOnly ? staffAreaOptions : areaOptions}
-          value={area} onChange={onAreaChange} />
-      ) : null}
       {selectedOrganizerId ? (
-        <>
-          <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
-            controller={controller} currentUserUid={currentUserUid}
-            isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
-            onOpenOrganizer={onOpenOrganizer} />
-        </>
-      ) : assignedStaffOnly && !staffAreaAllowed ? (
+        <HostDetail key={`${currentUserUid}:${selectedOrganizerId}:${assignedStaffOnly}`}
+          controller={controller} currentUserUid={currentUserUid}
+          isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
+          onOpenOrganizer={onOpenOrganizer} />
+      ) : assignedStaffOnly ? (
         <Panel title="Assigned Sales access" icon={<ClipboardList size={18} />}>
-          <CatchText as="p" variant="supporting">Your role can use Today, Hosts and Pipeline for records currently
+          <CatchText as="p" variant="supporting">Your role can use Today, Hosts and Deals for records currently
             assigned to you.</CatchText>
-          <AdminButton onClick={() => onAreaChange("today")}>Go to Today</AdminButton>
+          <AdminButton onClick={onGoToToday}>Go to Today</AdminButton>
         </Panel>
-      ) : area === "today" ? (
-        <TodayView controller={controller} currentUserUid={currentUserUid}
-          onOpenHost={onOpenHost} />
-      ) : area === "hosts" ? (
-        <HostsView controller={controller} currentUserUid={currentUserUid}
-          assignedStaffOnly={assignedStaffOnly} onOpenHost={onOpenHost}
-          onOpenIntake={onOpenIntake} />
-      ) : area === "pipeline" ? (
-        <>{assignedStaffOnly ? null : renderSalesFunnelWorkspace(currentUserUid)}
-          <PipelineView controller={controller} currentUserUid={currentUserUid}
-            onOpenHost={onOpenHost} /></>
-      ) : area === "research" ? (
-        <ResearchView controller={controller} onOpenHost={onOpenHost}
-          onOpenIntake={onOpenIntake} />
-      ) : area === "pilots" ? (
-        <PilotsView controller={controller} onOpenHost={onOpenHost} />
       ) : (
         <>{renderSalesSettingsWorkspace(controller, isAdminOwner)}
           {renderSalesPrivacyWorkspace({actorUid: currentUserUid, isAdminOwner})}
@@ -182,330 +131,6 @@ function QueryState({
   </EmptyState>;
   if (empty) return <EmptyState>No records match this view.</EmptyState>;
   return null;
-}
-
-function TodayView({
-  controller, currentUserUid, onOpenHost,
-}: {controller: SalesWorkspaceController; currentUserUid: string;
-  onOpenHost: (id: string) => void}) {
-  const rows = controller.tasks.data?.rows ?? [];
-  const now = Date.now();
-  const groups = [
-    {title: "Needs a reply", icon: <ClipboardList size={18} />,
-      matches: (task: SalesTask) => /reply|inbound/iu.test(task.kind)},
-    {title: "Follow-ups due", icon: <CalendarDays size={18} />,
-      matches: (task: SalesTask) => !/reply|inbound|draft|pilot|research/iu.test(task.kind) &&
-        Boolean(task.dueAt) && new Date(task.dueAt!).getTime() <= now},
-    {title: "Ready to review", icon: <ClipboardList size={18} />,
-      matches: (task: SalesTask) => /draft|review/iu.test(task.kind)},
-    {title: "Pilots need attention", icon: <CalendarDays size={18} />,
-      matches: (task: SalesTask) => /pilot/iu.test(task.kind)},
-    {title: "Research blockers", icon: <Search size={18} />,
-      matches: (task: SalesTask) => /research|duplicate/iu.test(task.kind)},
-    {title: "Coming up", icon: <ClipboardList size={18} />,
-      matches: (task: SalesTask) => !/reply|inbound|draft|review|pilot|research|duplicate/iu
-        .test(task.kind) && Boolean(task.dueAt) &&
-        new Date(task.dueAt!).getTime() > now},
-    {title: "Needs a date", icon: <CalendarDays size={18} />,
-      matches: (task: SalesTask) => !task.dueAt &&
-        !/reply|inbound|draft|review|pilot|research|duplicate/iu.test(task.kind)},
-  ];
-  return <>
-    <Panel title="Today's work" icon={<CalendarDays size={18} />}>
-      <CatchText as="p" variant="supporting">Tasks are shown in priority groups from this server page. Open a host to
-        record the outcome and set the next step.</CatchText>
-      <QueryState loading={controller.tasks.isPending} error={controller.tasks.error}
-        empty={!rows.length} onRetry={() => void controller.tasks.refetch()} />
-    </Panel>
-    {groups.map((group) => {
-      const members = rows.filter(group.matches);
-      return <Panel key={group.title} title={group.title} icon={group.icon}>
-        {members.length ? members.map((task) => <TaskRow key={task.taskId}
-          task={task} currentUserUid={currentUserUid}
-          onOpenHost={onOpenHost} />) :
-          <EmptyState>Nothing in this group on this page.</EmptyState>}
-      </Panel>;
-    })}
-    <Pagination hasPrevious={controller.hasPreviousTaskPage}
-      hasNext={Boolean(controller.tasks.data?.nextCursor)}
-      onPrevious={controller.previousTaskPage} onNext={controller.nextTaskPage} />
-  </>;
-}
-
-function TaskRow({task, currentUserUid, onOpenHost}: {
-  task: SalesTask; currentUserUid: string; onOpenHost: (id: string) => void;
-}) {
-  return <StateRow label={task.title} value={<>
-    {labelFor(task.kind)} · {dateLabel(task.dueAt)} · Owner {ownerLabel(
-      task.ownerUid, currentUserUid)}
-    {task.reason ? <> · {task.reason}</> : null}{" "}
-    <AdminButton onClick={() => onOpenHost(task.organizerId)}>Open host</AdminButton>
-  </>} />;
-}
-
-function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
-  onOpenIntake}: {
-  controller: SalesWorkspaceController;
-  currentUserUid: string;
-  assignedStaffOnly: boolean;
-  onOpenHost: (id: string) => void;
-  onOpenIntake: () => void;
-}) {
-  const [opened, setOpened] = useState<"add-host" | "nominate" | null>(null);
-  const [selectedCanonicalId, setSelectedCanonicalId] = useState("");
-  const rows = controller.accounts.data?.rows ?? [];
-  return <>
-  {assignedStaffOnly ? null : renderSalesFitQueueWorkspace(currentUserUid, onOpenHost)}
-  {opened === "nominate" ? renderSalesNominationWorkspace(controller, () => setOpened(null)) : null}
-  {!assignedStaffOnly && opened === "add-host" ? <Panel title="Add a host" icon={<Search size={18} />}>
-    <CatchText as="p" variant="supporting">First find the existing organizer identity. Adding it to Sales creates a
-      private record and does not publish a listing or approve a claim.</CatchText>
-    <CatchField recipe="input" title="Search existing organizers"
-      value={controller.canonicalSearch} inputHint="Organizer name"
-      onChanged={(value) => {
-        controller.setCanonicalSearch(value); setSelectedCanonicalId("");
-      }} />
-    {controller.canonicalMatches.isPending ? <CatchText as="p" variant="supporting">Searching organizers…</CatchText> : null}
-    {controller.canonicalMatches.error ? <CatchText as="p" variant="supporting" role="alert">
-      Organizer search failed. Try again.</CatchText> : null}
-    {controller.canonicalMatches.data?.length ? <CatchField recipe="select"
-      title="Reviewed organizer" value={selectedCanonicalId}
-      onChanged={(value) => setSelectedCanonicalId(value ?? "")} {...selectOptions([
-        {value: "", label: "Choose a matching organizer"},
-        ...controller.canonicalMatches.data.map((item) => ({
-          value: item.organizerId,
-          label: `${item.name} · ${item.cityName || "Location unknown"} · ${labelFor(item.publishStatus)}`,
-        })),
-      ])} /> : null}
-    <AdminToolbar>
-      <AdminButton variant="primary" disabled={!selectedCanonicalId || controller.isSaving}
-        onClick={() => void controller.addAccount({
-          organizerId: selectedCanonicalId,
-        }).then((saved) => {
-          if (saved) onOpenHost(selectedCanonicalId);
-        })}>Add selected host to Sales</AdminButton>
-      <AdminButton onClick={() => setOpened("nominate")}>Nominate a new organizer</AdminButton>
-      <AdminButton onClick={onOpenIntake}>Review new organizers in the Inbox</AdminButton>
-      <AdminButton onClick={() => setOpened(null)}>Cancel</AdminButton>
-    </AdminToolbar>
-  </Panel> : null}
-  <Panel title={assignedStaffOnly ? "Assigned hosts" : "Hosts"}
-    icon={<ClipboardList size={18} />} action={<>
-      <AdminButton onClick={() => setOpened("nominate")}>Nominate organizer</AdminButton>
-      {assignedStaffOnly ? null : <AdminButton onClick={() => setOpened("add-host")}>Add host</AdminButton>}
-    </>}>
-    <AdminToolbar>
-      <CatchField recipe="input" title="Search a name, city, or market word"
-        inputHint="One word, at least two letters" value={controller.query}
-        onChanged={(query) => controller.setAccountFilters({query})} />
-      {!controller.validAccountQuery ? <CatchText as="p" variant="supporting" role="status">
-        Search one word of 2–80 letters or numbers.</CatchText> : null}
-      <CatchField recipe="select" title="Research status" value={controller.researchStatus}
-        onChanged={(value) => controller.setAccountFilters({
-          researchStatus: (value ?? "") as "all" | SalesResearchStatus,
-        })} {...selectOptions([{value: "all", label: "All research statuses"},
-          ...researchStatusOptions])} />
-      {assignedStaffOnly ? null : <CatchField recipe="select" title="Owner"
-        value={controller.ownerUid ? "mine" : "all"}
-        onChanged={(value) => controller.setAccountFilters({
-          ownerUid: (value ?? "") === "mine" ? currentUserUid : "",
-        })} {...selectOptions([{value: "all", label: "All owners"},
-          {value: "mine", label: "Assigned to me"}])} />}
-    </AdminToolbar>
-    <QueryState loading={controller.accounts.isPending} error={controller.accounts.error}
-      empty={!rows.length} onRetry={() => void controller.accounts.refetch()} />
-    {rows.length ? <DataTable ariaLabel="Sales hosts">
-      <thead><tr>
-        <th>Host</th><th>Market</th><th>Events</th><th>Fit</th>
-        <th>Research</th><th>Stage</th><th>Owner</th><th>Next step</th><th />
-      </tr></thead><tbody>
-        {rows.map((row) => <tr key={row.organizerId}>
-          <td><strong>{row.name}</strong></td>
-          <td>{[row.city, row.marketLabel].filter(Boolean).join(", ") || "Not recorded"}</td>
-          <td>{row.eventTypes?.join(", ") || "Not recorded"}</td>
-          <td>{row.fitLabel || "Needs review"}</td>
-          <td>{labelFor(row.researchStatus)}</td>
-          <td>{labelFor(row.stage)}</td>
-          <td>{ownerLabel(row.assignedOwnerUid, currentUserUid)}</td>
-          <td>{row.nextAction || "Not set"}</td>
-          <td><CatchButton label="Open" onPressed={() => onOpenHost(row.organizerId)} recipe="text" /></td>
-        </tr>)}
-      </tbody>
-    </DataTable> : null}
-    <Pagination hasPrevious={controller.hasPreviousPage}
-      hasNext={Boolean(controller.accounts.data?.nextCursor)}
-      onPrevious={controller.previousPage} onNext={controller.nextPage} />
-  </Panel>
-  </>;
-}
-
-function Pagination({hasPrevious, hasNext, onPrevious, onNext}: {
-  hasPrevious: boolean; hasNext: boolean;
-  onPrevious: () => void; onNext: () => void;
-}) {
-  return <AdminToolbar>
-    <AdminButton disabled={!hasPrevious} onClick={onPrevious}>Previous page</AdminButton>
-    <AdminButton disabled={!hasNext} onClick={onNext}>Next page</AdminButton>
-  </AdminToolbar>;
-}
-
-function PipelineView({controller, currentUserUid, onOpenHost}: {
-  controller: SalesWorkspaceController; currentUserUid: string;
-  onOpenHost: (id: string) => void;
-}) {
-  const rows = controller.opportunities.data?.rows ?? [];
-  return <Panel title="Opportunities" icon={<ClipboardList size={18} />}>
-    <CatchText as="p" variant="supporting">Stages describe commercial work. Organizer ownership and product activation are managed separately.</CatchText>
-    <CatchField recipe="select" title="Stage" value={controller.opportunityStage}
-      onChanged={(value) => controller.setStageFilter(value ?? "")} {...selectOptions(stageOptions)}
-    />
-    <QueryState loading={controller.opportunities.isPending}
-      error={controller.opportunities.error} empty={!rows.length}
-      onRetry={() => void controller.opportunities.refetch()} />
-    {rows.length ? <DataTable ariaLabel="Sales opportunities">
-      <thead><tr><th>Motion</th><th>Stage</th><th>Owner</th>
-        <th>Next step</th><th>Due</th><th /></tr></thead>
-      <tbody>{rows.map((row) => <tr key={row.opportunityId}>
-        <td>{labelFor(row.motion)}</td><td>{labelFor(row.stage)}</td>
-        <td>{ownerLabel(row.ownerUid, currentUserUid)}</td>
-        <td>{row.nextStep || "Not set"}</td>
-        <td>{dateLabel(row.nextStepAt)}</td>
-        <td><CatchButton label="Open host" onPressed={() => onOpenHost(row.organizerId)} recipe="text" /></td>
-      </tr>)}</tbody>
-    </DataTable> : null}
-    <Pagination hasPrevious={controller.hasPreviousOpportunityPage}
-      hasNext={Boolean(controller.opportunities.data?.nextCursor)}
-      onPrevious={controller.previousOpportunityPage}
-      onNext={controller.nextOpportunityPage} />
-  </Panel>;
-}
-
-function ResearchView({controller, onOpenHost, onOpenIntake}: {
-  controller: SalesWorkspaceController; onOpenHost: (id: string) => void;
-  onOpenIntake: () => void;
-}) {
-  return <>
-    <InboundReview controller={controller} onOpenIntake={onOpenIntake} />
-    <Panel title="Research review" icon={<Search size={18} />}>
-      <CatchText as="p" variant="supporting">Use the host record to capture a sourced summary, owner and next action.
-        Qualification and fit remain separate decisions.</CatchText>
-      <CatchField recipe="select" title="Research status" value={controller.researchStatus}
-        onChanged={(value) => controller.setAccountFilters({
-          researchStatus: (value ?? "") as "all" | SalesResearchStatus,
-        })} {...selectOptions([{value: "all", label: "All"}, ...researchStatusOptions])} />
-      <QueryState loading={controller.accounts.isPending} error={controller.accounts.error}
-        empty={!controller.accounts.data?.rows.length}
-        onRetry={() => void controller.accounts.refetch()} />
-      {controller.accounts.data?.rows.map((row) => <StateRow
-        key={row.organizerId} label={row.name} value={<>
-          {labelFor(row.researchStatus)} · {row.fitLabel || "Fit not assessed"}{" "}
-          <AdminButton onClick={() => onOpenHost(row.organizerId)}>Review</AdminButton>
-        </>} />)}
-      <Pagination hasPrevious={controller.hasPreviousPage}
-        hasNext={Boolean(controller.accounts.data?.nextCursor)}
-        onPrevious={controller.previousPage} onNext={controller.nextPage} />
-    </Panel>
-  </>;
-}
-
-function InboundReview({controller, onOpenIntake}: {
-  controller: SalesWorkspaceController; onOpenIntake: () => void;
-}) {
-  const [selectedId, setSelectedId] = useState("");
-  const [matchId, setMatchId] = useState("");
-  const selected = controller.inboundIntents.data?.rows.find((row) =>
-    row.intentId === selectedId);
-  const matches = controller.identityMatches.data?.rows ?? [];
-  const select = (intent: SalesInboundIntent) => {
-    setSelectedId(intent.intentId);
-    setMatchId("");
-    const searchName = typeof intent.hostApplication?.organizationName === "string" ?
-      intent.hostApplication.organizationName : intent.fullName;
-    const firstWord = searchName.trim().match(/[A-Za-z0-9]{2,80}/u)?.[0] ?? "";
-    controller.setIdentitySearch(firstWord);
-  };
-  const link = async () => {
-    if (!selected || !matchId) return;
-    const linked = await controller.linkInboundIntent({
-      intentId: selected.intentId, organizerId: matchId,
-      expectedRevision: selected.revision,
-    });
-    if (linked) {setSelectedId(""); setMatchId("");
-      controller.setIdentitySearch("");}
-  };
-  return <Panel title="New enquiries and nominations" icon={<Search size={18} />}>
-    <CatchText as="p" variant="supporting">These details were entered by the sender. Review the identity before attaching
-      an enquiry to a host; linking does not approve an organizer claim.</CatchText>
-    <QueryState loading={controller.inboundIntents.isPending}
-      error={controller.inboundIntents.error}
-      empty={!controller.inboundIntents.data?.rows.length}
-      onRetry={() => void controller.inboundIntents.refetch()} />
-    {controller.inboundIntents.data?.rows.map((intent) =>
-      <StateRow key={intent.intentId} label={typeof intent.hostApplication?.organizationName === "string" ?
-        intent.hostApplication.organizationName : intent.fullName} value={<>
-        {intent.city || "City not supplied"} · {dateLabel(intent.createdAt)} ·
-        {intent.source === "partner" ? "Partner nomination" : "Website enquiry"} · Self reported{" "}
-        <AdminButton onClick={() => select(intent)}>Review match</AdminButton>
-      </>} />)}
-    <Pagination hasPrevious={controller.hasPreviousInboundPage}
-      hasNext={Boolean(controller.inboundIntents.data?.nextCursor)}
-      onPrevious={controller.previousInboundPage}
-      onNext={controller.nextInboundPage} />
-    {selected ? <AdminForm onSubmit={(event) => {event.preventDefault(); void link();}}>
-      <CatchText as="h3" variant="sectionTitle">Match enquiry from {selected.fullName}</CatchText>
-      <CatchField recipe="input" title="Search existing hosts for this enquiry"
-        inputHint="One name, city, or market word"
-        value={controller.identitySearch}
-        onChanged={(value) => {controller.setIdentitySearch(value); setMatchId("");}} />
-      <CatchField recipe="select" title="Existing host" value={matchId}
-        onChanged={(value) => setMatchId(value ?? "")}
-        {...selectOptions([{value: "", label: "Choose a reviewed match"},
-          ...matches.map((row) => ({value: row.organizerId,
-            label: `${row.name} · ${row.city || row.marketLabel || "Location unknown"}`}))])} />
-      {controller.identityMatches.isPending ? <CatchText as="p" variant="supporting">Searching hosts…</CatchText> : null}
-      {controller.identitySearch.trim() &&
-        !/^[A-Za-z0-9]{2,80}$/u.test(controller.identitySearch.trim()) ?
-        <CatchText as="p" variant="supporting" role="status">Search one word of 2–80 letters or numbers.</CatchText> : null}
-      {controller.identityMatches.error ? <CatchText as="p" variant="supporting" role="alert">
-        Host search failed. Try another search.</CatchText> : null}
-      {controller.identityMatches.data?.nextCursor ? <CatchText as="p" variant="supporting">
-        More matches exist. Narrow the search before linking.</CatchText> : null}
-      <AdminToolbar>
-        <AdminButton type="submit" variant="primary"
-          disabled={!matchId || controller.isSaving}>Link to selected host</AdminButton>
-        <AdminButton onClick={onOpenIntake}>Review as a new host</AdminButton>
-        <AdminButton onClick={() => setSelectedId("")}>Cancel</AdminButton>
-      </AdminToolbar>
-    </AdminForm> : null}
-  </Panel>;
-}
-
-function PilotsView({controller, onOpenHost}: {
-  controller: SalesWorkspaceController; onOpenHost: (id: string) => void;
-}) {
-  return <Panel title="Pilots" icon={<ClipboardList size={18} />}>
-    <CatchText as="p" variant="supporting">Select a pilot stage to see its opportunities and next commitments. Pilot outcomes
-      require linked evidence before a commercial or reference claim is made.</CatchText>
-    <CatchField recipe="select" title="Pilot stage" value={controller.opportunityStage}
-      onChanged={(value) => controller.setStageFilter(value ?? "")} {...selectOptions([
-        {value: "", label: "All opportunities"},
-        {value: "pilot_agreed", label: "Pilot agreed"},
-        {value: "pilot_running", label: "Pilot running"},
-      ])} />
-    <QueryState loading={controller.opportunities.isPending}
-      error={controller.opportunities.error}
-      empty={!controller.opportunities.data?.rows.length}
-      onRetry={() => void controller.opportunities.refetch()} />
-    {controller.opportunities.data?.rows.map((item) =>
-      <StateRow key={item.opportunityId} label={labelFor(item.stage)} value={<>
-        {item.nextStep || "No next step"} · {dateLabel(item.nextStepAt)}{" "}
-        <AdminButton onClick={() => onOpenHost(item.organizerId)}>Open host</AdminButton>
-      </>} />)}
-    <Pagination hasPrevious={controller.hasPreviousOpportunityPage}
-      hasNext={Boolean(controller.opportunities.data?.nextCursor)}
-      onPrevious={controller.previousOpportunityPage}
-      onNext={controller.nextOpportunityPage} />
-  </Panel>;
 }
 
 function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly,
