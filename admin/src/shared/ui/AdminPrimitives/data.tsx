@@ -18,7 +18,6 @@ import {
   type PanelProps,
 } from "./shared";
 
-import {AdminTagList} from "./cards";
 
 export function AlertRow({
   children,
@@ -200,68 +199,6 @@ export function Panel({
       </header>
       {children}
     </section>
-  );
-}
-
-export function AdminIntakePublicationBoundaryPanel({
-  activeWorkspace,
-}: {
-  activeWorkspace: "events" | "organizers";
-}) {
-  const isEvents = activeWorkspace === "events";
-  return (
-    <Panel
-      span={2}
-      icon={<Lock size={18} strokeWidth={1.9} />}
-      title="Intake publication boundary"
-      action={isEvents ? "event review only" : "organizer review only"}
-    >
-      <AlertRow
-        icon={<Lock size={16} strokeWidth={1.9} />}
-        title={isEvents ? "Event candidates are not app events" : "Organizer approvals are not final publication"}
-      >
-        {isEvents ?
-          "Review source-backed event candidates here. Creating an event, enabling bookings, and promoting it to members are separate actions." :
-          "Review organizer evidence here. Publishing a listing, making it discoverable, and confirming ownership are separate actions."}
-      </AlertRow>
-      <QualityList>
-        <StateRow
-          label="Evidence"
-          value={isEvents ?
-            "Latest completed Supply Intake run" :
-            "Latest reviewed organizer intake run"}
-        />
-        <StateRow
-          label="Action here"
-          value={isEvents ?
-            "Record a review decision and any required corrections" :
-            "Record review, curation, policy, and location decisions"}
-        />
-        <StateRow
-          label="Separate actions"
-          value={isEvents ?
-            "Create event, publish, bookings, payments, and waitlists" :
-            "Publish listing, search visibility, app discovery, and ownership transfer"}
-        />
-      </QualityList>
-      <AdminTagList>
-        {(isEvents ? [
-          "source evidence",
-          "dedupe",
-          "location",
-          "policy",
-          "review note",
-        ] : [
-          "evidence",
-          "surface curation",
-          "policy gaps",
-          "publication packet",
-          "claim handoff",
-        ]).map((label) => (
-          <CatchBadge key={label} label={label} />
-        ))}
-      </AdminTagList>
-    </Panel>
   );
 }
 
