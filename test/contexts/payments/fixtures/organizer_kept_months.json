@@ -1,0 +1,105 @@
+{
+  "description": "One month of an organizer's money, read the same way by Admin and the host app. Commission base differs from sales on purpose. Tested by test/contexts/payments/host_organizer_bill_test.dart and admin/src/features/money/controllers/useOrganizerBillsController.test.tsx.",
+  "months": [
+    {
+      "name": "a refund and a payment that earns no commission",
+      "expected": {"salesMinor": 900000, "billMinor": 40000, "keptMinor": 830000},
+      "bill": {
+        "billId": "lantern_2026-10",
+        "month": "2026-10",
+        "status": "sent",
+        "sales": {
+          "paymentCount": 40,
+          "eventCount": 3,
+          "grossMinor": 1000000,
+          "refundedMinor": 100000,
+          "baseMinor": 800000,
+          "providerFeeMinor": 30000
+        },
+        "commission": {"amountMinor": 40000, "capMinor": 1000000, "capped": false, "trialWaivedMinor": 0},
+        "gst": {"registered": false, "amountMinor": 0},
+        "totalMinor": 40000,
+        "invoiceNumber": "CATCH-2026-10-001",
+        "dueAtMillis": 1763164800000,
+        "paymentUrl": "https://rzp.io/l/bill",
+        "paidAtMillis": null,
+        "paidMinor": null
+      }
+    },
+    {
+      "name": "a written-off bill the organizer never paid",
+      "expected": {"salesMinor": 500000, "billMinor": 0, "keptMinor": 488000},
+      "bill": {
+        "billId": "lantern_2026-09",
+        "month": "2026-09",
+        "status": "writtenOff",
+        "sales": {
+          "paymentCount": 20,
+          "eventCount": 2,
+          "grossMinor": 500000,
+          "refundedMinor": 0,
+          "baseMinor": 500000,
+          "providerFeeMinor": 12000
+        },
+        "commission": {"amountMinor": 25000, "capMinor": 1000000, "capped": false, "trialWaivedMinor": 0},
+        "gst": {"registered": false, "amountMinor": 0},
+        "totalMinor": 25000,
+        "invoiceNumber": "CATCH-2026-09-001",
+        "dueAtMillis": 1760486400000,
+        "paymentUrl": null,
+        "paidAtMillis": null,
+        "paidMinor": null
+      }
+    },
+    {
+      "name": "a bill paid for less than its total",
+      "expected": {"salesMinor": 600000, "billMinor": 29000, "keptMinor": 556600},
+      "bill": {
+        "billId": "lantern_2026-08",
+        "month": "2026-08",
+        "status": "paid",
+        "sales": {
+          "paymentCount": 24,
+          "eventCount": 2,
+          "grossMinor": 600000,
+          "refundedMinor": 0,
+          "baseMinor": 600000,
+          "providerFeeMinor": 14400
+        },
+        "commission": {"amountMinor": 30000, "capMinor": 1000000, "capped": false, "trialWaivedMinor": 0},
+        "gst": {"registered": false, "amountMinor": 0},
+        "totalMinor": 30000,
+        "invoiceNumber": "CATCH-2026-08-001",
+        "dueAtMillis": 1757808000000,
+        "paymentUrl": null,
+        "paidAtMillis": 1757000000000,
+        "paidMinor": 29000
+      }
+    },
+    {
+      "name": "a free month in the trial",
+      "expected": {"salesMinor": 200000, "billMinor": 0, "keptMinor": 195200},
+      "bill": {
+        "billId": "lantern_2026-07",
+        "month": "2026-07",
+        "status": "free",
+        "sales": {
+          "paymentCount": 8,
+          "eventCount": 1,
+          "grossMinor": 200000,
+          "refundedMinor": 0,
+          "baseMinor": 200000,
+          "providerFeeMinor": 4800
+        },
+        "commission": {"amountMinor": 0, "capMinor": 1000000, "capped": false, "trialWaivedMinor": 10000},
+        "gst": {"registered": false, "amountMinor": 0},
+        "totalMinor": 0,
+        "invoiceNumber": null,
+        "dueAtMillis": null,
+        "paymentUrl": null,
+        "paidAtMillis": null,
+        "paidMinor": null
+      }
+    }
+  ]
+}
