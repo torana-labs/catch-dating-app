@@ -459,7 +459,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     expect(tester.getSize(find.byType(CatchSkeleton)), const Size(42, 24));
   });
 
-  testWidgets('CatchSkeleton uses the theme tile fill in dark mode', (
+  testWidgets('CatchSkeleton uses the theme raised fill in dark mode', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -475,7 +475,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
         )
         .firstWhere((container) => container.decoration is BoxDecoration);
     final decoration = themedShape.decoration! as BoxDecoration;
-    expect(decoration.color, CatchTokens.dark.tile);
+    expect(decoration.color, CatchTokens.dark.raised);
     expect(decoration.color, isNot(CatchTokens.editorialWhite));
   });
 
