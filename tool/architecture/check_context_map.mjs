@@ -1,27 +1,14 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
-import {scanDartSource} from "../lib/dart_source.mjs";
 
 const contextMapPath = "tool/architecture/context_map.json";
-const defaultBaselinePath = "tool/architecture/context_map_baseline.json";
 const specPath = "docs/app_architecture.md";
 const specHeading = "## Bounded Context Contract";
-const appPackage = "package:catch_dating_app/";
 
-// Lower rank may be imported by higher rank. Contexts are additionally ordered
-// among themselves by their declaration order in the map.
-const layerRank = {kernel: 0, platform: 1, context: 2, pages: 3, app: 4};
-const hardGateRules = new Set([
-  "contextBarrelBypass",
-  "legacyContextFile",
-  "specOutOfSync",
-  "unknownContext",
-  "unmappedFile",
-]);
+const declaredLayers = new Set(["kernel", "platform", "context", "pages", "app"]);
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -66,7 +53,7 @@ export function loadContextMap(source) {
     if (entry.context != null && !contextRank.has(entry.context)) {
       throw new Error(`${entry.path} names undeclared context ${entry.context}.`);
     }
-    if (entry.context == null && !(entry.layer in layerRank)) {
+    if (entry.context == null && !declaredLayers.has(entry.layer)) {
       throw new Error(`${entry.path} needs a declared context or layer.`);
     }
     legacy.push(entry);
@@ -109,121 +96,6 @@ export function placePath(relativePath, map) {
   };
 }
 
-export function scanContextMap({snapshot, baseline = emptyBaseline()}) {
-  if (
-    snapshot == null ||
-    typeof snapshot.listFiles !== "function" ||
-    typeof snapshot.readTexts !== "function"
-  ) {
-    throw new Error("Context map check requires a repository snapshot.");
-  }
-  const files = collectDartFiles(snapshot);
-  if (files.length === 0) {
-    throw new Error("Context map check cannot pass without handwritten lib Dart files.");
-  }
-  const sources = snapshot.readTexts([...files, contextMapPath, specPath]);
-  const mapSource = sources.get(contextMapPath);
-  if (mapSource == null) {
-    throw new Error(`Required repository path is missing: ${contextMapPath}`);
-  }
-  const map = loadContextMap(mapSource);
-
-  const allFindings = [];
-  for (const file of files) {
-    const source = sources.get(file);
-    if (source == null) {
-      throw new Error(`Required repository path is missing: ${file}`);
-    }
-    allFindings.push(...scanFile({relativePath: file, source, map}));
-  }
-  allFindings.push(...checkSpecTable({source: sources.get(specPath), map}));
-  if (map.forbidLegacyContextFiles) {
-    allFindings.push(...files.flatMap((file) => legacyContextFileFinding(file, map)));
-  }
-
-  const baselineKeys = new Set((baseline.allowedFindings ?? []).map(findingKey));
-  const findings = [];
-  const baselineFindings = [];
-  for (const finding of allFindings) {
-    if (isAllowedDebt(finding, map) && baselineKeys.has(findingKey(finding))) {
-      baselineFindings.push(finding);
-    } else {
-      findings.push(finding);
-    }
-  }
-  const liveKeys = new Set(allFindings.map(findingKey));
-  for (const allowance of baseline.allowedFindings ?? []) {
-    if (liveKeys.has(findingKey(allowance))) continue;
-    findings.push({
-      rule: "staleBaselineAllowance",
-      path: allowance.path,
-      reason: `Remove obsolete baseline allowance: ${findingKey(allowance)}`,
-    });
-  }
-
-  return {
-    checkedFiles: files.length,
-    baselinePath: baseline.path ?? null,
-    findings,
-    baselineFindings,
-    allFindings,
-    summary: {
-      newFindingsByRule: countByRule(findings),
-      baselineFindingsByRule: countByRule(baselineFindings),
-    },
-  };
-}
-
-export function scanFile({relativePath, source, map}) {
-  const from = placePath(relativePath, map);
-  if (from == null) {
-    return [{
-      rule: "unmappedFile",
-      path: relativePath,
-      line: 1,
-      reason: `place this file under a target root or add its folder to ${contextMapPath}`,
-    }];
-  }
-  if (from.layer === "context" && !map.contextRank.has(from.context)) {
-    return [{
-      rule: "unknownContext",
-      path: relativePath,
-      line: 1,
-      reason: `${from.context} is not a context declared in ${contextMapPath}`,
-    }];
-  }
-  if (from.layer === "app") return [];
-
-  const findings = [];
-  for (const {uri, line} of directiveUris(source)) {
-    const target = resolveLibPath(relativePath, uri);
-    if (target == null) continue;
-    const to = placePath(target, map);
-    if (to == null) continue;
-    if (isOwnLegacyBarrelExport({relativePath, target, from, to})) continue;
-    const finding = classifyImport({from, to, target, map});
-    if (finding == null) continue;
-    findings.push({...finding, path: relativePath, import: uri, line});
-  }
-  return findings;
-}
-
-// Once domain and data have moved, a legacy folder holds only screens and its
-// feature barrel; any other file it places in a context belongs under
-// lib/contexts/<context>/.
-export function legacyContextFileFinding(file, map) {
-  const place = placePath(file, map);
-  if (place == null || !place.legacy || place.layer !== "context") return [];
-  const barrel = /^lib\/([^/]+)\/([^/]+)\.dart$/u.exec(file);
-  if (barrel != null && barrel[1] === barrel[2]) return [];
-  return [{
-    rule: "legacyContextFile",
-    path: file,
-    line: 1,
-    reason: `domain and data code for ${place.context} lives under ${map.roots.contexts}${place.context}/; legacy folders keep only screens and their barrel`,
-  }];
-}
-
 // The spec's context table must list the map's contexts, in order, with the
 // same ownership sentence.
 export function checkSpecTable({source, map}) {
@@ -243,232 +115,58 @@ export function checkSpecTable({source, map}) {
   return finding(`the context table in "${specHeading}" disagrees with ${contextMapPath}; expected ${missing.join("; ") || "nothing"}; found extra ${extra.join("; ") || "nothing"}`);
 }
 
-function classifyImport({from, to, target, map}) {
-  if (layerRank[to.layer] > layerRank[from.layer]) {
-    return {
-      rule: "upwardLayerImport",
-      reason: `${describe(from)} must not import ${describe(to)}`,
-    };
+// What the analyzer cannot see from one file: that the map itself is well
+// formed and that the spec agrees with it. Placement and import order are
+// catch_arch_* lints in packages/catch_ui_lints.
+export function scanContextMap({snapshot}) {
+  if (snapshot == null || typeof snapshot.readTexts !== "function") {
+    throw new Error("Context map check requires a repository snapshot.");
   }
-  if (from.layer !== "context" || to.layer !== "context") return null;
-  if (from.context === to.context) return null;
-  const fromRank = map.contextRank.get(from.context);
-  const toRank = map.contextRank.get(to.context);
-  if (toRank == null) return null;
-  if (toRank > fromRank) {
-    return {
-      rule: "contextOrderImport",
-      reason: `${from.context} is declared before ${to.context}, so it must not depend on it; combine them in the screen's view model or move the shared value down`,
-    };
+  const sources = snapshot.readTexts([contextMapPath, specPath]);
+  const mapSource = sources.get(contextMapPath);
+  if (mapSource == null) {
+    throw new Error(`Required repository path is missing: ${contextMapPath}`);
   }
-  if (!from.legacy && !to.legacy) {
-    const barrel = `${map.roots.contexts}${to.context}/${to.context}.dart`;
-    if (target !== barrel) {
-      return {
-        rule: "contextBarrelBypass",
-        reason: `import ${to.context} through its public API ${barrel}`,
-      };
-    }
-  }
-  return null;
-}
-
-// New roots carry no debt: only legacy-placed files may be baselined.
-function isAllowedDebt(finding, map) {
-  if (hardGateRules.has(finding.rule)) return false;
-  const from = placePath(finding.path, map);
-  return from?.legacy === true;
-}
-
-// Legacy feature barrels re-export their own screens until they are split.
-function isOwnLegacyBarrelExport({relativePath, target, from, to}) {
-  if (!from.legacy || to.layer !== "app") return false;
-  const match = /^lib\/([^/]+)\/([^/]+)\.dart$/u.exec(relativePath);
-  if (match == null || match[1] !== match[2]) return false;
-  return target.startsWith(`lib/${match[1]}/`);
-}
-
-function describe(place) {
-  if (place.layer === "context") return `the ${place.context} context`;
-  return place.layer === "app" ? "app screens" : `the ${place.layer} layer`;
-}
-
-function directiveUris(source) {
-  const uris = [];
-  for (const directive of scanDartSource(source).imports) {
-    for (const {uri, offset} of directive.uris) {
-      uris.push({uri, line: lineForOffset(source, offset)});
-    }
-  }
-  for (const match of source.matchAll(/^export\s+['"]([^'"]+)['"]/gmu)) {
-    uris.push({uri: match[1], line: lineForOffset(source, match.index ?? 0)});
-  }
-  return uris;
-}
-
-function resolveLibPath(relativePath, uri) {
-  if (uri.startsWith(appPackage)) return `lib/${uri.slice(appPackage.length)}`;
-  if (/^[A-Za-z][A-Za-z0-9+.-]*:/u.test(uri)) return null;
-  const url = new URL(uri, new URL(relativePath, "file:///"));
-  const resolved = path.posix.normalize(decodeURIComponent(url.pathname));
-  return resolved.startsWith("/lib/") ? resolved.slice(1) : null;
-}
-
-function collectDartFiles(snapshot) {
-  return snapshot
-    .listFiles({prefix: "lib/"})
-    .filter((file) => file.endsWith(".dart"))
-    .filter((file) => !file.endsWith(".g.dart"))
-    .filter((file) => !file.endsWith(".freezed.dart"))
-    .sort((a, b) => a.localeCompare(b));
-}
-
-function findingKey(finding) {
-  return finding.import == null
-    ? `${finding.rule}|${finding.path}`
-    : `${finding.rule}|${finding.path}|${finding.import}`;
-}
-
-function countByRule(findings) {
-  const counts = {};
-  for (const finding of findings) {
-    counts[finding.rule] = (counts[finding.rule] ?? 0) + 1;
-  }
-  return counts;
-}
-
-function lineForOffset(source, offset) {
-  let line = 1;
-  for (let index = 0; index < offset; index += 1) {
-    if (source.charCodeAt(index) === 10) line += 1;
-  }
-  return line;
-}
-
-function baselineFromFindings(findings, map) {
+  const map = loadContextMap(mapSource);
   return {
-    owner: "app_architecture",
-    targetPhase: "docs/app_architecture.md#phase-3-move-domain-and-data",
-    version: 1,
-    updated: new Date().toISOString().slice(0, 10),
-    description:
-      "Imports in legacy folders that break the bounded-context order. Each move into lib/contexts/ removes its entries; normal runs fail on new findings and on obsolete allowances.",
-    allowedFindings: findings
-      .filter((finding) => isAllowedDebt(finding, map))
-      .map(({rule, path: findingPath, import: uri}) => ({
-        rule,
-        path: findingPath,
-        import: uri,
-      }))
-      .sort((a, b) => findingKey(a).localeCompare(findingKey(b))),
+    contexts: map.contexts.length,
+    findings: checkSpecTable({source: sources.get(specPath), map}),
   };
-}
-
-function readBaseline(snapshot, relativePath) {
-  const source = snapshot.readText(relativePath);
-  if (source == null) return emptyBaseline(relativePath);
-  try {
-    return {...JSON.parse(source), path: relativePath};
-  } catch (error) {
-    throw new Error(`Failed to parse ${relativePath}: ${error.message}`);
-  }
-}
-
-function emptyBaseline(relativePath = null) {
-  return {path: relativePath, allowedFindings: []};
-}
-
-function parseArgs(rawArgs) {
-  const parsed = {help: false, json: false, root: null, writeBaseline: false};
-  for (let index = 0; index < rawArgs.length; index += 1) {
-    const arg = rawArgs[index];
-    if (arg === "--help" || arg === "-h") {
-      parsed.help = true;
-    } else if (arg === "--json") {
-      parsed.json = true;
-    } else if (arg === "--write-baseline") {
-      parsed.writeBaseline = true;
-    } else if (arg === "--root") {
-      const value = rawArgs[(index += 1)];
-      if (value == null || value.startsWith("--")) {
-        console.error(`Missing value for ${arg}`);
-        process.exit(2);
-      }
-      parsed.root = path.resolve(value);
-    } else {
-      console.error(`Unknown argument: ${arg}`);
-      process.exit(2);
-    }
-  }
-  return parsed;
 }
 
 function printHelp() {
   console.log(`Usage:
   node tool/architecture/check_context_map.mjs
   node tool/architecture/check_context_map.mjs --json
-  node tool/architecture/check_context_map.mjs --write-baseline
 
-Places every handwritten lib/**/*.dart file with ${contextMapPath} and checks:
-- every file is placed (a new top-level folder must be declared);
-- layers import only downward: kernel, platform, contexts, pages, app;
-- a context imports only contexts declared before it;
-- files under lib/contexts/ cross contexts only through the public API file
-  lib/contexts/<name>/<name>.dart.
-- the context table in ${specPath} matches the map.
-
-Legacy UI under presentation/ and shared/ counts as app composition. Debt in
-legacy folders ratchets in ${defaultBaselinePath}; files under the target
-roots (lib/contexts, lib/pages, lib/kernel, lib/platform) cannot be baselined.`);
-}
-
-function printFindings(result) {
-  console.error(
-    `Context map check failed (${result.findings.length} new finding(s); ${result.baselineFindings.length} baseline finding(s) acknowledged).`,
-  );
-  for (const finding of result.findings) {
-    console.error(`- ${finding.path}: ${finding.reason}`);
-    const detail = finding.import == null ? "" : `: ${finding.import}`;
-    console.error(`  ${finding.line == null ? "" : `L${finding.line} `}${finding.rule}${detail}`);
-  }
+Checks that ${contextMapPath} is well formed and that the context table in
+${specPath} matches it. Where each file sits and which imports it may make are
+catch_arch_* lints in packages/catch_ui_lints, which read the same map.`);
 }
 
 function runCli() {
-  const args = parseArgs(process.argv.slice(2));
-  if (args.help) {
+  const args = process.argv.slice(2);
+  if (args.includes("--help") || args.includes("-h")) {
     printHelp();
-    process.exit(0);
-  }
-  const snapshot = createRepositorySnapshot({root: args.root ?? fromRepo()});
-  const baseline = args.writeBaseline
-    ? emptyBaseline()
-    : readBaseline(snapshot, defaultBaselinePath);
-  const result = scanContextMap({snapshot, baseline});
-
-  if (args.writeBaseline) {
-    const map = loadContextMap(snapshot.readText(contextMapPath));
-    const nextBaseline = baselineFromFindings(result.allFindings, map);
-    const blocking = result.allFindings.filter((finding) => !isAllowedDebt(finding, map));
-    const target = path.join(snapshot.root, defaultBaselinePath);
-    fs.writeFileSync(target, `${JSON.stringify(nextBaseline, null, 2)}\n`);
-    console.log(
-      `Wrote context map baseline with ${nextBaseline.allowedFindings.length} finding(s): ${defaultBaselinePath}`,
-    );
-    if (blocking.length > 0) {
-      printFindings({findings: blocking, baselineFindings: []});
-      process.exit(1);
-    }
     return;
   }
-
-  if (args.json) console.log(JSON.stringify(result, null, 2));
+  const unknown = args.find((arg) => arg !== "--json");
+  if (unknown != null) {
+    console.error(`Unknown argument: ${unknown}`);
+    process.exit(2);
+  }
+  const result = scanContextMap({snapshot: createRepositorySnapshot({root: fromRepo()})});
+  if (args.includes("--json")) console.log(JSON.stringify(result, null, 2));
   if (result.findings.length > 0) {
-    if (!args.json) printFindings(result);
+    if (!args.includes("--json")) {
+      console.error(`Context map check failed (${result.findings.length} finding(s)).`);
+      for (const finding of result.findings) {
+        console.error(`- ${finding.path}: ${finding.reason}`);
+      }
+    }
     process.exit(1);
   }
-  if (!args.json) {
-    console.log(
-      `Context map check passed (${result.checkedFiles} lib Dart files placed; ${result.baselineFindings.length} baseline finding(s) acknowledged).`,
-    );
+  if (!args.includes("--json")) {
+    console.log(`Context map check passed (${result.contexts} contexts agree with ${specPath}).`);
   }
 }

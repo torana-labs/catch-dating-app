@@ -123,7 +123,7 @@ test("generator-only changes install their declared preflight dependencies witho
   assert.equal(output.contracts, false);
   assert.equal(output.preflight_functions_dependencies, true);
 
-  for (const changedPath of ["README.md", "tool/architecture/check_dependency_direction.mjs"]) {
+  for (const changedPath of ["README.md", "tool/architecture/check_mutation_error_surfaces.mjs"]) {
     const unrelated = planAffected({graph, mode: "pr", changedPaths: [changedPath]});
     assert.equal(projectPlanOutputs({plan: unrelated, graph}).preflight_functions_dependencies, false);
   }

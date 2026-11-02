@@ -46,9 +46,6 @@ jobs:
       - name: Check schema/type boundaries
         run: node tool/contracts/check_schema_type_boundaries.mjs
 
-      - name: Check Dart domain dependency direction
-        run: node tool/run.mjs check audit:dependency-direction
-
       - name: Check schema path literals
         run: node tool/contracts/check_schema_path_literals.mjs
 
