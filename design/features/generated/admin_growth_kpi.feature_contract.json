@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_growth_kpi.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:91af932e1e728d598507f14856d0decbe132bb060f908cf1ebc449af440dafd1",
-  "resolvedDigest": "sha256:0055ab272e544832abf78729b587bf4913d80385068ed09ddfc3ef0b432d6f95",
+  "sourceDigest": "sha256:c1806eb5b54bdc510dac70f5417d8df3c1fa33c986f7bc4e244a31d2502612e4",
+  "resolvedDigest": "sha256:23a36a2829499a8042ccb705503490ae90b5860d19d646a249bd21057a91de6f",
   "feature": {
     "id": "feature.admin_growth_kpi",
     "name": "Admin Growth KPI",
@@ -41,7 +41,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesGrowth.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -352,7 +352,7 @@
             "exportName": "GrowthKpiScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesGrowth.stories.tsx",
               "exportName": "GrowthRouteStory",
               "states": [
                 "signal-directory"

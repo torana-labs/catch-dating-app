@@ -11,13 +11,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
         "exportName": "IntakeWorkspaceRouteStory",
         "states": [
           "event-review"
         ]
       },
-      "notes": "Tabbed route shell owns event, organizer, and read-only automation composition; previews use deterministic controller fixtures in AdminRoutes.stories.tsx."
+      "notes": "Tabbed route shell owns event, organizer, and read-only automation composition; previews use deterministic controller fixtures in the route stories."
     },
     {
       "id": "route_settings_intake",
@@ -268,7 +268,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
         "exportName": "IntakeWorkspaceStory",
         "states": [
           "event-review"

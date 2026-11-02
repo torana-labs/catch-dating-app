@@ -21,7 +21,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesDataQuality.stories.tsx"],
         "actionOwners": [
           {"id": "controller", "language": "typescript", "file": "admin/src/features/data-quality/controllers/useDataQualityController.ts", "symbol": "useDataQualityController"},
           {"id": "screen", "language": "typescript", "file": "admin/src/features/data-quality/ui/DataQualityScreen.tsx", "symbol": "DataQualityWorkspace"}

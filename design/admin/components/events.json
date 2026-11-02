@@ -47,13 +47,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesEvents.stories.tsx",
         "exportName": "EventPublishingRouteStory",
         "states": [
           "canonical-detail"
         ]
       },
-      "notes": "The editors the event page's tabs host: a Catch event's canonical editor (Page) or an imported event's source record and takedown (Takedown). The Events directory replaced its directory and External inventory lists; preview renders the registered EventPublishingWorkspace editor in AdminRoutes.stories.tsx."
+      "notes": "The editors the event page's tabs host: a Catch event's canonical editor (Page) or an imported event's source record and takedown (Takedown). The Events directory replaced its directory and External inventory lists; preview renders the registered EventPublishingWorkspace editor in the route stories."
     },
     {
       "id": "route_event_records_live_controller",
@@ -196,7 +196,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesEvents.stories.tsx",
         "exportName": "EventPublishingWorkspaceStory",
         "states": [
           "canonical-detail"

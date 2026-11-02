@@ -21,7 +21,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesGrowth.stories.tsx"],
         "actionOwners": [
           {"id": "controller", "language": "typescript", "file": "admin/src/features/growth/controllers/useGrowthKpiController.ts", "symbol": "useGrowthKpiController"},
           {"id": "screen", "language": "typescript", "file": "admin/src/features/growth/ui/GrowthKpiScreen.tsx", "symbol": "GrowthKpiWorkspace"}

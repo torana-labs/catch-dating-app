@@ -20,7 +20,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesUsers.stories.tsx"],
         "actionOwners": [
           {"id": "controller", "language": "typescript", "file": "admin/src/features/users/controllers/useUserAnalyticsController.ts", "symbol": "useUserAnalyticsController"}
         ],

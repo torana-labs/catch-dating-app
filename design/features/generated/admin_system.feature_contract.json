@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_system.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:f2eff43e140f637b77813c5f6d0c4f973645fbd8438b4d4b8dc01551d53e61d3",
-  "resolvedDigest": "sha256:a303ebd79af444c2bd17257926792338d935819f41cfe8daf08f899f017851b9",
+  "sourceDigest": "sha256:2a94feda253997c94ebba7bf5c971c5e38de34a7c0492fe0b98df3b5b54c8e82",
+  "resolvedDigest": "sha256:cc12330b3e5ed95cb4d99ec1dbd4a044d2950aaf5c7b19b9e57c6d705f445e34",
   "feature": {
     "id": "feature.admin_system",
     "name": "Admin System",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesSystem.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -296,7 +296,7 @@
             "exportName": "SystemScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesSystem.stories.tsx",
               "exportName": "SystemRouteStory",
               "states": [
                 "activity",

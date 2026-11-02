@@ -19,7 +19,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesEvents.stories.tsx"],
         "actionOwners": [
           {"id": "controller", "language": "typescript", "file": "admin/src/features/events/controllers/useEventPublishingController.ts", "symbol": "useEventPublishingController"},
           {"id": "screen", "language": "typescript", "file": "admin/src/features/events/ui/EventPublishingScreen.tsx", "symbol": "EventPublishingWorkspace"}

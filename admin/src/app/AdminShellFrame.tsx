@@ -17,7 +17,8 @@ import {
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
 import type {AdminNavigationEntry} from "./adminAccess";
-import {adminAreas, type AdminAreaContext} from "./adminAreas";
+import type {AdminAreaContext} from "./adminAreaKit";
+import {adminAreas} from "./adminAreas";
 import {adminPathForNav, type AdminNavId} from "./adminRoutes";
 
 export interface AdminShellAccount {
@@ -43,7 +44,7 @@ export function AdminShellFrame({
   pageTitle,
 }: {
   account: AdminShellAccount;
-  context: Omit<AdminAreaContext, "navigation">;
+  context: Omit<AdminAreaContext, "navigation" | "areaLabel">;
   currentNav: AdminNavId;
   error: string | null;
   headerNote: string;
@@ -67,7 +68,7 @@ export function AdminShellFrame({
   const area = adminAreas[currentNav];
   const screen = (
     <Suspense fallback={<AdminFeatureLoadingState label={`Loading ${area.label}`} />}>
-      {area.render({...context, navigation: items})}
+      {area.render({...context, navigation: items, areaLabel: (nav) => adminAreas[nav].label})}
     </Suspense>
   );
   return (

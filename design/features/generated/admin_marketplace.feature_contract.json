@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_marketplace.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:4515b132889823b662e8c47c5ff6ab96ca5acfc40c7acce3459385718a8088f6",
-  "resolvedDigest": "sha256:8a9eef415288fc950ea6851a9e5ad55c99a27a02ded1e653c64521841ca89d01",
+  "sourceDigest": "sha256:0605a706746dce32fe2fac32f2d1e1382b639d8975d94dd0523416490023b54d",
+  "resolvedDigest": "sha256:3db8e1a3ce64909873c33db9b9ed4c00241c62f2de79cfc387e27ad7ec8d03e8",
   "feature": {
     "id": "feature.admin_marketplace",
     "name": "Admin Marketplace",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesMarketplace.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -300,7 +300,7 @@
             "exportName": "MarketplaceScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesMarketplace.stories.tsx",
               "exportName": "MarketplaceRouteStory",
               "states": [
                 "default",

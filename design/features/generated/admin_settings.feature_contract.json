@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_settings.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:65a805e7d76b79fc6aa33b5820e7f1e23df3c0967e5fc80618833ad5dd54964f",
-  "resolvedDigest": "sha256:9b8f0bc8e862e725f716f0f7dec0fd992ada54dcabbb4291c40da935b3aba0a2",
+  "sourceDigest": "sha256:301840c0cb66fa3d805de5790266da56cb6679bf947d6bc6c363b71545c9b0a9",
+  "resolvedDigest": "sha256:8f07b907b3b121325ff29bbf8bda8c88d29a2f84307edb2c8d7e4b716707c985",
   "feature": {
     "id": "feature.admin_settings",
     "name": "Admin Settings",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesSettings.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -284,7 +284,7 @@
             "exportName": "SettingsScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesSettings.stories.tsx",
               "exportName": "SettingsRouteStory",
               "states": [
                 "team",
@@ -299,7 +299,7 @@
             "exportName": "TeamSettingsWorkspace",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesSettings.stories.tsx",
               "exportName": "TeamSettingsWorkspaceStory",
               "states": [
                 "team",

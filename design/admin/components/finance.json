@@ -11,13 +11,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesFinance.stories.tsx",
         "exportName": "FinanceRouteStory",
         "states": [
           "issue-detail"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered FinanceOpsWorkspace with deterministic issue/reconciliation fixtures in AdminRoutes.stories.tsx."
+      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered FinanceOpsWorkspace with deterministic issue/reconciliation fixtures in the route stories."
     },
     {
       "id": "workspace_finance_ops",
@@ -30,7 +30,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesFinance.stories.tsx",
         "exportName": "FinanceWorkspaceStory",
         "states": [
           "issue-detail"

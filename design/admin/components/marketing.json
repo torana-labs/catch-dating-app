@@ -11,13 +11,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesMarketing.stories.tsx",
         "exportName": "MarketingOpsRouteStory",
         "states": [
           "post-board"
         ]
       },
-      "notes": "Marketing Ops route wrapper keeps live admin feedback props and delegates to MarketingOpsWorkspace; deterministic preview coverage uses typed synthetic dashboard state in AdminRoutes.stories.tsx."
+      "notes": "Marketing Ops route wrapper keeps live admin feedback props and delegates to MarketingOpsWorkspace; deterministic preview coverage uses typed synthetic dashboard state in the route stories."
     },
     {
       "id": "shared_admin_card",
@@ -1751,7 +1751,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesMarketing.stories.tsx",
         "exportName": "MarketingOpsWorkspaceStory",
         "states": [
           "post-board"

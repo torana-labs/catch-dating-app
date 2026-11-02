@@ -21,7 +21,8 @@
     },
     "admin": {
       // ESLint loads its app config implicitly from the CLI's working directory.
-      "entry": ["eslint.config.mjs"]
+      // The Admin areas are found with import.meta.glob.
+      "entry": ["eslint.config.mjs", "src/app/areas/*.{ts,tsx}"]
     },
     "website": {
       "entry": [

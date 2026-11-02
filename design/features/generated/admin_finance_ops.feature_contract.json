@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_finance_ops.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:edd2c75dbbca56c2fc69e48f0f40327d21c9d29276c90d40fecdbae74927a4c8",
-  "resolvedDigest": "sha256:acb2ab3f0c7f499989fd8cb944cb93248a13e7b6ab565f6965edc069ed4b5ecf",
+  "sourceDigest": "sha256:5bc5109b01575dd98f358d96a05a42382bbbc69dc0f874f3d3b0eaf30bba71bb",
+  "resolvedDigest": "sha256:573626e888d1b91e0285cbb2f909562435539a54e349aef86d22a67bbc2c82ad",
   "feature": {
     "id": "feature.admin_finance_ops",
     "name": "Admin Finance Operations",
@@ -41,7 +41,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesFinance.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -344,7 +344,7 @@
             "exportName": "FinanceOpsScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesFinance.stories.tsx",
               "exportName": "FinanceRouteStory",
               "states": [
                 "issue-detail"

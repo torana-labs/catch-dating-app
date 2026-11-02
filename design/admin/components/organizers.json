@@ -50,13 +50,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesOrganizers.stories.tsx",
         "exportName": "OrganizerPublishingRouteStory",
         "states": [
           "canonical-detail"
         ]
       },
-      "notes": "The editor the organizer page's Page tab hosts, and the claims review kept under Organizers until the Inbox decides claims. The Organizers directory replaced its directory list; deterministic preview coverage uses shared sample organizer details in AdminRoutes.stories.tsx."
+      "notes": "The editor the organizer page's Page tab hosts, and the claims review kept under Organizers until the Inbox decides claims. The Organizers directory replaced its directory list; deterministic preview coverage uses shared sample organizer details in the route stories."
     },
     {
       "id": "route_organizer_records_live_controller",
@@ -142,7 +142,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesOrganizers.stories.tsx",
         "exportName": "OrganizerPublishingWorkspaceStory",
         "states": [
           "canonical-detail",

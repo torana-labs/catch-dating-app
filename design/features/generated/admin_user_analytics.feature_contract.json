@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_user_analytics.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:64bd114747cce275bf6e045e85d9602336f3a4d57b0cb6ec930d5f3ad5f756fc",
-  "resolvedDigest": "sha256:73c0df7ab17b288462d94d9d48029937234a390370efa22ba560ab7ae41bc857",
+  "sourceDigest": "sha256:bc699c7f1f30989df17f07a09e818a25b2d042aa0a57745095c6c4a89521ab47",
+  "resolvedDigest": "sha256:78577198546bb4c19aec420585aa1367bc6199f31a6f3f9a0e095c03f8c95926",
   "feature": {
     "id": "feature.admin_user_analytics",
     "name": "Admin User Analytics",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesUsers.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -281,7 +281,7 @@
             "exportName": "UserAnalyticsScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesUsers.stories.tsx",
               "exportName": "UserAnalyticsRouteStory",
               "states": [
                 "aggregate-report"

@@ -11,7 +11,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesMarketplace.stories.tsx",
         "exportName": "MarketplaceRouteStory",
         "states": [
           "default",
@@ -19,7 +19,7 @@
           "scoped-analytics"
         ]
       },
-      "notes": "Marketplace analytics, split from the old Overview (its queues moved to Needs you): range and entity controls apply to host analytics. The Marketplace board (PR 14) replaces it. Backed by sample host analytics fixtures in admin/src/stories/AdminRoutes.stories.tsx."
+      "notes": "Marketplace analytics, split from the old Overview (its queues moved to Needs you): range and entity controls apply to host analytics. The Marketplace board (PR 14) replaces it. Backed by sample host analytics fixtures in admin/src/stories/the route stories."
     },
     {
       "id": "route_marketplace_live_controller",

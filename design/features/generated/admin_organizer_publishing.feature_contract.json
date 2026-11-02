@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_organizer_publishing.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:f906bbaaafa4602e97e20ef6b9be559edafa66582e1d09a47e68c6d7160319cb",
-  "resolvedDigest": "sha256:081f2f03b69109993f9e33467d7a73eb7ace20eac36de72cfac7da9c05dbe22d",
+  "sourceDigest": "sha256:53c3d987b909d5b5048191d512bbc6c36edde79c42ca08a673dac74ac0a611e6",
+  "resolvedDigest": "sha256:7f724e8abbdf2b933c4d2bec87d3743b302cf931be0d0558582bd68fae001465",
   "feature": {
     "id": "feature.admin_organizer_publishing",
     "name": "Admin Organizer Publishing",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesOrganizers.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -593,7 +593,7 @@
             "exportName": "OrganizerPublishingScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesOrganizers.stories.tsx",
               "exportName": "OrganizerPublishingRouteStory",
               "states": [
                 "canonical-detail"

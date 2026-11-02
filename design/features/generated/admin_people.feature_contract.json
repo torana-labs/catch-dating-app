@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_people.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:1dd7ee07658fbb5abab26a9ac5c8db722f99f55dcb63efbf5c4cede4ee7a969a",
-  "resolvedDigest": "sha256:5c90f8a8256d6392d4328e97a0addc0f3bcf844ff26659cac4af79462af65a12",
+  "sourceDigest": "sha256:3c352d084294826ea6d6c5224e2339a1b391dcb1ab6174b0e55b0df12ff7a801",
+  "resolvedDigest": "sha256:28600ccfe7fbb5497008f30d4db627176f9c93694ec61c10b2b360d3ed9a3c46",
   "feature": {
     "id": "feature.admin_people",
     "name": "Admin People",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesPeople.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -233,7 +233,7 @@
             "exportName": "PeopleScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesPeople.stories.tsx",
               "exportName": "PeopleRouteStory",
               "states": [
                 "search-results",

@@ -23,9 +23,7 @@
         ]
       },
       "bindings": {
-        "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
-        ],
+        "previewSources": ["admin/src/stories/AdminRoutesMarketplace.stories.tsx"],
         "actionOwners": [
           {
             "id": "controller",

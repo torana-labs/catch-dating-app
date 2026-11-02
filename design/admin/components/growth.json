@@ -11,13 +11,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesGrowth.stories.tsx",
         "exportName": "GrowthRouteStory",
         "states": [
           "signal-directory"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered GrowthKpiWorkspace with deterministic signal/trend fixtures in AdminRoutes.stories.tsx."
+      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered GrowthKpiWorkspace with deterministic signal/trend fixtures in the route stories."
     },
     {
       "id": "workspace_growth_kpi",
@@ -30,7 +30,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesGrowth.stories.tsx",
         "exportName": "GrowthWorkspaceStory",
         "states": [
           "signal-directory"

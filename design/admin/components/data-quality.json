@@ -11,13 +11,13 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesDataQuality.stories.tsx",
         "exportName": "DataQualityRouteStory",
         "states": [
           "source-register"
         ]
       },
-      "notes": "Route wrapper owns TanStack Query controller; preview renders the shared DataQualityScreen preview workspace with deterministic source/state/detail fixtures in AdminRoutes.stories.tsx."
+      "notes": "Route wrapper owns TanStack Query controller; preview renders the shared DataQualityScreen preview workspace with deterministic source/state/detail fixtures in the route stories."
     },
     {
       "id": "workspace_data_quality",
@@ -30,7 +30,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesDataQuality.stories.tsx",
         "exportName": "DataQualityWorkspaceStory",
         "states": [
           "source-register"

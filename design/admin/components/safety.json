@@ -9,7 +9,7 @@
       "css": [],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesSafety.stories.tsx",
         "exportName": "SafetyRouteStory",
         "states": [
           "open-cases",
@@ -61,7 +61,7 @@
       "css": [],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesSafety.stories.tsx",
         "exportName": "SafetyActionSheetStory",
         "states": [
           "restrict",
@@ -79,7 +79,7 @@
       "css": [],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesSafety.stories.tsx",
         "exportName": "SafetySettingsWorkspaceStory",
         "states": [
           "owner-edits",
