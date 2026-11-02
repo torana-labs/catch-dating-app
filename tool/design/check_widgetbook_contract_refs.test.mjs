@@ -94,3 +94,11 @@ test("split contract families are discovered and a deleted family cannot pass", 
   fs.unlinkSync(path.join(directory, "statuses.dart"));
   assert.throws(() => collectPrimitiveContractUseCases({root}), /no Dart sources/);
 });
+
+test("a planned record needs no contract preview until it has code", () => {
+  const planned = {components: [{id: "catch.toast", status: "planned", kind: "composite", contract: {states: []}}]};
+  const none = parsePrimitiveContractUseCases("");
+  assert.deepEqual(validatePrimitiveContractUseCases(planned, none), []);
+  const active = {components: [{...planned.components[0], status: "active", dart: {symbol: "CatchToast"}}]};
+  assert.ok(validatePrimitiveContractUseCases(active, none).some((error) => error.includes("catch.toast")));
+});

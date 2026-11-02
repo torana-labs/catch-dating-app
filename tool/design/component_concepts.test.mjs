@@ -3,12 +3,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   collisionKeyFor,
+  componentAbsorptionProblems,
   componentAliasIndex,
   componentAliasProblems,
   roleNounRedirectProblems,
   componentTierProblems,
   conceptMetrics,
   conceptTopologyProblems,
+  isPlannedWithoutDart,
   newWidgetPolicyIssues,
   normalizeSymbol,
   publicWidgetNamingProblems,
@@ -476,4 +478,36 @@ test("role-noun redirects name only off-vocabulary nouns and real roles", () => 
 test("normalization only strips the reserved prefix, not the Catches product word", () => {
   assert.equal(normalizeSymbol("CatchEventCard"), "event_card");
   assert.equal(normalizeSymbol("CatchesTopOverlay"), "catches_top_overlay");
+});
+
+test("a planned record has no symbol to prove and still claims its name", () => {
+  const planned = {
+    id: "catch.toast",
+    name: "CatchToast",
+    status: "planned",
+    governance: {conceptRole: "concept", conceptId: "catch.toast"},
+    contract: {members: []},
+    aliases: ["CatchNoticeRegion"],
+  };
+  assert.equal(isPlannedWithoutDart(planned), true);
+  assert.equal(isPlannedWithoutDart({...planned, dart: {symbol: "CatchToast"}}), false);
+  assert.equal(isPlannedWithoutDart({...planned, status: "active"}), false);
+  assert.deepEqual(conceptTopologyProblems([planned]), []);
+  const index = componentAliasIndex([planned]);
+  assert.equal(index.get(normalizeSymbol("CatchToast")).id, "catch.toast");
+  assert.equal(index.get(normalizeSymbol("CatchNoticeRegion")).symbol, "CatchToast");
+  assert.deepEqual(componentAliasProblems([planned]), []);
+});
+
+test("absorbs holds claimed names once; any other name belongs in aliases", () => {
+  const owner = {...primary("catch.notice", "CatchNotice"), absorbs: ["CatchBanner"]};
+  const banner = primary("catch.banner", "CatchBanner");
+  assert.deepEqual(componentAbsorptionProblems([owner, banner]), []);
+  assert.deepEqual(componentAbsorptionProblems([{...owner, absorbs: ["CatchNotRegistered"]}, banner]),
+    ["catch.notice: absorbs CatchNotRegistered, which no record claims; list it in aliases"]);
+  assert.deepEqual(componentAbsorptionProblems([{...owner, absorbs: ["CatchSplit"]}, {...banner, aliases: ["SplitView"]}]), []);
+  assert.deepEqual(componentAbsorptionProblems([{...owner, absorbs: ["CatchNotice"]}, banner]),
+    ["catch.notice: absorbs its own symbol CatchNotice"]);
+  assert.deepEqual(componentAbsorptionProblems([owner, {...banner, id: "catch.other", absorbs: ["CatchBanner"], dart: {symbol: "CatchOther"}}, banner]),
+    ["catch.other: CatchBanner is already absorbed by catch.notice"]);
 });

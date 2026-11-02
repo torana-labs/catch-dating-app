@@ -13,6 +13,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {collectPrimitiveContractUseCases} from "./check_widgetbook_contract_refs.mjs";
+import {isPlannedWithoutDart} from "./component_concepts.mjs";
 
 const gatesPath = "design/components/consolidation_gates.json";
 const registryPath = "design/components/catch.components.json";
@@ -74,7 +75,8 @@ export function registryMeasures(registry, priorityIds, {widgetbookStates = new 
   const contracts = Object.entries(registry.components ?? registry)
     .map(([id, contract]) => ({id, ...contract}));
   const styled = (contract) => contract.react?.api === "styled";
-  const t1 = contracts.filter((contract) => contract.tier === "T1");
+  // A planned contract has no code yet; it counts once its first implementation lands.
+  const t1 = contracts.filter((contract) => contract.tier === "T1" && !isPlannedWithoutDart(contract));
   const byId = new Map(contracts.map((contract) => [contract.id, contract]));
   const unknown = priorityIds.filter((id) => !byId.has(id));
   if (unknown.length) throw new Error(`Unknown priority registry ids: ${unknown.join(", ")}`);

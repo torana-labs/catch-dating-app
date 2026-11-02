@@ -187,3 +187,9 @@ test("rendered rows index registry aliases so a search for any likely name finds
   assert.deepEqual(rows[0].aliases, ["DropdownMenu", "PopupMenu"]);
   assert.match(renderCatalogInventory(rows), /Also called: <code>DropdownMenu<\/code>, <code>PopupMenu<\/code>\./u);
 });
+
+test("a planned record with no code adds no catalog identity, and an active one must name its source", () => {
+  assert.deepEqual(buildCatalogRows({declarations: [], components: [{id: "catch.toast", status: "planned"}]}), []);
+  assert.throws(() => buildCatalogRows({declarations: [], components: [{id: "catch.toast", status: "active"}]}),
+    /catch\.toast: registry symbol and file are required/u);
+});

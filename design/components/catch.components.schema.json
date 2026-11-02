@@ -134,6 +134,43 @@
     "componentLevel": {
       "enum": ["L0", "L1", "L2", "L3", "L4", "L4a", "L5", "L6"]
     },
+    "systemProp": {
+      "type": "object",
+      "required": ["name", "tsType", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "tsType": {"type": "string", "minLength": 1},
+        "required": {"type": "boolean"}
+      }
+    },
+    "systemBlock": {
+      "type": "object",
+      "description": "What the design system declares for this record, written by tool/design/import_ds_props.mjs from the design source. Informational for Dart: parity is on names, states and slots, and Dart props stay idiomatic.",
+      "required": ["name", "states", "slots", "props"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+        "states": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "slots": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "props": {"type": "array", "items": {"$ref": "#/$defs/systemProp"}},
+        "parts": {
+          "type": "array",
+          "description": "Exports the component documents that have no registry symbol of their own.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "slots", "props"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+              "slots": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+              "props": {"type": "array", "items": {"$ref": "#/$defs/systemProp"}}
+            }
+          }
+        }
+      }
+    },
     "roleNoun": {
       "enum": [
         "Button", "Icon", "IconAction", "Field", "FieldLanes", "Section", "SectionList",
@@ -187,6 +224,8 @@
           "not": {"anyOf": [{"required": ["enforcement"]}, {"required": ["verification"]}]}
         }
       ],
+      "if": {"properties": {"status": {"const": "planned"}}},
+      "else": {"required": ["dart"]},
       "required": [
         "id",
         "name",
@@ -194,7 +233,6 @@
         "kind",
         "tier",
         "summary",
-        "dart",
         "design",
         "contract",
         "governance",
@@ -224,10 +262,18 @@
         "roleNoun": {"$ref": "#/$defs/roleNoun"},
         "naming": {"$ref": "#/$defs/widgetNaming"},
         "aliases": {"$ref": "#/$defs/componentAliases"},
+        "absorbs": {
+          "type": "array",
+          "description": "Names this component takes over when its first redesigned consumer lands that aliases cannot hold because a registered symbol or another record's alias already claims them. Any other name goes in aliases.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^(?:[A-Z][a-z0-9]*)+$"}
+        },
         "summary": {
           "type": "string",
           "minLength": 1
         },
+        "system": {"$ref": "#/$defs/systemBlock"},
         "dart": {
           "type": "object",
           "required": ["symbol", "file"],
