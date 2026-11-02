@@ -1,0 +1,23 @@
+name: Find Merge Queue Validation
+description: Says whether the merge queue already passed the given CI jobs on this exact commit.
+
+inputs:
+  jobs:
+    description: CI job names that must have passed, one per line.
+    required: true
+
+outputs:
+  validated:
+    description: "'true' only when every named job passed; any doubt reads as 'false'."
+    value: ${{ steps.find.outputs.validated }}
+
+runs:
+  using: composite
+  steps:
+    - id: find
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REQUIRED_JOBS: ${{ inputs.jobs }}
+        SOURCE_SHA: ${{ github.sha }}
+      run: bash "$GITHUB_ACTION_PATH/find_queue_validation.sh"
