@@ -75,7 +75,7 @@ test("merge parity retains focused similarity and product invariants, with repor
   assert.match(blocking, /check_widget_dedupe_probes.mjs/u);
   for (const invariant of ["check_component_contracts", "check_widget_classification",
     "check_new_widget_inventory", "check_widget_pattern_families", "check_route_inventory",
-    "check_capture_coverage", "check_screen_contracts", "build_feature_contracts",
+    "check_capture_coverage", "check_screen_contracts",
     "check_screen_top_bar_contracts", "check_widgetbook_coverage"]) {
     assert.ok(blocking.includes(invariant), `${invariant} must remain blocking`);
   }

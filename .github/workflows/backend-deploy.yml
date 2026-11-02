@@ -5,9 +5,8 @@ name: Deploy backend
 # deploys the same commit automatically once dev succeeds (the prod
 # environment has no required reviewer since 30 Oct 2026). Each deploy
 # rebuilds only the Functions codebases whose code, parameters or secrets
-# changed; the Firebase CLI skips the rest. Staging refreshes on the first of
-# each month. Run it manually for prod, dev or staging, optionally as a full
-# deploy or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
+# changed; the Firebase CLI skips the rest. Run it manually for prod, dev or
+# staging, optionally as a full deploy or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
   push:
@@ -28,8 +27,6 @@ on:
       - tool/firebase/**
       - .github/workflows/backend-deploy.yml
       - .github/workflows/_backend-deploy.yml
-  schedule:
-    - cron: '17 2 1 * *'
   workflow_dispatch:
     inputs:
       environment:
@@ -76,8 +73,7 @@ jobs:
 
   staging:
     if: >-
-      ${{ github.event_name == 'schedule' ||
-        github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
+      ${{ github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
     uses: ./.github/workflows/_backend-deploy.yml
     with:
       environment: staging

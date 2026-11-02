@@ -59,7 +59,9 @@ class _EventProfileIdentitySectionState
             if (_image case final image?) ...[
               SizedBox.square(
                 dimension: CatchLayout.avatarIdentityExtent,
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 child: ClipOval(
+                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                   child: Image(
                     image: image,
                     fit: BoxFit.cover,

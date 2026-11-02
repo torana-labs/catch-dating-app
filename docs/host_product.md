@@ -1,7 +1,7 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.6.2
-updated: 2026-10-29
+version: 4.6.3
+updated: 2026-11-02
 owner: host_tooling
 status: active
 ---
@@ -1669,7 +1669,7 @@ approval, invite, membership and profile-balanced flows fail closed.
 
 These are product contracts for the implementation slices. Production routes,
 component ids, actions, captures, previews, and tests must be added to the
-machine-readable screen and feature contracts in the implementing PR.
+machine-readable screen contracts in the implementing PR.
 
 ### `host.first_run.intent`
 
@@ -1884,7 +1884,7 @@ hand:
 | Campaigns and WhatsApp | `functions/src/events/sendEventBroadcast.ts`, Operations platform, organizer communication-preference contract | campaign/recipient/sender/template contracts, organizer-owned WABA onboarding, dispatcher, webhook/status/STOP/reply/report surfaces |
 | Invitations/attribution | `functions/src/events/inviteLinks.ts`, `contracts/firestore/event_invite_links.schema.json`, Flutter event share card and Host invite-link UI | person/referrer link kinds, touch/share-intent/attribution receipts, bot filtering, external-provider reconciliation and CRM advocacy projection |
 | External provider adapters | roster adapter/import contracts and event provenance | connector authority/secrets, backfill/webhooks or polling, provider-specific export presets, sync health, reconciliation and revocation |
-| Design contracts | `design/screens/catch.screens.json`, `design/features/*.feature.json`, `tool/ui_capture/`, `widgetbook/` | register new states/actions, fix roster/Event Success fixtures, add captures/previews/tests before promotion |
+| Design contracts | `design/screens/catch.screens.json`, `tool/ui_capture/`, `widgetbook/` | register new states/actions, fix roster/Event Success fixtures, add captures/previews/tests before promotion |
 
 Every schema change regenerates compile-critical Dart/TypeScript/validator
 outputs through the existing contract pipeline. Generated files are never

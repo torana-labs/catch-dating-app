@@ -45,19 +45,19 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Feature-contract actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation. |
-| `ChatsSearchHeaderController` | `lib/chats/presentation/inbox/chats_search_header_controller.dart` | Feature-contract actions: toggle_search. |
-| `ChatSearchQuery` | `lib/chats/presentation/inbox/chats_list_view_model.dart` | Feature-contract actions: search_inquiries. |
-| `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Feature-contract actions: select_broadcast_audience, select_broadcast_template. |
-| `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Feature-contract actions: send_broadcast. |
-| `_HostSendsPageBodySliverState` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Feature-contract actions: open_event_announcement_composer. |
-| `HostManualSendList` | `lib/hosts/presentation/inbox/host_manual_send_list.dart` | Feature-contract actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
-| `showHostFollowerUpdateComposer` | `lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart` | Feature-contract actions: send_follower_update. |
-| `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner from feature.host_inbox. |
-| `HostWhatsappSetupSection` | `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart` | Feature-contract actions: manage_whatsapp_sender. |
-| `HostCampaignEditor` | `lib/hosts/presentation/inbox/host_campaign_editor.dart` | Structural owner from feature.host_inbox. |
-| `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Feature-contract actions: manage_campaign. |
-| `HostWhatsappThreadSheet` | `lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart` | Feature-contract actions: open_whatsapp_thread, send_whatsapp_reply. |
+| `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation. |
+| `ChatsSearchHeaderController` | `lib/chats/presentation/inbox/chats_search_header_controller.dart` | Actions: toggle_search. |
+| `ChatSearchQuery` | `lib/chats/presentation/inbox/chats_list_view_model.dart` | Actions: search_inquiries. |
+| `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Actions: select_broadcast_audience, select_broadcast_template. |
+| `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Actions: send_broadcast. |
+| `_HostSendsPageBodySliverState` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Actions: open_event_announcement_composer. |
+| `HostManualSendList` | `lib/hosts/presentation/inbox/host_manual_send_list.dart` | Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
+| `showHostFollowerUpdateComposer` | `lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart` | Actions: send_follower_update. |
+| `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner. |
+| `HostWhatsappSetupSection` | `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart` | Actions: manage_whatsapp_sender. |
+| `HostCampaignEditor` | `lib/hosts/presentation/inbox/host_campaign_editor.dart` | Structural owner. |
+| `HostAudienceController` | `lib/hosts/presentation/host_audience_controller.dart` | Actions: manage_campaign. |
+| `HostWhatsappThreadSheet` | `lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart` | Actions: open_whatsapp_thread, send_whatsapp_reply. |
 
 ## Shared dependencies
 
@@ -119,4 +119,4 @@ node tool/design/build_host_feature_responsibilities.mjs
 node tool/design/build_host_feature_responsibilities.mjs --check
 ```
 
-The generator cross-checks the Host shell order, typed route contract, feature-contract action owners, Dart symbols, data-contract paths, and focused tests.
+The generator cross-checks the Host shell order, typed route contract, Dart symbols, data-contract paths, and focused tests.

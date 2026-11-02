@@ -200,6 +200,7 @@ class ProfilePhoto extends StatelessWidget {
       );
     }
     return CatchGradedImage(
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: Image(image: photo, fit: BoxFit.cover),
     );
   }
@@ -322,6 +323,7 @@ class ProfileCompatibilitySection extends StatelessWidget {
                   padding: const EdgeInsets.only(top: CatchSpacing.s1),
                   child: CatchSurface(
                     backgroundColor: markColor,
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     borderRadius: BorderRadius.circular(CatchRadius.pill),
                     duration: Duration.zero,
                     child: const SizedBox.square(

@@ -77,6 +77,7 @@ List<Widget> buildExploreEventsSlivers(
           // dominate the sheet's sliver layout and starve following siblings
           // of paint extent. The `OverflowBox` lets the child report its
           // natural intrinsic size while we clip down to a fixed paint area.
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           child: ClipRect(
             child: SizedBox(
               height: CatchLayout.exploreErrorSliverHeight,

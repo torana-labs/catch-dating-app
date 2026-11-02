@@ -131,6 +131,7 @@ class _HostAuthContentEntrance extends StatelessWidget {
       curve: CatchMotion.easeOutCubicCurve,
       child: child,
       builder: (context, value, child) {
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         return Opacity(
           opacity: value,
           child: Transform.translate(

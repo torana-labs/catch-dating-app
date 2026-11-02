@@ -1,13 +1,8 @@
-import 'dart:io';
-
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/type.dart';
 
-import 'migration_baseline.dart';
-
-const drawingMigrationBaseline =
-    'tool/architecture/catch_drawing_migration_baseline.json';
+import 'migration_scope.dart';
 
 /// SDK drawing constructors and strategy bases (D18 / CAT-227).
 /// Icon and Tooltip are inventoried now but stay dormant until CAT-226 ships.
@@ -121,9 +116,7 @@ class _DrawingCalls extends RecursiveAstVisitor<void> {
   }
 }
 
-final _cache = <String, ({DateTime modified, MigrationCounts counts})>{};
-
-/// Parts own their file/family budgets, just as they own text-role budgets.
+/// Every drawing site in scope; an existing one takes a reasoned `// ignore:`.
 List<DrawingMigrationSite> newDrawingMigrationSites(
   CompilationUnit unit,
   String path, {
@@ -133,40 +126,37 @@ List<DrawingMigrationSite> newDrawingMigrationSites(
   if (root == null) return const [];
   final relative = path.substring(root.length + 1).replaceAll(r'\', '/');
   if (!migrationScope(relative)) return const [];
-  final baseline = File('$root/$drawingMigrationBaseline');
-  final modified = baseline.statSync().modified;
-  var input = _cache[root];
-  if (input == null || input.modified != modified) {
-    input = (
-      modified: modified,
-      counts: parseMigrationBaseline(
-        baseline.readAsStringSync(),
-        label: 'CatchDrawing',
-      ),
-    );
-    _cache[root] = input;
-  }
-  final sites = drawingMigrationSites(unit, activeKinds ?? activeDrawingKinds)
+  return drawingMigrationSites(unit, activeKinds ?? activeDrawingKinds)
     ..sort((a, b) => a.node.offset.compareTo(b.node.offset));
-  final seen = <String, int>{};
+}
+
+final _drawingIgnore = RegExp(
+  r'//\s*ignore:[^\n]*catch_ui_lints/catch_no_raw_surface_shell(\s*--\s*\S)?',
+);
+
+/// A drawing exception needs its reason and a live site, so none outlasts the
+/// code it excused. Returns the offending comments.
+List<({int offset, int length})> invalidDrawingIgnores(
+  CompilationUnit unit,
+  String source,
+  Iterable<AstNode> reportedSites,
+) {
+  final lines = {
+    for (final site in reportedSites)
+      unit.lineInfo.getLocation(site.offset).lineNumber,
+  };
   return [
-    for (final site in sites)
-      if (seen.update(site.kind, (n) => n + 1, ifAbsent: () => 1) >
-          (input.counts[relative]?[site.kind] ?? 0))
-        site,
+    for (final match in _drawingIgnore.allMatches(source))
+      if (match[1] == null || !lines.contains(_targetLine(unit, source, match)))
+        (offset: match.start, length: match.end - match.start),
   ];
 }
 
-// Internal mode of the registered lint-drift wrapper, not a new check registry.
-Future<void> main(List<String> args) => runMigrationBaseline(
-  args,
-  label: 'CatchDrawing',
-  baselinePath: drawingMigrationBaseline,
-  optionName: 'drawing',
-  activeKinds: (_) => activeDrawingKinds,
-  kindsInUnit: (unit) =>
-      drawingMigrationSites(unit, null).map((site) => site.kind),
-  initialSources: const ['lib', 'apps', 'packages/catch_ui'],
-  recordActiveKinds: true,
-  countedUnit: 'sites',
-);
+int _targetLine(CompilationUnit unit, String source, Match match) {
+  final location = unit.lineInfo.getLocation(match.start);
+  final before = source.substring(
+    match.start - (location.columnNumber - 1),
+    match.start,
+  );
+  return location.lineNumber + (before.trim().isEmpty ? 1 : 0);
+}

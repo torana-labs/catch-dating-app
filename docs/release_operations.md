@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 3.2.1
+version: 3.2.2
 updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
@@ -541,7 +541,7 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging monthly. See Deploy Backend. |
+| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging only when run by hand. See Deploy Backend. |
 | `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend` deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then a new deployment records the commit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
@@ -1359,7 +1359,8 @@ When it runs:
 - **Dev:** every merge to `main` that touches backend inputs deploys to dev
   automatically.
 - **Prod:** deploys the same commit automatically once dev succeeds.
-- **Staging:** refreshes on the first of each month at 02:17 UTC.
+- **Staging:** deploys only when someone runs the workflow for it. Nothing uses it
+  day to day, and it is missing secrets (#1423).
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Skipping intermediate commits loses nothing,
   because the CLI compares against what is live.

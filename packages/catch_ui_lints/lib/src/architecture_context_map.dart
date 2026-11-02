@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:analyzer/dart/ast/ast.dart';
 
 import 'architecture_findings.dart';
-import 'migration_baseline.dart' show migrationRepositoryRoot;
+import 'migration_scope.dart' show migrationRepositoryRoot;
 
 const _contextMapPath = 'tool/architecture/context_map.json';
 

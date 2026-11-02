@@ -32,6 +32,7 @@ class PhotoSlotTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     final borderRadius = BorderRadius.circular(CatchRadius.lg);
 
     final hasPhoto = url != null;
@@ -221,6 +222,7 @@ class PhotoSlotTile extends StatelessWidget {
                   ),
                 ),
               IgnorePointer(
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 child: CustomPaint(
                   painter: _PhotoSlotBorderPainter(
                     borderRadius: borderRadius,
@@ -250,6 +252,7 @@ class PhotoPlaceholderImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return CustomPaint(
       painter: _PhotoSlotStripePainter(
         background: t.raised,
@@ -270,6 +273,7 @@ class PhotoPlaceholderImage extends StatelessWidget {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _PhotoSlotStripePainter extends CustomPainter {
   const _PhotoSlotStripePainter({
     required this.background,
@@ -302,6 +306,7 @@ class _PhotoSlotStripePainter extends CustomPainter {
       oldDelegate.background != background || oldDelegate.stripe != stripe;
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _PhotoSlotBorderPainter extends CustomPainter {
   const _PhotoSlotBorderPainter({
     required this.borderRadius,

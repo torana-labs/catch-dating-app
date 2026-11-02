@@ -70,6 +70,7 @@ class StartupBrandHeader extends StatelessWidget {
                 ),
                 child: Align(
                   alignment: Alignment.topLeft,
+                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                   child: Image.asset(
                     iconAsset,
                     key: markKey,
@@ -94,6 +95,7 @@ class StartupBrandHeader extends StatelessWidget {
         ),
         child: Align(
           alignment: Alignment.topCenter,
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           child: Image.asset(
             iconAsset,
             key: markKey,
@@ -147,6 +149,7 @@ class _CatchStartupLoadingScreenState extends State<SplashScreen> {
             )
           else
             Center(
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               child: Image.asset(
                 SplashScreen.iconAssetForBrightness(
                   Theme.of(context).brightness,

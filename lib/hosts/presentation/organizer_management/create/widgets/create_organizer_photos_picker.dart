@@ -221,6 +221,7 @@ class OrganizerProfileImageTile extends StatelessWidget {
     final Widget content;
 
     if (imageBytes case final bytes?) {
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       content = Image.memory(bytes, fit: BoxFit.cover);
     } else if (existingImageUrl case final imageUrl?) {
       content = CatchNetworkImage(

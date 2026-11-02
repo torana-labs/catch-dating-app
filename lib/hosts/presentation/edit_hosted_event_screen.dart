@@ -416,6 +416,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                       ),
                       IgnorePointer(
                         ignoring: !screenState.canEdit,
+                        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                         child: Opacity(
                           opacity: screenState.canEdit ? 1 : 0.56,
                           child: Column(

@@ -420,6 +420,7 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
     if (imageBytes != null) {
       return RepaintBoundary(
         key: cropKey,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         child: ClipRect(
           child: InteractiveViewer(
             minScale: 1,
@@ -428,6 +429,7 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
               CatchLayout.profilePhotoEditorBoundaryMargin,
             ),
             child: SizedBox.expand(
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               child: Image.memory(imageBytes, fit: BoxFit.cover),
             ),
           ),

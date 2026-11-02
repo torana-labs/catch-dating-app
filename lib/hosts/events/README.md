@@ -50,12 +50,12 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostEventsScreen` | `lib/hosts/events/presentation/host_events_screen.dart` | Feature-contract actions: retry_host_home. |
-| `HostEventsRouteScaffold` | `lib/hosts/events/presentation/host_events_screen.dart` | Feature-contract actions: create_organizer, manage_event. |
-| `runHostEventEntryFlow` | `lib/hosts/events/presentation/host_event_entry_flow.dart` | Feature-contract actions: create_event, repeat_event. |
-| `HostEventsOrganizerCard` | `lib/hosts/events/presentation/widgets/host_events_list.dart` | Feature-contract actions: retry_host_events, open_program. |
-| `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Feature-contract actions: load_more_schedule, load_more_history, retry_event_history. |
-| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Feature-contract actions: switch_organizer. |
+| `HostEventsScreen` | `lib/hosts/events/presentation/host_events_screen.dart` | Actions: retry_host_home. |
+| `HostEventsRouteScaffold` | `lib/hosts/events/presentation/host_events_screen.dart` | Actions: create_organizer, manage_event. |
+| `runHostEventEntryFlow` | `lib/hosts/events/presentation/host_event_entry_flow.dart` | Actions: create_event, repeat_event. |
+| `HostEventsOrganizerCard` | `lib/hosts/events/presentation/widgets/host_events_list.dart` | Actions: retry_host_events, open_program. |
+| `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Actions: load_more_schedule, load_more_history, retry_event_history. |
+| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Actions: switch_organizer. |
 | `ProgramCreateScreen` | `lib/programs/presentation/program_create_screen.dart` | Recoverable organizer-scoped Program creation route entered from Events. |
 | `ProgramEventsController` | `lib/programs/presentation/program_events_controller.dart` | Bounded Program inventory, exact saved-row confirmation, mutation, retry, and actor-generation fences. |
 | `ProgramEventsRow` | `lib/programs/presentation/program_events_row.dart` | Identifiable Program date-range, function-count, and lifecycle row inside Events. |
@@ -94,4 +94,4 @@ node tool/design/build_host_feature_responsibilities.mjs
 node tool/design/build_host_feature_responsibilities.mjs --check
 ```
 
-The generator cross-checks the Host shell order, typed route contract, feature-contract action owners, Dart symbols, data-contract paths, and focused tests.
+The generator cross-checks the Host shell order, typed route contract, Dart symbols, data-contract paths, and focused tests.

@@ -270,7 +270,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
       heightFactor: 0.94,
       child: CatchSurface(
         backgroundColor: t.bg,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: const BorderRadius.vertical(
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           top: Radius.circular(CatchLayout.sheetTopRadius),
         ),
         clipBehavior: Clip.hardEdge,

@@ -372,6 +372,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                       : Brightness.dark
                 : Brightness.light,
           ),
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           child: ColoredBox(
             color: background,
             child: Semantics(
@@ -380,6 +381,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                   ? null
                   : context.l10n.onboardingWelcomePageLabelSkipWelcomeAnimation,
               onTap: _landed ? null : _skip,
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               child: GestureDetector(
                 key: CatchConsumerBootScreen.tapTargetKey,
                 behavior: HitTestBehavior.opaque,
@@ -414,6 +416,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                           fit: StackFit.expand,
                           children: [
                             IgnorePointer(
+                              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                               child: Opacity(
                                 opacity: 1 - handoff,
                                 child: Stack(
@@ -434,6 +437,7 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                                 ),
                               ),
                             ),
+                            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                             Opacity(
                               opacity: handoff,
                               child: WelcomeSceneLayout(

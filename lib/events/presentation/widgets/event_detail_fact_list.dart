@@ -64,6 +64,7 @@ class EventDetailTicketStubRow extends StatelessWidget {
             ),
             Positioned.fill(
               child: IgnorePointer(
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 child: CustomPaint(
                   painter: _TicketStubNotchPainter(
                     color: notchBackgroundColor ?? t.bg,
@@ -219,6 +220,7 @@ class EventDetailMapCard extends StatelessWidget {
         height: CatchLayout.eventDetailMapCardHeight,
         backgroundColor: surfaceColor ?? t.surface,
         radius: CatchRadius.none,
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.circular(CatchRadius.md),
         borderSpec: CatchBorderSpec(
           role: CatchBorderRole.boundary,
@@ -607,6 +609,7 @@ class TicketStubTile extends StatelessWidget {
       children: [
         if (showDivider)
           Positioned.fill(
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             child: CustomPaint(painter: _VerticalDashedPainter(color: t.line2)),
           ),
         Padding(

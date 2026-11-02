@@ -52,10 +52,12 @@ class EventSuccessAttendeeSpatialRow extends StatelessWidget {
     if (!canDrag || !selected) return row;
     return Draggable<String>(
       data: assignment.uid,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       feedback: Material(
         color: Colors.transparent,
         child: SizedBox(width: CatchLayout.maxContentWidth, child: row),
       ),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       childWhenDragging: Opacity(
         opacity: CatchOpacity.disabledControl,
         child: row,

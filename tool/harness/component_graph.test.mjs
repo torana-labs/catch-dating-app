@@ -49,31 +49,10 @@ function adminPendingInputs() {
     "admin/src/shared/ui/AdminPrimitives/actions.tsx",
     "admin/src/shared/ui/AdminPrimitives/shell.tsx",
   ]);
-  // Derive the controller closure from the scanner's frozen action bindings,
-  // so adding a guarded controller requires routing it without a second list.
-  const directory = new URL("../../design/features/", import.meta.url);
-  for (const name of fs.readdirSync(directory).filter((name) => /^admin_.+\.feature\.json$/u.test(name))) {
-    const contract = JSON.parse(fs.readFileSync(new URL(name, directory), "utf8"));
-    for (const surface of contract.surfaces ?? []) {
-      const actions = new Map((surface.actions ?? []).map((action) => [action.id, action]));
-      const owners = new Map((surface.bindings?.actionOwners ?? []).map((owner) => [owner.id, owner]));
-      for (const scenario of surface.scenarios ?? []) {
-        for (const actionCase of scenario.actionCases ?? []) {
-          if (!actionCase.id.includes("pending_frozen_workspace") &&
-              actionCase.id !== "loading_frozen_query") continue;
-          for (const id of actionCase.disabledActions ?? []) {
-            const owner = owners.get(actions.get(id)?.owner);
-            if (!owner?.file?.includes("/controllers/")) continue;
-            const file = new URL(`../../${owner.file}`, import.meta.url);
-            if (!fs.existsSync(file)) continue;
-            if (fs.readFileSync(file, "utf8").includes(".mutateAsync(") ||
-                owner.file.endsWith("useUserAnalyticsController.ts")) inputs.add(owner.file);
-          }
-        }
-      }
-    }
-  }
-  assert.ok(inputs.size > 5, "frozen controller bindings must not be empty");
+  // The scanner names the controllers it guards, so routing one needs no second list.
+  const scanner = fs.readFileSync(new URL("../../tool/web/check_admin_pending_operations.mjs", import.meta.url), "utf8");
+  for (const [, file] of scanner.matchAll(/"(admin\/src\/features\/[^"]+Controller\.ts)"/gu)) inputs.add(file);
+  assert.ok(inputs.size > 5, "guarded controllers must not be empty");
   return [...inputs].sort();
 }
 
@@ -82,10 +61,7 @@ test("Admin pending inputs add exact validation while preserving every source op
   const classification = graph.classifications.find((entry) => entry.id === "admin-pending-input");
   assert.deepEqual([...classification.paths.include].sort(), inputs);
   const scanner = toolsManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
-  // The scanner also reads the frozen feature cases, which app.design already
-  // routes to Tools; only the controller closure needs this classification.
-  assert.deepEqual([...scanner.impactPaths].sort(),
-    [...inputs, "design/features/admin_*.feature.json"].sort());
+  assert.deepEqual([...scanner.impactPaths].sort(), [...inputs].sort());
   const before = clone(graph);
   before.classifications = before.classifications.filter((entry) => entry.id !== classification.id);
   before.components = before.components.filter((entry) => entry.id !== "web.admin-pending-input");
@@ -101,7 +77,7 @@ test("Admin pending inputs add exact validation while preserving every source op
       }, `${file} ${mode}`);
     }
   }
-  for (const file of ["admin/src/shared/query/queryKeys.ts", "design/features/admin_finance_ops.feature.json"]) {
+  for (const file of ["admin/src/shared/query/queryKeys.ts"]) {
     for (const mode of graph.modes) {
       assert.deepEqual(plan(file, mode).operations, plan(file, mode, before).operations);
     }

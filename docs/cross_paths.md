@@ -1,7 +1,7 @@
 ---
 doc_id: cross_paths
-version: 1.13.0
-updated: 2026-09-09
+version: 1.13.1
+updated: 2026-11-02
 owner: product (approved direction 2026-08-05)
 status: active
 ---
@@ -13,7 +13,7 @@ Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Related owners: `docs/app_architecture.md`, `docs/data_contracts.md`,
 `docs/backend_operation_catalog.md`, `docs/design_language.md`,
 `docs/action_cardinality_policy.md`, `lib/user_profile/README.md`,
-`lib/safety/README.md`, `design/features/explore.feature.json`.
+`lib/safety/README.md`.
 
 ## Decision status
 
@@ -928,8 +928,8 @@ Implementation is incomplete until the changed phase has all relevant proof:
 - JSON schemas for every new document and callable payload/response;
 - generated Dart/TypeScript/admin validators refreshed from source schemas;
 - `docs/data_contracts.md` and `docs/backend_operation_catalog.md` updated;
-- `design/features/explore.feature.json`, screen contract, component contract,
-  and feature coverage updated only when the surface is actually implemented;
+- screen contract and component contract updated only when the surface is
+  actually implemented;
 - Firestore rules emulator tests for roster denial, own/host reads, consent,
   invitation, and event-plan access;
 - Functions tests for eligibility, reciprocal preferences, idempotence,
@@ -943,7 +943,7 @@ Implementation is incomplete until the changed phase has all relevant proof:
 - analytics emission tests and holdout assignment tests;
 - account-deletion cleanup coverage;
 - `./tool/check_data_contract.sh` when contracts/rules change;
-- relevant feature-contract, component, copy, design, analyzer, and readiness
+- relevant component, copy, design, analyzer, and readiness
   gates from `AGENTS.md` and the generated context pack.
 
 ## Launch checklist
