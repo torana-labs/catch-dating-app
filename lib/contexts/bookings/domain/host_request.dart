@@ -82,8 +82,4 @@ class HostRequests {
 
   final List<HostRequest> rows;
   final bool complete;
-
-  /// People whose request is waiting on a decision; the waitlist can wait.
-  int get decisionCount =>
-      rows.where((row) => row.kind == HostRequestKind.request).length;
 }

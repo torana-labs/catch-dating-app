@@ -231,7 +231,7 @@ class AppShellNavigationBar extends StatelessWidget {
               item.selectedIconBuilder?.call(context) ??
               item.iconBuilder?.call(context),
           label: item.destination.localizedLabel(l10n),
-          badgeCount: item.showsUnreadBadge ? unreadCount : item.badgeCount,
+          badgeCount: item.showsUnreadBadge ? unreadCount : 0,
           onLongPress: item.onLongPress,
           semanticValue: item.semanticValue,
           semanticHint: item.semanticHint,
@@ -356,7 +356,6 @@ class AppShellNavigationItem {
     required this.cupertinoSelectedIcon,
     this.branchIndex,
     this.showsUnreadBadge = false,
-    this.badgeCount = 0,
     this.iconBuilder,
     this.selectedIconBuilder,
     this.onLongPress,
@@ -371,9 +370,6 @@ class AppShellNavigationItem {
   final IconData cupertinoIcon;
   final IconData cupertinoSelectedIcon;
   final bool showsUnreadBadge;
-
-  /// A count of its own, for destinations that don't show unread messages.
-  final int badgeCount;
   final WidgetBuilder? iconBuilder;
   final WidgetBuilder? selectedIconBuilder;
   final VoidCallback? onLongPress;

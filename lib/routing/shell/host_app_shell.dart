@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -138,14 +137,6 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
               ),
             )
           : null,
-      requestCount: selectedOrganizer == null
-          ? 0
-          : ref
-                    .watch(hostOrganizerRequestsProvider(selectedOrganizer.id))
-                    .asData
-                    ?.value
-                    .decisionCount ??
-                0,
       organizerSemanticHint: organizers.length > 1
           ? context.l10n.hostsHostTodayTooltipSwitchOrganizer
           : null,
@@ -235,7 +226,6 @@ List<AppShellNavigationItem> _hostNavigationItems({
   required Organizer? selectedOrganizer,
   required VoidCallback? onOrganizerLongPress,
   required String? organizerSemanticHint,
-  required int requestCount,
 }) => [
   AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostToday,
@@ -253,7 +243,6 @@ List<AppShellNavigationItem> _hostNavigationItems({
   ),
   AppShellNavigationItem(
     destination: AppShellNavigationDestination.hostAudience,
-    badgeCount: requestCount,
     materialIcon: CatchIcons.people,
     materialSelectedIcon: CatchIcons.people,
     cupertinoIcon: CatchIcons.people,

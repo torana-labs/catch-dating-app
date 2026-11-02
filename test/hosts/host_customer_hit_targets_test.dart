@@ -11,8 +11,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_cont
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
-import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';

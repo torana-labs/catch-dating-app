@@ -21,13 +21,13 @@ Map<String, Object?> _row({
 };
 
 void main() {
-  test('only join requests count as decisions waiting', () {
+  test('a response reads every row', () {
     final requests = HostRequests.fromJson({
       'complete': true,
       'rows': [_row(), _row(kind: 'waitlist', position: 1)],
     });
     expect(requests.rows, hasLength(2));
-    expect(requests.decisionCount, 1);
+    expect(requests.complete, isTrue);
   });
 
   test('a person waiting on two events is two rows', () {
