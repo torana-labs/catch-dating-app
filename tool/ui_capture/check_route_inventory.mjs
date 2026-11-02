@@ -3,12 +3,12 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const routerPath = fromRepo("lib/routing/go_router.dart");
 const routeContractPath = fromRepo("lib/routing/route_contract.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
+const productionDartRoots = ["lib", "apps/consumer/lib", "apps/host/lib"];
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 const isCliEntrypoint =
@@ -143,7 +143,7 @@ export function buildInventory({
 
 function extractImperativePageRouteInventory(repoRoot = fromRepo(".")) {
   const entries = [];
-  for (const root of screenSourceRoots(repoRoot)) {
+  for (const root of productionDartRoots) {
     const absoluteRoot = path.join(repoRoot, root);
     if (!fs.existsSync(absoluteRoot)) continue;
     for (const absolutePath of dartFilesUnder(absoluteRoot)) {

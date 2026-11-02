@@ -2,7 +2,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {isAppPackageSource} from "../lib/flutter_source_roots.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collisionKeyFor} from "./component_concepts.mjs";
 import {featureWidgetNamingIssues, isAppSharedWidgetSource} from "./lib/component_naming.mjs";
@@ -258,7 +257,7 @@ function roleFor(entry, contract) {
 export function isScreen(name, file) {
   return (
     /(?:Screen|Page|Route|App)$/.test(name) ||
-    (file.includes("/presentation/") || isAppPackageSource(file)) &&
+    (file.includes("/presentation/") || file.startsWith("apps/")) &&
       !file.includes("/widgets/") && /screen\.dart$/.test(file)
   );
 }
