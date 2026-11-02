@@ -8,6 +8,7 @@ import {MyNominationsScreen} from "./MyNominationsScreen";
 import {SalesDealsScreen} from "./SalesDealsScreen";
 import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesHostsScreen} from "./SalesHostsScreen";
+import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {SalesPartnerOfferWorkspace} from "./SalesPartnerOfferWorkspace";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {SalesTodayScreen} from "./SalesTodayScreen";
@@ -22,11 +23,11 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
-  /** The older host page: fit and outreach. */
+  /** The older host page: custom fields and imported history. */
   onOpenHostTools: (organizerId: string) => void;
-  onOpenHostPage: (organizerId: string, page: "privacy" | "demo") => void;
+  onOpenHostPage: (organizerId: string, page: "fit" | "privacy" | "demo") => void;
   /** Which of one host's own pages is open. */
-  hostPage: "main" | "privacy" | "demo";
+  hostPage: "main" | "fit" | "privacy" | "demo";
   onOpenOrganizer: (organizerId: string) => void;
   onAddHost: () => void;
   onError: (message: string | null) => void;
@@ -42,18 +43,21 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
 }
 
 /** A host's own page. Privacy asks the owner to type the host's name, so nothing draws until that name is known. */
-function HostOwnPage({uid, isAdminOwner, selectedId, hostPage, onOpenHost}: Props) {
+function HostOwnPage({uid, ownWorkOnly, isAdminOwner, selectedId, hostPage, onOpenHost}: Props) {
   const organizerId = selectedId as string;
   const {name, isLoading} = useSalesHostName(organizerId);
   let body = null;
-  if (!isAdminOwner) body = <CatchEmptyState title="Only the owner can open this" />;
+  if (hostPage === "fit") {
+    if (ownWorkOnly) body = <CatchEmptyState title="Only the owner and admins can open this" />;
+    else if (!isLoading) body = <SalesIntelligenceWorkspace organizerId={organizerId} organizerName={name ?? ""} currentUserUid={uid ?? ""} isAdminOwner={isAdminOwner} />;
+  } else if (!isAdminOwner) body = <CatchEmptyState title="Only the owner can open this" />;
   else if (!isLoading && hostPage === "demo") {
     body = <SalesDemoWorkspace key={`${uid}:${organizerId}`} organizerId={organizerId} organizerName={name ?? ""} isAdminOwner currentUserUid={uid ?? ""} />;
   } else if (!isLoading) {
     body = renderSalesPrivacyWorkspace({actorUid: uid ?? "", isAdminOwner, organizerId, ...(name ? {organizerName: name} : {})});
   }
   return <CatchPaneLayout pattern="reading" main={<>
-    <CatchWorkspaceHeader title={hostPage === "demo" ? "Private demo" : "Privacy"} kicker={name ? `Sales · ${name}` : "Sales · Hosts"}
+    <CatchWorkspaceHeader title={hostPage === "fit" ? "Fit and outreach" : hostPage === "demo" ? "Private demo" : "Privacy"} kicker={name ? `Sales · ${name}` : "Sales · Hosts"}
       back={{label: "Back to the host", onPressed: () => onOpenHost(organizerId)}} />
     {body}
   </>} />;
@@ -63,7 +67,7 @@ function Hosts({uid, ownWorkOnly, isAdminOwner, selectedId, onSelect, onOpenOrga
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
   const commercial = useSalesHostCommercialController({organizerId: selectedId, opportunities: controller.host?.opportunities ?? [],
     enabled: !ownWorkOnly, onError, onNotice});
-  return <SalesHostsScreen onOpenPrivacy={(id) => onOpenHostPage(id, "privacy")} onOpenDemo={(id) => onOpenHostPage(id, "demo")} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
+  return <SalesHostsScreen onOpenPrivacy={(id) => onOpenHostPage(id, "privacy")} onOpenDemo={(id) => onOpenHostPage(id, "demo")} onOpenFit={(id) => onOpenHostPage(id, "fit")} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
     renderPartnerOffer: ownWorkOnly ? null : (organizerId, organizerName) =>
       <SalesPartnerOfferWorkspace key={`${uid}:${organizerId}`} actorUid={uid ?? ""} organizerId={organizerId} organizerName={organizerName} />}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }

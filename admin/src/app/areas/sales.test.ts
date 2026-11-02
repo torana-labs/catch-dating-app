@@ -13,7 +13,8 @@ describe("Sales routes", () => {
     expect(resolveAdminRoute("/sales/nominations/supply-req-1")).toMatchObject({nav: "nominations", params: {nominationItemId: "supply-req-1"}});
   });
 
-  it("gives a host its own privacy and demo pages", () => {
+  it("gives a host its own fit, privacy and demo pages", () => {
+    expect(resolveAdminRoute("/sales/hosts/host-1/fit")).toMatchObject({nav: "sales-hosts", salesHostPage: "fit", params: {salesOrganizerId: "host-1"}});
     expect(resolveAdminRoute("/sales/hosts/host-1/demo")).toMatchObject({nav: "sales-hosts", salesHostPage: "demo", params: {salesOrganizerId: "host-1"}});
     expect(resolveAdminRoute("/sales/hosts/host-1")).toMatchObject({salesHostPage: "main"});
     expect(resolveAdminRoute("/sales/hosts/host-1/privacy")).toMatchObject({nav: "sales-hosts", salesHostPage: "privacy", params: {salesOrganizerId: "host-1"}});

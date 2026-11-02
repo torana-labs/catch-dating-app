@@ -22,7 +22,6 @@ import type {
 } from "../api/salesTypes";
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
-import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 import {renderSalesNominationWorkspace} from "./SalesNominationPanel";
 
@@ -31,7 +30,7 @@ import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "workflow" | "activity" |
-  "opportunities" | "research" | "intelligence";
+  "opportunities" | "research";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "today", label: "Today"},
@@ -48,7 +47,6 @@ const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "workflow", label: "Workflow"},
   {id: "activity", label: "Activity"},
   {id: "opportunities", label: "Opportunities"},
-  {id: "intelligence", label: "Fit & outreach"},
   {id: "research", label: "Research"},
 ];
 const stageOptions = [
@@ -548,10 +546,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     </> : null}
     {tab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
-    {tab === "intelligence" ? <SalesIntelligenceWorkspace
-      organizerId={detail.account.organizerId}
-      organizerName={detail.organizerSummary.name}
-      currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
     {tab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
       controller={controller} /> : null}
     {!assignedStaffOnly && (tab === "overview" || tab === "research") ?

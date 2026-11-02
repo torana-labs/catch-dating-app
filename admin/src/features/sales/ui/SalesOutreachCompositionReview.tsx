@@ -1,12 +1,7 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchMetaRow, CatchText} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import type {ReactNode} from "react";
-import {
-  AdminButton,
-  AdminForm,
-  selectOptions,
-  StateRow,
-} from "../../../shared/ui/AdminPrimitives";
+import {selectChoices} from "../controllers/salesLabels";
 import type {ApprovedClause, DraftSourceRequest} from
   "../api/salesIntelligenceTypes";
 import type {SalesContact, SalesOpportunity} from "../api/salesTypes";
@@ -152,95 +147,46 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
     ...ofKind(kind).map((row) => ({value: row.clauseId, label: row.text})),
   ];
 
+  const mode = interactionBlocked ? "inactive" : "editable";
   return <>
     <CatchText as="p" variant="supporting">This editable composition plan chooses current approved wording. It is
       not the final draft, cannot send a message, and does not grant contact
       authority. The deterministic server draft still needs separate exact-content review.</CatchText>
     {!eligible ? <CatchText as="p" variant="supporting" role="alert">This host needs an active fit policy, a
       qualified Sales record and clear contact restrictions before drafting.</CatchText> : null}
-    <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
+    <CatchGap size="related">
       <CatchText as="h3" variant="sectionTitle">Review a first-message composition plan</CatchText>
-      <CatchField
-        recipe="select"
-        title="Reviewed contact"
-        value={contactId}
-        onChanged={(value) => setContactId(value ?? "")}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions([{value: "", label: "Choose contact"},
-          ...contacts.map((row) => ({value: row.contactId,
-            label: `${row.displayName} · ${row.relationship.role}`}))])}
-      />
-      {nextContactCursor ? <AdminButton disabled={interactionBlocked}
-        onClick={() => onNextContacts(nextContactCursor)}>More contacts</AdminButton> : null}
-      {hasPreviousContacts ? <AdminButton disabled={interactionBlocked}
-        onClick={onPreviousContacts}>Previous contacts</AdminButton> : null}
-      <CatchField
-        recipe="select"
-        title="Opportunity ready for contact"
-        value={opportunityId}
-        onChanged={(value) => setOpportunityId(value ?? "")}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions([{value: "", label: "Choose opportunity"},
-          ...opportunities.map((row) => ({value: row.opportunityId,
-            label: `${label(row.motion)} · ${label(row.stage)}`}))])}
-      />
-      <CatchField
-        recipe="select"
-        title="Host observation"
-        value={observationId}
-        onChanged={(value) => setObservationId(value ?? "")}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions(options("observation"))}
-      />
-      <CatchField
-        recipe="select"
-        title="Catch capability"
-        value={capabilityId}
-        onChanged={(value) => setCapabilityId(value ?? "")}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions(options("capability"))}
-      />
-      <CatchField
-        recipe="select"
-        title="Private reference (optional)"
-        value={referenceId}
-        onChanged={(value) => setReferenceId(value ?? "")}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions(options("reference", true))}
-      />
-      <CatchField
-        recipe="select"
-        title="Question or next step"
-        value={ctaId}
-        onChanged={(value) => setCtaId(value ?? "")}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions(options("cta"))}
-      />
-      <CatchField
-        recipe="select"
-        title="Draft channel"
-        value={channel}
-        onChanged={(value) => setChannel((value ?? "") as typeof channel)}
-        inputMode={interactionBlocked ? "inactive" : "editable"}
-        {...selectOptions([
-          {value: "email", label: "Email draft"},
-          {value: "message", label: "Message draft"},
-        ])}
-      />
+      <CatchField recipe="select" title="Reviewed contact" value={contactId} onChanged={(value) => setContactId(value ?? "")} inputMode={mode}
+        {...selectChoices([{value: "", label: "Choose contact"},
+          ...contacts.map((row) => ({value: row.contactId, label: `${row.displayName} · ${row.relationship.role}`}))])} />
+      <CatchGap size="inline" direction="horizontal" wrap>
+        {nextContactCursor ? <CatchButton variant="secondary" size="sm" label="More contacts" onPressed={interactionBlocked ? null : () => onNextContacts(nextContactCursor)} /> : null}
+        {hasPreviousContacts ? <CatchButton variant="secondary" size="sm" label="Previous contacts" onPressed={interactionBlocked ? null : onPreviousContacts} /> : null}
+      </CatchGap>
+      <CatchField recipe="select" title="Opportunity ready for contact" value={opportunityId} onChanged={(value) => setOpportunityId(value ?? "")} inputMode={mode}
+        {...selectChoices([{value: "", label: "Choose opportunity"},
+          ...opportunities.map((row) => ({value: row.opportunityId, label: `${label(row.motion)} · ${label(row.stage)}`}))])} />
+      <CatchField recipe="select" title="Host observation" value={observationId} onChanged={(value) => setObservationId(value ?? "")} inputMode={mode}
+        {...selectChoices(options("observation"))} />
+      <CatchField recipe="select" title="Catch capability" value={capabilityId} onChanged={(value) => setCapabilityId(value ?? "")} inputMode={mode}
+        {...selectChoices(options("capability"))} />
+      <CatchField recipe="select" title="Private reference (optional)" value={referenceId} onChanged={(value) => setReferenceId(value ?? "")} inputMode={mode}
+        {...selectChoices(options("reference", true))} />
+      <CatchField recipe="select" title="Question or next step" value={ctaId} onChanged={(value) => setCtaId(value ?? "")} inputMode={mode}
+        {...selectChoices(options("cta"))} />
+      <CatchField recipe="select" title="Draft channel" value={channel} onChanged={(value) => setChannel((value ?? "") as typeof channel)} inputMode={mode}
+        {...selectChoices([{value: "email", label: "Email draft"}, {value: "message", label: "Message draft"}])} />
       <CatchText as="h3" variant="sectionTitle">Composition review</CatchText>
-      <StateRow label="Contact" value={selectedContact?.displayName ?? "Not selected"} />
-      <StateRow label="Opportunity" value={selectedOpportunity ?
-        `${label(selectedOpportunity.motion)} · ${label(selectedOpportunity.stage)}` :
-        "Not selected"} />
-      <StateRow label="Approved wording" value={request ?
-        `${request.observationIds.length} observation · ${request.capabilityIds.length} capability · ${request.referenceIds.length} reference · ${request.ctaIds.length} next step` :
-        "Complete every required selection"} />
-      <StateRow label="Output" value="Deterministic private draft · separate exact review · manual copy only" />
-      <AdminButton type="submit" variant="primary" aria-label={submitting ?
-        "Submitting composition plan" : "Prepare private draft"}
-        disabled={!canSubmit}>{submitting ? "Submitting composition plan" :
-          "Review plan and prepare private draft"}</AdminButton>
-    </AdminForm>
+      <CatchMetaRow columns={2} entries={[
+        {label: "Contact", value: selectedContact?.displayName ?? "Not selected"},
+        {label: "Opportunity", value: selectedOpportunity ? `${label(selectedOpportunity.motion)} · ${label(selectedOpportunity.stage)}` : "Not selected"},
+        {label: "Approved wording", value: request ?
+          `${request.observationIds.length} observation · ${request.capabilityIds.length} capability · ${request.referenceIds.length} reference · ${request.ctaIds.length} next step` :
+          "Complete every required selection", wide: true},
+        {label: "Output", value: "Deterministic private draft · separate exact review · manual copy only", wide: true},
+      ]} />
+      <CatchButton size="sm" label={submitting ? "Submitting composition plan" : "Review plan and prepare private draft"} onPressed={canSubmit ? () => void submit() : null} />
+    </CatchGap>
     {notice ? <CatchText as="p" variant="supporting" role="status">{notice}</CatchText> : null}
     {error ? <CatchText as="p" variant="supporting" role="alert">{error}</CatchText> : null}
   </>;
