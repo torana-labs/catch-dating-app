@@ -32,6 +32,14 @@ describe("useSystemController", () => {
     expect(activityRow(record({status: "started"}))).toMatchObject({problem: false, result: {text: "Running"}});
   });
 
+  it("treats an action whose result was lost as a problem, never as done", () => {
+    const unclear = activityRow(record({status: "indeterminate", errorCode: "ADMIN_CALLABLE_TIMEOUT"}));
+    expect(unclear).toMatchObject({problem: true, result: {text: "Unclear", tone: "warning"}});
+    expect(filterActivity([unclear], "problems", "")).toHaveLength(1);
+    expect(activityRow(record({status: "started"}))).toMatchObject({problem: false, result: {text: "Running"}});
+    expect(activityRow(record({status: "succeeded"}))).toMatchObject({problem: false, result: {text: "Done"}});
+  });
+
   it("filters by who acted and by problems, and searches", () => {
     const rows = [activityRow(record({})), activityRow(record({executionId: "e2", cliVersion: "1.2.0", status: "failed", errorCode: "permission-denied"}))];
     expect(filterActivity(rows, "people", "")).toHaveLength(1);
