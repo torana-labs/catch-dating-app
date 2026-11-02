@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.100.2
+version: 1.101.0
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -102,6 +102,8 @@ in the shared package. Connectivity and rehearsal state remain app callers.
    component (poster, polaroid, ticket) and draws nothing.
 4. Otherwise → the smallest layer that owns the job, arranging library
    components with the framework's layout widgets and token spacing.
+
+Under `apps/*/lib` and `lib/pages`, [App Roots](#app-roots) adds file kinds and zero drawing.
 
 ### Naming grammar (summary — the Naming Grammar section below is binding)
 
@@ -2926,6 +2928,125 @@ Promote a feature widget to a context's `parts/` only when:
 Do not promote a widget just to avoid duplication if the concepts are actually
 different. Do not leave duplicate feature-local widgets when they are the same
 concept under different names.
+
+## App Roots
+
+Ratified 2026-11-02 (blueprint D24 and D25). This section binds every file under
+`apps/host/lib/`, `apps/consumer/lib/` and `lib/pages/` from the first redesigned
+screen, with no baseline and no exceptions. Legacy `presentation/` folders follow
+the rest of this document until they are redrawn. "PR 1.4" and the like use the
+numbering of the
+[redesign programme plan](https://github.com/torana-labs/catch-knowledge/blob/main/plans/redesign-implementation-programme.md).
+
+It refines three sections, and everything they say that is not named here stands:
+
+- [Bounded Context Contract](#bounded-context-contract): the folders inside a
+  context, its layers, its order and its rules stay. Its target layout moves to
+  packages, as below. Its note that the compiler stops `lib/` from importing a
+  screen is corrected below.
+- [Screen Composition Contract](#screen-composition-contract): the sequence from
+  listeners to async boundary to body stays. Under these roots `CatchViewport` is
+  the screen-family owner and the body arranges library components only.
+- [Widget Ownership](#widget-ownership): screen-local `widgets/` are a third home.
+  A widget moves out of one as soon as a second screen wants it, not when two
+  unrelated features do.
+
+### File kinds
+
+A destination folder (`apps/<app>/lib/<destination>/`) or a page folder
+(`lib/pages/<page>/`) holds these files. New ones come from `tool/scaffold.mjs`
+once PR 1.7 lands it.
+
+| File | Declares | May import |
+|---|---|---|
+| `<name>_screen.dart` | One `<Name>Screen` widget: route parsing, `CatchViewport` with its TopBar, Navigation and Dock, the async boundary, listeners, navigation callbacks | The view model, the body, `catch_ui`, platform |
+| `<name>_body.dart` or `<name>_state.dart` | One provider-free `<Name>Body` or `<Name>State` that arranges library components from view-model data | `catch_ui`, context barrels (types only), `parts/`, the screen's `widgets/` |
+| `<name>_view_model.dart` | The generated read-only provider composing context providers into screen state, with the cache policy PR 1.3 asks of it | Contexts, platform |
+| `<name>_flow.dart` | A flow controller for a multi-step screen | Contexts, platform |
+| `widgets/<name>.dart` | Provider-free composition widgets only this screen uses; they arrange library components and parts and draw nothing | `catch_ui`, context barrels (types only), `parts/` |
+
+A context's `parts/` and types are both reached through its public API file, as
+the Bounded Context Contract requires. `_flow` joins the file suffix vocabulary
+for these roots. App wiring at the top of `apps/<app>/lib/` (entry points, native
+adapters, routes, shells) takes no file kind, and the drawing rule still binds it.
+
+```text
+<Name>Screen
+  CatchViewport(theme:, format:, navigation:, topBar: CatchTopBar.<variant>, dock:)
+    CatchAsyncBoundary(viewModel)
+      <Name>Body(state)                       // provider-free
+        CatchPageBody / CatchPaneLayout.<pattern>
+          CatchSection(... children: rows from parts/)
+          CatchEventCard(...)                  // bound in contexts/events/parts
+          CatchStack(...)                      // arrangement only
+```
+
+### Zero drawing
+
+No file under these roots uses a literal colour, text style, radius, stroke,
+elevation or spacing. None uses a raw `Container`, `DecoratedBox`, `Text`,
+`TextStyle`, `BoxDecoration` or `Theme.of`, or a numeric `SizedBox` or `Padding`.
+Everything visible comes from a `catch_ui` component or a token. Framework layout
+widgets (`Column`, `Row`, `Expanded`, slivers) stay legal, because they arrange
+and draw nothing.
+
+This is a drawing rule, not a class-count rule. No class-count lint exists. The
+table above is the shape scaffolds produce and reviewers expect, and nothing
+counts the classes in a file.
+
+### Provider-free files and bindings
+
+- Bodies, states and screen-local widgets never watch providers. They take values
+  and callbacks.
+- A binding from domain data to a component lives in the owning context's `parts/`
+  and draws nothing. A `parts/` widget is provider-free too.
+- One-shot actions live in the context's `actions/`.
+- A visual that repeats goes to `catch_ui`, registry entry first, and T4 is
+  allowed. A visual the library lacks is a library change, not a screen change.
+
+PR 1.4 lands the checks before any screen, each at an empty baseline with seeded
+probes in `tool/check_catch_ui_lints.sh`: the D18 drawing, text, token and
+surface-geometry lints, extended to reject `Theme.of`, `TextStyle`, `BoxDecoration`
+and numeric `SizedBox` and `Padding` here; `catch_arch_provider_free_boundary` for
+bodies, states and `widgets/`; `catch_arch_parts_provider_coupling` for `parts/`.
+
+### Contexts as packages
+
+| Today | Package |
+|---|---|
+| `lib/kernel/` | `packages/kernel` |
+| `lib/platform/`, with `schema_contracts` | `packages/platform` |
+| `lib/contexts/<ctx>/` | `packages/contexts/<ctx>` |
+
+- **Members.** Each is a pub-workspace member, moved in its own PR with no
+  behaviour change. The root package depends on them so legacy code keeps compiling.
+- **Timing.** `kernel` and `platform` move first. A context is promoted when its
+  first redesigned screen lands, in its own PR ahead of that screen. The contexts
+  that wave-1 screens read move in the programme's phase P1.
+- **Dependencies.** An app package depends on `catch_ui`, `kernel`, `platform` and
+  the context packages it reads, and never on the root package. A context lists
+  only contexts declared before it. Every app lists the root package today, because
+  `lib/pages`, the routes, the shells and the legacy screens live there. PR 7.7
+  removes that edge, when the root package is only the workspace. Until then an app
+  imports from the root package only what has not moved.
+- **Imports.** Once a context is promoted, code imports `package:<ctx>/<ctx>.dart`,
+  not `package:catch_dating_app/contexts/<ctx>/<ctx>.dart`. The promoting PR
+  rewrites every import. `packages/platform` cannot take the pub name `platform`,
+  because the lockfile already holds it as a hosted package.
+- **What holds it.** `depend_on_referenced_packages`, which `flutter_lints` turns on
+  and CI fails through `--fatal-infos`. The compiler does not: pub-workspace members
+  share one package config, so a member that imports an unlisted member compiles
+  and runs. Every new package keeps that lint on.
+
+A `catch_arch_*` rule that a package dependency makes redundant is deleted when
+that package lands, and narrows to unpromoted code until then. That covers
+`catch_arch_upward_layer_import`, `catch_arch_cross_feature_presentation_import`
+and `catch_arch_legacy_context_file`. Two rules need more than a dependency:
+
+- `catch_arch_context_barrel_bypass` goes only when the package keeps its internals
+  under `lib/src/`, where the SDK's `implementation_imports` lint holds the line.
+- `catch_arch_context_order_import` goes only when `audit:context-map` checks the
+  same order against each context's `pubspec.yaml`.
 
 ## Naming Grammar
 
