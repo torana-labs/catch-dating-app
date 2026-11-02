@@ -1,4 +1,5 @@
 import type {
+  SalesContact,
   SalesEvidence,
   SalesHoldStatus,
   SalesOpportunity,
@@ -98,6 +99,14 @@ export const decisionInfluences = [
   {value: "unknown", label: "Not sure"}, {value: "decision_maker", label: "Decides"},
   {value: "influencer", label: "Influences"}, {value: "operator", label: "Runs things day to day"},
 ] as const;
+
+/** A person's contact review. None of these gives permission to send anything. */
+export const contactReviewLabels: Record<SalesContact["relationship"]["contactabilityStatus"], {text: string; tone?: "success" | "warning" | "danger"}> = {
+  unknown: {text: "Not reviewed"},
+  draft_reviewed: {text: "Reviewed for drafts", tone: "success"},
+  held: {text: "On hold", tone: "warning"},
+  suppressed: {text: "Don't contact", tone: "danger"},
+};
 
 export function stageLabel(stage: string): string {
   const words = stage.replace(/_/gu, " ");

@@ -10,12 +10,14 @@ import {
   recordSalesActivity,
   reviewSalesEvidenceProposal,
   setSalesAccountSuppression,
+  setSalesContactability,
   updateSalesAccount,
   upsertSalesContact,
   upsertSalesOpportunity,
   upsertSalesTask,
 } from "../api/salesRepository";
 import type {
+  SalesContact,
   SalesContactInput,
   SalesEvidenceInput,
   SalesEvidenceProposal,
@@ -29,7 +31,7 @@ import type {
 export type HostTab = "overview" | "conversations" | "deals" | "notes";
 
 export type HostActivityInput = Pick<SalesRecordActivityInput, "type" | "note" | "channel" | "attestation">;
-export type NextStepInput = Pick<SalesTask, "kind" | "title" | "dueAt">;
+export type NextStepInput = Pick<SalesTask, "kind" | "title" | "dueAt" | "contactId">;
 export interface HostEditInput {
   researchStatus: SalesResearchStatus;
   assignedOwnerUid: string | null;
@@ -44,7 +46,7 @@ export type DealMoveInput = Pick<SalesOpportunity, "stage" | "nextStep" | "nextS
  * Hosts: the accounts a sales associate works (or the team's), searchable,
  * and one host's page with four tabs: overview, conversations, deals, notes.
  * Its everyday work happens there: logging what happened, next steps, moving a deal, research evidence
- * and suggestions, and an account hold.
+ * and suggestions, contact reviews, and an account hold.
  */
 export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onError, onNotice}: {
   ownerUid: string | null;
@@ -69,9 +71,11 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
     queryFn: () => getSalesAccount(selectedOrganizerId as string),
     enabled: selectedOrganizerId !== null,
   });
-  const contacts = useQuery({
-    queryKey: ["sales", "contacts", selectedOrganizerId],
-    queryFn: () => listSalesContacts(selectedOrganizerId as string),
+  const contacts = useInfiniteQuery({
+    queryKey: ["sales", "host-contacts", selectedOrganizerId],
+    queryFn: ({pageParam}) => listSalesContacts(selectedOrganizerId as string, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
     enabled: selectedOrganizerId !== null,
   });
   const evidence = useInfiniteQuery({
@@ -96,6 +100,7 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
   const addingEvidence = useMutation({mutationFn: addSalesEvidence});
   const reviewing = useMutation({mutationFn: reviewSalesEvidenceProposal});
   const holding = useMutation({mutationFn: setSalesAccountSuppression});
+  const reviewingContact = useMutation({mutationFn: setSalesContactability});
 
   const run = useCallback(async (action: () => Promise<unknown>, notice: string) => {
     onError(null);
@@ -124,7 +129,16 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
     tab, setTab,
     host: host.data ?? null,
     hostError: host.error,
-    contacts: contacts.data?.rows ?? [],
+    contacts: contacts.data?.pages.flatMap((page) => page.rows) ?? [],
+    contactsFailed: contacts.isError,
+    retryContacts: () => void contacts.refetch(),
+    hasMoreContacts: contacts.hasNextPage,
+    moreContacts: () => void contacts.fetchNextPage(),
+    /** Decides the version the person read; a newer one comes back as an error to reload. */
+    reviewContact: (contact: SalesContact, expectedRevision: number, status: SalesContact["relationship"]["contactabilityStatus"],
+      reason: string, evidenceId: string | null) => run(() => reviewingContact.mutateAsync({organizerId, contactId: contact.contactId,
+      expectedRevision, status, reason, requestId: crypto.randomUUID(), ...(status === "draft_reviewed" && evidenceId ? {evidenceId} : {})}),
+    "Contact review recorded. No send permission was granted."),
     logActivity: (input: HostActivityInput) => run(() => logging.mutateAsync({...input, organizerId,
       requestId: crypto.randomUUID(), occurredAt: new Date().toISOString()}), "Logged."),
     addNextStep: (input: NextStepInput) => run(() => savingTask.mutateAsync({organizerId, requestId: crypto.randomUUID(),
@@ -167,7 +181,7 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
       expectedRevision, status, reason, requestId: crypto.randomUUID()}), "Account hold saved."),
     canEditResearch: ownerUid === null,
     isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending || savingHost.isPending || savingPerson.isPending ||
-      addingEvidence.isPending || reviewing.isPending || holding.isPending,
+      addingEvidence.isPending || reviewing.isPending || holding.isPending || reviewingContact.isPending,
   };
 }
 

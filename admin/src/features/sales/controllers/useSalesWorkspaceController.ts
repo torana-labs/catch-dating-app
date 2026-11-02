@@ -11,8 +11,7 @@ import {
   upsertSalesOpportunity, upsertSalesTask,
   applySalesImport, listSalesContacts, listSalesEvidence,
   applySalesImportCompensation, previewSalesImportCompensation,
-  previewSalesImport, setSalesContactability,
-  upsertSalesContact,
+  previewSalesImport,
 } from "../api/salesRepository";
 import type {
   SalesAccount, SalesCreateAccountInput, SalesCreateCustomFieldInput,
@@ -22,9 +21,8 @@ import type {
   SalesResearchStatus, SalesSetCustomFieldValueInput, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput,
   SalesUpsertTaskInput,
-  SalesContactInput, SalesImportPacket, SalesImportPreview,
+  SalesImportPacket, SalesImportPreview,
   SalesImportCompensationInput, SalesImportCompensationPreview,
-  SalesSetContactabilityInput,
 } from "../api/salesTypes";
 
 export const researchStatusOptions: Array<{value: SalesResearchStatus; label: string}> = [
@@ -193,8 +191,6 @@ export function useSalesWorkspaceController({
   const inboundLinkMutation = useMutation({mutationFn: linkSalesInboundIntent});
   const createCustomFieldMutation = useMutation({mutationFn: createSalesCustomField});
   const setCustomValueMutation = useMutation({mutationFn: setSalesCustomFieldValue});
-  const contactMutation = useMutation({mutationFn: upsertSalesContact});
-  const contactabilityMutation = useMutation({mutationFn: setSalesContactability});
   const importPreviewMutation = useMutation({mutationFn: previewSalesImport});
   const importApplyMutation = useMutation({mutationFn: applySalesImport});
   const compensationPreviewMutation = useMutation({
@@ -317,16 +313,6 @@ export function useSalesWorkspaceController({
     setCustomValueMutation.mutateAsync({...input, requestId}),
   "Field value saved."), [execute, setCustomValueMutation]);
 
-  const saveContact = useCallback((input: Omit<SalesContactInput, "requestId">) =>
-    execute("contact", input, (requestId) =>
-      contactMutation.mutateAsync({...input, requestId}), "Contact saved."),
-  [contactMutation, execute]);
-  const saveContactability = useCallback((
-    input: Omit<SalesSetContactabilityInput, "requestId">
-  ) => execute("contactability", input, (requestId) =>
-    contactabilityMutation.mutateAsync({...input, requestId}),
-  "Contact review recorded. No send permission was granted."),
-  [contactabilityMutation, execute]);
   const previewImport = useCallback(async (packet: SalesImportPacket):
     Promise<SalesImportPreview | null> => {
     onError(null);
@@ -444,7 +430,6 @@ export function useSalesWorkspaceController({
     saveAccount, addAccount, nominateOrganizer, saveTask, logActivity,
     saveOpportunity, linkInboundIntent,
     addCustomField, saveCustomValue,
-    saveContact, saveContactability,
     previewImport, applyImport, importPreviewPending: importPreviewMutation.isPending,
     previewCompensation, applyCompensation,
     compensationPreviewPending: compensationPreviewMutation.isPending,
@@ -452,8 +437,7 @@ export function useSalesWorkspaceController({
       nominationMutation.isPending || taskMutation.isPending ||
       activityMutation.isPending || opportunityMutation.isPending ||
       inboundLinkMutation.isPending || createCustomFieldMutation.isPending ||
-      setCustomValueMutation.isPending || contactMutation.isPending ||
-      contactabilityMutation.isPending || importApplyMutation.isPending ||
+      setCustomValueMutation.isPending || importApplyMutation.isPending ||
       compensationApplyMutation.isPending,
   };
 }

@@ -11,188 +11,7 @@ import {
 } from "../../../shared/ui/AdminPrimitives";
 import {toLocalDateTimeInput, type SalesWorkspaceController} from
   "../controllers/useSalesWorkspaceController";
-import type {SalesAccountDetail, SalesContact} from "../api/salesTypes";
-
-function PageControls({previous, next, onPrevious, onNext}: {
-  previous: boolean; next: boolean; onPrevious: () => void; onNext: () => void;
-}) {
-  return <CatchGap direction="horizontal" size="inline" wrap><AdminButton disabled={!previous} onClick={onPrevious}>Previous</AdminButton>{" "}
-    <AdminButton disabled={!next} onClick={onNext}>Next</AdminButton></CatchGap>;
-}
-
-function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
-  detail: SalesAccountDetail; controller: SalesWorkspaceController;
-  assignedStaffOnly: boolean;
-}) {
-  const organizerId = detail.account.organizerId;
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [influence, setInfluence] = useState<SalesContact["relationship"]["decisionInfluence"]>("unknown");
-  const [primary, setPrimary] = useState("false");
-  const [endpointKind, setEndpointKind] = useState<"email" | "phone">("email");
-  const [endpointValue, setEndpointValue] = useState("");
-  const [selectedContact, setSelectedContact] = useState("");
-  const [selectedRevision, setSelectedRevision] = useState<number | null>(null);
-  const [status, setStatus] = useState<SalesContact["relationship"]["contactabilityStatus"]>("unknown");
-  const [reason, setReason] = useState("");
-  const [evidenceId, setEvidenceId] = useState("");
-  const contacts = controller.contacts.data?.rows ?? [];
-  const selected = contacts.find((item) => item.contactId === selectedContact);
-  const contactChanged = Boolean(selected && selectedRevision !==
-    selected.relationship.revision);
-  const selectContact = (contact: SalesContact | undefined) => {
-    setSelectedContact(contact?.contactId ?? "");
-    setSelectedRevision(contact?.relationship.revision ?? null);
-    setStatus(contact?.relationship.contactabilityStatus ?? "unknown");
-    setReason("");
-    setEvidenceId(contact?.relationship.draftReviewEvidenceId ?? "");
-  };
-  const matchingEvidence = (controller.evidence.data?.rows ?? []).filter(
-    (item) => item.contactId === selectedContact);
-  const create = async () => {
-    if (!name.trim() || !role.trim()) return;
-    const saved = await controller.saveContact({organizerId, expectedRevision: 0,
-      contact: {displayName: name.trim()}, relationship: {
-        role: role.trim(), decisionInfluence: influence, primary: primary === "true",
-        ...(endpointValue.trim() ? {endpoints: [{kind: endpointKind,
-          value: endpointValue.trim(), verificationStatus: "unverified" as const}]} : {}),
-      }});
-    if (saved) {setName(""); setRole(""); setInfluence("unknown"); setPrimary("false");
-      setEndpointValue("");}
-  };
-  const review = async () => {
-    if (assignedStaffOnly) return;
-    if (!selected || contactChanged || selectedRevision === null || !reason.trim() ||
-      (status === "draft_reviewed" && !evidenceId)) return;
-    const saved = await controller.saveContactability({organizerId,
-      contactId: selected.contactId, expectedRevision: selectedRevision,
-      status, reason: reason.trim(), evidenceId: status === "draft_reviewed" ? evidenceId :
-        undefined});
-    if (saved) selectContact(undefined);
-  };
-  return <Panel title="People" icon={<ClipboardList size={18} />}>
-    <CatchText as="p" variant="supporting">Private contact relationships. A review for drafting never authorizes sending.</CatchText>
-    {controller.contacts.isPending ? <EmptyState>Loading contacts…</EmptyState> :
-      controller.contacts.error ? <EmptyState>Contacts could not be loaded. <AdminButton
-        onClick={() => void controller.contacts.refetch()}>Try again</AdminButton></EmptyState> :
-        contacts.length ? contacts.map((contact) => <StateRow key={contact.contactId}
-          label={contact.displayName} value={<>{contact.relationship.role} ·
-            {contact.relationship.decisionInfluence.replaceAll("_", " ")} ·
-            {contact.relationship.contactabilityStatus.replaceAll("_", " ")}
-            {contact.relationship.primary ? " · Primary" : ""}
-            {contact.relationship.endpoints?.map((endpoint) =>
-              ` · ${endpoint.kind}: ${endpoint.value} (${endpoint.verificationStatus})`)
-              .join("") ?? ""}</>} />) :
-          <EmptyState>No contacts recorded for this host.</EmptyState>}
-    <PageControls previous={controller.hasPreviousContactPage}
-      next={Boolean(controller.contacts.data?.nextCursor)}
-      onPrevious={controller.previousContactPage} onNext={controller.nextContactPage} />
-    <AdminForm onSubmit={(event) => {event.preventDefault(); void create();}}>
-      <CatchText as="h3" variant="sectionTitle">Add contact relationship</CatchText>
-      <CatchField recipe="input" title="Name" value={name} onChanged={setName} required />
-      <CatchField
-        recipe="input"
-        title="Role with host"
-        value={role}
-        onChanged={setRole}
-        required
-      />
-      <CatchField
-        recipe="select"
-        title="Decision influence"
-        value={influence}
-        onChanged={(value) => setInfluence((value ?? "") as typeof influence)}
-        {...selectOptions([
-          {value: "unknown", label: "Unknown"},
-          {value: "decision_maker", label: "Decision maker"},
-          {value: "influencer", label: "Influencer"},
-          {value: "operator", label: "Operator"},
-        ])}
-      />
-      <CatchField
-        recipe="select"
-        title="Primary contact"
-        value={primary}
-        onChanged={(value) => setPrimary(value ?? "")}
-        {...selectOptions([{value: "false", label: "No"}, {value: "true", label: "Yes"}])}
-      />
-      <CatchField
-        recipe="select"
-        title="Contact method (optional)"
-        value={endpointKind}
-        onChanged={(value) => setEndpointKind((value ?? "") as typeof endpointKind)}
-        {...selectOptions([
-          {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
-        ])}
-      />
-      <CatchField recipe="input" title={endpointKind === "email" ? "Email address (unverified)" :
-        "Phone number (unverified)"} value={endpointValue}
-        onChanged={setEndpointValue} keyboardType={endpointKind === "email" ? "emailAddress" : "text"} />
-      <CatchText as="p" variant="supporting">These contact details still need review before they can be used.</CatchText>
-      <AdminButton type="submit" disabled={!name.trim() || !role.trim() ||
-        controller.isSaving}>Add contact</AdminButton>
-    </AdminForm>
-    {assignedStaffOnly ? <CatchText as="p" variant="supporting">Contact restrictions and draft eligibility require an
-      authorized reviewer. Adding contact details never grants permission to send.</CatchText> : null}
-    {contacts.length && !assignedStaffOnly ? <AdminForm onSubmit={(event) => {event.preventDefault(); void review();}}>
-      <CatchText as="h3" variant="sectionTitle">Contact restriction or draft review</CatchText>
-      <CatchField
-        recipe="select"
-        title="Contact on this page"
-        value={selectedContact}
-        onChanged={(value) => selectContact(contacts.find((item) =>
-          item.contactId === (value ?? "")))}
-        {...selectOptions([{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
-          value: item.contactId, label: item.displayName,
-        }))])}
-      />
-      {selected ? <StateRow label="Current status" value={
-        selected.relationship.contactabilityStatus.replaceAll("_", " ")} /> : null}
-      {contactChanged ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">This contact decision changed since you opened
-        it. Compare the current status before recording another decision. <AdminButton
-          type="button" onClick={() => selectContact(selected)}>Use latest contact
-          decision</AdminButton></CatchText> : null}
-      <CatchField
-        recipe="select"
-        title="New status"
-        value={status}
-        onChanged={(value) => setStatus((value ?? "") as typeof status)}
-        {...selectOptions([
-          {value: "unknown", label: "Unknown"},
-          {value: "draft_reviewed", label: "Reviewed for draft consideration"},
-          {value: "held", label: "Hold"},
-          {value: "suppressed", label: "Suppress"},
-        ])}
-      />
-      {status === "draft_reviewed" ? <CatchField
-        recipe="select"
-        title="Reviewed contact evidence on this page"
-        value={evidenceId}
-        onChanged={(value) => setEvidenceId(value ?? "")}
-        {...selectOptions([
-          {value: "", label: "Choose evidence"}, ...matchingEvidence.map((item) => ({
-            value: item.evidenceId,
-            label: `${item.claimKey}: ${item.sourceRef}`,
-          })),
-        ])}
-      /> : null}
-      <CatchField
-        recipe="input"
-        title="Reason for decision"
-        maxLines={2}
-        value={reason}
-        onChanged={setReason}
-        required
-      />
-      <CatchText as="p" variant="supporting">Draft review is only a private eligibility input. It does not verify an
-        endpoint, consent to send, or provider delivery.</CatchText>
-      <AdminButton type="submit" disabled={!selected || contactChanged || !reason.trim() ||
-        (status === "draft_reviewed" && !evidenceId) || controller.isSaving}>
-        Record contact decision
-      </AdminButton>
-    </AdminForm> : null}
-  </Panel>;
-}
+import type {SalesAccountDetail} from "../api/salesTypes";
 
 function taskDateLabel(value: string | null) {
   if (!value) return "No date";
@@ -276,7 +95,7 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
           current restrictions before recording this task; it does not send anything.</CatchText>
         {!reviewedContacts.length ? <CatchText as="p" variant="supporting" role="alert">No reviewed contacts on this page.
           {assignedStaffOnly ? " Ask an authorized reviewer, or choose Internal research." :
-            " Review a contact in People, or choose Internal research."}</CatchText> : null}
+            " Review a contact on the host page, or choose Internal research."}</CatchText> : null}
       </> : null}
       <CatchText as="p" variant="supporting">Assigned to you</CatchText>
       <CatchField
@@ -303,7 +122,7 @@ function SalesDraftReadinessPanel() {
 
 export function SalesRecordsWorkspace({section, detail, controller, currentUserUid,
   assignedStaffOnly = false}: {
-  section: "people" | "draft" | "tasks";
+  section: "draft" | "tasks";
   currentUserUid?: string;
   assignedStaffOnly?: boolean;
   detail: SalesAccountDetail; controller: SalesWorkspaceController;
@@ -311,7 +130,5 @@ export function SalesRecordsWorkspace({section, detail, controller, currentUserU
   if (section === "tasks") return <SalesTasksPanel key={detail.account.organizerId}
     detail={detail} controller={controller} currentUserUid={currentUserUid ?? ""}
     assignedStaffOnly={assignedStaffOnly} />;
-  if (section === "people") return <SalesPeoplePanel key={detail.account.organizerId}
-    detail={detail} controller={controller} assignedStaffOnly={assignedStaffOnly} />;
   return <SalesDraftReadinessPanel />;
 }

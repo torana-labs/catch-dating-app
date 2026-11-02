@@ -1,4 +1,5 @@
 import {
+  CatchBadge,
   CatchButton,
   CatchCheckboxInput,
   CatchEmptyState,
@@ -27,6 +28,7 @@ import type {
   SalesTaskKind,
 } from "../api/salesTypes";
 import {
+  contactReviewLabels,
   decisionInfluences,
   dueLabel,
   evidenceClaimLabels,
@@ -47,7 +49,8 @@ export type SalesHostsModel = Pick<SalesHostsController,
   "query" | "setQuery" | "rows" | "hasNextPage" | "hasPreviousPage" | "nextPage" | "previousPage" | "tab" | "setTab" |
   "contacts" | "logActivity" | "addNextStep" | "completeNextStep" | "saveDeal" | "saveHost" | "addPerson" | "canEditResearch" | "isSaving" |
   "evidence" | "evidenceFailed" | "retryEvidence" | "hasMoreEvidence" | "moreEvidence" | "addEvidence" | "suggestions" | "suggestionsFailed" |
-  "retrySuggestions" | "hasMoreSuggestions" | "moreSuggestions" | "reviewSuggestion" | "setHold"> & {
+  "retrySuggestions" | "hasMoreSuggestions" | "moreSuggestions" | "reviewSuggestion" | "setHold" |
+  "contactsFailed" | "retryContacts" | "hasMoreContacts" | "moreContacts" | "reviewContact"> & {
   /** Who "Assign to me" means. */
   uid: string | null;
   host: SalesAccountDetail | null;
@@ -110,18 +113,31 @@ function NextStepSheet({model, onClose}: {model: SalesHostsModel; onClose: () =>
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<SalesTaskKind>("follow_up");
   const [due, setDue] = useState(tomorrowMorning);
+  const [contactId, setContactId] = useState("");
   const dueAt = isoFrom(due);
+  // Following up or arranging a demo needs someone reviewed for drafts; the server checks that again when saving.
+  const outbound = kind === "follow_up" || kind === "demo";
+  const reviewed = model.contacts.filter((contact) => contact.relationship.contactabilityStatus === "draft_reviewed");
+  const chosen = reviewed.some((contact) => contact.contactId === contactId);
   const submit = async () => {
-    if (dueAt && await model.addNextStep({kind, title: title.trim(), dueAt})) onClose();
+    if (dueAt && await model.addNextStep({kind, title: title.trim(), dueAt, ...(outbound ? {contactId} : {})})) onClose();
   };
   return (
     <CatchSheet recipe="standard" open onClose={onClose} title="Add a next step" subtitle="Hosts"
-      footer={<CatchButton label={model.isSaving ? "Saving" : "Add"} onPressed={title.trim() && dueAt && !model.isSaving ? () => void submit() : null} />}>
+      footer={<CatchButton label={model.isSaving ? "Saving" : "Add"} onPressed={title.trim() && dueAt && (!outbound || chosen) && !model.isSaving ? () => void submit() : null} />}>
       <CatchGap size="related">
         <CatchField recipe="input" title="What's next" value={title} onChanged={setTitle} inputHint="Send pilot terms" />
         <CatchField recipe="select" title="Kind" value={kind} values={nextStepKinds}
           itemLabelBuilder={(value) => taskKindLabels[value as SalesTaskKind] ?? value}
           onChanged={(value) => setKind((value ?? "follow_up") as SalesTaskKind)} />
+        {outbound ? (reviewed.length ? (
+          <CatchField recipe="select" title="With" value={contactId} values={["", ...reviewed.map((contact) => contact.contactId)]}
+            itemLabelBuilder={(value) => reviewed.find((contact) => contact.contactId === value)?.displayName ?? "Choose someone"}
+            helperText="Only people reviewed for drafts. This records the step; it doesn't send anything."
+            onChanged={(value) => setContactId(value ?? "")} />
+        ) : <CatchText as="p" variant="bodyM" role="alert">
+          {model.canEditResearch ? "Nobody here is reviewed for drafts yet. Review someone under People, or choose another kind." :
+            "Nobody here is reviewed for drafts yet. Ask a reviewer, or choose another kind."}</CatchText>) : null}
         <CatchField recipe="input" title="Due" value={due} onChanged={setDue} keyboardType="datetime" />
       </CatchGap>
     </CatchSheet>
@@ -218,11 +234,60 @@ function AddPersonSheet({model, onClose}: {model: SalesHostsModel; onClose: () =
   );
 }
 
+type ContactStatus = SalesContact["relationship"]["contactabilityStatus"];
+
+/** A decision about one person. It stays bound to what the reviewer opened, so a change made meanwhile is seen first. */
+function ContactReviewSheet({model, contact, onClose}: {model: SalesHostsModel; contact: SalesContact; onClose: () => void}) {
+  const {relationship} = contact;
+  const [openedRevision, setOpenedRevision] = useState(relationship.revision);
+  const [status, setStatus] = useState<ContactStatus>(relationship.contactabilityStatus);
+  const [evidenceId, setEvidenceId] = useState(relationship.draftReviewEvidenceId ?? "");
+  const [reason, setReason] = useState("");
+  const changed = openedRevision !== relationship.revision;
+  const useLatest = () => {
+    setOpenedRevision(relationship.revision);
+    setStatus(relationship.contactabilityStatus);
+    setEvidenceId(relationship.draftReviewEvidenceId ?? "");
+    setReason("");
+  };
+  const about = model.evidence.filter((item) => item.contactId === contact.contactId);
+  const draft = status === "draft_reviewed";
+  const ready = reason.trim() && (!draft || about.some((item) => item.evidenceId === evidenceId));
+  const submit = async () => {
+    if (await model.reviewContact(contact, openedRevision, status, reason.trim(), draft ? evidenceId : null)) onClose();
+  };
+  return (
+    <CatchSheet recipe="standard" open onClose={onClose} title={`Review ${contact.displayName}`} subtitle="Contact review"
+      footer={changed ? <CatchButton label="Use the latest" variant="secondary" onPressed={useLatest} /> :
+        <CatchButton label={model.isSaving ? "Saving" : "Save"} onPressed={ready && !model.isSaving ? () => void submit() : null} />}>
+      <CatchGap size="related">
+        {changed ? <CatchText as="p" variant="bodyM" role="alert">
+          This person changed since you opened this. They're now {contactReviewLabels[relationship.contactabilityStatus].text.toLowerCase()}. Check that before you decide.</CatchText> : null}
+        <CatchField recipe="select" title="Status" value={status} values={keysOf(contactReviewLabels)}
+          itemLabelBuilder={(value) => contactReviewLabels[value as ContactStatus].text}
+          onChanged={(value) => setStatus((value ?? status) as ContactStatus)} />
+        {draft ? (about.length ? (
+          <CatchField recipe="select" title="Evidence about them" value={evidenceId} values={["", ...about.map((item) => item.evidenceId)]}
+            itemLabelBuilder={(value) => {
+              const item = about.find((entry) => entry.evidenceId === value);
+              return item ? `${evidenceClaimLabels[item.claimKey]}: ${item.sourceRef}` : "Choose evidence";
+            }}
+            onChanged={(value) => setEvidenceId(value ?? "")} />
+        ) : <CatchText as="p" variant="bodyM" role="alert">{model.hasMoreEvidence ? "No evidence about them is loaded yet." :
+          "Add evidence about them on this page before reviewing them for drafts."}</CatchText>) : null}
+        {draft && model.hasMoreEvidence ? <CatchButton label="Show more evidence" variant="secondary" size="sm" onPressed={model.moreEvidence} /> : null}
+        <CatchField recipe="input" title="Why" maxLines={2} value={reason} onChanged={setReason}
+          helperText="A review for drafts doesn't verify their details, give consent or send anything." />
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
 type ClaimKey = SalesEvidence["claimKey"];
 type SourceType = SalesEvidence["sourceType"];
 type Confidence = SalesEvidence["confidence"];
 
-const keysOf = <T extends string>(labels: Record<T, string>) => Object.keys(labels) as T[];
+const keysOf = <T extends string>(labels: Record<T, unknown>) => Object.keys(labels) as T[];
 const date = (value: string) => new Intl.DateTimeFormat("en-IN", {day: "numeric", month: "short", year: "numeric"}).format(new Date(value));
 
 /** Records what was seen and where, apart from any conclusion. Evidence is private and publishes nothing. */
@@ -383,7 +448,8 @@ function HoldSheet({model, host, onClose}: {
   );
 }
 
-type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "person"} | {kind: "hold"} | {kind: "deal"; deal: SalesOpportunity | null};
+type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "person"} | {kind: "hold"} | {kind: "deal"; deal: SalesOpportunity | null} |
+  {kind: "contact"; contactId: string};
 
 /** One host: its facts and history beside what's next and who's involved. Everything rarer is in All tools. */
 function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
@@ -395,6 +461,7 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
 }) {
   const [sheet, setSheet] = useState<HostSheet | null>(null);
   const close = () => setSheet(null);
+  const reviewingContact = sheet?.kind === "contact" ? model.contacts.find((contact) => contact.contactId === sheet.contactId) ?? null : null;
   const research = researchLabels[host.account.researchStatus];
   const deal = host.opportunities[0];
   const openTasks = host.tasks.filter((task) => task.status === "open");
@@ -447,6 +514,7 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
         {sheet?.kind === "edit" ? <EditHostSheet model={model} host={host} onClose={close} /> : null}
         {sheet?.kind === "person" ? <AddPersonSheet model={model} onClose={close} /> : null}
         {sheet?.kind === "hold" ? <HoldSheet model={model} host={host} onClose={close} /> : null}
+        {reviewingContact ? <ContactReviewSheet key={reviewingContact.contactId} model={model} contact={reviewingContact} onClose={close} /> : null}
       </>}
       aside={<CatchGap size="section">
         <CatchSection title="Next steps" count={openTasks.length} dividers="none" action={{label: "Add", onPressed: () => setSheet({kind: "step"})}}
@@ -456,16 +524,30 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
             trailing={<CatchButton label="Done" variant="secondary" size="sm"
               onPressed={model.isSaving ? null : () => void model.completeNextStep(task)} />} />)}
         </CatchSection>
-        <CatchSection title="People" count={model.contacts.length} dividers="none" action={{label: "Add", onPressed: () => setSheet({kind: "person"})}} empty={<CatchEmptyState title="No one yet" />}>
-          {model.contacts.map((contact) => <CatchIndexRow key={contact.contactId} title={contact.displayName} titleVariant="bodyM"
-            subtitle={[contact.relationship.role, ...(contact.relationship.endpoints ?? []).map((endpoint) => endpoint.value)].filter(Boolean).join(" · ") || undefined} />)}
+        <CatchSection title="People" count={model.contacts.length} dividers="none" action={{label: "Add", onPressed: () => setSheet({kind: "person"})}}
+          empty={model.contactsFailed ?
+            <CatchEmptyState title="People could not be loaded" actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={model.retryContacts} />} /> :
+            <CatchEmptyState title="Nobody yet" />}>
+          {model.contacts.map((contact) => {
+            const {relationship} = contact;
+            const review = contactReviewLabels[relationship.contactabilityStatus];
+            const influence = decisionInfluences.find((entry) => entry.value === relationship.decisionInfluence && entry.value !== "unknown")?.label;
+            return <CatchIndexRow key={contact.contactId} title={contact.displayName} titleVariant="bodyM"
+              subtitle={[relationship.role, influence, relationship.primary ? "Main contact" : null,
+                ...(relationship.endpoints ?? []).map((endpoint) => `${endpoint.value}${endpoint.verificationStatus === "unverified" ? " (unverified)" : ""}`),
+              ].filter(Boolean).join(" · ") || undefined}
+              footer={<CatchBadge recipe="status" tone={review.tone ?? "neutral"} label={review.text} />}
+              {...(model.canEditResearch ? {trailing: <CatchButton label="Review" variant="secondary" size="sm"
+                onPressed={() => setSheet({kind: "contact", contactId: contact.contactId})} />} : {})} />;
+          })}
         </CatchSection>
+        {model.hasMoreContacts ? <CatchButton label="Show more people" variant="secondary" size="sm" onPressed={model.moreContacts} /> : null}
         <CatchSection title="More" dividers="none">
           <CatchIndexRow title="Edit host" titleVariant="bodyM" subtitle="Summary, next action, research and owner" onTap={() => setSheet({kind: "edit"})} />
           <CatchIndexRow title="Organizer page" titleVariant="bodyM" onTap={onOpenOrganizer} />
           <CatchIndexRow title="Account hold" titleVariant="bodyM" subtitle={holdLabels[host.account.suppressionStatus ?? "clear"]}
             trailing={model.canEditResearch ? <CatchButton label="Change" variant="secondary" size="sm" onPressed={() => setSheet({kind: "hold"})} /> : undefined} />
-          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Contact reviews, pilots, quotes, fit, demos and privacy" onTap={onOpenTools} />
+          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Pilots, quotes, fit, demos and privacy" onTap={onOpenTools} />
         </CatchSection>
       </CatchGap>} />
   );
@@ -476,7 +558,7 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
-  /** The older host page: contact reviews, pilots, quotes, fit, demos and privacy. */
+  /** The older host page: pilots, quotes, fit, demos and privacy. */
   onOpenHostTools: (organizerId: string) => void;
   /** The older form to add a host or nominate an organizer. */
   onAddHost: () => void;
