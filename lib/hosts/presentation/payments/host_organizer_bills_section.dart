@@ -132,12 +132,12 @@ class HostOrganizerBillSheet extends ConsumerWidget {
       subtitle: invoice == null ? null : l10n.hostBillsInvoice(number: invoice),
       pinFooter: true,
       footer: bill.canPay && paymentUrl != null
-          ? CatchButton(
+          ? CatchButton.sheet(
+              role: CatchButtonEmphasis.commit,
               key: const ValueKey('host-bill-pay'),
               label: l10n.hostBillsPay(
                 amount: formatMinorCurrency(bill.totalMinor),
               ),
-              fullWidth: true,
               status: pay.isPending
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
