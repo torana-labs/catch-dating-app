@@ -7,45 +7,10 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 export const adminReviewBridgeChannels = [
   {
-    id: "organizer_publication",
-    callableName: "adminDecideOrganizerIntake",
-    adminApiWrapper: "decideOrganizerIntake",
-    payloadType: "AdminDecideOrganizerIntakePayload",
-    responseType: "AdminDecideOrganizerIntakeResponse",
-    handlerFile: "functions/src/admin/organizerIntake.ts",
-    handlerTest: "functions/src/admin/organizerIntake.test.ts",
-    payloadSchema:
-      "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
-    firestoreSchema:
-      "contracts/firestore/organizer_intake_review_decisions.schema.json",
-    generatedPayload:
-      "functions/src/shared/generated/adminDecideOrganizerIntakeCallablePayload.ts",
-    generatedDocument:
-      "functions/src/shared/generated/organizerIntakeReviewDecisionDocument.ts",
-    firestoreCollection: "organizerIntakeReviewDecisions",
-  },
-  {
-    id: "organizer_curation",
-    callableName: "adminRecordOrganizerCuration",
-    adminApiWrapper: "recordOrganizerCuration",
-    payloadType: "AdminRecordOrganizerCurationPayload",
-    responseType: "AdminRecordOrganizerCurationResponse",
-    handlerFile: "functions/src/admin/organizerCuration.ts",
-    handlerTest: "functions/src/admin/organizerCuration.test.ts",
-    payloadSchema:
-      "contracts/callables/admin_record_organizer_curation_payload.schema.json",
-    firestoreSchema:
-      "contracts/firestore/organizer_intake_curation_decisions.schema.json",
-    generatedPayload:
-      "functions/src/shared/generated/adminRecordOrganizerCurationCallablePayload.ts",
-    generatedDocument:
-      "functions/src/shared/generated/organizerIntakeCurationDecisionDocument.ts",
-    firestoreCollection: "organizerIntakeCurationDecisions",
-  },
-  {
     id: "organizer_policy_gap_review",
     callableName: "adminDecideOrganizerPolicyGap",
     adminApiWrapper: "decideOrganizerPolicyGap",
+    controllerMutationToken: "mutationFn: decideSupplyIntakePolicy",
     payloadType: "AdminDecideOrganizerPolicyGapPayload",
     responseType: "AdminDecideOrganizerPolicyGapResponse",
     handlerFile: "functions/src/admin/organizerPolicyGap.ts",
@@ -65,11 +30,9 @@ export const adminReviewBridgeChannels = [
 const sharedFiles = {
   adminApi: "admin/src/shared/api/adminApi.ts",
   adminRepository:
-    "admin/src/features/intake/organizer/api/organizerIntakeRepository.ts",
+    "admin/src/features/intake/organizer/api/supplyIntakePolicyRepository.ts",
   adminController:
-    "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
-  adminLoader:
-    "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+    "admin/src/features/intake/organizer/controllers/useSupplyIntakePolicyController.ts",
   adminTypes: "admin/src/shared/types/adminTypes.ts",
   functionsIndex: "functions/src/index.ts",
   intakeOperationsHandler: "functions/src/admin/intakeOperations.ts",
@@ -125,11 +88,6 @@ export function checkAdminReviewBridge({
 
 function checkFirestoreIntakeReadPath({root, errors, fileCache}) {
   const expectations = [
-    [sharedFiles.adminApi, '"adminListIntakeOperations"', "admin callable"],
-    [sharedFiles.adminLoader, "listIntakeOperations", "Firestore loader"],
-    [sharedFiles.adminLoader, 'workflowId: "supply-intake"', "workflow filter"],
-    [sharedFiles.adminLoader, 'runStatus: "completed"', "completed-run filter"],
-    [sharedFiles.adminLoader, "latestRunPerLaunchMarket", "market selection"],
     [sharedFiles.functionsIndex, "adminListIntakeOperations", "function export"],
     [
       sharedFiles.intakeOperationsHandler,

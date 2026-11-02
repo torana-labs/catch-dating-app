@@ -8,18 +8,10 @@ describe("Inbox routes", () => {
     expect(route.params.inboxItemId).toBe("supply-req:1");
   });
 
-  it("puts the inbox on the Intake nav and keeps the old review addresses", () => {
+  it("sends the old Intake review addresses to the inbox", () => {
     expect(adminPathForNav("organizer-intake")).toBe("/inbox");
-    for (const path of ["/intake/organizers", "/intake/events", "/organizer-intake/listings"]) {
-      expect(resolveAdminRoute(path).nav).toBe("intake-review");
+    for (const path of ["/intake", "/intake/organizers", "/intake/events", "/intake/operations", "/organizer-intake/listings"]) {
+      expect(resolveAdminRoute(path).redirect).toBe("/inbox");
     }
-  });
-
-  it.each([
-    ["/intake/organizers", "Organizer intake"],
-    ["/intake/events", "Event intake"],
-    ["/intake/operations", "Supply intake operations"],
-  ])("retains the title for %s", (path, title) => {
-    expect(resolveAdminRoute(path).title).toBe(title);
   });
 });

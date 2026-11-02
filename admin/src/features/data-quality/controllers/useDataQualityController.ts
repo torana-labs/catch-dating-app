@@ -302,8 +302,8 @@ export function buildDataQualityRows({
       isEmpty: eventIntake.bridgeSource === "empty",
       detail: `${arrayLength(eventIntake.eventCandidates)} candidates from ${arrayLength(eventIntake.sourceResults)} source results`,
       owner: "Events intake",
-      runbook: "admin > Intake > Events",
-      owningWorkflowPath: "/intake/events",
+      runbook: "admin > Inbox",
+      owningWorkflowPath: "/inbox",
     }));
     rows.push(buildRunPlanConfigurationRow({
       id: "event-intake-run-plan-configuration",
@@ -311,9 +311,9 @@ export function buildDataQualityRows({
       source: "Event Intake crawl configuration",
       label: "Event Intake source crawl plan",
       owner: "Events intake",
-      runbook: "admin > Intake > Crawl setup",
+      runbook: "admin > Inbox",
       runPlan: eventIntake.runPlan,
-      owningWorkflowPath: "/intake/events",
+      owningWorkflowPath: "/inbox",
     }));
   }
   return rows.sort((left, right) =>

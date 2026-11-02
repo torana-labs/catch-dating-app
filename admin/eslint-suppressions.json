@@ -24,21 +24,6 @@
       "count": 3
     }
   },
-  "src/features/intake/events/ui/eventIntakeWorkbench.tsx": {
-    "react/forbid-elements": {
-      "count": 10
-    }
-  },
-  "src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx": {
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/features/marketing/ui/marketingComposerPanels.tsx": {
     "react/forbid-elements": {
       "count": 8

@@ -119,12 +119,6 @@ import {
   sampleEventIntakeBridge,
   sampleMarketingOpsBridge,
 } from "./sampleOperationalData";
-import {sampleIntakeOperations} from
-  "../operations/sampleIntakeOperations";
-import type {
-  AdminListIntakeOperationsPayload,
-  AdminListIntakeOperationsResponse,
-} from "../operations/operationsTypes";
 import {
   AdminAssignSafetyTriageItemPayload,
   AdminAssignSafetyTriageItemResponse,
@@ -156,16 +150,8 @@ import {
   AdminDecideOrganizerClaimResponse,
   AdminGetOrganizerClaimRequestDetailsPayload,
   AdminGetOrganizerClaimRequestDetailsResponse,
-  AdminDecideOrganizerIntakePayload,
-  AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
   AdminDecideOrganizerPolicyGapResponse,
-  AdminRecordOrganizerCurationPayload,
-  AdminRecordOrganizerCurationResponse,
-  AdminCreateOrganizerDraftFromCandidatePayload,
-  AdminCreateOrganizerDraftFromCandidateResponse,
-  AdminRecordEventIntakeReviewDecisionPayload,
-  AdminRecordEventIntakeReviewDecisionResponse,
   AdminTakedownExternalEventPayload,
   AdminTakedownExternalEventResponse,
   AdminRecordMarketingReviewDecisionPayload,
@@ -1076,22 +1062,6 @@ export async function loadEventIntakeDashboard():
   return result.data;
 }
 
-export async function listIntakeOperations(
-  payload: AdminListIntakeOperationsPayload = {}
-): Promise<AdminListIntakeOperationsResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return sampleIntakeOperations(payload);
-  }
-
-  const callable = httpsCallable<
-    AdminListIntakeOperationsPayload,
-    AdminListIntakeOperationsResponse
-  >(functions, "adminListIntakeOperations");
-  const result = await callable(payload);
-  return result.data;
-}
-
 export async function listActionExecutions(
   payload: AdminListActionExecutionsPayload = {}
 ): Promise<AdminListActionExecutionsResponse> {
@@ -1448,64 +1418,6 @@ export async function setOrganizerIndexStatus(
   return result.data;
 }
 
-export async function decideOrganizerIntake(
-  payload: AdminDecideOrganizerIntakePayload
-): Promise<AdminDecideOrganizerIntakeResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 240));
-    return {
-      entityId: payload.entityId,
-      decision: payload.decision,
-      decisionStatus: payload.decision === "approve_public" ?
-        "approved_public" :
-        payload.decision === "hold" ? "held" : "suppressed",
-      publishStatus: payload.publishStatus,
-      indexStatus: payload.indexStatus,
-      appVisibility: payload.appVisibility,
-      decisionPath: `organizerIntakeReviewDecisions/${payload.entityId}`,
-      projectionState: payload.decision === "approve_public" ?
-        "pending_static_generation" :
-        "not_projectable",
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminDecideOrganizerIntakePayload,
-    AdminDecideOrganizerIntakeResponse
-  >(functions, "adminDecideOrganizerIntake");
-  const result = await callable(payload);
-  return result.data;
-}
-
-export async function createOrganizerDraftFromCandidate(
-  payload: AdminCreateOrganizerDraftFromCandidatePayload
-): Promise<AdminCreateOrganizerDraftFromCandidateResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 240));
-    const organizerId = "sampleOrg00000000001";
-    return {
-      organizerId,
-      organizerPath: `organizers/${organizerId}`,
-      curationPath:
-        `organizerIntakeCurationDecisions/sample-${payload.candidateId}`,
-      created: true,
-      appVisibility: "hidden",
-      ownershipState: "programmatic",
-      claimState: "unclaimed",
-      publishStatus: "draft",
-      indexStatus: "noindex",
-      crawlStatus: "disabled",
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminCreateOrganizerDraftFromCandidatePayload,
-    AdminCreateOrganizerDraftFromCandidateResponse
-  >(functions, "adminCreateOrganizerDraftFromCandidate");
-  const result = await callable(payload);
-  return result.data;
-}
-
 export async function decideOrganizerPolicyGap(
   payload: AdminDecideOrganizerPolicyGapPayload
 ): Promise<AdminDecideOrganizerPolicyGapResponse> {
@@ -1537,28 +1449,6 @@ export async function decideOrganizerPolicyGap(
   return result.data;
 }
 
-export async function recordOrganizerCuration(
-  payload: AdminRecordOrganizerCurationPayload
-): Promise<AdminRecordOrganizerCurationResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 240));
-    return {
-      operationId: payload.operationId ??
-        `${payload.operationType}-${payload.entityId ?? payload.sourceEntityId ?? "operation"}`,
-      operationType: payload.operationType,
-      operationStatus: "active",
-      decisionPath: "organizerIntakeCurationDecisions/sample-operation",
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminRecordOrganizerCurationPayload,
-    AdminRecordOrganizerCurationResponse
-  >(functions, "adminRecordOrganizerCuration");
-  const result = await callable(payload);
-  return result.data;
-}
-
 export async function recordMarketingReviewDecision(
   payload: AdminRecordMarketingReviewDecisionPayload
 ): Promise<AdminRecordMarketingReviewDecisionResponse> {
@@ -1586,33 +1476,6 @@ export async function recordMarketingReviewDecision(
   return result.data;
 }
 
-export async function recordEventIntakeReviewDecision(
-  payload: AdminRecordEventIntakeReviewDecisionPayload
-): Promise<AdminRecordEventIntakeReviewDecisionResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 240));
-    const decisionId = `event-intake-${payload.targetType}-${payload.targetId}`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-    return {
-      decisionId,
-      targetType: payload.targetType,
-      targetId: payload.targetId,
-      decision: payload.decision,
-      decisionStatus: eventIntakeDecisionStatus(payload.decision),
-      decisionPath: `eventIntakeReviewDecisions/${decisionId}`,
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminRecordEventIntakeReviewDecisionPayload,
-    AdminRecordEventIntakeReviewDecisionResponse
-  >(functions, "adminRecordEventIntakeReviewDecision");
-  const result = await callable(payload);
-  return result.data;
-}
-
 function marketingDecisionStatus(
   decision: AdminRecordMarketingReviewDecisionPayload["decision"]
 ): AdminRecordMarketingReviewDecisionResponse["decisionStatus"] {
@@ -1620,15 +1483,6 @@ function marketingDecisionStatus(
   if (decision === "hold") return "held";
   if (decision === "reject") return "rejected";
   if (decision === "export_ready") return "export_ready";
-  return "needs_changes";
-}
-
-function eventIntakeDecisionStatus(
-  decision: AdminRecordEventIntakeReviewDecisionPayload["decision"]
-): AdminRecordEventIntakeReviewDecisionResponse["decisionStatus"] {
-  if (decision === "approve") return "approved";
-  if (decision === "hold") return "held";
-  if (decision === "reject") return "rejected";
   return "needs_changes";
 }
 

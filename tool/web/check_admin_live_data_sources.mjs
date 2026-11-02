@@ -60,14 +60,8 @@ export function validateAdminLiveDataSources({
       violations.push(`admin navigation: ${navId} has no live data contract`);
     }
   }
-  for (const requiredRoute of [
-    "event-intake",
-    "organizer-intake",
-    "intake-operations",
-  ]) {
-    if (!routeIds.has(requiredRoute)) {
-      violations.push(`contract: missing Intake route ${requiredRoute}`);
-    }
+  if (!routeIds.has("inbox")) {
+    violations.push("contract: missing Inbox route inbox");
   }
 
   for (const file of featureFiles) {

@@ -20,6 +20,10 @@ import type {AdminPublishListingEventsCallablePayload} from
 import type {AdminPublishListingEventsCallableResponse} from
   "../../../generated/contracts/adminPublishListingEventsCallableResponse";
 import {decideAccessApplication, decideOrganizerClaim, getOrganizerClaimRequestDetails, listOrganizerDetails} from "../../../shared/api/adminApi";
+import type {AdminNominateOrganizerCallablePayload} from
+  "../../../generated/contracts/adminNominateOrganizerCallablePayload";
+import type {AdminNominateOrganizerCallableResponse} from
+  "../../../generated/contracts/adminNominateOrganizerCallableResponse";
 import type {AdminApproveOrganizerListingCallablePayload} from
   "../../../generated/contracts/adminApproveOrganizerListingCallablePayload";
 import type {AdminApproveOrganizerListingCallableResponse} from
@@ -47,6 +51,7 @@ export type ClaimEvidence = AdminOrganizerClaimRequestDetails;
 export type ListingEventReview = AdminGetListingEventReviewCallableResponse;
 export type ListingEventRef = NonNullable<InboxItem["listingEvent"]>;
 export type ListingEventPublishInput = AdminPublishListingEventsCallablePayload;
+export type NominationInput = AdminNominateOrganizerCallablePayload;
 
 // The validators load on first call, not in the inbox chunk.
 async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
@@ -167,6 +172,12 @@ function closeSampleItem(kind: InboxItem["sourceKind"], sourceId: string, label:
   const item = [...sampleState.values()].find((entry) => entry.sourceKind === kind && entry.sourceId === sourceId);
   if (item) sampleState.set(item.itemId, {...item, status: "done", doneAt: new Date().toISOString(),
     state: {code: "decided", label, tone: "success"}});
+}
+
+/** Asks Intake to build a new listing from what a person typed. A retry with the same request id changes nothing. */
+export async function nominateOrganizer(input: NominationInput): Promise<void> {
+  if (dataMode() === "sample") return;
+  await call<NominationInput, AdminNominateOrganizerCallableResponse>("adminNominateOrganizer", input);
 }
 
 /** Organizers Catch lists, by name, to link an enquiry to. */

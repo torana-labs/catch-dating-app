@@ -11,12 +11,12 @@ const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? brand.web.origin
 ).replace(/\/+$/u, "");
 
-function DirectoryRoute({onNavigate}: {onNavigate: (path: string) => void}) {
+function DirectoryRoute({canNominate, onNavigate}: {canNominate: boolean; onNavigate: (path: string) => void}) {
   const controller = useOrganizerDirectoryController();
   return (
     <OrganizerDirectoryScreen
       controller={controller}
-      onAddOrganizer={() => onNavigate("/intake/organizers")}
+      onAddOrganizer={canNominate ? () => onNavigate("/sales/add-host") : null}
       onOpenOrganizer={(id) => onNavigate(`/organizers/${encodeURIComponent(id)}`)}
     />
   );
@@ -63,6 +63,7 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
 /** The Organizers area: the directory, or one organizer's page and its tabs. Claims are decided in the Inbox. */
 export function OrganizersRouteScreen({
   canChangeTerms,
+  canNominate,
   onNavigate,
   organizerId,
   renderBills,
@@ -70,6 +71,8 @@ export function OrganizersRouteScreen({
   tab,
 }: {
   canChangeTerms: boolean;
+  /** Adding an organizer nominates it, which the owner and Sales can do and ops cannot. */
+  canNominate: boolean;
   onNavigate: (path: string) => void;
   organizerId: string | null;
   /** The Money tab's bills, which the Money area owns; null for those who cannot open Money. */
@@ -84,5 +87,5 @@ export function OrganizersRouteScreen({
         renderBills={renderBills} renderEvents={renderEvents} tab={tab} />
     );
   }
-  return <DirectoryRoute onNavigate={onNavigate} />;
+  return <DirectoryRoute canNominate={canNominate} onNavigate={onNavigate} />;
 }
