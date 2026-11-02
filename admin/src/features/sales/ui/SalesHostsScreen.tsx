@@ -560,7 +560,7 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit,
           {model.renderPartnerOffer?.(host.account.organizerId, host.organizerSummary.name)}
           <CatchIndexRow title="Account hold" titleVariant="bodyM" subtitle={holdLabels[host.account.suppressionStatus ?? "clear"]}
             trailing={model.canEditResearch ? <CatchButton label="Change" variant="secondary" size="sm" onPressed={() => setSheet({kind: "hold"})} /> : undefined} />
-          <CatchIndexRow title="Fit and outreach" titleVariant="bodyM" subtitle="Fit, reviewed wording and drafts to copy" onTap={onOpenFit} />
+          {model.canEditResearch ? <CatchIndexRow title="Fit and outreach" titleVariant="bodyM" subtitle="Fit, reviewed wording and drafts to copy" onTap={onOpenFit} /> : null}
           <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Custom fields and imported history" onTap={onOpenTools} />
           {model.isAdminOwner ? <CatchIndexRow title="Private demo" titleVariant="bodyM" subtitle="A synthetic example to show this host" onTap={onOpenDemo} /> : null}
           {model.isAdminOwner ? <CatchIndexRow title="Privacy" titleVariant="bodyM" subtitle="Restrict this host's private Sales records" onTap={onOpenPrivacy} /> : null}

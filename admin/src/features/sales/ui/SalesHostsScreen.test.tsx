@@ -165,6 +165,7 @@ it("a sales associate can add someone and sees their status, but can't review th
   render(peopleScreen(peopleModel({canEditResearch: false, contacts: [person(1, "held")]})));
   expect(screen.getByText("On hold")).toBeTruthy();
   expect(screen.queryByRole("button", {name: "Review"})).toBeNull();
+  expect(screen.queryByText("Fit and outreach")).toBeNull();
 });
 
 it("a follow-up names someone reviewed for drafts; other kinds of step don't need anyone", async () => {
