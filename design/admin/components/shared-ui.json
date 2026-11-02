@@ -266,25 +266,6 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_intake_section",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeSection",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeSectionStory",
-        "states": [
-          "summary"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_link_button",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -304,105 +285,6 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Anchor rendered as the ghost or icon button, disabled while an operation is pending: a link recipe of catch.button.",
       "componentId": "catch.button"
-    },
-    {
-      "id": "shared_admin_marketing_panel",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
-      "exportName": "AdminMarketingPanel",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingPanelStory",
-        "states": [
-          "default",
-          "action"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_marketing_section",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
-      "exportName": "AdminMarketingSection",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingSectionStory",
-        "states": [
-          "with-meta",
-          "content"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_marketing_section_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
-      "exportName": "AdminMarketingSectionHeader",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingSectionHeaderStory",
-        "states": [
-          "title",
-          "meta"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_marketing_studio_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
-      "exportName": "AdminMarketingStudioHeader",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingStudioHeaderStory",
-        "states": [
-          "with-actions",
-          "copy"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_marketing_title_input",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
-      "exportName": "AdminMarketingTitleInput",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingTitleInputStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_metric_card",
@@ -560,25 +442,6 @@
       "notes": "Keeps diagnostics, command details, and source-path material available without placing it in the primary task flow."
     },
     {
-      "id": "shared_admin_section_caption",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminSectionCaption",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminSectionCaptionStory",
-        "states": [
-          "eyebrow-and-scope"
-        ]
-      },
-      "notes": "Shared flat section caption pairs a mono eyebrow with concise scope or provenance copy so controls and metrics are not mistaken for global state."
-    },
-    {
       "id": "shared_admin_sign_in_panel",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -657,25 +520,6 @@
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_tag_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminTagList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTagListStory",
-        "states": [
-          "tags"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_tag_row",
@@ -861,25 +705,6 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "EmptyState",
       "componentId": "catch.empty_state"
-    },
-    {
-      "id": "shared_inline_text_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
-      "exportName": "InlineTextField",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "InlineTextFieldStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_page_header",

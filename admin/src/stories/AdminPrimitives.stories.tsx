@@ -30,7 +30,6 @@ import {
   AdminLinkButton,
   AdminMetricCard,
   AdminMetricGrid,
-  AdminSectionCaption,
   AdminPanel,
   AdminSecondaryDisclosure,
   AdminSignInActions,
@@ -40,7 +39,6 @@ import {
   AdminStateRow,
   AdminStatGrid,
   AdminStatusGrid,
-  AdminTagList,
   AdminTagRow,
   AdminToolbar,
   AdminWorkbenchNote,
@@ -51,7 +49,6 @@ import {
   CheckboxField,
   DataTable,
   EmptyState,
-  InlineTextField,
   PageHeader,
   QualityList,
   QualityRow,
@@ -106,9 +103,6 @@ export const MetricGridStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminSectionCaption eyebrow="Queue health">
-        Complete totals with short ownership and scope notes.
-      </AdminSectionCaption>
       <AdminMetricGrid ariaLabel="Publishing metrics" columns={3}>
         <AdminMetricCard
           caption="Ready for final review"
@@ -131,23 +125,6 @@ export const MetricGridStory: Story = {
           variant="tile"
         />
       </AdminMetricGrid>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSectionCaptionStory: Story = {
-  name: "Section caption",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_section_caption",
-      states: ["eyebrow-and-scope"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSectionCaption eyebrow="Analytics scope">
-        These controls affect only the charts below.
-      </AdminSectionCaption>
     </AdminWorkspace>
   ),
 };
@@ -466,21 +443,6 @@ export const AdminLinkButtonStory: Story = {
     <AdminWorkspace>
       <AdminLinkButton href="#admin-link">Open route</AdminLinkButton>
       <AdminLinkButton href="#download" icon={<Download size={16} />} label="Download CSV" variant="icon" />
-    </AdminWorkspace>
-  ),
-};
-
-export const InlineTextFieldStory: Story = {
-  name: "Inline text field",
-  parameters: {
-    catchComponent: {
-      id: "shared_inline_text_field",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <InlineTextField ariaLabel="Post title" onChange={() => undefined} value="Tonight in SoMa" />
     </AdminWorkspace>
   ),
 };
@@ -837,25 +799,6 @@ export const AdminCardListStory: Story = {
         <AdminCard>Queue card one</AdminCard>
         <AdminCard>Queue card two</AdminCard>
       </AdminCardList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminTagListStory: Story = {
-  name: "Admin tag list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_tag_list",
-      states: ["tags"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTagList>
-        <CatchBadge label="evidence" />
-        <CatchBadge label="claim handoff" />
-        <CatchBadge recipe="status" tone="success" label="ready" />
-      </AdminTagList>
     </AdminWorkspace>
   ),
 };

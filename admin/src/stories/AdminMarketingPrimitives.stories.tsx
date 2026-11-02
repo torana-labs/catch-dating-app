@@ -52,7 +52,6 @@ import {
   AdminMarketingNewPostCard,
   AdminMarketingNewPostGrid,
   AdminMarketingOpsShell,
-  AdminMarketingPanel,
   AdminMarketingPickerList,
   AdminMarketingPickerRow,
   AdminMarketingPostBoard,
@@ -67,8 +66,6 @@ import {
   AdminMarketingPreviewToolbar,
   AdminMarketingRecommendationItem,
   AdminMarketingRecommendationList,
-  AdminMarketingSection,
-  AdminMarketingSectionHeader,
   AdminMarketingSlideEditor,
   AdminMarketingSlideEditorTopline,
   AdminMarketingSlideList,
@@ -78,16 +75,14 @@ import {
   AdminMarketingStepStrip,
   AdminMarketingStudioActions,
   AdminMarketingStudioFilterTabs,
-  AdminMarketingStudioHeader,
   AdminMarketingStudioNav,
   AdminMarketingStudioStack,
   AdminMarketingStudioSummary,
   AdminMarketingStudioSummaryItem,
   AdminMarketingTabs,
-  AdminMarketingTitleInput,
+  AdminTagRow,
   AdminPanel,
   AdminStateRow,
-  AdminTagList,
   AdminWorkspace,
   EmptyState,
   QualityList,
@@ -121,34 +116,11 @@ export const AdminMarketingOpsShellStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingOpsShell>
-        <AdminMarketingStudioHeader eyebrow="Marketing" title="Campaign review">
-          Review generated posts, visual assets, and export readiness.
-        </AdminMarketingStudioHeader>
+        <AdminMarketingHelpText>Review generated posts, visual assets, and export readiness.</AdminMarketingHelpText>
       </AdminMarketingOpsShell>
       <AdminMarketingOpsShell variant="studio">
-        <AdminMarketingStudioHeader eyebrow="Studio" title="Launch workspace" />
+        <AdminMarketingHelpText>Launch workspace</AdminMarketingHelpText>
       </AdminMarketingOpsShell>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingStudioHeaderStory: Story = {
-  name: "Studio header",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_studio_header",
-      states: ["with-actions", "copy"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingStudioHeader
-        actions={<AdminButton variant="primary">New draft</AdminButton>}
-        eyebrow="Marketing studio"
-        title="Post board"
-      >
-        Plan, review, and export launch marketing content.
-      </AdminMarketingStudioHeader>
     </AdminWorkspace>
   ),
 };
@@ -498,7 +470,7 @@ export const AdminMarketingStepLayoutStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingStepLayout>
-        <AdminMarketingPanel icon={<Edit3 size={18} />} title="Copy">
+        <AdminPanel icon={<Edit3 size={18} />} title="Copy">
           <CatchField
             recipe="input"
             title="Caption"
@@ -506,7 +478,7 @@ export const AdminMarketingStepLayoutStory: Story = {
             value="Meet better hosts this week."
             onChanged={() => undefined}
           />
-        </AdminMarketingPanel>
+        </AdminPanel>
         <AdminMarketingPreviewShell>
           <AdminMarketingPreviewCopy>Meet better hosts this week.</AdminMarketingPreviewCopy>
         </AdminMarketingPreviewShell>
@@ -733,10 +705,10 @@ export const AdminMarketingLibraryCardStory: Story = {
         eyebrow="Organizer"
         title="Afterfly Social"
       >
-        <AdminTagList>
+        <AdminTagRow>
           <CatchBadge label="claim ready" />
           <CatchBadge recipe="status" tone="success" label="verified" />
-        </AdminTagList>
+        </AdminTagRow>
       </AdminMarketingLibraryCard>
     </AdminWorkspace>
   ),
@@ -932,82 +904,9 @@ export const AdminMarketingStackedSectionsStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingStackedSections>
-        <AdminMarketingSection title="Copy">Draft caption and CTA.</AdminMarketingSection>
-        <AdminMarketingSection title="Assets">Capture and source images.</AdminMarketingSection>
+        <AdminMarketingHelpText>Draft caption and CTA.</AdminMarketingHelpText>
+        <AdminMarketingHelpText>Capture and source images.</AdminMarketingHelpText>
       </AdminMarketingStackedSections>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingPanelStory: Story = {
-  name: "Marketing panel",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_panel",
-      states: ["default", "action"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingPanel
-        action={<AdminButton>Open</AdminButton>}
-        icon={<Megaphone size={18} />}
-        title="Copy review"
-      >
-        <QualityList>
-          <QualityRow icon={<CheckCircle2 size={16} />} tone="success">
-            <strong>Approved language</strong>
-            <span>No policy-sensitive claims.</span>
-          </QualityRow>
-        </QualityList>
-      </AdminMarketingPanel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingTitleInputStory: Story = {
-  name: "Title input",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_title_input",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingTitleInput ariaLabel="Draft title" value="Host launch post" onChange={() => undefined} />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingSectionStory: Story = {
-  name: "Marketing section",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_section",
-      states: ["with-meta", "content"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingSection meta={<CatchBadge recipe="status" tone="success" label="Ready" />} title="Caption">
-        <AdminMarketingHelpText>Host-facing copy is ready for export.</AdminMarketingHelpText>
-      </AdminMarketingSection>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingSectionHeaderStory: Story = {
-  name: "Marketing section header",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_section_header",
-      states: ["title", "meta"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingSectionHeader meta={<CatchBadge label="Draft" />} title="Visual direction" />
     </AdminWorkspace>
   ),
 };
@@ -1394,7 +1293,7 @@ export const AdminMarketingImageEditorStory: Story = {
         <AdminMarketingImageReviewRow>
           <AdminMarketingImageThumb alt="Selected image" src={imageData} />
           <AdminMarketingImageMetaFields>
-            <AdminMarketingTitleInput ariaLabel="Alt text" value="Host dashboard preview" onChange={() => undefined} />
+            <CatchField recipe="input" title="Alt text" value="Host dashboard preview" onChanged={() => undefined} />
           </AdminMarketingImageMetaFields>
         </AdminMarketingImageReviewRow>
       </AdminMarketingImageEditor>
@@ -1485,7 +1384,7 @@ export const AdminMarketingImageMetaFieldsStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingImageMetaFields>
-        <AdminMarketingTitleInput ariaLabel="Image title" value="Host console proof" onChange={() => undefined} />
+        <CatchField recipe="input" title="Image title" value="Host console proof" onChanged={() => undefined} />
         <CatchField
           recipe="select"
           title="Usage"

@@ -5,7 +5,6 @@ import type {
   FormHTMLAttributes,
   HTMLAttributes,
   ImgHTMLAttributes,
-  InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
@@ -109,29 +108,6 @@ export function AdminLinkButton({
       {icon}
       {children}
     </a>
-  );
-}
-
-export function InlineTextField({
-  ariaLabel,
-  className = "",
-  onChange,
-  value,
-  ...props
-}: {
-  ariaLabel: string;
-  className?: string;
-  onChange: (value: string) => void;
-  value: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "aria-label" | "className" | "onChange" | "value">) {
-  return (
-    <input
-      aria-label={ariaLabel}
-      className={className}
-      onChange={(event) => onChange(event.target.value)}
-      value={value}
-      {...props}
-    />
   );
 }
 

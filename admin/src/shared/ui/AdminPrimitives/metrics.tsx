@@ -87,21 +87,6 @@ export function AdminMetricGrid({
   );
 }
 
-export function AdminSectionCaption({
-  children,
-  eyebrow,
-}: {
-  children: ReactNode;
-  eyebrow: ReactNode;
-}) {
-  return (
-    <div className="admin-section-caption">
-      <AdminEyebrow as="span">{eyebrow}</AdminEyebrow>
-      <span>{children}</span>
-    </div>
-  );
-}
-
 export function AdminMetricCard({
   caption,
   footer,

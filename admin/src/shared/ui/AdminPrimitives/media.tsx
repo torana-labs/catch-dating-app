@@ -157,16 +157,3 @@ export function AdminMarketingImageEmpty({
   );
 }
 
-export function AdminGuardrailList({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={classNames("guardrail-list", className)}>
-      {children}
-    </div>
-  );
-}

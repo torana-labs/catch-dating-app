@@ -157,20 +157,6 @@ export function CardHeader({
   );
 }
 
-export function AdminTagList({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={classNames("intake-tags", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminTagRow({
   as = "div",
   children,

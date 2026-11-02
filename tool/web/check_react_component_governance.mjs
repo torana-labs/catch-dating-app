@@ -222,7 +222,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminMarketingOpsShell, AdminMarketingStudioHeader, AdminMarketingStudioActions, AdminMarketingStudioNav, and AdminMarketingTabs instead of passing raw admin marketing studio shell classes from feature code.",
+    guidance: "Use AdminMarketingOpsShell, AdminMarketingStudioActions, AdminMarketingStudioNav, and AdminMarketingTabs instead of passing raw admin marketing studio shell classes from feature code.",
   },
   {
     family: "admin-marketing-post-board",
@@ -502,7 +502,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminMarketingGrid, AdminMarketingPanel, AdminMarketingTitleInput, AdminMarketingSection, and AdminMarketingEditGrid instead of passing raw admin marketing layout classes from feature code.",
+    guidance: "Use AdminMarketingGrid and AdminMarketingEditGrid instead of passing raw admin marketing layout classes from feature code.",
   },
   {
     family: "admin-diff-list",
@@ -802,7 +802,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminGuardrailList instead of passing the raw admin guardrail-list class from feature code.",
+    guidance: "Use CatchSection and CatchText instead of passing the raw admin guardrail-list class from feature code.",
   },
   {
     family: "admin-intake-source-list",
@@ -862,7 +862,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminIntakeWorkspaceHeader, AdminIntakeWorkspaceTabs, and AdminIntakeEventWorkspaceShell instead of passing raw admin intake workspace shell classes from feature code.",
+    guidance: "Use AdminIntakeWorkspaceHeader and AdminIntakeEventWorkspaceShell instead of passing raw admin intake workspace shell classes from feature code.",
   },
   {
     family: "admin-organizer-intake-curation-shell",
@@ -882,7 +882,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminCard and CardHeader with variant=\"intake\", and AdminOrganizerIntakeCheckboxField, instead of passing raw organizer intake card and checkbox classes from feature code.",
+    guidance: "Use AdminCard and CardHeader with variant=\"intake\" instead of passing raw organizer intake card and checkbox classes from feature code.",
   },
   {
     family: "admin-overview-queue-shell",
@@ -1091,7 +1091,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminTagList and AdminTag instead of rendering admin intake tag-list shells directly.",
+    guidance: "Use AdminTagRow instead of rendering admin intake tag-list shells directly.",
   },
   {
     family: "admin-intake-section-shell",
@@ -1126,7 +1126,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminIntakeSection, AdminCard with variant=\"searchCandidate\", and the @catch/web-ui CatchAdminIntakeSectionTitle and CatchAdminSearchCandidateHeader instead of rendering admin intake/search-candidate shells directly.",
+    guidance: "Use AdminCard with variant=\"searchCandidate\", and the @catch/web-ui CatchAdminIntakeSectionTitle and CatchAdminSearchCandidateHeader instead of rendering admin intake/search-candidate shells directly.",
   },
   {
     family: "admin-row-tag-shell",
