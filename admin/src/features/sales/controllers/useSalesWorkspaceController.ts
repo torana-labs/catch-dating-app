@@ -1,13 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {salesErrorMessage} from "./salesLabels";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useRef} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
-  createSalesAccount, createSalesCustomField, getSalesAccount,
-  linkSalesInboundIntent, nominateSalesOrganizer,
-  listSalesAccounts, listSalesCustomFields,
-  listSalesInboundIntents, listSalesOpportunities, listSalesTasks,
-  recordSalesActivity, searchCanonicalOrganizers, setSalesCustomFieldValue,
+  createSalesCustomField, getSalesAccount,
+  listSalesCustomFields,
+  recordSalesActivity, setSalesCustomFieldValue,
   updateSalesAccount,
   upsertSalesOpportunity, upsertSalesTask,
   applySalesImport, listSalesContacts,
@@ -15,9 +13,7 @@ import {
   previewSalesImport,
 } from "../api/salesRepository";
 import type {
-  SalesAccount, SalesCreateAccountInput, SalesCreateCustomFieldInput,
-  SalesLinkInboundIntentInput,
-  SalesListAccountsInput, SalesNominateOrganizerInput,
+  SalesAccount, SalesCreateCustomFieldInput,
   SalesRecordActivityInput,
   SalesResearchStatus, SalesSetCustomFieldValueInput, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput,
@@ -42,10 +38,6 @@ export function toLocalDateTimeInput(date: Date): string {
     `T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function isSalesSearchWord(value: string): boolean {
-  return /^[A-Za-z0-9]{2,80}$/u.test(value);
-}
-
 export function useSalesWorkspaceController({
   area,
   selectedOrganizerId,
@@ -53,7 +45,7 @@ export function useSalesWorkspaceController({
   onError,
   onNotice,
 }: {
-  area: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
+  area: "hosts" | "settings";
   selectedOrganizerId: string | null;
   assignedStaffOnly?: boolean;
   onError: (message: string | null) => void;
@@ -61,93 +53,8 @@ export function useSalesWorkspaceController({
 }) {
   const queryClient = useQueryClient();
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [identitySearch, setIdentitySearch] = useState("");
-  const [debouncedIdentitySearch, setDebouncedIdentitySearch] = useState("");
-  const [canonicalSearch, setCanonicalSearch] = useState("");
-  const [debouncedCanonicalSearch, setDebouncedCanonicalSearch] = useState("");
-  const [researchStatus, setResearchStatus] = useState<"all" | SalesResearchStatus>("all");
-  const [ownerUid, setOwnerUid] = useState("");
-  const [cursor, setCursor] = useState<string | undefined>();
-  const [previousCursors, setPreviousCursors] = useState<Array<string | undefined>>([]);
-  const [opportunityStage, setOpportunityStage] = useState("");
-  const [opportunityCursor, setOpportunityCursor] = useState<string | undefined>();
-  const [opportunityPreviousCursors, setOpportunityPreviousCursors] =
-    useState<Array<string | undefined>>([]);
-  const [inboundCursor, setInboundCursor] = useState<string | undefined>();
-  const [inboundPreviousCursors, setInboundPreviousCursors] =
-    useState<Array<string | undefined>>([]);
-  const [taskCursor, setTaskCursor] = useState<string | undefined>();
-  const [taskPreviousCursors, setTaskPreviousCursors] =
-    useState<Array<string | undefined>>([]);
   const pendingRequestIds = useRef(new Map<string, string>());
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 250);
-    return () => window.clearTimeout(timer);
-  }, [query]);
-  useEffect(() => {
-    const timer = window.setTimeout(() =>
-      setDebouncedIdentitySearch(identitySearch.trim()), 250);
-    return () => window.clearTimeout(timer);
-  }, [identitySearch]);
-  useEffect(() => {
-    const timer = window.setTimeout(() =>
-      setDebouncedCanonicalSearch(canonicalSearch.trim()), 250);
-    return () => window.clearTimeout(timer);
-  }, [canonicalSearch]);
-  useEffect(() => {
-  }, [selectedOrganizerId]);
-
-  const listInput = useMemo<SalesListAccountsInput>(() => ({
-    limit: 25, cursor,
-    query: debouncedQuery || undefined,
-    ownerUid: ownerUid.trim() || undefined,
-    researchStatus: researchStatus === "all" ? undefined : researchStatus,
-  }), [cursor, debouncedQuery, ownerUid, researchStatus]);
-  const validAccountQuery = !debouncedQuery || isSalesSearchWord(debouncedQuery);
-
-  const accounts = useQuery({
-    enabled: !selectedOrganizerId &&
-      (area === "hosts" || (!assignedStaffOnly && area === "research")) &&
-      validAccountQuery,
-    queryKey: ["sales", "accounts", listInput],
-    queryFn: () => listSalesAccounts(listInput),
-  });
-  const identityMatches = useQuery({
-    enabled: !assignedStaffOnly && area === "research" &&
-      isSalesSearchWord(debouncedIdentitySearch),
-    queryKey: ["sales", "identity-matches", debouncedIdentitySearch],
-    queryFn: () => listSalesAccounts({limit: 25, query: debouncedIdentitySearch}),
-  });
-  const canonicalMatches = useQuery({
-    enabled: !assignedStaffOnly && area === "hosts" &&
-      debouncedCanonicalSearch.length >= 2,
-    queryKey: ["sales", "canonical-matches", debouncedCanonicalSearch],
-    queryFn: () => searchCanonicalOrganizers(debouncedCanonicalSearch),
-  });
-  const tasks = useQuery({
-    enabled: area === "today" && !selectedOrganizerId,
-    queryKey: ["sales", "tasks", "open", taskCursor],
-    queryFn: () => listSalesTasks({limit: 50, cursor: taskCursor, status: "open"}),
-  });
-  const opportunities = useQuery({
-    enabled: !selectedOrganizerId &&
-      (area === "pipeline" || (!assignedStaffOnly && area === "pilots")),
-    queryKey: ["sales", "opportunities", opportunityStage, opportunityCursor],
-    queryFn: () => listSalesOpportunities({
-      limit: 25, cursor: opportunityCursor,
-      stage: opportunityStage || undefined,
-    }),
-  });
-  const inboundIntents = useQuery({
-    enabled: !assignedStaffOnly && area === "research" && !selectedOrganizerId,
-    queryKey: ["sales", "inbound", inboundCursor],
-    queryFn: () => listSalesInboundIntents({
-      limit: 25, cursor: inboundCursor, status: "needs_identity_review",
-    }),
-  });
   const customFields = useQuery({
     enabled: !assignedStaffOnly &&
       (area === "settings" || Boolean(selectedOrganizerId)),
@@ -166,12 +73,9 @@ export function useSalesWorkspaceController({
   });
 
   const accountMutation = useMutation({mutationFn: updateSalesAccount});
-  const createAccountMutation = useMutation({mutationFn: createSalesAccount});
-  const nominationMutation = useMutation({mutationFn: nominateSalesOrganizer});
   const taskMutation = useMutation({mutationFn: upsertSalesTask});
   const activityMutation = useMutation({mutationFn: recordSalesActivity});
   const opportunityMutation = useMutation({mutationFn: upsertSalesOpportunity});
-  const inboundLinkMutation = useMutation({mutationFn: linkSalesInboundIntent});
   const createCustomFieldMutation = useMutation({mutationFn: createSalesCustomField});
   const setCustomValueMutation = useMutation({mutationFn: setSalesCustomFieldValue});
   const importPreviewMutation = useMutation({mutationFn: previewSalesImport});
@@ -186,7 +90,6 @@ export function useSalesWorkspaceController({
       queryClient.invalidateQueries({queryKey: ["sales", "accounts"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "tasks"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "opportunities"]}),
-      queryClient.invalidateQueries({queryKey: ["sales", "inbound"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "custom-fields"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "account"]}),
       queryClient.invalidateQueries({queryKey: ["sales", "contacts"]}),
@@ -247,19 +150,6 @@ export function useSalesWorkspaceController({
     accountMutation.mutateAsync({...input, requestId}), "Host research saved."),
   [accountMutation, execute]);
 
-  const addAccount = useCallback((
-    input: Omit<SalesCreateAccountInput, "requestId">
-  ) => execute("account-create", input, (requestId) =>
-    createAccountMutation.mutateAsync({...input, requestId}),
-  "Host added to Sales."), [createAccountMutation, execute]);
-
-  const nominateOrganizer = useCallback((
-    input: Omit<SalesNominateOrganizerInput, "requestId">
-  ) => execute("nomination", input, (requestId) =>
-    nominationMutation.mutateAsync({...input, requestId}),
-  "Nomination queued. Its listing appears in the Inbox for review."),
-  [execute, nominationMutation]);
-
   const saveTask = useCallback((
     input: Omit<SalesUpsertTaskInput, "requestId">
   ) => execute("task", input, (requestId) =>
@@ -277,12 +167,6 @@ export function useSalesWorkspaceController({
   ) => execute("opportunity", input, (requestId) =>
     opportunityMutation.mutateAsync({...input, requestId}), "Opportunity saved."),
   [execute, opportunityMutation]);
-
-  const linkInboundIntent = useCallback((
-    input: Omit<SalesLinkInboundIntentInput, "requestId">
-  ) => execute("inbound-link", input, (requestId) =>
-    inboundLinkMutation.mutateAsync({...input, requestId}),
-  "Enquiry linked to the host for review."), [execute, inboundLinkMutation]);
 
   const addCustomField = useCallback((
     input: Omit<SalesCreateCustomFieldInput, "requestId">
@@ -325,91 +209,19 @@ export function useSalesWorkspaceController({
   "Reviewed import correction recorded. Refresh the account before new work."),
   [execute, compensationApplyMutation]);
 
-  const setAccountFilters = useCallback((next: {
-    query?: string; researchStatus?: "all" | SalesResearchStatus; ownerUid?: string;
-  }) => {
-    if (next.query !== undefined) setQuery(next.query);
-    if (next.researchStatus !== undefined) setResearchStatus(next.researchStatus);
-    if (next.ownerUid !== undefined) setOwnerUid(next.ownerUid);
-    setCursor(undefined);
-    setPreviousCursors([]);
-  }, []);
-
-  const nextPage = useCallback(() => {
-    if (!accounts.data?.nextCursor) return;
-    setPreviousCursors((previous) => [...previous, cursor]);
-    setCursor(accounts.data.nextCursor);
-  }, [accounts.data?.nextCursor, cursor]);
-
-  const previousPage = useCallback(() => {
-    const previous = previousCursors.at(-1);
-    setCursor(previous);
-    setPreviousCursors((stack) => stack.slice(0, -1));
-  }, [previousCursors]);
-
-  const setStageFilter = useCallback((stage: string) => {
-    setOpportunityStage(stage);
-    setOpportunityCursor(undefined);
-    setOpportunityPreviousCursors([]);
-  }, []);
-
-  const nextOpportunityPage = useCallback(() => {
-    if (!opportunities.data?.nextCursor) return;
-    setOpportunityPreviousCursors((previous) => [...previous, opportunityCursor]);
-    setOpportunityCursor(opportunities.data.nextCursor);
-  }, [opportunities.data?.nextCursor, opportunityCursor]);
-
-  const previousOpportunityPage = useCallback(() => {
-    setOpportunityCursor(opportunityPreviousCursors.at(-1));
-    setOpportunityPreviousCursors((stack) => stack.slice(0, -1));
-  }, [opportunityPreviousCursors]);
-
-  const nextInboundPage = useCallback(() => {
-    if (!inboundIntents.data?.nextCursor) return;
-    setInboundPreviousCursors((previous) => [...previous, inboundCursor]);
-    setInboundCursor(inboundIntents.data.nextCursor);
-  }, [inboundIntents.data?.nextCursor, inboundCursor]);
-  const previousInboundPage = useCallback(() => {
-    setInboundCursor(inboundPreviousCursors.at(-1));
-    setInboundPreviousCursors((stack) => stack.slice(0, -1));
-  }, [inboundPreviousCursors]);
-
-  const nextTaskPage = useCallback(() => {
-    if (!tasks.data?.nextCursor) return;
-    setTaskPreviousCursors((previous) => [...previous, taskCursor]);
-    setTaskCursor(tasks.data.nextCursor);
-  }, [taskCursor, tasks.data?.nextCursor]);
-  const previousTaskPage = useCallback(() => {
-    setTaskCursor(taskPreviousCursors.at(-1));
-    setTaskPreviousCursors((stack) => stack.slice(0, -1));
-  }, [taskPreviousCursors]);
-
-
   return {
-    accounts, tasks, opportunities, inboundIntents, identityMatches,
-    canonicalMatches, canonicalSearch, setCanonicalSearch,
     customFields,
     contacts,
-    identitySearch, setIdentitySearch, detail, query,
-    researchStatus, ownerUid, validAccountQuery,
-    opportunityStage, setStageFilter, nextOpportunityPage, previousOpportunityPage,
-    hasPreviousOpportunityPage: opportunityPreviousCursors.length > 0,
-    nextInboundPage, previousInboundPage,
-    hasPreviousInboundPage: inboundPreviousCursors.length > 0,
-    nextTaskPage, previousTaskPage,
-    hasPreviousTaskPage: taskPreviousCursors.length > 0,
-    setAccountFilters, nextPage, previousPage,
-    hasPreviousPage: previousCursors.length > 0,
-    saveAccount, addAccount, nominateOrganizer, saveTask, logActivity,
-    saveOpportunity, linkInboundIntent,
+    detail,
+    saveAccount, saveTask, logActivity,
+    saveOpportunity,
     addCustomField, saveCustomValue,
     previewImport, applyImport, importPreviewPending: importPreviewMutation.isPending,
     previewCompensation, applyCompensation,
     compensationPreviewPending: compensationPreviewMutation.isPending,
-    isSaving: accountMutation.isPending || createAccountMutation.isPending ||
-      nominationMutation.isPending || taskMutation.isPending ||
+    isSaving: accountMutation.isPending || taskMutation.isPending ||
       activityMutation.isPending || opportunityMutation.isPending ||
-      inboundLinkMutation.isPending || createCustomFieldMutation.isPending ||
+      createCustomFieldMutation.isPending ||
       setCustomValueMutation.isPending || importApplyMutation.isPending ||
       compensationApplyMutation.isPending,
   };

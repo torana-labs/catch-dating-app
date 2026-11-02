@@ -51,7 +51,8 @@ export type SalesHostsModel = Pick<SalesHostsController,
   "contacts" | "logActivity" | "addNextStep" | "completeNextStep" | "saveDeal" | "saveHost" | "addPerson" | "canEditResearch" | "isSaving" |
   "evidence" | "evidenceFailed" | "retryEvidence" | "hasMoreEvidence" | "moreEvidence" | "addEvidence" | "suggestions" | "suggestionsFailed" |
   "retrySuggestions" | "hasMoreSuggestions" | "moreSuggestions" | "reviewSuggestion" | "setHold" |
-  "contactsFailed" | "retryContacts" | "hasMoreContacts" | "moreContacts" | "reviewContact"> & {
+  "contactsFailed" | "retryContacts" | "hasMoreContacts" | "moreContacts" | "reviewContact" |
+  "validSearch" | "researchStatus" | "setResearchStatus" | "mineOnly" | "setMineOnly"> & {
   /** Who "Assign to me" means. */
   uid: string | null;
   host: SalesAccountDetail | null;
@@ -69,6 +70,8 @@ interface Row {
   stage: string;
   next: string;
 }
+
+const researchFilters: SalesResearchStatus[] = ["new", "needs_research", "ready_for_review", "qualified"];
 
 const columns: CatchTableColumn<Row>[] = [
   {key: "host", label: "Host", kind: "title"},
@@ -570,7 +573,7 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit,
 }
 
 /** Hosts: the accounts in Sales, searchable, and one host's page with four tabs. */
-export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenFit, onOpenPrivacy, onOpenDemo, onAddHost}: {
+export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenFit, onOpenPrivacy, onOpenDemo, onOpenFitQueue, onAddHost}: {
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
@@ -579,8 +582,9 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
   onOpenFit: (organizerId: string) => void;
   onOpenPrivacy: (organizerId: string) => void;
   onOpenDemo: (organizerId: string) => void;
-  /** The older form to add a host or nominate an organizer. */
   onAddHost: () => void;
+  /** The company-wide reviewed fit queue; null for a sales associate. */
+  onOpenFitQueue: (() => void) | null;
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   if (selectedOrganizerId && model.host) {
@@ -597,8 +601,17 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
   return (
     <CatchPaneLayout pattern="wide-table" main={<>
       <CatchWorkspaceHeader title="Hosts" count={model.rows.length}
-        filters={{search: {placeholder: "Search hosts", value: model.query, onChanged: model.setQuery}}}
+        {...(model.validSearch ? {} : {note: "search one word of 2 to 80 letters or numbers"})}
+        filters={{
+          chips: [
+            ...(model.canEditResearch ? [{label: "Mine", selected: model.mineOnly, onPressed: () => model.setMineOnly(!model.mineOnly)}] : []),
+            ...researchFilters.map((status) => ({label: researchLabels[status].text, selected: model.researchStatus === status,
+              onPressed: () => model.setResearchStatus(model.researchStatus === status ? null : status)})),
+          ],
+          search: {placeholder: "Search hosts", value: model.query, onChanged: model.setQuery},
+        }}
         actions={<>
+          {onOpenFitQueue ? <CatchButton label="Reviewed fit" variant="secondary" size="sm" onPressed={onOpenFitQueue} /> : null}
           <CatchButton label="Add or nominate" variant="secondary" size="sm" onPressed={onAddHost} />
           {model.hasPreviousPage ? <CatchButton label="Previous" variant="secondary" size="sm" onPressed={model.previousPage} /> : null}
           {model.hasNextPage ? <CatchButton label="More" variant="secondary" size="sm" onPressed={model.nextPage} /> : null}
