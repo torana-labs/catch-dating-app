@@ -1105,6 +1105,49 @@
       }
     },
     {
+      "id": "generator:scaffold",
+      "category": "generator",
+      "path": "tool/scaffold.mjs",
+      "command": "node tool/scaffold.mjs --help",
+      "safety": "local",
+      "status": "active",
+      "role": "generator",
+      "description": "Creates the files a new context package, screen, catch_ui component or web-ui component starts from, in the shape docs/app_architecture.md (App Roots) fixes. Prints what it cannot edit: workspace and dependency lines, the route and capture ids, the registry record and the web barrel lines. Refuses to overwrite.",
+      "checks": [
+        "node --check tool/scaffold.mjs",
+        "node --test tool/scaffold.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/scaffold/**",
+        "tool/scaffold.test.mjs",
+        "design/components/catch.components.schema.json",
+        "lib/platform/riverpod_ui/catch_async_boundary.dart",
+        "lib/platform/riverpod_ui/catch_async_boundary_builders.dart",
+        "packages/catch_ui/lib/src/components/catch_empty_state.dart",
+        "packages/catch_ui/lib/src/components/catch_top_bar.dart",
+        "packages/catch_ui/lib/src/patterns/catch_page_body.dart",
+        "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart",
+        "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
+        "packages/catch_ui/lib/src/primitives/catch_text.dart",
+        "packages/catch_ui/lib/src/primitives/catch_text_variant.dart",
+        "packages/web-config/tsconfig.react.json",
+        "packages/web-ui/tsconfig.json",
+        "pubspec.lock",
+        "widgetbook/lib/support/contract_preview.dart",
+        "apps/host/build.yaml",
+        "apps/consumer/build.yaml"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm",
+          "flutter",
+          "flutter-pub"
+        ]
+      }
+    },
+    {
       "id": "architecture:wire-organizer-rename",
       "category": "generator",
       "path": "tool/architecture/rename_wire_to_organizer.mjs",
