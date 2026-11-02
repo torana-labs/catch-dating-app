@@ -1,0 +1,240 @@
+{
+  "components": [
+    {
+      "id": "route_event_directory",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventDirectoryScreen.tsx",
+      "exportName": "EventDirectoryScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "EventDirectoryRouteStory",
+        "states": [
+          "upcoming",
+          "catch-and-imported"
+        ]
+      },
+      "notes": "Events: Catch and imported events in one CatchTable on CatchPaneLayout wide-table with exact view totals from adminListEventDirectory; each row names its source. It replaces the Event Publishing directory and External inventory."
+    },
+    {
+      "id": "route_event_page",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventPageScreen.tsx",
+      "exportName": "EventPageScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "EventPageRouteStory",
+        "states": [
+          "catch-event",
+          "imported-event"
+        ]
+      },
+      "notes": "One event in the CatchPaneLayout reading pattern: a Catch event's facts and bookings with a Page tab hosting the Event Publishing editor, or an imported event's facts, checks and source link."
+    },
+    {
+      "id": "route_event_publishing",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventPublishingScreen.tsx",
+      "exportName": "EventPublishingScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "EventPublishingRouteStory",
+        "states": [
+          "canonical-detail"
+        ]
+      },
+      "notes": "The editors the event page's tabs host: a Catch event's canonical editor (Page) or an imported event's source record and takedown (Takedown). The Events directory replaced its directory and External inventory lists; preview renders the registered EventPublishingWorkspace editor in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "route_event_records_live_controller",
+      "kind": "route",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventsRouteScreen.tsx",
+      "exportName": "EventsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Events directory and event page controllers; the old External inventory address opens the directory filtered to imported events."
+    },
+    {
+      "id": "shared_admin_event_supply_detail",
+      "kind": "feature-component",
+      "owner": "features/events",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminEventSupplyDetail",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEventSupplyDetailStory",
+        "states": [
+          "aside"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_event_supply_empty_state",
+      "kind": "feature-component",
+      "owner": "features/events",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminEventSupplyEmptyState",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEventSupplyEmptyStateStory",
+        "states": [
+          "empty"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_event_supply_links",
+      "kind": "feature-component",
+      "owner": "features/events",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminEventSupplyLinks",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEventSupplyLinksStory",
+        "states": [
+          "actions"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_event_supply_review_grid",
+      "kind": "feature-component",
+      "owner": "features/events",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminEventSupplyReviewGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminEventSupplyReviewGridStory",
+        "states": [
+          "table-and-detail"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_intake_source_list",
+      "kind": "feature-component",
+      "owner": "features/events",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeSourceList.tsx",
+      "exportName": "CatchAdminIntakeSourceList",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminIntakeSourceList.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeSourceListStory",
+        "states": [
+          "sources"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/events renders it. admin/src/features/events/ui/eventPublishingSupplyPanels.tsx binds the external event's source rows."
+    },
+    {
+      "id": "shared_admin_search_candidate_header",
+      "kind": "feature-component",
+      "owner": "features/events",
+      "source": "packages/web-ui/src/components/CatchAdminSearchCandidateHeader.tsx",
+      "exportName": "CatchAdminSearchCandidateHeader",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminSearchCandidateHeader.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminSearchCandidateHeaderStory",
+        "states": [
+          "title-status"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/events renders it. admin/src/features/events/ui/eventPublishingSupplyPanels.tsx binds the external event's title and review status."
+    },
+    {
+      "id": "workspace_event_publishing",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventPublishingScreen.tsx",
+      "exportName": "EventPublishingWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "EventPublishingWorkspaceStory",
+        "states": [
+          "canonical-detail"
+        ]
+      },
+      "notes": "Prop-driven Event Publishing workspace surface used by the route wrapper and deterministic Storybook previews; canonical detail keeps lifecycle fields read-only with operator-facing rationale while backend paths and callable names stay in repository documentation."
+    },
+    {
+      "id": "workspace_organizer_events",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventDirectoryScreen.tsx",
+      "exportName": "OrganizerEventsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerEventsWorkspaceStory",
+        "states": [
+          "upcoming"
+        ]
+      },
+      "notes": "One organizer's events, Catch and imported, for the Events tab of the organizer page."
+    },
+    {
+      "id": "workspace_organizer_events_live_controller",
+      "kind": "workspace",
+      "owner": "features/events",
+      "source": "admin/src/features/events/ui/EventsRouteScreen.tsx",
+      "exportName": "OrganizerEventsRouteWorkspace",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live wrapper that reads one organizer's events for the organizer page's Events tab; coverage remains on workspace_organizer_events."
+    }
+  ]
+}

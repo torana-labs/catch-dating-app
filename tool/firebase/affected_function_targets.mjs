@@ -5,11 +5,13 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 import {
+  catalogFragments,
   catalogGenerator,
   catalogSource,
   functionsCatalogModule,
   renderFunctions,
 } from "../admin/generate_admin_action_catalog.mjs";
+import {assembleAdminActionCatalog} from "../lib/admin_registries.mjs";
 import {listFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const require = createRequire(import.meta.url);
@@ -56,10 +58,19 @@ function sourceTree(root, sha) {
 // would deploy, unless it predates untracking and still holds them.
 function withBuiltCatalog(root, sha, tree) {
   if (!tree.has(functionsCatalogModule)) {
-    const catalog = readJson(root, sha, catalogSource);
+    const catalog = readCatalog(root, sha);
     if (catalog) tree.set(functionsCatalogModule, renderFunctions(catalog));
   }
   return tree;
+}
+
+function readCatalog(root, sha) {
+  const index = readJson(root, sha, catalogSource);
+  // A commit from before the per-workflow split holds one document.
+  if (!index || index.actions) return index;
+  const names = git(root, ["ls-tree", "-rz", "--name-only", sha, "--", catalogFragments], QUIET)
+    .split("\0").filter(Boolean);
+  return assembleAdminActionCatalog(index, names.map((name) => readJson(root, sha, name)));
 }
 
 function parse(ts, tree, name) {

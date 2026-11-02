@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {readAdminActionCatalog} from "../lib/admin_registries.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDirectory, "..", "..");
@@ -10,6 +11,8 @@ export const functionsCatalogModule =
   "functions/src/shared/generated/adminActionCatalog.ts";
 /** The catalog the views are rendered from, relative to the repository root. */
 export const catalogSource = "contracts/admin/admin_action_catalog.json";
+/** The folder of per-workflow files that catalog adds up, relative to the repository root. */
+export const catalogFragments = "contracts/admin/actions";
 /** This renderer, relative to the repository root. */
 export const catalogGenerator = "tool/admin/generate_admin_action_catalog.mjs";
 
@@ -49,7 +52,7 @@ function selfTest(catalog) {
 }
 
 function main() {
-  const catalog = JSON.parse(fs.readFileSync(path.join(repoRoot, catalogSource), "utf8"));
+  const catalog = readAdminActionCatalog(path.join(repoRoot, catalogSource));
   validateCatalog(catalog);
   if (process.argv.includes("--self-test")) {
     selfTest(catalog);
@@ -95,7 +98,9 @@ function renderAdmin(value) {
 }
 
 export function renderFunctions(value) {
-  const actions = Object.fromEntries(value.actions.map((action) => [
+  // Sorted, so the bytes depend on what the catalog holds, not how it is stored.
+  const sorted = value.actions.toSorted((a, b) => (a.actionId < b.actionId ? -1 : 1));
+  const actions = Object.fromEntries(sorted.map((action) => [
     action.actionId,
     {
       callable: action.callable,

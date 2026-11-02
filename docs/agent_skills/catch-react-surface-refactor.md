@@ -16,7 +16,7 @@ scanner/tooling rules.
 Read: `AGENTS.md`, `docs/agent_operating_model.md`,
 `docs/web_surface_architecture.md`, `docs/marketing_website_architecture.md`,
 `design/website/routes.json`, `design/website/components.json`,
-`design/admin/components.json`,
+`design/admin/components/`,
 `website/README.md`, `admin/README.md` when present,
 `packages/web-config/README.md`, and `tool/tools_manifest.json`.
 
@@ -56,7 +56,7 @@ Loop:
    `packages/web-ui/src/components/`, registered in that surface's registry;
    its feature keeps only the binding that passes domain data to its props.
 8. For the marketing website, every exported uppercase component under `website/src/features/**/*.tsx` must be declared in `design/website/components.json` as a route, section, flow, or supporting component, or made private. Run `node tool/run.mjs check marketing:website-components` after adding, moving, or exporting website route/section/supporting components.
-9. For admin feature UI, export only route/workspace entry components such as `*Screen` and `*Workspace`. Panels, cards, lists and sections that draw belong in `packages/web-ui/src/components/` as registered T4 components (D18; entries still under `admin/src/shared/ui` await that move); a private feature component may only arrange library components and bind data. Route/workspace entries, shared admin primitives, and admin feedback providers must be declared in `design/admin/components.json`. Run `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` after touching admin feature or shared admin UI exports. When an admin registry entry becomes preview-ready, add or update `admin/src/stories/**` metadata and run `node tool/run.mjs check web:admin-storybook`.
+9. For admin feature UI, export only route/workspace entry components such as `*Screen` and `*Workspace`. Panels, cards, lists and sections that draw belong in `packages/web-ui/src/components/` as registered T4 components (D18; entries still under `admin/src/shared/ui` await that move); a private feature component may only arrange library components and bind data. Route/workspace entries, shared admin primitives, and admin feedback providers must be declared in `design/admin/components/`. Run `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` after touching admin feature or shared admin UI exports. When an admin registry entry becomes preview-ready, add or update `admin/src/stories/**` metadata and run `node tool/run.mjs check web:admin-storybook`.
 10. For marketing website public route changes, update
    `design/website/routes.json` first and run
    `node tool/run.mjs check marketing:website-routes`.
@@ -117,7 +117,7 @@ Failure modes to avoid:
 - Exporting reusable admin feature panels, cards, lists, badges, or sections
   instead of moving them into `admin/src/shared/ui` or keeping them private.
 - Exporting or renaming admin route/workspace entries, shared primitives, or
-  feedback providers without updating `design/admin/components.json`.
+  feedback providers without updating `design/admin/components/`.
 - Marking an admin component preview-ready without a matching Storybook export
   and `parameters.catchComponent` declaration.
 - Moving website route behavior without updating the route contract and

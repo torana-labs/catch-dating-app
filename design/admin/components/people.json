@@ -1,0 +1,38 @@
+{
+  "components": [
+    {
+      "id": "route_people",
+      "kind": "route",
+      "owner": "features/people",
+      "source": "admin/src/features/people/ui/PeopleScreen.tsx",
+      "exportName": "PeopleScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "PeopleRouteStory",
+        "states": [
+          "search-results",
+          "person"
+        ]
+      },
+      "notes": "People (board AdminPeople) in the quiet register: search by name, phone or user id, run only when submitted because each search is logged, results in a CatchTable on the queue pattern and the person beside them."
+    },
+    {
+      "id": "route_people_live_controller",
+      "kind": "route",
+      "owner": "features/people",
+      "source": "admin/src/features/people/ui/PeopleRouteScreen.tsx",
+      "exportName": "PeopleRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the People search controller; deterministic prop-driven visual coverage remains on route_people."
+    }
+  ]
+}

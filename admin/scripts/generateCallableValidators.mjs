@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import {adminCallableNames, readAdminCallableSources} from
   "../../tool/admin/callable_inventory.mjs";
+import {readAdminActionCatalog} from "../../tool/lib/admin_registries.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -105,7 +106,7 @@ function buildModel() {
       strictRequests.add(name);
     }
   }
-  const adminActions = readJson(adminActionCatalogPath).actions ?? [];
+  const adminActions = readAdminActionCatalog(adminActionCatalogPath).actions;
   const groups = {};
   for (const action of adminActions) {
     if (!names.includes(action.callable) || groups[action.callable]) continue;

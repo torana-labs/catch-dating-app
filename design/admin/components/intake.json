@@ -1,0 +1,280 @@
+{
+  "components": [
+    {
+      "id": "route_intake_workspace",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
+      "exportName": "IntakeWorkspaceScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "IntakeWorkspaceRouteStory",
+        "states": [
+          "event-review"
+        ]
+      },
+      "notes": "Tabbed route shell owns event, organizer, and read-only automation composition; previews use deterministic controller fixtures in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "route_settings_intake",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsWorkspace.tsx",
+      "exportName": "IntakeSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminSettingsIntake.stories.tsx",
+        "exportName": "IntakeSettingsStory",
+        "states": [
+          "policies",
+          "limits",
+          "nominators",
+          "launch-cities"
+        ]
+      },
+      "notes": "Settings → Intake: what Intake does on its own (each decision recorded in a dialog with its checklist, switched on only by a reviewed change), limits, who can nominate by message (the add-someone sheet) and launch cities, replacing the Supply Intake policy and nominator panels."
+    },
+    {
+      "id": "route_settings_intake_live_controller",
+      "kind": "route",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/organizer/ui/IntakeSettingsRouteScreen.tsx",
+      "exportName": "IntakeSettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the policy and nominator controllers; deterministic visual coverage remains on route_settings_intake."
+    },
+    {
+      "id": "shared_admin_guardrail_list",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminGuardrailList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminGuardrailListStory",
+        "states": [
+          "alerts"
+        ]
+      },
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_intake_boundary_notice",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminIntakeBoundaryNotice",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeBoundaryNoticeStory",
+        "states": [
+          "compact",
+          "expanded-action"
+        ]
+      },
+      "notes": "Compact, task-first statement of the intake publication boundary; full contract detail remains available on demand."
+    },
+    {
+      "id": "shared_admin_intake_publication_boundary_panel",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AdminIntakePublicationBoundaryPanel",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakePublicationBoundaryPanelStory",
+        "states": [
+          "events",
+          "organizers"
+        ]
+      },
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.badge"
+      ],
+      "comparisonReason": "Publication boundary panel that composes CatchBadge status labels with its own copy and actions; the badge contract owns the labels, not the panel."
+    },
+    {
+      "id": "shared_admin_intake_review_workbench",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "exportName": "AdminIntakeReviewWorkbench",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeReviewWorkbenchStory",
+        "states": [
+          "populated",
+          "batch-selection",
+          "partial-eligibility",
+          "inspector-open",
+          "keyboard-help",
+          "loading",
+          "error",
+          "unavailable",
+          "filter-empty",
+          "stage-empty",
+          "blocked-decision",
+          "mobile"
+        ]
+      },
+      "notes": "Shared full-height intake operations workbench with an integrated segmented stage control and command row, a fixed-height selection action bar, a compact table queue, stable multi-selection, partial-safe bulk actions with visible gates and results, keyboard and mouse parity, retryable loading/error/empty/unavailable states, and a composable collapsible evidence inspector.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Composes CatchText headings and supporting copy inside the intake queue, selection controls and evidence inspector; it is a workbench rather than a text-role atom."
+    },
+    {
+      "id": "shared_admin_intake_stage_rail",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminIntakeStageRail",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeStageRailStory",
+        "states": [
+          "incoming",
+          "verify",
+          "resolve",
+          "ready"
+        ]
+      },
+      "notes": "Keyboard-accessible, count-backed stage lens used by organizer and event intake workspaces. Adapter of catch.form_step_list until Phase 7e replaces it with the @catch/web-ui implementation.",
+      "componentId": "catch.form_step_list"
+    },
+    {
+      "id": "shared_admin_intake_task_toolbar",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminIntakeTaskToolbar",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeTaskToolbarStory",
+        "states": [
+          "search-and-filters",
+          "desktop",
+          "mobile"
+        ]
+      },
+      "notes": "Responsive action and filter row for intake queue work; only backed filters and operations are exposed."
+    },
+    {
+      "id": "shared_admin_intake_workspace_frame",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminIntakeWorkspaceFrame",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeWorkspaceFrameStory",
+        "states": [
+          "compact-chrome",
+          "full-height-content"
+        ]
+      },
+      "notes": "Shared full-height route frame that owns the compact Intake workspace chrome and the min-height-zero content chain used by all three Intake workspaces."
+    },
+    {
+      "id": "shared_admin_intake_workspace_tabs",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminIntakeWorkspaceTabs",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeWorkspaceTabsStory",
+        "states": [
+          "events-selected",
+          "organizers-selected",
+          "disabled"
+        ]
+      },
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_organizer_intake_checkbox_field",
+      "kind": "feature-component",
+      "owner": "features/intake",
+      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+      "exportName": "AdminOrganizerIntakeCheckboxField",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminOrganizerIntakeCheckboxFieldStory",
+        "states": [
+          "checked",
+          "unchecked"
+        ]
+      },
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+    },
+    {
+      "id": "workspace_intake_workspace",
+      "kind": "workspace",
+      "owner": "features/intake",
+      "source": "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
+      "exportName": "IntakeWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "IntakeWorkspaceStory",
+        "states": [
+          "event-review"
+        ]
+      },
+      "notes": "Prop-driven Intake workspace shell used by the route wrapper and deterministic Storybook previews; live event, organizer, and automation composition stays in IntakeWorkspaceScreen."
+    }
+  ]
+}

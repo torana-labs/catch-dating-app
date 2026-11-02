@@ -829,7 +829,7 @@
     },
     {
       "id": "admin-module-generators",
-      "paths": {"include": ["tool/admin/generate_admin_action_catalog.mjs"]},
+      "paths": {"include": ["tool/admin/generate_admin_action_catalog.mjs", "tool/lib/admin_registries.mjs"]},
       "components": ["backend.admin-module-generators"],
       "terminal": true
     },

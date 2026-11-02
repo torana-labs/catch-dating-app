@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "id": "route_finance_ops",
+      "kind": "route",
+      "owner": "features/finance",
+      "source": "admin/src/features/finance/ui/FinanceOpsScreen.tsx",
+      "exportName": "FinanceOpsScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "FinanceRouteStory",
+        "states": [
+          "issue-detail"
+        ]
+      },
+      "notes": "Route wrapper owns TanStack Query controller; preview renders the registered FinanceOpsWorkspace with deterministic issue/reconciliation fixtures in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "workspace_finance_ops",
+      "kind": "workspace",
+      "owner": "features/finance",
+      "source": "admin/src/features/finance/ui/FinanceOpsScreen.tsx",
+      "exportName": "FinanceOpsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "FinanceWorkspaceStory",
+        "states": [
+          "issue-detail"
+        ]
+      },
+      "notes": "Prop-driven Finance Ops workspace surface used by the route wrapper and deterministic Storybook previews; controller-owned query logic stays in FinanceOpsScreen."
+    }
+  ]
+}

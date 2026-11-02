@@ -1,0 +1,53 @@
+{
+  "workflow": {
+    "workflowId": "access",
+    "label": "Access review",
+    "guiPath": "/access"
+  },
+  "actions": [
+    {
+      "actionId": "access.decide",
+      "callable": "adminDecideAccessApplication",
+      "workflowIds": [
+        "access"
+      ],
+      "guiPath": "/access",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "applicationUid",
+      "requestSchema": "contracts/callables/admin_decide_access_application_payload.schema.json",
+      "summary": "Approve or deny one launch-access application.",
+      "example": {
+        "applicationUid": "example-applicant",
+        "decision": "deny",
+        "note": "Fixture decision; do not apply to production."
+      }
+    },
+    {
+      "actionId": "access.get",
+      "callable": "adminGetAccessApplicationDetails",
+      "workflowIds": [
+        "access"
+      ],
+      "guiPath": "/access",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_access_application_details_payload.schema.json",
+      "summary": "Load one launch-access application and duplicate signals.",
+      "example": {
+        "applicationUid": "example-applicant"
+      }
+    }
+  ]
+}

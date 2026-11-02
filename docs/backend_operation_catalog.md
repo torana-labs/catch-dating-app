@@ -87,7 +87,7 @@ The current admin callable is a role-gated, rate-limited read projection only.
 | `eventMessagingBudgetDecisionReceipts/{receiptId}` | Immutable request-hash replay evidence for a messaging budget decision | `adminDecideEventMessagingBudget` callable |
 | `eventMessagingBudgetApplicationReceipts/{receiptId}` | Immutable proof that one current approval staged both channel spending ceilings in paused state | `adminApplyEventMessagingBudget` callable |
 
-`contracts/admin/admin_action_catalog.json` binds every callable-backed admin
+`contracts/admin/actions/` binds every callable-backed admin
 GUI action to the same stable CLI action id, role set, request schema, GUI
 route, risk, confirmation policy, and contract-loop example. The catalog does
 not bypass a callable: live CLI execution still uses Firebase Auth, App Check,

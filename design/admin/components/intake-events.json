@@ -1,0 +1,42 @@
+{
+  "components": [
+    {
+      "id": "workspace_event_intake",
+      "kind": "workspace",
+      "owner": "features/intake/events",
+      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
+      "exportName": "EventIntakePreviewWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "EventIntakeWorkspaceStory",
+        "states": [
+          "default",
+          "run-plan",
+          "source-review"
+        ]
+      },
+      "notes": "Prop-driven Event Intake workspace view used by the live hook wrapper and deterministic Storybook previews; query and mutation logic stay in EventIntakeWorkspace."
+    },
+    {
+      "id": "workspace_event_intake_live",
+      "kind": "workspace",
+      "owner": "features/intake/events",
+      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
+      "exportName": "EventIntakeWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live Event Intake hook wrapper registered for export governance; deterministic preview coverage belongs to workspace_event_intake via EventIntakePreviewWorkspace."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "components": [
+    {
+      "id": "route_marketplace",
+      "kind": "route",
+      "owner": "features/marketplace",
+      "source": "admin/src/features/marketplace/ui/MarketplaceScreen.tsx",
+      "exportName": "MarketplaceScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "MarketplaceRouteStory",
+        "states": [
+          "default",
+          "analytics-controls",
+          "scoped-analytics"
+        ]
+      },
+      "notes": "Marketplace analytics, split from the old Overview (its queues moved to Needs you): range and entity controls apply to host analytics. The Marketplace board (PR 14) replaces it. Backed by sample host analytics fixtures in admin/src/stories/AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "route_marketplace_live_controller",
+      "kind": "route",
+      "owner": "features/marketplace",
+      "source": "admin/src/features/marketplace/ui/MarketplaceRouteScreen.tsx",
+      "exportName": "MarketplaceRouteScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Marketplace analytics controller/query seam; deterministic prop-driven visual coverage remains on route_marketplace."
+    },
+    {
+      "id": "shared_admin_filter_bar",
+      "kind": "feature-component",
+      "owner": "features/marketplace",
+      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+      "exportName": "AdminFilterBar",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFilterBarStory",
+        "states": [
+          "controls"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_overview_main_grid",
+      "kind": "feature-component",
+      "owner": "features/marketplace",
+      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
+      "exportName": "AdminOverviewMainGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminOverviewMainGridStory",
+        "states": [
+          "summary-and-detail"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    }
+  ]
+}

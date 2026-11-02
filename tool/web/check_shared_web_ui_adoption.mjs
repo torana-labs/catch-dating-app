@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {readAdminComponentRegistry} from "../lib/admin_registries.mjs";
 import {buildReactComponentGraph} from "./lib/react_component_graph.mjs";
 import {buildReactComponentInventory} from "./lib/react_component_inventory.mjs";
 import {graphProbeProblems, inventoryProbeProblems} from "./lib/react_component_inventory_probes.mjs";
@@ -36,7 +37,7 @@ const inventory = buildReactComponentInventory({
   registry: readJson("design/components/catch.components.json"),
   surfaceRegistries: {
     website: readJson("design/website/components.json"),
-    admin: readJson("design/admin/components.json"),
+    admin: readAdminComponentRegistry(),
   },
 });
 const findings = [

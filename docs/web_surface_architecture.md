@@ -675,7 +675,7 @@ only `firebase.ts` to import the generated callable types.
   component identity. Each contract's `react` record names its `@catch/web-ui`
   symbol, file, `api` (`headless-control` until Phase 7e ships the styled
   component) and Storybook coverage, and its T1/T2 props carry `tsType` beside
-  `dartType`. `design/website/components.json` and `design/admin/components.json`
+  `dartType`. `design/website/components.json` and `design/admin/components/`
   own routes, sections and surface-specific components; an adapter of a shared
   contract points at it with `componentId`. Admin components that one feature
   or only the app shell renders are `feature-component` entries owned by that
@@ -807,7 +807,7 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   only arrange and bind. Run `node tool/run.mjs check web:admin-feature-exports`
   when touching admin feature UI exports. Admin route/workspace entries, shared
   admin primitives, and admin feedback providers must also be declared in
-  `design/admin/components.json`; run
+  `design/admin/components/`; run
   `node tool/run.mjs check web:admin-components` when touching those exports.
   Admin form primitives adopted into the shared Flutter/React interaction
   vocabulary declare an `interactionContract` mode in that registry. Adopted
@@ -1037,7 +1037,7 @@ reconciliation, never request or response bodies. Manual actions
 remain in their owning routes; this route does not reproduce their mutation
 forms or authority decisions.
 
-`contracts/admin/admin_action_catalog.json` binds every admin API callable to a
+`contracts/admin/actions/` binds every admin API callable to a
 stable CLI action id, request schema, roles, workflow, GUI path, and
 confirmation policy. `tool/admin/generate_admin_action_catalog.mjs` produces
 the typed browser and Functions views at build time, and Git ignores both; the

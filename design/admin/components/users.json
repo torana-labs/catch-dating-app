@@ -1,0 +1,61 @@
+{
+  "components": [
+    {
+      "id": "route_user_analytics",
+      "kind": "route",
+      "owner": "features/users",
+      "source": "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
+      "exportName": "UserAnalyticsScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "UserAnalyticsRouteStory",
+        "states": [
+          "aggregate-report"
+        ]
+      },
+      "notes": "Route wrapper owns QueryClient, handoff, and sample-mode autoload behavior; preview renders the registered UserAnalyticsWorkspace with deterministic aggregate report fixtures in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "shared_admin_intake_section_title",
+      "kind": "feature-component",
+      "owner": "features/users",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeSectionTitle.tsx",
+      "exportName": "CatchAdminIntakeSectionTitle",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminIntakeSectionTitle.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeSectionTitleStory",
+        "states": [
+          "title-meta"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/users renders it. admin/src/features/users/ui/UserAnalyticsScreen.tsx binds the section labels."
+    },
+    {
+      "id": "workspace_user_analytics",
+      "kind": "workspace",
+      "owner": "features/users",
+      "source": "admin/src/features/users/ui/UserAnalyticsScreen.tsx",
+      "exportName": "UserAnalyticsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "UserAnalyticsWorkspaceStory",
+        "states": [
+          "aggregate-report"
+        ]
+      },
+      "notes": "Prop-driven User Analytics workspace surface used by the route wrapper and deterministic Storybook previews; query, handoff, and sample-mode autoload logic stay in UserAnalyticsScreen."
+    }
+  ]
+}

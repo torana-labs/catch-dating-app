@@ -1,0 +1,56 @@
+{
+  "components": [
+    {
+      "id": "route_settings",
+      "kind": "route",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/SettingsScreen.tsx",
+      "exportName": "SettingsScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SettingsRouteStory",
+        "states": [
+          "team",
+          "role-change"
+        ]
+      },
+      "notes": "Settings (boards AdminSettings*) on the list-detail pattern: settings pages as navigation and the open page beside them. Areas add their own pages through the app; Team and roles is drawn here. It replaces the Admin roles screen."
+    },
+    {
+      "id": "route_settings_live_controller",
+      "kind": "route",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/SettingsRouteScreen.tsx",
+      "exportName": "SettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Team controller and the settings URL seam; deterministic prop-driven visual coverage remains on route_settings."
+    },
+    {
+      "id": "workspace_team_settings",
+      "kind": "workspace",
+      "owner": "features/settings",
+      "source": "admin/src/features/settings/ui/TeamSettingsWorkspace.tsx",
+      "exportName": "TeamSettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "TeamSettingsWorkspaceStory",
+        "states": [
+          "team",
+          "role-change"
+        ]
+      },
+      "notes": "Team and roles (board AdminSettingsTeam): the people with an Admin job, what each of the three jobs can do, inviting by user id, and a sheet to change someone's job with a review note."
+    }
+  ]
+}

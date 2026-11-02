@@ -1,0 +1,38 @@
+{
+  "components": [
+    {
+      "id": "route_support",
+      "kind": "route",
+      "owner": "features/support",
+      "source": "admin/src/features/support/ui/SupportScreen.tsx",
+      "exportName": "SupportScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SupportRouteStory",
+        "states": [
+          "open-conversations",
+          "conversation"
+        ]
+      },
+      "notes": "Support (board AdminSupport) in the quiet register: guest and organizer conversations from WhatsApp, Instagram and logged email, longest waiting first, in a CatchTable on the queue pattern with Open, Mine, Waiting on them and Closed views. The conversation beside it shows who it is, how long they have waited, its links to a booking, money issue or safety case, the messages, saved replies, and recording a reply or note. The WhatsApp reply trial stays reachable at /support/trial."
+    },
+    {
+      "id": "route_support_live_controller",
+      "kind": "route",
+      "owner": "features/support",
+      "source": "admin/src/features/support/ui/SupportRouteScreen.tsx",
+      "exportName": "SupportRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the support inbox controller and the conversation URL; deterministic prop-driven visual coverage remains on route_support."
+    }
+  ]
+}
