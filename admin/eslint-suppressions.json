@@ -79,10 +79,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 6
+      "count": 5
     },
     "react/forbid-elements": {
-      "count": 8
+      "count": 6
     }
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
@@ -165,9 +165,6 @@
     }
   },
   "src/shared/ui/AdminPrimitives/media.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
     "react/forbid-dom-props": {
       "count": 7
     },

@@ -227,6 +227,21 @@ test("scanSectionDividers covers lib, test, and widgetbook sources", () => {
   assert.equal(result.counts.medium, 3);
 });
 
+test("scanSectionDividers covers app-package sources", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-section-dividers-apps-"));
+  writeFile(
+    root,
+    "apps/host/lib/today/today_body.dart",
+    "Widget build(BuildContext context) => Divider(height: 1, color: t.line);",
+  );
+
+  const result = scanSectionDividers({root});
+
+  assert.equal(result.filesScanned, 1);
+  assert.equal(result.counts.medium, 1);
+  assert.equal(result.findings[0].path, "apps/host/lib/today/today_body.dart");
+});
+
 function writeFile(root, relativePath, source) {
   const file = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(file), {recursive: true});

@@ -1,15 +1,11 @@
 /* eslint-disable max-len */
-import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminGetListingEventReviewCallablePayload} from "../shared/generated/adminGetListingEventReviewCallablePayload";
 import type {AdminGetListingEventReviewCallableResponse} from "../shared/generated/adminGetListingEventReviewCallableResponse";
-import type {AdminListListingEventImportsCallablePayload} from "../shared/generated/adminListListingEventImportsCallablePayload";
-import type {AdminListListingEventImportsCallableResponse} from "../shared/generated/adminListListingEventImportsCallableResponse";
 import type {AdminPublishListingEventsCallablePayload} from "../shared/generated/adminPublishListingEventsCallablePayload";
 import type {AdminPublishListingEventsCallableResponse} from "../shared/generated/adminPublishListingEventsCallableResponse";
 import {validateAdminGetListingEventReviewCallablePayload} from "../shared/generated/validators/adminGetListingEventReviewInput";
-import {validateAdminListListingEventImportsCallablePayload} from "../shared/generated/validators/adminListListingEventImportsInput";
 import {validateAdminPublishListingEventsCallablePayload} from "../shared/generated/validators/adminPublishListingEventsInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
@@ -29,9 +25,16 @@ import {requireAdminRole} from "./adminAuth";
 // Reviewing and publishing imported events share the external-event roles.
 const listingEventRoles = ["admin", "adminOwner", "support"] as const;
 
-type ListResponse = AdminListListingEventImportsCallableResponse;
-type ListRow = ListResponse["rows"][number];
-type EventRow = ListRow["events"][number];
+type Review = AdminGetListingEventReviewCallableResponse;
+type EventRow = Review["event"];
+/** One approved listing and its imported events. */
+interface ListRow {
+  intakeRequestId: string;
+  listingId: string;
+  approvedAt: string;
+  organizer: Review["organizer"];
+  events: EventRow[];
+}
 
 interface ListingEventImportDeps extends ListingEventPublicationDeps {
   checkRateLimit?: typeof defaultCheckRateLimit;
@@ -41,60 +44,6 @@ const defaultDeps: ListingEventImportDeps = {
   ...defaultListingEventPublicationDeps,
   checkRateLimit: defaultCheckRateLimit,
 };
-
-/**
- * One page of approved listings, most recently approved first, each with the
- * events Supply Intake imported and where each stands: published by the
- * policy or staff, withdrawn, ready for staff, needing a resolution or
- * waiver, or blocked. A listing whose organizer is gone is counted, not shown.
- */
-export async function adminListListingEventImportsHandler(
-  request: CallableRequest<unknown>,
-  deps: ListingEventImportDeps = defaultDeps
-): Promise<ListResponse> {
-  const adminContext = requireAdminRole(request, listingEventRoles);
-  const data = validateCallableWithAjv<AdminListListingEventImportsCallablePayload>(request,
-    validateAdminListListingEventImportsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(
-    db,
-    adminContext.uid,
-    "adminListListingEventImports",
-    {maxRequests: 60, windowMs: 60 * 1000}
-  );
-  const runtime = await packagedEventPublication();
-  const policy = await (deps.loadEventPublicationPolicy ?? runtime.loadEventPublicationPolicy)();
-  const requests = db.collection(supplyIntakeCollections.requests);
-  // Only approved requests carry approval.approvedAt (an ISO string, so it sorts by time).
-  /* firestore-index: supplyIntakeRequests (
-    approval.approvedAt:DESCENDING, __name__:DESCENDING
-  ) */
-  let query = requests.orderBy("approval.approvedAt", "desc")
-    .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-    .limit(data.limit + 1);
-  if (data.cursor) {
-    const cursor = decodeCursor(data.cursor);
-    query = query.startAfter(cursor.approvedAt, cursor.requestId);
-  }
-  const snapshot = await query.get();
-  const page = snapshot.docs.slice(0, data.limit);
-  const now = deps.now().toISOString();
-  const rows: ListRow[] = [];
-  let unavailableCount = 0;
-  for (const doc of page) {
-    const imported = await listingEventImportRow(db, runtime, doc.id, doc.data(), adminContext.uid, now);
-    if (imported) rows.push(imported.row);
-    else unavailableCount += 1;
-  }
-  const last = page.at(-1);
-  return {
-    policy: {mode: policy.mode, policyVersion: policy.policyVersion},
-    rows,
-    nextCursor: snapshot.docs.length > data.limit && last ?
-      encodeCursor({approvedAt: String(last.data().approval?.approvedAt), requestId: last.id}) : null,
-    unavailableCount,
-  };
-}
 
 /** One approved request's events and where each stands, or null when its organizer is gone. */
 export async function listingEventImportRow(
@@ -180,9 +129,6 @@ export async function listingEventImportRow(
     events,
   }};
 }
-
-export const adminListListingEventImports = onCall(appCheckCallableOptions,
-  (request) => adminListListingEventImportsHandler(request));
 
 /** One imported event, by its request, for the inbox's publish sheet. */
 export async function adminGetListingEventReviewHandler(
@@ -284,22 +230,6 @@ function normalizePublishPayload(value: unknown): unknown {
   const trimmed = (entry: unknown) => typeof entry === "string" ? entry.trim() : entry;
   return {...data, intakeRequestId: trimmed(data.intakeRequestId), idempotencyKey: trimmed(data.idempotencyKey),
     reviewNote: trimmed(data.reviewNote)};
-}
-
-function encodeCursor(cursor: {approvedAt: string; requestId: string}): string {
-  return Buffer.from(JSON.stringify(cursor), "utf8").toString("base64url");
-}
-
-function decodeCursor(value: string): {approvedAt: string; requestId: string} {
-  try {
-    const cursor = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as Record<string, unknown>;
-    if (typeof cursor.approvedAt === "string" && typeof cursor.requestId === "string") {
-      return {approvedAt: cursor.approvedAt, requestId: cursor.requestId};
-    }
-  } catch {
-    // Falls through to the refusal below.
-  }
-  throw new HttpsError("invalid-argument", "This page cursor is invalid; reload the list.");
 }
 
 function recordValue(value: unknown): Record<string, unknown> | null {

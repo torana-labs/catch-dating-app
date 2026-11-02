@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../tool/architecture/provider_graph.dart';
 
 void main() {
+  _appPackageProviderGraphTests();
   test(
     'provider graph resolves providers, consumers, aliases, and mutations',
     () async {
@@ -735,6 +736,68 @@ class AnotherOwner {
       await Directory('${root.path}/lib').create();
       await File('${root.path}/lib/only.g.dart').writeAsString('generated');
       await expectLater(buildProviderGraph(root), throwsStateError);
+    },
+  );
+}
+
+void _appPackageProviderGraphTests() {
+  test(
+    'provider graph reads app-package view models and places them',
+    () async {
+      final root = await _fixtureRoot('''
+@riverpod
+int shared(Ref ref) => 1;
+''');
+      addTearDown(() => root.delete(recursive: true));
+      for (final entry in const {
+        'apps/host/lib/today/today_view_model.dart': '''
+@riverpod
+int todayViewModel(Ref ref) => ref.watch(sharedProvider);
+
+final todayManualProvider = Provider<int>((ref) => 1);
+''',
+        'apps/consumer/lib/explore/explore_screen.dart': '''
+class ExploreScreen {
+  void build(WidgetRef ref) {
+    ref.watch(sharedProvider);
+  }
+}
+''',
+        'apps/host/lib/today/today_view_model.g.dart': '''
+@riverpod
+int generatedOnly(Ref ref) => 1;
+''',
+      }.entries) {
+        final file = File('${root.path}/${entry.key}');
+        await file.parent.create(recursive: true);
+        await file.writeAsString(entry.value);
+      }
+
+      final graph = await buildProviderGraph(root);
+
+      final byName = {
+        for (final provider in graph.providers) provider.name: provider,
+      };
+      expect(graph.sourceFiles, 3);
+      expect(byName.keys, isNot(contains('generatedOnlyProvider')));
+      expect(byName['todayViewModelProvider']!.feature, 'apps/host');
+      expect(byName['todayViewModelProvider']!.layer, 'presentation');
+      expect(
+        graph.edges.where(
+          (edge) =>
+              edge.source == 'todayViewModelProvider' &&
+              edge.target == 'sharedProvider',
+        ),
+        isNotEmpty,
+      );
+      expect(
+        graph.consumers.map((consumer) => consumer.path),
+        contains('apps/consumer/lib/explore/explore_screen.dart'),
+      );
+      expect(
+        graph.candidates.map((candidate) => candidate.subject),
+        contains('todayManualProvider'),
+      );
     },
   );
 }

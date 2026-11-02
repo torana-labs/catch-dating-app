@@ -5,9 +5,6 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {AdminGetOrganizerListingReviewCallablePayload} from "../shared/generated/adminGetOrganizerListingReviewCallablePayload";
 import type {AdminGetOrganizerListingReviewCallableResponse} from "../shared/generated/adminGetOrganizerListingReviewCallableResponse";
 import {validateAdminGetOrganizerListingReviewCallablePayload} from "../shared/generated/validators/adminGetOrganizerListingReviewInput";
-import type {AdminListOrganizerListingReviewsCallablePayload} from "../shared/generated/adminListOrganizerListingReviewsCallablePayload";
-import type {AdminListOrganizerListingReviewsCallableResponse} from "../shared/generated/adminListOrganizerListingReviewsCallableResponse";
-import {validateAdminListOrganizerListingReviewsCallablePayload} from "../shared/generated/validators/adminListOrganizerListingReviewsInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validateOperationWorkItem} from "../operations/validation";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
@@ -20,8 +17,7 @@ import {listingApprovalRoles} from "./organizerListingApproval";
 // narrower (see adminApproveOrganizerListing).
 const reviewRoles = ["admin", "adminOwner", "support"] as const;
 
-type Response = AdminListOrganizerListingReviewsCallableResponse;
-type Row = Response["rows"][number];
+type Row = AdminGetOrganizerListingReviewCallableResponse["review"];
 
 interface ListingReviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -32,60 +28,6 @@ const defaultDeps: ListingReviewDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit: defaultCheckRateLimit,
 };
-
-/**
- * One page of listings Supply Intake built that staff have not approved yet,
- * newest first, each with what a reviewer needs to approve it: the listing's
- * evidence-backed fields and links, its gaps, how many pages were read, how
- * it compares with the organizers Catch already lists, and the content hash
- * approval must quote. A request whose listing cannot be read is counted, not
- * shown.
- */
-export async function adminListOrganizerListingReviewsHandler(
-  request: CallableRequest<unknown>,
-  deps: ListingReviewDeps = defaultDeps
-): Promise<Response> {
-  const adminContext = requireAdminRole(request, reviewRoles);
-  const data = validateCallableWithAjv<AdminListOrganizerListingReviewsCallablePayload>(request,
-    validateAdminListOrganizerListingReviewsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(
-    db,
-    adminContext.uid,
-    "adminListOrganizerListingReviews",
-    {maxRequests: 60, windowMs: 60 * 1000}
-  );
-  let query = db.collection(supplyIntakeCollections.requests)
-    .where("status", "==", "completed")
-    .where("approval", "==", null)
-    .orderBy("updatedAt", "desc")
-    .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-    .limit(data.limit + 1);
-  if (data.cursor) {
-    const cursor = decodeCursor(data.cursor);
-    query = query.startAfter(cursor.updatedAt, cursor.requestId);
-  }
-  const snapshot = await query.get();
-  const page = snapshot.docs.slice(0, data.limit);
-  const rows: Row[] = [];
-  let unavailableCount = 0;
-  for (const doc of page) {
-    const row = await reviewRow(db, doc.id, doc.data());
-    if (row) rows.push(row);
-    else unavailableCount += 1;
-  }
-  const last = page.at(-1);
-  return {
-    rows,
-    nextCursor: snapshot.docs.length > data.limit && last ?
-      encodeCursor({updatedAt: String(last.data().updatedAt), requestId: last.id}) : null,
-    unavailableCount,
-    canApprove: adminContext.roles.some((role) => (listingApprovalRoles as readonly string[]).includes(role)),
-  };
-}
-
-export const adminListOrganizerListingReviews = onCall(appCheckCallableOptions,
-  (request) => adminListOrganizerListingReviewsHandler(request));
 
 /**
  * One listing awaiting approval, for the inbox item that names its request. A
@@ -195,22 +137,6 @@ export function publicSlugFor(value: string): string {
   const slug = value.normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/gu, "-")
     .replace(/^-+|-+$/gu, "").slice(0, 64).replace(/-+$/u, "");
   return slug.length >= 3 ? slug : `organizer-${slug || "listing"}`.slice(0, 64);
-}
-
-function encodeCursor(cursor: {updatedAt: string; requestId: string}): string {
-  return Buffer.from(JSON.stringify(cursor), "utf8").toString("base64url");
-}
-
-function decodeCursor(value: string): {updatedAt: string; requestId: string} {
-  try {
-    const cursor = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as Record<string, unknown>;
-    if (typeof cursor.updatedAt === "string" && typeof cursor.requestId === "string") {
-      return {updatedAt: cursor.updatedAt, requestId: cursor.requestId};
-    }
-  } catch {
-    // Falls through to the refusal below.
-  }
-  throw new HttpsError("invalid-argument", "This page cursor is invalid; reload the queue.");
 }
 
 function recordValue(value: unknown): Record<string, unknown> | null {

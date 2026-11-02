@@ -252,7 +252,7 @@ export async function adminGetOrganizerOverviewHandler(
  * @param {object} input Records the steps are read from.
  * @return {JourneyStep[]} Journey.
  */
-function journeyOf(input: {
+export function journeyOf(input: {
   organizer: Partial<OrganizerDocument>;
   nomination: Partial<SupplyIntakeRequestsDocument> | null;
   claims: Array<Partial<OrganizerClaimRequestDocument>>;

@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const defaultRepoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -326,7 +327,9 @@ function collectEvidence(repoRoot, registry) {
   }
 
   if (previews.has("source-only")) {
-    sourceSymbols = collectDartSourceSymbols(path.resolve(repoRoot, "lib"));
+    sourceSymbols = new Set(screenSourceRoots(repoRoot).flatMap(
+      (sourceRoot) => [...collectDartSourceSymbols(path.resolve(repoRoot, sourceRoot))],
+    ));
   }
 
   return {errors, widgetbookSymbols, sourceSymbols};

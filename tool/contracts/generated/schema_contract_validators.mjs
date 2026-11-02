@@ -759,6 +759,7 @@ import {
   programIdCallablePayloadSchema,
   listOrganizerProgramsCallablePayloadSchema,
   listMyHostAssignmentsCallablePayloadSchema,
+  listMyOrganizerJourneysCallablePayloadSchema,
   listOrganizerBillsCallablePayloadSchema,
   listOrganizerRequestsCallablePayloadSchema,
   createOrganizerProgramCallablePayloadSchema,
@@ -811,6 +812,7 @@ import {
   organizerProgramListCallableResponseSchema,
   programAccessCallableResponseSchema,
   listMyHostAssignmentsCallableResponseSchema,
+  listMyOrganizerJourneysCallableResponseSchema,
   listOrganizerBillsCallableResponseSchema,
   listOrganizerRequestsCallableResponseSchema,
   organizerProgramCallableResponseSchema,
@@ -962,13 +964,9 @@ import {
   adminListActivityLogCallableResponseSchema,
   adminGetOrganizerListingReviewCallablePayloadSchema,
   adminGetOrganizerListingReviewCallableResponseSchema,
-  adminListOrganizerListingReviewsCallablePayloadSchema,
-  adminListOrganizerListingReviewsCallableResponseSchema,
   adminApproveOrganizerListingCallableResponseSchema,
   adminGetListingEventReviewCallablePayloadSchema,
   adminGetListingEventReviewCallableResponseSchema,
-  adminListListingEventImportsCallablePayloadSchema,
-  adminListListingEventImportsCallableResponseSchema,
   adminPublishListingEventsCallablePayloadSchema,
   adminSetSupplyNominatorCallablePayloadSchema,
   adminSetSupplyNominatorCallableResponseSchema,
@@ -2163,6 +2161,7 @@ export const validateTransportOperationReceiptDocument = ajv.compile(transportOp
 export const validateProgramIdCallablePayload = ajv.compile(programIdCallablePayloadSchema);
 export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrganizerProgramsCallablePayloadSchema);
 export const validateListMyHostAssignmentsCallablePayload = ajv.compile(listMyHostAssignmentsCallablePayloadSchema);
+export const validateListMyOrganizerJourneysCallablePayload = ajv.compile(listMyOrganizerJourneysCallablePayloadSchema);
 export const validateListOrganizerBillsCallablePayload = ajv.compile(listOrganizerBillsCallablePayloadSchema);
 export const validateListOrganizerRequestsCallablePayload = ajv.compile(listOrganizerRequestsCallablePayloadSchema);
 export const validateCreateOrganizerProgramCallablePayload = ajv.compile(createOrganizerProgramCallablePayloadSchema);
@@ -2215,6 +2214,7 @@ export const validateSubmitProgramHouseholdRsvpCallableResponse = ajv.compile(su
 export const validateOrganizerProgramListCallableResponse = ajv.compile(organizerProgramListCallableResponseSchema);
 export const validateProgramAccessCallableResponse = ajv.compile(programAccessCallableResponseSchema);
 export const validateListMyHostAssignmentsCallableResponse = ajv.compile(listMyHostAssignmentsCallableResponseSchema);
+export const validateListMyOrganizerJourneysCallableResponse = ajv.compile(listMyOrganizerJourneysCallableResponseSchema);
 export const validateListOrganizerBillsCallableResponse = ajv.compile(listOrganizerBillsCallableResponseSchema);
 export const validateListOrganizerRequestsCallableResponse = ajv.compile(listOrganizerRequestsCallableResponseSchema);
 export const validateOrganizerProgramCallableResponse = ajv.compile(organizerProgramCallableResponseSchema);
@@ -2366,13 +2366,9 @@ export const validateAdminListActivityLogCallablePayload = ajv.compile(adminList
 export const validateAdminListActivityLogCallableResponse = ajv.compile(adminListActivityLogCallableResponseSchema);
 export const validateAdminGetOrganizerListingReviewCallablePayload = ajv.compile(adminGetOrganizerListingReviewCallablePayloadSchema);
 export const validateAdminGetOrganizerListingReviewCallableResponse = ajv.compile(adminGetOrganizerListingReviewCallableResponseSchema);
-export const validateAdminListOrganizerListingReviewsCallablePayload = ajv.compile(adminListOrganizerListingReviewsCallablePayloadSchema);
-export const validateAdminListOrganizerListingReviewsCallableResponse = ajv.compile(adminListOrganizerListingReviewsCallableResponseSchema);
 export const validateAdminApproveOrganizerListingCallableResponse = ajv.compile(adminApproveOrganizerListingCallableResponseSchema);
 export const validateAdminGetListingEventReviewCallablePayload = ajv.compile(adminGetListingEventReviewCallablePayloadSchema);
 export const validateAdminGetListingEventReviewCallableResponse = ajv.compile(adminGetListingEventReviewCallableResponseSchema);
-export const validateAdminListListingEventImportsCallablePayload = ajv.compile(adminListListingEventImportsCallablePayloadSchema);
-export const validateAdminListListingEventImportsCallableResponse = ajv.compile(adminListListingEventImportsCallableResponseSchema);
 export const validateAdminPublishListingEventsCallablePayload = ajv.compile(adminPublishListingEventsCallablePayloadSchema);
 export const validateAdminSetSupplyNominatorCallablePayload = ajv.compile(adminSetSupplyNominatorCallablePayloadSchema);
 export const validateAdminSetSupplyNominatorCallableResponse = ajv.compile(adminSetSupplyNominatorCallableResponseSchema);

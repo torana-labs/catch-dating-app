@@ -254,10 +254,11 @@ function roleFor(entry, contract) {
   return "feature-adapter";
 }
 
-function isScreen(name, file) {
+export function isScreen(name, file) {
   return (
     /(?:Screen|Page|Route|App)$/.test(name) ||
-    file.includes("/presentation/") && !file.includes("/widgets/") && /screen\.dart$/.test(file)
+    (file.includes("/presentation/") || file.startsWith("apps/")) &&
+      !file.includes("/widgets/") && /screen\.dart$/.test(file)
   );
 }
 

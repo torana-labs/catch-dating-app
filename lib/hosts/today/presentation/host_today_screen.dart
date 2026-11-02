@@ -14,6 +14,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
@@ -549,16 +550,22 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSliverEmptyState(
-      icon: CatchIcons.people,
-      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
-      message: context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
-      actions: [
-        CatchButton(
-          label: context.l10n.hostsHostEventsScaffoldLabelCreateOrganizer,
-          leading: Icon(CatchIcons.add, size: CatchIconSize.md),
-          size: CatchButtonSize.md,
-          onPressed: onCreateOrganizer,
+    return SliverMainAxisGroup(
+      slivers: [
+        const SliverToBoxAdapter(child: HostWaitingClaimsSection()),
+        CatchSliverEmptyState(
+          icon: CatchIcons.people,
+          title:
+              context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstOrganizer,
+          message: context.l10n.hostsHostEventsScaffoldBodyCreateAOrganizerTo,
+          actions: [
+            CatchButton(
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateOrganizer,
+              leading: Icon(CatchIcons.add, size: CatchIconSize.md),
+              size: CatchButtonSize.md,
+              onPressed: onCreateOrganizer,
+            ),
+          ],
         ),
       ],
     );

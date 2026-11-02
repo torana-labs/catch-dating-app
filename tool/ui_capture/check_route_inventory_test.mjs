@@ -240,6 +240,16 @@ test("fails closed on GoRoute definitions outside the canonical graph", () => {
   );
 });
 
+test("fails closed on GoRoute definitions in an app package", () => {
+  assert.throws(
+    () => validateRouteSourceForInventory(
+      "final route = GoRoute(path: '/today');",
+      "apps/host/lib/today/today_screen.dart",
+    ),
+    /GoRoute construction is outside lib\/routing\/go_router\.dart/u,
+  );
+});
+
 test("fails closed on unsupported full-screen PageRoute constructors", () => {
   for (const routeType of ["CupertinoPageRoute", "PageRouteBuilder"]) {
     assert.throws(

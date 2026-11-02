@@ -256,6 +256,9 @@ jobs:
       - name: Catch UI resolved composition contracts
         run: dart run tool/architecture/check_ui_composition_contracts.dart --check --json /tmp/catch-ui-composition.json
 
+      - name: Install scanner dependencies
+        uses: ./.github/actions/install-ripgrep
+
       - name: Widget cleanup remaining scanner ratchet
         run: bash tool/widget_cleanup_scan.sh --check
 

@@ -145,6 +145,22 @@ test("inventory includes bound and unbound product callsites", () => {
   assert.equal(inventory.summary.unboundCallsites, 2);
 });
 
+test("an app-package form field cannot escape the missing-contract inventory", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-form-contracts-apps-"));
+  try {
+    write(root, "apps/host/lib/today/today_form.dart", "final field = CatchField.input(title: 'Name', controller: controller);");
+    write(root, "apps/consumer/lib/explore/explore_form.dart", "final field = CatchField.input(title: 'City', controller: controller, contract: cityContract);");
+
+    const inventory = buildFormContractInventory({repoRoot: root});
+
+    assert.equal(inventory.summary.editableCallsites, 2);
+    assert.equal(inventory.summary.boundCallsites, 1);
+    assert.equal(inventory.summary.unboundCallsites, 1);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
 function write(root, relative, source) {
   const file = path.join(root, relative);
   fs.mkdirSync(path.dirname(file), {recursive: true});
@@ -198,6 +214,9 @@ test("declared field bindings must stay referenced by Dart source", () => {
       "CatchContractConstraints.eventDocumentCapacity;");
     assert.deepEqual(unreferencedFieldBindings({repoRoot: root}),
       ["formProfile.profile.city"]);
+    write(root, "apps/host/lib/profile/city_field.dart",
+      "CatchContractConstraints.formProfileProfileCity;");
+    assert.deepEqual(unreferencedFieldBindings({repoRoot: root}), []);
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }

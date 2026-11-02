@@ -34,7 +34,6 @@ const requiredMarkers = [
   ["functions/src/index.ts", "startOrganizerConversation"],
   ["functions/src/index.ts", "adminGetOrganizerDetails"],
   ["functions/src/index.ts", "adminGetOrganizerClaimRequestDetails"],
-  ["functions/src/index.ts", "adminListOrganizerClaimRequests"],
   ["functions/src/index.ts", "adminSetOrganizerIndexStatus"],
   ["lib/platform/analytics/app_analytics.dart", "static const organizerId = 'organizer_id';"],
   ["docs/migrations/clubs_to_organizers.md", "organizerType"],

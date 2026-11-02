@@ -199,6 +199,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `getParticipantOrganizerApplicationForm` / `submitParticipantOrganizerApplication` / `revokeParticipantOrganizerDataGrant` | `src/organizers/participantOrganizerApplications.ts` | Phone-authenticated private prefill review, native submission with an exact organizer grant, and participant-owned revocation |
 | `decideOrganizerCommunityMembership` | `src/memberships/communityMembership.ts` | Manager-reviewed, revision-bound native community membership grants and prospective revocation with immutable decision receipts |
 | `listOrganizerRequests` | `src/events/organizerRequests.ts` | Organizer hosts read everyone waiting across coming events: join requests and the waitlist, with each person's name and events attended |
+| `listMyOrganizerJourneys` | `src/organizers/organizerJourney.ts` | How a page got here: one organizer's journey for its hosts, or each page the caller is waiting to claim, without staff-only facts |
 | `listOrganizerBills` | `src/money/organizerOwnBills.ts` | Organizer owner reads Catch's bills to that organizer: sent or closed bills and free months, without staff-only fields |
 | `manageHostMembershipProgram` | `src/hostMemberships/program.ts` | Organizer-manager paid membership program: effective money flow, readiness and unavailable reason; enable binds the organizer's own Razorpay account (hostCollected: Subscriptions probe plus merchant webhook) or the Route account (platformSplit); disable, host-wide billing pause/resume |
 | `manageHostMembershipPlans` | `src/hostMemberships/plans.ts` | Organizer-manager membership plan list/save/publish/archive; publish creates immutable Razorpay plans per interval |
@@ -324,7 +325,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminAssignSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue assignment |
 | `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed decision; tells the reporter it was handled |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
-| `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/organizerClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
+| `adminGetOrganizerClaimRequestDetails` | `src/admin/organizerClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
 | `adminSetOrganizerIndexStatus` | `src/admin/organizerIndexing.ts` | Admin audited organizer index/noindex publishing decision |
 | `adminListEventDetails` | `src/admin/eventDetails.ts` | Admin canonical `events/{id}` directory for event publishing ops |
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
@@ -336,7 +337,6 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminListIntakeOperations` | `src/admin/intakeOperations.ts` | Role-gated read-only Supply Intake projection with authoritative aggregates, server-filtered human exceptions, and lazy ordinary pages |
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
-| `adminListOrganizerListingReviews` | `src/admin/organizerListingReviewQueue.ts` | Admin, owner or support read the pages of Supply Intake listings awaiting approval, newest first, with each listing's evidence-backed fields, links, gaps, pages read and content hash, and whether the caller may approve |
 | `adminGetOrganizerListingReview` | `src/admin/organizerListingReviewQueue.ts` | Admin, owner or support read one Supply Intake listing awaiting approval, by its request, for the inbox's approval sheet |
 | `adminListInboxItems` | `src/admin/inbox/callables.ts` | Admin, owner or support read one page of the Admin inbox (listings, imported events, claims, enquiries, launch access, stuck intake) by scope, type and city, oldest first, with real totals per scope and type |
 | `adminGetInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support (or the sales associate who nominated it) read one inbox item and its journey, every step it took |
@@ -347,7 +347,6 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminSearchPeople` | `src/admin/peopleSearch.ts` | Admin, owner, support or safety reviewers search people by name, phone or uid in `adminPeopleIndex`; every search and its query is written to `adminAuditLogs` |
 | `adminListActivityLog` | `src/admin/activityLog.ts` | Admin or owner read the activity log newest first: audited decisions merged with agent execution receipts, filterable to problems |
 | `adminGetListingEventReview` | `src/admin/listingEventImports.ts` | Admin, owner or support read one imported event of an approved listing, for the inbox's publish sheet |
-| `adminListListingEventImports` | `src/admin/listingEventImports.ts` | Admin, owner or support read approved Supply Intake listings, newest first, with each imported event's state (published by the policy or staff, withdrawn, ready, needs a check, blocked) and the reasons |
 | `adminPublishListingEvents` | `src/admin/listingEventImports.ts` | Admin, owner or support dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events; full checklist, per-event resolutions, one transaction and receipt per event |
 | `adminListSupplyIntakePolicies` | `src/admin/supplyIntakePolicies.ts` | Admin, owner or support read the Supply Intake capabilities that wait for the owner's decision, with the decision and whether the policy file switches each on |
 | `adminRefreshOrganizerEvents` | `src/operations/supplyIntake/organizerEventRefresh.ts` | Admin, owner, support or sales staff queue an event refresh for an unclaimed listed organizer, created with its approval; audited, rate-limited and idempotent per caller key |

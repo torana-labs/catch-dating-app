@@ -5,7 +5,6 @@ import type {
   FormHTMLAttributes,
   HTMLAttributes,
   ImgHTMLAttributes,
-  InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
@@ -109,27 +108,6 @@ export function AdminLinkButton({
       {icon}
       {children}
     </a>
-  );
-}
-
-export function FilePickerButton({
-  children,
-  className = "",
-  icon,
-  inputLabel,
-  ...props
-}: {
-  children: ReactNode;
-  className?: string;
-  icon?: ReactNode;
-  inputLabel: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "aria-label" | "type">) {
-  return (
-    <label className={`ghost-button ${className}`.trim()}>
-      {icon}
-      {children}
-      <input aria-label={inputLabel} type="file" {...props} />
-    </label>
   );
 }
 

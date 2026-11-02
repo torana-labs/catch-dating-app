@@ -9,7 +9,7 @@ import {checkSizes, lineCount, sizeCeiling, sizeExemption} from "../test/check_f
 // `// size-exemption: <reason>` comment near its top (shared rules in
 // tool/test/check_flutter_test_size.mjs), and nothing passes the ceiling.
 export const sourceSizeLimit = 800;
-const sourceRoots = /^(?:lib\/|packages\/|widgetbook\/lib\/)/u;
+const sourceRoots = /^(?:lib\/|apps\/[^/]+\/lib\/|packages\/|widgetbook\/lib\/)/u;
 
 export function isHandwrittenSource(file) {
   if (!sourceRoots.test(file) || !file.endsWith(".dart")) return false;

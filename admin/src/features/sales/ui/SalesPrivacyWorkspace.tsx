@@ -1,7 +1,6 @@
-import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchText, CatchFilePickerButton} from "@catch/web-ui";
 import {useQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState} from "react";
-import {FilePickerButton} from "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {searchCanonicalOrganizers} from "../api/salesRepository";
@@ -215,10 +214,8 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
                 setPolicyReference(value);
               }}
               required maxLength={240} inputMode={!canEdit ? "inactive" : "editable"} />
-            <FilePickerButton inputLabel="Choose reviewed policy file" disabled={!canEdit}
-              onChange={(event) => void readPolicyFile(event.target.files?.[0])}>
-              Choose reviewed policy file
-            </FilePickerButton>
+            <CatchFilePickerButton label="Choose reviewed policy file"
+              onChanged={canEdit ? (file) => void readPolicyFile(file ?? undefined) : null} />
             <CatchText as="p" variant="supporting">{hashingBusy ? "Reading the selected policy file locally…" :
               policyFile ? `${policyFile} · SHA-256 checked locally; file not uploaded.` :
               "Choose the exact reviewed policy file. Only its fingerprint is saved."}</CatchText>
