@@ -6,6 +6,7 @@
     "admin",
     "website",
     "packages/web-ui",
+    "packages/web-ui-react18",
     "packages/web-config",
     "packages/brand"
   ],

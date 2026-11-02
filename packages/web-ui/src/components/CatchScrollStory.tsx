@@ -3,6 +3,7 @@
 import {useEffect, useRef, useState, type ReactNode} from "react";
 import type {PaletteAccent} from "./palette";
 import styles from "./CatchScrollStory.module.css";
+import {inertProps} from "./inert";
 
 export interface CatchScrollStoryChapter {
   /** Stable key. */
@@ -165,7 +166,7 @@ export function CatchScrollStory({
               aria-hidden={index !== active}
               className={styles.frame}
               data-active={index === active || undefined}
-              inert={index !== active}
+              {...inertProps(index !== active)}
               key={chapter.id}
             >
               {chapter.media}

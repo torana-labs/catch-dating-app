@@ -1,4 +1,5 @@
 import type {CSSProperties, ReactNode} from "react";
+import {inertProps} from "../components/inert";
 
 /**
  * Story support for the Website v2 components: the approved board captures in
@@ -120,7 +121,7 @@ export function FramedRendering({children, region}: {children: ReactNode; region
       <span style={{display: "block", overflow: "clip", width}}>
         <span style={{display: "block", marginLeft: -x, width: pageWidth}}>
           <PageFrame width={pageWidth}>
-            <div inert style={{marginLeft: x, width}}>{children}</div>
+            <div {...inertProps(true)} style={{marginLeft: x, width}}>{children}</div>
           </PageFrame>
         </span>
       </span>
