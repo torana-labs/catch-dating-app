@@ -18,9 +18,9 @@
   },
   "interactionContractAdoptions": [
     {
-      "id": "organizer_publishing_form",
+      "id": "external_event_takedown_form",
       "concept": "field_row",
-      "source": "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
+      "source": "admin/src/features/events/ui/eventPublishingSupplyPanels.tsx",
       "components": [
         "CheckboxField"
       ]

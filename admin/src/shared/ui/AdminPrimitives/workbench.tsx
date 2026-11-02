@@ -60,20 +60,6 @@ export function AdminToolbar({
 
 
 
-export function AdminWorkbenchNote({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLParagraphElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <p {...props} className={classNames("workbench-note", className)}>
-      {children}
-    </p>
-  );
-}
-
 export function AdminWorkbenchStack({
   alignStart = false,
   children,
@@ -97,26 +83,6 @@ export function AdminWorkbenchStack({
     >
       {children}
     </div>
-  );
-}
-
-export function AdminSecondaryDisclosure({
-  children,
-  className = "",
-  summary,
-  ...props
-}: DetailsHTMLAttributes<HTMLDetailsElement> & {
-  children: ReactNode;
-  summary: ReactNode;
-}) {
-  return (
-    <details
-      {...props}
-      className={classNames("admin-secondary-disclosure", className)}
-    >
-      <summary>{summary}</summary>
-      <div className="admin-secondary-disclosure-content">{children}</div>
-    </details>
   );
 }
 
@@ -183,36 +149,6 @@ export function AdminDetailScreenStack({
 }) {
   return (
     <AdminWorkbenchStack {...props} className={classNames("admin-detail-screen", className)} />
-  );
-}
-
-export function AdminEditorGrid({
-  as = "section",
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  as?: AdminEditorGridElement;
-  children: ReactNode;
-}) {
-  if (as === "div") {
-    return (
-      <div
-        {...props}
-        className={classNames("publishing-editor-grid", className)}
-      >
-        {children}
-      </div>
-    );
-  }
-
-  return (
-    <section
-      {...props}
-      className={classNames("publishing-editor-grid", className)}
-    >
-      {children}
-    </section>
   );
 }
 

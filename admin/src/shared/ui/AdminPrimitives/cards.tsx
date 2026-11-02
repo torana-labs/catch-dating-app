@@ -83,34 +83,6 @@ export function AdminStatGrid({
   return <div className={classNames("marketing-stat-grid", className)}>{children}</div>;
 }
 
-export function AdminDiffList({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return <div className={classNames("diff-list", className)}>{children}</div>;
-}
-
-export function AdminDiffRow({
-  after,
-  before,
-  field,
-}: {
-  after: ReactNode;
-  before: ReactNode;
-  field: ReactNode;
-}) {
-  return (
-    <div className="diff-row">
-      <strong>{field}</strong>
-      <span>{before}</span>
-      <span>{after}</span>
-    </div>
-  );
-}
-
 export function SelectableCardButton({
   children,
   className = "marketing-post-card",
@@ -157,66 +129,3 @@ export function CardHeader({
   );
 }
 
-export function AdminTagRow({
-  as = "div",
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  as?: AdminTagRowElement;
-  children: ReactNode;
-}) {
-  if (as === "span") {
-    return (
-      <span {...props} className={classNames("tag-row", className)}>
-        {children}
-      </span>
-    );
-  }
-
-  return (
-    <div {...props} className={classNames("tag-row", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminRoadmapList({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("roadmap-list", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminRoadmapListItem({
-  actionable = false,
-  children,
-  className = "",
-  tone = "default",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  actionable?: boolean;
-  children: ReactNode;
-  tone?: "default" | "blocker" | "warning";
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames(
-        "roadmap-list-item",
-        actionable && "actionable",
-        tone !== "default" && tone,
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}

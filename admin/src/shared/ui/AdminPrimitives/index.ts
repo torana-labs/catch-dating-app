@@ -7,7 +7,6 @@ export * from "./marketing-shell";
 export * from "./marketing-composer";
 export * from "./marketing-library";
 export * from "./cards";
-export * from "./intake";
 export * from "./marketing-editor";
 export * from "./media";
 export * from "./data";

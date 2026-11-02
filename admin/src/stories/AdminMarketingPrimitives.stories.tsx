@@ -1,4 +1,8 @@
-import {CatchBadge, CatchField} from "@catch/web-ui";
+import {
+  CatchBadge,
+  CatchField,
+  CatchGap,
+} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -81,7 +85,6 @@ import {
   AdminMarketingStudioSummary,
   AdminMarketingStudioSummaryItem,
   AdminMarketingTabs,
-  AdminTagRow,
   AdminPanel,
   AdminStateRow,
   AdminWorkspace,
@@ -706,10 +709,10 @@ export const AdminMarketingLibraryCardStory: Story = {
         eyebrow="Organizer"
         title="Afterfly Social"
       >
-        <AdminTagRow>
+        <CatchGap direction="horizontal" size="inline" wrap>
           <CatchBadge label="claim ready" />
           <CatchBadge recipe="status" tone="success" label="verified" />
-        </AdminTagRow>
+        </CatchGap>
       </AdminMarketingLibraryCard>
     </AdminWorkspace>
   ),

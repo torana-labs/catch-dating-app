@@ -39,6 +39,52 @@
       "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/users renders it. admin/src/features/users/ui/UserAnalyticsScreen.tsx binds the section labels."
     },
     {
+      "id": "shared_admin_metric_card",
+      "kind": "feature-component",
+      "owner": "features/users",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminMetricCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "MetricCardStory",
+        "states": [
+          "card",
+          "tile",
+          "attention",
+          "supporting-copy",
+          "ownership-footer"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: label, value and caption are CatchMetricTile, a member of catch.metric_strip. The footer slot and attention tone have no Flutter counterpart, and Flutter grid data requires an icon admin does not render; Phase 7e reconciles the contract.",
+      "componentId": "catch.metric_strip"
+    },
+    {
+      "id": "shared_admin_metric_grid",
+      "kind": "feature-component",
+      "owner": "features/users",
+      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
+      "exportName": "AdminMetricGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "MetricGridStory",
+        "states": [
+          "default",
+          "attention",
+          "explicit-columns"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: a labelled grid of independent measurements is CatchMetricSection.grid.",
+      "componentId": "catch.metric_strip"
+    },
+    {
       "id": "workspace_user_analytics",
       "kind": "workspace",
       "owner": "features/users",

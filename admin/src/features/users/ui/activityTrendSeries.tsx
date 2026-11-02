@@ -1,7 +1,7 @@
-import {CatchTable, CatchText} from "@catch/web-ui";
+import {CatchSection, CatchTable, CatchText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 
-import {AdminSecondaryDisclosure, AdminWorkbenchStack, EmptyState} from "../../../shared/ui/AdminPrimitives";
+import {AdminWorkbenchStack, EmptyState} from "../../../shared/ui/AdminPrimitives";
 
 interface TrendSeries {
   id: string;
@@ -64,12 +64,12 @@ export function renderActivityTrendSeries({
           ))}
         </figcaption>
       </figure>
-      <AdminSecondaryDisclosure summary="View chart data as a table">
+      <CatchSection dividers="none" title="Chart data as a table">
         <CatchTable<Record<string, string>> label={`${ariaLabel} data`} rowKey="period" density="compact"
           columns={[{key: "period", label: "Period"}, ...series.map((definition) => ({key: definition.id, label: definition.label}))]}
           rows={points.map((point) => ({period: point.label, ...Object.fromEntries(series.map((definition) =>
             [definition.id, String(safeTrendValue(point.values[definition.id]))]))}))} />
-      </AdminSecondaryDisclosure>
+      </CatchSection>
     </AdminWorkbenchStack>
   );
 }

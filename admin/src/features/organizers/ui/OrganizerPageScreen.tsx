@@ -8,6 +8,7 @@ import {
   CatchSection,
   CatchText,
   CatchTopBar,
+  CatchViewport,
   type CatchMetaEntry,
   type CatchSectionStep,
 } from "@catch/web-ui";
@@ -213,23 +214,28 @@ export function OrganizerPageScreen({
   links,
   loadError,
   overview,
-  pageEditor,
+  editor,
   tab,
 }: {
   links: OrganizerPageLinks;
   loadError: string | null;
   overview: OrganizerOverview | null;
-  /** The editor the Page tab shows. */
-  pageEditor: ReactNode;
+  /** The Page tab: its form, what sits beside it, and Discard, Save and Publish. */
+  editor: {main: ReactNode; aside: ReactNode; actions: ReactNode} | null;
   tab: OrganizerPageTab;
 }) {
   const canonicalPath = overview?.organizer.publishStatus === "published" ? overview.organizer.canonicalPath : null;
   const top = (
     <CatchTopBar
-      actions={canonicalPath ? (
-        <CatchButton href={links.publicPageUrl(canonicalPath)} label="Public page" newTab
-          onPressed={() => undefined} size="sm" variant="secondary" />
-      ) : undefined}
+      actions={(
+        <>
+          {canonicalPath ? (
+            <CatchButton href={links.publicPageUrl(canonicalPath)} label="Public page" newTab
+              onPressed={() => undefined} size="sm" variant="secondary" />
+          ) : null}
+          {tab === "page" ? editor?.actions : null}
+        </>
+      )}
       back={{label: "Back to organizers", onPressed: links.onBack}}
       kicker="Organizers"
       title={overview?.organizer.name ?? "Organizer"}
@@ -265,13 +271,16 @@ export function OrganizerPageScreen({
       size="sm"
     />
   );
-  if (tab === "page") {
+  if (tab === "page" && editor) {
+    // Its own viewport keeps Save, the checks and the changes on screen down a long form.
     return (
-      <>
-        {top}
-        {tabs}
-        {pageEditor}
-      </>
+      <CatchViewport fill="parent" register="quiet" topBar={top}>
+        <CatchPaneLayout
+          aside={editor.aside}
+          main={<CatchGap size="section">{tabs}{editor.main}</CatchGap>}
+          pattern="reading"
+        />
+      </CatchViewport>
     );
   }
   const body = tabBody(tab, overview, links);
