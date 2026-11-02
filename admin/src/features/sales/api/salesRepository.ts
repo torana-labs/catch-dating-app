@@ -202,21 +202,6 @@ export async function listSalesOpportunities(
   return pageRows(rows, input.cursor, input.limit ?? 25);
 }
 
-export async function listSalesInboundIntents(
-  input: SalesListInboundIntentsInput
-): Promise<SalesPage<SalesInboundIntent>> {
-  if (dataMode() !== "sample") return call("adminListSalesInboundIntents", input);
-  return {rows: [], nextCursor: null};
-}
-
-export async function linkSalesInboundIntent(
-  input: SalesLinkInboundIntentInput
-): Promise<{intent: SalesInboundIntent; task: SalesTask;
-  activity: SalesActivity; receipt: MutationReceipt}> {
-  if (dataMode() !== "sample") return call("adminLinkSalesInboundIntent", input);
-  throw new Error("Sample mode has no website enquiries to link.");
-}
-
 export async function listSalesCustomFields(): Promise<{
   rows: SalesCustomFieldDefinition[];
 }> {

@@ -54,11 +54,6 @@
       "count": 2
     }
   },
-  "src/features/sales/ui/SalesFitQueueWorkspace.tsx": {
-    "react/forbid-elements": {
-      "count": 3
-    }
-  },
   "src/features/sales/ui/SalesImportedHistoryPanel.tsx": {
     "react/forbid-elements": {
       "count": 4
@@ -71,7 +66,7 @@
   },
   "src/features/sales/ui/SalesWorkspaceScreen.tsx": {
     "react/forbid-elements": {
-      "count": 2
+      "count": 1
     }
   },
   "src/features/users/ui/UserAnalyticsScreen.tsx": {

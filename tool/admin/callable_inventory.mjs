@@ -4,11 +4,11 @@ import path from "node:path";
 /** Shared discovery for the Admin validator generator and catalog parity check. */
 export function adminCallableNames(source) {
   const direct = [...source.matchAll(/\(\s*functions,\s*["'](admin[A-Z][A-Za-z0-9]+)["']\s*\)/gu)];
-  const wrappers = [...source.matchAll(/\bcall(?:<[^;()]+>)?\s*\(\s*["'](admin[A-Z][A-Za-z0-9]+)["']/gu)];
+  const wrappers = [...source.matchAll(/\bcall(?:<[^()]+>)?\s*\(\s*["'](admin[A-Z][A-Za-z0-9]+)["']/gu)];
   // A callable named before the admin prefix existed (for example
   // manageCommercialTerms) is an admin callable when the console reaches it
   // through the validated invokeAdminCallable boundary.
-  const named = [...source.matchAll(/\binvokeAdminCallable(?:<[^;()]+>)?\s*\(\s*["']([a-z][A-Za-z0-9]+)["']/gu)];
+  const named = [...source.matchAll(/\binvokeAdminCallable(?:<[^()]+>)?\s*\(\s*["']([a-z][A-Za-z0-9]+)["']/gu)];
   return [...new Set([...direct, ...wrappers, ...named].map(match => match[1]))].sort();
 }
 

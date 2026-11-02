@@ -116,3 +116,13 @@ test("the checked-in gates validate and every measure runs on this tree", () => 
   }
   assert.ok(rows.every((row) => row.gate.baseline?.date), "every gate records its starting value");
 });
+
+test("a planned T1 contract is not web debt until its first code lands", () => {
+  const planned = {id: "catch.toast", tier: "T1", status: "planned"};
+  const measures = registryMeasures({components: [planned]}, []);
+  assert.deepEqual(measures.t1WithoutStyledReact, []);
+  assert.deepEqual(measures.t1WithoutCatalogParity, []);
+  const active = registryMeasures({components: [{...planned, status: "active", dart: {symbol: "CatchToast"}}]}, []);
+  assert.deepEqual(active.t1WithoutStyledReact, ["catch.toast"]);
+  assert.deepEqual(active.t1WithoutCatalogParity, ["catch.toast"]);
+});

@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {
-  listSalesAccounts, listSalesInboundIntents, listSalesOpportunities,
+  listSalesAccounts, listSalesOpportunities,
   listSalesTasks, updateSalesAccount,
 } from "./salesRepository";
 
@@ -32,9 +32,6 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("Sales callable wire payloads", () => {
   it.each([
-    ["inbound enquiries", () => listSalesInboundIntents({limit: 25,
-      cursor: undefined, status: "needs_identity_review"}),
-    {limit: 25, status: "needs_identity_review"}],
     ["hosts", () => listSalesAccounts({limit: 25, cursor: undefined,
       query: undefined, ownerUid: undefined, researchStatus: undefined}),
     {limit: 25}],
