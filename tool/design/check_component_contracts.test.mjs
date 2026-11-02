@@ -35,3 +35,13 @@ test("component paths reject test, tool and unrelated package sources", () => {
   assert.equal(isComponentSourcePath("packages/catch_ui/lib/../test/example.dart"), false);
   assert.equal(isProductionWidgetDartPath("packages/catch_ui/lib/../test/example.dart"), false);
 });
+
+test("only a planned record may omit dart", () => {
+  const validate = new Ajv2020({allErrors: true, strict: false}).compile({...schema.$defs.component, $defs: schema.$defs});
+  const missingDart = (status) => {
+    validate({id: "catch.x", status});
+    return (validate.errors ?? []).some((error) => error.params?.missingProperty === "dart");
+  };
+  assert.equal(missingDart("active"), true);
+  assert.equal(missingDart("planned"), false);
+});
