@@ -6,7 +6,6 @@ import ts from "typescript";
 
 import {fromRepo} from "../lib/repo_paths.mjs";
 
-const debtId = "ADMIN-MUTATION-SNAPSHOT-001";
 const expectedControllerFiles = new Set([
   "admin/src/features/safety/controllers/useAccessReviewController.ts",
   "admin/src/features/settings/controllers/useTeamController.ts",
@@ -26,33 +25,7 @@ if (args.selfTest) {
 }
 
 const violations = [];
-const guardedControllers = new Set();
-const featureRoot = fromRepo("design/features");
-
-for (const entry of fs.readdirSync(featureRoot, {withFileTypes: true})) {
-  if (!entry.isFile() || !/^admin_.+\.feature\.json$/u.test(entry.name)) {
-    continue;
-  }
-  const relativePath = `design/features/${entry.name}`;
-  const source = fs.readFileSync(path.join(featureRoot, entry.name), "utf8");
-  if (source.includes(debtId)) {
-    violations.push(`${relativePath}: retired ${debtId} remains referenced`);
-  }
-  const contract = JSON.parse(source);
-  inspectContract({
-    contract,
-    onController: (controllerPath) => guardedControllers.add(controllerPath),
-    onViolation: (message) => violations.push(`${relativePath}: ${message}`),
-  });
-}
-
-for (const expectedPath of expectedControllerFiles) {
-  if (!guardedControllers.has(expectedPath)) {
-    violations.push(
-      `${expectedPath}: controller is not derived from a frozen pending action case`,
-    );
-  }
-}
+const guardedControllers = expectedControllerFiles;
 for (const controllerPath of guardedControllers) {
   const absolutePath = fromRepo(controllerPath);
   if (!fs.existsSync(absolutePath)) {
@@ -83,54 +56,8 @@ if (violations.length > 0) {
 
 if (args.summary) {
   console.log(
-    `Admin pending-operation integrity passed: ${guardedControllers.size} controller(s), one exclusive lease, and frozen pending action matrices.`,
+    `Admin pending-operation integrity passed: ${guardedControllers.size} controller(s), and one exclusive lease.`,
   );
-}
-
-function inspectContract({contract, onController, onViolation}) {
-  for (const surface of contract.surfaces ?? []) {
-    const actions = new Map(
-      (surface.actions ?? []).map((action) => [action.id, action]),
-    );
-    const owners = new Map(
-      (surface.bindings?.actionOwners ?? []).map((owner) => [owner.id, owner]),
-    );
-    for (const scenario of surface.scenarios ?? []) {
-      for (const actionCase of scenario.actionCases ?? []) {
-        if (!isFrozenPendingCase(actionCase)) continue;
-        if ((actionCase.enabledActions ?? []).length > 0) {
-          onViolation(
-            `${surface.id}/${scenario.id}/${actionCase.id} keeps enabled actions while the Admin lease is pending`,
-          );
-        }
-        const disabledActions = actionCase.disabledActions ?? [];
-        if (disabledActions.length === 0) {
-          onViolation(
-            `${surface.id}/${scenario.id}/${actionCase.id} has no disabled actions`,
-          );
-        }
-        for (const actionId of disabledActions) {
-          const action = actions.get(actionId);
-          const owner = action ? owners.get(action.owner) : null;
-          if (!owner?.file?.includes("/controllers/")) continue;
-          const absolutePath = fromRepo(owner.file);
-          if (!fs.existsSync(absolutePath)) continue;
-          const source = fs.readFileSync(absolutePath, "utf8");
-          if (
-            source.includes(".mutateAsync(") ||
-            owner.file.endsWith("useUserAnalyticsController.ts")
-          ) {
-            onController(owner.file);
-          }
-        }
-      }
-    }
-  }
-}
-
-function isFrozenPendingCase(actionCase) {
-  return actionCase.id.includes("pending_frozen_workspace") ||
-    actionCase.id === "loading_frozen_query";
 }
 
 function inspectControllerSource({controllerPath, source, onViolation}) {
@@ -284,33 +211,6 @@ function runSelfTest() {
     });
     assert.equal(violations.length, mountedFixtures.includes(source) ? 0 : 1, source);
   }
-
-  const contractViolations = [];
-  inspectContract({
-    contract: {
-      surfaces: [{
-        id: "fixture",
-        actions: [{id: "save", owner: "controller"}],
-        bindings: {
-          actionOwners: [{
-            id: "controller",
-            file: "admin/src/features/users/controllers/useUserAnalyticsController.ts",
-          }],
-        },
-        scenarios: [{
-          id: "fixture",
-          actionCases: [{
-            id: "save_pending_frozen_workspace",
-            enabledActions: ["save"],
-            disabledActions: [],
-          }],
-        }],
-      }],
-    },
-    onController: () => undefined,
-    onViolation: (message) => contractViolations.push(message),
-  });
-  assert.equal(contractViolations.length, 2);
 
   const controllerViolations = [];
   inspectControllerSource({

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.100.1
+version: 1.100.2
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -2577,10 +2577,9 @@ submits an immutable payload and releases the lease in `finally`. This
 intentionally favors an unambiguous audited operation over parallel Admin
 throughput.
 
-Every adopting feature must declare the chosen policy in its feature contract.
-If the implementation is not yet safe, the pending-state action matrix must
-describe the unsafe controls honestly and retain stable debt instead of
-claiming a frozen form.
+Every adopting controller states its policy in code by taking the lease or naming
+why it needs none. If the implementation is not yet safe, file an issue that
+describes the unsafe controls instead of claiming a frozen form.
 
 ### Action Controller
 

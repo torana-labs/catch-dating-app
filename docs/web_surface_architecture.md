@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.48.2
+version: 0.48.3
 updated: 2026-11-02
 owner: web_platform
 status: active
@@ -345,57 +345,12 @@ DNS alone cannot select a URL path.
 
 ## Cross-Surface Feature Identity
 
-A feature contract in `design/features/` can assign one semantic feature id
-to multiple runtime projections when the user outcome is genuinely shared—for
-example organizer discovery or organizer detail. It does not make Flutter and
-React share a UI runtime: each projection keeps its own screen/route authority,
-components, action symbols, evidence, and implementation tests.
-
-`feature.explore` is the first compiled cross-runtime contract: its consumer
-projection binds `screen.explore.discovery`, while its marketing projection
-binds the `organizer_search` route and the URL-owned
-`useOrganizerDirectoryController`. The projections share feature identity and
-product intent, not UI code or state vocabulary.
-
-The marketing migration now compiles every stateful public route. Marketing
-Home and Host Acquisition remain website-only identities because conversion
-and acquisition are different user goals from consumer or Host app operation.
-Organizer Claim owns both `/claim/` and the dynamic lookup projection because
-they use the same controller and outcome but retain different exact route-state
-inventories. The legacy organizer listing remains grouped under canonical
-Organizer Detail because it adds static canonical/noindex behavior, not another
-interactive workflow. Static legal/support and 404 routes remain explicit
-exclusions rather than synthetic zero-action product features.
-
-The Admin migration compiles all 15 registered route authorities across 13
-feature identities. Access Review, Role Management, Cross Paths Showcase,
-Data Quality, Event Publishing, Finance Operations, Growth KPI, Marketing
-Operations, Organizer
-Publishing, Safety Triage, and User Analytics each use one route projection.
-Intake and Overview each use two because Organizer Intake and the live Overview
-controller wrapper own independently reviewable states and actions. No Admin
-authority remains planned or grouped.
-
-Marketing Home and Host Acquisition now share the versioned
-`contracts/http/join_waitlist_{request,response}.schema.json` boundary with the
-Function. The schema generator emits website and Functions types plus runtime
-schema projections; browser responses and Functions requests/responses are
-validated, including the legacy `runner` role compatibility case. Pending
-request snapshots remain a separate, closed concern for Marketing: waitlist,
-Host application, and Claim use the frozen-snapshot policy from
-`ARCH-PENDING-SNAPSHOT-001`, including request-defining controls, steps, auth,
-sibling forms, shared route links, and browser exit.
-
-Admin applies a whole-console frozen-snapshot policy to operator writes and
-submitted analytics queries. `AdminPendingOperationProvider` grants one
-synchronous exclusive lease across all controllers; while held, the complete
-workspace, Admin navigation, shared links, and browser unload are blocked.
-Controllers capture their request payload before dispatch and release the lease
-in `finally`, so visible inputs cannot drift from the audited request and peer
-operations cannot overlap. The compiled Admin action matrices disable every
-surface action in those pending states. This deliberately trades small amounts
-of operator throughput for deterministic receipts and unambiguous recovery.
-
+One user outcome can appear in several runtimes, such as organizer discovery in
+the consumer app and on the website. That doesn't make Flutter and React share a
+UI runtime: each keeps its own screen or route, components, action symbols,
+evidence and tests. Nothing records this link formally; the screen registry
+(`design/screens/catch.screens.json`) and website route registry
+(`design/website/routes.json`) own each side.
 
 ## Organizer Entity Boundary
 

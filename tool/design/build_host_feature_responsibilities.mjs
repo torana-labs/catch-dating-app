@@ -17,7 +17,6 @@ const shellManifestPath = fromRepo(
   "design/source_packs/host-v2/host-coverage-manifest.json",
 );
 const routeContractPath = fromRepo("lib/routing/route_contract.dart");
-const featureContractRoot = fromRepo("design/features");
 const expectedFeatureIds = ["today", "events", "audience", "inbox", "organizer"];
 const generatedNotice =
   "<!-- GENERATED FROM design/features/host_feature_responsibilities.json. DO NOT EDIT. -->";
@@ -108,7 +107,6 @@ async function runCli() {
     contract,
     shellManifest: readJson(shellManifestPath),
     routes: parseDartRoutes(fs.readFileSync(routeContractPath, "utf8")),
-    featureContracts: loadFeatureContracts(),
     pathExists: (repoPath) => fs.existsSync(fromRepo(repoPath)),
     readText: (repoPath) => fs.readFileSync(fromRepo(repoPath), "utf8"),
   });
@@ -161,7 +159,6 @@ export function validateAndResolveHostFeatureResponsibilities({
   contract,
   shellManifest,
   routes,
-  featureContracts,
   pathExists,
   readText,
 }) {
@@ -233,56 +230,6 @@ export function validateAndResolveHostFeatureResponsibilities({
     const codeOwners = [];
     const dataContracts = new Set(feature.additionalDataContracts);
     const seenOwnerIds = new Set();
-    for (const binding of feature.featureContractBindings) {
-      const featureContract = featureContracts.get(binding.contractId);
-      if (featureContract == null) {
-        errors.push(`${label}: unknown feature contract ${binding.contractId}.`);
-        continue;
-      }
-      const surface = (featureContract.surfaces ?? []).find(
-        (candidate) => candidate.id === binding.surfaceId,
-      );
-      if (surface == null) {
-        errors.push(
-          `${label}: ${binding.contractId} has no surface ${binding.surfaceId}.`,
-        );
-        continue;
-      }
-      const ownersById = new Map(
-        (surface.bindings?.actionOwners ?? []).map((owner) => [owner.id, owner]),
-      );
-      for (const ownerId of binding.actionOwnerIds) {
-        const owner = ownersById.get(ownerId);
-        if (owner == null) {
-          errors.push(
-            `${label}: ${binding.contractId}.${binding.surfaceId} has no action owner ${ownerId}.`,
-          );
-          continue;
-        }
-        const actionIds = (surface.actions ?? [])
-          .filter((action) => action.owner === ownerId)
-          .map((action) => action.id);
-        addCodeOwner({
-          owner: {
-            ...owner,
-            role: actionIds.length > 0
-              ? `Feature-contract actions: ${actionIds.join(", ")}.`
-              : `Structural owner from ${binding.contractId}.`,
-          },
-          label,
-          errors,
-          codeOwners,
-          seenOwnerIds,
-          pathExists,
-          readText,
-        });
-      }
-      if (binding.includeDataContracts) {
-        for (const dataContract of surface.bindings?.dataContracts ?? []) {
-          dataContracts.add(dataContract);
-        }
-      }
-    }
     for (const owner of feature.additionalCodeOwners) {
       addCodeOwner({
         owner: {...owner, language: "dart"},
@@ -435,7 +382,7 @@ export function renderHostFeatureReadme({contract, feature}) {
     "```",
     "",
     "The generator cross-checks the Host shell order, typed route contract, " +
-      "feature-contract action owners, Dart symbols, data-contract paths, and focused tests.",
+      "Dart symbols, data-contract paths, and focused tests.",
     ...renderGuideMaintenance(feature),
   ];
   return `${lines.join("\n")}\n`;
@@ -685,16 +632,6 @@ function renderDocumentationImpact(report) {
   ].join("\n");
 }
 
-function loadFeatureContracts() {
-  const contracts = new Map();
-  for (const name of fs.readdirSync(featureContractRoot).sort()) {
-    if (!name.endsWith(".feature.json")) continue;
-    const featureContract = readJson(path.join(featureContractRoot, name));
-    contracts.set(featureContract.id, featureContract);
-  }
-  return contracts;
-}
-
 function readJson(filePath) {
   try {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -742,7 +679,7 @@ function printHelp() {
   node tool/design/build_host_feature_responsibilities.mjs --affected audience --base <git-ref> [--json]
 
 Validates the five ordered Host destination responsibilities against the shell,
-route contract, feature contracts, Dart symbols, data contracts, and tests, then
+route contract, Dart symbols, data contracts, and tests, then
 generates one local README.md in each destination's target feature root.
 Explain prints only the product guide and schema facts. Affected compares the
 base commit with tracked working changes and untracked, non-ignored files.

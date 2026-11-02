@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.3.1
+version: 0.3.2
 updated: 2026-11-02
 owner: product_design_parity
 status: active
@@ -20,14 +20,10 @@ previews, and drift-prevention checks.
 | `host_shell_route_ui_audit.md` | Extensible route-by-checklist audit matrix for the Host shell destinations, with source-backed findings and reproducible compact, medium, expanded, and 200% text-scale captures. Add a destination by appending one column. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
 | `composition_migration_spec.md` | Layered implementation spec for migrating screens into controller-owned state composition, registered sections, registered components, and platform-neutral design tokens/contracts. |
-| `../../design/features/event_detail.feature.json` | Current Event Detail surface, state, action, outcome, and evidence orchestration. |
 | `design/screens/screen_coverage.json` | Exhaustive route-to-screen design-parity lifecycle ledger. Its schema admits planned work, while the zero-debt composition gate accepts no planned route. |
 | `design/screens/catch.screens.json` | Machine-readable screen composition registry connecting routes, controller owners, states, captures, sections, implementation paths, and typed route-layout owners. |
-| `design/features/*.feature.json` | Structured multi-surface feature orchestration contracts. Each surface binds a Flutter screen, marketing route, or admin route plus native components, action owners, and evidence. |
-| `design/features/generated/*.feature_contract.json` | Generated cross-surface state/action/evidence projections. These artifacts are deterministic and must not be edited by hand. |
-| `design/features/host_feature_responsibilities.json` | Ordered responsibility and migration contract for Today, Events, Audience, Inbox, and Organizer. It resolves existing feature-contract action owners instead of duplicating their behavior. |
+| `design/features/host_feature_responsibilities.json` | Ordered responsibility and migration contract for Today, Events, Audience, Inbox, and Organizer. It names existing action owners instead of duplicating their behavior. |
 | `tool/design/check_design_parity.mjs` | Standard local design parity gate. Runs component contracts, route inventory, capture coverage, screen coverage, screen contracts, Widgetbook refs, and advisory scanners. |
-| `tool/design/build_feature_contracts.mjs` | Compiles multi-surface feature sources, enforces exact authority-state coverage and action cardinality, resolves runtime-native evidence, and fails stale generated output. |
 | `tool/design/build_host_feature_responsibilities.mjs` | Validates the five Host owners against shell order, routes, code symbols, contracts, and tests, then generates their local `lib/hosts/*/README.md` overviews. |
 | `tool/design/check_screen_coverage.mjs` | Validates screen coverage against route inventory, capture coverage, and the screen composition registry. |
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
@@ -219,295 +215,30 @@ role-derived coverage. The interactive comparison UI is served by
 classification registry, and canonical decision logs. Do not commit generated
 coverage reports or rebuild a parallel static comparison page.
 
-## Feature Contract Compiler
+## Modelling Screens And Actions
 
-Feature contracts are orchestration indexes, not replacement sources of truth.
-They declare one semantic feature identity with one or more runtime-specific
-surface projections. Each surface declares valid state dimensions, cardinality
-for explicit action domains, and one mapping for every state in its owning
-screen or route contract. It references native component ids, action-owner
-symbols, data-contract paths, previews, captures, and tests; the compiler
-resolves those authorities into one checked generated artifact.
+Per-feature contract files lived here until 2 Nov 2026. Screen and route
+registries still own state inventories, tests and captures own the evidence, and
+these lessons from building those contracts still apply:
 
-A feature identity can span runtimes. `feature.explore` is the first checked
-example: it contains both `screen.explore.discovery` and the
-marketing `organizer_search` route, while their components, action owners,
-states, and evidence remain runtime-specific.
-
-All 32 registered Flutter screens are now covered. Event Detail with its exact-location projection, Explore, Dashboard Home,
-Event Success, Host Home, Host Organizers, Host Organizer Create, Host Event
-Create, Host Event Manage with its owner-edit projection, Host Inbox, Catches
-Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile,
-Organizer Detail, Phone Authentication, Member Onboarding with its Start
-Welcome projection, Event Planning, Matching Preferences, Event Recap,
-Notifications, Reviews, Payments, and Account Settings are the current Flutter
-reference contracts. Marketing Home, Host Acquisition, and Organizer Claim
-complete the stateful marketing routes, while Explore and Organizer Detail
-retain their existing marketing projections. Organizer Detail is the first
-three-surface reference:
-consumer Flutter, host Flutter, and the canonical marketing listing share one
-semantic feature identity while retaining separate actions and state
-inventories.
-
-All 14 registered Admin route authorities are also compiled across 12 feature
-identities: Access Review, Role Management, Data Quality, Event Publishing,
-Finance Operations, Growth KPI, Intake, Marketing Operations, Organizer
-Publishing, Overview, Safety Triage, and User Analytics. Intake and Overview
-each retain two projections because their secondary route components expose
-independent state and actions; they are not flattened into grouped coverage.
-Admin route previews are resolved from `design/admin/components/` just as
-marketing route previews are resolved from the website registry.
-
-Actions name one of the surface's declared Dart or TypeScript owners, so a
-larger feature may compose multiple action domains without pretending one enum
-or controller owns everything. Action outcomes are typed as local surface
-states, route destinations, or side effects. A read-only surface may declare no
-actions or action owners; the format never requires fabricated behavior.
-
-A coordinated workspace may bind several route projections to one authority
-when users experience them as one feature. Host Organizers is the reference:
-Edit, Insights, Preview, Event Defaults, Live Guide, Payments, Team, and host
-identity retain separate action owners and states inside one feature contract.
-Do not split a feature merely because a spoke has its own URL, and do not merge
-routes whose state or actions do not share a coherent user goal.
-
-A filtered route can also be a projection of a broader workspace even when it
-uses a different screen class. Saved Events is a saved-only view of the same
-planned-event agenda, organizer-name enrichment, and Event Detail handoff as
-Calendar, so both belong to Event Planning. A shared widget is useful evidence,
-but the deciding test is shared user goal plus overlapping data and action
-semantics—not class identity alone.
-
-The Host top-level responsibility contract is a narrower architecture index
-over this graph. It does not replace `feature.host_home`,
-`feature.host_customers`, `feature.host_inbox`, or
-`feature.host_organizers`; it selects their existing action owners into the
-five destination boundaries and adds only currently uncontracted transitional
-owners such as Forms and Applications. Generated local READMEs therefore stay
-useful during A3-A5 without pretending that target folders already own code
-which still lives under `lib/hosts/presentation/`.
-
-Do not infer actions from repository capabilities. Saved Events has a
-`SavedEventRepository` in its authority metadata, but the list route exposes no
-save or unsave control; its contract contains only back, recovery, and event
-navigation actions. Mutations remain with Event Detail until production UI
-actually exposes them.
-
-Cardinalize meaningful user decisions and side effects, not raw field-entry
-events. Host Event Create and Host Organizer Create are the references: wizard
-movement, media and location selection, typed organizer/activity/policy/guide
-choices, draft lifecycle, submission, and success navigation are explicit
-actions; text entry remains form data governed by field validators and data
-schemas. This keeps action coverage complete without treating every keystroke
-as a separate contract operation.
-
-A child route should keep its own internal actions when it is already a
-registered authority. Event Detail owns opening its exact-location projection;
-Event Location Map owns route recovery, back navigation, and external
-directions. A fullscreen modal that is not that registered route must not borrow
-its authority merely because both involve maps. Host Event Edit actually opens
-`LocationPickerScreen`, so its contract owns that modal result locally and no
-longer claims an Event Location Map transition. This preserves typed route edges
-without making one authority describe a different production screen.
-
-Dependency fallback is not automatically a valid data state. Event Recap now
-separates attendee-profile loading, failure, and resolved absence; Payment
-History does the same for event-title enrichment; Notifications keeps identity
-failure distinct from resolved sign-out; and Matching Preferences replaces its
-resolved null-profile blank body with branded recovery. Reviews History remains
-the open secondary-enrichment adopter. A feature contract should expose every
-collapse as debt instead of calling an unresolved dependency a successful empty
-or fallback state, then retain separate states after the implementation closes
-that debt.
-The same rule applies to external effects: requesting directions or opening an
-external settings link is not complete merely because a Future was started.
-The owning route must await the result, give the action a visible pending state,
-reject duplicate or conflicting actions at the declared cardinality, and show
-honest feedback for both a false platform result and a thrown failure. Event
-Location Map and Account Settings are the current Flutter reference adopters.
-Their pending and failure outcomes, together with Event Recap profile
-enrichment, Notifications identity failure, and Payment History event-title
-enrichment, now have deterministic route captures and Widgetbook previews
-where the registered feature contracts require them.
-
-Action names describe observed outcomes rather than promising more than the
-implementation does. Payment History therefore contracts its current support
-CTA as `show_support_guidance`: How to get help with this booking closes the
-sheet and displays actionable receipt-ID guidance, but it does not claim to
-open a support channel. A future channel may change both the implementation and
-contract together; prose alone must not upgrade the outcome.
-
-Action availability must describe production behavior, including unsafe
-behavior. Host Organizer Create and Host Event Edit now use frozen request
-snapshots: route dismissal and every request-defining form decision are
-disabled during submit/save, and controller-level deduplication prevents a
-programmatic duplicate from starting a second operation.
-Phone Authentication is now the frozen-snapshot reference: phone and country
-controls disable while the request is pending, duplicate controller dispatches
-share one future, and flow reset invalidates stale Firebase callbacks. Treat
-every control that can mutate, dismiss, or invalidate an in-flight snapshot as
-part of the pending action matrix, even when the primary button itself is
-disabled. Versioned editing and independently keyed concurrency remain explicit
-tested variants under `ARCH-PENDING-SNAPSHOT-001`, not implicit exceptions.
-Member Onboarding, Matching Preferences, Host Organizer Create, Host Event
-Edit, Reviews, Account Settings, and Marketing forms are promoted adopters.
-Onboarding freezes
-step-back plus identity, prompt, and running-preference controls; Matching
-Preferences freezes route exit, reset, age, gender, and apply; Host Organizer
-Create freezes route, steps, media, fields, defaults, and footer actions; Host
-Event Edit freezes route and the complete form. Reviews freezes rating,
-comment, both writes, and sheet dismissal. Account Settings freezes every
-route, recovery, external, preference, unblock, delete, and sign-out action
-while any mutation is pending. Their controller/state/widget proof prevents
-duplicate or overlapping writes from drifting away from the visible snapshot.
-Marketing waitlist, Host application, and Claim flows freeze their complete
-form, step, auth, sibling-form, shared-link, and browser-exit boundary; focused
-controller and UI tests prove one request and one visible snapshot until
-settlement.
-Admin uses one console-wide exclusive operation lease for every contracted
-write and submitted analytics query. The shared provider freezes the complete
-workspace, navigation, links, and browser unload; controller guards reject
-same-tick peer operations, and the pending action matrices disable every
-surface action until settlement. This closes `ADMIN-MUTATION-SNAPSHOT-001`
-without pretending independently keyed concurrency exists.
-
-When two registered surfaces use the same production implementation and differ
-only by viewer policy, prefer separate projections in one feature contract.
-Chat Thread is the reference: consumer and host routes both render
-`ChatScreen`, while each projection keeps its own states, action availability,
-evidence, and profile/share/safety policy. Shared code alone is insufficient if
-the user goals differ; Host Inbox remains separate because event scoping,
-audience segmentation, and broadcasts are host operations rather than thread
-behavior.
-
-The same rule applies when one implementation serves two registered entry
-points for the same user goal. `OnboardingWelcomeBody` is both the onboarding welcome
-state and the logged-out Start route, so Member Onboarding owns two projections
-instead of creating a duplicate Start feature. Reuse the same semantic action
-ids across such projections when the user decision and production callback are
-the same; keep separate state inventories and evidence for each authority.
-
-Implemented UI is not necessarily reachable product behavior. Member
-Onboarding records the Instagram step with an explicit `orphaned` reachability
-dimension and a stable screen gap because no production entry mode or forward
-transition currently reaches it. Do not silently present previewed or captured
-states as live-flow coverage; either prove a route transition or classify the
-state as unreachable debt.
-
-Flutter preview evidence may use the stable annotated Widgetbook builder id or
-the `Type/Use case name` identity. Prefer the builder id when the same builder
-is intentionally annotated for several component types, because the generated
-Widgetbook registry uses that builder as their shared evidence seam.
-
-Action owners may be Dart classes, enums, or top-level functions. The compiler
-validates each declared symbol directly, so route helpers such as
-`openNotificationRoute` remain attributed to their real production owner
-instead of being reassigned to a nearby class merely to satisfy the contract.
-
-An action whose owner exists but whose runtime callback is not connected may be
-declared with `implementationStatus: known_gap`, stable debt, and a concrete
-source note. The action must still be classified, but the compiler rejects any
-scenario that enables it. Generated actions without an explicit status project
-as `implemented`. This prevents a contract from turning an existing controller
-method into a false claim that the user-facing action works.
-
-For state-rich surfaces, use the compact state matrix: `stateIds` must list the
-authority's exact state inventory, `scenarioDefaults` declares the repeated
-dimension/action case once, and `scenarioOverrides` records only meaningful
-differences. The compiler expands this into the same generated scenario
-projection and rejects missing, unknown, duplicate, or out-of-inventory state
-overrides. This keeps source contracts reviewable without allowing a newly
-registered state to pass silently.
-
-React route review states do not always use the same vocabulary as Storybook
-component states. `bindings.previewEvidence` may map an authority state to a
-selected registry preview such as `component_id/StoryExport`; the compiler
-checks that the component belongs to the route, the story source is declared,
-and the preview is part of the selected marketing or Admin component registry.
-Admin route wrappers whose registry preview is explicitly `not-required` may
-bind controller tests instead of inventing a visual state. This makes the
-relationship explicit without renaming either authority. Static-output tests
-under `website/scripts/*.test.mjs` may provide test evidence for indexing and
-canonical metadata states that cannot be meaningfully shown in Storybook.
-
-Grouped route coverage is appropriate only when the secondary authority adds
-no independent workflow state worth compiling. Organizer Claim binds both the
-canonical `/claim/` workspace and its dynamic lookup route because the latter
-has its own exact known, missing, pending, and unavailable state inventory.
-The legacy organizer-listing family stays grouped because its only differences
-are canonical/noindex static-output policy already proved by route tests.
-Admin Intake and Overview do not qualify for grouping: Organizer Intake has
-three independently reviewable states, and the live Overview wrapper has its
-own query lifecycle and actions, so both compile as explicit projections.
-
-A feature orchestration contract must cite the actual network boundary rather
-than nearby Firestore or analytics schemas. Marketing Home and Host Acquisition
-now bind the shared `/api/join-waitlist` request and response schemas; generated
-website and Functions types plus runtime validators make those references
-executable.
-
-An Admin callable binding must also state validation strength rather than
-treating every generated validator as equivalent. `bindings.runtimeContracts`
-names the callable and declares request and response validation separately as
-`strict_schema` or `structural_object`. The compiler compares those values with
-the registry `admin/scripts/generateCallableValidators.mjs` builds and rejects both
-overclaiming and stale underclaiming. Structural validation is real boundary
-protection, but it is not a field-level request/response schema. The prioritized
-overview, access-decision, role, safety, and marketing mutation directions now
-compile as `strict_schema`; remaining structural bindings continue to say so
-explicitly. Pending-operation integrity is separately enforced by the
-Admin-wide frozen-snapshot lease and the compiled pending action matrices.
-
-## Structural Lessons From Full Coverage
-
-The complete Flutter, marketing, and Admin migration establishes the feature
-contract as a coordination layer rather than a new monolithic source of truth.
-The feature contract owns semantic feature identity and the checked links among
-runtime projections. Screen and route registries continue to own state
-inventories; component registries own reusable UI and previews; data schemas
-own payload shape; production controllers own behavior; and tests and captures
-own evidence. Duplicating any of those details in the feature contract would
-create a second authority instead of preventing drift.
-
-A durable feature boundary follows a coherent user goal plus overlapping data
-and action semantics, not a route, widget, or class boundary. One feature may
-therefore contain several route projections, while two routes that share an
-implementation may remain separate when their viewer policy or operational
-goal differs. This is why Organizer Detail spans three runtimes, Host
-Organizers contains several workspace spokes, and Host Inbox remains distinct
-from the shared Chat Thread implementation.
-
-The preferred implementation seam is now explicit: registered authority to
-controller-owned state, provider-free view composition, typed action outcome,
-and native evidence. Contracts revealed risk wherever production collapses
-loading, missing, and failed dependencies into one state; leaves peer controls
-active after a mutation snapshot; or exposes a runtime boundary with only
-structural-object validation. Those are architectural debts in the code, not
-conditions the contract should hide.
-
-New tooling should extend this graph by resolving existing authorities and
-validation strength. It should not generate product behavior from prose or
-replace specialist schemas. That separation keeps the format deterministic
-while allowing the application structure to improve independently.
-
-Required evidence stays strict. A real missing capture, preview, or test may be
-admitted only through an explicit evidence exception tied to a stable open debt
-id. The compiler rejects missing exceptions and also rejects stale exceptions
-after the evidence is added. Compile and verify the contracts with:
-
-```bash
-node tool/design/build_feature_contracts.mjs
-node tool/design/build_feature_contracts.mjs --check
-```
-
-The compiler fails duplicate surfaces or authority bindings, runtime/authority
-mismatches, duplicate or missing authority-state mappings, unknown action owner,
-action, outcome, route, or dimension values, enabled known-gap actions,
-undeclared Dart/TypeScript symbols, missing component/data paths, missing
-capture/preview/test evidence, Admin callable or validation-strength drift,
-unused evidence exceptions, stale output, and
-orphaned generated artifacts. Natural-language
-briefs may inform a contract draft, but only the reviewed JSON source is
-executable. Flutter widgets, controllers, business algorithms, security rules,
-and migrations remain manually implemented and tested against their owning
-contracts.
+- **Feature boundaries follow a user goal.** Group routes that share a user goal
+  and overlapping data and actions, not a route, widget or class. A shared
+  widget alone doesn't make one feature, and a separate URL alone doesn't split one.
+- **Don't infer actions from capabilities.** A repository that can save doesn't
+  mean the screen offers saving. Describe what production UI exposes.
+- **Record decisions, not keystrokes.** Wizard moves, submissions and side effects
+  are actions; text entry is form data governed by validators and schemas.
+- **A failed dependency isn't an empty state.** Keep loading, failure and resolved
+  absence separate rather than falling back as if the data were simply missing.
+- **External effects finish when they finish.** Await directions or settings links,
+  show a pending state, refuse duplicates, and report both a false result and a throw.
+- **Name actions for what they do.** `show_support_guidance` closes a sheet and
+  shows guidance, so it doesn't claim to open a support channel.
+- **Freeze what a pending request depends on.** Every control that can change,
+  dismiss or invalidate an in-flight request counts, even when the primary button
+  is disabled. `PENDING-SNAPSHOT-001` owns the rule; Admin uses one console-wide
+  lease that `tool/web/check_admin_pending_operations.mjs` checks.
+- **Implemented isn't reachable.** A previewed state with no route to it is
+  unreachable debt, not live-flow coverage.
+- **Two entry points, one decision.** When one implementation serves two routes
+  for the same goal, keep their state lists separate and reuse the action names.

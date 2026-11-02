@@ -1,6 +1,6 @@
 ---
 doc_id: action_cardinality_policy
-version: 1.1.1
+version: 1.1.2
 updated: 2026-11-02
 owner: product_architecture
 status: active
@@ -90,8 +90,10 @@ to build with one item.
 
 ## Open Work Queue
 
-- `ACC-001` (closed): `ACTION-CARDINALITY-001` on `design:feature-contracts` in
-  `../tool/tools_manifest.json` owns the active rule.
+- `ACC-001` (closed): this policy owns `ACTION-CARDINALITY-001`. Declare each
+  user-visible action's scope and cardinality; singleton actions render their
+  resulting state and are enforced server-side, and unbounded ones support zero,
+  one and many.
 - `ACC-002`: Build an action inventory from backend callables and primary UI
   CTAs, then keep it current like the backend operation catalog.
 - `ACC-003`: Continue auditing rapid repeated taps on singleton mutation

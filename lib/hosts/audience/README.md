@@ -173,15 +173,15 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Feature-contract actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
-| `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | Feature-contract actions: search_saved_audiences, open_saved_audience_detail. |
-| `HostSavedAudienceEditorScreen` | `lib/hosts/presentation/customers/host_saved_audience_editor.dart` | Feature-contract actions: save_saved_audience, archive_saved_audience. |
-| `HostAddCustomerScreen` | `lib/hosts/presentation/customers/host_customer_editor.dart` | Structural owner from feature.host_customers. |
-| `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Feature-contract actions: load_more. |
-| `HostCustomersController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Feature-contract actions: export_customers, create_customer, manage_customer, start_conversation. |
-| `HostCustomerDetailScreen` | `lib/hosts/presentation/customers/host_customer_detail_screen.dart` | Feature-contract actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
-| `HostCustomerMemorySection` | `lib/hosts/presentation/customers/host_customer_memory_section.dart` | Feature-contract actions: edit_contact_tags, create_contact_note, edit_contact_note. |
-| `HostContactMergeReviewSheet` | `lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart` | Feature-contract actions: decide_duplicate_customer. |
+| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
+| `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | Actions: search_saved_audiences, open_saved_audience_detail. |
+| `HostSavedAudienceEditorScreen` | `lib/hosts/presentation/customers/host_saved_audience_editor.dart` | Actions: save_saved_audience, archive_saved_audience. |
+| `HostAddCustomerScreen` | `lib/hosts/presentation/customers/host_customer_editor.dart` | Structural owner. |
+| `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: load_more. |
+| `HostCustomersController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: export_customers, create_customer, manage_customer, start_conversation. |
+| `HostCustomerDetailScreen` | `lib/hosts/presentation/customers/host_customer_detail_screen.dart` | Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
+| `HostCustomerMemorySection` | `lib/hosts/presentation/customers/host_customer_memory_section.dart` | Actions: edit_contact_tags, create_contact_note, edit_contact_note. |
+| `HostContactMergeReviewSheet` | `lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart` | Actions: decide_duplicate_customer. |
 | `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
 | `HostFormsScreen` | `lib/hosts/presentation/forms/host_forms_screen.dart` | Forms and Responses route composition inside Audience. |
 | `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Organizer form inventory state. |
@@ -261,7 +261,7 @@ node tool/design/build_host_feature_responsibilities.mjs
 node tool/design/build_host_feature_responsibilities.mjs --check
 ```
 
-The generator cross-checks the Host shell order, typed route contract, feature-contract action owners, Dart symbols, data-contract paths, and focused tests.
+The generator cross-checks the Host shell order, typed route contract, Dart symbols, data-contract paths, and focused tests.
 
 Product answers live in this feature's `guide` in the same responsibility contract. Edit that source, never the generated README. Update the guide date when its explanation changes. To retrieve the guide or review change impact:
 
