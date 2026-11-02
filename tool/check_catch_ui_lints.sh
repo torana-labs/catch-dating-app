@@ -1272,6 +1272,7 @@ apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|4|const gaps = [Si
 apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|2|SizedBox gap(bool wide) => SizedBox(height: wide ? 8 : 12);
 apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const pad = Padding(padding: EdgeInsets.all(8));
 apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|7|const pads = [EdgeInsets.only(top: 8), EdgeInsets.symmetric(horizontal: 1), EdgeInsets.fromLTRB(0, 8, 0, 8), EdgeInsetsDirectional.only(start: 0)];
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const inset = EdgeInsetsGeometry.all(8);
 apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const column = Column(spacing: 8);
 apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const row = Row(spacing: 8);
 apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const at = Positioned(top: 8, child: SizedBox.shrink());

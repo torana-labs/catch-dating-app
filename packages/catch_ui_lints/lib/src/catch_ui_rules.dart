@@ -742,7 +742,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         ],
       );
     }
-    if (isZeroDrawingPath) {
+    if (isZeroDrawingPath &&
+        !currentPath.endsWith('.g.dart') &&
+        !currentPath.endsWith('.freezed.dart')) {
       _reportNewRootSites(
         node,
         namedTextSites.map((site) => site.node).toSet(),

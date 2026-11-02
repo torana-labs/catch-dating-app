@@ -36,7 +36,7 @@ class _NewRootSites extends RecursiveAstVisitor<void> {
     if (!_isFlutterElement(constructor)) return;
     final typeName = _constructorTypeName(node);
     if (_rawTextConstructors.contains(typeName)) rawText.add(node);
-    if (typeName != 'SizedBox' && !_isEdgeInsetsConstructor(typeName)) return;
+    if (typeName != 'SizedBox' && !_isNewRootInsetConstructor(typeName)) return;
     // Every number counts here, however small: EdgeInsets.zero and
     // SizedBox.shrink say nothing instead.
     for (final argument in node.argumentList.arguments) {
@@ -57,7 +57,7 @@ class _NewRootSites extends RecursiveAstVisitor<void> {
     final ownsItsNumbers =
         owner is InstanceCreationExpression &&
         (_constructorTypeName(owner) == 'SizedBox' ||
-            _isEdgeInsetsConstructor(_constructorTypeName(owner)));
+            _isNewRootInsetConstructor(_constructorTypeName(owner)));
     if (!ownsItsNumbers) _collectNumbers(node.expression, keepZero: false);
   }
 
@@ -79,6 +79,10 @@ class _NumberLiterals extends RecursiveAstVisitor<void> {
   @override
   void visitDoubleLiteral(DoubleLiteral node) => found.add(node);
 }
+
+// EdgeInsetsGeometry.all(8) is the same number by a third name.
+bool _isNewRootInsetConstructor(String typeName) =>
+    typeName.startsWith('EdgeInsets');
 
 bool _isNotZero(Literal literal) => switch (literal) {
   IntegerLiteral(:final value) => value != 0,
