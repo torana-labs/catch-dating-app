@@ -9,7 +9,9 @@
       "id": "today",
       "destination": "hostToday",
       "primaryRouteId": "hostTodayScreen",
-      "ownedRouteIds": ["hostTodayScreen"],
+      "ownedRouteIds": [
+        "hostTodayScreen"
+      ],
       "handoffRouteIds": [
         "hostEventsScreen",
         "hostAppEventManageScreen",
@@ -35,23 +37,47 @@
         "CRM segmentation, form authoring, messaging workflows, organizer settings, payout onboarding behavior, or rehearsal runtime internals.",
         "A generic notification feed or speculative reminders derived from null setup fields, unread messages, aggregate counts, or zero staff grants."
       ],
-      "currentRoots": ["lib/hosts/today"],
-      "featureContractBindings": [
+      "currentRoots": [
+        "lib/hosts/today"
+      ],
+      "additionalCodeOwners": [
         {
-          "contractId": "feature.host_home",
-          "surfaceId": "host_flutter",
-          "actionOwnerIds": [
-            "today_route",
-            "today_body",
-            "today_attention_model",
-            "today_attention_repository",
-            "today_feed",
-            "host_shell"
-          ],
-          "includeDataContracts": false
+          "id": "today_route",
+          "file": "lib/hosts/today/presentation/host_today_screen.dart",
+          "symbol": "HostTodayScreen",
+          "role": "Actions: sign_in, open_operational_event, open_attention_task, start_dress_rehearsal."
+        },
+        {
+          "id": "today_body",
+          "file": "lib/hosts/today/presentation/widgets/host_today_body.dart",
+          "symbol": "HostTodayBody",
+          "role": "Structural owner."
+        },
+        {
+          "id": "today_attention_model",
+          "file": "lib/contexts/insights/domain/host_attention_item.dart",
+          "symbol": "HostAttentionProjection",
+          "role": "Structural owner."
+        },
+        {
+          "id": "today_attention_repository",
+          "file": "lib/contexts/insights/data/host_attention_repository.dart",
+          "symbol": "HostAttentionRepository",
+          "role": "Structural owner."
+        },
+        {
+          "id": "today_feed",
+          "file": "lib/hosts/today/presentation/host_today_feed_controller.dart",
+          "symbol": "HostTodayFeedController",
+          "role": "Structural owner."
+        },
+        {
+          "id": "host_shell",
+          "file": "lib/routing/shell/host_app_shell.dart",
+          "symbol": "HostAppShell",
+          "role": "Actions: switch_organizer."
         }
       ],
-      "additionalCodeOwners": [],
       "additionalDataContracts": [
         "contracts/callable_responses/list_organizer_attention_items_response.schema.json",
         "contracts/callables/list_organizer_attention_items_payload.schema.json",
@@ -88,7 +114,9 @@
       "id": "events",
       "destination": "hostEvents",
       "primaryRouteId": "hostEventsScreen",
-      "ownedRouteIds": ["hostEventsScreen"],
+      "ownedRouteIds": [
+        "hostEventsScreen"
+      ],
       "handoffRouteIds": [
         "hostCreateEventScreen",
         "hostCreateProgramScreen",
@@ -114,23 +142,46 @@
         "Constituent Program function, guest, team, lodging, transport, or operational workspace behavior.",
         "CRM, Forms, Inbox, Organizer, or global shell state."
       ],
-      "currentRoots": ["lib/hosts/events"],
-      "featureContractBindings": [
-        {
-          "contractId": "feature.host_home",
-          "surfaceId": "host_flutter",
-          "actionOwnerIds": [
-            "events_route",
-            "workspace",
-            "event_entry_flow",
-            "events_list",
-            "events_timeline",
-            "host_shell"
-          ],
-          "includeDataContracts": false
-        }
+      "currentRoots": [
+        "lib/hosts/events"
       ],
       "additionalCodeOwners": [
+        {
+          "id": "events_route",
+          "file": "lib/hosts/events/presentation/host_events_screen.dart",
+          "symbol": "HostEventsScreen",
+          "role": "Actions: retry_host_home."
+        },
+        {
+          "id": "workspace",
+          "file": "lib/hosts/events/presentation/host_events_screen.dart",
+          "symbol": "HostEventsRouteScaffold",
+          "role": "Actions: create_organizer, manage_event."
+        },
+        {
+          "id": "event_entry_flow",
+          "file": "lib/hosts/events/presentation/host_event_entry_flow.dart",
+          "symbol": "runHostEventEntryFlow",
+          "role": "Actions: create_event, repeat_event."
+        },
+        {
+          "id": "events_list",
+          "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
+          "symbol": "HostEventsOrganizerCard",
+          "role": "Actions: retry_host_events, open_program."
+        },
+        {
+          "id": "events_timeline",
+          "file": "lib/hosts/events/presentation/host_events_timeline_controller.dart",
+          "symbol": "HostEventsTimelineController",
+          "role": "Actions: load_more_schedule, load_more_history, retry_event_history."
+        },
+        {
+          "id": "host_shell",
+          "file": "lib/routing/shell/host_app_shell.dart",
+          "symbol": "HostAppShell",
+          "role": "Actions: switch_organizer."
+        },
         {
           "id": "program_create_screen",
           "file": "lib/programs/presentation/program_create_screen.dart",
@@ -202,7 +253,10 @@
         "hostApplicationDetailScreen",
         "hostCustomerDetailScreen"
       ],
-      "handoffRouteIds": ["hostInboxScreen", "hostAppEventDetailScreen"],
+      "handoffRouteIds": [
+        "hostInboxScreen",
+        "hostAppEventDetailScreen"
+      ],
       "targetRoot": "lib/hosts/audience",
       "migrationStatus": "targetDefinedLegacyImplementation",
       "purpose": "Own the participant relationship system as one destination: People, saved Audiences, Forms, and unified Responses review, with shared organizer scope and deliberate handoff to Inbox for delivery.",
@@ -405,25 +459,61 @@
         "lib/hosts/presentation/forms",
         "lib/hosts/presentation/applications"
       ],
-      "featureContractBindings": [
-        {
-          "contractId": "feature.host_customers",
-          "surfaceId": "host_flutter",
-          "actionOwnerIds": [
-            "customers_screen",
-            "audiences_workspace",
-            "audience_editor",
-            "customer_create",
-            "customers_directory",
-            "customers_mutations",
-            "customer_detail",
-            "customer_memory",
-            "customer_merge_review"
-          ],
-          "includeDataContracts": true
-        }
-      ],
       "additionalCodeOwners": [
+        {
+          "id": "customers_screen",
+          "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
+          "symbol": "HostCustomersScreen",
+          "role": "Actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers."
+        },
+        {
+          "id": "audiences_workspace",
+          "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
+          "symbol": "HostSavedAudiencesWorkspace",
+          "role": "Actions: search_saved_audiences, open_saved_audience_detail."
+        },
+        {
+          "id": "audience_editor",
+          "file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
+          "symbol": "HostSavedAudienceEditorScreen",
+          "role": "Actions: save_saved_audience, archive_saved_audience."
+        },
+        {
+          "id": "customer_create",
+          "file": "lib/hosts/presentation/customers/host_customer_editor.dart",
+          "symbol": "HostAddCustomerScreen",
+          "role": "Structural owner."
+        },
+        {
+          "id": "customers_directory",
+          "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+          "symbol": "HostCustomersDirectoryController",
+          "role": "Actions: load_more."
+        },
+        {
+          "id": "customers_mutations",
+          "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
+          "symbol": "HostCustomersController",
+          "role": "Actions: export_customers, create_customer, manage_customer, start_conversation."
+        },
+        {
+          "id": "customer_detail",
+          "file": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+          "symbol": "HostCustomerDetailScreen",
+          "role": "Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff."
+        },
+        {
+          "id": "customer_memory",
+          "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
+          "symbol": "HostCustomerMemorySection",
+          "role": "Actions: edit_contact_tags, create_contact_note, edit_contact_note."
+        },
+        {
+          "id": "customer_merge_review",
+          "file": "lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart",
+          "symbol": "HostContactMergeReviewSheet",
+          "role": "Actions: decide_duplicate_customer."
+        },
         {
           "id": "audience_view",
           "file": "lib/hosts/presentation/host_audience_view.dart",
@@ -475,7 +565,43 @@
         "contracts/firestore/organizer_form_versions.schema.json",
         "contracts/firestore/organizer_forms.schema.json",
         "contracts/shared/organizer_form_common.schema.json",
-        "contracts/shared/organizer_form_response_common.schema.json"
+        "contracts/shared/organizer_form_response_common.schema.json",
+        "contracts/callable_responses/create_organizer_contact_response.schema.json",
+        "contracts/callable_responses/export_organizer_contacts_response.schema.json",
+        "contracts/callable_responses/get_organizer_contact_detail_response.schema.json",
+        "contracts/callable_responses/list_organizer_contacts_response.schema.json",
+        "contracts/callable_responses/list_organizer_contact_merge_candidates_response.schema.json",
+        "contracts/callable_responses/mutate_organizer_contact_response.schema.json",
+        "contracts/callable_responses/organizer_contact_note_response.schema.json",
+        "contracts/callable_responses/review_organizer_contact_merge_candidate_response.schema.json",
+        "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
+        "contracts/callable_responses/list_organizer_saved_audiences_response.schema.json",
+        "contracts/callable_responses/organizer_saved_audience_response.schema.json",
+        "contracts/callable_responses/preview_organizer_saved_audience_response.schema.json",
+        "contracts/callables/create_organizer_contact_payload.schema.json",
+        "contracts/callables/export_organizer_contacts_payload.schema.json",
+        "contracts/callables/get_organizer_contact_detail_payload.schema.json",
+        "contracts/callables/list_organizer_contacts_payload.schema.json",
+        "contracts/callables/list_organizer_contact_merge_candidates_payload.schema.json",
+        "contracts/callables/mutate_organizer_contact_payload.schema.json",
+        "contracts/callables/create_organizer_contact_note_payload.schema.json",
+        "contracts/callables/mutate_organizer_contact_note_payload.schema.json",
+        "contracts/callables/start_organizer_contact_conversation_payload.schema.json",
+        "contracts/callables/review_organizer_contact_merge_candidate_payload.schema.json",
+        "contracts/callables/list_organizer_saved_audiences_payload.schema.json",
+        "contracts/callables/upsert_organizer_saved_audience_payload.schema.json",
+        "contracts/callables/preview_organizer_saved_audience_payload.schema.json",
+        "contracts/callables/archive_organizer_saved_audience_payload.schema.json",
+        "contracts/firestore/organizer_contact_channel_states.schema.json",
+        "contracts/firestore/organizer_contact_event_edges.schema.json",
+        "contracts/firestore/organizer_contact_merge_receipts.schema.json",
+        "contracts/firestore/organizer_contact_merge_review_decisions.schema.json",
+        "contracts/firestore/organizer_contact_notes.schema.json",
+        "contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
+        "contracts/firestore/organizer_contact_traits.schema.json",
+        "contracts/firestore/organizer_contacts.schema.json",
+        "contracts/firestore/organizer_saved_audiences.schema.json",
+        "contracts/firestore/payments.schema.json"
       ],
       "sharedDependencies": [
         {
@@ -507,8 +633,14 @@
       "id": "inbox",
       "destination": "hostInbox",
       "primaryRouteId": "hostInboxScreen",
-      "ownedRouteIds": ["hostInboxScreen", "hostOrganizerMessagingScreen"],
-      "handoffRouteIds": ["hostChatScreen", "hostAudienceScreen"],
+      "ownedRouteIds": [
+        "hostInboxScreen",
+        "hostOrganizerMessagingScreen"
+      ],
+      "handoffRouteIds": [
+        "hostChatScreen",
+        "hostAudienceScreen"
+      ],
       "targetRoot": "lib/hosts/inbox",
       "migrationStatus": "targetDefinedLegacyImplementation",
       "purpose": "Own organizer communication work: inquiry conversations, WhatsApp threads, outbound Sends, saved-audience consumption, delivery operations, and sender-readiness recovery.",
@@ -524,31 +656,127 @@
         "Event lifecycle management, organizer profile/settings, or payment-account onboarding.",
         "The shared Consumer/Host chat message implementation when a dedicated chat route owns it."
       ],
-      "currentRoots": ["lib/hosts/presentation/inbox"],
-      "featureContractBindings": [
+      "currentRoots": [
+        "lib/hosts/presentation/inbox"
+      ],
+      "additionalCodeOwners": [
         {
-          "contractId": "feature.host_inbox",
-          "surfaceId": "host_flutter",
-          "actionOwnerIds": [
-            "inbox_screen",
-            "search_header",
-            "search_query",
-            "broadcast_composer",
-            "broadcast_controller",
-            "sends_workspace",
-            "manual_send_queue",
-            "follower_update_composer",
-            "messaging_setup_screen",
-            "whatsapp_setup",
-            "campaign_composer",
-            "campaign_controller",
-            "whatsapp_thread"
-          ],
-          "includeDataContracts": true
+          "id": "inbox_screen",
+          "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+          "symbol": "HostInboxScreen",
+          "role": "Actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation."
+        },
+        {
+          "id": "search_header",
+          "file": "lib/chats/presentation/inbox/chats_search_header_controller.dart",
+          "symbol": "ChatsSearchHeaderController",
+          "role": "Actions: toggle_search."
+        },
+        {
+          "id": "search_query",
+          "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+          "symbol": "ChatSearchQuery",
+          "role": "Actions: search_inquiries."
+        },
+        {
+          "id": "broadcast_composer",
+          "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+          "symbol": "HostBroadcastComposerSheet",
+          "role": "Actions: select_broadcast_audience, select_broadcast_template."
+        },
+        {
+          "id": "broadcast_controller",
+          "file": "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
+          "symbol": "HostInboxBroadcastController",
+          "role": "Actions: send_broadcast."
+        },
+        {
+          "id": "sends_workspace",
+          "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+          "symbol": "_HostSendsPageBodySliverState",
+          "role": "Actions: open_event_announcement_composer."
+        },
+        {
+          "id": "manual_send_queue",
+          "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
+          "symbol": "HostManualSendList",
+          "role": "Actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks."
+        },
+        {
+          "id": "follower_update_composer",
+          "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
+          "symbol": "showHostFollowerUpdateComposer",
+          "role": "Actions: send_follower_update."
+        },
+        {
+          "id": "messaging_setup_screen",
+          "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
+          "symbol": "HostMessagingSetupScreen",
+          "role": "Structural owner."
+        },
+        {
+          "id": "whatsapp_setup",
+          "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+          "symbol": "HostWhatsappSetupSection",
+          "role": "Actions: manage_whatsapp_sender."
+        },
+        {
+          "id": "campaign_composer",
+          "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
+          "symbol": "HostCampaignEditor",
+          "role": "Structural owner."
+        },
+        {
+          "id": "campaign_controller",
+          "file": "lib/hosts/presentation/host_audience_controller.dart",
+          "symbol": "HostAudienceController",
+          "role": "Actions: manage_campaign."
+        },
+        {
+          "id": "whatsapp_thread",
+          "file": "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart",
+          "symbol": "HostWhatsappThreadSheet",
+          "role": "Actions: open_whatsapp_thread, send_whatsapp_reply."
         }
       ],
-      "additionalCodeOwners": [],
-      "additionalDataContracts": [],
+      "additionalDataContracts": [
+        "contracts/callable_responses/organizer_campaign_response.schema.json",
+        "contracts/callable_responses/create_organizer_post_response.schema.json",
+        "contracts/callable_responses/list_organizer_campaigns_response.schema.json",
+        "contracts/callable_responses/list_organizer_whatsapp_threads_response.schema.json",
+        "contracts/callable_responses/get_organizer_whatsapp_thread_response.schema.json",
+        "contracts/callable_responses/organizer_messaging_setup_response.schema.json",
+        "contracts/callable_responses/send_event_broadcast_response.schema.json",
+        "contracts/callable_responses/send_organizer_whatsapp_reply_response.schema.json",
+        "contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json",
+        "contracts/callables/create_organizer_post_payload.schema.json",
+        "contracts/callables/list_organizer_campaigns_payload.schema.json",
+        "contracts/callables/list_organizer_whatsapp_threads_payload.schema.json",
+        "contracts/callables/get_organizer_whatsapp_thread_payload.schema.json",
+        "contracts/callables/organizer_campaign_action_payload.schema.json",
+        "contracts/callables/send_organizer_whatsapp_test_payload.schema.json",
+        "contracts/callables/send_event_broadcast_payload.schema.json",
+        "contracts/callables/send_organizer_whatsapp_reply_payload.schema.json",
+        "contracts/callables/upsert_organizer_campaign_payload.schema.json",
+        "contracts/callables/list_organizer_manual_send_tasks_payload.schema.json",
+        "contracts/callables/open_organizer_manual_send_task_payload.schema.json",
+        "contracts/callables/mark_organizer_manual_send_task_payload.schema.json",
+        "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
+        "contracts/firestore/organizers.schema.json",
+        "contracts/firestore/event_broadcasts.schema.json",
+        "contracts/firestore/event_participations.schema.json",
+        "contracts/firestore/events.schema.json",
+        "contracts/firestore/matches.schema.json",
+        "contracts/firestore/organizer_campaign_recipients.schema.json",
+        "contracts/firestore/organizer_broadcast_summaries.schema.json",
+        "contracts/firestore/organizer_campaign_webhook_receipts.schema.json",
+        "contracts/firestore/organizer_campaigns.schema.json",
+        "contracts/firestore/organizer_posts.schema.json",
+        "contracts/firestore/organizer_manual_send_tasks.schema.json",
+        "contracts/firestore/organizer_whatsapp_threads.schema.json",
+        "contracts/firestore/organizer_whatsapp_messages.schema.json",
+        "contracts/firestore/organizer_whatsapp_reply_operations.schema.json"
+      ],
       "sharedDependencies": [
         {
           "path": "lib/chats/presentation/inbox",
@@ -607,32 +835,120 @@
         "lib/hosts/presentation/organizer_management",
         "lib/hosts/presentation/payments"
       ],
-      "featureContractBindings": [
+      "additionalCodeOwners": [
         {
-          "contractId": "feature.host_organizers",
-          "surfaceId": "host_flutter",
-          "actionOwnerIds": [
-            "route_screen",
-            "workspace",
-            "edit_tab",
-            "edit_controller",
-            "spoke_resolver",
-            "defaults_saver",
-            "insights",
-            "payout_adapter",
-            "payout_controller",
-            "team_screen",
-            "team_section",
-            "team_controller",
-            "profile_controller",
-            "auth_controller",
-            "host_shell"
-          ],
-          "includeDataContracts": true
+          "id": "route_screen",
+          "file": "lib/hosts/presentation/host_operations/host_organizers_screen.dart",
+          "symbol": "HostOrganizersScreen",
+          "role": "Actions: sign_in, retry_organizer_workspace."
+        },
+        {
+          "id": "workspace",
+          "file": "lib/hosts/presentation/host_operations/host_organizers_scaffold.dart",
+          "symbol": "HostOrganizersScaffold",
+          "role": "Actions: create_organizer, select_workspace_tab."
+        },
+        {
+          "id": "edit_tab",
+          "file": "lib/hosts/presentation/host_operations/host_organizer_edit_body.dart",
+          "symbol": "HostOrganizerEditBody",
+          "role": "Actions: open_organizer_setting."
+        },
+        {
+          "id": "edit_controller",
+          "file": "lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart",
+          "symbol": "HostOrganizerEditController",
+          "role": "Actions: update_organizer, update_organizer_media."
+        },
+        {
+          "id": "spoke_resolver",
+          "file": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
+          "symbol": "HostOrganizerSpokeAsyncBoundary",
+          "role": "Actions: retry_organizer_setting."
+        },
+        {
+          "id": "defaults_saver",
+          "file": "lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart",
+          "symbol": "HostOrganizerDefaultsSaver",
+          "role": "Actions: save_event_defaults."
+        },
+        {
+          "id": "insights",
+          "file": "lib/hosts/presentation/host_operations/host_organizer_insights_section.dart",
+          "symbol": "HostOrganizerInsightsSection",
+          "role": "Actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events."
+        },
+        {
+          "id": "payout_adapter",
+          "file": "lib/hosts/presentation/payments/host_payment_account_controller_card.dart",
+          "symbol": "HostPaymentAccountControllerCard",
+          "role": "Actions: retry_payout_account."
+        },
+        {
+          "id": "payout_controller",
+          "file": "lib/hosts/presentation/payments/host_payment_account_controller.dart",
+          "symbol": "HostPaymentAccountController",
+          "role": "Actions: start_payout_onboarding, refresh_payout_status."
+        },
+        {
+          "id": "team_screen",
+          "file": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
+          "symbol": "HostOrganizerTeamScreen",
+          "role": "Actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace."
+        },
+        {
+          "id": "team_section",
+          "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+          "symbol": "HostTeamManagementSection",
+          "role": "Structural owner."
+        },
+        {
+          "id": "team_controller",
+          "file": "lib/hosts/presentation/organizer_management/host_team_management_controller.dart",
+          "symbol": "HostTeamManagementController",
+          "role": "Actions: add_host, remove_host, transfer_organizer_ownership."
+        },
+        {
+          "id": "profile_controller",
+          "file": "lib/hosts/presentation/host_profile_controller.dart",
+          "symbol": "HostProfileController",
+          "role": "Actions: create_host_profile, save_host_profile."
+        },
+        {
+          "id": "auth_controller",
+          "file": "lib/auth/presentation/auth_session_controller.dart",
+          "symbol": "AuthSessionController",
+          "role": "Actions: sign_out."
+        },
+        {
+          "id": "host_shell",
+          "file": "lib/routing/shell/host_app_shell.dart",
+          "symbol": "HostAppShell",
+          "role": "Actions: switch_organizer."
         }
       ],
-      "additionalCodeOwners": [],
-      "additionalDataContracts": [],
+      "additionalDataContracts": [
+        "contracts/callables/add_organizer_manager_payload.schema.json",
+        "contracts/callables/create_razorpay_host_payment_account_payload.schema.json",
+        "contracts/callables/create_stripe_host_onboarding_link_payload.schema.json",
+        "contracts/callables/get_organizer_crm_summary_payload.schema.json",
+        "contracts/callables/host_analytics_query_payload.schema.json",
+        "contracts/callables/refresh_razorpay_host_payment_account_payload.schema.json",
+        "contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",
+        "contracts/callables/remove_organizer_manager_payload.schema.json",
+        "contracts/callables/transfer_organizer_ownership_payload.schema.json",
+        "contracts/callables/update_organizer_payload.schema.json",
+        "contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
+        "contracts/firestore/organizers.schema.json",
+        "contracts/firestore/event_attendees.schema.json",
+        "contracts/firestore/host_analytics_snapshots.schema.json",
+        "contracts/firestore/host_payment_accounts.schema.json",
+        "contracts/firestore/host_profiles.schema.json",
+        "contracts/firestore/organizer_team_memberships.schema.json",
+        "contracts/firestore/organizer_communication_preferences.schema.json",
+        "contracts/storage/organizer_logo_images.schema.json",
+        "contracts/storage/organizer_photos.schema.json"
+      ],
       "sharedDependencies": [
         {
           "path": "lib/contexts/organizers/data/organizers_repository.dart",

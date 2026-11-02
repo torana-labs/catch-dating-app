@@ -53,10 +53,7 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
   const scanner = productionManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
   // The graph suite derives and reconciles this scope from frozen feature cases.
   const inputs = productionGraph.classifications.find((entry) => entry.id === "admin-pending-input").paths.include;
-  // The frozen feature cases are already Tools-lane design inputs, so only the
-  // controller closure needs the graph classification.
-  const featureCases = "design/features/admin_*.feature.json";
-  assert.deepEqual([...scanner.impactPaths].sort(), [...inputs, featureCases].sort());
+  assert.deepEqual([...scanner.impactPaths].sort(), [...inputs].sort());
   assert.ok(scanner.checks.includes("node tool/web/check_admin_pending_operations.mjs --self-test"));
   assert.ok(scanner.checks.includes("node tool/web/check_admin_pending_operations.mjs --check --summary"));
   const cat50Paths = [
@@ -142,9 +139,8 @@ test("widget variants stay narrow while their comparison consumer closes safely"
   });
   assert.equal(widgetbookPlan.mode, "affected");
   assert.equal(widgetbookPlan.repositoryView, "full");
-  // Feature contracts validate their Widgetbook bindings with root-installed Ajv.
-  assert.deepEqual(widgetbookPlan.setupRequirements, ["node", "root-npm"]);
-  for (const id of ["design:widget-variant-inventory", "design:feature-contracts",
+  assert.deepEqual(widgetbookPlan.setupRequirements, ["node"]);
+  for (const id of ["design:widget-variant-inventory",
     "design:widgetbook-contract-refs", "design:section-headers"]) {
     assert.ok(widgetbookPlan.toolIds.includes(id), id);
   }
@@ -239,12 +235,6 @@ const consumedInputs = new Map([
     ["web:storybook-visuals"]],
   ["artifacts/marketing/app-screenshots/host-live-console.png", ["marketing:app-media-sync",
     "marketing:app-screenshot-export", "marketing:hosted-capture-export"]],
-  ["design/features/event_detail.feature.json", ["design:feature-contracts",
-    "design:host-feature-responsibilities", "design:screen-contracts"]],
-  ["design/features/admin_finance_ops.feature.json", ["agent:harness-v2", "design:feature-contracts",
-    "web:admin-pending-operations"]],
-  ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
-    "design:screen-contracts"]],
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
     "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
   ["tool/data/lib/recompute_cli_test_support.mjs", ["data:repair-club-hosts",

@@ -39,7 +39,6 @@ const routeIds = [
 function fixture() {
   const existing = new Set(["lib/shared.dart"]);
   const sourceByPath = new Map();
-  const featureContracts = new Map();
   const routes = new Map([
     [
       "hostSharedScreen",
@@ -61,21 +60,6 @@ function fixture() {
       path: `/host/${id}`,
       audience: "host",
     });
-    featureContracts.set(`feature.${id}`, {
-      id: `feature.${id}`,
-      surfaces: [
-        {
-          id: "host_flutter",
-          bindings: {
-            actionOwners: [
-              {id: "screen", file: ownerFile, symbol, language: "dart"},
-            ],
-            dataContracts: [dataContract],
-          },
-          actions: [{id: "open", owner: "screen"}],
-        },
-      ],
-    });
     return {
       id,
       destination: destinations[index],
@@ -90,16 +74,10 @@ function fixture() {
       responsibilities: [`Own ${id}.`],
       doesNotOwn: [`Exclude non-${id}.`],
       currentRoots: [currentRoot],
-      featureContractBindings: [
-        {
-          contractId: `feature.${id}`,
-          surfaceId: "host_flutter",
-          actionOwnerIds: ["screen"],
-          includeDataContracts: true,
-        },
+      additionalCodeOwners: [
+        {id: "screen", file: ownerFile, symbol, role: "Actions: open."},
       ],
-      additionalCodeOwners: [],
-      additionalDataContracts: [],
+      additionalDataContracts: [dataContract],
       sharedDependencies: [
         {path: "lib/shared.dart", reason: "Shared fixture dependency."},
       ],
@@ -120,7 +98,6 @@ function fixture() {
       })),
     },
     routes,
-    featureContracts,
     pathExists: (repoPath) => existing.has(repoPath),
     readText: (repoPath) => sourceByPath.get(repoPath) ?? "",
   };
@@ -139,9 +116,7 @@ test("accepts exactly five ordered Host feature owners and renders local docs", 
 test("rejects route ownership, action-owner, and symbol drift", () => {
   const input = fixture();
   input.contract.features[1].ownedRouteIds = [routeIds[0], routeIds[1]];
-  input.contract.features[2].featureContractBindings[0].actionOwnerIds = [
-    "missing_owner",
-  ];
+  input.contract.features[2].additionalCodeOwners[0].file = "lib/missing_owner.dart";
   input.readText = () => "class WrongSymbol {}";
   assert.throws(
     () => validateAndResolveHostFeatureResponsibilities(input),

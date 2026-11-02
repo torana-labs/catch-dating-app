@@ -53,21 +53,21 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostOrganizersScreen` | `lib/hosts/presentation/host_operations/host_organizers_screen.dart` | Feature-contract actions: sign_in, retry_organizer_workspace. |
-| `HostOrganizersScaffold` | `lib/hosts/presentation/host_operations/host_organizers_scaffold.dart` | Feature-contract actions: create_organizer, select_workspace_tab. |
-| `HostOrganizerEditBody` | `lib/hosts/presentation/host_operations/host_organizer_edit_body.dart` | Feature-contract actions: open_organizer_setting. |
-| `HostOrganizerEditController` | `lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart` | Feature-contract actions: update_organizer, update_organizer_media. |
-| `HostOrganizerSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart` | Feature-contract actions: retry_organizer_setting. |
-| `HostOrganizerDefaultsSaver` | `lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart` | Feature-contract actions: save_event_defaults. |
-| `HostOrganizerInsightsSection` | `lib/hosts/presentation/host_operations/host_organizer_insights_section.dart` | Feature-contract actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
-| `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart` | Feature-contract actions: retry_payout_account. |
-| `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart` | Feature-contract actions: start_payout_onboarding, refresh_payout_status. |
-| `HostOrganizerTeamScreen` | `lib/hosts/presentation/host_operations/host_organizer_team_screen.dart` | Feature-contract actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |
-| `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner from feature.host_organizers. |
-| `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Feature-contract actions: add_host, remove_host, transfer_organizer_ownership. |
-| `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Feature-contract actions: create_host_profile, save_host_profile. |
-| `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Feature-contract actions: sign_out. |
-| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Feature-contract actions: switch_organizer. |
+| `HostOrganizersScreen` | `lib/hosts/presentation/host_operations/host_organizers_screen.dart` | Actions: sign_in, retry_organizer_workspace. |
+| `HostOrganizersScaffold` | `lib/hosts/presentation/host_operations/host_organizers_scaffold.dart` | Actions: create_organizer, select_workspace_tab. |
+| `HostOrganizerEditBody` | `lib/hosts/presentation/host_operations/host_organizer_edit_body.dart` | Actions: open_organizer_setting. |
+| `HostOrganizerEditController` | `lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart` | Actions: update_organizer, update_organizer_media. |
+| `HostOrganizerSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart` | Actions: retry_organizer_setting. |
+| `HostOrganizerDefaultsSaver` | `lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart` | Actions: save_event_defaults. |
+| `HostOrganizerInsightsSection` | `lib/hosts/presentation/host_operations/host_organizer_insights_section.dart` | Actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
+| `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart` | Actions: retry_payout_account. |
+| `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart` | Actions: start_payout_onboarding, refresh_payout_status. |
+| `HostOrganizerTeamScreen` | `lib/hosts/presentation/host_operations/host_organizer_team_screen.dart` | Actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |
+| `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner. |
+| `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
+| `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
+| `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Actions: sign_out. |
+| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies
 
@@ -116,4 +116,4 @@ node tool/design/build_host_feature_responsibilities.mjs
 node tool/design/build_host_feature_responsibilities.mjs --check
 ```
 
-The generator cross-checks the Host shell order, typed route contract, feature-contract action owners, Dart symbols, data-contract paths, and focused tests.
+The generator cross-checks the Host shell order, typed route contract, Dart symbols, data-contract paths, and focused tests.

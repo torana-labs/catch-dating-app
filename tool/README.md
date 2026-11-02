@@ -90,8 +90,8 @@ Explicit mappings avoid full fanout when ordinary screen changes update
 generated manifests; unknown companion inputs
 still trigger the full fallback. Committed evidence follows the same rule:
 website Storybook baselines select `web:storybook-visuals`, app screenshots
-select every capture check that reads their bytes, and feature contracts select
-each compiler, coverage, responsibility, screen and pending-operation check that
+select every capture check that reads their bytes, and screen contracts select
+each coverage, responsibility, screen and pending-operation check that
 reads them. Declare an input on every check that reads it, because a declared
 owner suppresses the fallback for that path. Admin and `@catch/web-ui`
 baselines, Widgetbook Flutter tests and Operations unit tests have no Tools
@@ -932,10 +932,9 @@ many are fixed, and `--update-consolidation-baseline` drops those when convenien
 feature controller and mutation hook, normally beside it, without turning
 aggregate coverage percentages into a brittle merge gate. No list names them.
 
-`web:admin-pending-operations` derives write and submitted-query controllers
-from frozen Admin feature-contract cases. It requires each controller to
-acquire and release the shared exclusive lease, rejects pending cases with
-enabled actions, and verifies the workspace, navigation, link, unload, and
+`web:admin-pending-operations` names the write and submitted-query controllers
+it guards. It requires each one to acquire and release the shared exclusive
+lease, and verifies the workspace, navigation, link, unload, and
 focused regression-test boundary remains installed.
 
 Registry-ready Storybook stories also have deterministic desktop and mobile
@@ -1086,70 +1085,12 @@ from returning. Active invariants belong in tests,
 linters, component risk gates, or explicitly manual owner-runbook checks. Git
 and CI provide the durable proof of work.
 
-## Feature Contract Compiler
-
-`planned` proves that a surface is visible to the migration; it does not claim
-that its state/action/evidence contract exists yet. Grouping is reserved for a
-secondary route projection of the same feature, such as a dynamic lookup or a
-live controller wrapper. Static legal/support and platform fallback routes may
-be excluded when their existing route, metadata, and preview contracts are the
-correct authority and there is no stateful product-action workflow to model.
-
-`design/features/*.feature.json` holds reviewed feature orchestration sources.
-One semantic feature may contain Flutter, marketing React, and admin React
-surface projections. Each projection binds exactly one authoritative screen or
-route, its native component registry, one or more typed action owners, and its
-capture/preview/test evidence instead of duplicating those authorities. The
-compiler expands every action case into enabled, disabled, and not-allowed
-classifications and writes one deterministic cross-surface artifact under
-`design/features/generated/`.
-
-Each surface must state its action scope. Event Detail covers the Flutter
-booking dock; Explore combines Flutter empty-result recovery with marketing-web
-URL filtering/search analytics; Host Event Manage covers primary Flutter
-edit/cancel/delete lifecycle rows; the consumer social reference batch adds
-Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, and Public
-Profile. Organizer Detail adds a three-surface reference for consumer Flutter,
-host Flutter, and the canonical marketing organizer listing. Generated action
-counts must not be read as coverage of excluded route or section actions.
-Actions name their owning Dart or TypeScript symbol and may
-end in local surface states, route destinations, or named side effects.
-Read-only surfaces use empty action/action-owner arrays instead of inventing
-synthetic behavior. Missing required evidence must use an explicit stable-debt
-exception, and the compiler rejects that exception once the referenced evidence
-exists.
-
-State-heavy surfaces may use the compact matrix form. `stateIds` still must
-equal the authority's full state inventory, while `scenarioDefaults` owns the
-common dimension/action case and `scenarioOverrides` records only divergent
-states. The compiler expands this form into ordinary generated scenarios and
-fails missing or unknown state ids and overrides, so the shorter source format
-does not weaken drift detection.
-
-For React routes, `bindings.previewEvidence` maps an authority state to an
-explicitly selected registry preview when route-review and Storybook state
-names differ. The compiler verifies the component belongs to that route and
-that its story source is declared. Website static-output tests under
-`website/scripts/*.test.mjs` are valid evidence for indexing, canonical, and
-sitemap behavior that has no meaningful visual preview.
-
-```sh
-node tool/design/build_feature_contracts.mjs
-node tool/design/build_feature_contracts.mjs --check
-node tool/design/build_feature_contracts.mjs --summary
-```
-
-The `--check` command is blocking in the design parity gate. Generated feature
-contracts are review artifacts and must not be edited by hand.
-
 ## Host Feature Responsibility Generator
 
 `design/features/host_feature_responsibilities.json` defines the exact ordered
 responsibility boundary for Today, Events, Audience, Inbox, and Organizer. It
-is intentionally an index over the Host shell, typed route contract, and the
-existing cross-surface feature contracts; it does not duplicate their state or
-action algorithms. Direct transitional owners are allowed only when the wider
-feature contract does not yet cover that destination seam.
+is intentionally an index over the Host shell and typed route contract; it does
+not duplicate their state or action algorithms.
 
 The generator resolves referenced action-owner paths and symbols, verifies
 owned and handoff routes, checks data-contract and focused-test paths, and
@@ -1165,8 +1106,7 @@ node tool/run.mjs check design:host-feature-responsibilities
 ```
 
 The selected implementation uses the repository's existing Node/Ajv tooling
-instead of adding a documentation framework or extending the much denser
-feature-contract schema with Host-only migration prose. The JSON contract is
+instead of adding a documentation framework. The JSON contract is
 Catch-specific architecture policy, generation is deterministic and
 network-free, and the standard design-parity gate owns freshness.
 

@@ -256,8 +256,7 @@
         ".gitignore",
         "tool/check_repository_root_hygiene.test.mjs",
         "tool/lib/path_glob.mjs",
-        "tool/lib/path_glob.test.mjs",
-        "design/features/admin_*.feature.json"
+        "tool/lib/path_glob.test.mjs"
       ],
       "description": "Plans fail-closed CI, release, and deploy impact from the source-owned component graph and runs only explicitly allowlisted compile-codegen checks.",
       "checks": [
@@ -1737,6 +1736,20 @@
     },
     {
       "id": "web:admin-pending-operations",
+      "rules": [
+        {
+          "id": "PENDING-SNAPSHOT-001",
+          "title": "Protect the submitted request snapshot while an operation is pending",
+          "appliesTo": [
+            "lib/**/presentation/**",
+            "website/src/features/**",
+            "admin/src/features/**",
+            "design/screens/catch.screens.json",
+            "test/**"
+          ],
+          "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary."
+        }
+      ],
       "category": "lint",
       "path": "tool/web/check_admin_pending_operations.mjs",
       "impactPaths": [
@@ -1753,22 +1766,18 @@
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
         "admin/src/features/safety/controllers/useSafetyTriageController.ts",
-        "admin/src/features/users/controllers/useUserAnalyticsController.ts",
-        "design/features/admin_*.feature.json"
+        "admin/src/features/users/controllers/useUserAnalyticsController.ts"
       ],
       "command": "node tool/web/check_admin_pending_operations.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Enforces one exclusive Admin operation lease across every controller derived from frozen pending feature-contract cases, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
+      "description": "Enforces one exclusive Admin operation lease across the controllers it names, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
       "checks": [
         "node --check tool/web/check_admin_pending_operations.mjs",
         "node tool/web/check_admin_pending_operations.mjs --self-test",
         "node tool/web/check_admin_pending_operations.mjs --check --summary"
       ],
       "role": "gate",
-      "alsoEnforces": [
-        "PENDING-SNAPSHOT-001"
-      ],
       "ciRequirements": {
         "repositoryView": "full",
         "setup": ["node", "root-npm"]
@@ -4509,59 +4518,6 @@
       ]
     },
     {
-      "id": "design:feature-contracts",
-      "category": "design",
-      "path": "tool/design/build_feature_contracts.mjs",
-      "command": "node tool/design/build_feature_contracts.mjs --check",
-      "safety": "local-writes-generated",
-      "status": "active",
-      "description": "Compiles reviewed multi-surface feature sources, including compact exact state matrices, stable annotated Flutter preview-builder ids, checked React route-state preview mappings, and explicitly disabled known implementation gaps, into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift, enabled known-gap actions, and missing or duplicate authority-state coverage.",
-      "checks": [
-        "node --check tool/design/build_feature_contracts.mjs",
-        "node --test tool/design/build_feature_contracts.test.mjs",
-        "node tool/design/build_feature_contracts.mjs --check"
-      ],
-      "impactPaths": [
-        "tool/design/build_feature_contracts.test.mjs",
-        "design/features/*.feature.json",
-        "design/features/feature_contract.schema.json",
-        "design/features/generated/**",
-        "widgetbook/lib/**"
-      ],
-      "role": "gate",
-      "rules": [
-        {
-          "id": "ACTION-CARDINALITY-001",
-          "title": "Declare action cardinality before wiring UI affordances",
-          "appliesTo": [
-            "lib/**/presentation/**",
-            "lib/**/data/**",
-            "functions/src/**",
-            "design/features/**",
-            "docs/**"
-          ],
-          "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts."
-        },
-        {
-          "id": "PENDING-SNAPSHOT-001",
-          "title": "Protect the submitted request snapshot while an operation is pending",
-          "appliesTo": [
-            "lib/**/presentation/**",
-            "website/src/features/**",
-            "admin/src/features/**",
-            "design/features/**",
-            "design/screens/catch.screens.json",
-            "test/**"
-          ],
-          "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary."
-        }
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": ["node", "root-npm"]
-      }
-    },
-    {
       "id": "design:host-feature-responsibilities",
       "category": "design",
       "path": "tool/design/build_host_feature_responsibilities.mjs",
@@ -4575,8 +4531,7 @@
         "lib/hosts/events/README.md",
         "lib/hosts/audience/README.md",
         "lib/hosts/inbox/README.md",
-        "lib/hosts/organizer/README.md",
-        "design/features/*.feature.json"
+        "lib/hosts/organizer/README.md"
       ],
       "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
       "safety": "local-writes-generated",
@@ -4588,7 +4543,7 @@
           "root-npm"
         ]
       },
-      "description": "Validates the ordered Today, Events, Audience, Inbox, and Organizer responsibility boundaries against the Host shell, typed routes, existing feature-contract action owners, Dart symbols, data contracts, and focused tests, then generates one local overview in each destination root.",
+      "description": "Validates the ordered Today, Events, Audience, Inbox, and Organizer responsibility boundaries against the Host shell, typed routes, Dart symbols, data contracts, and focused tests, then generates one local overview in each destination root.",
       "checks": [
         "node --check tool/design/build_host_feature_responsibilities.mjs",
         "node --test tool/design/build_host_feature_responsibilities.test.mjs",
@@ -4950,9 +4905,7 @@
         "design/screens/catch.screens.schema.json",
         "tool/ui_capture/route_inventory.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "design/components/catch.components.json",
-        "design/features/*.feature.json",
-        "design/features/generated/**"
+        "design/components/catch.components.json"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -5330,7 +5283,6 @@
         "node tool/design/check_comprehensive_todo_summary.mjs --check",
         "node tool/design/check_screen_coverage.mjs --check",
         "node tool/design/check_screen_contracts.mjs --check",
-        "node tool/design/build_feature_contracts.mjs --check",
         "node tool/design/build_host_feature_responsibilities.mjs --check",
         "node tool/design/check_screen_top_bar_contracts.mjs --check",
         "node tool/design/check_widgetbook_contract_refs.mjs --check",

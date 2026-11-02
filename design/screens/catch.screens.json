@@ -2174,20 +2174,6 @@
           "status": "available",
           "path": "design/components/catch.components.json",
           "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, the Cross Paths event-consent control, companion prompt, booking dock, and avatar stack without promoting event-only compounds to reusable primitives."
-        },
-        {
-          "id": "repo.event-detail-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/event_detail.feature.json",
-          "notes": "Structured orchestration source for Event Detail dimensions, booking-action cardinality, and exact screen-state coverage."
-        },
-        {
-          "id": "generated.event-detail-feature-contract",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/features/generated/event_detail.feature_contract.json",
-          "notes": "Deterministic projection resolving every Event Detail state to captures, Widgetbook previews, tests, action cases, components, and data contracts."
         }
       ],
       "captures": [
@@ -4037,20 +4023,6 @@
           "status": "available",
           "path": "design/reference_screens/manifest.json",
           "notes": "Explore discovery-feed PNG reference plus masks is registered for advisory pixel comparison."
-        },
-        {
-          "id": "repo.explore-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/explore.feature.json",
-          "notes": "Structured orchestration source for Explore discovery/map dimensions, empty-state recovery action cardinality, exact screen-state coverage, and explicit evidence debt."
-        },
-        {
-          "id": "generated.explore-feature-contract",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/features/generated/explore.feature_contract.json",
-          "notes": "Deterministic projection resolving every Explore state to captures, Widgetbook previews, tests or named evidence exceptions, action cases, components, and data contracts."
         }
       ],
       "captures": [
@@ -8781,7 +8753,7 @@
         {
           "id": "DS-MATCHES-CHAT-004",
           "status": "closed",
-          "nextAction": "Closed. Populated Messaging thread and Messaging \u00b7 New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
+          "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
         }
       ]
     },
@@ -9610,7 +9582,7 @@
           "kind": "repo",
           "status": "available",
           "path": "design/reference_screens/manifest.json",
-          "notes": "Public-profile PNG reference is regenerated from the current Profile \u00b7 other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
+          "notes": "Public-profile PNG reference is regenerated from the current Profile · other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
         }
       ],
       "captures": [
@@ -9761,7 +9733,7 @@
             "test/public_profile/public_profile_screen_test.dart",
             "test/swipes/profile_card_widget_test.dart"
           ],
-          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile \u00b7 other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
+          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile · other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ]
@@ -10201,20 +10173,6 @@
         "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller. Quiet Today uses account-and-organizer-scoped device-local focus preferences; authoritative audience, rehearsal, public-page and payout evidence remains distinct from preference and navigation."
       },
       "designRefs": [
-        {
-          "id": "repo.host-home-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/host_home.feature.json",
-          "notes": "Authoritative Host Today and Events feature orchestration source; the compiler requires exact coverage of both independent destinations, their registered states, and typed actions."
-        },
-        {
-          "id": "generated.host-home-feature-contract",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/features/generated/host_home.feature_contract.json",
-          "notes": "Generated Host Today and Events state, action, evidence, component, and data-contract projection; do not edit directly."
-        },
         {
           "id": "repo.host-operations-tests",
           "kind": "repo",
@@ -11072,20 +11030,6 @@
         "notes": "HostOrganizersScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostOrganizerEditBody owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostOrganizerDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostOrganizerEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostOrganizerInsightsState owns analytics query state."
       },
       "designRefs": [
-        {
-          "id": "repo.host-organizers-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/host_organizers.feature.json",
-          "notes": "Authoritative Host Organizers feature orchestration source across Edit, Insights, Preview, settings spokes, payouts, team, and host identity."
-        },
-        {
-          "id": "generated.host-organizers-feature-contract",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/features/generated/host_organizers.feature_contract.json",
-          "notes": "Generated Host Organizers state, action, evidence, component, and data-contract projection; do not edit directly."
-        },
         {
           "id": "repo.host-clubs-tests",
           "kind": "repo",
@@ -15031,20 +14975,6 @@
           "notes": "Event Success host tests cover setup, live, and report tabs, host report availability, live signal quality, and Event Success host states embedded by Host Manage."
         },
         {
-          "id": "repo.host-event-manage-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/host_event_manage.feature.json",
-          "notes": "Structured orchestration source for Host Manage route/workspace dimensions, edit/cancel/delete action outcomes, exact screen-state coverage, and explicit evidence debt."
-        },
-        {
-          "id": "generated.host-event-manage-feature-contract",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/features/generated/host_event_manage.feature_contract.json",
-          "notes": "Deterministic projection resolving every Host Manage state to captures, Widgetbook previews, tests or named evidence exceptions, action cases, components, and data contracts."
-        },
-        {
           "id": "claude.host-event-manage",
           "kind": "claude",
           "status": "needs_export",
@@ -16886,22 +16816,7 @@
         ],
         "notes": "Audience is the sole organizer CRM and intake destination and follows the shell-selected organizer. People owns normalized customer search, computed segments, organizer tag vocabulary, server cursor, id de-duplication, export, contact administration and customer detail. Audiences owns reusable saved groups. Forms and Responses own intake definition and response review without becoming shell destinations. Inbox selects saved audience ids and never authors a competing filter expression."
       },
-      "designRefs": [
-        {
-          "id": "repo.host-customers-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/host_customers.feature.json",
-          "notes": "Authoritative Host Audience state, action, identity, revenue, intake, and evidence contract."
-        },
-        {
-          "id": "generated.host-customers-feature-contract",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/features/generated/host_customers.feature_contract.json",
-          "notes": "Generated orchestration projection; do not edit directly."
-        }
-      ],
+      "designRefs": [],
       "captures": [
         {
           "id": "host_customers_populated",
@@ -27997,13 +27912,6 @@
           "status": "available",
           "path": "test/event_rehearsal/host_event_rehearsal_screen_test.dart",
           "notes": "Focused widget coverage keeps the safety boundary, start choices, guest-phone handoff, and live virtual controls visible."
-        },
-        {
-          "id": "repo.event-rehearsal-feature-contract",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/features/event_rehearsal.feature.json",
-          "notes": "Cross-surface feature orchestration source for the Host console and anonymous synthetic guest phone."
         }
       ],
       "captures": [],
@@ -29225,10 +29133,10 @@
             ],
             "migration": "Apply the phone source only after reviewed CRM authority and receipt semantics are integrated; shared owner regenerates route, l10n and Widgetbook inventories.",
             "previewIds": [
-              "PhoneImportReviewScreen/Local demo \u00b7 empty and selected guests",
+              "PhoneImportReviewScreen/Local demo · empty and selected guests",
               "hostPhoneImportGuestStates",
-              "PhoneImportSavedReviewSection/Saved review \u00b7 synthetic read-only rows",
-              "PhoneImportScreen/Workspace route \u00b7 access unavailable"
+              "PhoneImportSavedReviewSection/Saved review · synthetic read-only rows",
+              "PhoneImportScreen/Workspace route · access unavailable"
             ]
           }
         ]
@@ -30000,7 +29908,7 @@
             "symbol": "ProgramTripActions"
           }
         ],
-        "notes": "The hotel view is a scoped projection \u2014 names, party size, plates and ETAs only."
+        "notes": "The hotel view is a scoped projection — names, party size, plates and ETAs only."
       },
       "designRefs": [
         {
@@ -30168,7 +30076,7 @@
             "symbol": "ProgramWorkRepository"
           }
         ],
-        "notes": "The room board is a hotel-scoped projection \u2014 stay rows, block capacity and unplaced guest names only."
+        "notes": "The room board is a hotel-scoped projection — stay rows, block capacity and unplaced guest names only."
       },
       "designRefs": [
         {
@@ -30366,7 +30274,7 @@
             "symbol": "ProgramTripActions"
           }
         ],
-        "notes": "The ledger is the vendor reconciliation record \u2014 voided rows stay visible with reasons."
+        "notes": "The ledger is the vendor reconciliation record — voided rows stay visible with reasons."
       },
       "designRefs": [
         {
@@ -30830,7 +30738,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "Now/Next is a pure client projection over the staff work-access payload \u2014 functions bucketed in-progress, upcoming and earlier with door counts, no dedicated read."
+        "notes": "Now/Next is a pure client projection over the staff work-access payload — functions bucketed in-progress, upcoming and earlier with door counts, no dedicated read."
       },
       "designRefs": [
         {

@@ -50,12 +50,12 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostTodayScreen` | `lib/hosts/today/presentation/host_today_screen.dart` | Feature-contract actions: sign_in, open_operational_event, open_attention_task, start_dress_rehearsal. |
-| `HostTodayBody` | `lib/hosts/today/presentation/widgets/host_today_body.dart` | Structural owner from feature.host_home. |
-| `HostAttentionProjection` | `lib/contexts/insights/domain/host_attention_item.dart` | Structural owner from feature.host_home. |
-| `HostAttentionRepository` | `lib/contexts/insights/data/host_attention_repository.dart` | Structural owner from feature.host_home. |
-| `HostTodayFeedController` | `lib/hosts/today/presentation/host_today_feed_controller.dart` | Structural owner from feature.host_home. |
-| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Feature-contract actions: switch_organizer. |
+| `HostTodayScreen` | `lib/hosts/today/presentation/host_today_screen.dart` | Actions: sign_in, open_operational_event, open_attention_task, start_dress_rehearsal. |
+| `HostTodayBody` | `lib/hosts/today/presentation/widgets/host_today_body.dart` | Structural owner. |
+| `HostAttentionProjection` | `lib/contexts/insights/domain/host_attention_item.dart` | Structural owner. |
+| `HostAttentionRepository` | `lib/contexts/insights/data/host_attention_repository.dart` | Structural owner. |
+| `HostTodayFeedController` | `lib/hosts/today/presentation/host_today_feed_controller.dart` | Structural owner. |
+| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies
 
@@ -91,4 +91,4 @@ node tool/design/build_host_feature_responsibilities.mjs
 node tool/design/build_host_feature_responsibilities.mjs --check
 ```
 
-The generator cross-checks the Host shell order, typed route contract, feature-contract action owners, Dart symbols, data-contract paths, and focused tests.
+The generator cross-checks the Host shell order, typed route contract, Dart symbols, data-contract paths, and focused tests.
