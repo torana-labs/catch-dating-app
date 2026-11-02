@@ -17,7 +17,7 @@ Domain and data code lives in bounded contexts under
 widgets still live in the legacy feature folders' `presentation/` and
 `shared/` folders until each is redrawn into `apps/<app>/lib/`.
 `tool/architecture/context_map.json` places every folder in a context or
-layer, and `audit:context-map` fails on imports against the order and on any
+layer, and the `catch_arch_*` lints fail on imports against the order and on any
 new domain or data file outside `lib/contexts/`; read the Bounded Context
 Contract in `docs/app_architecture.md` before adding a folder or moving code.
 

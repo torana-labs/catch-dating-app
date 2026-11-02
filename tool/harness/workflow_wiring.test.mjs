@@ -1137,7 +1137,6 @@ test("app builds fail fast on structure and fan iOS roles out in parallel", () =
   const structural = namedStep(builds, "Fail-fast app structural gates");
   for (const checkId of [
     "audit:context-map",
-    "audit:dependency-direction",
     "audit:mutation-error-surfaces",
     "audit:route-string-literals",
     "audit:widget-cleanup",
