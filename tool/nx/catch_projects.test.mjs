@@ -99,3 +99,21 @@ test("a lane with dependencies is selected when they change", () => {
     assert.equal(targets.lane.inputs.includes("^production"), Boolean(options.implicitDependencies[name]), name);
   }
 });
+
+test("web tests that read Flutter source run when that source changes", () => {
+  const lane = options.sourceProjects.find(({name}) => name === "lane-admin-design");
+  const prefixes = lane.targets.lane.inputs.map((input) =>
+    input.replace("{workspaceRoot}/", "").replace(/\*\*\/\*$/u, ""));
+  const tests = execFileSync("git", ["ls-files", "packages/web-ui/src/**/*.test.*"],
+    {cwd: workspaceRoot, encoding: "utf8"}).trim().split("\n");
+  const uncovered = [];
+  for (const test of tests) {
+    const source = fs.readFileSync(path.join(workspaceRoot, test), "utf8");
+    for (const [, relative] of source.matchAll(/["'`](\.\.[^"'`$\n]*\.dart)["'`]/gu)) {
+      const file = path.posix.join(path.posix.dirname(test), relative);
+      if (!prefixes.some((prefix) => file.startsWith(prefix))) uncovered.push(`${test} reads ${file}`);
+    }
+  }
+  assert.deepEqual(uncovered, []);
+});
+

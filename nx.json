@@ -439,7 +439,12 @@
                 "cache": false,
                 "inputs": [
                   "{workspaceRoot}/design/components/**/*",
-                  "{workspaceRoot}/design/admin/**/*"
+                  "{workspaceRoot}/design/admin/**/*",
+                  "{workspaceRoot}/packages/catch_ui/lib/**/*",
+                  "{workspaceRoot}/packages/catch_tokens/lib/**/*",
+                  "{workspaceRoot}/lib/contexts/events/parts/**/*",
+                  "{workspaceRoot}/lib/locations/shared/**/*",
+                  "{workspaceRoot}/widgetbook/lib/primitives/**/*"
                 ]
               }
             }
