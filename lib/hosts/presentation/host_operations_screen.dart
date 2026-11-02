@@ -36,6 +36,7 @@ import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.da
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_section.dart';
+import 'package:catch_dating_app/hosts/presentation/organizer_journey/host_organizer_journey_section.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart';
