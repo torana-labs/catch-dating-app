@@ -1,0 +1,40 @@
+{
+  "components": [
+    {
+      "id": "route_now",
+      "kind": "route",
+      "owner": "features/now",
+      "source": "admin/src/features/now/ui/NowScreen.tsx",
+      "exportName": "NowScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "NowRouteStory",
+        "states": [
+          "oldest-first",
+          "by-kind",
+          "data-sources",
+          "stats"
+        ]
+      },
+      "notes": "Needs you: every overview queue item waiting on a person in one list, oldest first, beside counts by kind and data-source freshness, in the quiet register on CatchWorkspaceHeader and CatchPaneLayout feed. Rows open the role-checked owning area. It replaces the Overview action digest."
+    },
+    {
+      "id": "route_now_live_controller",
+      "kind": "route",
+      "owner": "features/now",
+      "source": "admin/src/features/now/ui/NowRouteScreen.tsx",
+      "exportName": "NowRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Needs you controller/query seam; deterministic prop-driven visual coverage remains on route_now."
+    }
+  ]
+}

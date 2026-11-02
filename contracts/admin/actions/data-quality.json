@@ -1,0 +1,8 @@
+{
+  "workflow": {
+    "workflowId": "data-quality",
+    "label": "Data quality",
+    "guiPath": "/quality"
+  },
+  "actions": []
+}

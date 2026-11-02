@@ -1,0 +1,99 @@
+{
+  "workflow": {
+    "workflowId": "events",
+    "label": "Events",
+    "guiPath": "/events"
+  },
+  "actions": [
+    {
+      "actionId": "events.directory",
+      "callable": "adminListEventDirectory",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_list_event_directory_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_event_directory_response.schema.json",
+      "summary": "List Catch and imported events as one table with a source, exact view totals and chip counts.",
+      "example": {
+        "view": "upcoming",
+        "limit": 50
+      }
+    },
+    {
+      "actionId": "events.get",
+      "callable": "adminGetEventDetails",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_event_details_payload.schema.json",
+      "summary": "Load one canonical event profile and publication state.",
+      "example": {
+        "eventId": "example-event"
+      }
+    },
+    {
+      "actionId": "events.list",
+      "callable": "adminListEventDetails",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_event_details_payload.schema.json",
+      "summary": "List bounded canonical events.",
+      "example": {
+        "timeWindow": "upcoming",
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "events.update",
+      "callable": "adminUpdateEventDetails",
+      "workflowIds": [
+        "events"
+      ],
+      "guiPath": "/events",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "eventId",
+      "requestSchema": "contracts/callables/admin_update_event_details_payload.schema.json",
+      "summary": "Patch owner-safe fields on one canonical event.",
+      "example": {
+        "eventId": "example-event",
+        "fields": {
+          "description": "Fixture description"
+        },
+        "reviewNote": "Fixture update; do not apply."
+      }
+    }
+  ]
+}

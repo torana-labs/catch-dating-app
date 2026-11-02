@@ -1,0 +1,150 @@
+{
+  "workflow": {
+    "workflowId": "organizers",
+    "label": "Organizers",
+    "guiPath": "/organizers"
+  },
+  "actions": [
+    {
+      "actionId": "organizers.directory",
+      "callable": "adminListOrganizerDirectory",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_list_organizer_directory_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_organizer_directory_response.schema.json",
+      "summary": "List the Organizers directory with real totals per view and chip counts for city, kind, claim state and the caller's own organizers.",
+      "example": {
+        "view": "all",
+        "limit": 50
+      }
+    },
+    {
+      "actionId": "organizers.get",
+      "callable": "adminGetOrganizerDetails",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_organizer_details_payload.schema.json",
+      "summary": "Load one canonical organizer profile and publication state.",
+      "example": {
+        "organizerId": "example-organizer"
+      }
+    },
+    {
+      "actionId": "organizers.list",
+      "callable": "adminListOrganizerDetails",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_organizer_details_payload.schema.json",
+      "summary": "List bounded canonical organizer profiles.",
+      "example": {
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "organizers.overview",
+      "callable": "adminGetOrganizerOverview",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers/:organizerId",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_get_organizer_overview_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_organizer_overview_response.schema.json",
+      "summary": "Read one organizer's overview: facts, Sales owner, terms, payments, journey from nomination to claim and upcoming events.",
+      "example": {
+        "organizerId": "organizer-id"
+      }
+    },
+    {
+      "actionId": "organizers.set-index-status",
+      "callable": "adminSetOrganizerIndexStatus",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_set_organizer_index_status_payload.schema.json",
+      "summary": "Set one organizer compatibility profile's index-readiness state.",
+      "example": {
+        "organizerId": "example-organizer",
+        "indexStatus": "noindex",
+        "checklist": {
+          "sourceEvidenceVerified": true,
+          "mediaRightsVerified": true,
+          "cadenceVerified": true,
+          "ownerContactVerified": true
+        },
+        "reviewNote": "Fixture noindex decision."
+      }
+    },
+    {
+      "actionId": "organizers.update",
+      "callable": "adminUpdateOrganizerDetails",
+      "workflowIds": [
+        "organizers"
+      ],
+      "guiPath": "/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_update_organizer_details_payload.schema.json",
+      "summary": "Patch owner-safe fields on one canonical organizer profile.",
+      "example": {
+        "organizerId": "example-organizer",
+        "fields": {
+          "description": "Fixture description"
+        },
+        "reviewNote": "Fixture update; do not apply."
+      }
+    }
+  ]
+}

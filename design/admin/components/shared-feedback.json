@@ -1,0 +1,19 @@
+{
+  "components": [
+    {
+      "id": "provider_admin_feedback_provider",
+      "kind": "provider",
+      "owner": "shared/feedback",
+      "source": "admin/src/shared/feedback/AdminFeedbackContext.tsx",
+      "exportName": "AdminFeedbackProvider",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "context-provider"
+        ]
+      },
+      "notes": "Shared admin feedback provider. Preview coverage is not required because it wraps the app context rather than rendering a standalone surface."
+    }
+  ]
+}

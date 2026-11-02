@@ -1,0 +1,39 @@
+{
+  "components": [
+    {
+      "id": "route_system",
+      "kind": "route",
+      "owner": "features/system",
+      "source": "admin/src/features/system/ui/SystemScreen.tsx",
+      "exportName": "SystemScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "SystemRouteStory",
+        "states": [
+          "activity",
+          "filters",
+          "health"
+        ]
+      },
+      "notes": "System: one activity log of people's and agents' Admin actions (newest first, filtered by who acted and by problems, searchable) beside the health of each data source, on CatchPaneLayout queue with CatchTable and CatchSection."
+    },
+    {
+      "id": "route_system_live_controller",
+      "kind": "route",
+      "owner": "features/system",
+      "source": "admin/src/features/system/ui/SystemRouteScreen.tsx",
+      "exportName": "SystemRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the System controller/query seam; deterministic prop-driven visual coverage remains on route_system."
+    }
+  ]
+}

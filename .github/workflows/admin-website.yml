@@ -24,6 +24,7 @@ on:
       - "packages/web-ui/**"
       - "tool/admin/callable_inventory.mjs"
       - "tool/admin/generate_admin_action_catalog.mjs"
+      - "tool/lib/admin_registries.mjs"
       - "tool/ci/toolchain.env"
       - "tool/ci/delivery_core.mjs"
       - "tool/ci/package_web_hosting.mjs"

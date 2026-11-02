@@ -1,0 +1,80 @@
+{
+  "workflow": {
+    "workflowId": "marketing",
+    "label": "Marketing",
+    "guiPath": "/marketing"
+  },
+  "actions": [
+    {
+      "actionId": "marketing.create-draft",
+      "callable": "adminCreateMarketingContentDraft",
+      "workflowIds": [
+        "marketing"
+      ],
+      "guiPath": "/marketing/new",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+      "summary": "Create one reviewable marketing content draft; this does not post it.",
+      "example": {
+        "draftType": "feature_explainer",
+        "cityId": "mumbai",
+        "title": "CLI workflow fixture"
+      }
+    },
+    {
+      "actionId": "marketing.get",
+      "callable": "adminGetMarketingOpsDashboard",
+      "workflowIds": [
+        "marketing",
+        "data-quality"
+      ],
+      "guiPath": "/marketing",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_marketing_ops_dashboard_payload.schema.json",
+      "summary": "Load the current reviewable marketing operations dashboard.",
+      "example": {}
+    },
+    {
+      "actionId": "marketing.record-decision",
+      "callable": "adminRecordMarketingReviewDecision",
+      "workflowIds": [
+        "marketing"
+      ],
+      "guiPath": "/marketing/posts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "targetId",
+      "requestSchema": "contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
+      "summary": "Record a bounded review decision for one marketing object; this does not post it.",
+      "example": {
+        "targetType": "content_draft",
+        "targetId": "example-draft",
+        "decision": "hold",
+        "note": "Fixture review hold.",
+        "checklist": {
+          "sourceReviewed": true,
+          "copyReviewed": true
+        }
+      }
+    }
+  ]
+}

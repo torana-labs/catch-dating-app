@@ -427,6 +427,24 @@ test("the generated catalog is rebuilt from each commit's contract to select its
   assert.deepEqual(changed.targets, targets.slice(0, 2));
 });
 
+test("a catalog split into per-workflow files selects the same consumers", (t) => {
+  const {f, catalog} = catalogFixture(t);
+  const whole = f.commit();
+  const select = (baseSha, sourceSha) => affectedFunctionTargets({
+    sourceRoot: f.root, baseSha, sourceSha, authorizedTargets: targets,
+  });
+  f.write("contracts/admin/admin_action_catalog.json", "{}");
+  f.write("contracts/admin/actions/reads.json", JSON.stringify({actions: catalog.actions}));
+  const split = f.commit();
+  assert.equal(select(whole, split).mode, "no-op", "The split alone deploys nothing");
+  f.write("contracts/admin/actions/reads.json", JSON.stringify({
+    actions: [{...catalog.actions[0], roles: ["owner", "support"]}],
+  }));
+  const changed = select(split, f.commit());
+  assert.equal(changed.mode, "affected");
+  assert.deepEqual(changed.targets, targets.slice(0, 2));
+});
+
 test("untracking the generated catalog redeploys nothing when its bytes are unchanged", (t) => {
   const {f, catalog, module} = catalogFixture(t);
   f.write(module, renderFunctions(catalog));

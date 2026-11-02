@@ -1,0 +1,72 @@
+{
+  "components": [
+    {
+      "id": "route_money",
+      "kind": "route",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/MoneyScreen.tsx",
+      "exportName": "MoneyScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "MoneyRouteStory",
+        "states": [
+          "bills-queue",
+          "bill-inspector",
+          "decision-bar"
+        ]
+      },
+      "notes": "Money: payment issues (open and resolved) and the month's bills to organizers, each a CatchTable queue on CatchPaneLayout queue with an inspector (CatchMetaRow facts, CatchSection statement rows and timeline) and the CatchDock pane decision bar. It replaces the Finance issues workspace. Backed by the sample bills and issues in admin/src/features/money/api/moneySamples.ts."
+    },
+    {
+      "id": "route_money_live_controller",
+      "kind": "route",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/MoneyRouteScreen.tsx",
+      "exportName": "MoneyRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the bills and issues controllers and the address; deterministic prop-driven visual coverage remains on route_money."
+    },
+    {
+      "id": "workspace_organizer_bills",
+      "kind": "workspace",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/OrganizerBillsWorkspace.tsx",
+      "exportName": "OrganizerBillsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRecords.stories.tsx",
+        "exportName": "OrganizerBillsWorkspaceStory",
+        "states": [
+          "bills",
+          "latest-month"
+        ]
+      },
+      "notes": "One organizer's money on the Money tab of its page: all-time sales and earnings, ticket sales each month, its bills newest first and its latest month as the organizer lived it, read from adminManageOrganizerBills. Bills open in Money."
+    },
+    {
+      "id": "workspace_organizer_bills_live_controller",
+      "kind": "workspace",
+      "owner": "features/money",
+      "source": "admin/src/features/money/ui/OrganizerBillsWorkspace.tsx",
+      "exportName": "OrganizerBillsRouteWorkspace",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Live wrapper that reads one organizer's bills; the shell shows it only to those who can open Money. Coverage remains on workspace_organizer_bills."
+    }
+  ]
+}

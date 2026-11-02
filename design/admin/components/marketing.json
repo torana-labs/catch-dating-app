@@ -1,0 +1,1763 @@
+{
+  "components": [
+    {
+      "id": "route_marketing_ops",
+      "kind": "route",
+      "owner": "features/marketing",
+      "source": "admin/src/features/marketing/ui/MarketingOpsScreen.tsx",
+      "exportName": "MarketingOpsScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "MarketingOpsRouteStory",
+        "states": [
+          "post-board"
+        ]
+      },
+      "notes": "Marketing Ops route wrapper keeps live admin feedback props and delegates to MarketingOpsWorkspace; deterministic preview coverage uses typed synthetic dashboard state in AdminRoutes.stories.tsx."
+    },
+    {
+      "id": "shared_admin_card",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminCardStory",
+        "states": [
+          "marketing",
+          "intake"
+        ]
+      },
+      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_card_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminCardList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminCardListStory",
+        "states": [
+          "list"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_command_row",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "packages/web-ui/src/components/CatchAdminCommandStack.tsx",
+      "exportName": "CatchAdminCommandRow",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminCommandStack.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminCommandRowStory",
+        "states": [
+          "with-action"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. admin/src/features/marketing/ui/marketingLibraryPanels.tsx and marketingComposerPanels.tsx bind each command label and command."
+    },
+    {
+      "id": "shared_admin_command_stack",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "packages/web-ui/src/components/CatchAdminCommandStack.tsx",
+      "exportName": "CatchAdminCommandStack",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminCommandStack.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminCommandStackStory",
+        "states": [
+          "commands"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. admin/src/features/marketing/ui/marketingLibraryPanels.tsx and marketingComposerPanels.tsx bind the generated command list."
+    },
+    {
+      "id": "shared_admin_feature_drop_capture_thumb",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminFeatureDropCaptureThumb",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropCaptureThumbStory",
+        "states": [
+          "image"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_feature_drop_control_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminFeatureDropControlGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropControlGridStory",
+        "states": [
+          "controls"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_feature_drop_feature_editor",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminFeatureDropFeatureEditor",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropFeatureEditorStory",
+        "states": [
+          "fields"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_feature_drop_feature_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminFeatureDropFeatureList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropFeatureListStory",
+        "states": [
+          "features"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_feature_drop_preview_card",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminFeatureDropPreviewCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropPreviewCardStory",
+        "states": [
+          "image",
+          "empty"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_feature_drop_preview_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminFeatureDropPreviewGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropPreviewGridStory",
+        "states": [
+          "cards"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_feature_drop_wide_field",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminFeatureDropWideField",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminFeatureDropWideFieldStory",
+        "states": [
+          "wide-field"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_icon_button",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminIconButtonStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "exportName": "AdminIconButton",
+      "componentId": "catch.icon_button"
+    },
+    {
+      "id": "shared_admin_intake_decision_actions",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeDecision.tsx",
+      "exportName": "CatchAdminIntakeDecisionActions",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminIntakeDecision.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeDecisionActionsStory",
+        "states": [
+          "actions"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. Admin's shared DecisionFooter (admin/src/shared/ui/AdminPrimitives/forms.tsx) binds the review decision buttons; features/marketing is its only renderer."
+    },
+    {
+      "id": "shared_admin_intake_decision_state",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "packages/web-ui/src/components/CatchAdminIntakeDecision.tsx",
+      "exportName": "CatchAdminIntakeDecisionState",
+      "css": [
+        "packages/web-ui/src/components/CatchAdminIntakeDecision.module.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeDecisionStateStory",
+        "states": [
+          "saved"
+        ]
+      },
+      "notes": "Admin T4 under D18: @catch/web-ui draws it and only features/marketing renders it. Admin's shared DecisionFooter (admin/src/shared/ui/AdminPrimitives/forms.tsx) binds the saved decision status and path; features/marketing is its only renderer."
+    },
+    {
+      "id": "shared_admin_marketing_app_capture_preview",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingAppCapturePreview",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingAppCapturePreviewStory",
+        "states": [
+          "image"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_app_media_paths",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingAppMediaPaths",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingAppMediaPathsStory",
+        "states": [
+          "with-web-path",
+          "without-web-path"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_audit_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingAuditList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingAuditListStory",
+        "states": [
+          "rows"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_audit_row",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingAuditRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingAuditRowStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_board_column",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingBoardColumn",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingBoardColumnStory",
+        "states": [
+          "with-list"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_board_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingBoardList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingBoardListStory",
+        "states": [
+          "cards"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_brand_contract",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingBrandContract",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingBrandContractStory",
+        "states": [
+          "items"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_brand_contract_item",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingBrandContractItem",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingBrandContractItemStory",
+        "states": [
+          "label-value"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_card_link",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingCardLink",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingCardLinkStory",
+        "states": [
+          "text",
+          "icon"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_carousel_preview",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingCarouselPreview",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingCarouselPreviewStory",
+        "states": [
+          "slides"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_compliance_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingComplianceList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingComplianceListStory",
+        "states": [
+          "checks"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_composer",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingComposer",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingComposerStory",
+        "states": [
+          "header-steps-footer"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_composer_back_button",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingComposerBackButton",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingComposerBackButtonStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_composer_footer",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingComposerFooter",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingComposerFooterStory",
+        "states": [
+          "actions"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_composer_header",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingComposerHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingComposerHeaderStory",
+        "states": [
+          "status"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_deliverable",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingDeliverable",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingDeliverableStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_event_library_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingEventLibraryGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingEventLibraryGridStory",
+        "states": [
+          "cards"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_export_status",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingExportStatus",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingExportStatusStory",
+        "states": [
+          "success",
+          "error"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_feature_shot_card",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingFeatureShotCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingFeatureShotCardStory",
+        "states": [
+          "with-meta"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_feature_shot_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingFeatureShotGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingFeatureShotGridStory",
+        "states": [
+          "cards"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_file_picker_button",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingFilePickerButton",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingFilePickerButtonStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_guide_layout",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingGuideLayout",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingGuideLayoutStory",
+        "states": [
+          "deliverables"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_help_text",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingHelpText",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingHelpTextStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_controls",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageControls",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageControlsStory",
+        "states": [
+          "buttons"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_editor",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageEditor",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageEditorStory",
+        "states": [
+          "controls-and-review"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_editor_header",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageEditorHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageEditorHeaderStory",
+        "states": [
+          "title-status"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_empty",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageEmpty",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageEmptyStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_meta_fields",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageMetaFields",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageMetaFieldsStory",
+        "states": [
+          "fields"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_review_row",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageReviewRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageReviewRowStory",
+        "states": [
+          "thumb-and-meta"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_source_note",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageSourceNote",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageSourceNoteStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_image_thumb",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
+      "exportName": "AdminMarketingImageThumb",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingImageThumbStory",
+        "states": [
+          "image"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_library_card",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingLibraryCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingLibraryCardStory",
+        "states": [
+          "with-action",
+          "with-children"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Composes CatchText title and description with library-card content and actions; it does not implement the text-role atom."
+    },
+    {
+      "id": "shared_admin_marketing_media_card",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingMediaCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingMediaCardStory",
+        "states": [
+          "image",
+          "fallback"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Composes CatchText title and description with media or fallback content and actions; it does not implement the text-role atom."
+    },
+    {
+      "id": "shared_admin_marketing_media_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingMediaGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingMediaGridStory",
+        "states": [
+          "media-cards"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_new_post_card",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingNewPostCard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingNewPostCardStory",
+        "states": [
+          "event",
+          "feature",
+          "soon"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Composes CatchText title inside an actionable post-creation card with an accent and supporting content; it does not implement the text-role atom."
+    },
+    {
+      "id": "shared_admin_marketing_new_post_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingNewPostGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingNewPostGridStory",
+        "states": [
+          "cards"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_ops_shell",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingOpsShell",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingOpsShellStory",
+        "states": [
+          "default",
+          "studio"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_picker_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingPickerList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPickerListStory",
+        "states": [
+          "rows"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_picker_row",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingPickerRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPickerRowStory",
+        "states": [
+          "default",
+          "selected"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_post_board",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingPostBoard",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPostBoardStory",
+        "states": [
+          "columns"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_post_type_badge",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingPostTypeBadge",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPostTypeBadgeStory",
+        "states": [
+          "event",
+          "feature",
+          "soon"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_actions",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewActions",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewActionsStory",
+        "states": [
+          "buttons"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_brand_note",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewBrandNote",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewBrandNoteStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_copy",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewCopy",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewCopyStory",
+        "states": [
+          "short",
+          "long"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_image",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewImage",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewImageStory",
+        "states": [
+          "image"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_meta",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewMeta",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewMetaStory",
+        "states": [
+          "rows"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_shell",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewShell",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewShellStory",
+        "states": [
+          "toolbar-and-copy"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_slide",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewSlide",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewSlideStory",
+        "states": [
+          "text",
+          "image"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_preview_toolbar",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingPreviewToolbar",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingPreviewToolbarStory",
+        "states": [
+          "actions"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_recommendation_item",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingRecommendationItem",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingRecommendationItemStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_recommendation_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingRecommendationList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingRecommendationListStory",
+        "states": [
+          "items"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_slide_editor",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingSlideEditor",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingSlideEditorStory",
+        "states": [
+          "topline-and-fields"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_slide_editor_topline",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingSlideEditorTopline",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingSlideEditorToplineStory",
+        "states": [
+          "title-status"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_slide_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminMarketingSlideList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingSlideListStory",
+        "states": [
+          "multiple",
+          "single"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_stacked_sections",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
+      "exportName": "AdminMarketingStackedSections",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStackedSectionsStory",
+        "states": [
+          "sections"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_step_chip",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingStepChip",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStepChipStory",
+        "states": [
+          "todo",
+          "active",
+          "done"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_step_layout",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingStepLayout",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStepLayoutStory",
+        "states": [
+          "editor-preview"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_step_strip",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
+      "exportName": "AdminMarketingStepStrip",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStepStripStory",
+        "states": [
+          "chips"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_actions",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioActions",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioActionsStory",
+        "states": [
+          "buttons"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_filter_tabs",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioFilterTabs",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioFilterTabsStory",
+        "states": [
+          "selected",
+          "disabled"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_nav",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioNav",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioNavStory",
+        "states": [
+          "tabs-and-actions"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_stack",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioStack",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioStackStory",
+        "states": [
+          "sections"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_summary",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioSummary",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioSummaryStory",
+        "states": [
+          "items"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_studio_summary_item",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingStudioSummaryItem",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingStudioSummaryItemStory",
+        "states": [
+          "label-value"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_marketing_tabs",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
+      "exportName": "AdminMarketingTabs",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
+        "exportName": "AdminMarketingTabsStory",
+        "states": [
+          "selected",
+          "disabled"
+        ]
+      },
+      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_panel",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
+      "exportName": "AdminPanel",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminPanelStory",
+        "states": [
+          "default",
+          "wide",
+          "action"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Composes CatchText headings inside a framed panel with content and optional actions; it does not implement the text-role atom."
+    },
+    {
+      "id": "shared_admin_query_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminQueryList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminQueryListStory",
+        "states": [
+          "rows"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_query_row",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "AdminQueryRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "AdminQueryRowStory",
+        "states": [
+          "query"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+    },
+    {
+      "id": "shared_admin_stat_grid",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "AdminStatGrid",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminStatGridStory",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_admin_state_row",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+      "exportName": "AdminStateRow",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "AdminStateRowStory",
+        "states": [
+          "text",
+          "node"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_card_header",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "CardHeader",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "CardHeaderStory",
+        "states": [
+          "marketing",
+          "intake",
+          "with-action"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_decision_footer",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
+      "exportName": "DecisionFooter",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
+        "exportName": "DecisionFooterStory",
+        "states": [
+          "editable",
+          "approved",
+          "blocked"
+        ]
+      },
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.field"
+      ],
+      "comparisonReason": "Review decision footer that composes a CatchField note with decision actions; the field contract owns the note, not the footer."
+    },
+    {
+      "id": "shared_selectable_card_button",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
+      "exportName": "SelectableCardButton",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "SelectableCardButtonStory",
+        "states": [
+          "default",
+          "selected"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "shared_tag_list",
+      "kind": "feature-component",
+      "owner": "features/marketing",
+      "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
+      "exportName": "TagList",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
+        "exportName": "TagListStory",
+        "states": [
+          "marketing-row"
+        ]
+      },
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+    },
+    {
+      "id": "workspace_marketing_ops",
+      "kind": "workspace",
+      "owner": "features/marketing",
+      "source": "admin/src/features/marketing/ui/MarketingOpsScreen.tsx",
+      "exportName": "MarketingOpsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "MarketingOpsWorkspaceStory",
+        "states": [
+          "post-board"
+        ]
+      },
+      "notes": "Prop-driven Marketing Ops workspace used by the live route wrapper and deterministic Storybook previews; generated dashboard state and no-op callbacks are supplied through the controller seam."
+    }
+  ]
+}
