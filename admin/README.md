@@ -227,12 +227,10 @@ a reviewer note and only update the queue document status/assignment fields.
 Restriction, escalation, and account-level safety actions are intentionally
 absent until their audited mutation callables and document contracts exist.
 
-The Growth tab is a read-only KPI workspace over `adminGetOverview` and
-`adminGetHostAnalytics`. It groups launch signals by acquisition, supply,
-conversion, and marketplace stages, supports range selection, shows booking
-trend buckets, and labels the combined dashboard timestamp as client load time.
-Channel, cohort, referral, campaign tasking, and export actions need explicit
-analytics contracts before they are exposed here.
+Growth reads `adminGetGrowth` over a range: organizers by the month they listed,
+channels and what they cost, nominators, and the best organizers. Nominator
+credit is approved and recorded as paid through `adminManageNominatorCredits`.
+Per-campaign ad tables and export are not built.
 
 The Finance tab is a read-only issue workspace over `adminGetOverview` payment
 queues and `adminGetHostAnalytics` event payment signals. It surfaces failed

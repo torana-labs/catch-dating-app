@@ -24,11 +24,6 @@
       "count": 3
     }
   },
-  "src/features/growth/ui/GrowthKpiScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 4
-    }
-  },
   "src/features/intake/events/ui/eventIntakeWorkbench.tsx": {
     "react/forbid-elements": {
       "count": 10

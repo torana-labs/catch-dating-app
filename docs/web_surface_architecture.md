@@ -864,7 +864,7 @@ Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
 `/organizers/{organizerId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
 `/events/external/{candidateId}`,
-`/growth/signals/{signalId}`, `/finance/issues/{issueId}`,
+`/growth/nominators/{nominatorUid}`, `/finance/issues/{issueId}`,
 `/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
 stays unavailable; controllers must never auto-select another row to make a
 deep link appear valid.
