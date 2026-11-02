@@ -76,22 +76,19 @@ function controller() {
     canonicalMatches: query([]),
     customFields: query({rows: []}), contacts: query({rows: [], nextCursor: null}),
     evidence: query({rows: [], nextCursor: null}),
-    evidenceProposals: query({rows: [], nextCursor: null}), detail: query(detail),
+    detail: query(detail),
     canonicalSearch: "", identitySearch: "", query: "", researchStatus: "all",
     ownerUid: "", opportunityStage: "", validAccountQuery: true,
     isSaving: false,
     hasPreviousPage: false, hasPreviousTaskPage: false,
     hasPreviousOpportunityPage: false, hasPreviousInboundPage: false,
-    hasPreviousContactPage: false, hasPreviousEvidencePage: false,
-    hasPreviousProposalPage: false,
+    hasPreviousContactPage: false,
     setCanonicalSearch: vi.fn(), setIdentitySearch: vi.fn(),
     setAccountFilters: vi.fn(), setStageFilter: vi.fn(),
     previousPage: vi.fn(), nextPage: vi.fn(), previousTaskPage: vi.fn(),
     nextTaskPage: vi.fn(), previousOpportunityPage: vi.fn(),
     nextOpportunityPage: vi.fn(), previousInboundPage: vi.fn(),
     nextInboundPage: vi.fn(), previousContactPage: vi.fn(), nextContactPage: vi.fn(),
-    previousEvidencePage: vi.fn(), nextEvidencePage: vi.fn(),
-    previousProposalPage: vi.fn(), nextProposalPage: vi.fn(),
     addAccount: vi.fn(), nominateOrganizer: vi.fn(async () => true),
     saveAccount: vi.fn(async () => true),
     logActivity: vi.fn(async () => true), saveOpportunity: vi.fn(), saveTask: vi.fn(),
@@ -197,8 +194,6 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     expect(screen.queryByRole("button", {name: "Pilot & terms"})).toBeNull();
     expect(screen.queryByLabelText("Research status")).toBeNull();
     expect(screen.queryByRole("button", {name: "Assign to me"})).toBeNull();
-    expect(childMocks.records.mock.calls.some(([props]) =>
-      props.section === "suppression")).toBe(false);
 
     fireEvent.change(screen.getByLabelText("Working summary"),
       {target: {value: "  Updated sourced summary  "}});

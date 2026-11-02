@@ -20,33 +20,6 @@ function contact(revision: number,
       primary: true, contactabilityStatus, sendAuthority: false}};
 }
 
-it("keeps an account restriction bound to the reviewed revision across a refresh", async () => {
-  const saveAccountSuppression = vi.fn().mockResolvedValue(false);
-  const controller = {isSaving: false, saveAccountSuppression};
-  const props = {section: "suppression" as const,
-    controller: controller as unknown as SalesWorkspaceController};
-  const {rerender} = render(<SalesRecordsWorkspace {...props} detail={detail()} />);
-  fireEvent.change(screen.getByLabelText("New status"), {target: {value: "clear"}});
-  fireEvent.change(screen.getByLabelText("Reason"), {target: {value: "Old hold cleared"}});
-  rerender(<SalesRecordsWorkspace {...props} detail={detail(2, "suppressed")} />);
-  expect(screen.getByRole("button", {name: "Record account decision"}))
-    .toHaveProperty("disabled", true);
-  fireEvent.submit(screen.getByRole("button", {name: "Record account decision"})
-    .closest("form")!);
-  expect(saveAccountSuppression).not.toHaveBeenCalled();
-  expect(screen.getByRole("alert").textContent).toContain("changed since you opened");
-  fireEvent.click(screen.getByRole("button", {name: "Use latest account decision"}));
-  expect((screen.getByLabelText("New status") as HTMLSelectElement).value)
-    .toBe("suppressed");
-  expect((screen.getByLabelText("Reason") as HTMLTextAreaElement).value).toBe("");
-  fireEvent.change(screen.getByLabelText("Reason"), {target: {value: "Keep restriction"}});
-  fireEvent.click(screen.getByRole("button", {name: "Record account decision"}));
-  await waitFor(() => expect(saveAccountSuppression).toHaveBeenCalledWith({
-    organizerId: "host-one", expectedRevision: 2, status: "suppressed",
-    reason: "Keep restriction",
-  }));
-});
-
 it("does not submit an old contact decision with a refreshed revision", async () => {
   const saveContactability = vi.fn().mockResolvedValue(false);
   const controller = {isSaving: false, saveContactability,
@@ -113,33 +86,6 @@ it("creates internal work without a contact and requires one for outbound tasks"
   })));
 });
 
-it("reviews the displayed suggestion revision and clears the reason on a refreshed version", async () => {
-  const reviewEvidenceProposal = vi.fn().mockResolvedValue(false);
-  const proposal = {proposalId: "proposal-one", organizerId: "host-one", revision: 1,
-    status: "pending", evidence: {claimKey: "identity", sourceRef: "https://example.test",
-      observedAt: "2026-09-28T00:00:00Z", confidence: "medium", normalizedValue: "Example host"},
-    clientId: "helper-one"};
-  const controller = {isSaving: false, reviewEvidenceProposal,
-    contacts: {data: {rows: []}}, evidence: {data: {rows: []}},
-    evidenceProposals: {data: {rows: [proposal]}}};
-  const props = {section: "evidence" as const, detail: detail()};
-  const {rerender} = render(<SalesRecordsWorkspace {...props}
-    controller={controller as unknown as SalesWorkspaceController} />);
-  const accept = () => screen.getByRole("button", {name: "Accept as reviewed evidence"});
-  expect(accept()).toHaveProperty("disabled", true);
-  fireEvent.change(screen.getByLabelText("Review reason"), {target: {value: "Checked source"}});
-  fireEvent.click(accept());
-  await waitFor(() => expect(reviewEvidenceProposal).toHaveBeenCalledWith({
-    organizerId: "host-one", proposalId: "proposal-one", expectedRevision: 1,
-    decision: "accept", reason: "Checked source",
-  }));
-  controller.evidenceProposals.data.rows = [{...proposal, revision: 2}];
-  rerender(<SalesRecordsWorkspace {...props}
-    controller={controller as unknown as SalesWorkspaceController} />);
-  expect(accept()).toHaveProperty("disabled", true);
-  expect((screen.getByLabelText("Review reason") as HTMLTextAreaElement).value).toBe("");
-});
-
 it("staff can add contacts without contactability approval controls", async () => {
   const saveContact = vi.fn().mockResolvedValue(true);
   const saveContactability = vi.fn();
@@ -159,34 +105,3 @@ it("staff can add contacts without contactability approval controls", async () =
   expect(saveContactability).not.toHaveBeenCalled();
 });
 
-it("staff records sourced evidence but cannot approve assistant suggestions", async () => {
-  const saveEvidence = vi.fn().mockResolvedValue(true);
-  const reviewEvidenceProposal = vi.fn();
-  const controller = {isSaving: false, saveEvidence, reviewEvidenceProposal,
-    contacts: {data: {rows: []}}, evidence: {data: {rows: []}},
-    evidenceProposals: {data: {rows: [{proposalId: "proposal-one",
-      organizerId: "host-one", revision: 1, status: "pending",
-      evidence: {claimKey: "identity", sourceRef: "https://example.test",
-        observedAt: "2026-09-28T00:00:00Z", confidence: "medium"}}]}}};
-  render(<SalesRecordsWorkspace section="evidence" detail={detail()}
-    assignedStaffOnly controller={controller as unknown as SalesWorkspaceController} />);
-  expect(screen.getByText("Awaiting authorized evidence review.")).toBeTruthy();
-  expect(screen.queryByRole("button", {name: "Accept as reviewed evidence"})).toBeNull();
-  expect(screen.queryByRole("button", {name: "Reject suggestion"})).toBeNull();
-  fireEvent.change(screen.getByLabelText("Source reference"),
-    {target: {value: "synthetic:reviewed-source"}});
-  fireEvent.click(screen.getByRole("button", {name: "Record evidence"}));
-  await waitFor(() => expect(saveEvidence).toHaveBeenCalledWith(expect.objectContaining({
-    organizerId: "host-one", sourceRef: "synthetic:reviewed-source",
-  })));
-  expect(reviewEvidenceProposal).not.toHaveBeenCalled();
-});
-
-it("staff cannot mount account-restriction controls through shared records", () => {
-  const saveAccountSuppression = vi.fn();
-  render(<SalesRecordsWorkspace section="suppression" detail={detail()}
-    assignedStaffOnly controller={{saveAccountSuppression} as unknown as SalesWorkspaceController} />);
-  expect(screen.getByText("Account restrictions require an authorized reviewer.")).toBeTruthy();
-  expect(screen.queryByRole("button", {name: "Record account decision"})).toBeNull();
-  expect(saveAccountSuppression).not.toHaveBeenCalled();
-});

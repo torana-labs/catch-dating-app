@@ -20,7 +20,7 @@ export interface SalesAccountSummary {
   stage?: string | null;
   assignedOwnerUid?: string | null;
   nextAction?: string | null;
-  suppressionStatus?: "clear" | "held" | "suppressed";
+  suppressionStatus?: SalesHoldStatus;
 }
 
 export interface SalesAccount {
@@ -30,7 +30,7 @@ export interface SalesAccount {
   assignedOwnerUid?: string | null;
   summary?: string | null;
   nextAction?: string | null;
-  suppressionStatus?: "clear" | "held" | "suppressed";
+  suppressionStatus?: SalesHoldStatus;
 }
 
 export interface SalesOrganizerSummary {
@@ -104,6 +104,8 @@ export interface SalesContact {
       verificationStatus: "unverified" | "verified"; evidenceId?: string | null}>;
   };
 }
+
+export type SalesHoldStatus = "clear" | "held" | "suppressed";
 
 export interface SalesEvidence {
   evidenceId: string;

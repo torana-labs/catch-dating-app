@@ -1,4 +1,11 @@
-import type {SalesOpportunity, SalesResearchStatus, SalesTask, SalesTaskKind} from "../api/salesTypes";
+import type {
+  SalesEvidence,
+  SalesHoldStatus,
+  SalesOpportunity,
+  SalesResearchStatus,
+  SalesTask,
+  SalesTaskKind,
+} from "../api/salesTypes";
 
 export const taskKindLabels: Record<SalesTaskKind, string> = {
   research: "Review", reply: "Reply", follow_up: "Follow-up", demo: "Demo", pilot: "Pilot",
@@ -96,3 +103,24 @@ export function stageLabel(stage: string): string {
   const words = stage.replace(/_/gu, " ");
   return words[0]?.toUpperCase() + words.slice(1);
 }
+
+export const evidenceClaimLabels: Record<SalesEvidence["claimKey"], string> = {
+  identity: "Who they are", recurrence: "How often they run events", operation: "How they run events",
+  stack: "Tools they use", other: "Something else",
+};
+export const evidenceSourceLabels: Record<SalesEvidence["sourceType"], string> = {
+  first_party: "The host told us", public_web: "Public web", human_note: "Staff note", import_artifact: "An import",
+};
+export const evidenceConfidenceLabels: Record<SalesEvidence["confidence"], string> = {high: "High", medium: "Medium", low: "Low"};
+export const holdLabels: Record<SalesHoldStatus, string> = {clear: "None", held: "On hold", suppressed: "Suppressed"};
+
+/** What a datetime field shows: local wall-clock time, not UTC. */
+export function localInput(at: Date): string {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}T${pad(at.getHours())}:${pad(at.getMinutes())}`;
+}
+
+export const isoFrom = (local: string): string | null => {
+  const at = new Date(local);
+  return Number.isNaN(at.getTime()) ? null : at.toISOString();
+};
