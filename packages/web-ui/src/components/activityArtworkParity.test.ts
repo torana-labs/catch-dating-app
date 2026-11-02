@@ -15,9 +15,9 @@ const backdropDart = read("../../../../lib/contexts/events/parts/event_backdrop_
 const artworkTs = read("./activityArtwork.ts");
 const tokensCss = read("../../../web-config/generated/catch-tokens.css");
 
-/** Numeric literals in a code block, ignoring digits inside identifiers. */
+/** Numeric literals in a code block, ignoring comments and digits inside identifiers. */
 function numericLiterals(code: string) {
-  return [...code.matchAll(/(?<![\w.])\d+(?:\.\d+)?(?![\w.])/g)].map((match) => Number(match[0])).sort((a, b) => a - b);
+  return [...code.replace(/\/\/.*$/gm, "").matchAll(/(?<![\w.])\d+(?:\.\d+)?(?![\w.])/g)].map((match) => Number(match[0])).sort((a, b) => a - b);
 }
 
 /** Splits a switch into its case blocks, keyed by the case label. */
