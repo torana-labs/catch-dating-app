@@ -239,7 +239,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     fs.rmSync(tree, {recursive: true, force: true});
     fs.mkdirSync(tree, {recursive: true});
     const copy = run("sh", ["-c", `git archive HEAD -- . ${[
-      "artifacts", "test/goldens", "website", "admin", "functions",
+      "artifacts", "test/goldens", "website/public", "admin/public", "functions",
       "apps/host/android", "apps/host/ios", "apps/host/web", "apps/consumer/android", "apps/consumer/ios", "apps/consumer/web",
     ].map((entry) => `':(exclude)${entry}'`).join(" ")} | tar -x -C '${tree}'`]);
     assertOk(copy, "copying the tree");
