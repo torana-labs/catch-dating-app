@@ -51,9 +51,21 @@ analytics workspace; access decisions, organizer claim decisions, and organizer
 indexing decisions are handled in their owning tabs where the operator must
 select a row and enter a review note.
 
-`src/app/adminRoutes.ts` owns the Admin URL patterns, selected-record parameters,
-workspace state, and titles. React Router matches this table; feature controllers
-receive the resolved state and navigation callbacks. Unknown sections return to
+Each Admin area is its own pair of files in `src/app/areas/`, and no list names
+them, so two PRs adding different areas do not collide:
+
+- `areas/<id>.ts` holds the area's address, title, icon, roles, place in each
+  job's navigation, URL patterns and route state. It declares its own id with
+  `declare module "../adminAreaKit" {interface AdminNavIds {<id>: true}}`. The
+  sign-in entry loads these, so they import no screens.
+- `areas/<id>.screen.tsx` renders the area's screen, loading it lazily.
+- `areas/<id>.test.ts` tests that area's routes.
+
+`src/app/adminRoutes.ts` combines them into the route table React Router matches,
+and `src/app/adminAreas.tsx` adds the screens. A feature's stories, registry
+entries (`design/admin/components/<feature>.json`) and actions
+(`contracts/admin/actions/<workflow>.json`) follow the same one-file rule. Feature
+controllers receive the resolved state and navigation callbacks. Unknown sections return to
 the first permitted section after authentication and role resolution. Partner
 and operator-session routes retain their separate entry boundaries.
 

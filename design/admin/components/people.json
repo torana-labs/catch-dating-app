@@ -9,7 +9,7 @@
       "css": [],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesPeople.stories.tsx",
         "exportName": "PeopleRouteStory",
         "states": [
           "search-results",

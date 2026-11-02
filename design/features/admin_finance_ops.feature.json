@@ -21,7 +21,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesFinance.stories.tsx"],
         "actionOwners": [
           {"id": "controller", "language": "typescript", "file": "admin/src/features/finance/controllers/useFinanceOpsController.ts", "symbol": "useFinanceOpsController"},
           {"id": "screen", "language": "typescript", "file": "admin/src/features/finance/ui/FinanceOpsScreen.tsx", "symbol": "FinanceOpsWorkspace"}

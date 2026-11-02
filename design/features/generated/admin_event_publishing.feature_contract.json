@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_event_publishing.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:0df6ceedc081f6edcd9315a2bb823cf807a6dc8ae3a10b39bf7ba7500e3ff02c",
-  "resolvedDigest": "sha256:46c52141fc532790dfd66ea5d8396d84b74818dbe57c3ef48753e175ded445d8",
+  "sourceDigest": "sha256:7d9159edb1587a198ee978e6235ad824fc088503575bb588104ef6f9a53be460",
+  "resolvedDigest": "sha256:8c9bbb39f483b5dd6651780fc180f3e17003389ca8634c80e10dd973b3286c1c",
   "feature": {
     "id": "feature.admin_event_publishing",
     "name": "Admin Event Publishing",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesEvents.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -367,7 +367,7 @@
             "exportName": "EventPublishingScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesEvents.stories.tsx",
               "exportName": "EventPublishingRouteStory",
               "states": [
                 "canonical-detail"

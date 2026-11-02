@@ -21,7 +21,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesIntake.stories.tsx"],
         "actionOwners": [
           {"id": "workspace", "language": "typescript", "file": "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx", "symbol": "IntakeWorkspace"},
           {"id": "event_controller", "language": "typescript", "file": "admin/src/features/intake/events/controllers/useEventIntakeController.ts", "symbol": "useEventIntakeController"},
@@ -94,7 +94,7 @@
         ]
       },
       "bindings": {
-        "previewSources": ["admin/src/stories/AdminRoutes.stories.tsx"],
+        "previewSources": ["admin/src/stories/AdminRoutesIntake.stories.tsx"],
         "actionOwners": [
           {"id": "controller", "language": "typescript", "file": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts", "symbol": "useOrganizerIntakeController"},
           {"id": "screen", "language": "typescript", "file": "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx", "symbol": "OrganizerIntakeWorkspace"}

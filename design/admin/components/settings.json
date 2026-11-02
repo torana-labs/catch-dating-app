@@ -9,7 +9,7 @@
       "css": [],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesSettings.stories.tsx",
         "exportName": "SettingsRouteStory",
         "states": [
           "team",
@@ -43,7 +43,7 @@
       "css": [],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesSettings.stories.tsx",
         "exportName": "TeamSettingsWorkspaceStory",
         "states": [
           "team",

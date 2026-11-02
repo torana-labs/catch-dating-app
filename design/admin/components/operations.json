@@ -11,7 +11,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesOperations.stories.tsx",
         "exportName": "AdminActionExecutionsRouteStory",
         "states": [
           "bounded-receipt-register"
@@ -30,7 +30,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesOperations.stories.tsx",
         "exportName": "AdminActionExecutionsWorkspaceStory",
         "states": [
           "bounded-receipt-register"

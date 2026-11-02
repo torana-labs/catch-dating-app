@@ -81,7 +81,7 @@ Files inspected:
 - `admin/src/features/data-quality/api/dataQualityRepository.ts`
 - `admin/src/features/data-quality/controllers/useDataQualityController.ts`
 - `admin/src/features/data-quality/ui/DataQualityScreen.tsx`
-- `admin/src/stories/AdminRoutes.stories.tsx`
+- `admin/src/stories/AdminRoutes<Feature>.stories.tsx`
 - `design/admin/components/`
 - `functions/src/admin/**` and `functions/src/clubs/organizerClaims.ts` for API
   ownership context

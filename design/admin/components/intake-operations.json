@@ -11,7 +11,7 @@
       ],
       "preview": {
         "status": "ready",
-        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
         "exportName": "IntakeOperationsWorkspaceStory",
         "states": [
           "default",

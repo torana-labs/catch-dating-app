@@ -42,11 +42,10 @@ import {
   adminPathForNav,
   adminRoutes,
   adminSections,
-  financePathForWorkspace,
   resolveAdminRoute,
   type AdminNavId,
-  type FinanceWorkspace,
 } from "./adminRoutes";
+import {financePathForWorkspace, type FinanceWorkspace} from "./areas/payment-setup";
 import {adminAreaRoles, adminNavigation} from "./adminAccess";
 import {adminJobFor, adminJobLabels} from "./adminJobs";
 import {useAdminSession} from "./useAdminSession";
