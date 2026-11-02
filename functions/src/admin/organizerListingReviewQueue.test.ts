@@ -10,15 +10,15 @@ import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
 import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {adminGetOrganizerListingReviewHandler, adminListOrganizerListingReviewsHandler, publicSlugFor} from "./organizerListingReviewQueue";
-import type {AdminListOrganizerListingReviewsCallableResponse} from
-  "../shared/generated/adminListOrganizerListingReviewsCallableResponse";
+import {adminGetOrganizerListingReviewHandler, publicSlugFor} from "./organizerListingReviewQueue";
+import type {AdminGetOrganizerListingReviewCallableResponse} from
+  "../shared/generated/adminGetOrganizerListingReviewCallableResponse";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {contractValidator} from "../shared/contractTestValidators";
 
-const validateAdminListOrganizerListingReviewsCallableResponse =
-  contractValidator<AdminListOrganizerListingReviewsCallableResponse>(
-    "AdminListOrganizerListingReviewsCallableResponse"
+const validateAdminGetOrganizerListingReviewCallableResponse =
+  contractValidator<AdminGetOrganizerListingReviewCallableResponse>(
+    "AdminGetOrganizerListingReviewCallableResponse"
   );
 
 // The build post-step copies the Operations runtime into lib; the worker uses it.
@@ -66,28 +66,20 @@ async function harness({organizers = {} as Record<string, Record<string, unknown
       writer.items.get(stored.result.listingWorkItemId) as unknown as Record<string, unknown>);
   }
   const deps = {firestore: () => db as unknown as FirebaseFirestore.Firestore};
-  const call = (data: Record<string, unknown>, token: Record<string, unknown> = {admin: true}) =>
-    adminListOrganizerListingReviewsHandler({auth: {uid: "admin-1", token}, data,
-      rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, deps as never);
   const get = (requestId: string, token: Record<string, unknown> = {support: true}) =>
     adminGetOrganizerListingReviewHandler({auth: {uid: "admin-1", token}, data: {requestId},
       rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, deps as never);
-  return {db, call, get};
+  return {db, get};
 }
 
-const valid = (response: unknown) => assert.equal(validateAdminListOrganizerListingReviewsCallableResponse(response), true,
-  schemaErrorMessages(validateAdminListOrganizerListingReviewsCallableResponse as never).join("; "));
+const valid = (response: unknown) => assert.equal(validateAdminGetOrganizerListingReviewCallableResponse(response), true,
+  schemaErrorMessages(validateAdminGetOrganizerListingReviewCallableResponse as never).join("; "));
 
-test("listings awaiting approval are listed newest first, a page at a time", async () => {
+test("a listing awaiting approval comes with what a reviewer needs", async () => {
   const h = await harness();
-  const first = await h.call({limit: 2, cursor: null});
-  valid(first);
-  assert.deepEqual(first.rows.map((row) => row.requestId), ["nom-listing-2", "nom-listing-1"]);
-  assert.ok(first.nextCursor);
-  const second = await h.call({limit: 2, cursor: first.nextCursor});
-  valid(second);
-  assert.deepEqual([second.rows.map((row) => row.requestId), second.nextCursor], [["nom-listing-0"], null]);
-  const row = second.rows[0];
+  const nearby = await h.get("nom-listing-0");
+  valid(nearby);
+  const row = nearby.review;
   assert.deepEqual([row.kind, row.submittedByRole, row.origin, row.suggestedSlug], ["nomination", "associate", "none", "afterfly"]);
   assert.deepEqual(row.market, {slug: "mumbai", marketId: "in-mh-mumbai", label: row.market.label, open: true});
   assert.match(row.listing.contentHash, /^[a-f0-9]{64}$/);
@@ -95,17 +87,17 @@ test("listings awaiting approval are listed newest first, a page at a time", asy
   assert.ok(row.listing.gaps.includes("seed_page_unreadable"));
   assert.equal(row.listing.fetchedPageCount, 0);
   // A market Catch has not opened cannot take an approval until it opens.
-  assert.deepEqual([first.rows[0].market.slug, first.rows[0].market.marketId, first.rows[0].market.open],
-    ["bengaluru", "in-ka-bengaluru", false]);
+  const unopened = (await h.get("nom-listing-2")).review.market;
+  assert.deepEqual([unopened.slug, unopened.marketId, unopened.open], ["bengaluru", "in-ka-bengaluru", false]);
 });
 
-test("each row shows how its listing compares with the organizers Catch already lists", async () => {
+test("a listing shows how it compares with the organizers Catch already lists", async () => {
   const listed = {name: "Afterfly", instagramHandle: null,
     publicPage: {slug: "afterfly", citySlug: "mumbai", publishStatus: "published"}, publicSources: []};
   const h = await harness({organizers: {"org-afterfly": listed}});
-  const response = await h.call({limit: 10, cursor: null});
-  valid(response);
-  const [sketchers, bhag, afterfly] = response.rows;
+  const reviews = await Promise.all(["nom-listing-2", "nom-listing-1", "nom-listing-0"].map((requestId) => h.get(requestId)));
+  reviews.forEach(valid);
+  const [sketchers, bhag, afterfly] = reviews.map((response) => response.review);
   assert.ok(afterfly.listing.gaps.includes("possible_duplicate_organizer"));
   assert.equal(afterfly.duplicateCheck?.verdict, "match");
   assert.deepEqual([afterfly.duplicateCheck?.citySlug, afterfly.duplicateCheck?.truncated,
@@ -128,9 +120,9 @@ test("each row shows how its listing compares with the organizers Catch already 
   const withoutCheck = {...older.result};
   delete withoutCheck.duplicateCheck;
   h.db.write(path1, {...older, result: withoutCheck});
-  const reread = await h.call({limit: 10, cursor: null});
-  valid(reread);
-  assert.deepEqual(reread.rows.map((row) => row.duplicateCheck?.verdict ?? null), ["none", null, null]);
+  const reread = await Promise.all(["nom-listing-2", "nom-listing-1", "nom-listing-0"].map((requestId) => h.get(requestId)));
+  reread.forEach(valid);
+  assert.deepEqual(reread.map(({review}) => review.duplicateCheck?.verdict ?? null), ["none", null, null]);
 });
 
 test("approved, unfinished and unreadable listings are not offered for review", async () => {
@@ -143,20 +135,18 @@ test("approved, unfinished and unreadable listings are not offered for review", 
   const path2 = `${supplyIntakeCollections.requests}/nom-listing-2`;
   const stored2 = h.db.read(path2) as {result: {listingWorkItemId: string}};
   h.db.remove(`operationWorkItems/${stored2.result.listingWorkItemId}`);
-  const response = await h.call({limit: 10, cursor: null});
-  valid(response);
-  assert.deepEqual([response.rows, response.unavailableCount], [[], 1]);
+  await assert.rejects(h.get("nom-listing-0"), /not waiting for approval/);
+  await assert.rejects(h.get("nom-listing-1"), /not waiting for approval/);
+  await assert.rejects(h.get("nom-listing-2"), /could not be read/);
 });
 
 test("ops (support) and the owner can read and approve; others cannot read it", async () => {
   const h = await harness();
-  assert.equal((await h.call({limit: 5, cursor: null}, {support: true})).canApprove, true);
-  assert.equal((await h.call({limit: 5, cursor: null}, {adminOwner: true})).canApprove, true);
+  assert.equal((await h.get("nom-listing-0", {support: true})).canApprove, true);
+  assert.equal((await h.get("nom-listing-0", {adminOwner: true})).canApprove, true);
   for (const token of [{salesStaff: true}, {}]) {
-    await assert.rejects(h.call({limit: 5, cursor: null}, token), /permission|role|admin/i);
+    await assert.rejects(h.get("nom-listing-0", token), /permission|role|admin/i);
   }
-  await assert.rejects(h.call({limit: 5, cursor: "not-a-cursor"}), /cursor is invalid/);
-  await assert.rejects(h.call({limit: 51, cursor: null}));
 });
 
 test("one listing can be read by its request for the inbox's approval sheet", async () => {

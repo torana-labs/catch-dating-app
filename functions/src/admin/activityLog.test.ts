@@ -16,7 +16,7 @@ function harness() {
     targetPath: "organizers/afterfly", createdAt: stamp("2026-10-31T10:00:00.000Z"), note: "Real organizer."});
   db.write("adminAuditLogs/a2", {actorUid: "dev", roles: ["support"], action: "adminSearchPeople",
     targetPath: "users", createdAt: stamp("2026-10-31T08:00:00.000Z")});
-  db.write("adminActionExecutions/e1", {actionId: "organizer-intake.list-listing-reviews", callable: "adminListOrganizerListingReviews",
+  db.write("adminActionExecutions/e1", {actionId: "organizer-intake.get-listing-review", callable: "adminGetOrganizerListingReview",
     actorUid: "agent", actorRoles: ["admin"], status: "succeeded", target: null, errorCode: null, errorMessage: null,
     startedAt: "2026-10-31T09:00:00.000Z"});
   db.write("adminActionExecutions/e2", {actionId: "inbox.update", callable: "adminUpdateInboxItem", actorUid: "agent",

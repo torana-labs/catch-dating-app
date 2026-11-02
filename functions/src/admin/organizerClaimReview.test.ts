@@ -3,7 +3,6 @@ import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   adminGetOrganizerClaimRequestDetailsHandler,
-  adminListOrganizerClaimRequestsHandler,
   normalizeOrganizerClaimDetailsPayload,
 } from "./organizerClaimReview";
 
@@ -159,36 +158,6 @@ test("normalizeOrganizerClaimDetailsPayload accepts only exact request ids",
     );
   });
 
-test(
-  "adminListOrganizerClaimRequestsHandler returns pending claims newest first",
-  async () => {
-    const firestore = new FakeFirestore({
-      "organizerClaimRequests/claim-1": pendingClaim(),
-      "organizerClaimRequests/claim-2": pendingClaim({
-        requestId: "claim-2",
-        requesterName: "Newer Host",
-        createdAt: "2026-07-10T12:00:00.000Z",
-      }),
-      "organizerClaimRequests/claim-reviewed": pendingClaim({
-        requestId: "claim-reviewed",
-        status: "approved",
-      }),
-    });
-
-    const result = await adminListOrganizerClaimRequestsHandler(
-      request(),
-      deps(firestore)
-    );
-
-    assert.equal(result.generatedAt, "2026-07-11T00:00:00.000Z");
-    assert.deepEqual(result.rows.map((row) => row.requestId), [
-      "claim-2",
-      "claim-1",
-    ]);
-    assert.equal(result.rows[1].proofCount, 1);
-  }
-);
-
 test("adminGetOrganizerClaimRequestDetailsHandler returns review-safe evidence",
   async () => {
     const firestore = new FakeFirestore({
@@ -219,8 +188,8 @@ test("adminGetOrganizerClaimRequestDetailsHandler returns review-safe evidence",
 test("club claim review handlers deny viewer-only admins", async () => {
   const firestore = new FakeFirestore({});
   await assert.rejects(
-    () => adminListOrganizerClaimRequestsHandler(
-      request({}, {salesStaff: true}),
+    () => adminGetOrganizerClaimRequestDetailsHandler(
+      request({requestId: "claim-1"}, {salesStaff: true}),
       deps(firestore)
     ),
     (error) => error instanceof HttpsError && error.code === "permission-denied"
