@@ -1,4 +1,6 @@
 "use client";
+import {useEffect} from "react";
+import {reportCaughtError} from "@catch/web-config/errorReporting";
 import {availabilityCopy} from "../src/content/availability";
 import {routeRecoveryCopy} from "../src/content/routeRecovery";
 import {PublicProviders} from "../src/app/next/PublicProviders";
@@ -7,7 +9,8 @@ import {Button, ButtonLink, EmptyState} from "../src/shared/ui/primitives";
 
 /** Render failures after the proxy's catalog preflight, such as the public read
  * bound being crossed between the two reads. Next keeps the 500 status. */
-export default function PublicRouteError() {
+export default function PublicRouteError({error}: {error: Error}) {
+  useEffect(() => reportCaughtError(error), [error]);
   return <PublicProviders pathname="/" catalog={{listings: [], readAt: 0}} live={false}>
     <PageShell pageClassName="not-found-page">
       <PublicSiteHeader />

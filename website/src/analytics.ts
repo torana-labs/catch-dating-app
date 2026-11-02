@@ -3,6 +3,7 @@ import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementControll
 import {browserAttribution, catchAttributionKey} from "./analytics/catchMeasurement.ts";
 import {catchMeasurementMode, type CatchMeasurementMode, configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
 import {createHostServerConsent, postHostServerConsent} from "./analytics/hostServerConsent.ts";
+import {isPrivateEventUpdatePath} from "./analytics/privateRoutes.ts";
 import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 import {brand} from "@catch/brand";
 
@@ -455,8 +456,5 @@ function writeJson(key: string, value: unknown) {
 }
 
 function isPrivateEventUpdate(): boolean {
-  return window.location.pathname.startsWith("/demo/") ||
-    window.location.pathname.startsWith("/event-update/") ||
-    window.location.pathname.startsWith("/booking/") ||
-    window.location.pathname === "/offer" || window.location.pathname === "/offer/";
+  return isPrivateEventUpdatePath(window.location.pathname);
 }

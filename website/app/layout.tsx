@@ -1,6 +1,7 @@
 import type {Metadata, Viewport} from "next";
 import type {ReactNode} from "react";
 import siteIcons from "../src/generated/siteIcons.json" with {type: "json"};
+import {ErrorReporting} from "../src/app/next/ErrorReporting";
 import "../src/styles.css";
 import "./next.css";
 
@@ -16,5 +17,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {themeColor: siteIcons.themeColor};
 
 export default function RootLayout({children}: {children: ReactNode}) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><ErrorReporting />{children}</body></html>;
 }
