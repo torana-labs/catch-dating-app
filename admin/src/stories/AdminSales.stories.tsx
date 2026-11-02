@@ -82,13 +82,13 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenPrivacy={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenPrivacy={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
 };
 
 const quoteTerms = {currency: "INR", amountMinor: 500_000, billingCadence: "monthly" as const, scope: "Booking pages and guest messages for one host",

@@ -22,7 +22,6 @@ import type {
 } from "../api/salesTypes";
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
-import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
 import {renderSalesNominationWorkspace} from "./SalesNominationPanel";
@@ -32,7 +31,7 @@ import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "workflow" | "activity" |
-  "opportunities" | "research" | "demo" | "intelligence";
+  "opportunities" | "research" | "intelligence";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "today", label: "Today"},
@@ -47,7 +46,6 @@ const staffAreaOptions = areaOptions.filter((option) =>
 const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "overview", label: "Overview"},
   {id: "workflow", label: "Workflow"},
-  {id: "demo", label: "Private demo"},
   {id: "activity", label: "Activity"},
   {id: "opportunities", label: "Opportunities"},
   {id: "intelligence", label: "Fit & outreach"},
@@ -526,10 +524,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     Host details could not be loaded.
     <AdminButton onClick={() => void controller.detail.refetch()}>Try again</AdminButton>
   </EmptyState>;
-  const availableDetailTabs = assignedStaffOnly ? detailTabs.filter((item) =>
-    item.id !== "demo") : detailTabs;
-  const visibleTab = assignedStaffOnly && tab === "demo" ?
-    "overview" : tab;
   return <AdminDetailScreenStack>
     <AdminToolbar>
       <CatchBadge label={`Research: ${labelFor(detail.account.researchStatus)}`} />
@@ -541,31 +535,26 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       </AdminButton>}
     </AdminToolbar>
     <SegmentedControl ariaLabel="Host detail tab" mobileLayout="content"
-      mobileSelectLabel="Host detail section" options={availableDetailTabs}
-      value={visibleTab} onChange={setTab} />
-    {visibleTab === "overview" || visibleTab === "research" ?
+      mobileSelectLabel="Host detail section" options={detailTabs}
+      value={tab} onChange={setTab} />
+    {tab === "overview" || tab === "research" ?
       <HostAccountEditor key={detail.account.organizerId} detail={detail}
         controller={controller} currentUserUid={currentUserUid}
         assignedStaffOnly={assignedStaffOnly} /> : null}
-    {visibleTab === "activity" ? <>
+    {tab === "activity" ? <>
       <HostActivity detail={detail} controller={controller} />
       {assignedStaffOnly ? null : renderSalesImportedHistory(
         detail.account.organizerId, currentUserUid)}
     </> : null}
-    {visibleTab === "opportunities" ? <HostOpportunities detail={detail}
+    {tab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
-    {visibleTab === "intelligence" ? <SalesIntelligenceWorkspace
+    {tab === "intelligence" ? <SalesIntelligenceWorkspace
       organizerId={detail.account.organizerId}
       organizerName={detail.organizerSummary.name}
       currentUserUid={currentUserUid} isAdminOwner={isAdminOwner} /> : null}
-    {visibleTab === "demo" && !assignedStaffOnly ? <SalesDemoWorkspace
-      key={`${currentUserUid}:${detail.account.organizerId}:${isAdminOwner}`}
-      organizerId={detail.account.organizerId}
-      organizerName={detail.organizerSummary.name}
-      isAdminOwner={isAdminOwner} currentUserUid={currentUserUid} /> : null}
-    {visibleTab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
+    {tab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
       controller={controller} /> : null}
-    {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
+    {!assignedStaffOnly && (tab === "overview" || tab === "research") ?
       <HostCustomFields
       detail={detail} controller={controller} /> : null}
     <SalesRecordsWorkspace section="tasks" detail={detail} controller={controller}

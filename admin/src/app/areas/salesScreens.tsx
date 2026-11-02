@@ -18,7 +18,7 @@ export function renderSales(context: AdminAreaContext, area: keyof typeof salesA
       area={area}
       hostPage={route.salesHostPage}
       isAdminOwner={mode === "sample" || adminRoles.includes("adminOwner")}
-      onOpenHostPrivacy={(organizerId) => navigate(`${adminPathForNav("sales-hosts")}/${encodeURIComponent(organizerId)}/privacy`)}
+      onOpenHostPage={(organizerId, page) => navigate(`${adminPathForNav("sales-hosts")}/${encodeURIComponent(organizerId)}/${page}`)}
       onError={setError}
       onAddHost={() => navigate("/sales/add-host")}
       onNotice={setNotice}
