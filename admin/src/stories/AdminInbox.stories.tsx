@@ -46,6 +46,7 @@ function model(selectedItemId: string | null, canDecideClaim = false, eventSheet
     claimEvidence: selectedItemId === "claim-bhag" ? sampleClaimEvidence.bhag : null, claimEvidenceFailed: false,
     openEventReview: noop, eventReview: eventSheet ? sampleEventReviews["work-rooftop"] : null, eventReviewFailed: false,
     publishEvent: done, isPublishingEvent: false,
+    fillInByHand: done, isFillingIn: false,
     updateItem: done, recommendClaim: done, decideClaim: done, decideAccess: done, linkEnquiry: done,
     hostQuery: selectedItemId === "enquiry-harbor" ? "Harbor" : "", setHostQuery: noop,
     hostMatches: selectedItemId === "enquiry-harbor" ? [{organizerId: "harbor-social", name: "Harbor Social Club", city: "Mumbai"}] : [],
@@ -57,8 +58,8 @@ function model(selectedItemId: string | null, canDecideClaim = false, eventSheet
 
 const screen = (selectedItemId: string | null, canDecideClaim = false, eventSheet = false) => (
   <InboxScreen
+    canFillIn
     model={model(selectedItemId, canDecideClaim, eventSheet)}
-    onOpenReview={noop}
     onSelect={noop}
     selectedItemId={selectedItemId}
     uid="sample-dev"

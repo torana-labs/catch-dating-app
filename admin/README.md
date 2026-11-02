@@ -166,13 +166,13 @@ Catch-hosted `events/{id}` documents until a policy-owned importer exists.
 External supply rows are selectable so operators can inspect source attribution,
 candidate ids, normalized duplicate keys, review batch state, and owner-safe
 copy/import-policy checks without opening raw artifacts. Imported events
-publish from Organizer Intake's "Imported events" panels through
+publish from the Inbox through
 `adminPublishListingEvents`; the Events workspace only inspects and takes down
 external supply. The readiness workspace that read `eventSupplyReadiness/current`
 and published one row through `adminPublishExternalEvent` was retired on
 2026-10-29, and old `/events/readiness` links open the directory.
 
-Organizer Intake requires an explicit Resolved or Waived choice for every
+The Inbox requires an explicit Resolved or Waived choice for every
 governed event-import blocker. Waived choices must name the accepted matching
 policy-gap decision; selecting approval never silently clears a blocker. The
 Events workspace also exposes a separate dry-run-first takedown action. Takedown
@@ -294,64 +294,22 @@ items. Sample mode uses small typed synthetic objects in
 `admin/src/shared/api/sampleOperationalData.ts`; it never retains a copy of
 production operations data.
 
-The Intake tab shows an active publication-boundary panel for Event leads and
-Organizers before the dense workspaces render. Event leads write review
-decisions only and do not create `events/{id}`, `externalEvents/{id}`, bookings,
-payments, or waitlists. Organizer Intake records review, curation, policy, and
-location decisions; canonical organizer publication, route indexing, and claim
-handoff still pass through promotion tooling and the Organizers workspace.
+Supply Intake reaches people through the Inbox: one item for each nomination,
+claim, enquiry, access application or imported event, with the journey that
+brought it there. A nomination that could not be read waits as stuck. The owner
+or Sales can fill it in by hand, which starts a new nomination from the typed
+details and closes the stuck item; ops can pick it up or dismiss it. Settings →
+Intake holds the policy decisions and who can nominate by message.
 
-In live mode Organizer Intake loads the newest completed organizer-only Supply
-Intake run for Indore and Mumbai through `adminListIntakeOperations`. Candidate
-rows and bounded organizer publication-review packets are persisted
-`operationWorkItems`. The packet projection contains only the identity,
-market, blockers, checklist, aggregate evidence counts, public-state summary,
-decision state, and next actions needed by the workbench; evidence records,
-public copy, local commands, and raw provider payloads do not enter Firestore.
-The workbench treats record approval, public-page publication, search indexing,
-and app discovery as separate choices. Web and app exposure show their own
-evidence checks; indexing requires a published page, suppression clears every
-surface, and the backend repeats the same checks before accepting a decision.
-The browser never infers a hidden-app default for an approval.
-Immutable packets created before those controls were split are accepted only
-when they match the complete legacy shape and its original decision semantics:
-approve is published and indexed, hold is draft and noindex, and suppress is
-suppressed and noindex. Existing app visibility is preserved. Mixed, unknown,
-or contradictory legacy state still fails closed, and current producers must
-write every explicit visibility field required by the operations contract.
-Until a run contains that packet projection, live Verify, Resolve, and Ready
-show an explicit unavailable state rather than reporting zero work. Sample and
-Storybook views continue to use typed synthetic operation records. The checked
-`contracts/admin/admin_live_data_sources.json` inventory covers every Admin
-route and fails if production feature code imports generated operational JSON.
-Live builds also fail if any generated Event Intake, Organizer Intake,
+The old Intake review (Event leads, Organizers and Automation) retired on
+2026-11-02, and `/intake/*` opens the Inbox. Candidates from command-line
+discovery runs have no review screen until discovery is built into Admin; the
+callables they used stay in Functions until then.
+
+The checked `contracts/admin/admin_live_data_sources.json` inventory covers every
+Admin route and fails if production feature code imports generated operational
+JSON. Live builds also fail if any generated Event Intake, Organizer Intake,
 Marketing Ops, or external-event plan fixture survives in the Vite manifest.
-
-The third Intake workspace, Automation, reads canonical Supply Intake runs and
-work items through `adminListIntakeOperations`. It mirrors the persisted
-Incoming, Verify, Resolve, and Ready stages and highlights the human exception
-queue. It is read-only in both sample and live mode: the browser cannot request
-a run, fetch a source, call a model, deploy a rule, or publish a listing.
-
-Event Intake is one batch workspace rather than a queue plus a parallel
-Marketing-derived diagnostics screen. Incoming source rows and event-candidate
-rows use stage-specific columns. Candidate stages are mutually exclusive,
-upcoming work is ordered by projected event start time, Operations expiry stays
-visible as separate provenance, and passed events stay reviewable in a separate
-filter but cannot be approved. Editing happens in
-the inspector; decisions persist changed fields only as audited before/after
-pairs and decided rows stay in the current visual snapshot until Refresh.
-The inspector keeps diagnostics collapsed, compares duplicate candidates in
-place, and reports partial duplicate-resolution failures.
-
-The callable overlays decisions onto each refreshed Supply Intake projection
-and joins an attributed organizer's current Firestore `appVisibility` as a
-fail-closed ceiling. Event Intake remains a review surface; the separate
-external-event pipeline still owns publication, identity, location, dedupe, and
-import-policy gates. An orphan row is labeled `organizer required`, links its
-direct event evidence, and links to the paired organizer discovery lead created
-by Supply Intake. It cannot pass the Intake approval checklist until a
-canonical organizer is attributed.
 
 Live mode calls `adminGetMarketingOpsDashboard`,
 `adminRecordMarketingReviewDecision`, and `adminCreateMarketingContentDraft`.

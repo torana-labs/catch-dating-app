@@ -45,7 +45,7 @@ export function renderOlderSales({adminRoles, mode, navigate, route, userUid}: A
       onAreaChange={(area) => navigate(`/sales/${area}`)}
       onBackToHosts={() => navigate("/sales/hosts")}
       onOpenHost={(organizerId) => navigate(`/sales/hosts/${encodeURIComponent(organizerId)}`)}
-      onOpenIntake={() => navigate("/intake/organizers")}
+      onOpenIntake={() => navigate("/inbox")}
       onOpenOrganizer={(organizerId) => navigate(`/organizers/${encodeURIComponent(organizerId)}`)}
       selectedOrganizerId={route.params.salesOrganizerId ?? null}
     />

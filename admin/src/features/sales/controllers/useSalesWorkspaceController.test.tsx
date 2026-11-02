@@ -160,7 +160,7 @@ describe("useSalesWorkspaceController", () => {
       .map(([request]) => request.requestId);
     expect(second).toBe(first);
     expect(onNotice).toHaveBeenCalledWith(
-      "Nomination queued. Its listing appears in Organizer Intake for review.");
+      "Nomination queued. Its listing appears in the Inbox for review.");
   });
 
   it("explains revision conflicts without losing the operator's edit", () => {

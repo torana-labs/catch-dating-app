@@ -2,7 +2,7 @@
   "workflow": {
     "workflowId": "organizer-intake",
     "label": "Organizer Intake",
-    "guiPath": "/intake/organizers"
+    "guiPath": "/inbox"
   },
   "actions": [
     {
@@ -47,40 +47,12 @@
       }
     },
     {
-      "actionId": "organizer-intake.create-organizer-draft",
-      "callable": "adminCreateOrganizerDraftFromCandidate",
-      "workflowIds": [
-        "organizer-intake",
-        "organizers"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "workItemId",
-      "requestSchema": "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
-      "summary": "Create one unclaimed, source-backed organizer draft from a reviewed Supply Intake candidate; publication, indexing, app visibility, crawling, and ownership remain disabled.",
-      "example": {
-        "workItemId": "example-organizer-work-item",
-        "candidateId": "example-organizer-candidate",
-        "publicSlug": "example-organizer",
-        "name": "Example organizer",
-        "organizerType": "community",
-        "reviewNote": "Fixture organizer draft; do not apply to production."
-      }
-    },
-    {
       "actionId": "organizer-intake.decide-policy-gap",
       "callable": "adminDecideOrganizerPolicyGap",
       "workflowIds": [
         "organizer-intake"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/settings/intake",
       "kind": "mutation",
       "risk": "critical",
       "roles": [
@@ -108,47 +80,12 @@
       }
     },
     {
-      "actionId": "organizer-intake.decide-publication",
-      "callable": "adminDecideOrganizerIntake",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "critical",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "entityId",
-      "requestSchema": "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
-      "summary": "Approve or hold one organizer record while setting public-page publication, search indexing, and app discovery independently.",
-      "example": {
-        "entityId": "example-organizer",
-        "decision": "hold",
-        "publishStatus": "draft",
-        "indexStatus": "noindex",
-        "appVisibility": "hidden",
-        "checklist": {
-          "identityReviewed": true,
-          "surfaceInventoryReviewed": true,
-          "ownerSafeCopyReviewed": true,
-          "marketScopeReviewed": true,
-          "mediaRightsReviewed": true,
-          "crawlDisabledReviewed": true
-        },
-        "note": "Fixture publication hold."
-      }
-    },
-    {
       "actionId": "organizer-intake.list-supply-intake-policies",
       "callable": "adminListSupplyIntakePolicies",
       "workflowIds": [
         "organizer-intake"
       ],
-      "guiPath": "/intake/organizers",
+      "guiPath": "/settings/intake",
       "kind": "read",
       "risk": "read",
       "roles": [
@@ -193,30 +130,6 @@
           "ownerSafeCopyReviewed": true
         },
         "blockerResolutions": []
-      }
-    },
-    {
-      "actionId": "organizer-intake.record-curation",
-      "callable": "adminRecordOrganizerCuration",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "entityId",
-      "requestSchema": "contracts/callables/admin_record_organizer_curation_payload.schema.json",
-      "summary": "Record one atomic organizer curation operation.",
-      "example": {
-        "operationType": "suppress_entity",
-        "entityId": "example-organizer",
-        "reason": "Fixture curation operation; do not apply."
       }
     },
     {

@@ -12,30 +12,25 @@ import {
 
 const sharedFiles = [
   "admin/src/shared/api/adminApi.ts",
-  "admin/src/features/intake/organizer/api/organizerIntakeRepository.ts",
-  "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
-  "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+  "admin/src/features/intake/organizer/api/supplyIntakePolicyRepository.ts",
+  "admin/src/features/intake/organizer/controllers/useSupplyIntakePolicyController.ts",
   "admin/src/shared/types/adminTypes.ts",
   "functions/src/index.ts",
   "functions/src/admin/intakeOperations.ts",
   "functions/src/admin/intakeOperations.test.ts",
 ];
 
-test("current Organizer Intake is Firestore-backed", () => {
+test("the Intake policy decision is Firestore-backed", () => {
   const result = checkAdminReviewBridge();
 
   assert.equal(result.ok, true);
   assert.deepEqual(result.errors, []);
-  assert.equal(result.summary.channels, 3);
-  assert.equal(result.summary.readyChannels, 3);
+  assert.equal(result.summary.channels, 1);
+  assert.equal(result.summary.readyChannels, 1);
   assert.equal(result.summary.source, "firestore");
   assert.deepEqual(
     result.channels.map((channel) => channel.id),
-    [
-      "organizer_publication",
-      "organizer_curation",
-      "organizer_policy_gap_review",
-    ]
+    ["organizer_policy_gap_review"]
   );
 });
 
@@ -58,24 +53,24 @@ test("rejects removal of the Supply Intake Firestore read", () => {
   const root = mirrorRequiredFiles();
   replaceIn(
     root,
-    "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
-    "listIntakeOperations",
-    "removedListIntakeOperations"
+    "functions/src/admin/intakeOperations.ts",
+    "repository.listRuns",
+    "removedListRuns"
   );
 
   const result = checkAdminReviewBridge({root});
 
   assert.equal(result.ok, false);
-  assert.match(result.errors.join("\n"), /Firestore loader/);
+  assert.match(result.errors.join("\n"), /run collection repository/);
 });
 
 test("rejects a removed React Query decision mutation", () => {
   const root = mirrorRequiredFiles();
   replaceIn(
     root,
-    "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
-    "mutationFn: decideOrganizerIntake",
-    "mutationFn: removedOrganizerIntake"
+    "admin/src/features/intake/organizer/controllers/useSupplyIntakePolicyController.ts",
+    "mutationFn: decideSupplyIntakePolicy",
+    "mutationFn: removedSupplyIntakePolicy"
   );
 
   const result = checkAdminReviewBridge({
@@ -92,7 +87,7 @@ test("rejects a drifted Firestore decision collection", () => {
   replaceIn(
     root,
     adminReviewBridgeChannels[0].handlerFile,
-    'const decisionCollection = "organizerIntakeReviewDecisions"',
+    'const decisionCollection = "organizerPolicyGapReviewDecisions"',
     'const decisionCollection = "localOrganizerDecisions"'
   );
 

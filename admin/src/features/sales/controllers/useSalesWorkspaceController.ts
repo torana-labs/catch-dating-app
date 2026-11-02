@@ -278,7 +278,7 @@ export function useSalesWorkspaceController({
     input: Omit<SalesNominateOrganizerInput, "requestId">
   ) => execute("nomination", input, (requestId) =>
     nominationMutation.mutateAsync({...input, requestId}),
-  "Nomination queued. Its listing appears in Organizer Intake for review."),
+  "Nomination queued. Its listing appears in the Inbox for review."),
   [execute, nominationMutation]);
 
   const saveTask = useCallback((
