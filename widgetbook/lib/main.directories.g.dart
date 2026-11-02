@@ -471,6 +471,8 @@ import 'package:widgetbook_workspace/primitives/contracts/section.dart'
     as _widgetbook_workspace_primitives_contracts_section;
 import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
     as _widgetbook_workspace_primitives_contracts_section_lists;
+import 'package:widgetbook_workspace/primitives/contracts/section_timeline.dart'
+    as _widgetbook_workspace_primitives_contracts_section_timeline;
 import 'package:widgetbook_workspace/primitives/contracts/sheets.dart'
     as _widgetbook_workspace_primitives_contracts_sheets;
 import 'package:widgetbook_workspace/primitives/contracts/steps.dart'
@@ -2428,6 +2430,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_section_layout_use_cases
                         .responsiveSectionPageStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Sections',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSectionTimeline',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_section_timeline
+                        .catchSectionTimelineContractStates,
               ),
             ],
           ),

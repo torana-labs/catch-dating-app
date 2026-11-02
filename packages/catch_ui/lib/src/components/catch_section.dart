@@ -21,7 +21,6 @@ import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
 import 'package:catch_ui/src/components/catch_section_header_placement.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
-import 'package:catch_ui/src/components/catch_section_timeline.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
@@ -648,20 +647,6 @@ class CatchSection extends StatelessWidget {
       trailing: trailing,
       child: child,
     ),
-  );
-
-  /// A journey, as `@catch/web-ui`'s `timeline`: steps joined by their markers.
-  factory CatchSection.timeline({
-    Key? key,
-    String? title,
-    Widget? trailing,
-    required List<CatchSectionStep> steps,
-    required CatchSectionTimelineCopy copy,
-  }) => CatchSection.content(
-    key: key,
-    title: title,
-    trailing: trailing,
-    child: CatchSectionTimeline(steps: steps, copy: copy),
   );
 
   /// A lazy ordinary-row section for a full-width page or pane viewport.

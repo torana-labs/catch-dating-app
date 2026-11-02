@@ -13,15 +13,15 @@ const _steps = [
     title: 'Your page went live',
     subtitle: 'Hidden from search',
     meta: 'Thu 31 Oct',
-    state: CatchSectionStepState.done,
+    status: CatchSectionStepStatus.done,
   ),
   CatchSectionStep(
     title: 'You asked to claim it',
     meta: 'Today',
-    state: CatchSectionStepState.current,
+    status: CatchSectionStepStatus.current,
     tone: CatchSectionStepTone.warning,
   ),
-  CatchSectionStep(title: 'Run your page', state: CatchSectionStepState.next),
+  CatchSectionStep(title: 'Run your page', status: CatchSectionStepStatus.next),
 ];
 
 Widget _app(Widget child) => MaterialApp(
@@ -54,18 +54,5 @@ void main() {
     expect(find.bySemanticsLabel(RegExp('^Now: You asked')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('^Next: Run your')), findsOneWidget);
     handle.dispose();
-  });
-
-  testWidgets('a section titles the timeline', (tester) async {
-    await tester.pumpWidget(
-      _app(
-        CatchSection.timeline(
-          title: 'Your page so far',
-          steps: _steps,
-          copy: _copy,
-        ),
-      ),
-    );
-    expect(find.byType(CatchSectionTimeline), findsOneWidget);
   });
 }
