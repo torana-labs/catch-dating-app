@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const isCliEntrypoint =
@@ -17,7 +18,8 @@ export function scanMutationErrorSurfaces({root = fromRepo()} = {}) {
       return scopeFailure("Expected a repository root with a production lib directory.");
     }
   }
-  const dartFiles = collectDartFiles(inputRoot);
+  const dartFiles = screenSourceRoots(root)
+    .flatMap((sourceRoot) => collectDartFiles(path.join(root, sourceRoot)));
   if (dartFiles.length === 0) {
     return scopeFailure("No eligible production lib Dart files found (.g.dart files are excluded).");
   }
@@ -302,7 +304,8 @@ function printHelp() {
   node tool/architecture/check_mutation_error_surfaces.mjs --json
   node tool/architecture/check_mutation_error_surfaces.mjs --root <repo-root>
 
-Scans production lib/**/*.dart build methods, excluding .g.dart files.
+Scans production lib/**/*.dart and apps/*/lib/**/*.dart build methods, excluding
+.g.dart files.
 Missing, non-directory or empty input scopes fail the check.
 Any watched mutation whose
 isPending state is read must also expose a matching mutation error surface, such
@@ -331,7 +334,7 @@ function runCli() {
 
   if (!args.json) {
     console.log(
-      `Mutation error surface check passed (${result.checkedFiles} lib Dart files scanned).`,
+      `Mutation error surface check passed (${result.checkedFiles} lib and apps/*/lib Dart files scanned).`,
     );
   }
 }

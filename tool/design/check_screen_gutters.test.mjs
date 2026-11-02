@@ -47,6 +47,26 @@ test("scanScreenGutters covers presentation widgets, not only screen files", () 
   assert.equal(result.findings[0].path, "lib/dashboard/presentation/widgets/activity_section.dart");
 });
 
+test("scanScreenGutters covers every app-package source, with no presentation folder", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-screen-gutters-apps-"));
+  writeJson(root, "design/screens/catch.screens.json", {screens: []});
+  const source = fs.readFileSync(
+    path.join(testDir, "fixtures/screen_gutters/bad_presentation_widget.dart"),
+    "utf8",
+  );
+  writeFile(root, "apps/host/lib/today/today_body.dart", source);
+  writeFile(root, "apps/consumer/lib/explore/explore_body.dart", source);
+
+  const result = scanScreenGutters({root});
+
+  assert.equal(result.filesScanned, 2);
+  assert.equal(result.counts.high, 2);
+  assert.deepEqual(result.findings.map((finding) => finding.path), [
+    "apps/consumer/lib/explore/explore_body.dart",
+    "apps/host/lib/today/today_body.dart",
+  ]);
+});
+
 test("scanSourceForEdgeInsets ignores comments and strings", () => {
   const findings = scanSourceForEdgeInsets({
     relativePath: "lib/example/presentation/example_screen.dart",

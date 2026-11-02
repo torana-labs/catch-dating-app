@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isScreenSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
@@ -197,10 +198,7 @@ export function checkScreenTopBarContracts({
 }
 
 function checkTopBarActionFamilies({root, findings}) {
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return;
-
-  for (const absolutePath of walkDartFiles(libRoot)) {
+  for (const absolutePath of screenDartFiles(root)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
     const source = maskDartCommentsAndStrings(
       fs.readFileSync(absolutePath, "utf8"),
@@ -373,7 +371,7 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
 
 function collectAppBars(root, {canonicalScreenScaffoldAppBarIndex = null} = {}) {
   const result = new Map();
-  const roots = ["lib", "packages/catch_ui/lib"]
+  const roots = [...screenSourceRoots(root), "packages/catch_ui/lib"]
     .map((relativePath) => path.join(root, relativePath))
     .filter((absolutePath) => fs.existsSync(absolutePath));
 
@@ -434,10 +432,7 @@ function collectAppBars(root, {canonicalScreenScaffoldAppBarIndex = null} = {}) 
 
 function collectRawChrome(root) {
   const result = new Map();
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return result;
-
-  for (const absolutePath of walkDartFiles(libRoot)) {
+  for (const absolutePath of screenDartFiles(root)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
     const source = maskDartCommentsAndStrings(
       fs.readFileSync(absolutePath, "utf8"),
@@ -466,10 +461,7 @@ function manualHeaderOwners(source) {
 
 function collectManualHeaders(root) {
   const result = new Map();
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return result;
-
-  for (const absolutePath of walkDartFiles(libRoot)) {
+  for (const absolutePath of screenDartFiles(root)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
     if (isAppSharedWidgetSource(relativePath)) continue;
     const source = maskDartCommentsAndStrings(
@@ -513,7 +505,7 @@ function collectTrackedRootHeaderPaths(rootHeaders) {
       .filter(
         (surfacePath) =>
           typeof surfacePath === "string" &&
-          surfacePath.startsWith("lib/") &&
+          isScreenSource(surfacePath) &&
           !isAppSharedWidgetSource(surfacePath),
       ),
   );
@@ -580,6 +572,13 @@ function collectScreenChromeClassCandidates(source) {
   }
   screenChromeClassPattern.lastIndex = 0;
   return candidates;
+}
+
+function* screenDartFiles(root) {
+  for (const sourceRoot of screenSourceRoots(root)) {
+    const absolute = path.join(root, sourceRoot);
+    if (fs.existsSync(absolute)) yield* walkDartFiles(absolute);
+  }
 }
 
 function* walkDartFiles(directory) {
@@ -819,11 +818,11 @@ function validateManifest(manifest, findings, manifestPath) {
 
   const seenPaths = new Set();
   for (const contract of manifest.contracts) {
-    if (typeof contract.path !== "string" || !contract.path.startsWith("lib/")) {
+    if (typeof contract.path !== "string" || !isScreenSource(contract.path)) {
       findings.push({
         code: "invalid-path",
         path: manifestPath,
-        message: "Every contract requires a lib-relative path.",
+        message: "Every contract requires a path under lib/ or apps/<app>/lib/.",
       });
     } else if (seenPaths.has(contract.path)) {
       findings.push({
@@ -1004,11 +1003,11 @@ function validateRootHeaderManifest(manifest, findings, manifestPath) {
       }
       seenSurfaces.add(surfaceKey);
 
-      if (typeof surface.path !== "string" || !surface.path.startsWith("lib/")) {
+      if (typeof surface.path !== "string" || !isScreenSource(surface.path)) {
         findings.push({
           code: "invalid-root-surface-path",
           path: manifestPath,
-          message: "Every root-header surface requires a lib-relative path.",
+          message: "Every root-header surface requires a path under lib/ or apps/<app>/lib/.",
         });
       }
       if (typeof surface.symbol !== "string" || surface.symbol.length === 0) {
@@ -1042,11 +1041,11 @@ function validateRawChromeExceptions(manifest, findings, manifestPath) {
   }
   const seen = new Set();
   for (const exception of manifest.rawChromeExceptions) {
-    if (typeof exception.path !== "string" || !exception.path.startsWith("lib/")) {
+    if (typeof exception.path !== "string" || !isScreenSource(exception.path)) {
       findings.push({
         code: "invalid-raw-chrome-path",
         path: manifestPath,
-        message: "Every raw-chrome exception requires a lib-relative path.",
+        message: "Every raw-chrome exception requires a path under lib/ or apps/<app>/lib/.",
       });
     } else if (seen.has(exception.path)) {
       findings.push({
@@ -1126,11 +1125,11 @@ function validateRoutePresentations(manifest, findings, manifestPath) {
       });
     }
     seen.add(key);
-    if (typeof presentation.path !== "string" || !presentation.path.startsWith("lib/")) {
+    if (typeof presentation.path !== "string" || !isScreenSource(presentation.path)) {
       findings.push({
         code: "invalid-route-presentation-path",
         path: manifestPath,
-        message: "Every route presentation requires a lib-relative path.",
+        message: "Every route presentation requires a path under lib/ or apps/<app>/lib/.",
       });
     }
     if (typeof presentation.symbol !== "string" || presentation.symbol.length === 0) {
@@ -1179,11 +1178,11 @@ function validateManualHeaders(manifest, findings, manifestPath) {
       });
     }
     seen.add(key);
-    if (typeof header.path !== "string" || !header.path.startsWith("lib/")) {
+    if (typeof header.path !== "string" || !isScreenSource(header.path)) {
       findings.push({
         code: "invalid-manual-header-path",
         path: manifestPath,
-        message: "Every manual header requires a lib-relative path.",
+        message: "Every manual header requires a path under lib/ or apps/<app>/lib/.",
       });
     }
     if (typeof header.symbol !== "string" || header.symbol.length === 0) {

@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isScreenSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
@@ -37,7 +38,7 @@ export function scanOptionGroupUsage({root = repoRoot} = {}) {
 }
 
 export function scanSourceForOptionGroupUsage({relativePath, source}) {
-  if (!relativePath.startsWith("lib/")) return [];
+  if (!isScreenSource(relativePath)) return [];
   if (allowedProductionPaths.has(relativePath)) return [];
 
   const commentStripped = stripDartCommentsPreserveLength(source);
@@ -59,8 +60,10 @@ export function scanSourceForOptionGroupUsage({relativePath, source}) {
 
 function collectDartFiles(root) {
   const files = [];
-  const absolute = path.join(root, "lib");
-  if (fs.existsSync(absolute)) walk(absolute, files, root);
+  for (const sourceRoot of screenSourceRoots(root)) {
+    const absolute = path.join(root, sourceRoot);
+    if (fs.existsSync(absolute)) walk(absolute, files, root);
+  }
   return files.sort();
 }
 

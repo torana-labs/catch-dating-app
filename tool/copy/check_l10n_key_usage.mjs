@@ -4,12 +4,12 @@ import fs from "node:fs";
 import {tokenizeDartSyntax} from "../lib/dart_source.mjs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {
   repoRoot as defaultRepoRoot,
 } from "../lib/repo_paths.mjs";
 
 const defaultArbRelativePath = "lib/l10n/app_en.arb";
-const defaultSourceRootRelativePath = "lib";
 
 const generatedSuffixPattern =
   /\.(?:freezed|g|gen|gr|mocks)\.dart$/u;
@@ -35,11 +35,12 @@ if (isCliEntrypoint) {
 export function scanL10nKeyUsage({
   repoRoot = defaultRepoRoot,
   arbPath = path.join(repoRoot, defaultArbRelativePath),
-  sourceRoot = path.join(repoRoot, defaultSourceRootRelativePath),
+  sourceRoots = screenSourceRoots(repoRoot)
+    .map((sourceRoot) => path.join(repoRoot, sourceRoot)),
 } = {}) {
   const resolvedRepoRoot = path.resolve(repoRoot);
   const resolvedArbPath = path.resolve(arbPath);
-  const resolvedSourceRoot = path.resolve(sourceRoot);
+  const resolvedSourceRoots = sourceRoots.map((sourceRoot) => path.resolve(sourceRoot));
   const catalog = parseArbCatalog(
     fs.readFileSync(resolvedArbPath, "utf8"),
     displayPath(resolvedArbPath, resolvedRepoRoot),
@@ -54,7 +55,7 @@ export function scanL10nKeyUsage({
   const scannedFiles = [];
   const excludedFiles = [];
 
-  for (const filePath of collectDartFiles(resolvedSourceRoot)) {
+  for (const filePath of resolvedSourceRoots.flatMap(collectDartFiles)) {
     const source = fs.readFileSync(filePath, "utf8");
     const relativePath = displayPath(filePath, resolvedRepoRoot);
     const exclusionReason = generatedFileExclusionReason({
@@ -123,10 +124,10 @@ export function scanL10nKeyUsage({
     missingCatalogReferences.map((reference) => reference.key),
   )].sort(compareText);
   const inventory = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     generatedBy: "node tool/copy/check_l10n_key_usage.mjs",
     catalog: displayPath(resolvedArbPath, resolvedRepoRoot),
-    sourceRoot: displayPath(resolvedSourceRoot, resolvedRepoRoot),
+    sourceRoots: resolvedSourceRoots.map((sourceRoot) => displayPath(sourceRoot, resolvedRepoRoot)),
     scope: {
       included:
         "exact ARB-key identifiers and statically recognized l10n.<key> member references in handwritten production Dart",
@@ -323,7 +324,7 @@ function parseArgs(argv) {
     help: false,
     json: false,
     repoRoot: defaultRepoRoot,
-    sourceRoot: defaultSourceRootRelativePath,
+    sourceRoot: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -362,8 +363,11 @@ function runCli() {
 
   const repoRoot = path.resolve(args.repoRoot);
   const arbPath = resolveFromRoot(repoRoot, args.arb);
-  const sourceRoot = resolveFromRoot(repoRoot, args.sourceRoot);
-  const result = scanL10nKeyUsage({repoRoot, arbPath, sourceRoot});
+  const result = scanL10nKeyUsage({
+    repoRoot,
+    arbPath,
+    ...(args.sourceRoot == null ? {} : {sourceRoots: [resolveFromRoot(repoRoot, args.sourceRoot)]}),
+  });
 
   if (args.json) {
     console.log(
@@ -417,7 +421,7 @@ function printHelp() {
   console.log(`Usage: node tool/copy/check_l10n_key_usage.mjs [options]
 
 Scans exact app_en.arb key identifiers and l10n.<key> member references in
-handwritten production Dart. Missing catalog getters always fail. Generated
+handwritten production Dart under lib/ and apps/*/lib/. Missing catalog getters always fail. Generated
 Dart, comments, and ordinary string contents cannot affect either result.
 
 Check options:
@@ -426,7 +430,7 @@ Check options:
 
 Path options:
   --arb <path>            Override lib/l10n/app_en.arb.
-  --source-root <path>    Override the lib source root.
+  --source-root <path>    Scan this one source root instead of lib and apps/*/lib.
   --repo-root <path>      Override the checkout root (used by fixture tests).
   --help, -h              Show this help.
 
