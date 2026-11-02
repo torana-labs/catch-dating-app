@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

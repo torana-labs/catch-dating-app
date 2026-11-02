@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:catch_kernel/location_coordinate.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('LocationCoordinate', () {

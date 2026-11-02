@@ -10,11 +10,11 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/platform/device/connectivity_service.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
 import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 
 /// Shared deterministic fixtures for Matches List and Match Chat design review.
 ///

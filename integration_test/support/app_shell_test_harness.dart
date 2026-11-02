@@ -45,8 +45,6 @@ import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/explore/explore.dart';
-import 'package:catch_dating_app/kernel/city_data.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/cities/city_repository.dart';
@@ -60,6 +58,8 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/callable_re
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
+import 'package:catch_kernel/city_data.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';

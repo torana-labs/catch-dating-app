@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.da
 import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_card.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_thumbnail.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

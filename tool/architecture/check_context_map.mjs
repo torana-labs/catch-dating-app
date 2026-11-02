@@ -40,7 +40,7 @@ export function loadContextMap(source) {
   const roots = map.roots ?? {};
   for (const root of ["contexts", "pages", "kernel", "platform"]) {
     if (typeof roots[root] !== "string" || !roots[root].endsWith("/")) {
-      throw new Error(`Context map root ${root} must be a lib/ folder ending in /.`);
+      throw new Error(`Context map root ${root} must be a folder ending in /.`);
     }
   }
   const legacy = [];

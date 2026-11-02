@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/events/data/places_callable_requests.dart';
 import 'package:catch_dating_app/contexts/events/data/places_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/domain/place.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

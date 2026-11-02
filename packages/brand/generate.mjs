@@ -110,7 +110,7 @@ export function outputs(record = brand) {
   return [
     {path: "functions/src/shared/generated/brand.ts", content: renderFunctionsModule(record)},
     {path: "website/src/content/brand.ts", content: renderWebsiteModule(record)},
-    {path: "lib/kernel/brand.dart", content: renderDartModule(record)},
+    {path: "packages/kernel/lib/brand.dart", content: renderDartModule(record)},
   ];
 }
 

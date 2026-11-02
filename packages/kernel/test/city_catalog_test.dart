@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/kernel/city_catalog.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_kernel/country_markets.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('city catalog', () {

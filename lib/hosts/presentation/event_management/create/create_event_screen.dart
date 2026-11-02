@@ -40,11 +40,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dial
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_stepper_dock.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/business_rules.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -55,6 +50,11 @@ import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart'
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/business_rules.dart';
+import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_kernel/country_markets.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

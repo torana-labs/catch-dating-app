@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_dating_app/platform/time/time_zone_calendar.dart';
+import 'package:catch_kernel/country_markets.dart';
 
 class EventFormatters {
   static String shortMonth(DateTime dateTime) =>

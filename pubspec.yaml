@@ -26,6 +26,7 @@ workspace:
   - apps/host
   - packages/catch_tokens
   - packages/catch_ui
+  - packages/kernel
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -38,6 +39,8 @@ dependencies:
     path: packages/catch_ui
   catch_tokens:
     path: packages/catch_tokens
+  catch_kernel:
+    path: packages/kernel
   flutter:
     sdk: flutter
 

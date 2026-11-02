@@ -2307,7 +2307,7 @@ API contract.
 
 Use sentinel-backed parameters only for patch/copy APIs where "leave unchanged"
 must be distinguishable from "clear this nullable field." Generated patch
-classes use `unsetSentinel` from `lib/kernel/sentinels.dart` and compare it with
+classes use `unsetSentinel` from `packages/kernel/lib/sentinels.dart` and compare it with
 `identical`; callers should pass `null` only when the persisted value should be
 cleared. Do not add new ad hoc sentinels outside patch/copy semantics without
 first documenting the same clear-versus-omit distinction.

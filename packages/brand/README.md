@@ -17,7 +17,7 @@ cannot switch.
 | Admin, website outside `src/content/`, Node scripts in `tool/` | `import {brand, webUrl, applyBrand} from "@catch/brand"` | Workspace package; plain ESM, no copy. |
 | Website copy (`website/src/content/`) | `./brand.ts` (generated) | Content modules may only import content, and the release smoke runs them from a bare worktree with no packages installed. |
 | Cloud Functions | `functions/src/shared/generated/brand.ts` (`BRAND`, `brandWebUrl`, `BRAND_ORIGIN_PATTERN`) | Functions deploys only `functions/`. |
-| Flutter apps, Widgetbook, Dart tests | `lib/kernel/brand.dart` (`Brand.webOrigin`, `Brand.webUri(path)`, …) | Generated. |
+| Flutter apps, Widgetbook, Dart tests | `packages/kernel/lib/brand.dart` (`Brand.webOrigin`, `Brand.webUri(path)`, …) | Generated. |
 | Managed surfaces (see below) | literal values, rewritten by the generator | Files another toolchain reads raw. |
 | JSON copy (`legal.json`, …) | `{{brand.name}}`, `{{brand.web.domain}}`, … | The importing module passes the document through `applyBrand`. An unknown token throws. |
 

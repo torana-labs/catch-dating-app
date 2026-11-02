@@ -1,5 +1,3 @@
-/// Use as a default for `Object?` parameters when "not passed" must be
-/// distinguishable from "explicitly null."
-///
-/// Compare with [identical].
-const Object unsetSentinel = Object();
+// Temporary: importers held by other open pull requests still use this path.
+// Deleted with their rewrite. See the catch_kernel pull request.
+export 'package:catch_kernel/sentinels.dart';

@@ -5,9 +5,9 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/city_data.dart';
 import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/city_data.dart';
 
 const widgetbookExploreViewerUid = 'widgetbook-explore-viewer';
 
