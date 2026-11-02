@@ -4917,6 +4917,7 @@
         ]
       },
       "impactPaths": [
+        "tool/design/consolidation_gates.test.mjs",
         "design/components/consolidation_gates.json",
         "design/components/catch.components.json",
         "tool/design/check_widgetbook_contract_refs.mjs",
