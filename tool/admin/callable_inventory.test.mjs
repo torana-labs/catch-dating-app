@@ -12,6 +12,14 @@ test("catalog and validator discovery cover central and feature-owned APIs", () 
   `), ["adminLegacy", "adminSalesRead", "adminSalesWrite"]);
 });
 
+test("a call with an inline type in its generics is still found", () => {
+  assert.deepEqual(adminCallableNames(`
+    const page = await call<{status: string; limit: number}, {rows: Array<{intentId: string; revision: number}>}>(
+      "adminListWithInlineTypes", {status: "open", limit: 50});
+    invokeAdminCallable<{id: string; revision: number}, void>("manageWithInlineTypes", payload);
+  `), ["adminListWithInlineTypes", "manageWithInlineTypes"]);
+});
+
 test("the validated boundary also covers callables without the admin prefix", () => {
   assert.deepEqual(adminCallableNames(`
     function invokeAdminCallable<RequestData, ResponseData>(name: string, payload: RequestData) {}
