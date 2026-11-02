@@ -569,7 +569,7 @@ test("source preflight includes the queue regressions and refuses unavailable co
   const checks = planSourcePreflight(options);
   for (const command of ["check_flutter_test_size",
     "check_flutter_source_size", "check_route_inventory", "generate_widget_catalog",
-    "build_host_feature_responsibilities", "build_design_sync_manifest",
+    "build_host_feature_responsibilities",
     "provider_graph", "check_ui_composition_contracts"]) {
     assert.ok(checks.some(check => check.command.includes(command)), command);
   }

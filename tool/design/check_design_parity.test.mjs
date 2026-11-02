@@ -1,10 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {designParityCommands, selectedHandoffChecks} from "./check_design_parity.mjs";
-import {planAffectedToolChecks, uniqueToolChecks} from "../lib/tool_impact.mjs";
+import {designParityCommands} from "./check_design_parity.mjs";
+import {uniqueToolChecks} from "../lib/tool_impact.mjs";
 const manifest = JSON.parse(fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"));
-const graph = JSON.parse(fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"));
 const commands = designParityCommands(manifest);
 
 test("flat parity commands preserve real source invariants and deduplicate the full design bucket", () => {
@@ -42,48 +41,8 @@ test("widget dedupe probes resolve their standalone Dart package", () => {
     /"run",\s*"--packages=tool\/widget_dedupe\/\.dart_tool\/package_config\.json",\s*"tool\/widget_dedupe\/bin\/extract_fingerprints\.dart"/u);
 });
 
-test("advisory all-pairs generation and handoff snapshots are absent from ordinary parity execution", () => {
-  for (const path of ["build_widget_similarity.mjs", "import_figma_library_snapshot.mjs",
-    "build_design_sync_manifest.mjs"]) {
-    assert.ok(!commands.some(command => command.includes(path)), path);
-  }
+test("advisory all-pairs generation is absent from ordinary parity execution", () => {
+  assert.ok(!commands.some(command => command.includes("build_widget_similarity.mjs")));
   const source = fs.readFileSync(new URL("./check_design_parity.mjs", import.meta.url), "utf8");
   assert.match(source, /args.includes\("--reports"\)/u);
-  assert.match(source, /args.includes\("--handoff"\)/u);
-});
-
-for (const [path, required] of [
-  ["design/sync/figma_library_snapshot.json", "design:figma-library-snapshot"],
-  ["design/sync/live_capabilities.json", "design:sync-manifest"],
-  ["design/sync/claude_design_receipt.json", "design:sync-manifest"],
-  ["design/components/catch.components.json", "design:sync-manifest"],
-]) test(`handoff input ${path} retains ${required}`, () => {
-  const plan = planAffectedToolChecks({changedPaths: [path], manifest, componentGraph: graph});
-  assert.equal(plan.mode, "affected", plan.fullReasons?.join("\n"));
-  assert.ok(plan.toolIds.includes(required));
-});
-
-test("ordinary app logic does not invoke snapshot or handoff export checks", () => {
-  const plan = planAffectedToolChecks({changedPaths: ["lib/events/presentation/widgets/event_detail_dock.dart", "tool/design/check_design_parity.test.mjs"], manifest, componentGraph: graph});
-  assert.equal(plan.mode, "affected", plan.fullReasons?.join("\n"));
-  for (const id of ["design:figma-library-snapshot", "design:sync-manifest"]) {
-    assert.ok(!plan.toolIds.includes(id), id);
-  }
-});
-
-test("Flutter handoff selection uses real inputs and retains conservative control/full runs", () => {
-  assert.deepEqual(selectedHandoffChecks(manifest, ["lib/events/presentation/widgets/event_detail_dock.dart"]), []);
-  // App sources, fonts and capture catalogs fed only the retired context pack.
-  for (const file of ["lib/platform/theme/app_theme.dart", "assets/fonts/Fixture.ttf", "packages/catch_tokens/lib/token.dart",
-    "test/ui_captures/catalog/screen_capture_catalog.dart", "test/ui_captures/support/capture_device.dart", "pubspec.lock"]) {
-    assert.deepEqual(selectedHandoffChecks(manifest, [file]), [], file);
-  }
-  assert.ok(selectedHandoffChecks(manifest, ["design/sync/figma_library_snapshot.json"])
-    .includes("node tool/design/import_figma_library_snapshot.mjs --check"));
-  const full = selectedHandoffChecks(manifest, [], {full: true});
-  assert.ok(full.includes("node tool/design/build_design_sync_manifest.mjs --check"));
-  assert.deepEqual(selectedHandoffChecks(manifest, ["tool/tools_manifest.json"]), full);
-  const broken = structuredClone(manifest);
-  broken.tools.find(tool => tool.id === "design:sync-manifest").impactPaths = [];
-  assert.throws(() => selectedHandoffChecks(broken, []), /Missing scoped handoff owner/);
 });

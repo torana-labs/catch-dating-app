@@ -484,12 +484,9 @@ pack. Failure or cancellation of the owning Tools lane still fails Required CI.
 
 Design parity source checks are explicit commands in `tool/tools_manifest.json`,
 shared by the local umbrella and the tool runner. Identical scanner commands run
-once within the Marketing/design tool bucket. Figma/Claude snapshot checks and
-portable context exports select from their recorded inputs; local handoff work
-can request `check_design_parity.mjs --check --handoff`. Whole-product similarity
-and advisory migration reports remain explicit `--reports` output. These prove
-source contracts or export freshness, never live visual parity. Missing snapshot
-metadata still fails its selected check; generated reports do not replace UI
+once within the Marketing/design tool bucket. Whole-product similarity and
+advisory migration reports remain explicit `--reports` output. These prove
+source contracts, never live visual parity; generated reports do not replace UI
 journeys, renderer tests or ownership checks.
 
 Route inventory version 5 records semantic presentation identities, not physical
