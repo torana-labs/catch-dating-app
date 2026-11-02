@@ -32,7 +32,7 @@ const model = (overrides: Partial<SalesHostsModel> = {}): SalesHostsModel => ({q
   contacts: [], contactsFailed: false, retryContacts: vi.fn(), hasMoreContacts: false, moreContacts: vi.fn(),
   reviewContact: vi.fn().mockResolvedValue(true), evidence: [], evidenceFailed: false,
   retryEvidence: vi.fn(), hasMoreEvidence: false, moreEvidence: vi.fn(), addEvidence: vi.fn().mockResolvedValue(true), suggestions: [proposal()], suggestionsFailed: false, retrySuggestions: vi.fn(),
-  hasMoreSuggestions: false, moreSuggestions: vi.fn(), reviewSuggestion: vi.fn().mockResolvedValue(true), canEditResearch: true, isSaving: false, ...overrides});
+  hasMoreSuggestions: false, moreSuggestions: vi.fn(), reviewSuggestion: vi.fn().mockResolvedValue(true), canEditResearch: true, isAdminOwner: true, commercial: null, isSaving: false, ...overrides});
 
 const screenFor = (current: SalesHostsModel) => <SalesHostsScreen model={current} selectedOrganizerId="harbor" onSelect={noop}
   onOpenHostTools={noop} onAddHost={noop} onOpenOrganizer={noop} />;

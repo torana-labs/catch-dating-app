@@ -5,7 +5,7 @@ import {SalesWorkspaceScreen} from "./SalesWorkspaceScreen";
 
 const controllerMock = vi.hoisted(() => ({use: vi.fn()}));
 const childMocks = vi.hoisted(() => ({
-  commercial: vi.fn(), demo: vi.fn(), fitQueue: vi.fn(), funnel: vi.fn(),
+  demo: vi.fn(), fitQueue: vi.fn(), funnel: vi.fn(),
   history: vi.fn(), intelligence: vi.fn(), privacy: vi.fn(), records: vi.fn(),
   settings: vi.fn(),
 }));
@@ -26,9 +26,6 @@ vi.mock("../controllers/useSalesWorkspaceController", () => ({
   ],
   toLocalDateTimeInput: () => "2026-10-07T09:30",
   useSalesWorkspaceController: controllerMock.use,
-}));
-vi.mock("./SalesCommercialWorkspace", () => ({
-  renderSalesCommercialWorkspace: childMocks.commercial,
 }));
 vi.mock("./SalesDemoPanel", () => ({SalesDemoWorkspace: childMocks.demo}));
 vi.mock("./SalesFitQueueWorkspace", () => ({
@@ -75,7 +72,6 @@ function controller() {
     identityMatches: query({rows: [], nextCursor: null}),
     canonicalMatches: query([]),
     customFields: query({rows: []}), contacts: query({rows: [], nextCursor: null}),
-    evidence: query({rows: [], nextCursor: null}),
     detail: query(detail),
     canonicalSearch: "", identitySearch: "", query: "", researchStatus: "all",
     ownerUid: "", opportunityStage: "", validAccountQuery: true,

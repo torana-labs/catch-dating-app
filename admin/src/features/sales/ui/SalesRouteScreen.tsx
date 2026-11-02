@@ -1,5 +1,6 @@
 import {CatchPageTabBar, CatchTopBar} from "@catch/web-ui";
 import {useSalesDealsController, useSalesHostNames} from "../controllers/useSalesDealsController";
+import {useSalesHostCommercialController} from "../controllers/useSalesHostCommercialController";
 import {useSalesHostsController} from "../controllers/useSalesHostsController";
 import {useSalesTodayController} from "../controllers/useSalesTodayController";
 import {useMyNominationsController} from "../controllers/useMyNominationsController";
@@ -14,10 +15,11 @@ interface Props {
   uid: string | null;
   /** A sales associate sees their own work; the owner sees the team's. */
   ownWorkOnly: boolean;
+  isAdminOwner: boolean;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
-  /** The older host page: editing, stage moves, pilots, quotes, people and evidence. */
+  /** The older host page: fit, demos and privacy. */
   onOpenHostTools: (organizerId: string) => void;
   onOpenOrganizer: (organizerId: string) => void;
   onAddHost: () => void;
@@ -33,9 +35,11 @@ function Today({uid, ownWorkOnly, selectedId, onSelect, onError, onNotice}: Prop
     onSelect={onSelect} selectedTaskId={selectedId} />;
 }
 
-function Hosts({uid, ownWorkOnly, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost, onError, onNotice}: Props) {
+function Hosts({uid, ownWorkOnly, isAdminOwner, selectedId, onSelect, onOpenOrganizer, onOpenHostTools, onAddHost, onError, onNotice}: Props) {
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
-  return <SalesHostsScreen model={{...controller, uid}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
+  const commercial = useSalesHostCommercialController({organizerId: selectedId, opportunities: controller.host?.opportunities ?? [],
+    enabled: !ownWorkOnly, onError, onNotice});
+  return <SalesHostsScreen model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />;
 }
 
 function Deals({uid, onOpenHost}: Props) {
