@@ -249,8 +249,12 @@ OwnershipVerdict ownershipVerdict(
 }
 
 ScanResult scanMobileCopy(Directory root) {
+  final apps = Directory('${root.path}/apps');
   final sourceRoots = [
     Directory('${root.path}/lib'),
+    if (apps.existsSync())
+      for (final app in apps.listSync().whereType<Directory>())
+        Directory('${app.path}/lib'),
     Directory('${root.path}/packages/catch_ui/lib'),
   ];
   final files =
@@ -830,6 +834,12 @@ Widget build(BuildContext context) => Text('Fixture title');
   try {
     for (final entry in const {
       'lib/example.dart': "Widget build() => Text('App copy');",
+      'apps/host/lib/today/today_screen.dart':
+          "Widget build() => Text('Host copy');",
+      'apps/consumer/lib/today/today_screen.dart':
+          "Widget build() => Text('Consumer copy');",
+      'apps/consumer/lib/today/today_screen.g.dart':
+          "Widget generated() => Text('Generated app copy');",
       'packages/catch_ui/lib/src/components/example.dart':
           "Widget build() => Text('Package copy');",
       'packages/catch_ui/lib/src/components/caller_copy.dart':
@@ -845,9 +855,14 @@ Widget build(BuildContext context) => Text('Fixture title');
     }
     final scan = scanMobileCopy(fixtureRoot);
     final found = scan.findings.map((finding) => finding.text).toSet();
-    if (scan.checkedFiles != 3 ||
-        scan.findings.length != 2 ||
-        !found.containsAll({'App copy', 'Package copy'})) {
+    if (scan.checkedFiles != 5 ||
+        scan.findings.length != 4 ||
+        !found.containsAll({
+          'App copy',
+          'Host copy',
+          'Consumer copy',
+          'Package copy',
+        })) {
       throw StateError('App/package copy-root self-test failed: $found');
     }
     try {

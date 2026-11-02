@@ -405,6 +405,25 @@ test("allows unify and repair targets to name canonical member constructors", (t
   assert.deepEqual(result.errors, []);
 });
 
+test("a source-only symbol declared in an app package has source evidence", (t) => {
+  const registry = clone(validRegistry());
+  registry.families[0].members.push({
+    symbol: "TodayOnlyChip",
+    disposition: "discard",
+    preview: "source-only",
+    rationale: "Its source identity must still be auditable before removal.",
+  });
+  const {root} = createFixture(t, {registry});
+  const missing = checkPatternFamilies({repoRoot: root}).errors;
+  assert.ok(missing.some((error) => error.includes("'TodayOnlyChip'")));
+
+  writeFile(root, "apps/host/lib/today/today_chip.dart", "class TodayOnlyChip extends StatelessWidget {}\n");
+  assert.deepEqual(
+    checkPatternFamilies({repoRoot: root}).errors.filter((error) => error.includes("'TodayOnlyChip'")),
+    [],
+  );
+});
+
 test("CLI supports --check with custom --file and --repo-root", (t) => {
   const registryPath = "fixtures/custom_pattern_families.json";
   const {root} = createFixture(t, {registryPath});

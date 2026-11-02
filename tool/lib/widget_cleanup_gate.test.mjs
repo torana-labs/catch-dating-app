@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {
@@ -15,6 +18,37 @@ const summary = (counts) => [
 ].join("\n");
 const allZero = () => Object.fromEntries(widgetCleanupCategories.map((key) => [key, 0]));
 const runGate = (input) => spawnSync(process.execPath, [gatePath], {input, encoding: "utf8"});
+
+test("the actual scan reads both app packages", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-widget-cleanup-apps-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const seed = (file, source) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), source);
+  };
+  seed("tool/widget_cleanup_scan.sh", fs.readFileSync(new URL("../widget_cleanup_scan.sh", import.meta.url), "utf8"));
+  seed("apps/host/lib/today/today_body.dart", "Widget build() => ElevatedButton(onPressed: null, child: child);\n");
+  seed("apps/consumer/lib/explore/explore_body.dart", "Widget gap() => const SizedBox(height: 12);\n");
+
+  const scan = spawnSync("bash", ["tool/widget_cleanup_scan.sh", "--summary"], {cwd: root, encoding: "utf8"});
+  assert.equal(scan.status, 0, scan.stderr);
+  const counts = parseWidgetCleanupSummary(scan.stdout);
+  assert.equal(counts.raw_material_button_candidates, 1);
+  assert.equal(counts.literal_sized_box_spacing_candidates, 1);
+});
+
+test("a missing rg fails the scan instead of reading as a clean tree", (t) => {
+  const noTools = fs.mkdtempSync(path.join(os.tmpdir(), "catch-widget-cleanup-path-"));
+  t.after(() => fs.rmSync(noTools, {recursive: true, force: true}));
+  const script = fileURLToPath(new URL("../widget_cleanup_scan.sh", import.meta.url));
+
+  for (const mode of ["--check", "--summary"]) {
+    const scan = spawnSync("/bin/bash", [script, mode], {env: {PATH: noTools}, encoding: "utf8"});
+    assert.equal(scan.status, 127, mode);
+    assert.match(scan.stderr, /needs ripgrep/u);
+    assert.equal(scan.stdout, "", mode);
+  }
+});
 
 test("parses live widget cleanup summary categories", () => {
   assert.deepEqual(parseWidgetCleanupSummary(`

@@ -883,12 +883,8 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
     /timeout-minutes: \$\{\{ \(matrix\.name == 'lint-scanners' \|\| matrix\.name == 'marketing-design'\) && 45 \|\| 30 \}\}/u,
   );
   assert.doesNotMatch(fullBuckets, /playwright install --with-deps/u);
-  assert.match(fullBuckets, /if command -v rg >\/dev\/null 2>&1/u);
+  assert.match(fullBuckets, /uses: \.\/\.github\/actions\/install-ripgrep/u);
   assert.doesNotMatch(fullBuckets, /apt-get/u);
-  assert.match(
-    fullBuckets,
-    /4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e/u,
-  );
 
   const resultJob = tools.match(/  tools:\n(?<body>[\s\S]*)$/u)?.groups?.body;
   assert.ok(resultJob, "tools result job must remain present");
@@ -1091,12 +1087,8 @@ test("affected tools install only planner-declared setup requirements", () => {
     );
   }
   assert.doesNotMatch(affectedJob, /playwright install --with-deps/u);
-  assert.match(affectedJob, /if command -v rg >\/dev\/null 2>&1/u);
+  assert.match(affectedJob, /uses: \.\/\.github\/actions\/install-ripgrep/u);
   assert.doesNotMatch(affectedJob, /apt-get/u);
-  assert.match(
-    affectedJob,
-    /4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e/u,
-  );
   const pubSetup = affectedJob.match(
     /      - name: Resolve Flutter and standalone Dart tool dependencies(?<body>[\s\S]*?)(?=\n      - |$)/u,
   )?.groups?.body;
@@ -1108,6 +1100,25 @@ test("affected tools install only planner-declared setup requirements", () => {
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
+
+test("every job that scans with ripgrep installs the one pinned release first", () => {
+  const action = repositorySnapshot.readText(
+    ".github/actions/install-ripgrep/action.yml",
+    {required: true},
+  );
+  assert.match(action, /if command -v rg >\/dev\/null 2>&1/u);
+  assert.match(action, /4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e/u);
+  assert.doesNotMatch(action, /apt-get/u);
+
+  const install = "uses: ./.github/actions/install-ripgrep";
+  for (const [source, scan] of [
+    [workflow("app-build-matrix.yml"), "Fail-fast app structural gates"],
+    [workflow("flutter-ci.yml"), "Widget cleanup remaining scanner ratchet"],
+  ]) {
+    const installAt = source.indexOf(install);
+    assert.ok(installAt >= 0 && installAt < source.indexOf(`name: ${scan}`), scan);
+  }
+});
 
 test("web smoke compiles dev roles without compiling production web", () => {
   const builds = workflow("app-build-matrix.yml");

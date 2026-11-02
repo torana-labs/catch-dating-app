@@ -75,6 +75,22 @@ test("scanRouteStringLiterals scans production files and skips routing files", (
   );
 });
 
+test("scanRouteStringLiterals flags raw route paths in app packages", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-routes-apps-"));
+  const source = "void open(BuildContext context) => context.push('/events/e1');\n";
+  writeFile(root, "lib/core/kept.dart", "class Kept {}\n");
+  writeFile(root, "apps/host/lib/today/today_screen.dart", source);
+  writeFile(root, "apps/consumer/lib/explore/explore_screen.dart", source);
+
+  const result = scanRouteStringLiterals({root});
+
+  assert.equal(result.checkedFiles, 3);
+  assert.deepEqual(result.findings.map((finding) => finding.path), [
+    "apps/consumer/lib/explore/explore_screen.dart",
+    "apps/host/lib/today/today_screen.dart",
+  ]);
+});
+
 function writeFile(root, relativePath, source) {
   const file = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(file), {recursive: true});

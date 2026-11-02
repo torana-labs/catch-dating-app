@@ -2,9 +2,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isScreenSource, screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
-const productionRoots = ["lib/", "packages/catch_ui/lib/"];
+const designPackageRoot = "packages/catch_ui/lib";
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const canonicalImplementationPaths = new Set([
   "packages/catch_ui/lib/src/components/catch_section.dart",
@@ -47,7 +48,7 @@ export function scanRailContracts({root = repoRoot} = {}) {
 }
 
 export function scanSourceForRailContracts({relativePath, source}) {
-  if (!productionRoots.some((root) => relativePath.startsWith(root))) {
+  if (!isScreenSource(relativePath) && !relativePath.startsWith(`${designPackageRoot}/`)) {
     return {findings: [], inventory: {fullBleedOptIns: 0, railCalls: 0}};
   }
   if (canonicalImplementationPaths.has(relativePath)) {
@@ -99,7 +100,7 @@ export function scanSourceForRailContracts({relativePath, source}) {
 
 function collectDartFiles(root) {
   const files = [];
-  for (const sourceRoot of productionRoots) {
+  for (const sourceRoot of [...screenSourceRoots(root), designPackageRoot]) {
     const absolute = path.join(root, sourceRoot);
     if (fs.existsSync(absolute)) walk(absolute, files, root);
   }

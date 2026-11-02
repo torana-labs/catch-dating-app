@@ -86,6 +86,9 @@ jobs:
             (unique | length) == length
           ' <<< "$APP_ROLES" > /dev/null
 
+      - name: Install scanner dependencies
+        uses: ./.github/actions/install-ripgrep
+
       - name: Fail-fast app structural gates
         run: >-
           node tool/run.mjs check

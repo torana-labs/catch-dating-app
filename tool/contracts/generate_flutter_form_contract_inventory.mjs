@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {isAppSharedWidgetSource} from "../design/lib/component_naming.mjs";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 
 const TOOL_FILE = fileURLToPath(import.meta.url);
 const DEFAULT_ROOT = path.resolve(path.dirname(TOOL_FILE), "../..");
@@ -41,7 +42,9 @@ const EDITABLE_SYMBOLS = new Set([
 
 export function buildFormContractInventory({repoRoot = DEFAULT_ROOT} = {}) {
   const callsites = [];
-  for (const file of listDartFiles(path.join(repoRoot, "lib"))) {
+  const sourceFiles = screenSourceRoots(repoRoot)
+    .flatMap((sourceRoot) => listDartFiles(path.join(repoRoot, sourceRoot)));
+  for (const file of sourceFiles) {
     const relative = normalizePath(path.relative(repoRoot, file));
     if (
       isAppSharedWidgetSource(relative) ||
@@ -437,7 +440,7 @@ export function unreferencedFieldBindings({repoRoot = DEFAULT_ROOT} = {}) {
     /static const (\w+) = CatchContractFieldConstraints\(\s*path: '([^']+)'/g,
   )].map((match) => [match[2], match[1]]));
   const referenced = new Set();
-  for (const directory of ["lib", "test", "integration_test", "widgetbook"]) {
+  for (const directory of [...screenSourceRoots(repoRoot), "test", "integration_test", "widgetbook"]) {
     for (const file of listDartFiles(path.join(repoRoot, directory))) {
       if (normalizePath(path.relative(repoRoot, file)) ===
         FIELD_CONSTRAINTS_OUTPUT) continue;

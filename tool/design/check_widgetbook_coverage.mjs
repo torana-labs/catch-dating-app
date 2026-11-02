@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
+import {screenSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {buildWidgetClassification} from "./generate_widget_classification.mjs";
 
@@ -20,7 +22,7 @@ if (args.includes("--help") || args.includes("-h")) {
   console.log(`Usage:
   node tool/design/check_widgetbook_coverage.mjs [--json] [--write <path>] [--decisions <path>] [--check]
 
-Scans lib/**/*.dart widget classes and compares them to generated Widgetbook
+Scans lib/**/*.dart and apps/*/lib/**/*.dart widget classes and compares them to generated Widgetbook
 component names. Coverage obligations are derived from the generated concept
 role: concepts need a direct family preview; members may use their parent's
 family; contracted compositions need a direct feature preview; uncontracted
@@ -218,6 +220,19 @@ function runSelfTest() {
   if (parseWidgetSourceLine("class CatchBadge extends Object {") !== null) {
     throw new Error("non-widget source lines must not enter the inventory");
   }
+  const appRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-widgetbook-coverage-"));
+  try {
+    for (const file of ["lib/shared_card.dart", "apps/host/lib/today/today_card.dart"]) {
+      fs.mkdirSync(path.dirname(path.join(appRoot, file)), {recursive: true});
+      fs.writeFileSync(path.join(appRoot, file), "class Probe extends StatelessWidget {}\n");
+    }
+    const scanned = scanWidgetClasses(appRoot).map((entry) => `${entry.area}:${entry.file}`);
+    if (scanned.join() !== "apps/host:apps/host/lib/today/today_card.dart,shared_card.dart:lib/shared_card.dart") {
+      throw new Error(`app-package widgets must enter the inventory: ${scanned.join()}`);
+    }
+  } finally {
+    fs.rmSync(appRoot, {recursive: true, force: true});
+  }
   console.log("Widgetbook role-derived coverage self-test passed.");
 }
 
@@ -237,10 +252,12 @@ function classifyMechanicalCoverage({
     : "PUBLIC_NEEDS_CATALOG_OR_REPLACE";
 }
 
-function scanWidgetClasses() {
+function scanWidgetClasses(root = fromRepo()) {
   const entries = [];
-  for (const absolutePath of listDartFiles(fromRepo("lib"))) {
-    const file = relativeToRepo(absolutePath).replaceAll("\\", "/");
+  const sourceFiles = screenSourceRoots(root)
+    .flatMap((sourceRoot) => listDartFiles(path.join(root, sourceRoot)));
+  for (const absolutePath of sourceFiles) {
+    const file = path.relative(root, absolutePath).replaceAll("\\", "/");
     const lines = fs.readFileSync(absolutePath, "utf8").split(/\r?\n/u);
     for (const [index, line] of lines.entries()) {
       const widgetClass = parseWidgetSourceLine(line);
@@ -338,6 +355,7 @@ function validateDecision(decision) {
 
 function areaFor(file) {
   const parts = file.split("/");
+  if (parts[0] === "apps") return `apps/${parts[1]}`;
   if (parts[1] === "core") return `core/${parts[2] ?? ""}`;
   return parts[1] ?? "unknown";
 }

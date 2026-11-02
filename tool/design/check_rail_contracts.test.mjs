@@ -135,6 +135,21 @@ test("only the exact extracted rail owner retains its exemption", () => {
   }
 });
 
+test("scanRailContracts covers app-package sources", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rail-contracts-apps-"));
+  writeFile(
+    root,
+    "apps/host/lib/today/today_body.dart",
+    "Widget build(context) => CatchSection.horizontal(headerPadding: EdgeInsets.zero);",
+  );
+
+  const result = scanRailContracts({root});
+
+  assert.equal(result.filesScanned, 1);
+  assert.equal(result.counts.high, 1);
+  assert.equal(result.findings[0].path, "apps/host/lib/today/today_body.dart");
+});
+
 function writeFile(root, relativePath, source) {
   const file = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(file), {recursive: true});

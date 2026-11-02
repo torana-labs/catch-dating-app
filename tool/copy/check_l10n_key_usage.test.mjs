@@ -2,6 +2,7 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -65,7 +66,7 @@ test("missing-catalog fixture reports exact handwritten getter locations", () =>
     (entry) => entry.key === "validKey",
   );
 
-  assert.equal(first.inventory.schemaVersion, 2);
+  assert.equal(first.inventory.schemaVersion, 3);
   assert.deepEqual(validKey.l10nReferences, [
     {path: "lib/sample.dart", line: 4, column: 22},
   ]);
@@ -250,6 +251,33 @@ test("CLI help exposes only live evidence modes", () => {
   );
 });
 
+test("a key used only in an app package is not orphaned, and its missing getter fails", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-l10n-apps-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const write = (file, source) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), source);
+  };
+  write("lib/l10n/app_en.arb", JSON.stringify({usedInHost: "Host", usedInConsumer: "Consumer", orphan: "Nobody"}));
+  write("lib/kept.dart", "class Kept {}\n");
+  write("apps/host/lib/today/today_screen.dart", "Widget build(l10n) => Text(l10n.usedInHost);\n");
+  write("apps/consumer/lib/explore/explore_screen.dart", "Widget build(l10n) => Text('${l10n.usedInConsumer} ${l10n.missingInCatalog}');\n");
+
+  const result = scanL10nKeyUsage({repoRoot: root});
+
+  assert.deepEqual(result.inventory.sourceRoots, ["lib", "apps/consumer/lib", "apps/host/lib"]);
+  assert.deepEqual(result.orphanedKeys, ["orphan"]);
+  assert.deepEqual(result.missingCatalogReferences.map(({key, path: file}) => [key, file]), [
+    ["missingInCatalog", "apps/consumer/lib/explore/explore_screen.dart"],
+  ]);
+  assert.equal(result.scannedFiles.length, 3);
+
+  const cli = runCli(["--repo-root", root, "--check"]);
+  assert.equal(cli.status, 1);
+  assert.match(cli.stderr, /apps\/consumer\/lib\/explore\/explore_screen\.dart:1:\d+ l10n\.missingInCatalog/u);
+  assert.match(cli.stderr, /- orphan/u);
+});
+
 function fixtureRoot(name) {
   return path.join(copyRoot, "fixtures", "l10n_key_usage", name);
 }
@@ -258,7 +286,7 @@ function scanFixture(root) {
   return scanL10nKeyUsage({
     repoRoot: root,
     arbPath: path.join(root, "lib", "l10n", "app_en.arb"),
-    sourceRoot: path.join(root, "lib"),
+    sourceRoots: [path.join(root, "lib")],
   });
 }
 
