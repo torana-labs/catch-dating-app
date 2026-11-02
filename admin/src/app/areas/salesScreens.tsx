@@ -16,6 +16,7 @@ export function renderSales(context: AdminAreaContext, area: keyof typeof salesA
   return (
     <SalesRouteScreen
       area={area}
+      isAdminOwner={mode === "sample" || adminRoles.includes("adminOwner")}
       onError={setError}
       onAddHost={() => navigate("/sales/add-host")}
       onNotice={setNotice}

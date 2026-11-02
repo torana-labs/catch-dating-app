@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {salesErrorMessage} from "./salesLabels";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
@@ -9,7 +10,7 @@ import {
   recordSalesActivity, searchCanonicalOrganizers, setSalesCustomFieldValue,
   updateSalesAccount,
   upsertSalesOpportunity, upsertSalesTask,
-  applySalesImport, listSalesContacts, listSalesEvidence,
+  applySalesImport, listSalesContacts,
   applySalesImportCompensation, previewSalesImportCompensation,
   previewSalesImport,
 } from "../api/salesRepository";
@@ -34,14 +35,6 @@ export const researchStatusOptions: Array<{value: SalesResearchStatus; label: st
   {value: "no_fit", label: "No fit"},
   {value: "archived", label: "Archived"},
 ];
-
-export function salesErrorMessage(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
-  if (/aborted|revision mismatch|record changed since review/iu.test(message)) {
-    return "Someone updated this record. Compare the latest details before saving again. Your edits are still here.";
-  }
-  return message || "The change could not be saved. Your edits are still here.";
-}
 
 export function toLocalDateTimeInput(date: Date): string {
   const pad = (value: number) => String(value).padStart(2, "0");
@@ -170,11 +163,6 @@ export function useSalesWorkspaceController({
     enabled: Boolean(selectedOrganizerId),
     queryKey: ["sales", "contacts", selectedOrganizerId],
     queryFn: () => listSalesContacts(selectedOrganizerId!),
-  });
-  const evidence = useQuery({
-    enabled: Boolean(selectedOrganizerId),
-    queryKey: ["sales", "evidence", selectedOrganizerId],
-    queryFn: () => listSalesEvidence(selectedOrganizerId!),
   });
 
   const accountMutation = useMutation({mutationFn: updateSalesAccount});
@@ -401,7 +389,7 @@ export function useSalesWorkspaceController({
     accounts, tasks, opportunities, inboundIntents, identityMatches,
     canonicalMatches, canonicalSearch, setCanonicalSearch,
     customFields,
-    contacts, evidence,
+    contacts,
     identitySearch, setIdentitySearch, detail, query,
     researchStatus, ownerUid, validAccountQuery,
     opportunityStage, setStageFilter, nextOpportunityPage, previousOpportunityPage,
