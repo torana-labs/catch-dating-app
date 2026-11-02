@@ -561,11 +561,6 @@ export interface AdminOrganizerClaimListRow {
   createdAt: string | null;
 }
 
-export interface AdminListOrganizerClaimRequestsResponse {
-  generatedAt: string;
-  rows: AdminOrganizerClaimListRow[];
-}
-
 export interface AdminGetOrganizerClaimRequestDetailsPayload {
   requestId: string;
 }

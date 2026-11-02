@@ -14,6 +14,7 @@ const repository = vi.hoisted(() => ({
   getListingReview: vi.fn(),
   approveListing: vi.fn(),
   searchOrganizers: vi.fn(),
+  getClaimEvidence: vi.fn(),
   getListingEventReview: vi.fn(),
   publishListingEvent: vi.fn(),
 }));
@@ -158,6 +159,22 @@ describe("useInboxController", () => {
     expect(onNotice).toHaveBeenLastCalledWith("Mixer is published on the organizer's page.");
     expect(onSelect).toHaveBeenLastCalledWith("bhag");
     await waitFor(() => expect(result.current.eventReview).toBeNull());
+  });
+
+  it("loads a claim's evidence only for a claim", async () => {
+    const {wrapper} = createQueryHarness();
+    const evidence = {requestId: "bhag", proofUrls: []};
+    repository.getClaimEvidence.mockResolvedValue(evidence);
+    repository.getInboxItem.mockImplementation(async (itemId: string) => ({item: item(itemId, itemId === "bhag" ? "claim" : "listing"), journey: [],
+      canWork: true, canDecideClaim: true}));
+    const {result, rerender} = renderHook(({selected}) => useInboxController({onError: vi.fn(), onNotice: vi.fn(), selectedItemId: selected, onSelect: vi.fn()}),
+      {wrapper, initialProps: {selected: "afterfly"}});
+    await waitFor(() => expect(result.current.detail.data?.item.itemId).toBe("afterfly"));
+    expect(repository.getClaimEvidence).not.toHaveBeenCalled();
+    expect(result.current.claimEvidence).toBeNull();
+    rerender({selected: "bhag"});
+    await waitFor(() => expect(result.current.claimEvidence).toEqual(evidence));
+    expect(repository.getClaimEvidence).toHaveBeenCalledWith("bhag");
   });
 
   it("reports a failed action and stays on the item", async () => {

@@ -24,7 +24,7 @@ function openQueueItem(
     navigate(`/safety/${encodeURIComponent(targetPath)}`);
   } else if (targetId && destination === "organizers") {
     navigate(targetPath?.startsWith("organizerClaimRequests/") ?
-      `/organizers/claims/${encodeURIComponent(targetId)}` :
+      `/inbox/claim-${encodeURIComponent(targetId)}` :
       `/organizers/${encodeURIComponent(targetId)}`);
   } else if (targetPath && destination === "money") {
     // Needs you names a payment by its document path; Money names an issue "collection:id".

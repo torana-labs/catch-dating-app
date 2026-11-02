@@ -3,7 +3,6 @@ import {defineArea, opsAndOwner, route} from "../adminAreaKit";
 declare module "../adminAreaKit" {
   interface AdminNavIds {organizers: true}
   interface AdminRouteFields {
-    organizerWorkspace: "directory" | "claims";
     organizerTab: "overview" | "page" | "events" | "sales" | "money" | "history";
   }
 }
@@ -20,13 +19,13 @@ export default defineArea({
     sales: {order: 50, section: "Records"},
     ops: {order: 50, section: "Records"},
   },
-  routeDefaults: {organizerWorkspace: "directory", organizerTab: "overview"},
+  routeDefaults: {organizerTab: "overview"},
   routes: [
     route("/organizers/*", "organizers"),
     route("/organizers/:organizerId", "organizers"),
     ...(["page", "events", "sales", "money", "history"] as const).map((organizerTab) =>
       route(`/organizers/:organizerId/${organizerTab}`, "organizers", {organizerTab})),
-    route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
-    route("/organizers/claims/:claimRequestId", "organizers", {organizerWorkspace: "claims"}),
+    // Claims moved into the Inbox.
+    route("/organizers/claims/*", "organizers", {redirect: "/inbox"}),
   ],
 });

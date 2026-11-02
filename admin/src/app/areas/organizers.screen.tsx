@@ -9,7 +9,6 @@ const OrganizerEventsRouteWorkspace = lazy(() => import("../../features/events/u
 const render: AdminAreaRender = ({canManageCommercialTerms, canOpen, navigate, route}) => (
   <OrganizersRouteScreen
     canChangeTerms={canManageCommercialTerms}
-    claimRequestId={route.params.claimRequestId ?? null}
     onNavigate={navigate}
     organizerId={route.params.organizerId ?? null}
     renderBills={canOpen("money") ? (organizerId) => (
@@ -20,7 +19,6 @@ const render: AdminAreaRender = ({canManageCommercialTerms, canOpen, navigate, r
     ) : null}
     renderEvents={(organizerId) => <OrganizerEventsRouteWorkspace onNavigate={navigate} organizerId={organizerId} />}
     tab={route.organizerTab}
-    workspace={route.organizerWorkspace}
   />
 );
 

@@ -30,6 +30,13 @@
       "liveMutations": ["adminRecordEventIntakeReviewDecision"]
     },
     {
+      "routeId": "inbox",
+      "navId": "organizer-intake",
+      "paths": ["/inbox"],
+      "liveReads": ["adminGetOrganizerClaimRequestDetails"],
+      "liveMutations": ["adminDecideOrganizerClaim"]
+    },
+    {
       "routeId": "organizer-intake",
       "navId": "organizer-intake",
       "paths": ["/intake/organizers"],
@@ -52,15 +59,12 @@
       "navId": "organizers",
       "paths": ["/organizers"],
       "liveReads": [
-        "adminGetOrganizerClaimRequestDetails",
         "adminGetOrganizerDetails",
         "adminGetOrganizerOverview",
-        "adminListOrganizerClaimRequests",
         "adminListOrganizerDetails",
         "adminListOrganizerDirectory"
       ],
       "liveMutations": [
-        "adminDecideOrganizerClaim",
         "adminSetOrganizerIndexStatus",
         "adminUpdateOrganizerDetails"
       ]
