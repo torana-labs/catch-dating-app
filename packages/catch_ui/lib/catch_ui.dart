@@ -121,6 +121,7 @@ export 'src/components/catch_search_field_copy.dart';
 export 'src/components/catch_search_field_mode.dart';
 export 'src/components/catch_search_field_status.dart';
 export 'src/components/catch_section.dart';
+export 'src/components/catch_section_timeline.dart';
 export 'src/components/catch_section_body.dart';
 export 'src/components/catch_section_body_mode.dart';
 export 'src/components/catch_section_field_group.dart';
