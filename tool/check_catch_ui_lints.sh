@@ -660,6 +660,40 @@ done < <(
   '
 )
 
+# A drawing exception is a reasoned ignore next to a live site; anything else
+# is debt. Other UI rules take no ignore at all.
+stage_probe "drawing exception with a reason" <<'DART'
+import 'package:flutter/material.dart';
+
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- seeded reason
+const probe = ColoredBox(color: Colors.transparent);
+DART
+expect_probe exact catch_no_raw_surface_shell 0
+expect_probe exact catch_no_allow_debt 0
+
+stage_probe "drawing exception without a reason" <<'DART'
+import 'package:flutter/material.dart';
+
+// ignore: catch_ui_lints/catch_no_raw_surface_shell
+const probe = ColoredBox(color: Colors.transparent);
+DART
+expect_probe exact catch_no_raw_surface_shell 0
+expect_probe exact catch_no_allow_debt 1
+
+stage_probe "stale drawing exception" <<'DART'
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- seeded reason
+const probe = 1;
+DART
+expect_probe exact catch_no_allow_debt 1
+
+stage_probe "UI rules other than drawing take no ignore" <<'DART'
+import 'package:flutter/material.dart';
+
+// ignore: catch_ui_lints/catch_no_raw_color -- seeded reason
+const probe = Color(0xFF123456);
+DART
+expect_code_count "UI rules other than drawing take no ignore" "catch_no_allow_debt" 1
+
 stage_probe "transparent drawing still belongs to the library" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -194,9 +194,11 @@ class EventSuccessMarqueeImage extends StatelessWidget {
             ),
           ),
           if (vignetteStrength > 0)
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             ShaderMask(
               blendMode: BlendMode.srcIn,
               shaderCallback: (bounds) {
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 return RadialGradient(
                   center: const Alignment(0, -0.16),
                   radius: 0.92,
@@ -211,6 +213,7 @@ class EventSuccessMarqueeImage extends StatelessWidget {
                   stops: const [0.34, 1.0],
                 ).createShader(bounds);
               },
+              // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
               child: const ColoredBox(color: CatchTokens.editorialBlack),
             ),
           CustomMultiChildLayout(
@@ -228,7 +231,9 @@ class EventSuccessMarqueeImage extends StatelessWidget {
                         .clamp(0.0, 1.0);
                 return LayoutId(
                   id: ('presence', index),
+                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                   child: ClipOval(
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     child: ColoredBox(
                       color: (index % 5 == 0 ? accent : foreground).withValues(
                         alpha: alpha,
@@ -250,6 +255,7 @@ class EventSuccessMarqueeImage extends StatelessWidget {
                         tone: CatchSurfaceTone.transparent,
                         radius: CatchRadius.pill,
                         clipBehavior: Clip.antiAlias,
+                        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                         child: ColoredBox(
                           color: accent.withValues(
                             alpha: (0.32 + anticipation * 0.48) * spokeFade,
@@ -272,7 +278,9 @@ class EventSuccessMarqueeImage extends StatelessWidget {
                 };
                 return LayoutId(
                   id: ('particle', index),
+                  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                   child: ClipOval(
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     child: ColoredBox(
                       color:
                           Color.lerp(
@@ -291,6 +299,7 @@ class EventSuccessMarqueeImage extends StatelessWidget {
             ],
           ),
           if (climax)
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             ColoredBox(
               color: CatchTokens.editorialWhite.withValues(
                 alpha:

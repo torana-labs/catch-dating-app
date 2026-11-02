@@ -214,6 +214,7 @@ class PaymentCheckoutHeader extends StatelessWidget {
               top: CatchSpacing.s5,
               bottom: CatchSpacing.s5,
             ),
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -309,7 +310,9 @@ class PaymentCheckoutSheet extends StatelessWidget {
     return CatchSurface(
       backgroundColor: t.surface,
       borderRole: CatchBorderRole.separator,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: const BorderRadius.vertical(
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         top: Radius.circular(CatchRadius.heroCard),
       ),
       width: double.infinity,
@@ -557,6 +560,7 @@ class PaymentConfirmationBody extends StatelessWidget {
           children: [
             for (var index = 0; index < actions.length; index++) ...[
               Expanded(
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 child: Opacity(
                   opacity: actions[index].isEnabled ? 1 : 0.7,
                   child: KeyedSubtree(

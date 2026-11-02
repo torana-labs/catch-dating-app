@@ -122,6 +122,7 @@ class _EventSuccessHostRevealSurfaceState
     );
     return CatchSurface(
       clipBehavior: Clip.antiAlias,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

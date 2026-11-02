@@ -160,6 +160,7 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
                 children: [
                   for (var index = 0; index < 3; index++) ...[
                     if (index > 0)
+                      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                       VerticalDivider(
                         color: t.line,
                         width: CatchStroke.hairline,
@@ -169,6 +170,7 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
                 ],
               ),
             ),
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             Divider(
               color: t.line,
               height: CatchStroke.hairline,

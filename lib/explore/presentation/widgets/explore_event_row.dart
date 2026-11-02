@@ -48,6 +48,7 @@ class ExploreFeedEventRow extends StatelessWidget {
       onTap: onTap,
     );
     if (item.status != EventTileStatus.ineligible) return card;
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
     return Opacity(
       key: ValueKey('explore-ineligible-event-${event.id}'),
       opacity: CatchOpacity.discoveryIneligible,

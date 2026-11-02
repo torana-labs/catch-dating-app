@@ -75,6 +75,7 @@ class EventSuccessRoomSummarySection extends StatelessWidget {
                   indexed.$2,
                   if (indexed.$1 != metrics.length - 1) ...[
                     gapH8,
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     Divider(color: t.line),
                     gapH8,
                   ],
@@ -88,6 +89,7 @@ class EventSuccessRoomSummarySection extends StatelessWidget {
                 for (final indexed in metrics.indexed) ...[
                   Expanded(child: indexed.$2),
                   if (indexed.$1 != metrics.length - 1)
+                    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     VerticalDivider(color: t.line, width: CatchSpacing.s3),
                 ],
               ],

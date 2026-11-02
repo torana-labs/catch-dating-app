@@ -185,6 +185,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
 
     if (compactCopy) {
       final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       final compactLayout = ColoredBox(
         color: t.surface,
         child: largeText
@@ -230,6 +231,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
               ),
       );
 
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       final expandedLayout = ColoredBox(
         key: const ValueKey<String>('event_success.live.wide_workspace'),
         color: t.surface,
@@ -266,6 +268,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
                 ],
               ),
             ),
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             VerticalDivider(width: CatchStroke.hairline, color: t.line),
             SizedBox(
               key: const ValueKey<String>('event_success.live.supporting_pane'),

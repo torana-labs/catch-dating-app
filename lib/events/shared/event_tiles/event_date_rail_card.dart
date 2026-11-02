@@ -192,6 +192,7 @@ class EventDateRailCard extends StatelessWidget {
             ),
             Positioned.fill(
               child: IgnorePointer(
+                // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 child: CustomPaint(
                   painter: _DateRailTicketBorderPainter(
                     color: t.line2,
@@ -206,6 +207,7 @@ class EventDateRailCard extends StatelessWidget {
     );
     final card = physicalElevation == 0
         ? ticket
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         : CustomPaint(
             painter: _DateRailTicketShadowPainter(
               color: CatchElevation.physicalShadow,
@@ -398,6 +400,7 @@ Path _dateRailTicketPath(
   return path..close();
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _DateRailTicketClipper extends CustomClipper<Path> {
   const _DateRailTicketClipper({required this.position});
 
@@ -412,6 +415,7 @@ class _DateRailTicketClipper extends CustomClipper<Path> {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _DateRailTicketShadowPainter extends CustomPainter {
   const _DateRailTicketShadowPainter({
     required this.color,
@@ -442,6 +446,7 @@ class _DateRailTicketShadowPainter extends CustomPainter {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _DateRailTicketBorderPainter extends CustomPainter {
   const _DateRailTicketBorderPainter({
     required this.color,
@@ -483,11 +488,13 @@ class PerforationDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: CatchStroke.hairline,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       child: CustomPaint(painter: _PerforationPainter(color: color)),
     );
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _PerforationPainter extends CustomPainter {
   const _PerforationPainter({required this.color});
 

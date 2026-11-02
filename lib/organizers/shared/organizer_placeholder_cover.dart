@@ -25,6 +25,7 @@ class OrganizerPlaceholderCover extends StatelessWidget {
     return CatchSurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -33,6 +34,7 @@ class OrganizerPlaceholderCover extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
+          // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
           CustomPaint(painter: _OrganizerCoverPatternPainter(palette)),
           Align(
             child: CatchIconTile(
@@ -48,6 +50,7 @@ class OrganizerPlaceholderCover extends StatelessWidget {
           CatchSurface(
             duration: Duration.zero,
             radius: CatchRadius.none,
+            // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -146,6 +149,7 @@ class OrganizerCoverVisualPalette {
   }
 }
 
+// ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
 class _OrganizerCoverPatternPainter extends CustomPainter {
   const _OrganizerCoverPatternPainter(this.palette);
 
@@ -165,6 +169,7 @@ class _OrganizerCoverPatternPainter extends CustomPainter {
           size.width * 0.72,
           size.height * 0.56,
         ),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         Radius.circular(size.shortestSide * 0.18),
       ),
       blockPaint,
@@ -177,6 +182,7 @@ class _OrganizerCoverPatternPainter extends CustomPainter {
           size.width * 0.62,
           size.height * 0.42,
         ),
+        // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         Radius.circular(size.shortestSide * 0.16),
       ),
       blockPaint
