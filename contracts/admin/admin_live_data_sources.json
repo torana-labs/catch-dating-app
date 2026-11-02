@@ -85,17 +85,6 @@
       "liveReads": ["adminGetOverview", "adminGetHostAnalytics"]
     },
     {
-      "routeId": "data-quality",
-      "navId": "quality",
-      "paths": ["/quality"],
-      "liveReads": [
-        "adminGetEventIntakeDashboard",
-        "adminGetHostAnalytics",
-        "adminGetMarketingOpsDashboard",
-        "adminGetOverview"
-      ]
-    },
-    {
       "routeId": "admin-roles",
       "navId": "admin-roles",
       "paths": ["/admin-roles"],
@@ -103,10 +92,16 @@
       "liveMutations": ["adminSetAdminUserRoles"]
     },
     {
-      "routeId": "agent-activity",
-      "navId": "operations",
-      "paths": ["/operations"],
-      "liveReads": ["adminListActionExecutions"]
+      "routeId": "system",
+      "navId": "system",
+      "paths": ["/system"],
+      "liveReads": [
+        "adminGetEventIntakeDashboard",
+        "adminGetHostAnalytics",
+        "adminGetMarketingOpsDashboard",
+        "adminGetOverview",
+        "adminListActionExecutions"
+      ]
     }
   ]
 }

@@ -1,5 +1,5 @@
 import {BarChart3} from "lucide-react";
-import {AdminButton, AdminTableRow, DataTable, EmptyState, Panel} from
+import {AdminButton, DataTable, EmptyState, Panel} from
   "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
 import {useSalesFunnelController} from "../controllers/useSalesFunnelController";
@@ -26,10 +26,10 @@ function SalesFunnelWorkspace({actorUid}: {actorUid: string}) {
       <DataTable ariaLabel="Company pipeline stages">
         <thead><tr><th>Stage</th><th>Opportunities now</th><th>Hosts now</th>
           <th>Hosts entering in report window</th></tr></thead>
-        <tbody>{value.stages.map(row => <AdminTableRow key={row.stage}>
+        <tbody>{value.stages.map(row => <tr key={row.stage}>
           <td>{row.stage.replaceAll("_", " ")}</td><td>{row.opportunities}</td>
           <td>{row.distinctHosts}</td><td>{row.distinctHostsEntered}</td>
-        </AdminTableRow>)}</tbody>
+        </tr>)}</tbody>
       </DataTable>
       <CatchText as="p" variant="supporting">A host can have several opportunities and appear in several stages.
         Stage entries since {new Date(value.since).toLocaleDateString()} describe recorded movement, including reopens; these are

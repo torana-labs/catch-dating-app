@@ -205,15 +205,11 @@ remain deployed with no Admin caller until the backend follow-up retires them.
 
 System (`/system`) is one activity log of what people and agents did in Admin,
 from `adminListActionExecutions`, filtered by who acted and by problems, beside
-the health of each data source from `adminGetOverview`.
-
-The Data quality tab is a read-only operations workspace over
-`adminGetOverview`, `adminGetHostAnalytics`, `adminGetMarketingOpsDashboard`,
-and `adminGetEventIntakeDashboard`.
-It groups quality rows by source, owner, runbook, state, and next action, and
-checks generated marketing bridge freshness, Event Intake dashboard freshness,
-and source crawl run plan health. It does not
-trigger backfills, inspect scheduler last-run telemetry, or acknowledge
+the health of each data source. Health reads `adminGetOverview`,
+`adminGetMarketingOpsDashboard`, `adminGetEventIntakeDashboard` and, for the
+owner only, `adminGetHostAnalytics`. Each source loads and retries on its own,
+and each signal shows its evidence, owner, runbook and next step. System does
+not trigger backfills, inspect scheduler last-run telemetry, or acknowledge
 incidents until each source has a safe backend tool and audit contract.
 
 The Safety tab is a triage workspace over `adminGetOverview` safety queues plus

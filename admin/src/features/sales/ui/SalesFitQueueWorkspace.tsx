@@ -1,5 +1,5 @@
 import {ClipboardList} from "lucide-react";
-import {AdminButton, AdminTableRow, AdminToolbar, DataTable,
+import {AdminButton, AdminToolbar, DataTable,
   EmptyState, Panel, SegmentedControl} from
   "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
@@ -75,7 +75,7 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
     {rows.length ? <DataTable ariaLabel="Reviewed host fit queue">
       <thead><tr><th>Host</th><th>Reviewed fit</th><th>Review state</th>
         <th>Valid through</th><th /></tr></thead>
-      <tbody>{rows.map((row) => <AdminTableRow key={row.organizerId}>
+      <tbody>{rows.map((row) => <tr key={row.organizerId}>
         <td><strong>{row.name}</strong>{row.city ? <> · {row.city}</> : null}</td>
         <td>{fitLabel(row)}</td>
         <td>{row.suppressionStatus !== "clear" ?
@@ -96,7 +96,7 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
             Open host
           </AdminButton>
         </AdminToolbar></td>
-      </AdminTableRow>)}</tbody>
+      </tr>)}</tbody>
     </DataTable> : null}
     <AdminToolbar>
       <AdminButton disabled={!c.history.length || c.busy}

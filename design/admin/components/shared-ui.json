@@ -540,26 +540,6 @@
       "comparisonReason": "Toned checklist item wrapping arbitrary content; none of the matched contracts is a blocker or warning checklist entry."
     },
     {
-      "id": "shared_admin_row_title",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminRowTitle",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminRowTitleStory",
-        "states": [
-          "default",
-          "compact"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_secondary_disclosure",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -677,27 +657,6 @@
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_table_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
-      "exportName": "AdminTableRow",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTableRowStory",
-        "states": [
-          "default",
-          "selected"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Selectable table row: CatchTableRow, a member of catch.table.",
-      "componentId": "catch.table"
     },
     {
       "id": "shared_admin_tag_list",
@@ -873,8 +832,7 @@
         "story": "admin/src/stories/AdminPrimitives.stories.tsx",
         "exportName": "DataTableStory",
         "states": [
-          "default",
-          "selected"
+          "default"
         ]
       },
       "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of the @catch/web-ui DataTableControl.",
@@ -1043,28 +1001,6 @@
       "comparisonReason": "Toned status row with icon and arbitrary content; meta rows are untoned factual entries and index rows navigate."
     },
     {
-      "id": "shared_search_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "SearchFieldStory",
-        "states": [
-          "empty",
-          "value",
-          "icon"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "exportName": "SearchField",
-      "componentId": "catch.search_field"
-    },
-    {
       "id": "shared_segmented_control",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -1126,26 +1062,6 @@
       },
       "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Error or success band with icon and role alert or status: CatchBanner (2026-10-17 name match, confirmed).",
       "componentId": "catch.banner"
-    },
-    {
-      "id": "shared_table_action_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
-      "exportName": "TableActionButton",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "TableActionButtonStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Raw button styled as a compact table action: a recipe of catch.button.",
-      "componentId": "catch.button"
     }
   ]
 }

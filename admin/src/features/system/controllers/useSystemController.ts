@@ -1,15 +1,28 @@
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
 import {adminActionCatalog} from "../../../generated/adminActionCatalog";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import type {
   AdminActionExecutionRecord,
-  AdminOverviewResponse,
+  AdminListActionExecutionsResponse,
   DataMode,
 } from "../../../shared/types/adminTypes";
-import {loadSystemActivity, loadSystemHealth} from "../api/systemRepository";
+import {
+  loadSystemActivity,
+  loadSystemEventIntake,
+  loadSystemHealth,
+  loadSystemHostAnalytics,
+  loadSystemMarketingBridge,
+} from "../api/systemRepository";
+import {
+  formatWhen,
+  healthSource,
+  systemSignals,
+  type SystemHealthSource,
+  type SystemHealthSourceId,
+} from "./systemHealth";
 
-const activityLimit = 100;
+const activityPageSize = 100;
 
 /** Who acted: a person in Admin, or an agent through the command line. */
 export type SystemActivityFilter = "everyone" | "people" | "automatic" | "problems";
@@ -20,31 +33,23 @@ export interface SystemActivityRow {
   what: string;
   when: string;
   result: {text: string; tone?: "danger" | "warning"};
-  /** The machine error code: not shown, but ops can search for it. */
-  errorCode: string | null;
   automatic: boolean;
   problem: boolean;
+  /** The receipt behind the row: its detail pane, and everything search looks through. */
+  record: AdminActionExecutionRecord;
 }
 
-export interface SystemHealthRow {
-  id: string;
-  title: string;
-  subtitle: string;
-  tone: "success" | "warning" | "danger";
+/** One fact on a receipt; long values (hashes, errors) take the whole row. */
+export interface SystemReceiptFact {
+  label: string;
+  value: string;
+  tone?: "danger" | "warning";
+  wide?: boolean;
 }
 
 const actionSummaries = new Map<string, string>(
   adminActionCatalog.actions.map((action) => [action.actionId, action.summary])
 );
-
-const whenFormat = new Intl.DateTimeFormat("en-IN", {
-  weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit",
-});
-
-function formatWhen(value: string): string {
-  const time = Date.parse(value);
-  return Number.isNaN(time) ? value : whenFormat.format(new Date(time));
-}
 
 const roleLabels: Record<string, string> = {
   adminOwner: "Owner",
@@ -78,28 +83,52 @@ export function activityRow(record: AdminActionExecutionRecord): SystemActivityR
     what: actionSummaries.get(record.actionId) ?? record.actionId,
     when: formatWhen(record.startedAt),
     result: activityResult(record.status),
-    errorCode: record.errorCode,
     automatic,
     problem,
+    record,
   };
 }
 
-/** The health list: when the snapshot was read, then each data source's state. */
-export function healthRows(overview: AdminOverviewResponse): SystemHealthRow[] {
-  return [
-    {
-      id: "overview",
-      title: "Queues and metrics",
-      subtitle: `Read ${formatWhen(overview.generatedAt)}`,
-      tone: "success",
-    },
-    ...overview.dataQuality.map((source): SystemHealthRow => ({
-      id: source.id,
-      title: source.label,
-      subtitle: source.state === "ok" ? source.detail : `${source.detail} Owner: ${source.owner}.`,
-      tone: source.state === "ok" ? "success" : source.state === "warning" ? "warning" : "danger",
-    })),
+function durationLabel(record: AdminActionExecutionRecord): string {
+  if (!record.finishedAt) return "Still running";
+  const duration = Date.parse(record.finishedAt) - Date.parse(record.startedAt);
+  if (!Number.isFinite(duration) || duration < 0) return "Not known";
+  return duration < 1000 ? `${duration} ms` : `${(duration / 1000).toFixed(1)} s`;
+}
+
+/** Everything a receipt holds. Request and response bodies are never stored, only their hashes. */
+export function receiptFacts(record: AdminActionExecutionRecord): SystemReceiptFact[] {
+  const result = activityResult(record.status);
+  const facts: Array<SystemReceiptFact | null> = [
+    {label: "What", value: actionSummaries.get(record.actionId) ?? record.actionId, wide: true},
+    {label: "Result", value: result.text, tone: result.tone},
+    {label: "Took", value: durationLabel(record)},
+    {label: "Started", value: formatWhen(record.startedAt)},
+    {label: "Finished", value: record.finishedAt ? formatWhen(record.finishedAt) : "Not yet"},
+    {label: "Acted on", value: record.target ?? "Nothing specific", wide: true},
+    record.errorCode ? {label: "Error code", value: record.errorCode, wide: true} : null,
+    record.errorMessage ? {label: "Error", value: record.errorMessage, wide: true} : null,
+    {label: "User id", value: record.actorUid, wide: true},
+    {label: "Roles", value: record.actorRoles.map((claim) => roleLabels[claim] ?? claim).join(", ") || "None"},
+    {label: "Command line", value: record.cliVersion ?? "Not used"},
+    {label: "Action", value: record.actionId, wide: true},
+    {label: "Function", value: record.callable, wide: true},
+    {label: "Execution id", value: record.executionId, wide: true},
+    {label: "Request hash", value: record.requestHash, wide: true},
+    record.responseHash ? {label: "Response hash", value: record.responseHash, wide: true} : null,
   ];
+  return facts.filter((fact) => fact !== null);
+}
+
+/** The loaded pages as one list, newest copy of a receipt winning when pages overlap. */
+export function activityRecords(
+  pages: readonly AdminListActionExecutionsResponse[]
+): AdminActionExecutionRecord[] {
+  const records = new Map<string, AdminActionExecutionRecord>();
+  for (const page of pages) {
+    for (const record of page.rows) records.set(record.executionId, record);
+  }
+  return [...records.values()];
 }
 
 export function filterActivity(rows: SystemActivityRow[], filter: SystemActivityFilter, query: string) {
@@ -109,28 +138,62 @@ export function filterActivity(rows: SystemActivityRow[], filter: SystemActivity
     if (filter === "automatic" && !row.automatic) return false;
     if (filter === "problems" && !row.problem) return false;
     if (!needle) return true;
-    return [row.who.title, row.who.subtitle, row.what, row.result.text, row.errorCode ?? ""]
-      .some((text) => text.toLowerCase().includes(needle));
+    const {record} = row;
+    return [
+      row.who.title, row.who.subtitle, row.what, row.result.text, record.actionId, record.callable,
+      record.actorUid, record.executionId, record.target ?? "", record.errorCode ?? "", record.errorMessage ?? "",
+    ].some((text) => text.toLowerCase().includes(needle));
   });
 }
 
 /** System: one activity log of people's and agents' Admin actions, beside data health. */
-export function useSystemController({isSessionReady, mode}: {isSessionReady: boolean; mode: DataMode}) {
+export function useSystemController({
+  canReadHostAnalytics,
+  isSessionReady,
+  mode,
+}: {
+  /** Host analytics is owner-only on the server, so nobody else asks for it. */
+  canReadHostAnalytics: boolean;
+  isSessionReady: boolean;
+  mode: DataMode;
+}) {
   const [filter, setFilter] = useState<SystemActivityFilter>("everyone");
   const [query, setQuery] = useState("");
-  const activityQuery = useQuery({
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [selectedSignalId, setSelectedSignalId] = useState<string | null>(null);
+  const activityQuery = useInfiniteQuery({
     enabled: isSessionReady,
     queryKey: adminQueryKeys.operations.executions(),
-    queryFn: () => loadSystemActivity(activityLimit),
+    queryFn: ({pageParam}) => loadSystemActivity({limit: activityPageSize, cursor: pageParam}),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     retry: false,
   });
-  const healthQuery = useQuery({
+  const overviewQuery = useQuery({
     enabled: isSessionReady,
     queryKey: adminQueryKeys.overview.snapshot(mode),
     queryFn: loadSystemHealth,
     placeholderData: (previousData) => previousData,
   });
-  const allRows = useMemo(() => (activityQuery.data?.rows ?? []).map(activityRow), [activityQuery.data]);
+  const hostAnalyticsQuery = useQuery({
+    enabled: isSessionReady && canReadHostAnalytics,
+    queryKey: adminQueryKeys.dataQuality.source("host-analytics"),
+    queryFn: loadSystemHostAnalytics,
+  });
+  const marketingQuery = useQuery({
+    enabled: isSessionReady,
+    queryKey: adminQueryKeys.dataQuality.source("marketing-bridge"),
+    queryFn: loadSystemMarketingBridge,
+  });
+  const eventIntakeQuery = useQuery({
+    enabled: isSessionReady,
+    queryKey: adminQueryKeys.dataQuality.source("event-intake"),
+    queryFn: loadSystemEventIntake,
+  });
+  const allRows = useMemo(
+    () => activityRecords(activityQuery.data?.pages ?? []).map(activityRow),
+    [activityQuery.data]
+  );
   const rows = useMemo(() => filterActivity(allRows, filter, query), [allRows, filter, query]);
   const counts = useMemo(() => ({
     everyone: allRows.length,
@@ -138,6 +201,30 @@ export function useSystemController({isSessionReady, mode}: {isSessionReady: boo
     automatic: allRows.filter((row) => row.automatic).length,
     problems: allRows.filter((row) => row.problem).length,
   }), [allRows]);
+  const signals = useMemo(() => systemSignals({
+    eventIntake: eventIntakeQuery.data,
+    hostAnalytics: hostAnalyticsQuery.data,
+    marketingBridge: marketingQuery.data,
+    overview: overviewQuery.data,
+  }), [eventIntakeQuery.data, hostAnalyticsQuery.data, marketingQuery.data, overviewQuery.data]);
+  const healthReads: Array<{
+    id: SystemHealthSourceId;
+    query: {data?: unknown; error: unknown; isPending: boolean; refetch: () => Promise<unknown>};
+    generatedAt: string | undefined;
+  }> = [
+    {id: "overview", query: overviewQuery, generatedAt: overviewQuery.data?.generatedAt},
+    ...(canReadHostAnalytics ? [{
+      id: "host-analytics" as const, query: hostAnalyticsQuery, generatedAt: hostAnalyticsQuery.data?.generatedAt,
+    }] : []),
+    {id: "marketing-bridge", query: marketingQuery, generatedAt: marketingQuery.data?.generatedAt},
+    {id: "event-intake", query: eventIntakeQuery, generatedAt: eventIntakeQuery.data?.generatedAt ?? undefined},
+  ];
+  const sources: SystemHealthSource[] = healthReads.map(({generatedAt, id, query: read}) => healthSource(id, {
+    generatedAt: generatedAt ?? null,
+    hasData: read.data !== undefined,
+    failed: read.error !== null,
+    isLoading: read.isPending,
+  }));
   return {
     filter,
     setFilter,
@@ -145,10 +232,27 @@ export function useSystemController({isSessionReady, mode}: {isSessionReady: boo
     setQuery,
     rows,
     counts,
-    activityError: activityQuery.error ? "Unable to load activity." : null,
+    selected: allRows.find((row) => row.key === selectedKey) ?? null,
+    select: (key: string | null) => {
+      setSelectedKey(key);
+      setSelectedSignalId(null);
+    },
+    // A failed Load more keeps the rows already on screen.
+    activityError: activityQuery.isFetchNextPageError ? "Unable to load more activity." :
+      activityQuery.error ? "Unable to load activity." : null,
     isActivityLoading: activityQuery.isPending && isSessionReady,
-    health: healthQuery.data ? healthRows(healthQuery.data) : [],
-    healthError: healthQuery.error ? "Unable to load data health." : null,
-    refresh: () => Promise.all([activityQuery.refetch(), healthQuery.refetch()]),
+    hasMore: activityQuery.hasNextPage,
+    isLoadingMore: activityQuery.isFetchingNextPage,
+    loadMore: () => activityQuery.fetchNextPage(),
+    sources,
+    signals,
+    selectedSignal: signals.find((signal) => signal.id === selectedSignalId) ?? null,
+    selectSignal: (id: string | null) => {
+      setSelectedSignalId(id);
+      setSelectedKey(null);
+    },
+    /** Retries one source's read and leaves the others alone. */
+    retrySource: (id: SystemHealthSourceId) => healthReads.find((read) => read.id === id)?.query.refetch(),
+    refresh: () => Promise.all([activityQuery.refetch(), ...healthReads.map(({query: read}) => read.refetch())]),
   };
 }

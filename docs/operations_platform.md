@@ -533,7 +533,7 @@ functions/src/operations/          trusted persistence and worker-side adapters
 functions/scripts/operations/      trusted, apply-guarded projection operators
 functions/src/admin/               admin-authenticated read/decision adapters
 admin/src/features/inbox/          task-first human-review presentation
-admin/src/features/operations/     agent action receipt monitor
+admin/src/features/system/         activity log of action receipts
 ```
 
 Only platform primitives and generic token validation belong in

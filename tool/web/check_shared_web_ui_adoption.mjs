@@ -137,7 +137,7 @@ function validateRequiredSourceContracts(readSource = readRepoSource) {
     },
     {
       path: "admin/src/styles.css",
-      includes: [".search-control:focus-within", ".marketing-title-input:focus-visible"],
+      includes: [".marketing-title-input:focus-visible"],
     },
   ];
   const findings = [];
