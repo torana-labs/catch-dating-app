@@ -25,6 +25,10 @@ Runtime imports use the `@catch/web-config` workspace:
   configuration. Admin currently retains its existing per-field development
   fallback; production build validation must supply and verify its environment.
   App Check provider selection and authorization remain surface-owned.
+- `@catch/web-config/errorReporting` sends browser errors to Sentry from the
+  production hostnames only: no tracing, replay, cookies, browser storage or IP
+  address, with contact details, ids and link secrets scrubbed first. Each
+  surface passes its own project address (public by design) and private pages.
 
 Sharing these factories does not share cached private data or sign users into
 another origin. Firebase Auth persistence and session/role lifetimes remain
