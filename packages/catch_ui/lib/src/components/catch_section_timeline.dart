@@ -163,7 +163,7 @@ class CatchSectionTimeline extends StatelessWidget {
                               const SizedBox(width: CatchSpacing.s3),
                               Text(
                                 meta,
-                                style: CatchTextStyles.meta(
+                                style: CatchTextStyles.supporting(
                                   context,
                                   color: t.ink2,
                                 ),
