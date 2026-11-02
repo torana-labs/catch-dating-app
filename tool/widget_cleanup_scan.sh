@@ -98,7 +98,7 @@ scan_tappables() {
   raw="$(rg -n \
     "${common_globs[@]}" \
     'GestureDetector\(|InkWell\(|IconButton\(|(^|[^A-Za-z])TextButton\(' \
-    lib/*/presentation | sort -t: -k1,1 -k2,2n -u || true)"
+    lib/*/presentation apps/*/lib | sort -t: -k1,1 -k2,2n -u || true)"
 
   local output=""
   while IFS=: read -r file line _; do
@@ -147,7 +147,7 @@ scan_white_pill_ctas() {
   raw="$(rg -n \
     "${common_globs[@]}" \
     'backgroundColor: Colors\.white\b|color: Colors\.white\b' \
-    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation | sort -t: -k1,1 -k2,2n -u || true)"
+    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation apps/*/lib | sort -t: -k1,1 -k2,2n -u || true)"
 
   local output=""
   while IFS=: read -r file line _; do
@@ -198,7 +198,7 @@ scan_raw_material_buttons() {
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(ElevatedButton|OutlinedButton|FilledButton|TextButton|CupertinoButton|FloatingActionButton)\(' \
-    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation \
+    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation apps/*/lib \
     --glob '!packages/catch_ui/lib/src/components/catch_button.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
@@ -220,7 +220,7 @@ scan_raw_text_inputs() {
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(TextField|TextFormField)\(' \
-    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation \
+    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation apps/*/lib \
     --glob '!packages/catch_ui/lib/src/components/catch_field.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_search_field.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' || true)"
@@ -244,7 +244,7 @@ scan_raw_range_sliders() {
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])RangeSlider\(|SliderTheme\(' \
-    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation \
+    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation apps/*/lib \
     --glob '!packages/catch_ui/lib/src/components/catch_range_input.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
@@ -266,7 +266,7 @@ scan_raw_number_steppers() {
   raw="$(rg -n \
     "${common_globs[@]}" \
     'Icons\.(add|remove)_rounded|Icons\.(add|remove)\b' \
-    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation \
+    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation apps/*/lib \
     --glob '!packages/catch_ui/lib/src/components/catch_stepper.dart' || true)"
 
   local output=""
@@ -308,7 +308,7 @@ scan_literal_sized_box_spacing() {
   output="$(rg -n \
     "${common_globs[@]}" \
     'const SizedBox\((height|width): [0-9]' \
-    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation || true)"
+    lib/kernel lib/platform lib/pages lib/routing/shell lib/contexts/*/parts lib/*/presentation apps/*/lib || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -329,7 +329,7 @@ scan_raw_text_styles() {
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])TextStyle\(' \
-    lib/contexts/*/parts lib/platform/media lib/pages/startup lib/*/presentation \
+    lib/contexts/*/parts lib/platform/media lib/pages/startup lib/*/presentation apps/*/lib \
     --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_top_bar.dart' || true)"
 

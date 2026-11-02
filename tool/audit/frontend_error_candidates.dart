@@ -23,7 +23,17 @@ import 'dart:io';
 /// Each candidate is classified into stable buckets:
 /// `mustMigrate`, `review`, `verified`, `intentional`, `fixture`, `migrated`.
 /// The finished-state invariant is `mustMigrate == 0` and `review == 0`.
-const defaultRoots = ['lib', 'test'];
+List<String> defaultRoots([String base = '']) {
+  final apps = Directory('${base}apps');
+  return [
+    '${base}lib',
+    if (apps.existsSync())
+      for (final app in apps.listSync().whereType<Directory>())
+        '${app.path}/lib',
+    '${base}test',
+  ];
+}
+
 const defaultBaselinePath =
     'tool/audit/frontend_error_candidates_baseline.json';
 const generatedSuffixes = ['.g.dart', '.freezed.dart', '.mocks.dart'];
@@ -220,7 +230,7 @@ CliOptions _parseArgs(List<String> args) {
   }
 
   return CliOptions(
-    roots: roots.isEmpty ? defaultRoots : roots,
+    roots: roots.isEmpty ? defaultRoots() : roots,
     baselinePath: baselinePath,
     checkOutput: checkOutput,
     jsonOutput: jsonOutput,
@@ -444,6 +454,21 @@ void _runSelfTest() {
     'catch-frontend-error-self-test-',
   );
   try {
+    final appFixture = File('${temp.path}/apps/host/lib/today/today_flow.dart');
+    appFixture.parent.createSync(recursive: true);
+    appFixture.writeAsStringSync('''
+Future<void> swallow() async {
+  try {
+    throw StateError('boom');
+  } catch (_) {
+  }
+}
+''');
+    if (_scan(defaultRoots('${temp.path}/')).isEmpty) {
+      throw StateError('Default roots must include app packages.');
+    }
+    appFixture.parent.parent.parent.parent.parent.deleteSync(recursive: true);
+
     final fixtureFile = File('${temp.path}/lib/bad.dart');
     fixtureFile.parent.createSync(recursive: true);
     fixtureFile.writeAsStringSync('''
@@ -1352,7 +1377,7 @@ class Candidate {
 
 class CliOptions {
   const CliOptions({
-    this.roots = defaultRoots,
+    this.roots = const <String>[],
     this.baselinePath = defaultBaselinePath,
     this.checkOutput = false,
     this.jsonOutput = false,
