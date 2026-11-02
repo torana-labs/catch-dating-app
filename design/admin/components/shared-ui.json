@@ -1001,28 +1001,6 @@
       "comparisonReason": "Toned status row with icon and arbitrary content; meta rows are untoned factual entries and index rows navigate."
     },
     {
-      "id": "shared_search_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "SearchFieldStory",
-        "states": [
-          "empty",
-          "value",
-          "icon"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "exportName": "SearchField",
-      "componentId": "catch.search_field"
-    },
-    {
       "id": "shared_segmented_control",
       "kind": "shared-primitive",
       "owner": "shared/ui",

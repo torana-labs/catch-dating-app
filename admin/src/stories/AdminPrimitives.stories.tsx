@@ -10,7 +10,6 @@ import {
   Home,
   Lock,
   RefreshCw,
-  Search as SearchIcon,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -57,7 +56,6 @@ import {
   PageHeader,
   QualityList,
   QualityRow,
-  SearchField,
   SegmentedControl,
   SelectableCardButton,
   StatusBanner,
@@ -490,22 +488,6 @@ export const FilePickerButtonStory: Story = {
   ),
 };
 
-export const SearchFieldStory: Story = {
-  name: "Search field",
-  parameters: {
-    catchComponent: {
-      id: "shared_search_field",
-      states: ["empty", "value", "icon"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <SearchField ariaLabel="Search organizers" icon={<SearchIcon size={16} />} value="Afterfly" />
-      <SearchField ariaLabel="Search empty queue" placeholder="Search by name, city, or source" value="" />
-    </AdminWorkspace>
-  ),
-};
-
 export const InlineTextFieldStory: Story = {
   name: "Inline text field",
   parameters: {
@@ -673,7 +655,6 @@ export const AdminToolbarStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminToolbar>
-        <SearchField ariaLabel="Search queue" value="social" />
         <AdminButton>Reset</AdminButton>
       </AdminToolbar>
       <AdminToolbar compact>

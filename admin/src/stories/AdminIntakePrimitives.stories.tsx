@@ -34,7 +34,6 @@ import {
   AlertRow,
   QualityList,
   QualityRow,
-  SearchField,
 } from "../shared/ui/AdminPrimitives";
 
 const meta = {
@@ -119,7 +118,6 @@ export const AdminIntakeTaskToolbarStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminIntakeTaskToolbar aria-label="Intake filters">
-        <SearchField ariaLabel="Search intake" placeholder="Search organizer, source, city..." />
         <AdminButton>All cities</AdminButton>
         <AdminButton>All priorities</AdminButton>
         <AdminButton>Diagnostics</AdminButton>

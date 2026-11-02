@@ -5,7 +5,7 @@ import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
   AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
   AdminForm, AdminToolbar, DataTable, EmptyState,
-  PageHeader, Panel, SearchField, SegmentedControl, selectOptions, StateRow,
+  PageHeader, Panel, SegmentedControl, selectOptions, StateRow,
   } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
@@ -281,9 +281,9 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
   {!assignedStaffOnly && opened === "add-host" ? <Panel title="Add a host" icon={<Search size={18} />}>
     <CatchText as="p" variant="supporting">First find the existing organizer identity. Adding it to Sales creates a
       private record and does not publish a listing or approve a claim.</CatchText>
-    <SearchField ariaLabel="Search existing organizers" icon={<Search size={16} />}
-      value={controller.canonicalSearch} placeholder="Organizer name"
-      onChange={(value) => {
+    <CatchField recipe="input" title="Search existing organizers"
+      value={controller.canonicalSearch} inputHint="Organizer name"
+      onChanged={(value) => {
         controller.setCanonicalSearch(value); setSelectedCanonicalId("");
       }} />
     {controller.canonicalMatches.isPending ? <CatchText as="p" variant="supporting">Searching organizers…</CatchText> : null}
@@ -316,10 +316,9 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
       {assignedStaffOnly ? null : <AdminButton onClick={() => setOpened("add-host")}>Add host</AdminButton>}
     </>}>
     <AdminToolbar>
-      <SearchField ariaLabel="Search a name, city, or market word"
-        icon={<Search size={16} />}
-        placeholder="One word, at least two letters" value={controller.query}
-        onChange={(query) => controller.setAccountFilters({query})} />
+      <CatchField recipe="input" title="Search a name, city, or market word"
+        inputHint="One word, at least two letters" value={controller.query}
+        onChanged={(query) => controller.setAccountFilters({query})} />
       {!controller.validAccountQuery ? <CatchText as="p" variant="supporting" role="status">
         Search one word of 2–80 letters or numbers.</CatchText> : null}
       <CatchField recipe="select" title="Research status" value={controller.researchStatus}
@@ -475,10 +474,10 @@ function InboundReview({controller, onOpenIntake}: {
       onNext={controller.nextInboundPage} />
     {selected ? <AdminForm onSubmit={(event) => {event.preventDefault(); void link();}}>
       <CatchText as="h3" variant="sectionTitle">Match enquiry from {selected.fullName}</CatchText>
-      <SearchField ariaLabel="Search existing hosts for this enquiry"
-        icon={<Search size={16} />} placeholder="One name, city, or market word"
+      <CatchField recipe="input" title="Search existing hosts for this enquiry"
+        inputHint="One name, city, or market word"
         value={controller.identitySearch}
-        onChange={(value) => {controller.setIdentitySearch(value); setMatchId("");}} />
+        onChanged={(value) => {controller.setIdentitySearch(value); setMatchId("");}} />
       <CatchField recipe="select" title="Existing host" value={matchId}
         onChanged={(value) => setMatchId(value ?? "")}
         {...selectOptions([{value: "", label: "Choose a reviewed match"},

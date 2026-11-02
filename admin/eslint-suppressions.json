@@ -89,10 +89,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 8
+      "count": 7
     },
     "react/forbid-elements": {
-      "count": 11
+      "count": 9
     }
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
