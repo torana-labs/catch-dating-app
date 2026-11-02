@@ -77,6 +77,25 @@ test("the action says what is left: align, port one or port both, plus live abso
   assert.equal(rows[1].system, "Web + WebPart");
 });
 
+test("the styled symbol wins over a headless record, and is not its own absorption", () => {
+  const rows = buildRows({
+    components: [{id: "catch.both", tier: "T1", name: "CatchBoth", dart: {symbol: "CatchBoth"}, react: {symbol: "BothControl"}, aliases: ["BothControl"]}],
+    reactExports: new Set(["CatchBoth", "BothControl"]),
+    dartExports: new Set(["CatchBoth"]),
+    table: {Both: {records: ["catch.both"]}},
+  });
+  assert.equal(rows[0].react, "CatchBoth");
+  assert.deepEqual(rows[0].absorbs, ["BothControl"]);
+  const headless = buildRows({
+    components: [{id: "catch.both", tier: "T1", name: "CatchBoth", dart: {symbol: "CatchBoth"}, react: {symbol: "BothControl"}, aliases: ["BothControl"]}],
+    reactExports: new Set(["BothControl"]),
+    dartExports: new Set(["CatchBoth"]),
+    table: {Both: {records: ["catch.both"]}},
+  });
+  assert.equal(headless[0].react, "BothControl");
+  assert.deepEqual(headless[0].absorbs, []);
+});
+
 test("the table renders the plan's columns with a dash for what is missing", () => {
   const text = renderMatrix(buildRows({
     components,
