@@ -268,26 +268,28 @@ and form lane is `pane-lane`, 600px.
 | `section-title` | `display-sm` | `display-sm` | `display-section` |
 | `hero` | `display-lg` | `display-xl` | `display-hero` |
 
-The older roles stay as deprecated aliases until P7 deletes them: the D19 display
-steps and the IBM Plex Mono roles (`typography.brand`), and the platform profile
-roles that have a system twin. The profile roles keep their `CatchPlatformTokens`
-names and now hold that twin's metrics on every platform:
+The D19 display steps and the IBM Plex Mono roles (`typography.brand`) stay as
+deprecated aliases until P7 deletes them; `CatchTextStyles` reads the role that
+replaces each one. IBM Plex Mono stays bundled for image exports.
 
-| Profile role | System role |
-| --- | --- |
-| `title` | `title-bar` |
-| `name` | `title-row` |
-| `body`, `fieldValue` | `body-input` |
-| `secondary` | `body-small` |
-| `context` | `body-meta` |
-| `control` | `label-button` |
-| `status` | `label-badge` |
-| `fieldLabel` | `label-kicker` |
+The platform profiles in `typography.ios`, `.android` and `.web` keep their
+values for now, and P2.1 moves `CatchText` onto the roles above:
 
-`headline`, `metric`, `displayLarge`, `displayMedium`, `displaySmall` and
-`navigationLabel` have no system twin and keep their platform values until the
-library drops them. The minimum interactive hit area stays 44 on iOS and 48 on
-Android.
+| Semantic use | iOS | Android | Role that replaces it |
+| --- | --- | --- | --- |
+| Functional headline | 24 / 30 / 600 | 24 / 32 / 600 | None yet |
+| UI title | 20 / 25 / 600 | 20 / 28 / 500 | `title-bar` |
+| Person or record title | 16 / 20 / 600 | 16 / 24 / 500 | `title-row` |
+| Reading body | 16 / 24 / 400 | 16 / 24 / 400 | `body-input` |
+| Secondary metadata | 14 / 20 / 400 | 14 / 20 / 400 | `body-small` |
+| Record context | 13 / 18 / 400 | 12 / 16 / 400 | `body-meta` |
+| Command | 15 / 20 / 400 | 14 / 20 / 400 | `label-button` |
+| Sentence-case status | 12 / 16 / 600 | 12 / 16 / 600 | `label-badge` |
+| Prominent quantity | 24 / 30 / 600 | 24 / 32 / 600 | None yet |
+| Editable field value | 16 / 24 / 500 | 16 / 24 / 500 | `body-input` |
+| Field caption/support | 13 / 18 / 500 | 12 / 16 / 500 | `label-kicker` |
+
+The minimum interactive hit area stays 44 on iOS and 48 on Android.
 
 `CatchPlatformTokens` selects the same `defaultTargetPlatform` used by
 `CatchFonts`. Flutter treats that native target as a compiler constant in
