@@ -82,42 +82,6 @@ export function AdminMarketingOpsShell({
   );
 }
 
-export function AdminIntakeWorkspaceTabs<T extends string>({
-  ariaLabel,
-  className = "",
-  options,
-  value,
-  onChange,
-}: {
-  ariaLabel: string;
-  className?: string;
-  options: Array<{disabled?: boolean; id: T; label: ReactNode}>;
-  value: T;
-  onChange: (value: T) => void;
-}) {
-  return (
-    <SegmentedControl
-      ariaLabel={ariaLabel}
-      className={classNames("intake-workspace-tabs", className)}
-      options={options}
-      value={value}
-      onChange={onChange}
-    />
-  );
-}
-
-export function AdminMarketingStudioHeader({
-  className = "",
-  ...props
-}: PageHeaderProps) {
-  return (
-    <PageHeader
-      {...props}
-      className={classNames("marketing-studio-header", className)}
-    />
-  );
-}
-
 export function AdminMarketingStudioActions({
   children,
   className = "",

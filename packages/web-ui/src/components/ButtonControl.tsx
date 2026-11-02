@@ -7,7 +7,7 @@ export interface ButtonControlProps
 
 /**
  * The retiring headless button under the surface adapters (website Button and
- * StepRail, Admin AdminButton and AdminIntakeStageRail): a native button that
+ * StepRail, and Admin AdminButton): a native button that
  * defaults to type button and is disabled and busy while loading. It draws
  * nothing; catch.button on the web is the styled CatchButton, and this goes
  * when the last adapter moves to it (the D20 call-site moves).
