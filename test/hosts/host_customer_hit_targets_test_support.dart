@@ -70,6 +70,9 @@ Future<_CrmHarness> _pumpCrm(
       hostMessagingSetupProvider(
         _organizer,
       ).overrideWithValue(const AsyncLoading()),
+      hostOrganizerRequestsProvider(_organizer).overrideWith(
+        (ref) async => const HostRequests(rows: [], complete: true),
+      ),
       hostCommunicationPlanProvider(_organizer, 'person-0').overrideWithValue(
         AsyncError(
           StateError('Messaging unavailable in this fixture'),

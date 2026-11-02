@@ -41,6 +41,10 @@ class HostRequestsRepository {
 HostRequestsRepository hostRequestsRepository(Ref ref) =>
     HostRequestsRepository(ref.watch(firebaseFunctionsProvider));
 
-@riverpod
+Duration? _noRequestsReadRetry(int retryCount, Object error) => null;
+
+/// The sidebar watches this from the Host shell, so a failed read must not
+/// keep retrying in the background. The Requests screen offers its own Retry.
+@Riverpod(retry: _noRequestsReadRetry)
 Future<HostRequests> hostOrganizerRequests(Ref ref, String organizerId) =>
     ref.watch(hostRequestsRepositoryProvider).list(organizerId);
