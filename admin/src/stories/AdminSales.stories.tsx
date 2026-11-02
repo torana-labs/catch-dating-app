@@ -59,7 +59,7 @@ export const SalesTodayStory: Story = {
   ),
 };
 
-const hostsModel = {query: "", setQuery: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
+const hostsModel = {query: "", setQuery: noop, validSearch: true, researchStatus: null, setResearchStatus: noop, mineOnly: false, setMineOnly: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
   tab: "overview" as const, setTab: noop,
   contacts: [{contactId: "c1", displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker" as const,
     primary: true, contactabilityStatus: "unknown" as const, sendAuthority: false as const}}],
@@ -82,13 +82,13 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
 };
 
 const quoteTerms = {currency: "INR", amountMinor: 500_000, billingCadence: "monthly" as const, scope: "Booking pages and guest messages for one host",

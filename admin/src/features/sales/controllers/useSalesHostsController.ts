@@ -58,13 +58,20 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
 }) {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
+  const [researchStatus, setResearchStatus] = useState<SalesResearchStatus | null>(null);
+  const [mineOnly, setMineOnly] = useState(false);
   const [cursors, setCursors] = useState<Array<string | undefined>>([undefined]);
   const [tab, setTab] = useState<HostTab>("overview");
   const cursor = cursors.at(-1);
+  const searchWord = query.trim();
+  // The server searches one word of 2 to 80 letters or numbers.
+  const validSearch = !searchWord || /^[A-Za-z0-9]{2,80}$/u.test(searchWord);
+  const listOwner = ownerUid ?? (mineOnly ? uid : null);
   const hosts = useQuery({
-    queryKey: ["sales", "hosts", ownerUid, query.trim(), cursor ?? null],
-    queryFn: () => listSalesAccounts({limit: 25, ...(cursor ? {cursor} : {}), ...(ownerUid ? {ownerUid} : {}),
-      ...(query.trim() ? {query: query.trim()} : {})}),
+    queryKey: ["sales", "hosts", listOwner, searchWord, researchStatus, cursor ?? null],
+    queryFn: () => listSalesAccounts({limit: 25, ...(cursor ? {cursor} : {}), ...(listOwner ? {ownerUid: listOwner} : {}),
+      ...(searchWord ? {query: searchWord} : {}), ...(researchStatus ? {researchStatus} : {})}),
+    enabled: validSearch,
   });
   const host = useQuery({
     queryKey: ["sales", "account", selectedOrganizerId],
@@ -119,6 +126,11 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
   return {
     query,
     setQuery: (value: string) => { setQuery(value); setCursors([undefined]); },
+    validSearch,
+    researchStatus,
+    setResearchStatus: (value: SalesResearchStatus | null) => { setResearchStatus(value); setCursors([undefined]); },
+    mineOnly,
+    setMineOnly: (value: boolean) => { setMineOnly(value); setCursors([undefined]); },
     rows: hosts.data?.rows ?? [],
     isLoading: hosts.isLoading,
     error: hosts.error,
