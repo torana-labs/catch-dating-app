@@ -64,7 +64,8 @@ abstract final class CatchElevation {
   /// Alias of the day [float]; P7 deletes it.
   static const List<BoxShadow> card = GeneratedCatchElevationTokens.card;
 
-  /// Alias of the day [sheet]; P7 deletes it.
+  /// Alias of the day [float]; P7 deletes it. Its readers are floating controls
+  /// and popovers, and the sheet shadow points up.
   static const List<BoxShadow> raised = GeneratedCatchElevationTokens.raised;
 
   /// Alias of the day [dialog]; P7 deletes it.

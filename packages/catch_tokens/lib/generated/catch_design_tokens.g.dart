@@ -772,12 +772,17 @@ abstract final class GeneratedCatchElevationTokens {
       offset: Offset(0.0, 10.0),
     ),
   ];
-  @Deprecated('Alias of theme.light.elevation.sheet; P7 deletes it.')
+  @Deprecated('Alias of theme.light.elevation.float; P7 deletes it.')
   static const List<BoxShadow> raised = <BoxShadow>[
     BoxShadow(
-      color: Color.fromRGBO(20, 17, 20, 0.16),
-      blurRadius: 32.0,
-      offset: Offset(0.0, -8.0),
+      color: Color.fromRGBO(20, 17, 20, 0.06),
+      blurRadius: 2.0,
+      offset: Offset(0.0, 1.0),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(20, 17, 20, 0.1),
+      blurRadius: 28.0,
+      offset: Offset(0.0, 10.0),
     ),
   ];
   @Deprecated('Alias of theme.light.elevation.dialog; P7 deletes it.')

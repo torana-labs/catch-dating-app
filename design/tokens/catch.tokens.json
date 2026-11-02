@@ -11498,13 +11498,13 @@
     },
     "raised": {
       "$type": "shadow",
-      "$description": "Deprecated alias of theme.light.elevation.sheet; P7 deletes it.",
+      "$description": "Deprecated alias of theme.light.elevation.float; P7 deletes it. Its readers are floating controls and popovers, and the sheet shadow points up.",
       "$extensions": {
         "org.catch": {
           "deprecated": true
         }
       },
-      "$value": "{theme.light.elevation.sheet}"
+      "$value": "{theme.light.elevation.float}"
     },
     "overlay": {
       "$type": "shadow",
