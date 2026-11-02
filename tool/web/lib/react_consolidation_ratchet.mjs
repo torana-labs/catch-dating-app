@@ -36,6 +36,10 @@ export const strandedByRetirementCeiling = Object.freeze({
   }),
 });
 
+const sortedBudgets = (budgets) =>
+  Object.fromEntries(Object.entries(budgets).sort(([left], [right]) => left.localeCompare(right)));
+const newlines = (source) => source.split("\n").length - 1;
+
 /** Match the scorecard's source scope and exact newline count, per file. */
 export function pageCssBudgets(root) {
   const result = {};
@@ -45,13 +49,28 @@ export function pageCssBudgets(root) {
       if (entry.isDirectory()) {
         if (entry.name !== "node_modules") walk(file);
       } else if (file.endsWith(".css") && !sharedCss.has(file)) {
-        const count = fs.readFileSync(path.join(root, file), "utf8").split("\n").length - 1;
+        const count = newlines(fs.readFileSync(path.join(root, file), "utf8"));
         if (count > 0) result[file] = count;
       }
     }
   }
   for (const surface of ["website", "admin"]) walk(`${surface}/src`);
-  return Object.fromEntries(Object.entries(result).sort(([left], [right]) => left.localeCompare(right)));
+  return sortedBudgets(result);
+}
+
+/**
+ * Page CSS line counts at the merge base. This is each file's ceiling, with no
+ * recorded copy: a merged reduction lowers it and needs no edit from anyone.
+ */
+export function mergeBaseCssBudgets(root, base) {
+  const git = (args) => execFileSync("git", args, {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 64 * 1024 * 1024});
+  const result = {};
+  for (const file of git(["ls-tree", "-r", "--name-only", base, "website/src", "admin/src"]).split("\n")) {
+    if (!file.endsWith(".css") || sharedCss.has(file) || file.split("/").includes("node_modules")) continue;
+    const count = newlines(git(["show", `${base}:${file}`]));
+    if (count > 0) result[file] = count;
+  }
+  return sortedBudgets(result);
 }
 
 /** Counts stay canonical; identities prevent replacing old debt with new debt. */
@@ -78,8 +97,11 @@ export function consolidationSnapshot({measures, inventory, css}) {
 }
 
 export function parseConsolidationBaseline(document) {
+  // The CSS gate is optional: measurements carry it, the recorded file does not,
+  // and a merge base from before that change still records it.
+  const withoutCss = (gates) => sorted(gates.filter((gate) => gate !== cssGate)).join();
   if (!object(document) || document.version !== 1 || document.owner !== owner || document.targetPhase !== targetPhase ||
-      !object(document.gates) || sorted(Object.keys(document.gates)).join() !== sorted(Object.keys(measuresByGate)).join()) {
+      !object(document.gates) || withoutCss(Object.keys(document.gates)) !== withoutCss(Object.keys(measuresByGate))) {
     throw new Error("Invalid React consolidation baseline metadata or gate set");
   }
   for (const [gate, entries] of Object.entries(document.gates)) {
@@ -134,31 +156,43 @@ export function strandedDifferences(findings, proposed, previous) {
   return [...findings.filter((finding) => !exempt.has(finding)), ...extra].sort();
 }
 
-/** Growth is illegal; a fixed allowance must also disappear on ordinary checks. */
-export function consolidationDifferences(actual, budget, {freshness = true} = {}) {
+/** Only growth fails. A budget is a ceiling, so reducing debt always passes. */
+export function consolidationDifferences(actual, budget) {
   const findings = [];
   for (const [gate, entries] of Object.entries(actual.gates)) {
     const previous = budget.gates[gate];
     if (gate === cssGate) {
-      for (const file of new Set([...Object.keys(entries), ...Object.keys(previous)])) {
-        const now = entries[file] ?? 0;
+      for (const [file, now] of Object.entries(entries)) {
         const before = previous[file] ?? 0;
         if (now > before) findings.push(`new debt ${gate}: ${file} ${now} exceeds ${before}`);
-        else if (freshness && now < before) findings.push(`stale allowance ${gate}: ${file} ${before} -> ${now}`);
       }
     } else {
-      const current = new Set(entries);
       const allowed = new Set(previous);
-      for (const id of current) if (!allowed.has(id)) findings.push(`new debt ${gate}: ${id}`);
-      if (freshness) for (const id of allowed) if (!current.has(id)) findings.push(`stale allowance ${gate}: ${id}`);
+      for (const id of entries) if (!allowed.has(id)) findings.push(`new debt ${gate}: ${id}`);
     }
   }
   return findings.sort();
 }
 
-export function previousConsolidationBaseline(root) {
+/** Recorded identity allowances that are no longer measured; never a failure. */
+export function fixedAllowanceCount(actual, recorded) {
+  return Object.keys(recorded.gates).filter((gate) => gate !== cssGate).reduce((count, gate) => {
+    const current = new Set(actual.gates[gate]);
+    return count + recorded.gates[gate].filter((id) => !current.has(id)).length;
+  }, 0);
+}
+
+function withoutCssGate(document) {
+  const {[cssGate]: _css, ...gates} = document.gates;
+  return {...document, gates};
+}
+
+function mergeBase(root) {
+  return execFileSync("git", ["merge-base", "origin/main", "HEAD"], {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
+}
+
+export function previousConsolidationBaseline(root, base = mergeBase(root)) {
   const git = (args) => execFileSync("git", args, {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim();
-  const base = git(["merge-base", "origin/main", "HEAD"]);
   return git(["ls-tree", "--name-only", base, baselinePath])
     ? parseConsolidationBaseline(JSON.parse(git(["show", `${base}:${baselinePath}`]))) : null;
 }
@@ -174,15 +208,17 @@ export function checkConsolidationRatchet({root, inventory, update = false}) {
   });
   const file = path.join(root, baselinePath);
   const recorded = fs.existsSync(file) ? parseConsolidationBaseline(JSON.parse(fs.readFileSync(file, "utf8"))) : null;
-  const previous = previousConsolidationBaseline(root);
+  const base = mergeBase(root);
+  const previous = previousConsolidationBaseline(root, base);
   if (!update && recorded === null) throw new Error(`Missing ${baselinePath}`);
-  const proposed = update ? carryStranded(actual, recorded) : recorded;
+  const proposed = withoutCssGate(update ? carryStranded(actual, recorded) : recorded);
+  const ceiling = recorded ? {gates: {...recorded.gates, [cssGate]: mergeBaseCssBudgets(root, base)}} : null;
   const findings = [...new Set([
-    ...(previous ? strandedDifferences(consolidationDifferences(proposed, previous, {freshness: false}), proposed, previous) : []),
-    ...(update ? recorded ? consolidationDifferences(actual, recorded, {freshness: false}) : []
-      : consolidationDifferences(actual, recorded)),
+    ...(previous ? strandedDifferences(consolidationDifferences(proposed, previous), proposed, previous) : []),
+    ...(ceiling ? consolidationDifferences(actual, ceiling) : []),
   ])];
   if (update && findings.length === 0) fs.writeFileSync(file, `${JSON.stringify(proposed, null, 2)}\n`);
-  return {findings, counts: Object.fromEntries(Object.entries(actual.gates).map(([gate, entries]) =>
-    [gate, gate === cssGate ? Object.values(entries).reduce((sum, count) => sum + count, 0) : entries.length]))};
+  return {findings, fixedAllowances: recorded && !update ? fixedAllowanceCount(actual, withoutCssGate(recorded)) : 0,
+    counts: Object.fromEntries(Object.entries(actual.gates).map(([gate, entries]) =>
+      [gate, gate === cssGate ? Object.values(entries).reduce((sum, count) => sum + count, 0) : entries.length]))};
 }

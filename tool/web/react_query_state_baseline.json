@@ -1,8 +1,0 @@
-{
-  "owner": "web_surface_architecture",
-  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
-  "version": 1,
-  "updated": "2026-07-02",
-  "description": "Current React feature controller/hook manual async-state baseline. Normal scanner runs fail only on findings not listed here.",
-  "allowedFindings": []
-}

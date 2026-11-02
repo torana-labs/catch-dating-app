@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.19.0
-updated: 2026-11-01
+version: 0.19.1
+updated: 2026-11-02
 owner: marketing_website
 status: active
 ---
@@ -568,13 +568,11 @@ aggregation points:
    `web:website-copy-ownership` scans production `.ts` and `.tsx` and blocks
    new visible JSX text (including single-word labels), accessibility copy,
    copy-bearing prop/data literals, and validation/status messages outside
-   `website/src/content/**`. The current component copy is recorded as
-   migration debt in `tool/web/website_copy_baseline.json`.
-   Move entries into direct page-specific content imports and shrink that
-   baseline; permanent technical exceptions belong in the reasoned allowlist.
-   The gate rejects malformed, duplicate, overlapping, or stale registry
-   entries, so completed migration debt cannot remain hidden in an inflated
-   baseline and allowlist exceptions cannot survive without a live finding.
+   `website/src/content/**`. Copy belongs in direct page-specific content
+   imports; permanent technical exceptions belong in the reasoned allowlist.
+   The gate fails on any string outside it, and rejects malformed, duplicate or
+   stale allowlist entries, so an exception cannot survive without a live
+   finding.
 
    ```sh
    node tool/run.mjs check web:website-copy-ownership
@@ -1058,19 +1056,16 @@ website/src/
    and external takedown mutation use shared query keys and mutation pending
    state. Organizer Intake, Event Intake, and Marketing Ops
    row-level pending state is derived from TanStack mutation state through named
-   mutation keys. `web:react-query-state` ratchets manual
+   mutation keys. `web:react-query-state` fails on any manual
    loading/saving/submitting/in-flight state in feature controllers and feature
-   `use*` hooks against `tool/web/react_query_state_baseline.json`; new
-   server-state work should keep that baseline empty.
+   `use*` hooks.
 
 9. Keep React query-state enforcement active.
 
    Website and admin code now share `node tool/run.mjs check
-   web:react-query-state`. The scanner is a baseline-backed ratchet for manual
-   async state in feature controllers and feature `use*` hooks. The baseline is
-   empty for both React apps. The gate fails new unbaselined
-   loading/saving/submitting/in-flight state. Refresh the baseline only when a
-   deliberate exception has an owner, expiry, and removal plan.
+   web:react-query-state`. The scanner is a plain gate over manual async state
+   in feature controllers and feature `use*` hooks: any
+   loading/saving/submitting/in-flight state fails, with no baseline.
 
 10. Keep React primitive enforcement active.
 

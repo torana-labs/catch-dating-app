@@ -424,11 +424,11 @@ test("resolved composition gate owns its authorities and both split suites", () 
   );
 });
 
-test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", () => {
+test("Flutter l10n gate derives JSON live and uploads ephemeral evidence", () => {
   const flutter = workflow("flutter-ci.yml");
   const scan = namedStep(
     flutter,
-    "Localization catalog and getter usage ratchet",
+    "Localization catalog and getter usage",
   );
   assert.equal(
     [...flutter.matchAll(/check_l10n_key_usage\.mjs/gu)].length,
@@ -441,7 +441,7 @@ test("Flutter l10n ratchet derives JSON live and uploads ephemeral evidence", ()
   );
   assert.match(
     scan,
-    /jq '\{summary: \.inventory\.summary, ratchet: \.ratchet\}' build\/ci\/l10n-key-usage\.json/u,
+    /jq '\{summary: \.inventory\.summary\}' build\/ci\/l10n-key-usage\.json/u,
   );
   assert.doesNotMatch(
     flutter,

@@ -2,7 +2,6 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -10,10 +9,7 @@ import test from "node:test";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {scanDartSource, tokenizeDartSyntax} from "../lib/dart_source.mjs";
 import {
-  baselineFromOrphans,
-  evaluateOrphanRatchet,
   findL10nMemberReferences,
-  readOrphanBaseline,
   scanL10nKeyUsage,
   stableJson,
   tokenizeDartIdentifiers,
@@ -22,8 +18,8 @@ import {
 const copyRoot = path.dirname(fileURLToPath(import.meta.url));
 const scannerPath = path.join(copyRoot, "check_l10n_key_usage.mjs");
 
-test("known-bad fixture reports only the newly orphaned key", () => {
-  const root = fixtureRoot("new_orphan");
+test("known-bad fixture reports every orphaned key", () => {
+  const root = fixtureRoot("orphans");
   const result = scanFixture(root);
   const entries = Object.fromEntries(
     result.inventory.keys.map((entry) => [entry.key, entry]),
@@ -49,37 +45,16 @@ test("known-bad fixture reports only the newly orphaned key", () => {
     ],
   );
 
-  const baseline = readFixtureBaseline(root);
-  const ratchet = evaluateOrphanRatchet(result.orphanedKeys, baseline);
-  assert.equal(ratchet.passed, false);
-  assert.deepEqual(ratchet.newOrphanedKeys, ["newOrphan"]);
-  assert.deepEqual(ratchet.baselineOrphanedKeys, [
+  assert.deepEqual(result.orphanedKeys, [
     "generatedOnly",
     "knownOrphan",
+    "newOrphan",
     "stringOnly",
   ]);
-  assert.deepEqual(ratchet.resolvedBaselineKeys, []);
 });
 
-test("reduction fixture passes when an orphan is used or removed", () => {
-  const root = fixtureRoot("reduction");
-  const result = scanFixture(root);
-  const ratchet = evaluateOrphanRatchet(
-    result.orphanedKeys,
-    readFixtureBaseline(root),
-  );
-
-  assert.deepEqual(result.orphanedKeys, []);
-  assert.equal(ratchet.passed, true);
-  assert.deepEqual(ratchet.newOrphanedKeys, []);
-  assert.deepEqual(ratchet.baselineOrphanedKeys, []);
-  assert.deepEqual(ratchet.resolvedBaselineKeys, [
-    "recoveredKey",
-    "removedCatalogKey",
-  ]);
-  const reducedBaseline = baselineFromOrphans(result.orphanedKeys);
-  assert.deepEqual(reducedBaseline.allowedOrphanedKeys, []);
-  assert.match(reducedBaseline.refreshCommand, /--write-baseline/u);
+test("no-orphans fixture has nothing to report", () => {
+  assert.deepEqual(scanFixture(fixtureRoot("no_orphans")).orphanedKeys, []);
 });
 
 test("missing-catalog fixture reports exact handwritten getter locations", () => {
@@ -159,14 +134,14 @@ test("Dart lexer ignores comments and strings but scans interpolation code", () 
 });
 
 test("inventory generation is deterministic JSON", () => {
-  const root = fixtureRoot("reduction");
+  const root = fixtureRoot("no_orphans");
   const first = scanFixture(root).inventory;
   const second = scanFixture(root).inventory;
   assert.equal(stableJson(first), stableJson(second));
   assert.deepEqual(JSON.parse(stableJson(first)), first);
 
-  const firstCli = runFixtureCli("reduction", "--check", "--json");
-  const secondCli = runFixtureCli("reduction", "--check", "--json");
+  const firstCli = runFixtureCli("no_orphans", "--check", "--json");
+  const secondCli = runFixtureCli("no_orphans", "--check", "--json");
   assert.equal(firstCli.status, 0, firstCli.stderr);
   assert.equal(secondCli.status, 0, secondCli.stderr);
   assert.equal(firstCli.stdout, secondCli.stdout);
@@ -194,15 +169,17 @@ test("shared tokenizer preserves l10n APIs and UTF-16 offsets through nested int
     assert.equal(source.slice(offset, offset + identifier.length), identifier);
 });
 
-test("CLI fails the new-orphan fixture and passes the reduction fixture", () => {
-  const failing = runFixtureCli("new_orphan", "--check");
+test("CLI fails on any orphan and passes when there are none", () => {
+  const failing = runFixtureCli("orphans", "--check");
   assert.equal(failing.status, 1, failing.stderr);
-  assert.match(failing.stderr, /New orphaned Flutter ARB keys:/u);
-  assert.match(failing.stderr, /- newOrphan/u);
+  assert.match(failing.stderr, /Orphaned Flutter ARB keys:/u);
+  for (const key of ["generatedOnly", "knownOrphan", "newOrphan", "stringOnly"]) {
+    assert.match(failing.stderr, new RegExp(`- ${key}`, "u"));
+  }
 
-  const passing = runFixtureCli("reduction", "--check");
+  const passing = runFixtureCli("no_orphans", "--check");
   assert.equal(passing.status, 0, passing.stderr);
-  assert.match(passing.stdout, /0 new, 0 baseline, 2 resolved/u);
+  assert.match(passing.stdout, /0 orphaned/u);
 });
 
 test("CLI always fails missing catalog getters with exact locations", () => {
@@ -213,7 +190,7 @@ test("CLI always fails missing catalog getters with exact locations", () => {
       result.stderr,
       /lib\/sample\.dart:5:24 l10n\.missingCatalogKey/u,
     );
-    assert.match(result.stderr, /cannot be baselined/u);
+    assert.match(result.stderr, /always fail/u);
     assert.doesNotMatch(result.stderr, /commentOnly|stringOnly|generatedOnly/u);
   }
 });
@@ -233,68 +210,14 @@ test("JSON review records missing getters but exits unsuccessfully", () => {
   ]);
 });
 
-test("baseline refresh refuses missing catalog getters", () => {
-  const root = fixtureRoot("missing_catalog");
-  const baselinePath = path.join(
-    root,
-    "tool",
-    "copy",
-    "l10n_orphan_baseline.json",
+test("CLI JSON is reviewable and matches the live scan", () => {
+  const root = fixtureRoot("no_orphans");
+  const review = runCli(["--repo-root", root, "--check", "--json"]);
+  assert.equal(review.status, 0, review.stderr);
+  assert.equal(
+    stableJson(JSON.parse(review.stdout).inventory),
+    stableJson(scanFixture(root).inventory),
   );
-  const before = fs.readFileSync(baselinePath, "utf8");
-  const result = runFixtureCli("missing_catalog", "--write-baseline");
-
-  assert.equal(result.status, 1, result.stderr);
-  assert.match(result.stderr, /Refusing to refresh the orphan baseline/u);
-  assert.equal(fs.readFileSync(baselinePath, "utf8"), before);
-});
-
-test("baseline refresh refuses to bless a newly orphaned key", () => {
-  const root = fixtureRoot("new_orphan");
-  const baselinePath = path.join(
-    root,
-    "tool",
-    "copy",
-    "l10n_orphan_baseline.json",
-  );
-  const before = fs.readFileSync(baselinePath, "utf8");
-  const refresh = runFixtureCli("new_orphan", "--write-baseline");
-
-  assert.equal(refresh.status, 1, refresh.stderr);
-  assert.match(refresh.stderr, /Refusing to grow/u);
-  assert.match(refresh.stderr, /newOrphan/u);
-  assert.equal(fs.readFileSync(baselinePath, "utf8"), before);
-});
-
-test("CLI JSON is reviewable and baseline write produces a reduction", () => {
-  const root = fixtureRoot("reduction");
-  const temporaryRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), "catch-l10n-writes-"),
-  );
-  try {
-    const baselinePath = path.join(temporaryRoot, "baseline.json");
-    const review = runCli(["--repo-root", root, "--check", "--json"]);
-    assert.equal(review.status, 0, review.stderr);
-    assert.equal(
-      stableJson(JSON.parse(review.stdout).inventory),
-      stableJson(scanFixture(root).inventory),
-    );
-
-    const baselineWrite = runCli([
-      "--repo-root",
-      root,
-      "--baseline",
-      baselinePath,
-      "--write-baseline",
-    ]);
-    assert.equal(baselineWrite.status, 0, baselineWrite.stderr);
-    assert.deepEqual(
-      JSON.parse(fs.readFileSync(baselinePath, "utf8")).allowedOrphanedKeys,
-      [],
-    );
-  } finally {
-    fs.rmSync(temporaryRoot, {recursive: true, force: true});
-  }
 });
 
 test("retired tracked inventory and legacy CLI modes stay absent", () => {
@@ -303,21 +226,19 @@ test("retired tracked inventory and legacy CLI modes stay absent", () => {
     snapshot.exists("docs/audit_registry/l10n_key_usage.json"),
     false,
   );
-  for (const flag of ["--check-inventory", "--write-inventory", "--inventory"]) {
-    const result = runFixtureCli("reduction", flag);
+  for (const flag of ["--check-inventory", "--write-inventory", "--inventory", "--write-baseline", "--baseline"]) {
+    const result = runFixtureCli("no_orphans", flag);
     assert.equal(result.status, 64, `${flag}: ${result.stderr}`);
     assert.match(result.stderr, /Unknown argument/u);
   }
 });
 
-test("CLI help exposes only live evidence and baseline modes", () => {
+test("CLI help exposes only live evidence modes", () => {
   const result = runCli(["--help"]);
   assert.equal(result.status, 0, result.stderr);
   for (const supported of [
     "--check",
     "--json",
-    "--write-baseline",
-    "--baseline <path>",
     "--repo-root <path>",
     "--check --json > build/ci/l10n-key-usage.json",
   ]) {
@@ -325,7 +246,7 @@ test("CLI help exposes only live evidence and baseline modes", () => {
   }
   assert.doesNotMatch(
     result.stdout,
-    /--check-inventory|--write-inventory|--inventory <path>|docs\/audit_registry\/l10n_key_usage\.json/u,
+    /--check-inventory|--write-inventory|--inventory <path>|--write-baseline|--baseline <path>|docs\/audit_registry\/l10n_key_usage\.json/u,
   );
 });
 
@@ -339,12 +260,6 @@ function scanFixture(root) {
     arbPath: path.join(root, "lib", "l10n", "app_en.arb"),
     sourceRoot: path.join(root, "lib"),
   });
-}
-
-function readFixtureBaseline(root) {
-  return readOrphanBaseline(
-    path.join(root, "tool", "copy", "l10n_orphan_baseline.json"),
-  );
 }
 
 function runFixtureCli(name, ...args) {

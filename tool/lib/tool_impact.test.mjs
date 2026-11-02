@@ -431,8 +431,7 @@ test("l10n usage changes keep the full source view with Node-only setup", () => 
   for (const changedPath of [
     "tool/copy/check_l10n_key_usage.mjs",
     "tool/copy/check_l10n_key_usage.test.mjs",
-    "tool/copy/l10n_orphan_baseline.json",
-    "tool/copy/fixtures/l10n_key_usage/reduction/lib/sample.dart",
+    "tool/copy/fixtures/l10n_key_usage/no_orphans/lib/sample.dart",
   ]) {
     const plan = planAffectedToolChecks({
       changedPaths: [changedPath],

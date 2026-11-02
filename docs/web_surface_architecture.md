@@ -831,8 +831,10 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   gaps, adapters and single-owner shared components cannot gain debt identities.
   Page CSS outside the two website foundation layers has a separate newline
   ceiling for each file, so another file or surface cannot spend its allowance.
-  Fixed identities and shorter files must leave the baseline in the same slice.
-  Regenerate with `node tool/web/check_shared_web_ui_adoption.mjs
+  That ceiling is the file's line count on the fetched-main merge base, so a
+  merged reduction lowers it with no edit. Only growth fails: a fixed identity
+  passes and may stay in the baseline as a ceiling. Drop fixed identities when
+  convenient with `node tool/web/check_shared_web_ui_adoption.mjs
   --update-consolidation-baseline`; the generator rejects growth against both
   the local baseline and fetched-main merge base. `--write` still writes only
   the ignored inventory. Bare `--json` is the scorecard's read-only inventory

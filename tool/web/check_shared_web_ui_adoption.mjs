@@ -55,8 +55,11 @@ if ((!args.has("--json") || args.has("--check") || args.has("--update-consolidat
     findings.push(...ratchet.findings);
     if (!args.has("--json") && ratchet.findings.length === 0) {
       console.log(`React consolidation ratchet passed: ${JSON.stringify(ratchet.counts)}.`);
+      if (ratchet.fixedAllowances > 0) {
+        console.log(`${ratchet.fixedAllowances} recorded allowance(s) are fixed; --update-consolidation-baseline drops them whenever convenient.`);
+      }
     }
-    if (ratchet.findings.length) findings.push("Remove new debt, or regenerate fixed allowances with --update-consolidation-baseline.");
+    if (ratchet.findings.length) findings.push("Remove the new debt; the baseline cannot grow to admit it.");
   } catch (error) {
     findings.push(error.message);
   }
