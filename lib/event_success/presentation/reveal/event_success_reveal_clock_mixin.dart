@@ -1,3 +1,4 @@
+// architecture: provider-free
 import 'dart:async';
 
 import 'package:catch_tokens/catch_tokens.dart';

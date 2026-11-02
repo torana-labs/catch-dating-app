@@ -1,7 +1,7 @@
 ---
 doc_id: mobile_release_fastlane_migration
-version: 1.1.0
-updated: 2026-10-30
+version: 1.1.1
+updated: 2026-11-02
 owner: recursive_audit_loop
 status: active
 ---
@@ -178,9 +178,8 @@ From the coupling audit (appendix C, §2):
   `functions-lib` upload.
 - Registries: `ci:mobile-*`, `ci:firebase-delivery-package`,
   `ci:finalize-ci-plan` and the receipt and Xcode Cloud entries in
-  `tool/tools_manifest.json`; the matching `tool/remote_ops_manifest.json`,
-  `tool/architecture/pattern_adoption.json` and `tool/policy/rules.json`
-  entries; `releasePolicy` and release-mode targets in `tool/app_targets.json`
+  `tool/tools_manifest.json`; the matching `tool/remote_ops_manifest.json`
+  and `tool/policy/rules.json` entries; `releasePolicy` and release-mode targets in `tool/app_targets.json`
   and `tool/harness/component_graph.json`.
 - Rewrite, not delete: `tool/platform/check_app_targets.mjs` release-ownership
   checks, and the tests that slice the deleted jobs.
@@ -808,7 +807,6 @@ else consumes it). Confidence H/M/L.
 - `tool/harness/component_graph.json`: remove `releaseTargets`/`releaseRoles` from the 19 main entries and all `release` entries (C-47/C-48), mode `"release"` at `:5`, `deployGroupRequirements` `:24-29` and `deployGroups` (C-50); edit `:182-189`, `:816-825`, `:843-849`; optionally align main `ciTargets` with merge_group (C-49).
 - `tool/harness/component_graph.schema.json:196-220`, `tool/harness/lib/component_graph.mjs:8,10,13-18,484-520,542-547`, `tool/harness.mjs:64-69,242-243`: drop release/deploy operations once the graph no longer uses them.
 - `tool/remote_ops_manifest.json`: replace `:683-812`; delete notes `:160-162`.
-- `tool/architecture/pattern_adoption.json:1158-1262`: edit prototypeFiles, adopters, exceptions, requiredChecks.
 - `tool/policy/rules.json:2742,2753,2789`: update sunset wording and anchor.
 - `tool/app_targets.json`: rewrite `:25-61`; trim `:386-394`, `:447-455`; drop `testFlightDistributionPolicy` `:85,108` (with `check_app_targets.mjs:129-134`).
 - `tool/app_target_external_gates.json`: retire or re-scope both gates (with `check_app_targets.mjs:13-28`).

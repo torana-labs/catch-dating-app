@@ -363,7 +363,10 @@ test("flags every noncanonical surface inside an aligned root adopter", () => {
     ],
   });
 
-  const result = checkScreenTopBarContracts({root});
+  const result = checkScreenTopBarContracts({
+    root,
+    rootHeaderPaths: new Set([trackedPath]),
+  });
 
   assert.ok(hasFinding(result, "tracked-root-header-noncanonical-owner"));
 });
@@ -882,7 +885,10 @@ test("discovers canonical root chrome delegated through StatefulWidget State", (
     ],
   });
 
-  const result = checkScreenTopBarContracts({root});
+  const result = checkScreenTopBarContracts({
+    root,
+    rootHeaderPaths: new Set([trackedPath]),
+  });
 
   assert.deepEqual(result.findings, []);
   assert.equal(result.trackedRootHeaderPathCount, 1);
@@ -908,7 +914,10 @@ test("discovers a canonical root HeaderContent surface", () => {
     ],
   });
 
-  const result = checkScreenTopBarContracts({root});
+  const result = checkScreenTopBarContracts({
+    root,
+    rootHeaderPaths: new Set([trackedPath]),
+  });
 
   assert.deepEqual(result.findings, []);
   assert.equal(result.trackedRootSurfaceCount, 1);
@@ -933,7 +942,10 @@ test("flags a tracked root Screen that drops its canonical owner", () => {
     ],
   });
 
-  const result = checkScreenTopBarContracts({root});
+  const result = checkScreenTopBarContracts({
+    root,
+    rootHeaderPaths: new Set([trackedPath]),
+  });
 
   assert.ok(hasFinding(result, "tracked-root-header-missing-owner"));
 });
@@ -1254,24 +1266,6 @@ function fixtureRoot({
   for (const trackedRootSource of trackedRootSources) {
     write(root, trackedRootSource.path, trackedRootSource.source);
   }
-  if (trackedRootSources.length > 0) {
-    write(
-      root,
-      "tool/architecture/pattern_adoption.json",
-      JSON.stringify({
-        patterns: [
-          {
-            id: "ARCH-SCREEN-CHROME-001",
-            adopters: trackedRootSources.map((trackedRootSource) => ({
-              path: trackedRootSource.path,
-              status: "aligned",
-            })),
-          },
-        ],
-      }),
-    );
-  }
-
   const configuredRootHeaders =
     rootHeaders ??
     [

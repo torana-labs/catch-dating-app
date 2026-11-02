@@ -12,14 +12,12 @@
         "lib/**",
         "test/**",
         "docs/app_architecture.md",
-        "tool/architecture/pattern_adoption.json",
         "lib/README.md"
       ],
       "source_docs": [
         "AGENTS.md",
         "docs/agent_operating_model.md",
         "docs/app_architecture.md",
-        "tool/architecture/pattern_adoption.json",
         "lib/README.md"
       ],
       "required_tools": [],
@@ -27,7 +25,7 @@
         "flutter analyze --no-fatal-infos"
       ],
       "optional_guidance": [
-        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md,tool/architecture/pattern_adoption.json"
+        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md"
       ],
       "success_evidence": "Focused tests/analyzer pass, relevant scanners run, generated artifacts are current, and Git or CI output preserves the evidence.",
       "known_failure_modes": [
