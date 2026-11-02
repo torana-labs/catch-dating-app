@@ -613,6 +613,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         setState(() => _audienceSearch = nextSearch);
       case HostAudienceView.forms:
       case HostAudienceView.responses:
+      case HostAudienceView.requests:
         return;
     }
   }

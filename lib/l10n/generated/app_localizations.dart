@@ -41220,6 +41220,198 @@ abstract class AppLocalizations {
   /// **'Pay {amount}'**
   String hostBillsPay({required String amount});
 
+  /// Audience tab: everyone waiting across coming events.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get hostRequestsTab;
+
+  /// Requests: nobody has asked to join or joined a waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'No one is waiting'**
+  String get hostRequestsEmptyTitle;
+
+  /// Requests: what this screen holds.
+  ///
+  /// In en, this message translates to:
+  /// **'Join requests and your waitlists show here, across your coming events.'**
+  String get hostRequestsEmptyBody;
+
+  /// Requests filter: everyone waiting.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count}'**
+  String hostRequestsFilterAll({required int count});
+
+  /// Requests filter: join requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked to join {count}'**
+  String hostRequestsFilterAsked({required int count});
+
+  /// Requests filter: the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist {count}'**
+  String hostRequestsFilterWaitlist({required int count});
+
+  /// Requests: the list was cut off.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the first people waiting. Open an event to see all of its guests.'**
+  String get hostRequestsPartial;
+
+  /// Requests: a person with no public name.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest'**
+  String get hostRequestsGuest;
+
+  /// Requests: first time with this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get hostRequestsNew;
+
+  /// Requests: events attended with this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 event} other{{count} events}}'**
+  String hostRequestsEvents({required int count});
+
+  /// Requests row: history with this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'{events} with you'**
+  String hostRequestsWithYou({required String events});
+
+  /// Requests row: history and when they asked.
+  ///
+  /// In en, this message translates to:
+  /// **'{history} · asked {date}'**
+  String hostRequestsAsked({required String history, required String date});
+
+  /// Requests row: place on the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Number {position} on the waitlist'**
+  String hostRequestsPosition({required int position});
+
+  /// Requests: a live waitlist offer and when it runs out.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered until {date}'**
+  String hostRequestsOffered({required String date});
+
+  /// Requests detail: back to the list on a phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to requests'**
+  String get hostRequestsBack;
+
+  /// Requests detail: the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostRequestsFactEvent;
+
+  /// Requests detail: when the event starts.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get hostRequestsFactWhen;
+
+  /// Requests detail: places left.
+  ///
+  /// In en, this message translates to:
+  /// **'Places left'**
+  String get hostRequestsFactPlaces;
+
+  /// Requests detail: places left of the capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'{left} of {capacity}'**
+  String hostRequestsPlacesLeft({required int left, required int capacity});
+
+  /// Requests detail: history with this organizer.
+  ///
+  /// In en, this message translates to:
+  /// **'With you'**
+  String get hostRequestsFactWithYou;
+
+  /// Requests detail: heading of the timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'How it got here'**
+  String get hostRequestsJourney;
+
+  /// Timeline: said to a screen reader before a finished step.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostRequestsStepDone;
+
+  /// Timeline: said to a screen reader before the current step.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get hostRequestsStepNow;
+
+  /// Timeline: said to a screen reader before a coming step.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostRequestsStepNext;
+
+  /// Requests timeline: earlier attendance.
+  ///
+  /// In en, this message translates to:
+  /// **'Came to {events} with you'**
+  String hostRequestsCameBefore({required String events});
+
+  /// Requests timeline: the join request.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked to join {event}'**
+  String hostRequestsAskedStep({required String event});
+
+  /// Requests timeline: joining the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined the waitlist for {event}'**
+  String hostRequestsWaitlistStep({required String event});
+
+  /// Requests dock: how the person hears of the decision.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} gets a notification'**
+  String hostRequestsHears({required String name});
+
+  /// Requests dock: how the person hears, and who is next.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} gets a notification · then {next}'**
+  String hostRequestsHearsThen({required String name, required String next});
+
+  /// Requests dock: approve a join request.
+  ///
+  /// In en, this message translates to:
+  /// **'Let them in'**
+  String get hostRequestsLetIn;
+
+  /// Requests dock: decline a join request.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get hostRequestsDecline;
+
+  /// Requests dock: offer a waitlisted person a spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer a spot'**
+  String get hostRequestsOffer;
+
   /// Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.
   ///
   /// In en, this message translates to:
