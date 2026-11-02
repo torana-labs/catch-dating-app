@@ -180,8 +180,9 @@ A record with `"status": "planned"` is a registered component with no code yet.
 It has no `dart` field, because there is no file to point at, and no `react`
 field. Its `name` holds the symbol it will have. The planned status exempts a
 record from checks that a symbol exists, and from nothing else: the lexicon,
-Widgetbook-contract, widget-catalog and enforcement-coverage checks skip it while
-it has no Dart symbol, and every other contract rule still applies. A planned
+Widgetbook-contract, widget-catalog and enforcement-coverage checks and the T1 React
+ratchets skip it while it has no Dart symbol, and every other contract rule still
+applies. A planned
 record still declares its one governance decision, usually the
 `verification.vehicle: widgetbook-contract` that takes effect with its first code.
 The first code sets `status` to `active` and adds `dart` in the same PR.
