@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.6
+version: 1.31.0
 updated: 2026-11-02
 owner: app_architecture
 status: active
@@ -25,7 +25,9 @@ separate deployables over one shared web system, enforced with stylelint and
 ESLint rather than hand-written scanners. D18 (2026-10-23) gives both
 frameworks one placement rule: the library draws, and features only arrange
 and bind. D19–D21 (2026-10-24) set brand baseline v1: one type scale, one
-button, and who decides consolidation calls.
+button, and who decides consolidation calls. D22–D25 (2026-11-02) bind the
+redesign implementation programme: system v15's values, the repo as the design
+system's source, zero drawing in the new roots, and contexts as packages.
 
 It is a point-in-time plan, not a parallel architecture document. Durable rules
 ratified here are folded into `docs/app_architecture.md` (and the widget
@@ -835,6 +837,8 @@ source:
 
 ### D19. One type scale
 
+Amended by D22 (2026-11-02).
+
 1. **Display voice.** Archivo stays at 78% width and is set at weight 760.
    Line height and letter-spacing follow the step, as in the table below.
    Archivo is only for headlines of 24px and up. Anything smaller uses the
@@ -877,6 +881,8 @@ source:
      is not used for type.
 
 ### D20. One button
+
+Amended by D22 (2026-11-02).
 
 1. **Shape.** Every button has 4px corners (`radius-xs`) in every framework,
    full-width sheet buttons included. `CatchButtonMode.rounded` retires.
@@ -966,6 +972,303 @@ Rejected alternatives:
 
 `docs/design_language.md` takes D19 and D20 in the change that updates the
 library defaults.
+
+### Redesign implementation (D22–D25, decided 2026-11-02)
+
+Owner direction (2026-11-02): one design system in code, then every host,
+consumer and website screen rebuilt from it. The owner accepted the programme's
+ten defaults that day and, the same evening, amendments A–J from an adversarial
+review. The
+[decision record](https://github.com/torana-labs/catch-knowledge/blob/main/decisions/2026-11-02-redesign-implementation-defaults.md)
+and the
+[programme plan](https://github.com/torana-labs/catch-knowledge/blob/main/plans/redesign-implementation-programme.md)
+live in the knowledge repository. D22–D25 are the parts that bind this
+repository. Below, "PR 1.4" and "phase P1" use the plan's numbering, not this
+document's Part 1 points or Part 4 phases.
+
+Measured by the plan on 2026-11-02 against `origin/main` e2b75f466 and
+`catch-design-source` 98b5da3 (system v15, canvas v92):
+
+- **The design system exists four times, and the copies disagree.** The canvas
+  mounts a React bundle built outside the repo (`ds/src`, 51 registry symbols).
+  `@catch/web-ui` has 91 components built to D19 and D20, `catch_ui` has 131
+  widgets in the older editorial language, and the website and Admin still carry
+  41 files of legacy primitives. The button corner is 10px on the canvas and 4px
+  in both libraries.
+- **The Flutter app no longer draws much; it sprawls at the parts level.**
+  Feature code makes 19 raw chrome calls and 48 inline text styles, yet defines
+  1,095 public widget classes outside `catch_ui`, in 55 duplicate clusters.
+- **One Dart package holds the app.** It is 507k lines, and about 90 lint rules
+  hold its layers apart.
+
+### D22. System v15 values supersede D19 and D20
+
+System v15 moved defaults that D19 and D20 set. Where they name a different
+value for the same thing, v15 wins. What they state and v15 leaves alone stands.
+The values below are the system's own: `ds/catch/project/tokens.json` in
+`catch-design-source`, and its `catch.button` and `catch.text` guidelines.
+
+1. **Buttons.** Every button has 10px corners (`radius-sm`) in every framework.
+   D20 said 4px (`radius-xs`). The other values that differ move with it:
+
+   | D20 | System v15 |
+   | --- | --- |
+   | Four variants; `ghost` retires | Six: primary, secondary, ghost, quiet, accent, danger. Ghost is outlined, for use on colour and photos. Accent takes the event colour, for actions that belong to the event |
+   | Secondary has a 1px border | `stroke-control` (1.5px) in `control-line`; on a tile or a coloured spotlight it loses the outline and turns white |
+   | Danger has a red fill | Outlined, with `deep-coral` text |
+   | S label is 13px / 600 | `label-action`, 14px / 600 |
+   | Hover overlay is 8% on filled buttons and 5% on the others | `opacity-hover`, 4%; quiet underlines instead |
+   | Press overlay is 14%, with a 0.97 scale | `opacity-pressed`, 8%, with a 0.98 scale |
+   | Transitions use 120ms | Transform `duration-instant` (100ms), colour `duration-quick` (160ms) |
+   | Loading shows three dots | A spinner, at the same width |
+
+   D20's heights (48, 40 and 32px, now `control-lg`, `control-md` and
+   `control-sm`), padding, focus ring and disabled opacity stand, and so does
+   its rule that pills are for chips and filters, not actions.
+2. **Radius.** The scale becomes:
+
+   | Token | Value | Use | Was |
+   | --- | --- | --- | --- |
+   | `radius-xs` | 6px | Checkboxes only | 4px |
+   | `radius-sm` | 10px | Buttons, fields, squares under 64px such as date and icon tiles | 8px |
+   | `radius-md` | 16px | Anything nested inside a tile; choice cards | 14px |
+   | `radius-lg` | 20px | Tiles | 20px |
+   | `radius-xl` | 24px | Spotlights, floating blocks, sheets | New |
+   | `radius-pill` | 999px | Chips, badges, avatars, switches, segmented items | Pill |
+
+   `interactiveTile` (12px) is deleted.
+3. **Type.** Nineteen roles replace D19's six display steps and the shared
+   function roles it kept. Archivo stays at 78% width. Display roles use Archivo
+   and every other role uses the system sans.
+
+   | Role | Size | Line height | Weight | Letter-spacing |
+   | --- | --- | --- | --- | --- |
+   | `display-hero` | 96px | 0.9 | 760 | −0.045em |
+   | `display-xl` | 64px | 0.95 | 760 | −0.04em |
+   | `display-lg` | 48px | 1.0 | 760 | −0.03em |
+   | `display-title` | 38px | 1.0 | 760 | −0.03em |
+   | `display-section` | 30px | 1.05 | 760 | −0.02em |
+   | `display-sm` | 24px | 1.1 | 760 | −0.01em |
+   | `display-xs` | 20px | 1.1 | 760 | 0 |
+   | `body-lead` | 20px | 1.5 | 400 | 0 |
+   | `body-input` | 16px | 1.5 | 400 | 0 |
+   | `body` | 15px | 1.45 | 400 | 0 |
+   | `body-small` | 14px | 1.43 | 400 | 0 |
+   | `body-meta` | 13px | 1.38 | 400 | 0 |
+   | `title-bar` | 17px | 1.3 | 700 | 0 |
+   | `title-row` | 16px | 1.35 | 600 | 0 |
+   | `label-button` | 15px | 1.3 | 600 | 0 |
+   | `label-action` | 14px | 1.3 | 600 | 0 |
+   | `label-kicker` | 13px | 1.35 | 600 | 0 |
+   | `label-badge` | 12px | 1.2 | 700 | 0 |
+   | `label-code` | 13px | 1.35 | 500 | 0.12em |
+
+   - **What they replace.** The display roles replace `displayXs` to
+     `displayXxl`. The body roles replace `bodyL`, `body`, `supporting` and
+     `meta`. The title roles replace `sectionTitle` and the record title roles.
+     The label roles replace `kicker`, `badge`, `badgeCaps` and `monoLabel*`.
+     D19's mapping of older roles onto its steps retires with the steps.
+   - **Archivo.** Its floor is 20px (`display-xs`), not 24px.
+   - **Weights.** Each role carries its own, so D19's weight list retires and
+     700 is no longer reserved for metrics. 760 stays display only.
+   - **Small text.** Nothing is set below 12px. Admin's allowance for 11px ends,
+     and its 13px floor for reading text stands (`body-meta`).
+   - **Codes.** IBM Plex Mono retires from UI labels. Codes use the sans with
+     tracking (`label-code`).
+   - **Responsive variants.** Three `CatchText` variants resolve to a role by
+     size class:
+
+     | Variant | Compact | Medium | Expanded |
+     | --- | --- | --- | --- |
+     | `page-title` | `display-title` | `display-lg` | `display-xl` |
+     | `section-title` | `display-sm` | `display-sm` | `display-section` |
+     | `hero` | `display-lg` | `display-xl` | `display-hero` |
+
+     Medium starts at `bp-medium` (600px) and expanded at `bp-expanded` (840px).
+   - **The 640px step-down.** D19's rule that the two largest steps drop two
+     steps below 640px wide retires with those steps. `hero` keeps the two-step
+     drop and takes it at the system's 600px boundary, because the tokens hold
+     no 640px value and two boundaries 40px apart would serve nothing. D19 set
+     no reading width. The system's reading and form lane is `pane-lane`, 600px.
+
+**Why.** The canvas is what the owner reviews, and every board is drawn in v15.
+The libraries are the side that is behind. D21 expected this: changing a D19 or
+D20 default is a library change, made once, and screens don't change. The token
+PR re-skins every screen not yet redrawn at once, which the owner accepted.
+
+**Supersedes.** The values above in D19 and D20. D21's decision rights read D22
+wherever they say D19 or D20.
+
+**Checked by.** PR 1.1 writes these values into
+`design/tokens/catch.tokens.json`, where `design:tokens` keeps the generated
+outputs in step, and regenerates corpus goldens and Storybook baselines once
+with a review sheet. `docs/design_language.md` takes D22 in that PR.
+
+### D23. The repo is the single source of the design system
+
+1. **Sources.** `design/tokens/catch.tokens.json` holds the tokens and
+   `design/components/catch.components.json` holds component identity, tiers,
+   aliases and props. No other file defines either.
+2. **Libraries.** `packages/web-ui` is the React that the design-system artifact
+   mounts. `packages/catch_ui` is its Flutter twin.
+3. **Direction.** The artifact and the canvas are downstream and are published
+   from the repo. The artifact's token format is an output of
+   `tool/design_tokens.mjs`, never a second source. Publishing is a release step
+   that the library writer runs after a library PR merges: the system first,
+   then the canvas. A design change is a library PR plus a republish.
+   `ds/tokens_src.py` is deleted in phase P1 and `ds/src` once `web-ui` is
+   published, and `ds/src` stays frozen at v15 until then.
+4. **The living canvas.** Storybook and Widgetbook are the canvas. The artifact
+   is the published Storybook build with each component's guideline beside it.
+   The board generators in `catch-design-source` (`gen/` and `harness/`) render
+   a board only until its screen ships, and then that board freezes as a
+   reference image next to the route's capture. PR 7.4 deletes them. No
+   generator moves into the repo.
+5. **Across frameworks.** A T1 or T2 component has the same name, states, slots
+   and tokens in both frameworks. Props are idiomatic per platform: children and
+   builders in Flutter, children and render props in React. The registry records
+   each prop's `dartType` and `tsType`. A component's anatomy is slots, not
+   variant props, and a component that would need more than six variants is
+   split. T3 and T4 stay as D18 left them.
+
+**Why.** Four copies disagree because nothing makes them agree. When the canvas
+renders the code, it cannot drift from it. Requiring identical props produces
+lowest-common-denominator APIs. Names, states and slots are what let a person
+or an agent carry a component across frameworks.
+
+**Supersedes.** The canvas-first loop that produced system v15. D9, D18's parity
+bullet and the "One API vocabulary" bullet under Cross-Framework Names in
+`docs/app_architecture.md` read as point 5 says wherever they require the same
+props. D9's rejection of a per-concept symbol mapping stands.
+
+**Checked by.** `design:component-lexicon` and `design:component-contracts`
+today. PR 0.2 adds `tool/design/component_matrix.mjs`, which checks names, states
+and slots across the two libraries. PR 1.5 adds
+`tool/design/publish_design_system.mjs`, which compares hashes so the published
+bundle and tokens are byte-equal to what the repo generates.
+
+### D24. Zero drawing in the new roots
+
+The new roots are `apps/*/lib` and `lib/pages`. They start clean: from the first
+screen PR they have no baseline and no exceptions.
+
+1. **File kinds.** A destination or page folder holds these files:
+
+   | File | Declares | May import |
+   | --- | --- | --- |
+   | `<name>_screen.dart` | One `<Name>Screen` widget: route parsing, `CatchViewport` with its TopBar, Navigation and Dock, the async boundary, listeners, navigation callbacks | The view model, the body, `catch_ui`, platform |
+   | `<name>_body.dart` or `<name>_state.dart` | One provider-free `<Name>Body` or `<Name>State` that arranges library components from view-model data | `catch_ui`, context barrels (types only), `parts/`, the screen's `widgets/` |
+   | `<name>_view_model.dart` | The generated read-only provider composing context providers into screen state, with the cache policy PR 1.3 asks of it | Contexts, platform |
+   | `<name>_flow.dart` | A flow controller for a multi-step screen | Contexts, platform |
+   | `widgets/<name>.dart` | Provider-free composition widgets only this screen uses; they arrange library components and parts and draw nothing | `catch_ui`, context barrels (types only), `parts/` |
+
+2. **No drawing.** No file under the new roots uses a literal colour, text style,
+   radius, stroke, elevation or spacing. None uses a raw `Container`,
+   `DecoratedBox`, `Text`, `TextStyle`, `BoxDecoration` or `Theme.of`, or a
+   numeric `SizedBox` or `Padding`. Everything visible comes from a `catch_ui`
+   component or a token. Framework layout widgets (`Column`, `Row`, `Expanded`,
+   slivers) stay legal, because they arrange and draw nothing.
+3. **Provider-free.** Bodies, states and screen-local widgets never watch
+   providers. They take values and callbacks.
+4. **Bindings live in `parts/`.** A binding from domain data to a component, such
+   as an event card from an `Event`, lives in the owning context's `parts/` and
+   draws nothing. One-shot actions live in the context's `actions/`.
+5. **Repeated visuals go to `catch_ui`,** registry entry first, and T4 is allowed.
+   A screen-local widget that a second screen wants moves to `catch_ui` or to
+   `parts/` in that second screen's PR.
+6. **This is a drawing rule, not a class-count rule.** No class-count lint exists.
+   The table is the shape scaffolds produce and reviewers expect, and nothing
+   counts the classes in a file.
+
+**Why.** Feature code barely draws now, so the debt is in the parts. D18 already
+says the library draws and features arrange and bind. These roots hold only the
+apps' entry points and three page files today, so there is almost no debt to
+tolerate. A class count would have pushed layout helpers into contexts or the
+library and made agents split files to comply.
+
+**Supersedes.** D18's tolerated debt, under these roots only. D18 stands
+everywhere else. The first wording of the programme's decision 6, which capped
+each file at one screen and one body or state class.
+
+**Checked by.** PR 1.4 lands these before any screen does, each at an empty
+baseline with seeded probes in `tool/check_catch_ui_lints.sh`: the D18 drawing,
+text, token and surface-geometry lints, extended to reject `Theme.of`,
+`TextStyle`, `BoxDecoration` and numeric `SizedBox` and `Padding` there;
+`catch_arch_provider_free_boundary` for bodies, states and `widgets/`;
+`catch_arch_parts_provider_coupling` for `parts/`; and a new `check_library_shims`.
+The registry gate holds a new `catch_ui` export to a registry record in the same
+PR.
+
+### D25. Contexts are packages
+
+1. **The packages.** `lib/kernel` becomes `packages/kernel`, `lib/platform` with
+   `schema_contracts` becomes `packages/platform`, and each context becomes
+   `packages/contexts/<ctx>`, all pub-workspace members. The move is mechanical:
+   one package per PR, imports rewritten across legacy code, no behaviour change.
+   The root package keeps compiling because it depends on the new packages.
+   D1's Riverpod adapters under `lib/platform/riverpod_ui/` move with
+   `lib/platform`.
+2. **Dependencies.** The app packages depend on `catch_ui`, `kernel`, `platform`
+   and the context packages they read, and never on the root package. A context
+   lists only contexts declared before it in the Bounded Context Contract. Every
+   app lists the root package today, because `lib/pages`, the routes, the shells
+   and the legacy screens live there. That edge is removed in PR 7.7, when the
+   root package is only the workspace. Until then an app imports from the root
+   package only what has not moved.
+3. **Promotion.** `kernel` and `platform` move first, in phase P1. A context is
+   promoted when its first redesigned screen lands, in its own PR ahead of that
+   screen. The contexts that wave-1 screens read move in phase P1, and the rest
+   by PR 7.7.
+4. **Imports.** Once a context is promoted, code imports `package:<ctx>/...`, not
+   `package:catch_dating_app/contexts/...`. The promoting PR rewrites every
+   import. `packages/platform` cannot take the pub name `platform`, because the
+   lockfile already holds that name as a hosted package. `kernel` and the context
+   names are free today.
+5. **Rules.** A `catch_arch_*` rule that a package dependency makes redundant is
+   deleted when that package lands. While unpromoted code still needs the rule,
+   it narrows to that code. Two rules need more than a dependency:
+   - `catch_arch_context_barrel_bypass` goes only when the package keeps its
+     internals under `lib/src/`, where the SDK's `implementation_imports` lint
+     holds the same line. A dependency alone still allows an import of any other
+     file in that package.
+   - `catch_arch_context_order_import` goes only when `audit:context-map` checks
+     the same order against each context's `pubspec.yaml`. Pub does not stop a
+     pubspec from listing a later context.
+
+**Why.** D1 rejected folder-only boundaries plus more scanners, and that is still
+what holds the contexts apart. A package boundary is a declared dependency graph
+held by one SDK lint, in place of the `catch_arch_*` import rules, and the
+analyzer, tests and `build_runner` then run per package, which the programme's CI
+load needs. Every screen is touched once anyway, so its contexts move then.
+
+**Supersedes.** The Target layout and the apps' dependency on `catch_dating_app`
+in the Bounded Context Contract of `docs/app_architecture.md`, at the steps above.
+D1's placement of the Riverpod adapters in the app package.
+
+**Checked by.** `depend_on_referenced_packages`, which `flutter_lints` turns on
+and CI fails through `--fatal-infos`. Every new package keeps it on. The compiler
+does not hold this line: pub-workspace members share one package config, so a
+member that imports an unlisted member, the root package included, compiles and
+runs (measured on Dart 3.13.7, 2026-11-02). The two rules in point 5 hold until
+their conditions are met.
+
+Rejected alternatives:
+
+- **Redraw the canvas to the D19 and D20 values (D22).** The owner reviewed the
+  product as drawn in v15, and D21 makes moving the libraries one change.
+- **Keep the canvas-first loop (D23).** Python generators writing against a
+  separate React bundle produced v15, and they also produced the four copies.
+- **Move the board generators into the repo (D23).** That is 44 files and 7.7k
+  lines, plus a 1.1k-line harness, kept alive as a second renderer once `web-ui`
+  is the source.
+- **D9 as written, with the same props in both frameworks (D23).** See D23's
+  rationale.
+- **A class-count rule for new-root files (D24).** `catch_arch_app_widget_kinds`,
+  proposed on the morning of 2026-11-02, was never built, for the reason in D24.
+- **One package, with lints holding the layers (D25).** See D25's rationale.
+
+The App Roots section of `docs/app_architecture.md` is the durable text of D24
+and D25 as they bind app code.
 
 ## Part 4 — Delivery Program
 
