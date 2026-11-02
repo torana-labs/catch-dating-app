@@ -11,15 +11,31 @@ import {
   CatchSection,
   CatchSheet,
   CatchTable,
+  CatchText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
 import {useState} from "react";
-import type {SalesAccountDetail, SalesContact, SalesOpportunity, SalesResearchStatus, SalesTaskKind} from "../api/salesTypes";
+import type {
+  SalesAccountDetail,
+  SalesContact,
+  SalesEvidence,
+  SalesEvidenceProposal,
+  SalesHoldStatus,
+  SalesOpportunity,
+  SalesResearchStatus,
+  SalesTaskKind,
+} from "../api/salesTypes";
 import {
   decisionInfluences,
   dueLabel,
+  evidenceClaimLabels,
+  evidenceConfidenceLabels,
+  evidenceSourceLabels,
+  holdLabels,
   hostActivityTypes,
+  isoFrom,
+  localInput,
   movableStages,
   researchLabels,
   stageLabel,
@@ -29,7 +45,9 @@ import type {HostTab, SalesHostsController} from "../controllers/useSalesHostsCo
 
 export type SalesHostsModel = Pick<SalesHostsController,
   "query" | "setQuery" | "rows" | "hasNextPage" | "hasPreviousPage" | "nextPage" | "previousPage" | "tab" | "setTab" |
-  "contacts" | "logActivity" | "addNextStep" | "completeNextStep" | "saveDeal" | "saveHost" | "addPerson" | "canEditResearch" | "isSaving"> & {
+  "contacts" | "logActivity" | "addNextStep" | "completeNextStep" | "saveDeal" | "saveHost" | "addPerson" | "canEditResearch" | "isSaving" |
+  "evidence" | "evidenceFailed" | "retryEvidence" | "hasMoreEvidence" | "moreEvidence" | "addEvidence" | "suggestions" | "suggestionsFailed" |
+  "retrySuggestions" | "hasMoreSuggestions" | "moreSuggestions" | "reviewSuggestion" | "setHold"> & {
   /** Who "Assign to me" means. */
   uid: string | null;
   host: SalesAccountDetail | null;
@@ -57,22 +75,11 @@ const tabs: Array<{value: HostTab; label: string}> = [
 
 const nextStepKinds: SalesTaskKind[] = ["follow_up", "reply", "demo", "pilot", "research"];
 
-/** What a datetime field shows: local wall-clock time, not UTC. */
-function localInput(at: Date): string {
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}T${pad(at.getHours())}:${pad(at.getMinutes())}`;
-}
-
 function tomorrowMorning(): string {
   const at = new Date(Date.now() + 86_400_000);
   at.setHours(10, 0, 0, 0);
   return localInput(at);
 }
-
-const isoFrom = (local: string): string | null => {
-  const at = new Date(local);
-  return Number.isNaN(at.getTime()) ? null : at.toISOString();
-};
 
 function LogActivitySheet({model, onClose}: {model: SalesHostsModel; onClose: () => void}) {
   const [type, setType] = useState<typeof hostActivityTypes[number]["value"]>("note");
@@ -211,7 +218,172 @@ function AddPersonSheet({model, onClose}: {model: SalesHostsModel; onClose: () =
   );
 }
 
-type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "person"} | {kind: "deal"; deal: SalesOpportunity | null};
+type ClaimKey = SalesEvidence["claimKey"];
+type SourceType = SalesEvidence["sourceType"];
+type Confidence = SalesEvidence["confidence"];
+
+const keysOf = <T extends string>(labels: Record<T, string>) => Object.keys(labels) as T[];
+const date = (value: string) => new Intl.DateTimeFormat("en-IN", {day: "numeric", month: "short", year: "numeric"}).format(new Date(value));
+
+/** Records what was seen and where, apart from any conclusion. Evidence is private and publishes nothing. */
+function AddEvidenceSheet({model, onClose}: {model: SalesHostsModel; onClose: () => void}) {
+  const [contactId, setContactId] = useState("");
+  const [claimKey, setClaimKey] = useState<ClaimKey>("identity");
+  const [signalId, setSignalId] = useState("");
+  const [sourceType, setSourceType] = useState<SourceType>("human_note");
+  const [sourceRef, setSourceRef] = useState("");
+  const [observedAt, setObservedAt] = useState(() => localInput(new Date()));
+  const [confidence, setConfidence] = useState<Confidence>("medium");
+  const [learned, setLearned] = useState("");
+  const [excerpt, setExcerpt] = useState("");
+  const observed = isoFrom(observedAt);
+  const ready = sourceRef.trim().length > 0 && observed !== null && (claimKey !== "operation" || signalId.trim().length > 0);
+  const submit = async () => {
+    if (!ready) return;
+    const saved = await model.addEvidence({contactId: contactId || null, claimKey,
+      ...(claimKey === "operation" ? {signalId: signalId.trim()} : {}),
+      sourceType, sourceRef: sourceRef.trim(), observedAt: observed, confidence,
+      normalizedValue: learned.trim() || null, excerpt: excerpt.trim() || null});
+    if (saved) onClose();
+  };
+  return (
+    <CatchSheet recipe="standard" open onClose={onClose} title="Add evidence" subtitle="Private to Sales"
+      footer={<CatchButton label={model.isSaving ? "Saving" : "Add evidence"} onPressed={ready && !model.isSaving ? () => void submit() : null} />}>
+      <CatchGap size="related">
+        <CatchField recipe="select" title="What this helps establish" value={claimKey} values={keysOf(evidenceClaimLabels)}
+          itemLabelBuilder={(value) => evidenceClaimLabels[value as ClaimKey]}
+          onChanged={(value) => setClaimKey((value ?? claimKey) as ClaimKey)} />
+        {claimKey === "operation" ?
+          <CatchField recipe="input" title="What they run" value={signalId} onChanged={setSignalId} helperText="A short label, like Waitlists." /> : null}
+        <CatchField recipe="select" title="Where it came from" value={sourceType} values={keysOf(evidenceSourceLabels)}
+          itemLabelBuilder={(value) => evidenceSourceLabels[value as SourceType]}
+          onChanged={(value) => setSourceType((value ?? sourceType) as SourceType)} />
+        <CatchField recipe="input" title="Source" maxLength={320} value={sourceRef} onChanged={setSourceRef}
+          helperText="A link, or where someone can find it." />
+        <CatchField recipe="input" keyboardType="datetime" title="Seen on" value={observedAt} onChanged={setObservedAt} />
+        <CatchField recipe="select" title="Confidence" value={confidence} values={keysOf(evidenceConfidenceLabels)}
+          itemLabelBuilder={(value) => evidenceConfidenceLabels[value as Confidence]}
+          onChanged={(value) => setConfidence((value ?? confidence) as Confidence)} />
+        <CatchField recipe="input" title="What you learned" maxLength={500} value={learned} onChanged={setLearned} />
+        <CatchField recipe="input" title="Short excerpt from the source" maxLines={2} maxLength={500} value={excerpt} onChanged={setExcerpt} />
+        <CatchField recipe="select" title="About" value={contactId} values={["", ...model.contacts.map((contact) => contact.contactId)]}
+          itemLabelBuilder={(value) => model.contacts.find((contact) => contact.contactId === value)?.displayName ?? "The host"}
+          onChanged={(value) => setContactId(value ?? "")} />
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
+/** A suggestion counts toward qualification only after someone checks its source and accepts it. */
+function SuggestionSheet({model, proposal, onClose}: {model: SalesHostsModel; proposal: SalesEvidenceProposal; onClose: () => void}) {
+  const [reason, setReason] = useState("");
+  const {evidence} = proposal;
+  const pending = proposal.status === "pending";
+  const review = async (decision: "accept" | "reject") => {
+    if (await model.reviewSuggestion(proposal, decision, reason.trim())) onClose();
+  };
+  const canDecide = reason.trim().length > 0 && !model.isSaving;
+  return (
+    <CatchSheet recipe="standard" open onClose={onClose} title={evidenceClaimLabels[evidence.claimKey]} subtitle="Suggested evidence"
+      footer={pending && model.canEditResearch ? <CatchGap size="inline" direction="horizontal">
+        <CatchButton label="Accept" onPressed={canDecide ? () => void review("accept") : null} />
+        <CatchButton label="Reject" variant="secondary" onPressed={canDecide ? () => void review("reject") : null} />
+      </CatchGap> : undefined}>
+      <CatchGap size="related">
+        <CatchMetaRow columns={1} entries={[
+          ...(evidence.normalizedValue ? [{label: "What it says", value: evidence.normalizedValue}] : []),
+          {label: "Source", value: evidence.sourceRef},
+          {label: "Seen on", value: date(evidence.observedAt)},
+          {label: "Suggested confidence", value: evidenceConfidenceLabels[evidence.confidence]},
+          ...(evidence.excerpt ? [{label: "Excerpt", value: evidence.excerpt}] : []),
+          {label: "Good until", value: evidence.validThrough ? date(evidence.validThrough) : "No end date"},
+          {label: "Suggested by", value: proposal.clientId ? "Assistant" : "Staff"},
+          ...(pending ? [] : [{label: proposal.status === "accepted" ? "Accepted because" : "Rejected because", value: proposal.reviewReason ?? "Not recorded"}]),
+        ]} />
+        {/^https?:\/\//u.test(evidence.sourceRef) ?
+          <CatchButton label="Open the source" variant="secondary" size="sm" href={evidence.sourceRef} newTab onPressed={() => undefined} /> : null}
+        {pending && model.canEditResearch ?
+          <CatchField recipe="input" title="Why" maxLines={2} maxLength={2000} value={reason} onChanged={setReason}
+            helperText="Check the source first." /> : null}
+        {pending && !model.canEditResearch ?
+          <CatchText as="p" variant="supporting">Waiting for a reviewer.</CatchText> : null}
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
+/** The host's research on Overview: what's on record, and what's suggested and waiting for a person. */
+function HostResearch({model}: {model: SalesHostsModel}) {
+  const [adding, setAdding] = useState(false);
+  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const reviewing = model.suggestions.find((proposal) => proposal.proposalId === reviewingId) ?? null;
+  const contactName = (contactId: string | null) => model.contacts.find((contact) => contact.contactId === contactId)?.displayName;
+  return (
+    <>
+      <CatchSection title="Evidence" count={model.evidence.length} dividers="none" action={{label: "Add", onPressed: () => setAdding(true)}}
+        empty={model.evidenceFailed ?
+          <CatchEmptyState title="Evidence could not be loaded" actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={model.retryEvidence} />} /> :
+          <CatchEmptyState title="No evidence yet" />}>
+        {model.evidence.map((item) => <CatchIndexRow key={item.evidenceId} title={item.normalizedValue ?? item.excerpt ?? item.sourceRef} titleVariant="bodyM"
+          subtitle={[evidenceClaimLabels[item.claimKey], contactName(item.contactId), item.sourceRef, date(item.observedAt),
+            `${evidenceConfidenceLabels[item.confidence]} confidence`].filter(Boolean).join(" · ")} />)}
+      </CatchSection>
+      {model.hasMoreEvidence ? <CatchButton label="Show more evidence" variant="secondary" size="sm" onPressed={model.moreEvidence} /> : null}
+      {model.suggestions.length || model.suggestionsFailed ? (
+        <CatchSection title="Suggestions to review" count={model.suggestions.filter((proposal) => proposal.status === "pending").length} dividers="none"
+          empty={<CatchEmptyState title="Suggestions could not be loaded" actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={model.retrySuggestions} />} />}>
+          {model.suggestions.map((proposal) => <CatchIndexRow key={proposal.proposalId} titleVariant="bodyM"
+            title={proposal.evidence.normalizedValue ?? proposal.evidence.excerpt ?? proposal.evidence.sourceRef}
+            subtitle={[evidenceClaimLabels[proposal.evidence.claimKey], proposal.clientId ? "From the assistant" : "From staff",
+              proposal.status === "pending" ? "Waiting" : proposal.status === "accepted" ? "Accepted" : "Rejected"].join(" · ")}
+            onTap={() => setReviewingId(proposal.proposalId)} />)}
+        </CatchSection>
+      ) : null}
+      {model.hasMoreSuggestions ? <CatchButton label="Show more suggestions" variant="secondary" size="sm" onPressed={model.moreSuggestions} /> : null}
+      {adding ? <AddEvidenceSheet model={model} onClose={() => setAdding(false)} /> : null}
+      {reviewing ? <SuggestionSheet key={`${reviewing.proposalId}:${reviewing.revision}`} model={model} proposal={reviewing}
+        onClose={() => setReviewingId(null)} /> : null}
+    </>
+  );
+}
+
+/** A decision about this host as a whole. It stays bound to what the person opened, so a change made meanwhile is seen first. */
+function HoldSheet({model, host, onClose}: {
+  model: SalesHostsModel;
+  host: SalesAccountDetail;
+  onClose: () => void;
+}) {
+  const current = host.account.suppressionStatus ?? "clear";
+  const [opened, setOpened] = useState({revision: host.account.revision, status: current});
+  const [status, setStatus] = useState<SalesHoldStatus>(current);
+  const [reason, setReason] = useState("");
+  const changed = opened.revision !== host.account.revision;
+  const useLatest = () => {
+    setOpened({revision: host.account.revision, status: current});
+    setStatus(current);
+    setReason("");
+  };
+  const submit = async () => {
+    if (await model.setHold(opened.revision, status, reason.trim())) onClose();
+  };
+  return (
+    <CatchSheet recipe="standard" open onClose={onClose} title="Account hold" subtitle={host.organizerSummary.name}
+      footer={changed ? <CatchButton label="Use the latest" variant="secondary" onPressed={useLatest} /> :
+        <CatchButton label={model.isSaving ? "Saving" : "Save"} onPressed={reason.trim() && !model.isSaving ? () => void submit() : null} />}>
+      <CatchGap size="related">
+        {changed ? <CatchText as="p" variant="bodyM" role="alert">
+          This host changed since you opened this. It's now {holdLabels[current].toLowerCase()}. Check that before you decide.</CatchText> : null}
+        <CatchField recipe="select" title="Status" value={status} values={keysOf(holdLabels)}
+          itemLabelBuilder={(value) => holdLabels[value as SalesHoldStatus]}
+          onChanged={(value) => setStatus((value ?? status) as SalesHoldStatus)} />
+        <CatchField recipe="input" title="Why" maxLines={2} value={reason} onChanged={setReason}
+          helperText="Clearing a hold doesn't give permission to draft or send outreach." />
+      </CatchGap>
+    </CatchSheet>
+  );
+}
+
+type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "person"} | {kind: "hold"} | {kind: "deal"; deal: SalesOpportunity | null};
 
 /** One host: its facts and history beside what's next and who's involved. Everything rarer is in All tools. */
 function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
@@ -233,14 +405,17 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
   let body;
   if (model.tab === "overview") {
     body = (
-      <CatchMetaRow columns={2} entries={[
-        {label: "Stage", value: deal ? stageLabel(deal.stage) : "No deal yet"},
-        {label: "Research", value: research.text, ...(research.tone ? {tone: research.tone} : {})},
-        {label: "City", value: host.organizerSummary.city ?? "Not set"},
-        {label: "On Catch", value: host.organizerSummary.claimStatus === "claimed" ? "Claimed" :
-          host.organizerSummary.appVisibility === "discoverable" ? "Listed" : "Listed, hidden"},
-        ...(host.account.summary ? [{label: "Summary", value: host.account.summary, wide: true}] : []),
-      ]} />
+      <CatchGap size="section">
+        <CatchMetaRow columns={2} entries={[
+          {label: "Stage", value: deal ? stageLabel(deal.stage) : "No deal yet"},
+          {label: "Research", value: research.text, ...(research.tone ? {tone: research.tone} : {})},
+          {label: "City", value: host.organizerSummary.city ?? "Not set"},
+          {label: "On Catch", value: host.organizerSummary.claimStatus === "claimed" ? "Claimed" :
+            host.organizerSummary.appVisibility === "discoverable" ? "Listed" : "Listed, hidden"},
+          ...(host.account.summary ? [{label: "Summary", value: host.account.summary, wide: true}] : []),
+        ]} />
+        <HostResearch model={model} />
+      </CatchGap>
     );
   } else if (model.tab === "deals") {
     body = <CatchSection title="Deals" count={host.opportunities.length} dividers="none"
@@ -271,6 +446,7 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
         {sheet?.kind === "deal" ? <DealSheet model={model} deal={sheet.deal} onClose={close} /> : null}
         {sheet?.kind === "edit" ? <EditHostSheet model={model} host={host} onClose={close} /> : null}
         {sheet?.kind === "person" ? <AddPersonSheet model={model} onClose={close} /> : null}
+        {sheet?.kind === "hold" ? <HoldSheet model={model} host={host} onClose={close} /> : null}
       </>}
       aside={<CatchGap size="section">
         <CatchSection title="Next steps" count={openTasks.length} dividers="none" action={{label: "Add", onPressed: () => setSheet({kind: "step"})}}
@@ -287,7 +463,9 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools}: {
         <CatchSection title="More" dividers="none">
           <CatchIndexRow title="Edit host" titleVariant="bodyM" subtitle="Summary, next action, research and owner" onTap={() => setSheet({kind: "edit"})} />
           <CatchIndexRow title="Organizer page" titleVariant="bodyM" onTap={onOpenOrganizer} />
-          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Evidence, holds, contact reviews, pilots, quotes, fit, demos and privacy" onTap={onOpenTools} />
+          <CatchIndexRow title="Account hold" titleVariant="bodyM" subtitle={holdLabels[host.account.suppressionStatus ?? "clear"]}
+            trailing={model.canEditResearch ? <CatchButton label="Change" variant="secondary" size="sm" onPressed={() => setSheet({kind: "hold"})} /> : undefined} />
+          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Contact reviews, pilots, quotes, fit, demos and privacy" onTap={onOpenTools} />
         </CatchSection>
       </CatchGap>} />
   );
@@ -298,7 +476,7 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
-  /** The older host page: editing, stage moves, pilots, quotes, people and evidence. */
+  /** The older host page: contact reviews, pilots, quotes, fit, demos and privacy. */
   onOpenHostTools: (organizerId: string) => void;
   /** The older form to add a host or nominate an organizer. */
   onAddHost: () => void;

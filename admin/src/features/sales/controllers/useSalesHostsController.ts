@@ -1,10 +1,15 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useState} from "react";
 import {
+  addSalesEvidence,
   getSalesAccount,
   listSalesAccounts,
   listSalesContacts,
+  listSalesEvidence,
+  listSalesEvidenceProposals,
   recordSalesActivity,
+  reviewSalesEvidenceProposal,
+  setSalesAccountSuppression,
   updateSalesAccount,
   upsertSalesContact,
   upsertSalesOpportunity,
@@ -12,6 +17,9 @@ import {
 } from "../api/salesRepository";
 import type {
   SalesContactInput,
+  SalesEvidenceInput,
+  SalesEvidenceProposal,
+  SalesHoldStatus,
   SalesOpportunity,
   SalesRecordActivityInput,
   SalesResearchStatus,
@@ -29,12 +37,14 @@ export interface HostEditInput {
   nextAction: string;
 }
 export type PersonInput = Pick<SalesContactInput, "contact" | "relationship">;
+export type EvidenceInput = Omit<SalesEvidenceInput, "organizerId" | "requestId">;
 export type DealMoveInput = Pick<SalesOpportunity, "stage" | "nextStep" | "nextStepAt"> & {transitionReason?: string};
 
 /**
  * Hosts: the accounts a sales associate works (or the team's), searchable,
  * and one host's page with four tabs: overview, conversations, deals, notes.
- * Its everyday work happens there: logging what happened, next steps and moving a deal.
+ * Its everyday work happens there: logging what happened, next steps, moving a deal, research evidence
+ * and suggestions, and an account hold.
  */
 export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onError, onNotice}: {
   ownerUid: string | null;
@@ -64,11 +74,28 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
     queryFn: () => listSalesContacts(selectedOrganizerId as string),
     enabled: selectedOrganizerId !== null,
   });
+  const evidence = useInfiniteQuery({
+    queryKey: ["sales", "host-evidence", selectedOrganizerId],
+    queryFn: ({pageParam}) => listSalesEvidence(selectedOrganizerId as string, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
+    enabled: selectedOrganizerId !== null,
+  });
+  const suggestions = useInfiniteQuery({
+    queryKey: ["sales", "host-suggestions", selectedOrganizerId],
+    queryFn: ({pageParam}) => listSalesEvidenceProposals(selectedOrganizerId as string, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
+    enabled: selectedOrganizerId !== null,
+  });
   const logging = useMutation({mutationFn: recordSalesActivity});
   const savingTask = useMutation({mutationFn: upsertSalesTask});
   const savingDeal = useMutation({mutationFn: upsertSalesOpportunity});
   const savingHost = useMutation({mutationFn: updateSalesAccount});
   const savingPerson = useMutation({mutationFn: upsertSalesContact});
+  const addingEvidence = useMutation({mutationFn: addSalesEvidence});
+  const reviewing = useMutation({mutationFn: reviewSalesEvidenceProposal});
+  const holding = useMutation({mutationFn: setSalesAccountSuppression});
 
   const run = useCallback(async (action: () => Promise<unknown>, notice: string) => {
     onError(null);
@@ -120,8 +147,27 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
       }}), "Saved."),
     addPerson: (input: PersonInput) => run(() => savingPerson.mutateAsync({...input, organizerId, requestId: crypto.randomUUID(),
       expectedRevision: 0}), "Added."),
+    evidence: evidence.data?.pages.flatMap((page) => page.rows) ?? [],
+    evidenceFailed: evidence.isError,
+    retryEvidence: () => void evidence.refetch(),
+    hasMoreEvidence: evidence.hasNextPage,
+    moreEvidence: () => void evidence.fetchNextPage(),
+    addEvidence: (input: EvidenceInput) => run(() => addingEvidence.mutateAsync({...input, organizerId,
+      requestId: crypto.randomUUID()}), "Evidence added."),
+    suggestions: suggestions.data?.pages.flatMap((page) => page.rows) ?? [],
+    suggestionsFailed: suggestions.isError,
+    retrySuggestions: () => void suggestions.refetch(),
+    hasMoreSuggestions: suggestions.hasNextPage,
+    moreSuggestions: () => void suggestions.fetchNextPage(),
+    /** Decides the version the person read; a newer one comes back as an error to reload. */
+    reviewSuggestion: (proposal: SalesEvidenceProposal, decision: "accept" | "reject", reason: string) => run(() => reviewing.mutateAsync({
+      organizerId, proposalId: proposal.proposalId, expectedRevision: proposal.revision, decision, reason,
+      requestId: crypto.randomUUID()}), decision === "accept" ? "Suggestion accepted." : "Suggestion rejected."),
+    setHold: (expectedRevision: number, status: SalesHoldStatus, reason: string) => run(() => holding.mutateAsync({organizerId,
+      expectedRevision, status, reason, requestId: crypto.randomUUID()}), "Account hold saved."),
     canEditResearch: ownerUid === null,
-    isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending || savingHost.isPending || savingPerson.isPending,
+    isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending || savingHost.isPending || savingPerson.isPending ||
+      addingEvidence.isPending || reviewing.isPending || holding.isPending,
   };
 }
 

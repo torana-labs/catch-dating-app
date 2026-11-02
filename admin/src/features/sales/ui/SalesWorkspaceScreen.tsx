@@ -592,11 +592,6 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
       isAdminOwner={isAdminOwner} currentUserUid={currentUserUid} /> : null}
     {visibleTab === "workflow" ? <SalesRecordsWorkspace section="draft" detail={detail}
       controller={controller} /> : null}
-    {visibleTab === "research" ? <SalesRecordsWorkspace section="evidence" detail={detail}
-      controller={controller} assignedStaffOnly={assignedStaffOnly} /> : null}
-    {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
-      <SalesRecordsWorkspace
-      section="suppression" detail={detail} controller={controller} /> : null}
     {!assignedStaffOnly && (visibleTab === "overview" || visibleTab === "research") ?
       <HostCustomFields
       detail={detail} controller={controller} /> : null}

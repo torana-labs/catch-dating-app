@@ -96,6 +96,13 @@ const sampleReceipts = new Map<string, unknown>();
 const sampleCustomFields: SalesCustomFieldDefinition[] = [];
 const sampleContacts = new Map<string, SalesContact[]>();
 const sampleEvidence = new Map<string, SalesEvidence[]>();
+const sampleProposals = new Map<string, SalesEvidenceProposal[]>([...sampleDetails.keys()].slice(0, 3).map((organizerId, index) => [organizerId, [{
+  proposalId: `sample-proposal-${index + 1}`, organizerId, revision: 1, status: "pending", clientId: "sample-assistant",
+  createdAt: "2026-10-30T09:00:00.000Z", reviewReason: null,
+  evidence: {organizerId, claimKey: "recurrence", sourceType: "public_web", sourceRef: "https://example.test/events",
+    observedAt: "2026-10-29T09:00:00.000Z", confidence: "medium", normalizedValue: "About four events a month",
+    excerpt: "Every week, somewhere new."},
+}]]));
 
 function sampleDetail(organizerId: string): SalesAccountDetail {
   const detail = sampleDetails.get(organizerId);
@@ -501,12 +508,27 @@ export async function applySalesImportCompensation(
 
 export async function listSalesEvidenceProposals(organizerId: string, cursor?: string):
 Promise<SalesPage<SalesEvidenceProposal>> {
-  if (dataMode() === "sample") return {rows: [], nextCursor: null};
+  if (dataMode() === "sample") return pageRows(structuredClone(sampleProposals.get(organizerId) ?? []), cursor, 25);
   return call("adminListSalesEvidenceProposals", {organizerId, limit: 25,
     ...(cursor ? {cursor} : {})});
 }
 export async function reviewSalesEvidenceProposal(input: SalesReviewEvidenceProposalInput):
 Promise<{proposal: SalesEvidenceProposal; receipt: MutationReceipt}> {
-  if (dataMode() === "sample") throw new Error("Evidence suggestions require live data.");
-  return call("adminReviewSalesEvidenceProposal", input);
+  if (dataMode() !== "sample") return call("adminReviewSalesEvidenceProposal", input);
+  return replayOrStore(input.requestId, () => {
+    const rows = sampleProposals.get(input.organizerId) ?? [];
+    const index = rows.findIndex((row) => row.proposalId === input.proposalId);
+    const current = rows[index];
+    if (!current) throw new Error("Suggestion was not found in this sample workspace.");
+    if (current.revision !== input.expectedRevision) throw new Error("Suggestion changed since review.");
+    const proposal: SalesEvidenceProposal = {...current, revision: current.revision + 1,
+      status: input.decision === "accept" ? "accepted" : "rejected", reviewReason: input.reason};
+    rows[index] = proposal;
+    if (input.decision === "accept") {
+      sampleEvidence.set(input.organizerId, [{evidenceId: crypto.randomUUID(), ...proposal.evidence, contactId: null, signalId: null,
+        validThrough: null, normalizedValue: proposal.evidence.normalizedValue ?? null, excerpt: proposal.evidence.excerpt ?? null},
+      ...(sampleEvidence.get(input.organizerId) ?? [])]);
+    }
+    return {proposal: structuredClone(proposal), receipt: {requestId: input.requestId, revision: proposal.revision}};
+  });
 }
