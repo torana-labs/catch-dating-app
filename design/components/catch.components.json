@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-11-01",
+  "updated": "2026-11-02",
   "sourceOfTruth": {
     "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and lib/platform are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -188,6 +188,7 @@
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["StatusBadge", "StatusChip", "StatusPill", "MetaBadge"],
+      "absorbs": ["CatchCountBadge", "CatchPrivacyBadge"],
       "summary": "Passive metadata and status with named compact, editorial, and readable rounded-rectangle recipes.",
       "dart": {
         "symbol": "CatchBadge",
@@ -568,6 +569,20 @@
       "roleNoun": "Badge",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Badge",
+        "states": ["rest", "live"],
+        "slots": ["label"],
+        "props": [
+          {"name": "label", "tsType": "React.ReactNode", "required": true},
+          {"name": "tone", "tsType": "BadgeTone", "required": false},
+          {"name": "emphasis", "tsType": "\"soft\" | \"solid\" | \"outline\"", "required": false},
+          {"name": "size", "tsType": "\"sm\" | \"md\"", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": false},
+          {"name": "dot", "tsType": "boolean | \"live\"", "required": false},
+          {"name": "format", "tsType": "Format", "required": false}
+        ]
       }
     },
     {
@@ -596,6 +611,7 @@
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["PrimaryButton", "SecondaryButton", "AppButton", "ActionButton", "CtaButton"],
+      "absorbs": ["CatchNavigationButton", "CatchToolbarButton", "CatchChoiceButton"],
       "summary": "Canonical labelled action with CTA, command, current-selection, counted floating and native text-action recipes.",
       "dart": {
         "symbol": "CatchButton",
@@ -1142,6 +1158,23 @@
       "roleNoun": "Button",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Button",
+        "states": ["rest", "hover", "pressed", "focus", "loading", "disabled"],
+        "slots": ["label", "children"],
+        "props": [
+          {"name": "label", "tsType": "React.ReactNode", "required": false},
+          {"name": "variant", "tsType": "ButtonVariant", "required": false},
+          {"name": "size", "tsType": "ButtonSize", "required": false},
+          {"name": "fill", "tsType": "boolean", "required": false},
+          {"name": "leadingIcon", "tsType": "IconName", "required": false},
+          {"name": "trailingIcon", "tsType": "IconName", "required": false},
+          {"name": "loading", "tsType": "boolean", "required": false},
+          {"name": "onPressed", "tsType": "(() => void) | null", "required": false},
+          {"name": "href", "tsType": "string", "required": false},
+          {"name": "type", "tsType": "\"button\" | \"submit\" | \"reset\"", "required": false}
+        ]
       }
     },
     {
@@ -1430,6 +1463,25 @@
       "roleNoun": "Chip",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Chip",
+        "states": ["rest", "hover", "pressed", "focus", "selected", "disabled"],
+        "slots": ["label", "leading"],
+        "props": [
+          {"name": "label", "tsType": "React.ReactNode", "required": true},
+          {"name": "kind", "tsType": "\"filter\" | \"choice\" | \"input\" | \"link\" | \"tag\"", "required": false},
+          {"name": "selected", "tsType": "boolean", "required": false},
+          {"name": "size", "tsType": "\"md\" | \"sm\"", "required": false},
+          {"name": "dot", "tsType": "Format", "required": false},
+          {"name": "leadingIcon", "tsType": "IconName", "required": false},
+          {"name": "leading", "tsType": "React.ReactNode", "required": false},
+          {"name": "count", "tsType": "number", "required": false},
+          {"name": "colourWhenSelected", "tsType": "boolean", "required": false},
+          {"name": "onPressed", "tsType": "(() => void) | null", "required": false},
+          {"name": "onRemove", "tsType": "() => void", "required": false},
+          {"name": "href", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -1448,6 +1500,7 @@
         "NoResultsState",
         "EmptyListState"
       ],
+      "absorbs": ["CatchErrorState", "CatchFrameworkErrorState"],
       "summary": "Successful empty content uses stacked page or inline section anatomy. Inline title icons occupy the heading only; message-only states omit the decorative icon and paragraphs keep the full width.",
       "dart": {
         "symbol": "CatchEmptyState",
@@ -1712,6 +1765,18 @@
       "roleNoun": "EmptyState",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "EmptyState",
+        "states": ["rest"],
+        "slots": ["title", "body", "action"],
+        "props": [
+          {"name": "kind", "tsType": "\"empty\" | \"error\" | \"offline\" | \"no-results\" | \"done\"", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "body", "tsType": "React.ReactNode", "required": false},
+          {"name": "action", "tsType": "{ label: string; href?: string; onPressed?: () => void; }", "required": false}
+        ]
       }
     },
     {
@@ -2145,6 +2210,18 @@
       "roleNoun": "ErrorState",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "EmptyState",
+        "states": ["rest"],
+        "slots": ["title", "body", "action"],
+        "props": [
+          {"name": "kind", "tsType": "\"empty\" | \"error\" | \"offline\" | \"no-results\" | \"done\"", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "body", "tsType": "React.ReactNode", "required": false},
+          {"name": "action", "tsType": "{ label: string; href?: string; onPressed?: () => void; }", "required": false}
+        ]
       }
     },
     {
@@ -2412,6 +2489,20 @@
       "enforcement": {
         "code": "catch_status_strip_is_layout_owned",
         "vehicle": "plugin"
+      },
+      "system": {
+        "name": "Notice",
+        "states": ["rest"],
+        "slots": ["title", "children", "action"],
+        "props": [
+          {"name": "tone", "tsType": "\"info\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "icon", "tsType": "IconName | false", "required": false},
+          {"name": "action", "tsType": "{ label: string; href?: string; onPressed?: () => void; }", "required": false},
+          {"name": "layout", "tsType": "\"inline\" | \"banner\"", "required": false},
+          {"name": "onDismiss", "tsType": "() => void", "required": false}
+        ]
       }
     },
     {
@@ -2428,7 +2519,8 @@
       "status": "active",
       "kind": "composite",
       "tier": "T1",
-      "aliases": ["Toast", "Snackbar", "InAppNotification", "NotificationToast"],
+      "aliases": ["InAppNotification"],
+      "absorbs": ["CatchBanner"],
       "summary": "Configurable ambient notice family with one app-level safe-area overlay. Arrival notices open from the whole card and support swipe dismissal; ordinary notifications use explicit action and dismiss controls. Features own copy, identity, tone and routing; the shared renderer owns readable geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
@@ -2620,6 +2712,20 @@
       "roleNoun": "Notice",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Notice",
+        "states": ["rest"],
+        "slots": ["title", "children", "action"],
+        "props": [
+          {"name": "tone", "tsType": "\"info\" | \"success\" | \"warning\" | \"danger\" | \"neutral\"", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "icon", "tsType": "IconName | false", "required": false},
+          {"name": "action", "tsType": "{ label: string; href?: string; onPressed?: () => void; }", "required": false},
+          {"name": "layout", "tsType": "\"inline\" | \"banner\"", "required": false},
+          {"name": "onDismiss", "tsType": "() => void", "required": false}
+        ]
       }
     },
     {
@@ -2660,6 +2766,7 @@
       "kind": "composite",
       "tier": "T1",
       "aliases": ["TextField", "FormField", "InputField", "LabeledField", "FormInput"],
+      "absorbs": ["CatchSearchField"],
       "summary": "Field owns activation, hover, focus, disabled state and accessibility. Ordinary records, people and conversations are sealed passive content layouts. Section owns gutters, dividers and the interaction perimeter. Form controllers own draft and persistence state.",
       "design": {
         "figma": {
@@ -4646,6 +4753,25 @@
           "catch.field.text_input"
         ],
         "reason": "Canonical labelled field contract: named constructors cover reading, navigation, native editing, selection and controlled disclosure while retaining one focus, validation, accessibility and save lifecycle. TextInput owns native editing alone, and SearchField owns label-less query entry and transient search chrome. Field members render its anatomy and do not create competing primary field implementations."
+      },
+      "system": {
+        "name": "Field",
+        "states": ["rest", "focus", "filled", "error", "disabled"],
+        "slots": ["prefix", "suffix"],
+        "props": [
+          {"name": "label", "tsType": "string", "required": false},
+          {"name": "help", "tsType": "string", "required": false},
+          {"name": "error", "tsType": "string", "required": false},
+          {"name": "kind", "tsType": "FieldKind", "required": false},
+          {"name": "size", "tsType": "\"lg\" | \"md\"", "required": false},
+          {"name": "prefix", "tsType": "React.ReactNode", "required": false},
+          {"name": "suffix", "tsType": "React.ReactNode", "required": false},
+          {"name": "leadingIcon", "tsType": "IconName", "required": false},
+          {"name": "counter", "tsType": "boolean", "required": false},
+          {"name": "options", "tsType": "Array<{ value: string; label: string; }>", "required": false},
+          {"name": "length", "tsType": "number", "required": false},
+          {"name": "rows", "tsType": "number", "required": false}
+        ]
       }
     },
     {
@@ -4675,8 +4801,10 @@
         "SectionCard",
         "SettingsSection",
         "SectionPanel",
-        "TitledSection"
+        "TitledSection",
+        "CatchCollectionSection"
       ],
+      "absorbs": ["CatchSectionHeader", "CatchRowSection", "CatchContentSection", "CatchDependentRowSection", "CatchDaySectionHeader", "CatchStepList"],
       "summary": "Owns section anatomy. Action, collection and status modules share quiet token fill, natural content height, heading, copy and padding. Collections own compact empty content, sibling separators and an optional full-width primary command. Outlined field groups remain separate semantic recipes.",
       "design": {
         "figma": {
@@ -5857,6 +5985,38 @@
           ]
         },
         "notes": "Design system v15 Section: a titled group that owns the lines between its rows; a list with a chosen row drops its lines (rule 12); a tile container for settings groups; a journey drawn as joined markers from steps; columns that fold to one on phones."
+      },
+      "system": {
+        "name": "Section",
+        "states": ["rest"],
+        "slots": ["title", "kicker", "action", "note", "empty", "footer", "children"],
+        "props": [
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+          {"name": "count", "tsType": "number", "required": false},
+          {"name": "action", "tsType": "SectionHeaderProps[\"action\"]", "required": false},
+          {"name": "note", "tsType": "React.ReactNode", "required": false},
+          {"name": "dividers", "tsType": "\"between\" | \"all\" | \"none\"", "required": false},
+          {"name": "container", "tsType": "\"plain\" | \"tile\"", "required": false},
+          {"name": "timeline", "tsType": "boolean", "required": false},
+          {"name": "empty", "tsType": "React.ReactNode", "required": false},
+          {"name": "footer", "tsType": "React.ReactNode", "required": false},
+          {"name": "columns", "tsType": "2 | 3", "required": false}
+        ],
+        "parts": [
+          {
+            "name": "SectionHeader",
+            "slots": ["title", "kicker", "action", "note"],
+            "props": [
+              {"name": "title", "tsType": "React.ReactNode", "required": true},
+              {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+              {"name": "count", "tsType": "number", "required": false},
+              {"name": "action", "tsType": "{ label: string; href?: string; onPressed?: () => void; }", "required": false},
+              {"name": "note", "tsType": "React.ReactNode", "required": false},
+              {"name": "as", "tsType": "\"h2\" | \"h3\"", "required": false}
+            ]
+          }
+        ]
       }
     },
     {
@@ -6034,6 +6194,16 @@
       "roleNoun": "Skeleton",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Skeleton",
+        "states": ["rest", "loading"],
+        "slots": [],
+        "props": [
+          {"name": "shape", "tsType": "\"line\" | \"block\" | \"circle\"", "required": false},
+          {"name": "width", "tsType": "number | string", "required": false},
+          {"name": "height", "tsType": "number | string", "required": false}
+        ]
       }
     },
     {
@@ -6182,6 +6352,15 @@
           "catch.field.status_indicator"
         ],
         "reason": "Indeterminate activity feedback uses circular, static dots or an inline fixed-cadence glyph. The former field spinner has the same loading responsibility and is an inline recipe. Page indicators show a selected index within a finite set; loading has no selected page or known total. FieldStatusIndicator retains transaction transitions and announcements around this passive rendering."
+      },
+      "system": {
+        "name": "Spinner",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "size", "tsType": "\"sm\" | \"md\"", "required": false},
+          {"name": "label", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -6687,6 +6866,20 @@
           "catch.typography.mono_label"
         ],
         "reason": "Editorial eyebrows force uppercase and use dedicated kicker size/weight/tracking recipes. MetadataText keeps sentence/data casing by default and a lighter metadata weight; both share the existing text-style resolver instead of inventing another type scale."
+      },
+      "system": {
+        "name": "Text",
+        "states": ["rest"],
+        "slots": ["children"],
+        "props": [
+          {"name": "variant", "tsType": "TextVariant", "required": false},
+          {"name": "tone", "tsType": "TextTone", "required": false},
+          {"name": "as", "tsType": "\"h1\" | \"h2\" | \"h3\" | \"p\" | \"span\" | \"label\" | \"div\" | \"strong\"", "required": false},
+          {"name": "align", "tsType": "\"start\" | \"center\" | \"end\"", "required": false},
+          {"name": "maxLines", "tsType": "number", "required": false},
+          {"name": "numeric", "tsType": "boolean", "required": false},
+          {"name": "htmlFor", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -6700,6 +6893,7 @@
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["Typography", "Paragraph", "BodyText", "HeadingText", "TextBlock"],
+      "absorbs": ["CatchKickerText", "CatchMetadataText", "CatchCountText"],
       "summary": "Text in one CatchTextStyles role: the six Archivo display steps, headings, body copy, supporting copy, labels and metrics.",
       "dart": {
         "symbol": "CatchText",
@@ -6871,6 +7065,20 @@
           "catch.typography"
         ],
         "reason": "The base text role renders the function-family CatchTextStyles roles in sentence case. KickerText forces uppercase editorial eyebrows and MetadataText is single-line mono data; both stay specialised members of catch.typography."
+      },
+      "system": {
+        "name": "Text",
+        "states": ["rest"],
+        "slots": ["children"],
+        "props": [
+          {"name": "variant", "tsType": "TextVariant", "required": false},
+          {"name": "tone", "tsType": "TextTone", "required": false},
+          {"name": "as", "tsType": "\"h1\" | \"h2\" | \"h3\" | \"p\" | \"span\" | \"label\" | \"div\" | \"strong\"", "required": false},
+          {"name": "align", "tsType": "\"start\" | \"center\" | \"end\"", "required": false},
+          {"name": "maxLines", "tsType": "number", "required": false},
+          {"name": "numeric", "tsType": "boolean", "required": false},
+          {"name": "htmlFor", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -7078,6 +7286,16 @@
           ]
         },
         "notes": "One bar against a maximum (a meter), or the chart recipe: weekly bars with values above and labels below, the running period outlined, read aloud as one image."
+      },
+      "system": {
+        "name": "BarChart",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "bars", "tsType": "Array<{ label: string; value: number; partial?: boolean; }>", "required": true},
+          {"name": "label", "tsType": "string", "required": true},
+          {"name": "height", "tsType": "number", "required": false}
+        ]
       }
     },
     {
@@ -7371,6 +7589,19 @@
           ]
         },
         "notes": "Design system v15 Stat strip: caller-formatted metrics with toned notes, as tiles or an inline strip; the quiet register sets values in plain type."
+      },
+      "system": {
+        "name": "Stat",
+        "states": ["rest"],
+        "slots": ["label", "value", "note"],
+        "props": [
+          {"name": "label", "tsType": "React.ReactNode", "required": true},
+          {"name": "value", "tsType": "React.ReactNode", "required": true},
+          {"name": "note", "tsType": "React.ReactNode", "required": false},
+          {"name": "noteTone", "tsType": "\"secondary\" | \"success\" | \"warning\" | \"danger\"", "required": false},
+          {"name": "layout", "tsType": "\"tile\" | \"inline\" | \"fact\"", "required": false},
+          {"name": "meter", "tsType": "{ value: number; max?: number; label: string; }", "required": false}
+        ]
       }
     },
     {
@@ -7384,6 +7615,7 @@
       "kind": "composite",
       "tier": "T2",
       "aliases": ["BottomSheet", "ModalSheet", "ActionSheet", "DrawerSheet"],
+      "absorbs": ["CatchSelectionSheet", "CatchShareCardSheet"],
       "summary": "Canonical sheet surface; standard recipe owns bounded whole-sheet scrolling, keyboard clearance, header, body and footer geometry.",
       "dart": {
         "symbol": "CatchSheet",
@@ -7836,6 +8068,25 @@
       "naming": {
         "useCase": "",
         "reason": "One sheet renderer owns header, body, footer and terminal clearance. The standard recipe fixes Host geometry and scroll ownership; the legacy constructor retains existing Consumer behavior. Wheel selection and captured-card sharing remain complementary sheet members."
+      },
+      "system": {
+        "name": "Sheet",
+        "states": ["rest"],
+        "slots": ["title", "kicker", "action", "dock", "children"],
+        "props": [
+          {"name": "open", "tsType": "boolean", "required": true},
+          {"name": "onClose", "tsType": "() => void", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+          {"name": "action", "tsType": "{ label: string; onPressed?: () => void; }", "required": false},
+          {"name": "dock", "tsType": "React.ReactNode", "required": false},
+          {"name": "placement", "tsType": "\"auto\" | \"bottom\" | \"center\"", "required": false},
+          {"name": "contained", "tsType": "boolean", "required": false},
+          {"name": "scrim", "tsType": "boolean", "required": false},
+          {"name": "tone", "tsType": "\"default\" | \"success\"", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "label", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -8014,6 +8265,16 @@
           "catch.icon_button"
         ],
         "reason": "A bare glyph with no container or command. CatchIconTile draws a container around an icon and CatchIconAction makes a glyph a command; both render CatchIcon roles."
+      },
+      "system": {
+        "name": "Icon",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "name", "tsType": "IconName", "required": true},
+          {"name": "size", "tsType": "IconSize", "required": false},
+          {"name": "label", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -8328,6 +8589,23 @@
       "roleNoun": "IconAction",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "IconButton",
+        "states": ["rest", "hover", "pressed", "focus", "toggled", "disabled"],
+        "slots": [],
+        "props": [
+          {"name": "type", "tsType": "\"button\" | \"submit\"", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": true},
+          {"name": "label", "tsType": "string", "required": true},
+          {"name": "variant", "tsType": "\"outlined\" | \"filled\" | \"ghost\" | \"overlay\"", "required": false},
+          {"name": "size", "tsType": "\"lg\" | \"md\" | \"sm\"", "required": false},
+          {"name": "shape", "tsType": "\"round\" | \"square\"", "required": false},
+          {"name": "badge", "tsType": "number", "required": false},
+          {"name": "pressed", "tsType": "boolean", "required": false},
+          {"name": "onPressed", "tsType": "(() => void) | null", "required": false},
+          {"name": "href", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -8350,6 +8628,7 @@
       "kind": "composite",
       "tier": "T1",
       "aliases": ["DropdownMenu", "PopupMenu", "OverflowMenu", "ContextMenu", "SelectMenu"],
+      "absorbs": ["CatchActionMenu", "CatchSelectionMenu"],
       "summary": "Canonical menu family with separate command overflow and adaptive mutually-exclusive selection contracts.",
       "dart": {
         "symbol": "CatchMenu",
@@ -8674,6 +8953,16 @@
       "roleNoun": "Menu",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Menu",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "items", "tsType": "MenuItem[]", "required": true},
+          {"name": "label", "tsType": "string", "required": false},
+          {"name": "defaultOpen", "tsType": "boolean", "required": false}
+        ]
       }
     },
     {
@@ -9338,6 +9627,21 @@
       "naming": {
         "useCase": "",
         "reason": "Base numeric-stepper responsibility: decrease, display and increase one value. The former NumberStepper and FieldStepper implementations share this contract and renderer. Multi-step workflow progress belongs to StepFlow or Indicator, rather than another Stepper qualifier."
+      },
+      "system": {
+        "name": "Stepper",
+        "states": ["rest", "pressed"],
+        "slots": [],
+        "props": [
+          {"name": "value", "tsType": "number", "required": false},
+          {"name": "defaultValue", "tsType": "number", "required": false},
+          {"name": "min", "tsType": "number", "required": false},
+          {"name": "max", "tsType": "number", "required": false},
+          {"name": "step", "tsType": "number", "required": false},
+          {"name": "onChange", "tsType": "(value: number) => void", "required": false},
+          {"name": "label", "tsType": "string", "required": true},
+          {"name": "format", "tsType": "(value: number) => React.ReactNode", "required": false}
+        ]
       }
     },
     {
@@ -9683,6 +9987,25 @@
           "catch.code_input"
         ],
         "reason": "Chooses existing typed values through discrete targets, with shared cardinality, schema filtering and form participation. CodeInput accepts entered text; individual Chip and ChoiceTile targets do not own group selection."
+      },
+      "system": {
+        "name": "Chip",
+        "states": ["rest", "hover", "pressed", "focus", "selected", "disabled"],
+        "slots": ["label", "leading"],
+        "props": [
+          {"name": "label", "tsType": "React.ReactNode", "required": true},
+          {"name": "kind", "tsType": "\"filter\" | \"choice\" | \"input\" | \"link\" | \"tag\"", "required": false},
+          {"name": "selected", "tsType": "boolean", "required": false},
+          {"name": "size", "tsType": "\"md\" | \"sm\"", "required": false},
+          {"name": "dot", "tsType": "Format", "required": false},
+          {"name": "leadingIcon", "tsType": "IconName", "required": false},
+          {"name": "leading", "tsType": "React.ReactNode", "required": false},
+          {"name": "count", "tsType": "number", "required": false},
+          {"name": "colourWhenSelected", "tsType": "boolean", "required": false},
+          {"name": "onPressed", "tsType": "(() => void) | null", "required": false},
+          {"name": "onRemove", "tsType": "() => void", "required": false},
+          {"name": "href", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -9841,6 +10164,23 @@
           "catch.metric_strip.stat_column"
         ],
         "reason": "This selection-family target combines one option title, its explanation and checked state inside one hit area. MetricTile displays a value and label without selection behavior."
+      },
+      "system": {
+        "name": "ChoiceCard",
+        "states": ["rest", "hover", "pressed", "focus", "selected", "attention", "disabled"],
+        "slots": ["title", "subtitle", "meta"],
+        "props": [
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "subtitle", "tsType": "React.ReactNode", "required": false},
+          {"name": "layout", "tsType": "\"row\" | \"tile\" | \"day\" | \"add\"", "required": false},
+          {"name": "selected", "tsType": "boolean", "required": false},
+          {"name": "selection", "tsType": "\"single\" | \"multi\"", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": false},
+          {"name": "meta", "tsType": "React.ReactNode", "required": false},
+          {"name": "attention", "tsType": "boolean", "required": false},
+          {"name": "onTap", "tsType": "(() => void) | null", "required": false}
+        ]
       }
     },
     {
@@ -9864,7 +10204,7 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T1",
-      "aliases": ["AppCard", "BaseCard", "ContentCard", "Panel", "RoundedContainer"],
+      "aliases": ["AppCard", "BaseCard", "ContentCard", "Panel", "RoundedContainer", "CatchGroundCard", "CatchBand", "CatchPhotoTile", "CatchFormatTile"],
       "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted panels, and tappable tiles.",
       "dart": {
         "symbol": "CatchSurface",
@@ -10070,6 +10410,20 @@
       "roleNoun": "Surface",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Surface",
+        "states": ["rest", "hover", "pressed", "focus"],
+        "slots": ["children"],
+        "props": [
+          {"name": "block", "tsType": "SurfaceBlock", "required": false},
+          {"name": "color", "tsType": "Format | \"ink\" | \"tile\"", "required": false},
+          {"name": "padding", "tsType": "\"none\" | \"sm\" | \"md\" | \"lg\"", "required": false},
+          {"name": "onPress", "tsType": "() => void", "required": false},
+          {"name": "href", "tsType": "string", "required": false},
+          {"name": "as", "tsType": "\"div\" | \"section\" | \"article\" | \"aside\" | \"li\"", "required": false},
+          {"name": "aspect", "tsType": "number", "required": false}
+        ]
       }
     },
     {
@@ -10110,8 +10464,11 @@
         "AppBar",
         "Toolbar",
         "HeaderBar",
-        "TitleBar"
+        "TitleBar",
+        "CatchSiteHeader",
+        "CatchPrimaryRail"
       ],
+      "absorbs": ["CatchStepHeader", "CatchCollapsedHeaderTitle"],
       "summary": "One canonical app bar with route, identity, root, embedded-root and branded navigation recipes; workspace headers flow from their content and share an anchored title baseline, with subtitles below and width-aware parent navigation.",
       "dart": {
         "symbol": "CatchTopBar",
@@ -10601,6 +10958,24 @@
           ]
         },
         "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; identity, tone, emphasis, navigation and search remain Flutter recipes until the Flutter mirror adopts the variants."
+      },
+      "system": {
+        "name": "TopBar",
+        "states": ["rest"],
+        "slots": ["title", "kicker", "back", "action", "actions", "live", "children"],
+        "props": [
+          {"name": "variant", "tsType": "\"tab-home\" | \"tool\" | \"subject\" | \"step\" | \"live\" | \"moment\" | \"site\"", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+          {"name": "back", "tsType": "Act & { close?: boolean; }", "required": false},
+          {"name": "action", "tsType": "Act", "required": false},
+          {"name": "actions", "tsType": "React.ReactNode", "required": false},
+          {"name": "step", "tsType": "{ index: number; total: number; }", "required": false},
+          {"name": "live", "tsType": "React.ReactNode", "required": false},
+          {"name": "links", "tsType": "Act[]", "required": false},
+          {"name": "homeHref", "tsType": "string", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false}
+        ]
       }
     },
     {
@@ -11936,6 +12311,16 @@
       "roleNoun": "PageBody",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "ScreenBody",
+        "states": ["rest"],
+        "slots": ["children"],
+        "props": [
+          {"name": "lane", "tsType": "boolean", "required": false},
+          {"name": "rhythm", "tsType": "\"section\" | \"tight\" | \"none\"", "required": false},
+          {"name": "bleed", "tsType": "boolean", "required": false}
+        ]
       }
     },
     {
@@ -12243,6 +12628,38 @@
       "roleNoun": "SectionList",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Section",
+        "states": ["rest"],
+        "slots": ["title", "kicker", "action", "note", "empty", "footer", "children"],
+        "props": [
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+          {"name": "count", "tsType": "number", "required": false},
+          {"name": "action", "tsType": "SectionHeaderProps[\"action\"]", "required": false},
+          {"name": "note", "tsType": "React.ReactNode", "required": false},
+          {"name": "dividers", "tsType": "\"between\" | \"all\" | \"none\"", "required": false},
+          {"name": "container", "tsType": "\"plain\" | \"tile\"", "required": false},
+          {"name": "timeline", "tsType": "boolean", "required": false},
+          {"name": "empty", "tsType": "React.ReactNode", "required": false},
+          {"name": "footer", "tsType": "React.ReactNode", "required": false},
+          {"name": "columns", "tsType": "2 | 3", "required": false}
+        ],
+        "parts": [
+          {
+            "name": "SectionHeader",
+            "slots": ["title", "kicker", "action", "note"],
+            "props": [
+              {"name": "title", "tsType": "React.ReactNode", "required": true},
+              {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+              {"name": "count", "tsType": "number", "required": false},
+              {"name": "action", "tsType": "{ label: string; href?: string; onPressed?: () => void; }", "required": false},
+              {"name": "note", "tsType": "React.ReactNode", "required": false},
+              {"name": "as", "tsType": "\"h2\" | \"h3\"", "required": false}
+            ]
+          }
+        ]
       }
     },
     {
@@ -12568,7 +12985,8 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
-      "aliases": ["CachedNetworkImage", "RemoteImage", "CachedImage", "ImageLoader"],
+      "aliases": ["CachedNetworkImage", "RemoteImage", "CachedImage", "ImageLoader", "CatchAppCaptureImage"],
+      "absorbs": ["CatchGradedImage", "CatchHeroImage", "CatchMediaOverlay"],
       "summary": "Canonical remote and bundled image primitive with decode sizing, branded fallback, loading hook, and semantic-label support.",
       "dart": {
         "symbol": "CatchNetworkImage",
@@ -12748,6 +13166,25 @@
           "catch.graded_image"
         ],
         "reason": "Owns remote or bundled source loading, decode sizing, image-cache identity, failure fallback and loading hooks. GradedImage transforms an already supplied child; production composes the two operations, so neither replaces the other."
+      },
+      "system": {
+        "name": "Image",
+        "states": ["rest", "loading", "failed"],
+        "slots": ["title", "caption"],
+        "props": [
+          {"name": "src", "tsType": "string", "required": false},
+          {"name": "alt", "tsType": "string", "required": true},
+          {"name": "aspect", "tsType": "number", "required": false},
+          {"name": "fit", "tsType": "\"cover\" | \"contain\"", "required": false},
+          {"name": "radius", "tsType": "\"none\" | \"sm\" | \"md\" | \"lg\" | \"xl\"", "required": false},
+          {"name": "placeholder", "tsType": "PaletteColour | \"tile\"", "required": false},
+          {"name": "kind", "tsType": "\"photo\" | \"video\"", "required": false},
+          {"name": "duration", "tsType": "string", "required": false},
+          {"name": "onPlay", "tsType": "() => void", "required": false},
+          {"name": "bleed", "tsType": "boolean", "required": false},
+          {"name": "title", "tsType": "string", "required": false},
+          {"name": "caption", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -13447,6 +13884,20 @@
           ]
         },
         "notes": "Design system v15 Segmented: options with value, label, count and an optional href (a view that opens another screen); the chosen view is an ink pill that slides across filled bars; a bar that does not fit scrolls with a fading edge and keeps the chosen view in sight. TabController and groupKey are Flutter mechanisms."
+      },
+      "system": {
+        "name": "Segmented",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "items", "tsType": "Array<{ value: string; label: React.ReactNode; count?: number; href?: string; }>", "required": true},
+          {"name": "value", "tsType": "string", "required": false},
+          {"name": "defaultValue", "tsType": "string", "required": false},
+          {"name": "onChange", "tsType": "(value: string) => void", "required": false},
+          {"name": "size", "tsType": "\"md\" | \"sm\"", "required": false},
+          {"name": "fill", "tsType": "boolean", "required": false},
+          {"name": "label", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -13463,8 +13914,10 @@
         "Carousel",
         "HorizontalList",
         "ChipRow",
-        "ScrollRow"
+        "ScrollRow",
+        "CatchScroller"
       ],
+      "absorbs": ["CatchHorizontalScrollView"],
       "summary": "A horizontal row that scrolls with snapping and a peek of the next item, fading whichever edge hides more; on desktops it wraps into a grid unless told never to. A row of filter chips is a rail of fitted items.",
       "dart": {
         "symbol": "CatchRail",
@@ -13592,6 +14045,16 @@
       "roleNoun": "Rail",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Rail",
+        "states": ["rest"],
+        "slots": ["children"],
+        "props": [
+          {"name": "itemWidth", "tsType": "number | \"auto\"", "required": false},
+          {"name": "wrap", "tsType": "\"auto\" | \"never\" | \"always\"", "required": false},
+          {"name": "label", "tsType": "string", "required": true}
+        ]
       }
     },
     {
@@ -13787,6 +14250,25 @@
           "catch.field.select_control"
         ],
         "reason": "Owns a controlled browse query, local text controller and focus, clear-before-close behavior, and the fixed or transient header search lifecycle. CatchField owns labelled form values, validation and commit orchestration; SelectionField owns a discrete nullable choice. Search recipes reuse one CatchTextInput configuration while retaining their established field and animated header surfaces."
+      },
+      "system": {
+        "name": "Field",
+        "states": ["rest", "focus", "filled", "error", "disabled"],
+        "slots": ["prefix", "suffix"],
+        "props": [
+          {"name": "label", "tsType": "string", "required": false},
+          {"name": "help", "tsType": "string", "required": false},
+          {"name": "error", "tsType": "string", "required": false},
+          {"name": "kind", "tsType": "FieldKind", "required": false},
+          {"name": "size", "tsType": "\"lg\" | \"md\"", "required": false},
+          {"name": "prefix", "tsType": "React.ReactNode", "required": false},
+          {"name": "suffix", "tsType": "React.ReactNode", "required": false},
+          {"name": "leadingIcon", "tsType": "IconName", "required": false},
+          {"name": "counter", "tsType": "boolean", "required": false},
+          {"name": "options", "tsType": "Array<{ value: string; label: string; }>", "required": false},
+          {"name": "length", "tsType": "number", "required": false},
+          {"name": "rows", "tsType": "number", "required": false}
+        ]
       }
     },
     {
@@ -13986,6 +14468,20 @@
           "catch.field.text_input"
         ],
         "reason": "Edits two ordered numeric endpoints as one interval, with contract-derived bounds, step divisions and an end-of-drag commit seam. ChoiceInput selects arbitrary typed members of a supplied set; TextInput edits characters. Neither has the interval constraints or paired adjustment semantics of this input."
+      },
+      "system": {
+        "name": "Slider",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "min", "tsType": "number", "required": false},
+          {"name": "max", "tsType": "number", "required": false},
+          {"name": "step", "tsType": "number", "required": false},
+          {"name": "value", "tsType": "number | [ number, number ]", "required": false},
+          {"name": "defaultValue", "tsType": "number | [ number, number ]", "required": false},
+          {"name": "onChange", "tsType": "(value: number | [ number, number ]) => void", "required": false},
+          {"name": "label", "tsType": "string", "required": true}
+        ]
       }
     },
     {
@@ -14145,6 +14641,18 @@
           "catch.code_input"
         ],
         "reason": "Edits a boolean through on/off track activation, including the existing compact field geometry. Text and code inputs own character editing and keyboard/text contracts, so the boolean control remains a distinct Input use case."
+      },
+      "system": {
+        "name": "Switch",
+        "states": ["rest", "on", "off", "disabled"],
+        "slots": [],
+        "props": [
+          {"name": "on", "tsType": "boolean", "required": false},
+          {"name": "defaultOn", "tsType": "boolean", "required": false},
+          {"name": "onChange", "tsType": "(on: boolean) => void", "required": false},
+          {"name": "label", "tsType": "string", "required": false},
+          {"name": "busy", "tsType": "boolean", "required": false}
+        ]
       }
     },
     {
@@ -14312,6 +14820,18 @@
           "catch.chip.field"
         ],
         "reason": "A single acknowledgement with checked semantics, not a setting or a group."
+      },
+      "system": {
+        "name": "Check",
+        "states": ["rest"],
+        "slots": ["label", "note"],
+        "props": [
+          {"name": "kind", "tsType": "\"checkbox\" | \"radio\"", "required": false},
+          {"name": "label", "tsType": "React.ReactNode", "required": true},
+          {"name": "note", "tsType": "React.ReactNode", "required": false},
+          {"name": "mixed", "tsType": "boolean", "required": false},
+          {"name": "error", "tsType": "boolean", "required": false}
+        ]
       }
     },
     {
@@ -14528,6 +15048,24 @@
           "catch.section.header"
         ],
         "reason": "Owns step/total clamping, accessible counter actions and progress rendering around navigation chrome; ordinary section headings have no flow-progress behavior."
+      },
+      "system": {
+        "name": "TopBar",
+        "states": ["rest"],
+        "slots": ["title", "kicker", "back", "action", "actions", "live", "children"],
+        "props": [
+          {"name": "variant", "tsType": "\"tab-home\" | \"tool\" | \"subject\" | \"step\" | \"live\" | \"moment\" | \"site\"", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": false},
+          {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+          {"name": "back", "tsType": "Act & { close?: boolean; }", "required": false},
+          {"name": "action", "tsType": "Act", "required": false},
+          {"name": "actions", "tsType": "React.ReactNode", "required": false},
+          {"name": "step", "tsType": "{ index: number; total: number; }", "required": false},
+          {"name": "live", "tsType": "React.ReactNode", "required": false},
+          {"name": "links", "tsType": "Act[]", "required": false},
+          {"name": "homeHref", "tsType": "string", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false}
+        ]
       }
     },
     {
@@ -14823,6 +15361,22 @@
           ]
         },
         "notes": "Design system v15 Navigation: one item list draws the phone bar, the 96px rail and the 240px sidebar. With an href and onChanged a plain click calls onChanged (client routing) and modified clicks follow the link. The quiet register draws a text-only sidebar with plain counts. Flutter's layout, header, primaryAction, footer, label and more props follow in the Flutter mirror."
+      },
+      "system": {
+        "name": "Navigation",
+        "states": ["rest", "selected"],
+        "slots": ["header", "primaryAction", "footer", "more"],
+        "props": [
+          {"name": "items", "tsType": "NavItem[]", "required": true},
+          {"name": "value", "tsType": "string", "required": true},
+          {"name": "onChange", "tsType": "(value: string) => void", "required": false},
+          {"name": "layout", "tsType": "\"auto\" | \"bottom\" | \"rail\" | \"sidebar\"", "required": false},
+          {"name": "header", "tsType": "React.ReactNode | NavIdentity", "required": false},
+          {"name": "primaryAction", "tsType": "{ label: string; icon?: IconName; href?: string; onPressed?: () => void; }", "required": false},
+          {"name": "footer", "tsType": "React.ReactNode | NavIdentity", "required": false},
+          {"name": "label", "tsType": "string", "required": false},
+          {"name": "more", "tsType": "{ label?: string; href?: string; onPressed?: () => void; badge?: number; }", "required": false}
+        ]
       }
     },
     {
@@ -15037,6 +15591,21 @@
           ]
         },
         "notes": "A native modal dialog for confirming a risky action: focus stays inside, Escape and the scrim close it, and the confirming action comes last."
+      },
+      "system": {
+        "name": "Dialog",
+        "states": ["rest"],
+        "slots": ["title", "body", "confirm", "cancel"],
+        "props": [
+          {"name": "open", "tsType": "boolean", "required": true},
+          {"name": "onClose", "tsType": "() => void", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "body", "tsType": "React.ReactNode", "required": false},
+          {"name": "confirm", "tsType": "Pick<ButtonProps, \"label\" | \"onPressed\" | \"loading\">", "required": true},
+          {"name": "cancel", "tsType": "Pick<ButtonProps, \"label\" | \"onPressed\">", "required": false},
+          {"name": "tone", "tsType": "\"default\" | \"destructive\"", "required": false},
+          {"name": "contained", "tsType": "boolean", "required": false}
+        ]
       }
     },
     {
@@ -15552,7 +16121,31 @@
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "level": "L5",
-      "roleNoun": "Poster"
+      "roleNoun": "Poster",
+      "system": {
+        "name": "EventCard",
+        "states": ["rest", "pressed"],
+        "slots": ["title", "formatLabel", "when", "place", "flag", "price"],
+        "props": [
+          {"name": "variant", "tsType": "\"poster\" | \"cover\" | \"compact\" | \"external\"", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "format", "tsType": "Format", "required": true},
+          {"name": "formatLabel", "tsType": "React.ReactNode", "required": false},
+          {"name": "when", "tsType": "React.ReactNode", "required": false},
+          {"name": "place", "tsType": "React.ReactNode", "required": false},
+          {"name": "flag", "tsType": "React.ReactNode", "required": false},
+          {"name": "counts", "tsType": "Array<{ value: React.ReactNode; label: React.ReactNode; }>", "required": false},
+          {"name": "people", "tsType": "Array<Pick<AvatarProps, \"name\" | \"imageUrl\">>", "required": false},
+          {"name": "peopleTotal", "tsType": "number", "required": false},
+          {"name": "price", "tsType": "React.ReactNode", "required": false},
+          {"name": "imageUrl", "tsType": "string", "required": false},
+          {"name": "source", "tsType": "string", "required": false},
+          {"name": "status", "tsType": "\"on-sale\" | \"sold-out\" | \"cancelled\" | \"live\" | \"past\"", "required": false},
+          {"name": "href", "tsType": "string", "required": false},
+          {"name": "onPress", "tsType": "() => void", "required": false},
+          {"name": "transitionName", "tsType": "string", "required": false}
+        ]
+      }
     },
     {
       "id": "catch.person_avatar",
@@ -15565,6 +16158,7 @@
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["ProfileAvatar", "UserAvatar", "ProfilePicture", "AvatarImage"],
+      "absorbs": ["CatchAvatarRow"],
       "summary": "Canonical avatar for photos, initials, activity identity, veils and localized overflow counts, with one clipping/ring owner and bounded labels.",
       "dart": {
         "symbol": "CatchAvatar",
@@ -15937,6 +16531,36 @@
       "roleNoun": "Avatar",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Avatar",
+        "states": ["rest", "failed"],
+        "slots": [],
+        "props": [
+          {"name": "size", "tsType": "AvatarSize", "required": false},
+          {"name": "name", "tsType": "string", "required": false},
+          {"name": "imageUrl", "tsType": "string", "required": false},
+          {"name": "initials", "tsType": "string", "required": false},
+          {"name": "color", "tsType": "PaletteColour | \"ink\"", "required": false},
+          {"name": "ring", "tsType": "boolean", "required": false},
+          {"name": "status", "tsType": "\"online\" | \"checked-in\" | \"away\"", "required": false},
+          {"name": "href", "tsType": "string", "required": false},
+          {"name": "onPress", "tsType": "() => void", "required": false},
+          {"name": "pressLabel", "tsType": "string", "required": false},
+          {"name": "shape", "tsType": "\"round\" | \"square\"", "required": false}
+        ],
+        "parts": [
+          {
+            "name": "AvatarStack",
+            "slots": [],
+            "props": [
+              {"name": "people", "tsType": "Array<Pick<AvatarProps, \"name\" | \"imageUrl\" | \"initials\" | \"color\">>", "required": true},
+              {"name": "size", "tsType": "AvatarSize", "required": false},
+              {"name": "max", "tsType": "number", "required": false},
+              {"name": "total", "tsType": "number", "required": false}
+            ]
+          }
+        ]
       }
     },
     {
@@ -15949,7 +16573,7 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": ["EventTicket", "EventTile", "EventListItem", "EventPreviewCard"],
+      "aliases": ["EventTicket", "EventTile", "EventListItem", "EventPreviewCard", "CatchEventPoster", "CatchPreviewCard", "CatchLinkTile", "CatchPlanCard"],
       "summary": "Event summary card: binds event media and metadata into the CatchTicket card recipe, which owns the ticket geometry.",
       "dart": {
         "symbol": "EventCard",
@@ -16290,7 +16914,31 @@
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "level": "L5",
-      "roleNoun": "Card"
+      "roleNoun": "Card",
+      "system": {
+        "name": "EventCard",
+        "states": ["rest", "pressed"],
+        "slots": ["title", "formatLabel", "when", "place", "flag", "price"],
+        "props": [
+          {"name": "variant", "tsType": "\"poster\" | \"cover\" | \"compact\" | \"external\"", "required": false},
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "format", "tsType": "Format", "required": true},
+          {"name": "formatLabel", "tsType": "React.ReactNode", "required": false},
+          {"name": "when", "tsType": "React.ReactNode", "required": false},
+          {"name": "place", "tsType": "React.ReactNode", "required": false},
+          {"name": "flag", "tsType": "React.ReactNode", "required": false},
+          {"name": "counts", "tsType": "Array<{ value: React.ReactNode; label: React.ReactNode; }>", "required": false},
+          {"name": "people", "tsType": "Array<Pick<AvatarProps, \"name\" | \"imageUrl\">>", "required": false},
+          {"name": "peopleTotal", "tsType": "number", "required": false},
+          {"name": "price", "tsType": "React.ReactNode", "required": false},
+          {"name": "imageUrl", "tsType": "string", "required": false},
+          {"name": "source", "tsType": "string", "required": false},
+          {"name": "status", "tsType": "\"on-sale\" | \"sold-out\" | \"cancelled\" | \"live\" | \"past\"", "required": false},
+          {"name": "href", "tsType": "string", "required": false},
+          {"name": "onPress", "tsType": "() => void", "required": false},
+          {"name": "transitionName", "tsType": "string", "required": false}
+        ]
+      }
     },
     {
       "id": "catch.graded_image",
@@ -16413,6 +17061,25 @@
           "catch.network_image"
         ],
         "reason": "Owns reversible display-time color grading of a supplied image child, with a raw-image bypass and deterministic optional grain. NetworkImage owns source loading and decoding; this treatment does not load, decode or cache a source."
+      },
+      "system": {
+        "name": "Image",
+        "states": ["rest", "loading", "failed"],
+        "slots": ["title", "caption"],
+        "props": [
+          {"name": "src", "tsType": "string", "required": false},
+          {"name": "alt", "tsType": "string", "required": true},
+          {"name": "aspect", "tsType": "number", "required": false},
+          {"name": "fit", "tsType": "\"cover\" | \"contain\"", "required": false},
+          {"name": "radius", "tsType": "\"none\" | \"sm\" | \"md\" | \"lg\" | \"xl\"", "required": false},
+          {"name": "placeholder", "tsType": "PaletteColour | \"tile\"", "required": false},
+          {"name": "kind", "tsType": "\"photo\" | \"video\"", "required": false},
+          {"name": "duration", "tsType": "string", "required": false},
+          {"name": "onPlay", "tsType": "() => void", "required": false},
+          {"name": "bleed", "tsType": "boolean", "required": false},
+          {"name": "title", "tsType": "string", "required": false},
+          {"name": "caption", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -16593,6 +17260,25 @@
           "catch.graded_image"
         ],
         "reason": "Assembles a photo or branded no-photo surface with optional hero readability treatment. NetworkImage owns loading and decode/cache sizing; GradedImage transforms supplied pixels. This composition delegates both operations and does not introduce another loader, grade or fallback renderer."
+      },
+      "system": {
+        "name": "Image",
+        "states": ["rest", "loading", "failed"],
+        "slots": ["title", "caption"],
+        "props": [
+          {"name": "src", "tsType": "string", "required": false},
+          {"name": "alt", "tsType": "string", "required": true},
+          {"name": "aspect", "tsType": "number", "required": false},
+          {"name": "fit", "tsType": "\"cover\" | \"contain\"", "required": false},
+          {"name": "radius", "tsType": "\"none\" | \"sm\" | \"md\" | \"lg\" | \"xl\"", "required": false},
+          {"name": "placeholder", "tsType": "PaletteColour | \"tile\"", "required": false},
+          {"name": "kind", "tsType": "\"photo\" | \"video\"", "required": false},
+          {"name": "duration", "tsType": "string", "required": false},
+          {"name": "onPlay", "tsType": "() => void", "required": false},
+          {"name": "bleed", "tsType": "boolean", "required": false},
+          {"name": "title", "tsType": "string", "required": false},
+          {"name": "caption", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -17526,7 +18212,18 @@
         ]
       },
       "level": "L5",
-      "roleNoun": "Input"
+      "roleNoun": "Input",
+      "system": {
+        "name": "ChatComposer",
+        "states": ["rest"],
+        "slots": ["closedNote"],
+        "props": [
+          {"name": "placeholder", "tsType": "string", "required": false},
+          {"name": "onSend", "tsType": "(text: string) => void", "required": false},
+          {"name": "closedNote", "tsType": "React.ReactNode", "required": false},
+          {"name": "onAttach", "tsType": "() => void", "required": false}
+        ]
+      }
     },
     {
       "id": "catch.bottom_action",
@@ -17875,6 +18572,21 @@
       "roleNoun": "Dock",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Dock",
+        "states": ["rest"],
+        "slots": ["primary", "secondary", "summary", "children", "danger", "next"],
+        "props": [
+          {"name": "primary", "tsType": "Pick<ButtonProps, \"label\" | \"onPressed\" | \"href\" | \"disabled\" | \"loading\" | \"leadingIcon\" | \"trailingIcon\" | \"variant\">", "required": true},
+          {"name": "secondary", "tsType": "Pick<ButtonProps, \"label\" | \"onPressed\" | \"href\" | \"disabled\">", "required": false},
+          {"name": "summary", "tsType": "React.ReactNode", "required": false},
+          {"name": "placement", "tsType": "\"auto\" | \"bar\" | \"card\" | \"pane\"", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "danger", "tsType": "Pick<ButtonProps, \"label\" | \"onPressed\" | \"href\" | \"disabled\">", "required": false},
+          {"name": "note", "tsType": "{ label: string; placeholder?: string; value?: string; required?: boolean; }", "required": false},
+          {"name": "next", "tsType": "React.ReactNode", "required": false}
+        ]
       }
     },
     {
@@ -18027,7 +18739,20 @@
         "notes": "The web draws no map itself: imageUrl is a static map the caller's provider renders with its marker, route and zoom, which stand in for markerHue, path, markers and zoom. Without a coordinate or an image it shows Flutter's fallback, whose label takes ink2 because Flutter's ink3 is under 4.5:1 on bg. framed is web-only: the v2 event page's map card, 5:2 at radius lg."
       },
       "level": "L5",
-      "roleNoun": "Preview"
+      "roleNoun": "Preview",
+      "system": {
+        "name": "MapPreview",
+        "states": ["rest", "selected"],
+        "slots": [],
+        "props": [
+          {"name": "pins", "tsType": "MapPin[]", "required": true},
+          {"name": "aspect", "tsType": "number", "required": false},
+          {"name": "route", "tsType": "Array<[ number, number ]>", "required": false},
+          {"name": "label", "tsType": "string", "required": true},
+          {"name": "onOpen", "tsType": "() => void", "required": false},
+          {"name": "onPinPress", "tsType": "(index: number) => void", "required": false}
+        ]
+      }
     },
     {
       "id": "catch.meta_row",
@@ -18256,6 +18981,16 @@
           ]
         },
         "notes": "Design system v15 MetaRow: a record's facts as label over value in columns (folding to one on phones), or the flow recipe's dot-separated line. Entries carry tone, href and wide."
+      },
+      "system": {
+        "name": "MetaRow",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "items", "tsType": "MetaItem[]", "required": true},
+          {"name": "layout", "tsType": "\"grid\" | \"inline\"", "required": false},
+          {"name": "columns", "tsType": "1 | 2 | 3 | 4", "required": false}
+        ]
       }
     },
     {
@@ -18268,7 +19003,8 @@
       "status": "active",
       "kind": "primitive",
       "tier": "T2",
-      "aliases": ["ListRow", "DirectoryRow", "NavigationRow", "BrowseRow"],
+      "aliases": ["ListRow", "DirectoryRow", "NavigationRow", "BrowseRow", "CatchPersonAvatarItem", "CatchReviewItem"],
+      "absorbs": ["CatchRecordLayout", "CatchPersonLayout", "CatchConversationLayout", "CatchStatusRow", "CatchAttributionRow", "ParticipantRow", "NotificationRow"],
       "summary": "Canonical hairline index row for compact directories and browse lists with optional leading and trailing content.",
       "dart": {
         "symbol": "CatchIndexRow",
@@ -18461,6 +19197,55 @@
           "catch.field.row"
         ],
         "reason": "Compact command and category entries remain the menu/navigation exception. Ordinary person and record collections use Field layouts in typed row sections."
+      },
+      "system": {
+        "name": "ListRow",
+        "states": ["rest", "hover", "focus", "selected", "unread", "done", "disabled"],
+        "slots": ["title", "subtitle", "meta", "body", "leading", "value", "status", "trailing", "action", "children"],
+        "props": [
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "subtitle", "tsType": "React.ReactNode", "required": false},
+          {"name": "meta", "tsType": "React.ReactNode", "required": false},
+          {"name": "metaTone", "tsType": "\"secondary\" | \"success\"", "required": false},
+          {"name": "body", "tsType": "React.ReactNode", "required": false},
+          {"name": "avatar", "tsType": "AvatarProps", "required": false},
+          {"name": "date", "tsType": "DateTileProps", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": false},
+          {"name": "iconTone", "tsType": "Format | \"neutral\" | \"success\" | \"warning\" | \"danger\" | \"info\"", "required": false},
+          {"name": "marker", "tsType": "MarkerProps", "required": false},
+          {"name": "time", "tsType": "string", "required": false},
+          {"name": "rank", "tsType": "number", "required": false},
+          {"name": "leading", "tsType": "React.ReactNode", "required": false},
+          {"name": "badge", "tsType": "BadgeProps", "required": false},
+          {"name": "value", "tsType": "React.ReactNode", "required": false},
+          {"name": "status", "tsType": "React.ReactNode", "required": false},
+          {"name": "statusTone", "tsType": "\"secondary\" | \"success\" | \"warning\" | \"danger\"", "required": false},
+          {"name": "trailing", "tsType": "React.ReactNode", "required": false},
+          {"name": "action", "tsType": "{ label: string; onPressed?: () => void; variant?: \"secondary\" | \"primary\"; }", "required": false},
+          {"name": "chevron", "tsType": "boolean", "required": false},
+          {"name": "progress", "tsType": "{ value: number; max?: number; label: string; }", "required": false},
+          {"name": "density", "tsType": "\"compact\" | \"regular\" | \"roomy\"", "required": false},
+          {"name": "wrap", "tsType": "boolean", "required": false},
+          {"name": "childrenSlot", "tsType": "\"trailing\" | \"below\"", "required": false},
+          {"name": "unread", "tsType": "boolean", "required": false},
+          {"name": "selected", "tsType": "boolean", "required": false},
+          {"name": "done", "tsType": "boolean", "required": false},
+          {"name": "disabled", "tsType": "boolean", "required": false},
+          {"name": "href", "tsType": "string", "required": false},
+          {"name": "onPress", "tsType": "() => void", "required": false}
+        ],
+        "parts": [
+          {
+            "name": "DateTile",
+            "slots": [],
+            "props": [
+              {"name": "day", "tsType": "string", "required": true},
+              {"name": "date", "tsType": "string | number", "required": true},
+              {"name": "format", "tsType": "Format", "required": false},
+              {"name": "size", "tsType": "\"md\" | \"sm\"", "required": false}
+            ]
+          }
+        ]
       }
     },
     {
@@ -18474,6 +19259,7 @@
       "kind": "composite",
       "tier": "T2",
       "aliases": ["EditorialCard", "MediaCard", "FeatureCard", "PosterCard", "OrganizerPoster"],
+      "absorbs": ["CatchOrganizerCard"],
       "summary": "Canonical organizer material with editorial, photo, split, and minimal layouts plus paper, ink, and signal treatments.",
       "dart": {
         "symbol": "CatchPoster",
@@ -18772,6 +19558,21 @@
       "roleNoun": "Poster",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "OrganiserCard",
+        "states": ["rest", "toggled"],
+        "slots": ["name", "meta"],
+        "props": [
+          {"name": "name", "tsType": "React.ReactNode", "required": true},
+          {"name": "initials", "tsType": "string", "required": false},
+          {"name": "logoUrl", "tsType": "string", "required": false},
+          {"name": "color", "tsType": "Format", "required": false},
+          {"name": "meta", "tsType": "React.ReactNode", "required": false},
+          {"name": "following", "tsType": "boolean", "required": false},
+          {"name": "onFollow", "tsType": "() => void", "required": false},
+          {"name": "href", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -19052,7 +19853,22 @@
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
       "level": "L5",
-      "roleNoun": "Cover"
+      "roleNoun": "Cover",
+      "system": {
+        "name": "OrganiserCard",
+        "states": ["rest", "toggled"],
+        "slots": ["name", "meta"],
+        "props": [
+          {"name": "name", "tsType": "React.ReactNode", "required": true},
+          {"name": "initials", "tsType": "string", "required": false},
+          {"name": "logoUrl", "tsType": "string", "required": false},
+          {"name": "color", "tsType": "Format", "required": false},
+          {"name": "meta", "tsType": "React.ReactNode", "required": false},
+          {"name": "following", "tsType": "boolean", "required": false},
+          {"name": "onFollow", "tsType": "() => void", "required": false},
+          {"name": "href", "tsType": "string", "required": false}
+        ]
+      }
     },
     {
       "id": "catch.motion_viewport",
@@ -19333,6 +20149,21 @@
           "catch.typography.mono_label"
         ],
         "reason": "Measures two caller-styled text runs at the active text scale to place a timestamp beside the last message line or below it. MetadataText styles one compact factual label; it does not own two-run fitting, baseline alignment or message wrapping."
+      },
+      "system": {
+        "name": "ChatMessage",
+        "states": ["rest", "failed"],
+        "slots": ["children"],
+        "props": [
+          {"name": "sender", "tsType": "\"mine\" | \"theirs\" | \"host\" | \"system\"", "required": false},
+          {"name": "from", "tsType": "\"mine\" | \"theirs\" | \"host\" | \"system\"", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": true},
+          {"name": "author", "tsType": "AvatarProps & { name: string; }", "required": false},
+          {"name": "time", "tsType": "string", "required": false},
+          {"name": "status", "tsType": "\"sending\" | \"sent\" | \"failed\" | \"read\"", "required": false},
+          {"name": "continued", "tsType": "boolean", "required": false},
+          {"name": "format", "tsType": "Format", "required": false}
+        ]
       }
     },
     {
@@ -19345,7 +20176,8 @@
       "status": "active",
       "kind": "composite",
       "tier": "T2",
-      "aliases": ["DataQualityTile", "CompletenessTile", "DataCoverageTile"],
+      "aliases": ["DataQualityTile", "CompletenessTile", "DataCoverageTile", "CatchFactTile"],
+      "absorbs": ["CatchMetricTile", "CatchMetricSection"],
       "summary": "Caller-formatted metric tile with explicit ready, partial and missing-data presentation.",
       "dart": {
         "symbol": "CatchDataQualityMetricTile",
@@ -19453,6 +20285,19 @@
           "catch.metric_strip.stat_column"
         ],
         "reason": "Owns an explicit data-completeness contract: ready, partial and missing states, status copy, warning fill and an optional explanation. MetricTile displays a scalar and label without asserting source completeness. The qualifier names that responsibility rather than the feature that consumes it."
+      },
+      "system": {
+        "name": "Stat",
+        "states": ["rest"],
+        "slots": ["label", "value", "note"],
+        "props": [
+          {"name": "label", "tsType": "React.ReactNode", "required": true},
+          {"name": "value", "tsType": "React.ReactNode", "required": true},
+          {"name": "note", "tsType": "React.ReactNode", "required": false},
+          {"name": "noteTone", "tsType": "\"secondary\" | \"success\" | \"warning\" | \"danger\"", "required": false},
+          {"name": "layout", "tsType": "\"tile\" | \"inline\" | \"fact\"", "required": false},
+          {"name": "meter", "tsType": "{ value: number; max?: number; label: string; }", "required": false}
+        ]
       }
     },
     {
@@ -19651,6 +20496,21 @@
       "roleNoun": "Ticket",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Ticket",
+        "states": ["rest", "used", "refunded"],
+        "slots": ["title", "organiser", "formatLabel", "guest"],
+        "props": [
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "format", "tsType": "Format", "required": true},
+          {"name": "organiser", "tsType": "React.ReactNode", "required": false},
+          {"name": "formatLabel", "tsType": "React.ReactNode", "required": false},
+          {"name": "facts", "tsType": "Array<{ label: React.ReactNode; value: React.ReactNode; }>", "required": true},
+          {"name": "code", "tsType": "string", "required": false},
+          {"name": "guest", "tsType": "React.ReactNode", "required": false},
+          {"name": "status", "tsType": "\"valid\" | \"used\" | \"refunded\"", "required": false}
+        ]
       }
     },
     {
@@ -19667,8 +20527,11 @@
         "ResponsiveLayout",
         "AdaptiveLayout",
         "SizeClassBuilder",
-        "BreakpointBuilder"
+        "BreakpointBuilder",
+        "AdaptiveTabScaffold",
+        "HostAppShell"
       ],
+      "absorbs": ["CatchScaffold", "CatchRootScreenScaffold", "CatchNavigationViewport", "CatchRouteScaffold"],
       "summary": "One local viewport owner with named size-class, explicit-width, sliver geometry, readable sliver lane and bounded-scene recipes.",
       "dart": {
         "symbol": "CatchViewport",
@@ -19953,6 +20816,25 @@
           ]
         },
         "notes": "Design system v15 AppShell on the web: measures its own size class (600/840), lays out navigation, top bar, the scrolling body, dock and overlays, and provides size class, register and scroll state through useCatchViewport. Flutter's builder recipes have no web use yet."
+      },
+      "system": {
+        "name": "AppShell",
+        "states": ["rest"],
+        "slots": ["navigation", "topBar", "dock", "overlay", "children"],
+        "props": [
+          {"name": "theme", "tsType": "Theme", "required": false},
+          {"name": "register", "tsType": "Register", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "size", "tsType": "SizeClass | \"auto\"", "required": false},
+          {"name": "frame", "tsType": "\"phone\" | \"tablet\" | \"desktop\" | \"fluid\"", "required": false},
+          {"name": "navigation", "tsType": "React.ReactNode", "required": false},
+          {"name": "topBar", "tsType": "React.ReactNode", "required": false},
+          {"name": "dock", "tsType": "React.ReactNode", "required": false},
+          {"name": "overlay", "tsType": "React.ReactNode", "required": false},
+          {"name": "height", "tsType": "number", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "className", "tsType": "string", "required": false}
+        ]
       }
     },
     {
@@ -20140,6 +21022,22 @@
       "verification": {
         "vehicle": "widgetbook-contract",
         "reason": "The Flutter Widgetbook contract covers measured header growth, shrink, a single pane, a header without a layout ancestor and large text; the React Contract story covers queue, views, filters, position and page headers."
+      },
+      "system": {
+        "name": "PaneHeader",
+        "states": ["rest"],
+        "slots": ["title", "kicker", "note", "back", "children"],
+        "props": [
+          {"name": "title", "tsType": "React.ReactNode", "required": true},
+          {"name": "kicker", "tsType": "React.ReactNode", "required": false},
+          {"name": "count", "tsType": "number", "required": false},
+          {"name": "note", "tsType": "React.ReactNode", "required": false},
+          {"name": "back", "tsType": "Act & { close?: boolean; }", "required": false},
+          {"name": "position", "tsType": "{ label: string; previous?: Act; next?: Act; }", "required": false},
+          {"name": "views", "tsType": "{ items: Array<{ value: string; label: string; count?: number; }>; value: string; label?: string; }", "required": false},
+          {"name": "filters", "tsType": "{ chips?: Array<{ label: string; count?: number; selected?: boolean; }>; search?: { placeholder: string; value?: string; }; }", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false}
+        ]
       }
     },
     {
@@ -20158,6 +21056,7 @@
         "ListDetailLayout",
         "WorkspaceLayout"
       ],
+      "absorbs": ["CatchWorkspacePaneScaffold"],
       "summary": "One layout for workspace screens: queue (a table and a 440/480px inspector that replaces the table when narrow), list-detail (a 360px list and the detail), feed and reading (with a 360px side pane) and wide-table, measured on the layout's own width.",
       "dart": {
         "symbol": "CatchPaneLayout",
@@ -20313,6 +21212,18 @@
           "catch.screen_body"
         ],
         "reason": "Arranges sibling panes for a named screen pattern inside the screen body it belongs to; the body owns one scrolling column and the viewport the whole screen."
+      },
+      "system": {
+        "name": "PaneLayout",
+        "states": ["rest"],
+        "slots": ["main", "detail", "aside", "children"],
+        "props": [
+          {"name": "pattern", "tsType": "PanePattern", "required": true},
+          {"name": "main", "tsType": "React.ReactNode", "required": false},
+          {"name": "detail", "tsType": "React.ReactNode", "required": false},
+          {"name": "aside", "tsType": "React.ReactNode", "required": false},
+          {"name": "detailOpen", "tsType": "boolean", "required": false}
+        ]
       }
     },
     {
@@ -20598,6 +21509,24 @@
       "roleNoun": "Table",
       "naming": {
         "useCase": ""
+      },
+      "system": {
+        "name": "Table",
+        "states": ["rest", "hover"],
+        "slots": ["bulk"],
+        "props": [
+          {"name": "columns", "tsType": "TableColumn<T>[]", "required": true},
+          {"name": "rows", "tsType": "T[]", "required": true},
+          {"name": "rowKey", "tsType": "((row: T) => string) | (keyof T & string)", "required": false},
+          {"name": "label", "tsType": "string", "required": true},
+          {"name": "onRowPress", "tsType": "(row: T) => void", "required": false},
+          {"name": "selectedKey", "tsType": "string", "required": false},
+          {"name": "selectable", "tsType": "boolean", "required": false},
+          {"name": "checked", "tsType": "string[]", "required": false},
+          {"name": "onCheck", "tsType": "(keys: string[]) => void", "required": false},
+          {"name": "bulk", "tsType": "React.ReactNode | Array<{ label: string; onPressed?: () => void; variant?: \"secondary\" | \"primary\"; }>", "required": false},
+          {"name": "density", "tsType": "\"compact\" | \"regular\"", "required": false}
+        ]
       }
     },
     {
@@ -20760,6 +21689,674 @@
           "catch.text"
         ],
         "reason": "CatchText renders one function-family text role. This welcome material measures a brand-plus-phrase lockup and owns its fitted underline, or paints a rich reel row with a separately faded period and capped text scaling."
+      }
+    },
+    {
+      "id": "catch.root",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchRoot",
+      "status": "planned",
+      "kind": "primitive",
+      "tier": "T1",
+      "aliases": ["AppRoot", "ThemeRoot", "DesignSystemRoot"],
+      "summary": "Sets the theme and size class for everything inside it. Wrap each screen (or the whole app) once.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Root",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Root",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks: theme, size class, format, register, reduced motion. CatchTheme stays the token theme it reads."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.root",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.root"
+      },
+      "system": {
+        "name": "Root",
+        "states": ["rest"],
+        "slots": ["children"],
+        "props": [
+          {"name": "theme", "tsType": "Theme", "required": false},
+          {"name": "size", "tsType": "SizeClass | \"auto\"", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "register", "tsType": "Register", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "className", "tsType": "string", "required": false},
+          {"name": "style", "tsType": "React.CSSProperties", "required": false}
+        ]
+      }
+    },
+    {
+      "id": "catch.stack",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchStack",
+      "status": "planned",
+      "kind": "primitive",
+      "tier": "T1",
+      "aliases": ["CatchGap", "CatchInset", "CatchGrid"],
+      "absorbs": ["CatchSplit", "CatchSectionList"],
+      "summary": "Lays children out in a column or a row with a token gap.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Stack",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Stack",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks; absorbs the web layout helpers when its first redesigned consumer lands (Split and Grid become equal plus collapseBelow)."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.stack",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.stack"
+      },
+      "system": {
+        "name": "Stack",
+        "states": ["rest"],
+        "slots": ["children"],
+        "props": [
+          {"name": "direction", "tsType": "\"column\" | \"row\"", "required": false},
+          {"name": "gap", "tsType": "Gap", "required": false},
+          {"name": "align", "tsType": "\"start\" | \"center\" | \"end\" | \"stretch\" | \"baseline\"", "required": false},
+          {"name": "justify", "tsType": "\"start\" | \"center\" | \"end\" | \"between\"", "required": false},
+          {"name": "wrap", "tsType": "boolean", "required": false},
+          {"name": "equal", "tsType": "boolean", "required": false},
+          {"name": "collapseBelow", "tsType": "\"medium\" | \"expanded\"", "required": false},
+          {"name": "as", "tsType": "\"div\" | \"section\" | \"header\" | \"footer\" | \"ul\" | \"ol\" | \"nav\" | \"main\" | \"aside\"", "required": false}
+        ]
+      }
+    },
+    {
+      "id": "catch.marker",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchMarker",
+      "status": "planned",
+      "kind": "primitive",
+      "tier": "T1",
+      "absorbs": ["CatchStatusIndicator", "CatchClockIndicator"],
+      "summary": "Dots, rings, checks and numbers: status lights, plan steps, legend keys.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Marker",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Marker",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks; absorbs the status and clock indicators when its first redesigned consumer lands."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.marker",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.marker"
+      },
+      "system": {
+        "name": "Marker",
+        "states": ["rest", "live"],
+        "slots": [],
+        "props": [
+          {"name": "kind", "tsType": "\"dot\" | \"ring\" | \"check\" | \"number\"", "required": false},
+          {"name": "size", "tsType": "8 | 10 | 12", "required": false},
+          {"name": "tone", "tsType": "\"ink\" | \"muted\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"format\"", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "live", "tsType": "boolean", "required": false},
+          {"name": "value", "tsType": "number", "required": false}
+        ]
+      }
+    },
+    {
+      "id": "catch.rating",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchRating",
+      "status": "planned",
+      "kind": "primitive",
+      "tier": "T2",
+      "aliases": ["CatchStarRating", "CatchStarInput", "CatchRatingSummary"],
+      "summary": "Stars, to give a score or to show one.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Rating",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Rating",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks; absorbs the three web star components."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.rating",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.rating"
+      },
+      "system": {
+        "name": "Rating",
+        "states": ["rest", "pressed"],
+        "slots": [],
+        "props": [
+          {"name": "value", "tsType": "number", "required": false},
+          {"name": "defaultValue", "tsType": "number", "required": false},
+          {"name": "max", "tsType": "number", "required": false},
+          {"name": "onChange", "tsType": "(value: number) => void", "required": false},
+          {"name": "readOnly", "tsType": "boolean", "required": false},
+          {"name": "size", "tsType": "\"md\" | \"sm\"", "required": false},
+          {"name": "label", "tsType": "string", "required": true}
+        ]
+      }
+    },
+    {
+      "id": "catch.calendar",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchCalendar",
+      "status": "planned",
+      "kind": "composite",
+      "tier": "T2",
+      "aliases": ["CatchAdaptivePicker"],
+      "absorbs": ["CatchWheelPickerSheet"],
+      "summary": "A month of days, Monday first, for picking a date past the day strip.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Calendar",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Calendar",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks, inside a Sheet; absorbs the wheel and adaptive pickers."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.calendar",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.calendar"
+      },
+      "system": {
+        "name": "Calendar",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "month", "tsType": "string", "required": true},
+          {"name": "value", "tsType": "string", "required": false},
+          {"name": "defaultValue", "tsType": "string", "required": false},
+          {"name": "onChange", "tsType": "(day: string) => void", "required": false},
+          {"name": "min", "tsType": "string", "required": false},
+          {"name": "marked", "tsType": "string[]", "required": false},
+          {"name": "repeats", "tsType": "string[]", "required": false},
+          {"name": "label", "tsType": "string", "required": true}
+        ]
+      }
+    },
+    {
+      "id": "catch.meter",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchMeter",
+      "status": "planned",
+      "kind": "primitive",
+      "tier": "T2",
+      "absorbs": ["CatchBarIndicator"],
+      "summary": "Progress, caps and steps on a rounded track.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Meter",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Meter",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks; absorbs CatchBarIndicator. catch.distance_ring stays T3."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.meter",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.meter"
+      },
+      "system": {
+        "name": "Meter",
+        "states": ["rest"],
+        "slots": [],
+        "props": [
+          {"name": "value", "tsType": "number", "required": true},
+          {"name": "max", "tsType": "number", "required": false},
+          {"name": "kind", "tsType": "\"progress\" | \"cap\" | \"segments\" | \"stack\"", "required": false},
+          {"name": "parts", "tsType": "Array<{ label: string; value: number; fill?: \"ink\" | \"muted\" | Format | \"indigo\"; }>", "required": false},
+          {"name": "thickness", "tsType": "4 | 6 | 8", "required": false},
+          {"name": "fill", "tsType": "\"ink\" | \"format\" | \"success\" | \"warning\" | \"danger\"", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "label", "tsType": "string", "required": true},
+          {"name": "showLabel", "tsType": "boolean", "required": false},
+          {"name": "limit", "tsType": "number", "required": false}
+        ]
+      }
+    },
+    {
+      "id": "catch.toast",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchToast",
+      "status": "planned",
+      "kind": "composite",
+      "tier": "T1",
+      "aliases": ["CatchNoticeRegion", "Toast", "Snackbar", "NotificationToast"],
+      "summary": "A short note that something happened, with an optional undo.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Toast",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Toast",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Port both frameworks; the web notice region becomes its internals."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.toast",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.toast"
+      },
+      "system": {
+        "name": "Toast",
+        "states": ["rest"],
+        "slots": ["message", "action"],
+        "props": [
+          {"name": "open", "tsType": "boolean", "required": true},
+          {"name": "message", "tsType": "React.ReactNode", "required": true},
+          {"name": "tone", "tsType": "\"neutral\" | \"success\" | \"danger\"", "required": false},
+          {"name": "icon", "tsType": "IconName", "required": false},
+          {"name": "action", "tsType": "{ label: string; onPressed?: () => void; }", "required": false},
+          {"name": "duration", "tsType": "number", "required": false},
+          {"name": "onClose", "tsType": "() => void", "required": false},
+          {"name": "contained", "tsType": "boolean", "required": false}
+        ]
+      }
+    },
+    {
+      "id": "catch.accordion",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+      },
+      "name": "CatchAccordion",
+      "status": "planned",
+      "kind": "composite",
+      "tier": "T2",
+      "absorbs": ["CatchAccordionController", "CatchErrorDetailsAccordion"],
+      "summary": "Questions and answers that open in place.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Accordion",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Accordion",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "The React CatchAccordion exists and is registered as a website T4 today; register it here and port Flutter."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.accordion",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.accordion"
+      },
+      "system": {
+        "name": "Accordion",
+        "states": ["rest", "open"],
+        "slots": [],
+        "props": [
+          {"name": "items", "tsType": "Array<{ title: React.ReactNode; body: React.ReactNode; }>", "required": true},
+          {"name": "multiple", "tsType": "boolean", "required": false},
+          {"name": "defaultOpen", "tsType": "number[]", "required": false},
+          {"name": "size", "tsType": "\"md\" | \"lg\"", "required": false}
+        ]
       }
     }
   ]

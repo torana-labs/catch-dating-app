@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {isPlannedWithoutDart} from "./component_concepts.mjs";
 import {collectProductionWidgetClassificationDeclarations} from "./generate_widget_classification.mjs";
 import {
   componentLevels as levels,
@@ -24,6 +25,7 @@ export const namingBaselinePath = "design/components/widget_naming_baseline.json
 export function buildCatalogRows({declarations, components}) {
   const identities = new Map();
   for (const component of components) {
+    if (isPlannedWithoutDart(component)) continue;
     addIdentity(component.dart?.symbol, component.dart?.file, component);
     for (const member of component.contract?.members ?? []) {
       addIdentity(member.symbol, member.file ?? component.dart?.file, member);

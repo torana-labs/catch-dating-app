@@ -4567,6 +4567,10 @@
       ],
       "role": "finder",
       "impactPaths": [
+        "tool/design/check_component_contracts.test.mjs",
+        "design/components/README.md",
+        "tool/design/lib/system_components.mjs",
+        "design/components/system/**",
         "tool/design/check_host_section_composition.mjs",
         "test/tool/host_section_composition_test.mjs",
         "lib/programs/presentation/program_workspace_screen.dart",
@@ -4616,6 +4620,61 @@
         "node --check tool/design/generate_widget_catalog.mjs",
         "node --test tool/design/generate_widget_catalog.test.mjs",
         "node tool/design/generate_widget_catalog.mjs --check"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
+    },
+    {
+      "id": "design:import-ds-props",
+      "category": "design",
+      "path": "tool/design/import_ds_props.mjs",
+      "impactPaths": [
+        "tool/design/import_ds_props.test.mjs",
+        "tool/design/lib/system_components.mjs",
+        "tool/design/system_components.test.mjs",
+        "design/components/catch.components.json",
+        "design/components/guidelines/**",
+        "design/components/system/**"
+      ],
+      "command": "node tool/design/import_ds_props.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "role": "generator",
+      "description": "Imports the design source's component types into each registry record's system block and copies its guidelines, whose Flutter section comes from the record's dart field. CI has no design source, so --check there compares props, slots and Flutter sections against the committed copies.",
+      "checks": [
+        "node --check tool/design/import_ds_props.mjs",
+        "node --test tool/design/import_ds_props.test.mjs",
+        "node --test tool/design/system_components.test.mjs",
+        "node tool/design/import_ds_props.mjs --check"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
+    },
+    {
+      "id": "design:component-matrix",
+      "category": "design",
+      "path": "tool/design/component_matrix.mjs",
+      "impactPaths": [
+        "tool/design/component_matrix.test.mjs",
+        "tool/design/lib/system_components.mjs",
+        "design/components/catch.components.json",
+        "design/components/component_matrix.md",
+        "packages/web-ui/src/index.ts",
+        "packages/catch_ui/lib/**"
+      ],
+      "command": "node tool/design/component_matrix.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "role": "generator",
+      "description": "Generates the redesign programme's component matrix from the registry and the two frameworks' public barrels: what exists today and what is left to align, port or absorb.",
+      "checks": [
+        "node --check tool/design/component_matrix.mjs",
+        "node --test tool/design/component_matrix.test.mjs",
+        "node tool/design/component_matrix.mjs --check"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -4858,6 +4917,7 @@
         ]
       },
       "impactPaths": [
+        "tool/design/consolidation_gates.test.mjs",
         "design/components/consolidation_gates.json",
         "design/components/catch.components.json",
         "tool/design/check_widgetbook_contract_refs.mjs",
@@ -4936,6 +4996,7 @@
         "node tool/design/check_widgetbook_contract_refs.mjs --check"
       ],
       "impactPaths": [
+        "tool/design/check_widgetbook_contract_refs.test.mjs",
         "widgetbook/lib/**"
       ],
       "role": "finder",
