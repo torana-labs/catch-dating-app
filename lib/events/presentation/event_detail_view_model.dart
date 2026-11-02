@@ -35,6 +35,7 @@ abstract class EventDetailViewModel with _$EventDetailViewModel {
   }) = _EventDetailViewModel;
 }
 
+// provider-graph: high-fan-out:eventDetailViewModelProvider accepted -- The eight dependencies form one Event Detail route projection: auth resolution, event and organizer authority, viewer profile, reviews, saved state, participation, and organizer membership. Their loading and error precedence is intentionally centralized so Event Detail and its map route cannot render inconsistent visibility or viewer actions.
 /// **Pattern D: View-model provider**
 ///
 /// Watches several stream/future providers and combines them into one

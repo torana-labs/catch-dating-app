@@ -1,3 +1,4 @@
+// size-exemption: at the limit before its provider-graph reviews moved here; split before it grows further.
 part of 'host_customers_screen.dart';
 
 class HostSavedAudienceEditorScreen extends ConsumerWidget {
@@ -454,6 +455,7 @@ class _HostSavedAudienceEditorFormState
       final requestId = _audience == null
           ? _pendingCreateRequestId ??= _newSavedAudienceRequestId()
           : _newSavedAudienceRequestId();
+      // provider-graph: ownership-widget-async:_HostSavedAudienceEditorFormState._save:await:hostAudienceControllerProvider.saveAudience watch CAT156 -- Existing bounded review signal at _HostSavedAudienceEditorFormState._save (await:hostAudienceControllerProvider.saveAudience). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final saved = await controller.saveAudience(
         organizerId: widget.organizerId,
         audienceId: _audience?.audienceId,
@@ -474,6 +476,7 @@ class _HostSavedAudienceEditorFormState
         _previewError = null;
       });
       _invalidateAudienceDirectories();
+      // provider-graph: ownership-widget-async:_HostSavedAudienceEditorFormState._save:await:hostAudienceControllerProvider.previewAudience watch CAT156 -- Existing bounded review signal at _HostSavedAudienceEditorFormState._save (await:hostAudienceControllerProvider.previewAudience). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final preview = await controller.previewAudience(
         organizerId: widget.organizerId,
         audience: saved,
@@ -505,6 +508,7 @@ class _HostSavedAudienceEditorFormState
     setState(() => _busy = true);
     try {
       final controller = ref.read(hostAudienceControllerProvider);
+      // provider-graph: ownership-widget-async:_HostSavedAudienceEditorFormState._refreshPreview:await:hostAudienceControllerProvider.refreshAudiencePreview watch CAT156 -- Existing bounded review signal at _HostSavedAudienceEditorFormState._refreshPreview (await:hostAudienceControllerProvider.refreshAudiencePreview). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final preview = await controller.refreshAudiencePreview(
         organizerId: widget.organizerId,
         audience: audience,
@@ -543,6 +547,7 @@ class _HostSavedAudienceEditorFormState
     if (confirmed != true || !mounted) return;
     setState(() => _busy = true);
     try {
+      // provider-graph: ownership-widget-async:_HostSavedAudienceEditorFormState._archive:await:hostAudienceControllerProvider.archiveAudience watch CAT156 -- Existing bounded review signal at _HostSavedAudienceEditorFormState._archive (await:hostAudienceControllerProvider.archiveAudience). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(hostAudienceControllerProvider)
           .archiveAudience(organizerId: widget.organizerId, audience: audience);

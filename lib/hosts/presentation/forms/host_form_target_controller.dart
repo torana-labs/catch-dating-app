@@ -90,8 +90,9 @@ mixin _HostFormEditorTargetMixin on _$HostFormEditorController {
     if (!editorBoundTo(_editorAccountId)) {
       return Future.error(StateError('The form editor account changed.'));
     }
-    return CallableHostOfferEventTargetsGateway(ref.read(firebaseFunctionsProvider))
-        .list(organizerId: organizerId, cursor: cursor);
+    return CallableHostOfferEventTargetsGateway(
+      ref.read(firebaseFunctionsProvider),
+    ).list(organizerId: organizerId, cursor: cursor);
   }
 
   void updateTarget({
@@ -227,14 +228,15 @@ mixin _HostFormEditorTargetMixin on _$HostFormEditorController {
       }
     }
   }
-
 }
 
-typedef HostFormTargetPageLoader = Future<HostOfferEventTargetPage> Function({
-  required String organizerId,
-  String? cursor,
-});
+typedef HostFormTargetPageLoader =
+    Future<HostOfferEventTargetPage> Function({
+      required String organizerId,
+      String? cursor,
+    });
 
+// provider-graph: ownership-listenable:HostFormTargetController:reactive-state planned CAT156 -- HostFormTargetController is a verified existing business-state Listenable owner (the EventPreferencesEditorController entry is the shared abstract base). Migrate its manual loaded/operation/error publication to an immutable generated owner in the bounded CAT156 slice, preserving identity, cancellation, in-flight deduplication and any journal/idempotency guarantees.
 /// Keeps the event picker bound to one manager and organizer. A late page from
 /// a previous account cannot become a selectable target in this controller.
 class HostFormTargetController extends ChangeNotifier {
@@ -264,8 +266,7 @@ class HostFormTargetController extends ChangeNotifier {
   bool get loaded => _loaded;
   bool get loading => _loading;
   bool get canLoadMore => _nextCursor != null && !_loading;
-  bool get isCurrentAccount =>
-      !_disposed && currentAccountId() == accountId;
+  bool get isCurrentAccount => !_disposed && currentAccountId() == accountId;
 
   HostOfferEventTarget? event(String eventId) {
     for (final value in _events) {
@@ -275,8 +276,11 @@ class HostFormTargetController extends ChangeNotifier {
   }
 
   bool bindingUnavailable(String eventId) =>
-      _loaded && !_loading && _error == null &&
-      _nextCursor == null && event(eventId) == null;
+      _loaded &&
+      !_loading &&
+      _error == null &&
+      _nextCursor == null &&
+      event(eventId) == null;
 
   Future<void> refresh() => _fetch(cursor: null);
 
@@ -299,10 +303,7 @@ class HostFormTargetController extends ChangeNotifier {
     }
     notifyListeners();
     try {
-      final page = await loadPage(
-        organizerId: organizerId,
-        cursor: cursor,
-      );
+      final page = await loadPage(organizerId: organizerId, cursor: cursor);
       if (!_accept(generation)) return;
       if (page.nextCursor case final nextCursor?) {
         if (!_seenCursors.add(nextCursor)) {

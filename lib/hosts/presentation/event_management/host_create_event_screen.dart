@@ -211,7 +211,9 @@ class HostCreateEventRouteBody extends ConsumerWidget {
         initialRosterImportPlan: initialRosterImportPlan,
         promptForDraftsOnStart: promptForDrafts,
         readOrganizerDefaults: (organizerId) =>
+            // provider-graph: ownership-repository-construction:HostCreateEventRouteBody.build:construct:ManagerEventSetupDefaultsRepository planned CAT156 -- HostCreateEventRouteBody.build directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences.
             ManagerEventSetupDefaultsRepository(
+              // provider-graph: ownership-widget-backend:HostCreateEventRouteBody.build:read:firebaseFunctionsProvider planned CAT156 -- HostCreateEventRouteBody.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
               ref.read(firebaseFunctionsProvider),
             ).get(organizerId),
         returnToResponsesOnSave: returnToResponsesOnSave,

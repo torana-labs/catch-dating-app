@@ -510,6 +510,7 @@ class _HostPersonConversationPageBodyState
     if (_sending || _sendingImage) return;
     setState(() => _sendingImage = true);
     try {
+      // provider-graph: ownership-widget-async:_HostPersonConversationPageBodyState._sendImage:await:chatControllerProvider.sendImage watch CAT156 -- Existing bounded review signal at _HostPersonConversationPageBodyState._sendImage (await:chatControllerProvider.sendImage). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(chatControllerProvider.notifier)
           .sendImage(matchId: matchId, senderId: uid);

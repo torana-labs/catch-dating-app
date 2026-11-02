@@ -135,6 +135,7 @@ class _ProgramJournalRecoverySheetState
           .read(programOperationsOutboxProvider)
           .exportRecovery(widget.accountId);
       if (!_current) return;
+      // provider-graph: ownership-widget-async:_ProgramJournalRecoverySheetState._export:await:externalShareControllerProvider.shareJsonFile watch CAT156 -- Existing bounded review signal at _ProgramJournalRecoverySheetState._export (await:externalShareControllerProvider.shareJsonFile). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(externalShareControllerProvider)
           .shareJsonFile(

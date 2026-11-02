@@ -96,6 +96,7 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
     final program = widget.programId;
     _accountId = account;
     try {
+      // provider-graph: ownership-widget-async:_PhoneImportScreenState._load:await:phoneImportRouteControllerProvider.open watch CAT156 -- Existing bounded review signal at _PhoneImportScreenState._load (await:phoneImportRouteControllerProvider.open). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final session = await ref
           .read(phoneImportRouteControllerProvider.notifier)
           .open(
@@ -146,6 +147,7 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
     final account = _accountId;
     final program = widget.programId;
     try {
+      // provider-graph: ownership-widget-async:_PhoneImportScreenState._refreshAccess:await:phoneImportRouteControllerProvider.refreshAccess watch CAT156 -- Existing bounded review signal at _PhoneImportScreenState._refreshAccess (await:phoneImportRouteControllerProvider.refreshAccess). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final access = await ref
           .read(phoneImportRouteControllerProvider.notifier)
           .refreshAccess(

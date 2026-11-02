@@ -722,6 +722,7 @@ class _OrganizerMomentEditScreenState
       _validation = null;
     });
     try {
+      // provider-graph: ownership-widget-async:_OrganizerMomentEditScreenState._save:await:organizerMomentsControllerProvider.save watch CAT156 -- Existing bounded review signal at _OrganizerMomentEditScreenState._save (await:organizerMomentsControllerProvider.save). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await ref
           .read(organizerMomentsControllerProvider(widget.scope).notifier)
           .save(

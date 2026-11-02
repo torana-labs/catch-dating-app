@@ -430,6 +430,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
         (needsInvite && _selectedEvent == null)) {
       throw StateError(context.l10n.hostsHostAudienceCompleteCampaign);
     }
+    // provider-graph: ownership-widget-async:_HostCampaignEditorState._saveAndPreview:await:hostAudienceControllerProvider.saveAndPreviewCampaign watch CAT156 -- Existing bounded review signal at _HostCampaignEditorState._saveAndPreview (await:hostAudienceControllerProvider.saveAndPreviewCampaign). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final preview = await ref
         .read(hostAudienceControllerProvider)
         .saveAndPreviewCampaign(
@@ -455,6 +456,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   });
 
   Future<void> _approveCampaign() => _run(() async {
+    // provider-graph: ownership-widget-async:_HostCampaignEditorState._approveCampaign:await:hostAudienceControllerProvider.approveCampaign watch CAT156 -- Existing bounded review signal at _HostCampaignEditorState._approveCampaign (await:hostAudienceControllerProvider.approveCampaign). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final campaign = await ref
         .read(hostAudienceControllerProvider)
         .approveCampaign(
@@ -465,6 +467,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   });
 
   Future<void> _dispatchCampaign() => _run(() async {
+    // provider-graph: ownership-widget-async:_HostCampaignEditorState._dispatchCampaign:await:hostAudienceControllerProvider.dispatchCampaign watch CAT156 -- Existing bounded review signal at _HostCampaignEditorState._dispatchCampaign (await:hostAudienceControllerProvider.dispatchCampaign). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final campaign = await ref
         .read(hostAudienceControllerProvider)
         .dispatchCampaign(
@@ -475,6 +478,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   });
 
   Future<void> _cancelCampaign() => _run(() async {
+    // provider-graph: ownership-widget-async:_HostCampaignEditorState._cancelCampaign:await:hostAudienceControllerProvider.cancelCampaign watch CAT156 -- Existing bounded review signal at _HostCampaignEditorState._cancelCampaign (await:hostAudienceControllerProvider.cancelCampaign). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final campaign = await ref
         .read(hostAudienceControllerProvider)
         .cancelCampaign(organizerId: widget.organizer.id, campaign: _campaign!);
@@ -482,6 +486,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   });
 
   Future<void> _refreshCampaign() => _run(() async {
+    // provider-graph: ownership-widget-async:_HostCampaignEditorState._refreshCampaign:await:hostAudienceControllerProvider.getCampaignReport watch CAT156 -- Existing bounded review signal at _HostCampaignEditorState._refreshCampaign (await:hostAudienceControllerProvider.getCampaignReport). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
     final campaign = await ref
         .read(hostAudienceControllerProvider)
         .getCampaignReport(
@@ -541,6 +546,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
     setState(() => _busy = true);
     widget.onBusyChanged?.call(true);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostCampaignEditorState._run:await:action watch CAT156 -- Existing bounded review signal at _HostCampaignEditorState._run (await:action). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       await action();
     } on Object catch (error) {
       if (mounted) {
