@@ -637,7 +637,7 @@ not-ready prerequisite stops the run; one the probe cannot confirm only warns.
 The backend deploys from an exact `main` commit through `Deploy backend`.
 - **Dev** deploys on every backend-relevant merge.
 - **Prod** deploys automatically after dev succeeds.
-- **Staging** refreshes on the first day of each month at 02:17 UTC.
+- **Staging** deploys only when someone runs the workflow for it.
 
 Each environment's last deployed commit is its newest successful GitHub
 deployment with task `deploy:backend`; see
