@@ -175,6 +175,11 @@ String? architectureRelativePath(String absolutePath) {
   if (RegExp(r'^packages/kernel/lib/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'kernel', owner: 'kernel', layer: 'kernel');
   }
+  // Temporary, with the re-exports left at lib/kernel/ for importers that other
+  // open pull requests hold.
+  if (RegExp(r'^lib/kernel/.+\.dart$').hasMatch(relativePath)) {
+    return (root: 'kernel', owner: 'kernel', layer: 'domain');
+  }
   if (RegExp(r'^lib/platform/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'platform', owner: 'platform', layer: 'platform');
   }
