@@ -65,7 +65,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     ["functions/src/index.ts", [
       "createOrganizer", "followOrganizer", "startOrganizerConversation",
       "adminGetOrganizerDetails", "adminGetOrganizerClaimRequestDetails",
-      "adminListOrganizerClaimRequests", "adminSetOrganizerIndexStatus",
+      "adminSetOrganizerIndexStatus",
     ]],
     ["lib/platform/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],

@@ -27,11 +27,6 @@ export interface AdminOrganizerClaimListRow {
   createdAt: string | null;
 }
 
-export interface AdminListOrganizerClaimRequestsResponse {
-  generatedAt: string;
-  rows: AdminOrganizerClaimListRow[];
-}
-
 export interface AdminGetOrganizerClaimRequestDetailsPayload {
   requestId: string;
 }
@@ -72,28 +67,6 @@ const defaultDeps: OrganizerClaimReviewDeps = {
   now: () => new Date(),
   checkRateLimit: defaultCheckRateLimit,
 };
-
-export async function adminListOrganizerClaimRequestsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerClaimReviewDeps = defaultDeps
-): Promise<AdminListOrganizerClaimRequestsResponse> {
-  const adminContext = requireAdminRole(request, claimReviewRoles);
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(
-    db,
-    adminContext.uid,
-    "adminListOrganizerClaimRequests",
-    {maxRequests: 60, windowMs: 60 * 1000}
-  );
-  const snapshot = await db.collection("organizerClaimRequests")
-    .where("status", "==", "pending")
-    .limit(100)
-    .get();
-  const rows = snapshot.docs
-    .map((doc) => claimListRow(doc.id, doc.data()))
-    .sort((left, right) => compareNullableIso(right.createdAt, left.createdAt));
-  return {generatedAt: deps.now().toISOString(), rows};
-}
 
 export async function adminGetOrganizerClaimRequestDetailsHandler(
   request: CallableRequest<unknown>,
@@ -198,10 +171,6 @@ function claimDetails(
   };
 }
 
-function compareNullableIso(left: string | null, right: string | null): number {
-  return String(left ?? "").localeCompare(String(right ?? ""));
-}
-
 function isoFromTimestamp(value: unknown): string | null {
   if (value instanceof Date && Number.isFinite(value.getTime())) {
     return value.toISOString();
@@ -233,11 +202,6 @@ function stringValue(value: unknown): string | null {
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
-
-export const adminListOrganizerClaimRequests = onCall(
-  appCheckCallableOptions,
-  (request) => adminListOrganizerClaimRequestsHandler(request)
-);
 
 export const adminGetOrganizerClaimRequestDetails = onCall(
   appCheckCallableOptions,

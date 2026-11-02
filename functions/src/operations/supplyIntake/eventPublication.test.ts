@@ -11,8 +11,8 @@ import {FakeFirestore} from "../testFirestore";
 import {adminApproveOrganizerListingHandler} from "../../admin/organizerListingApproval";
 import {
   adminGetListingEventReviewHandler,
-  adminListListingEventImportsHandler,
   adminPublishListingEventsHandler,
+  listingEventImportRow,
 } from "../../admin/listingEventImports";
 import {syncInboxDocument, syncListingEventItems} from "../../admin/inbox/listingEvents";
 import {packagedIntake, runSupplyIntake, type SupplyIntakeRequest} from "./runtime";
@@ -20,8 +20,8 @@ import {publishApprovedListingEvents} from "./eventPublicationTrigger";
 import {packagedEventPublication, publishListingEvents, type EventPublicationPolicy} from "./eventPublication";
 import {adminRefreshOrganizerEventsHandler} from "./organizerEventRefresh";
 import {supplyIntakeCollections} from "./worker";
-import type {AdminListListingEventImportsCallableResponse} from
-  "../../shared/generated/adminListListingEventImportsCallableResponse";
+import type {AdminGetListingEventReviewCallableResponse} from
+  "../../shared/generated/adminGetListingEventReviewCallableResponse";
 import type {AdminPublishListingEventsCallableResponse} from
   "../../shared/generated/adminPublishListingEventsCallableResponse";
 import type {ExternalEventDocument} from
@@ -32,9 +32,9 @@ import {schemaErrorMessages} from
   "../../shared/generated/schemaValidationRuntime";
 import {contractValidator} from "../../shared/contractTestValidators";
 
-const validateAdminListListingEventImportsCallableResponse =
-  contractValidator<AdminListListingEventImportsCallableResponse>(
-    "AdminListListingEventImportsCallableResponse"
+const validateAdminGetListingEventReviewCallableResponse =
+  contractValidator<AdminGetListingEventReviewCallableResponse>(
+    "AdminGetListingEventReviewCallableResponse"
   );
 const validateAdminPublishListingEventsCallableResponse =
   contractValidator<AdminPublishListingEventsCallableResponse>(
@@ -77,6 +77,19 @@ const valid = (validate: ((value: unknown) => boolean) & {errors?: unknown}, val
   assert.equal(validate(value), true, `${label}: ${schemaErrorMessages(validate as never).join("; ")}`);
 
 type EventEdit = (event: Record<string, unknown>) => void;
+
+/** Every approved request's events and where each stands, as the inbox and the review read them. */
+async function approvedImports({db}: {db: FakeFirestore}) {
+  const runtime = await packagedEventPublication();
+  const rows = [];
+  for (const [key, stored] of db.entries()) {
+    if (!key.startsWith(`${supplyIntakeCollections.requests}/`) || !(stored as {approval?: unknown}).approval) continue;
+    const imported = await listingEventImportRow(db as unknown as FirebaseFirestore.Firestore, runtime,
+      key.split("/").at(-1) as string, stored, "admin-1", NOW);
+    if (imported) rows.push(imported.row);
+  }
+  return {rows};
+}
 
 /**
  * A nomination of a public Luma calendar runs through the real Supply Intake
@@ -200,9 +213,10 @@ test("approving a listing publishes its clean, attributed Luma events under the 
   assert.equal(await publishApprovedListingEvents(h.requestId, h.db.read(h.requestPath), h.db.read(h.requestPath),
     h.deps), null);
 
-  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
-  valid(validateAdminListListingEventImportsCallableResponse, list, "AdminListListingEventImportsCallableResponse");
-  assert.equal(list.policy.mode, "auto_publish_approved_organizers");
+  const list = await approvedImports(h);
+  const review = await h.call(adminGetListingEventReviewHandler, {intakeRequestId: h.requestId, eventWorkItemId: h.eventWorkItemIds[0]});
+  valid(validateAdminGetListingEventReviewCallableResponse, review, "AdminGetListingEventReviewCallableResponse");
+  assert.equal(review.policy.mode, "auto_publish_approved_organizers");
   assert.deepEqual(list.rows.map((row) => [row.intakeRequestId, row.organizer.organizerId, row.organizer.appVisibility]),
     [[h.requestId, h.organizerId, "hidden"]]);
   assert.deepEqual(list.rows[0].events.map((event) => [event.state, event.publishedBy]),
@@ -218,8 +232,9 @@ test("an event framed as dating waits for staff, who can publish it", async () =
   assert.ok(results?.every((entry) => entry.blockers.includes("dating_framing")));
   assert.equal(externalEvents(h.db).length, 0, "nothing published without a person");
 
-  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
-  valid(validateAdminListListingEventImportsCallableResponse, list, "AdminListListingEventImportsCallableResponse");
+  const list = await approvedImports(h);
+  valid(validateAdminGetListingEventReviewCallableResponse, await h.call(adminGetListingEventReviewHandler,
+    {intakeRequestId: h.requestId, eventWorkItemId: h.eventWorkItemIds[0]}), "AdminGetListingEventReviewCallableResponse");
   const [row] = list.rows[0].events;
   assert.deepEqual([row.state, row.automatedFindings.map((finding) => finding.match)], ["ready", ["Singles", "Mixer"]],
     "the staff plan is clean; the findings say why the policy left it");
@@ -250,7 +265,7 @@ test("a governed blocker needs a staff resolution, and ended events stay blocked
   }});
   const results = await h.approved();
   assert.ok(results?.every((entry) => entry.outcome === "blocked" && entry.blockers.includes("missing_end_time")));
-  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
+  const list = await approvedImports(h);
   assert.deepEqual(list.rows[0].events.map((event) => [event.state, event.resolvableBlockers]),
     h.eventWorkItemIds.map(() => ["needs_resolution", ["missing_end_time"]]));
   const unresolved = await h.call(adminPublishListingEventsHandler, staffPayload(h.eventWorkItemIds));
@@ -279,7 +294,7 @@ test("a reviewer supplies the map location a page left out; a resolved note alon
     event.address = null;
   }});
   await h.approved();
-  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
+  const list = await approvedImports(h);
   assert.ok(list.rows[0].events.every((event) => event.resolvableBlockers.includes("missing_exact_coordinates")));
   const noted = await h.call(adminPublishListingEventsHandler, staffPayload(h.eventWorkItemIds, {
     idempotencyKey: "staff-publish-0010", blockerResolutions: h.eventWorkItemIds.flatMap((eventWorkItemId) =>
@@ -316,7 +331,7 @@ test("a withdrawn event is never brought back, and an unapproved listing publish
     actor: {kind: "policy"}, executionMode: "apply", idempotencyKey: "auto-publish:rerun"}, h.deps);
   assert.equal(rerun.results[0].outcome, "withdrawn");
   assert.equal(h.db.read(eventPath)?.publicationStatus, "removed");
-  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
+  const list = await approvedImports(h);
   assert.equal(list.rows[0].events[0].state, "withdrawn");
 
   const pending = await harness({approve: false});
@@ -361,23 +376,8 @@ test("a refresh of a listed organizer's calendar runs on completion and publishe
   assert.deepEqual(results?.map((entry) => [entry.outcome, entry.eventId]),
     first.map((entry) => ["already_published", entry.eventId]));
   assert.equal(externalEvents(h.db).length, first.length);
-  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
+  const list = await approvedImports(h);
   assert.deepEqual(list.rows.map((row) => row.intakeRequestId).sort(), [h.requestId, refresh.requestId].sort());
-});
-
-test("imported events page through approved listings, newest approval first", async () => {
-  const h = await harness();
-  const stored = h.db.read(h.requestPath)!;
-  const approval = stored.approval as Record<string, unknown>;
-  h.db.write(`${supplyIntakeCollections.requests}/nom-older-1`, {...stored, requestId: "nom-older-1",
-    approval: {...approval, approvedAt: "2026-10-01T08:00:00.000Z"}});
-  const first = await h.call(adminListListingEventImportsHandler, {limit: 1, cursor: null});
-  assert.deepEqual(first.rows.map((row) => row.intakeRequestId), [h.requestId]);
-  assert.ok(first.nextCursor);
-  const second = await h.call(adminListListingEventImportsHandler, {limit: 1, cursor: first.nextCursor});
-  assert.deepEqual([second.rows.map((row) => row.intakeRequestId), second.nextCursor], [["nom-older-1"], null]);
-  await assert.rejects(h.call(adminListListingEventImportsHandler, {limit: 1, cursor: "bm90LWpzb24"}),
-    /cursor is invalid/);
 });
 
 test("an approved listing's events wait in the inbox, and publishing closes the same item", async () => {
