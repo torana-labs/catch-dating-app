@@ -7,8 +7,7 @@ import {fileURLToPath} from "node:url";
 
 const require = createRequire(import.meta.url);
 
-/** The folder React 18 resolves from. */
-export const react18Root = path.dirname(fileURLToPath(import.meta.url));
+const react18Root = path.dirname(fileURLToPath(import.meta.url));
 /** React 18's package folder. */
 export const reactDir = path.dirname(require.resolve("react/package.json"));
 /** React DOM 18's package folder. */

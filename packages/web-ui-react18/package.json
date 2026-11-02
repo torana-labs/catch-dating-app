@@ -5,8 +5,7 @@
   "description": "React 18, the version the design-system canvas mounts. web-ui's React 18 test project and the design-system artifact check load it in place of the workspace's React 19.",
   "type": "module",
   "exports": {
-    ".": "./index.mjs",
-    "./hooks": "./hooks.mjs"
+    ".": "./index.mjs"
   },
   "dependencies": {
     "react": "18.3.1",
