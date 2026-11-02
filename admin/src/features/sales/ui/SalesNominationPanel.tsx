@@ -54,7 +54,7 @@ function SalesNominationWorkspace({controller, onClose}: {
   return <Panel title="Nominate an organizer" icon={<UserPlus size={18} />}>
     <CatchText as="p" variant="supporting">For an organizer Catch does not list yet. Catch reads
       their links, drafts a listing and finds their upcoming events. Staff review the draft in
-      Organizer Intake; nothing is published before then.</CatchText>
+      the Inbox; nothing is published before then.</CatchText>
     <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
       <CatchField recipe="input" title="Organizer name" maxLength={160}
         value={name} onChanged={setName} />

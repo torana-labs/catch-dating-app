@@ -93,7 +93,7 @@ export function OrganizerDirectoryScreen({
   onOpenOrganizer,
 }: {
   controller: OrganizerDirectoryController;
-  onAddOrganizer: () => void;
+  onAddOrganizer: (() => void) | null;
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   const {filters, views} = controller;
@@ -129,7 +129,7 @@ export function OrganizerDirectoryScreen({
   return (
     <>
       <CatchWorkspaceHeader
-        actions={<CatchButton label="Add an organizer" onPressed={onAddOrganizer} size="sm" />}
+        {...(onAddOrganizer ? {actions: <CatchButton label="Add an organizer" onPressed={onAddOrganizer} size="sm" />} : {})}
         count={controller.total ?? undefined}
         filters={{
           chips: chipsOf(controller),

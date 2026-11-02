@@ -1,25 +1,6 @@
 {
   "components": [
     {
-      "id": "route_intake_workspace",
-      "kind": "route",
-      "owner": "features/intake",
-      "source": "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
-      "exportName": "IntakeWorkspaceScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
-        "exportName": "IntakeWorkspaceRouteStory",
-        "states": [
-          "event-review"
-        ]
-      },
-      "notes": "Tabbed route shell owns event, organizer, and read-only automation composition; previews use deterministic controller fixtures in the route stories."
-    },
-    {
       "id": "route_settings_intake",
       "kind": "route",
       "owner": "features/intake",
@@ -112,11 +93,7 @@
           "organizers"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.badge"
-      ],
-      "comparisonReason": "Publication boundary panel that composes CatchBadge status labels with its own copy and actions; the badge contract owns the labels, not the panel."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_intake_review_workbench",
@@ -146,11 +123,7 @@
           "mobile"
         ]
       },
-      "notes": "Shared full-height intake operations workbench with an integrated segmented stage control and command row, a fixed-height selection action bar, a compact table queue, stable multi-selection, partial-safe bulk actions with visible gates and results, keyboard and mouse parity, retryable loading/error/empty/unavailable states, and a composable collapsible evidence inspector.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Composes CatchText headings and supporting copy inside the intake queue, selection controls and evidence inspector; it is a workbench rather than a text-role atom."
+      "notes": "Shared full-height intake operations workbench with an integrated segmented stage control and command row, a fixed-height selection action bar, a compact table queue, stable multi-selection, partial-safe bulk actions with visible gates and results, keyboard and mouse parity, retryable loading/error/empty/unavailable states, and a composable collapsible evidence inspector."
     },
     {
       "id": "shared_admin_intake_stage_rail",
@@ -256,25 +229,6 @@
         ]
       },
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
-      "id": "workspace_intake_workspace",
-      "kind": "workspace",
-      "owner": "features/intake",
-      "source": "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
-      "exportName": "IntakeWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
-        "exportName": "IntakeWorkspaceStory",
-        "states": [
-          "event-review"
-        ]
-      },
-      "notes": "Prop-driven Intake workspace shell used by the route wrapper and deterministic Storybook previews; live event, organizer, and automation composition stays in IntakeWorkspaceScreen."
     }
   ]
 }

@@ -312,4 +312,3 @@ export interface AdminIntakeWorkbenchDetail {
 export {
   AdminIntakeReviewWorkbench,
 } from "./intakeWorkbench";
-export type {AdminIntakeBulkAction} from "./intakeWorkbench";

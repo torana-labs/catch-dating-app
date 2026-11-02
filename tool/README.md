@@ -950,7 +950,7 @@ node tool/web/check_storybook_visuals.mjs --surface admin --check
 # What CI runs: list changed, missing and stale baselines without failing.
 node tool/web/check_storybook_visuals.mjs --surface admin --report
 # Limit a baseline update/check to task-owned registry entries in a dirty refactor.
-node tool/web/check_storybook_visuals.mjs --surface admin --component workspace_intake_operations --update
+node tool/web/check_storybook_visuals.mjs --surface admin --component route_inbox --update
 ```
 
 Use repeatable `--component <registry-id>` filters to isolate a task-owned

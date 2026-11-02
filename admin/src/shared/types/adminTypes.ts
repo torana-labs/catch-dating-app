@@ -393,7 +393,6 @@ export type AdminSetAdminUserRolesResponse =
 export type AccessApplicationDecision = "approve" | "deny";
 export type OrganizerClaimDecision = "approve" | "reject";
 export type OrganizerIndexDecision = "indexReady" | "noindex";
-export type OrganizerIntakeDecision = "approve_public" | "hold" | "suppress";
 export type OrganizerPolicyGapDecision = "accept" | "hold" | "reject";
 export type OrganizerEntityKind =
   | "club"
@@ -409,11 +408,6 @@ export type OrganizerType =
   | "venue"
   | "brand";
 export type OrganizerAppVisibility = "discoverable" | "hidden";
-export type OrganizerIntakePublishStatus =
-  | "draft"
-  | "published"
-  | "suppressed";
-export type OrganizerIntakeIndexStatus = "noindex" | "indexed";
 export type OrganizerPublishStatus =
   | "draft"
   | "qa"
@@ -430,63 +424,6 @@ export type OrganizerVerificationStatus =
   | "unverified"
   | "sourceBacked"
   | "ownerVerified";
-export type OrganizerCurationOperation =
-  | "attach_surface"
-  | "merge_entity"
-  | "split_surface"
-  | "suppress_entity"
-  | "surface_decision";
-export type OrganizerSurfaceDecision =
-  | "accept_primary"
-  | "accept_secondary"
-  | "reject_wrong_entity"
-  | "mark_ambiguous"
-  | "mark_historical";
-
-export interface OrganizerCurationSurface {
-  surfaceId: string;
-  platform:
-    | "bookMyShow"
-    | "district"
-    | "instagram"
-    | "linkedin"
-    | "luma"
-    | "news"
-    | "officialWebsite"
-    | "partiful"
-    | "sortMyScene"
-    | "userReport"
-    | "other";
-  surfaceKind:
-    | "eventListing"
-    | "eventCalendar"
-    | "organizerProfile"
-    | "personProfile"
-    | "press"
-    | "socialProfile"
-    | "website"
-    | "wrongEntity";
-  url: string | null;
-  normalizedKey: string | null;
-  role: "primary" | "secondary" | "backup" | "historical" | "ambiguous" | "rejected";
-  status: "active" | "candidate" | "ambiguous" | "historical" | "rejected";
-  confidence: {
-    city: "low" | "medium" | "high";
-    entityMatch: "low" | "medium" | "high";
-    ownership: "low" | "medium" | "high";
-  };
-  crawl: {
-    eventDiscoveryStatus: "disabled" | "candidate" | "approved" | "paused";
-    policy: "manualOnly" | "blocked" | "apiPreferred";
-    supportsEventExtraction: boolean;
-  };
-  evidenceRefs: Array<{
-    type: "hostDiscoveryRun" | "seedOrganizer" | "userReportedSearchResult" | "manualNote";
-    ref: string | null;
-    description: string;
-  }>;
-  notes: string;
-}
 
 export type AdminDecideAccessApplicationPayload =
   AdminDecideAccessApplicationCallablePayload;
@@ -608,41 +545,6 @@ export interface AdminSetOrganizerIndexStatusResponse {
   robots: "noindex, follow" | "index, follow";
 }
 
-export interface AdminDecideOrganizerIntakePayload {
-  entityId: string;
-  decision: OrganizerIntakeDecision;
-  publishStatus: OrganizerIntakePublishStatus;
-  indexStatus: OrganizerIntakeIndexStatus;
-  appVisibility: OrganizerAppVisibility;
-  checklist: {
-    identityReviewed: boolean;
-    surfaceInventoryReviewed: boolean;
-    ownerSafeCopyReviewed: boolean;
-    marketScopeReviewed: boolean;
-    mediaRightsReviewed: boolean;
-    crawlDisabledReviewed: boolean;
-    manualReportsReviewed?: boolean;
-    claimTargetReviewed?: boolean;
-    takedownPathReviewed?: boolean;
-    impersonationReviewed?: boolean;
-    operatingStatusReviewed?: boolean;
-    eventAccuracyReviewed?: boolean;
-    unclaimedAffordancesReviewed?: boolean;
-  };
-  note: string;
-}
-
-export interface AdminDecideOrganizerIntakeResponse {
-  entityId: string;
-  decision: OrganizerIntakeDecision;
-  decisionStatus: "approved_public" | "held" | "suppressed";
-  publishStatus: OrganizerIntakePublishStatus;
-  indexStatus: OrganizerIntakeIndexStatus;
-  appVisibility: OrganizerAppVisibility;
-  decisionPath: string;
-  projectionState: "pending_static_generation" | "not_projectable";
-}
-
 export interface AdminDecideOrganizerPolicyGapPayload {
   gapId: string;
   decision: OrganizerPolicyGapDecision;
@@ -664,33 +566,6 @@ export interface AdminDecideOrganizerPolicyGapResponse {
   decisionPath: string;
   operationalState: "blocked_until_policy_encoded" | "not_approved";
 }
-
-export interface AdminRecordOrganizerCurationPayload {
-  operationId?: string;
-  operationType: OrganizerCurationOperation;
-  entityId?: string;
-  sourceEntityId?: string;
-  targetEntityId?: string;
-  surfaceId?: string;
-  newEntityId?: string;
-  sourceCandidateId?: string;
-  decision?: OrganizerSurfaceDecision;
-  surface?: OrganizerCurationSurface;
-  reason: string;
-}
-
-export interface AdminRecordOrganizerCurationResponse {
-  operationId: string;
-  operationType: OrganizerCurationOperation;
-  operationStatus: "active" | "superseded";
-  decisionPath: string;
-}
-
-export type AdminCreateOrganizerDraftFromCandidatePayload =
-  AdminCreateOrganizerDraftFromCandidateCallablePayload;
-
-export type AdminCreateOrganizerDraftFromCandidateResponse =
-  AdminCreateOrganizerDraftFromCandidateCallableResponse;
 
 export interface AdminOrganizerDetails {
   organizerId: string;
@@ -1464,10 +1339,6 @@ export interface AdminGetMarketingOpsDashboardResponse {
   bridge: MarketingOpsBridge;
 }
 
-export type EventIntakeSourceProfile = MarketingSourceProfile;
-export type EventIntakeSourceResult = MarketingSourceResult;
-export type EventIntakeCandidate = MarketingEventCandidate;
-
 export type EventIntakeBridge = Pick<
   MarketingOpsBridge,
   | "schemaVersion"
@@ -1506,45 +1377,6 @@ export interface AdminCreateMarketingContentDraftResponse {
   dashboardPath: string;
 }
 
-export type EventIntakeTargetType =
-  | "source_profile"
-  | "query_template"
-  | "run_plan"
-  | "source_result"
-  | "event_candidate";
-
-export type EventIntakeDecision =
-  | "approve"
-  | "needs_changes"
-  | "hold"
-  | "reject";
-
-export interface AdminRecordEventIntakeReviewDecisionPayload {
-  targetType: EventIntakeTargetType;
-  targetId: string;
-  decision: EventIntakeDecision;
-  runId?: string | null;
-  note: string;
-  edits?: Record<string, unknown>;
-  checklist: {
-    sourceReviewed: boolean;
-    dateReviewed: boolean;
-    venueReviewed: boolean;
-    copyReviewed: boolean;
-    rightsReviewed: boolean;
-    noCatchHostingImplied: boolean;
-  };
-}
-
-export interface AdminRecordEventIntakeReviewDecisionResponse {
-  decisionId: string;
-  targetType: EventIntakeTargetType;
-  targetId: string;
-  decision: EventIntakeDecision;
-  decisionStatus: "approved" | "needs_changes" | "held" | "rejected";
-  decisionPath: string;
-}
-
 export type AdminRecordMarketingReviewDecisionPayload =
   AdminRecordMarketingReviewDecisionCallablePayload;
 
@@ -1570,10 +1402,6 @@ import type {AdminAssignSafetyTriageItemCallableResponse} from
   "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse";
 import type {AdminCreateMarketingContentDraftCallablePayload} from
   "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload";
-import type {AdminCreateOrganizerDraftFromCandidateCallablePayload} from
-  "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload";
-import type {AdminCreateOrganizerDraftFromCandidateCallableResponse} from
-  "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse";
 import type {AdminRecordMarketingReviewDecisionCallablePayload} from
   "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload";
 import type {AdminRecordMarketingReviewDecisionCallableResponse} from
