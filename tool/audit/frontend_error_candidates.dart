@@ -467,7 +467,7 @@ Future<void> swallow() async {
     if (_scan(defaultRoots('${temp.path}/')).isEmpty) {
       throw StateError('Default roots must include app packages.');
     }
-    appFixture.parent.parent.parent.parent.parent.deleteSync(recursive: true);
+    Directory('${temp.path}/apps').deleteSync(recursive: true);
 
     final fixtureFile = File('${temp.path}/lib/bad.dart');
     fixtureFile.parent.createSync(recursive: true);
