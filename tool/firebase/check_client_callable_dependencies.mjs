@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import {setTimeout as sleep} from "node:timers/promises";
 import {fileURLToPath} from "node:url";
 import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 import {
@@ -196,19 +197,38 @@ export function validateClientCallableDependencies({
   return matching;
 }
 
+/**
+ * A check can open a hundred connections at once, and one dropping says nothing
+ * about the Function. Any response at all is left for the caller to judge.
+ */
+async function fetchRetryingDroppedConnections(fetchImpl, url, options, wait) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await fetchImpl(url, options);
+    } catch (error) {
+      if (attempt === 3) {
+        const cause = error.cause?.code ?? error.cause?.message;
+        throw new Error(`${error.message}${cause ? ` (${cause})` : ""} after 3 attempts`);
+      }
+      await wait();
+    }
+  }
+}
+
 export async function probeCallable({
   projectId,
   region,
   callable,
   fetchImpl = fetch,
+  wait = () => sleep(2_000),
 }) {
   const url = `https://${region}-${projectId}.cloudfunctions.net/${callable}`;
-  const response = await fetchImpl(url, {
+  const response = await fetchRetryingDroppedConnections(fetchImpl, url, {
     method: "POST",
     redirect: "manual",
     headers: {"content-type": "application/json"},
     body: JSON.stringify({data: {}}),
-  });
+  }, wait);
   if (response.status >= 300 && response.status < 400) {
     throw new Error(`${callable} returned an unexpected redirect.`);
   }
