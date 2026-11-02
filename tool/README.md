@@ -390,7 +390,8 @@ The drift helper parses the machine analyzer diagnostic-code field; it must not
 count `catch_*` text from filenames, symbol names, or diagnostic messages.
 
 `bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup gate:
-any candidate in its eight regex-only categories fails. Promoted categories
+any candidate in its eight regex-only categories fails, and it refuses to run
+without `rg`, because a missing `rg` would read as a clean tree. Promoted categories
 are analyzer rules with seeded fixture parity, and every Catch analyzer
 diagnostic must remain at zero.
 

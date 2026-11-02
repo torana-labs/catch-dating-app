@@ -37,6 +37,19 @@ test("the actual scan reads both app packages", (t) => {
   assert.equal(counts.literal_sized_box_spacing_candidates, 1);
 });
 
+test("a missing rg fails the scan instead of reading as a clean tree", (t) => {
+  const noTools = fs.mkdtempSync(path.join(os.tmpdir(), "catch-widget-cleanup-path-"));
+  t.after(() => fs.rmSync(noTools, {recursive: true, force: true}));
+  const script = fileURLToPath(new URL("../widget_cleanup_scan.sh", import.meta.url));
+
+  for (const mode of ["--check", "--summary"]) {
+    const scan = spawnSync("/bin/bash", [script, mode], {env: {PATH: noTools}, encoding: "utf8"});
+    assert.equal(scan.status, 127, mode);
+    assert.match(scan.stderr, /needs ripgrep/u);
+    assert.equal(scan.stdout, "", mode);
+  }
+});
+
 test("parses live widget cleanup summary categories", () => {
   assert.deepEqual(parseWidgetCleanupSummary(`
 Widget cleanup candidate scan summary

@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Every scan reads rg's failure as "no matches", so a missing rg would pass the
+# gate on an unread tree.
+if ! command -v rg >/dev/null 2>&1; then
+  echo "tool/widget_cleanup_scan.sh needs ripgrep (rg) on PATH; nothing was scanned." >&2
+  exit 127
+fi
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 cd "$repo_root"
