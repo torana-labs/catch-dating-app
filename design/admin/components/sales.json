@@ -138,7 +138,7 @@
     },
     {
       "id": "workspace_sales_host_commercial",
-      "kind": "feature-component",
+      "kind": "workspace",
       "owner": "features/sales",
       "source": "admin/src/features/sales/ui/SalesHostCommercialWorkspace.tsx",
       "exportName": "SalesHostCommercialWorkspace",
@@ -209,13 +209,11 @@
       "preview": {
         "status": "planned",
         "states": [
-          "contacts",
-          "evidence",
-          "suppression",
+          "next-steps",
           "draft-blocked"
         ]
       },
-      "notes": "Private contact and evidence views with explicit account/contact restriction decisions and draft readiness boundary."
+      "notes": "The older host page's next steps and draft readiness boundary, until those go."
     }
   ]
 }
