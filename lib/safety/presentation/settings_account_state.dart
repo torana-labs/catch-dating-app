@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+// ignore: catch_ui_lints/catch_arch_provider_free_boundary -- reads a value type the safety repository declares; no repository call happens here
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:country_code_picker/country_code_picker.dart';
