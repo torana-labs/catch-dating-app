@@ -1,6 +1,7 @@
 import {
   CatchBadge,
   CatchField,
+  CatchFilePickerButton,
   CatchGap,
 } from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
@@ -40,7 +41,6 @@ import {
   AdminMarketingExportStatus,
   AdminMarketingFeatureShotCard,
   AdminMarketingFeatureShotGrid,
-  AdminMarketingFilePickerButton,
   AdminMarketingGuideLayout,
   AdminMarketingHelpText,
   AdminMarketingImageControls,
@@ -1291,9 +1291,7 @@ export const AdminMarketingImageEditorStory: Story = {
           <CatchBadge label="Draft" />
         </AdminMarketingImageEditorHeader>
         <AdminMarketingImageControls>
-          <AdminMarketingFilePickerButton icon={<Upload size={16} />} inputLabel="Upload marketing image">
-            Upload image
-          </AdminMarketingFilePickerButton>
+          <CatchFilePickerButton label="Upload image" leading={<Upload size={16} />} onChanged={() => undefined} />
           <AdminButton>Regenerate alt text</AdminButton>
         </AdminMarketingImageControls>
         <AdminMarketingImageReviewRow>
@@ -1336,28 +1334,9 @@ export const AdminMarketingImageControlsStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingImageControls>
-        <AdminMarketingFilePickerButton icon={<Upload size={16} />} inputLabel="Upload image">
-          Upload
-        </AdminMarketingFilePickerButton>
+        <CatchFilePickerButton label="Upload" leading={<Upload size={16} />} onChanged={() => undefined} semanticsLabel="Upload image" />
         <AdminButton icon={<Sparkles size={16} />}>Polish</AdminButton>
       </AdminMarketingImageControls>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingFilePickerButtonStory: Story = {
-  name: "Marketing file picker",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_file_picker_button",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingFilePickerButton icon={<Upload size={16} />} inputLabel="Upload image">
-        Upload image
-      </AdminMarketingFilePickerButton>
     </AdminWorkspace>
   ),
 };

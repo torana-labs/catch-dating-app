@@ -770,19 +770,19 @@ const componentFamilies = [
     sourcePatterns: [
       {
         pattern:
-          /["'`][^"'`]*(?<![-\w])(?:marketing-image-editor|marketing-image-editor-header|marketing-image-controls|marketing-file-button|marketing-image-review-row|marketing-image-thumb|marketing-image-meta-fields|marketing-image-source-note|marketing-image-empty|feature-drop-capture-thumb)(?![-\w])[^"'`]*["'`]/gu,
+          /["'`][^"'`]*(?<![-\w])(?:marketing-image-editor|marketing-image-editor-header|marketing-image-controls|marketing-image-review-row|marketing-image-thumb|marketing-image-meta-fields|marketing-image-source-note|marketing-image-empty|feature-drop-capture-thumb)(?![-\w])[^"'`]*["'`]/gu,
         description: "raw admin marketing image editor class string",
       },
     ],
     jsxPatterns: [
       {
         pattern:
-          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:marketing-image-editor|marketing-image-editor-header|marketing-image-controls|marketing-file-button|marketing-image-review-row|marketing-image-thumb|marketing-image-meta-fields|marketing-image-source-note|marketing-image-empty|feature-drop-capture-thumb)(?![-\w])[^"'`]*["'`]\}?/gu,
+          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:marketing-image-editor|marketing-image-editor-header|marketing-image-controls|marketing-image-review-row|marketing-image-thumb|marketing-image-meta-fields|marketing-image-source-note|marketing-image-empty|feature-drop-capture-thumb)(?![-\w])[^"'`]*["'`]\}?/gu,
         description: "raw admin marketing image editor class",
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminMarketingImageEditor, AdminMarketingImageEditorHeader, AdminMarketingImageControls, AdminMarketingFilePickerButton, AdminMarketingImageReviewRow, AdminMarketingImageThumb, AdminFeatureDropCaptureThumb, AdminMarketingImageMetaFields, AdminMarketingImageSourceNote, and AdminMarketingImageEmpty instead of passing raw admin marketing image editor classes from feature code.",
+    guidance: "Use AdminMarketingImageEditor, AdminMarketingImageEditorHeader, AdminMarketingImageControls, CatchFilePickerButton, AdminMarketingImageReviewRow, AdminMarketingImageThumb, AdminFeatureDropCaptureThumb, AdminMarketingImageMetaFields, AdminMarketingImageSourceNote, and AdminMarketingImageEmpty instead of passing raw admin marketing image editor classes from feature code.",
   },
   {
     family: "admin-guardrail-list",

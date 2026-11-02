@@ -1,5 +1,5 @@
-import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
-import {type ChangeEvent, useCallback, useEffect, useState} from "react";
+import {CatchBadge, CatchField, CatchText, CatchFilePickerButton} from "@catch/web-ui";
+import {useCallback, useEffect, useState} from "react";
 import {
   CheckCircle2,
   Download,
@@ -26,7 +26,6 @@ import {
   AdminMarketingAuditList,
   AdminMarketingAuditRow,
   AdminMarketingExportStatus,
-  AdminMarketingFilePickerButton,
   AdminMarketingHelpText,
   AdminMarketingImageControls,
   AdminMarketingImageEditor,
@@ -580,11 +579,7 @@ function MarketingSlideImageEditor({
     });
   }, [appCaptures, onChange]);
 
-  const handleUpload = useCallback(async (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0] ?? null;
-    event.target.value = "";
+  const handleUpload = useCallback(async (file: File | null) => {
     if (!file) return;
     const dataUrl = await marketingPreviewPanels.readImageFileAsDataUrl(file);
     onChange({
@@ -627,14 +622,13 @@ function MarketingSlideImageEditor({
           ])}
           value={selectedCapture?.id ?? ""}
         />
-        <AdminMarketingFilePickerButton
+        <CatchFilePickerButton
           accept="image/*"
-          icon={<ImagePlus size={15} strokeWidth={1.9} />}
-          inputLabel={`Choose image for ${slideId}`}
-          onChange={(event) => void handleUpload(event)}
-        >
-          Choose image
-        </AdminMarketingFilePickerButton>
+          label="Choose image"
+          leading={<ImagePlus size={15} strokeWidth={1.9} />}
+          onChanged={(file) => void handleUpload(file)}
+          semanticsLabel={`Choose image for ${slideId}`}
+        />
         <CatchField
           recipe="input"
           title="Image URL"
