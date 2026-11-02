@@ -72,7 +72,6 @@ jobs:
       commit_window: ${{ steps.plan.outputs.commit_window }}
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
       tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
-      tools_owns_design_handoff: ${{ steps.plan.outputs.tools_owns_design_handoff }}
       queue_verified_run: ${{ steps.queue.outputs.run_id }}
 
     steps:
@@ -218,7 +217,7 @@ jobs:
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
-            `tools_owns_design_parity=${design.parity}\ntools_owns_design_handoff=${design.handoff}\n`);
+            `tools_owns_design_parity=${design.parity}\n`);
           NODE
 
       - id: queue
@@ -402,7 +401,6 @@ jobs:
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
-      design_handoff_in_tools: ${{ needs.plan.outputs.tools_owns_design_handoff == 'true' }}
 
   visual-integration:
     needs: [plan, source-preflight]

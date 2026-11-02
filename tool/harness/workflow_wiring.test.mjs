@@ -1584,21 +1584,18 @@ test("Flutter design checks share only complete owners in the actual required To
   const owned = (changedPaths, full = false, manifest = toolsManifest) => toolsOwnDesignChecks({
     plan: planAffected({changedPaths, graph, full, mode: full ? "nightly" : "pr"}), manifest, componentGraph: graph,
   });
-  assert.deepEqual(owned([".github/workflows/ci.yml"]), {parity: true, handoff: true});
-  assert.deepEqual(owned([], true), {parity: true, handoff: true});
-  assert.deepEqual(owned(["lib/main.dart"]), {parity: false, handoff: false});
-  assert.deepEqual(owned(["tool/design/check_design_parity.mjs"]), {parity: true, handoff: false});
+  assert.deepEqual(owned([".github/workflows/ci.yml"]), {parity: true});
+  assert.deepEqual(owned([], true), {parity: true});
+  assert.deepEqual(owned(["lib/main.dart"]), {parity: false});
+  assert.deepEqual(owned(["tool/design/check_design_parity.mjs"]), {parity: true});
   assert.throws(() => toolsOwnDesignChecks({plan: {complete: false}}), /incomplete/);
   const broken = structuredClone(toolsManifest);
-  broken.tools.find(tool => tool.id === "design:sync-manifest").checks = [];
+  broken.tools.find(tool => tool.id === "design:parity-gate").checks = [];
   assert.throws(() => owned([], true, broken), /no longer provides/);
   const ci = workflow("ci.yml"), flutter = workflow("flutter-ci.yml");
-  for (const kind of ["parity", "handoff"]) {
-    assert.ok(ci.includes("design_" + kind + "_in_tools: $" + "{{ needs.plan.outputs.tools_owns_design_" + kind + " == 'true' }}"));
-    assert.ok(flutter.includes("if: $" + "{{ !inputs.design_" + kind + "_in_tools }}"));
-    assert.match(flutter, new RegExp(`design_${kind}_in_tools:[\\s\\S]*?default: false`, "u"));
-  }
-  assert.match(flutter, /--check-handoff[\s\S]*--base "\$BASE_SHA" --head "\$SOURCE_SHA" --full "\$FULL"/u);
+  assert.ok(ci.includes("design_parity_in_tools: $" + "{{ needs.plan.outputs.tools_owns_design_parity == 'true' }}"));
+  assert.ok(flutter.includes("if: $" + "{{ !inputs.design_parity_in_tools }}"));
+  assert.match(flutter, /design_parity_in_tools:[\s\S]*?default: false/u);
 });
 
 

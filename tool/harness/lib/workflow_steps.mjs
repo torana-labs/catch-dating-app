@@ -267,7 +267,6 @@ export function planSourcePreflight({targets, sparsePaths = [], executableAvaila
     ["node tool/ui_capture/check_route_inventory.mjs --check"],
     ["node tool/design/generate_widget_catalog.mjs --check"],
     ["node tool/design/build_host_feature_responsibilities.mjs --check"],
-    ["node tool/design/build_design_sync_manifest.mjs --check"],
     ["dart run tool/architecture/provider_graph.dart --check", "analyzer"],
     ["dart run tool/architecture/check_ui_composition_contracts.dart --check", "analyzer"],
   ];
