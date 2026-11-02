@@ -3,14 +3,15 @@ import fs from "node:fs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {readDesignRegistry} from "../lib/admin_registries.mjs";
 import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
-import {reactSymbolFiles} from "./component_concepts.mjs";
+import {isPlannedWithoutDart, reactSymbolFiles} from "./component_concepts.mjs";
 
 const knownBad = process.argv.includes("--known-bad");
 const knownBadWebsite = process.argv.includes("--known-bad-website");
 const knownBadAdapter = process.argv.includes("--known-bad-adapter");
 const knownBadApi = process.argv.includes("--known-bad-api");
+const knownBadActiveWithoutDart = process.argv.includes("--known-bad-active-without-dart");
 const surfacesOnly = process.argv.includes("--surfaces-only");
-const allowedArgs = new Set(["--known-bad", "--known-bad-website", "--known-bad-adapter", "--known-bad-api", "--surfaces-only"]);
+const allowedArgs = new Set(["--known-bad", "--known-bad-website", "--known-bad-adapter", "--known-bad-api", "--known-bad-active-without-dart", "--surfaces-only"]);
 if (process.argv.slice(2).some((arg) => !allowedArgs.has(arg)) ||
     (surfacesOnly && knownBadApi)) {
   console.error("Use --surfaces-only for the Node-only cross-stack symbol check; API probes require the full default check.");
@@ -36,11 +37,16 @@ if (knownBad) {
   component.react = {...component.react, symbol: "__KnownMissingReactSymbol__"};
 }
 
+if (knownBadActiveWithoutDart) {
+  const component = registry.components.find((entry) => entry.status === "active");
+  delete component.dart;
+}
+
 const declarationCache = new Map();
 const barrelExports = typeScriptExports(webUiBarrel);
 let reactLinks = 0;
 for (const component of registry.components ?? []) {
-  if (!dartClasses(component.dart?.file).has(component.dart?.symbol)) {
+  if (!isPlannedWithoutDart(component) && !dartClasses(component.dart?.file).has(component.dart?.symbol)) {
     failures.push(`${component.id}: dart.symbol '${component.dart?.symbol}' is not declared in ${component.dart?.file}`);
   }
   const react = component.react;

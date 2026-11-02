@@ -5,14 +5,17 @@ import Ajv2020 from "ajv/dist/2020.js";
 import {isComponentSourcePath} from "./lib/component_source_path.mjs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {
+  componentAbsorptionProblems,
   componentAliasProblems,
   componentTierProblems,
   conceptMetrics,
   conceptQualifiers,
   conceptRoles,
   conceptTopologyProblems,
+  isPlannedWithoutDart,
   roleNounRedirectProblems,
 } from "./component_concepts.mjs";
+import {declaredSystemNames, systemBlockProblems, systemTypesPath} from "./lib/system_components.mjs";
 
 import {checkHostSectionComposition} from './check_host_section_composition.mjs';
 
@@ -36,6 +39,11 @@ validateComponents(registry.components ?? []);
 failures.push(...conceptTopologyProblems(registry.components ?? []));
 failures.push(...componentTierProblems(registry.components ?? []));
 failures.push(...componentAliasProblems(registry.components ?? []));
+failures.push(...componentAbsorptionProblems(registry.components ?? []));
+failures.push(...systemBlockProblems({
+  components: registry.components ?? [],
+  declaredNames: declaredSystemNames(fs.readFileSync(fromRepo(systemTypesPath), "utf8")),
+}));
 failures.push(...roleNounRedirectProblems(registry.roleNounRedirects));
 failures.push(...checkHostSectionComposition(repoRoot));
 
@@ -163,6 +171,7 @@ function validateComponents(components) {
 }
 
 function validateDart(component, label) {
+  if (isPlannedWithoutDart(component)) return;
   const dart = component.dart;
   if (!dart?.file || !dart?.symbol) {
     failures.push(`${label}: dart.file and dart.symbol are required`);

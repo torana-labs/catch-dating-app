@@ -5,6 +5,7 @@ import {fileURLToPath} from "node:url";
 
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {buildLintEnforcementOutputs} from "./build_lint_enforcement_tables.mjs";
+import {isPlannedWithoutDart} from "./component_concepts.mjs";
 
 const isCli = process.argv[1] &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -43,6 +44,8 @@ export function checkComponentEnforcementCoverage({
           `${component.id}: unsupported verification vehicle ${component.verification.vehicle}`,
         );
       }
+      // The Widgetbook contract arrives with the planned component's first code.
+      if (isPlannedWithoutDart(component)) continue;
       const symbol = component.dart?.symbol;
       if (!symbol || !widgetbookNames.has(symbol)) {
         failures.push(

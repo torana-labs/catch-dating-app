@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {isPlannedWithoutDart} from "./component_concepts.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
@@ -236,7 +237,8 @@ export function validatePrimitiveContractUseCases(componentRegistry, primitiveCo
 function collectComponentContractEntries(componentRegistry) {
   const entries = [];
   for (const component of componentRegistry.components ?? []) {
-    const requiresPrimitiveContractPreview = component.kind !== "screen-contract";
+    const requiresPrimitiveContractPreview = component.kind !== "screen-contract" &&
+      !isPlannedWithoutDart(component);
     entries.push({
       id: component.id,
       symbol: component.dart?.symbol,
