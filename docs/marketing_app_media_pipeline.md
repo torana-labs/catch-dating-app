@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.13.1
+version: 1.14.1
 updated: 2026-11-02
 owner: marketing_website
 status: active
@@ -115,14 +115,27 @@ index hash only when it renders a web capture.
 
 ## CI Behavior
 
-`tool/tools_manifest.json` registers `marketing:app-media-sync`, so
-`node tool/run.mjs check` runs the marketing media check with the rest of tool
-CI. Pending captures pass only if their placeholders exist and the generated
+Capture provenance is checked where images get published, not on app pull
+requests. App source changes all the time, so the images tracked in Git are
+expected to be behind it and `--check` fails on them. Tool CI checks the
+authored manifest, the catalog mapping and the design context, which need no
+images. App changes select no capture job in CI: the `captures` job in
+`marketing-website.yml` produces them for that commit before anything is
+published. Website, capture-tool and capture-image changes, and full runs such
+as nightly, still select the producer in CI, because the website build imports
+its images and the preview release reads that binding.
+
+`node tool/marketing/export_app_screenshots.mjs --check` and
+`node tool/marketing/sync_website_media.mjs --check` run in the producer, after
+any rendering. Pending captures pass only if their placeholders exist and the generated
 website manifest is current. Active captures fail if the source image is missing, is not a framed
 1020×1964 iPhone 17 Pro PNG, lacks canonical render provenance, has changed
 image bytes or capture inputs, or differs from its website copy. The generated
 website manifest must also be current. Both sync commands run the exporter
-check before copying or accepting any active image.
+check before copying or accepting any active image. Every consumer that
+publishes imports through `import_hosted_captures.mjs --import`, which applies
+the same per-image check to the bundle and refuses images whose capture inputs
+changed.
 
 The exporter embeds one `caPt` ancillary chunk in each framed PNG. For app
 captures it records
@@ -155,15 +168,10 @@ The nightly run always renders everything, which re-checks the macOS font
 that a Linux reuse cannot see. Both producers publish the same bundle and
 binding; neither trusts the plan, and both verify every seed as they verify a
 committed PNG. Required Marketing validation imports its
-immutable artifact before dependency setup, checks and builds. Tools derives
-capture need from selected executable checks, shares the caller's bundle when
-provided, and otherwise starts one producer. Only the affected consumer or the
-full marketing/design bucket imports images; other buckets retain their
-ordinary checks. After importing, Tools verifies every current output byte
-against the bound archive before and after its check run and reuses only the
-three exact freshness commands already owned by the producer. Syntax, unit,
-framing and authored semantic checks still run. Missing or invalid bindings fail before a build; old tracked
-images cannot substitute for a missing artifact.
+immutable artifact before dependency setup, checks and builds. Tools imports
+nothing and starts no producer; any website build or Storybook check it runs
+uses the tracked images. Missing or invalid bindings fail a marketing build or
+release before it starts; old tracked images cannot substitute for a missing artifact.
 
 The importer checks the artifact ID, digest, repository, canonical workflow,
 source/controller commits, run and current attempt, then the bounded ZIP,

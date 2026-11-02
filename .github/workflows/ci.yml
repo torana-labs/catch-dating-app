@@ -349,12 +349,11 @@ jobs:
           retention-days: 7
 
   tools:
-    needs: [plan, source-preflight, capture-freshness]
+    needs: [plan, source-preflight]
     if: >-
       ${{ !cancelled() && needs.source-preflight.result == 'success' &&
           needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
-          needs.plan.outputs.tools == 'true' && !needs.plan.outputs.queue_verified_run &&
-          (needs.capture-freshness.result == 'success' || needs.capture-freshness.result == 'skipped') }}
+          needs.plan.outputs.tools == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/tools-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
@@ -362,7 +361,6 @@ jobs:
       full: ${{ needs.plan.outputs.full == 'true' }}
       commit_window: ${{ needs.plan.outputs.commit_window == 'true' }}
       marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
-      capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
 
   contracts:
     needs: [plan, source-preflight]
