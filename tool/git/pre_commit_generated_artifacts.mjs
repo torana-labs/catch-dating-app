@@ -16,10 +16,6 @@ export function planPreCommitActions({graph, stagedPaths}) {
       generator.id === "contracts.schema-projections" &&
       paths.some((candidate) => pathIsWithin(candidate, "contracts"))
     ) return true;
-    if (
-      generator.id === "admin.callable-validators" &&
-      paths.some((candidate) => pathIsWithin(candidate, "contracts/callables"))
-    ) return true;
     return paths.some((candidate) => matchesGeneratorPath(candidate, generator));
   });
   const l10n = generators.find((generator) => generator.id === "flutter.l10n");

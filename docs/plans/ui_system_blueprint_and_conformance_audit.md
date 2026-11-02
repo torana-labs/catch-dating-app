@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.3
-updated: 2026-10-31
+version: 1.30.6
+updated: 2026-11-02
 owner: app_architecture
 status: active
 ---
@@ -225,7 +225,7 @@ kept low by pushing invariants into structure (packages, types) instead of
 checks.
 
 **Catch today.** The probe discipline is exemplary (seeded lint corpus,
-bidirectional enforcement-coverage gate, enforcement-integrity meta-gate) —
+bidirectional enforcement-coverage gate, tool manifest validation) —
 better than most industry teams. But the estate is large (293 checks, 90
 rules) partly *because* P1 is unsolved: import-boundary, provider-seam, and
 layer-placement rules exist as scanners only because the compiler was never
@@ -548,18 +548,17 @@ A migration slice is complete only when all five hold:
 5. **Catalog moves with code.** Widgetbook cases, goldens, and registry
    entries for touched shared components update in the same PR.
 
-`pattern_adoption.json` remains for pattern bookkeeping, but an `aligned`
-claim must name its machine check or carry an explicit `manual-review` line
-with reviewer and date. Every `*_baseline.json` in the repo gains an owner and
+A claim that code conforms to a pattern must name its machine check or carry an
+explicit `manual-review` line with reviewer and date. Every `*_baseline.json` in the repo gains an owner and
 target-zero phase reference; a baseline without one is drift
-(enforcement-integrity gate extension).
+(checked by `meta:repository-root-hygiene`).
 
 ### D8. The check estate shrinks after extraction
 
 After Phase 3, every boundary invariant now expressed by package graphs
 (riverpod/firebase/feature imports in the design system, token-definition
-placement) has its scanner/lint retired via the existing enforcement-integrity
-workflow (rule, manifest, owner-doc anchor, and probe removed together).
+placement) has its scanner/lint retired with its manifest entry and rule text removed
+together.
 Target: net negative check count for this program. New checks added: golden
 coverage, source-size ratchet, naming grammar, catalog generation drift —
 four in, more than four out.
@@ -1011,7 +1010,9 @@ Scope:
    comparator reused from `test/goldens`.
 3. Whole-corpus coverage gate `design:golden-coverage` (public `Catch*`
    classes in `core/widgets` vs golden ids; waiver rows carry owner + expiry),
-   registered in the tool manifest and the visual-integration lane.
+   registered in the tool manifest and the visual-integration lane. Retired in
+   November 2026 with the use-case classifier in item 5 (governance rec 4); the
+   golden runner still renders every registered case.
 4. Seed baseline images; wire failed-image artifact retention (exists).
 5. Use-case triage: a deterministic classifier assigns every registered use
    case to `component-mount`, `body-mount`, `screen-scope`, or `prototype`.
@@ -1074,7 +1075,7 @@ Phase 2 continuation.
 
 ### Phase 2 — `packages/catch_tokens`
 
-Scope: create the package; retarget `tool/design_tokens.dart` generator
+Scope: create the package; retarget `tool/design_tokens.mjs` generator
 output; move generated primitive tokens plus the semantic token classes,
 splitting the token monolith by tier during the move (D6);
 rewrite imports
@@ -1085,7 +1086,7 @@ pointed at the new package. Theme wiring, typography, icon assets, gap widgets,
 and app-coupled activity palettes remain app-side until Phase 3.
 
 DoD: old files gone; `flutter analyze` green across workspace members and
-widgetbook; `dart run tool/design_tokens.dart --check` green; goldens
+widgetbook; `node tool/design_tokens.mjs --check` green; goldens
 unchanged (Phase 1 proof of no visual drift); lint probe corpus green.
 
 Implementation: `packages/catch_tokens` is a Flutter-only production dependency
@@ -1623,7 +1624,7 @@ for the 12 files at or above 1,600 lines (each split is a Protocol v2 slice;
 `host_crm_repository` splits by CRM subdomain, Event Success presentation by
 part-file elimination into real components, form-builder screen by pane,
 Widgetbook use-case monoliths by component family onto the shared harness);
-scanner/lint retirement per D8 through enforcement-integrity; baseline expiry
+scanner/lint retirement per D8; baseline expiry
 annotations (D7) added and validated.
 
 DoD: ratchet green; monolith baseline reduced to ≤ 4 `lib/**` entries and
@@ -1637,7 +1638,7 @@ covers 1,627 handwritten Dart files. Seven decrease-only entries remain: four
 under app `lib/**`, three under shared packages, and zero under
 `widgetbook/lib/**`. The original CRM, Event Success, form-builder, token, and
 Widgetbook monolith split plans are executed; every remaining baseline entry
-has an owner and target phase, as enforced by `meta:enforcement-integrity`.
+has an owner and target phase, as enforced by `meta:repository-root-hygiene`.
 
 For D8's executable-estate measurement, check count means active IDs emitted
 by `node tool/run.mjs list --json`; internal validators and retained manifest

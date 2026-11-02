@@ -1,8 +1,0 @@
-{
-  "owner": "marketing_website_architecture",
-  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
-  "version": 1,
-  "updated": "2026-07-12",
-  "description": "Existing marketing website component copy. The scanner blocks additions; migrate entries into website/src/content and delete them from this baseline.",
-  "entries": []
-}

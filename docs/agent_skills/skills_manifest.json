@@ -1,6 +1,6 @@
 {
-  "version": 147,
-  "updated": "2026-10-25",
+  "version": 148,
+  "updated": "2026-11-02",
   "owner": "agent_operating_model",
   "skills": [
     {
@@ -12,14 +12,12 @@
         "lib/**",
         "test/**",
         "docs/app_architecture.md",
-        "tool/architecture/pattern_adoption.json",
         "lib/README.md"
       ],
       "source_docs": [
         "AGENTS.md",
         "docs/agent_operating_model.md",
         "docs/app_architecture.md",
-        "tool/architecture/pattern_adoption.json",
         "lib/README.md"
       ],
       "required_tools": [],
@@ -27,7 +25,7 @@
         "flutter analyze --no-fatal-infos"
       ],
       "optional_guidance": [
-        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md,tool/architecture/pattern_adoption.json"
+        "node tool/agent/context_pack.mjs --task architecture-refactor --paths lib,docs/app_architecture.md"
       ],
       "success_evidence": "Focused tests/analyzer pass, relevant scanners run, generated artifacts are current, and Git or CI output preserves the evidence.",
       "known_failure_modes": [
@@ -236,7 +234,6 @@
         "design/components/**",
         "design/screens/**",
         "design/tokens/**",
-        "design_context_pack/**",
         "widgetbook/**",
         "lib/contexts/*/parts/**"
       ],
@@ -248,8 +245,7 @@
         "docs/widget_catalog.md"
       ],
       "required_tools": [
-        "design:parity-gate",
-        "design:context-pack"
+        "design:parity-gate"
       ],
       "required_commands": [
         "node tool/run.mjs check --category design"
@@ -261,7 +257,7 @@
       "known_failure_modes": [
         "Aliases or feature-only buckets survive as final state.",
         "Widgetbook route or generated directory state is stale.",
-        "Design context pack and component contracts drift independently."
+        "Design sync mappings and component contracts drift independently."
       ]
     },
     {

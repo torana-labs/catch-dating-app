@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.19.0
-updated: 2026-11-01
+version: 0.19.1
+updated: 2026-11-02
 owner: marketing_website
 status: active
 ---
@@ -191,9 +191,7 @@ The website is already split out of the old monolithic shell:
   ownership, and Storybook coverage status. It is validated bidirectionally
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
-- `design/features/feature_coverage.json` classifies every marketing route as a
-  contracted, grouped, planned, or explicitly excluded feature projection.
-  Shared product outcomes may target a cross-runtime identity such as
+- Shared product outcomes may target a cross-runtime identity such as
   `feature.explore` or `feature.organizer_detail`; route metadata, static output,
   React components, actions, and evidence remain owned by the website runtime.
   Organizer Search is the first live projection: the feature compiler resolves
@@ -570,13 +568,11 @@ aggregation points:
    `web:website-copy-ownership` scans production `.ts` and `.tsx` and blocks
    new visible JSX text (including single-word labels), accessibility copy,
    copy-bearing prop/data literals, and validation/status messages outside
-   `website/src/content/**`. The current component copy is recorded as
-   migration debt in `tool/web/website_copy_baseline.json`.
-   Move entries into direct page-specific content imports and shrink that
-   baseline; permanent technical exceptions belong in the reasoned allowlist.
-   The gate rejects malformed, duplicate, overlapping, or stale registry
-   entries, so completed migration debt cannot remain hidden in an inflated
-   baseline and allowlist exceptions cannot survive without a live finding.
+   `website/src/content/**`. Copy belongs in direct page-specific content
+   imports; permanent technical exceptions belong in the reasoned allowlist.
+   The gate fails on any string outside it, and rejects malformed, duplicate or
+   stale allowlist entries, so an exception cannot survive without a live
+   finding.
 
    ```sh
    node tool/run.mjs check web:website-copy-ownership
@@ -1060,19 +1056,16 @@ website/src/
    and external takedown mutation use shared query keys and mutation pending
    state. Organizer Intake, Event Intake, and Marketing Ops
    row-level pending state is derived from TanStack mutation state through named
-   mutation keys. `web:react-query-state` ratchets manual
+   mutation keys. `web:react-query-state` fails on any manual
    loading/saving/submitting/in-flight state in feature controllers and feature
-   `use*` hooks against `tool/web/react_query_state_baseline.json`; new
-   server-state work should keep that baseline empty.
+   `use*` hooks.
 
 9. Keep React query-state enforcement active.
 
    Website and admin code now share `node tool/run.mjs check
-   web:react-query-state`. The scanner is a baseline-backed ratchet for manual
-   async state in feature controllers and feature `use*` hooks. The baseline is
-   empty for both React apps. The gate fails new unbaselined
-   loading/saving/submitting/in-flight state. Refresh the baseline only when a
-   deliberate exception has an owner, expiry, and removal plan.
+   web:react-query-state`. The scanner is a plain gate over manual async state
+   in feature controllers and feature `use*` hooks: any
+   loading/saving/submitting/in-flight state fails, with no baseline.
 
 10. Keep React primitive enforcement active.
 
@@ -1096,12 +1089,11 @@ website/src/
    families; package exports, exact-name cross-app overlap, and adopted
    adapters cannot drift outside that decision record.
 
-13. Keep controller behavior-test targets explicit.
+13. Keep a behavior test beside each controller.
 
-   `tool/web/react_controller_test_targets.json` classifies every marketing and
-   admin feature controller/mutation hook. Run `node tool/run.mjs check
-   web:react-controller-test-targets`; required targets need named importing
-   behavior suites, while aggregate coverage remains an informational report.
+   Run `node tool/run.mjs check web:react-controller-test-targets`: every
+   marketing and admin feature controller/mutation hook needs a unit test that
+   imports it, while aggregate coverage remains an informational report.
 
 ## Next Implementation Batch
 

@@ -10,7 +10,7 @@ import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
 import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {adminListOrganizerListingReviewsHandler, publicSlugFor} from "./organizerListingReviewQueue";
+import {adminGetOrganizerListingReviewHandler, adminListOrganizerListingReviewsHandler, publicSlugFor} from "./organizerListingReviewQueue";
 import type {AdminListOrganizerListingReviewsCallableResponse} from
   "../shared/generated/adminListOrganizerListingReviewsCallableResponse";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
@@ -69,7 +69,10 @@ async function harness({organizers = {} as Record<string, Record<string, unknown
   const call = (data: Record<string, unknown>, token: Record<string, unknown> = {admin: true}) =>
     adminListOrganizerListingReviewsHandler({auth: {uid: "admin-1", token}, data,
       rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, deps as never);
-  return {db, call};
+  const get = (requestId: string, token: Record<string, unknown> = {support: true}) =>
+    adminGetOrganizerListingReviewHandler({auth: {uid: "admin-1", token}, data: {requestId},
+      rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, deps as never);
+  return {db, call, get};
 }
 
 const valid = (response: unknown) => assert.equal(validateAdminListOrganizerListingReviewsCallableResponse(response), true,
@@ -154,6 +157,18 @@ test("ops (support) and the owner can read and approve; others cannot read it", 
   }
   await assert.rejects(h.call({limit: 5, cursor: "not-a-cursor"}), /cursor is invalid/);
   await assert.rejects(h.call({limit: 51, cursor: null}));
+});
+
+test("one listing can be read by its request for the inbox's approval sheet", async () => {
+  const h = await harness();
+  const result = await h.get("nom-listing-0");
+  assert.equal(result.review.requestId, "nom-listing-0");
+  assert.equal(result.canApprove, true);
+  await assert.rejects(h.get("nom-listing-0", {salesStaff: true}), /permission|role|admin/i);
+  await assert.rejects(h.get("missing"), /not waiting for approval/);
+  const path = `${supplyIntakeCollections.requests}/nom-listing-1`;
+  h.db.write(path, {...h.db.read(path), approval: {approvalId: "ap"}});
+  await assert.rejects(h.get("nom-listing-1"), /not waiting for approval/);
 });
 
 test("suggested slugs are route-safe", () => {

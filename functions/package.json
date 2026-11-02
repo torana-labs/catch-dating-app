@@ -1,11 +1,14 @@
 {
   "name": "functions",
   "scripts": {
+    "generate": "node ../tool/admin/generate_admin_action_catalog.mjs",
+    "prelint": "npm run generate",
     "lint": "node --max-old-space-size=6144 node_modules/eslint/bin/eslint.js --ext .js,.ts src",
-    "prebuild": "node scripts/clean-lib.cjs",
+    "prebuild": "node ../tool/admin/generate_admin_action_catalog.mjs && node scripts/clean-lib.cjs",
     "build": "tsc",
     "test": "npm run build && node scripts/run-tests.cjs",
     "test:rules": "npm run build && node scripts/run-tests.cjs --require-emulators",
+    "prebuild:watch": "npm run generate",
     "build:watch": "tsc --watch",
     "serve": "npm run build && node scripts/run-local-emulators.cjs",
     "start": "npm run serve",

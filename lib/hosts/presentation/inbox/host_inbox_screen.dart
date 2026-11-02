@@ -1,6 +1,10 @@
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';

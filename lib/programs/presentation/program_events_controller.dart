@@ -34,10 +34,12 @@ typedef ProgramInventoryRowPredicate =
 /// cursor retained after this window.
 const programEventsMatchingPageReadLimit = 8;
 
+// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
 final programCreateJournalProvider = Provider<ProgramCreateJournal>(
   (ref) => const ProgramCreateJournal(),
 );
 
+// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
 final programCreateControllerProvider = FutureProvider.autoDispose
     .family<ProgramCreateController, ProgramEventsScope>((ref, scope) async {
       final repository = ref.watch(programSetupRepositoryProvider);
@@ -206,6 +208,7 @@ typedef ProgramEventsPageError = Object;
 
 /// Both account and organizer participate in the provider identity. An exact
 /// saved-ID anchor survives a route reopen without expanding the page size.
+// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
 final programEventsControllerProvider = Provider.autoDispose
     .family<ProgramEventsController, ProgramEventsRequest>((ref, request) {
       final scope = request.scope;

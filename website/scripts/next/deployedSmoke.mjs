@@ -129,11 +129,12 @@ export async function awaitServedRelease(base, sourceSha, {fetchImpl = fetch, at
   assert.fail(`${base}/ did not serve ${sourceSha} after ${attempts} attempts; last answer ${JSON.stringify(served)}`);
 }
 /**
- * The release a deployment must serve. Promotion runs on main's head but
- * releases the accepted preview's source (RELEASE_SHA); a preview releases
- * the commit it runs on. The routes and copy above are this file's source's,
- * so promotion runs the release's own copy of this file, never main's: main
- * may have reworked a route since (an older Explore, for one, fails main's).
+ * The release a deployment must serve. Preview and promotion both run on
+ * main's head but release a source main may have moved past (RELEASE_SHA):
+ * the train's validated commit, then the accepted preview's. The routes and
+ * copy above are this file's source's, so both run the release's own copy of
+ * this file, never main's: main may have reworked a route since (an older
+ * Explore, for one, fails main's).
  */
 export function expectedRelease(env) {
   return env.RELEASE_SHA || env.GITHUB_SHA;

@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/admin_update_inbox_item_payload.schema.json.
 // Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.
+/// Assign, unassign, snooze, wake, dismiss or reopen one Admin inbox item; audited and recorded in its journey.
 final class AdminUpdateInboxItemCallableRequest {
   const AdminUpdateInboxItemCallableRequest({
     required this.itemId,

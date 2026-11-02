@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_now.feature.json",
   "generatedFor": "2026-11-01",
-  "sourceDigest": "sha256:5cb46ec71f03d656a26cd45e09119e77b506946c8564305deb70f4c83f3f02aa",
-  "resolvedDigest": "sha256:2a8a786407abdf12aa057443dcf42852e888801283e6d4264e4508e75377e975",
+  "sourceDigest": "sha256:edb5ea471ddfab12d47f6ff1765c88922a41b4d15ea81843cd1ed42e40fff979",
+  "resolvedDigest": "sha256:8d53d4aa7da368e2378fcf7f4590c1813c080911c4bea961f5567e1c4085bd3a",
   "feature": {
     "id": "feature.admin_now",
     "name": "Admin Needs you",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesNow.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -327,7 +327,7 @@
             "exportName": "NowScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesNow.stories.tsx",
               "exportName": "NowRouteStory",
               "states": [
                 "oldest-first",

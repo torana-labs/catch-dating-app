@@ -6,7 +6,7 @@ export const adminUpdateInboxItemCallablePayloadSchema: Record<string, unknown> 
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_update_inbox_item_payload.schema.json",
   "title": "AdminUpdateInboxItemCallablePayload",
-  "description": "Assign, unassign, snooze or wake one Admin inbox item; audited and recorded in its journey.",
+  "description": "Assign, unassign, snooze, wake, dismiss or reopen one Admin inbox item; audited and recorded in its journey.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -29,7 +29,9 @@ export const adminUpdateInboxItemCallablePayloadSchema: Record<string, unknown> 
         "assign",
         "unassign",
         "snooze",
-        "wake"
+        "wake",
+        "dismiss",
+        "reopen"
       ]
     },
     "assigneeUid": {

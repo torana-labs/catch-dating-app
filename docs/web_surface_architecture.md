@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.48.0
-updated: 2026-10-30
+version: 0.48.2
+updated: 2026-11-02
 owner: web_platform
 status: active
 ---
@@ -236,10 +236,12 @@ dispatched) completes and hourly as a fallback:
 2. **Validate** (only when the plan asks). It dispatches full CI (`ci.yml`,
    `full: true`, the nightly mode) on main's head and waits for it. That run's
    Marketing validation and captures are the head's exact-source evidence. If
-   main moved past the head meanwhile, the train ends and the next one
-   releases the newer head.
-3. **Preview.** It dispatches `Next Website Preview`, follows that exact run,
-   and publishes the preview channel URL.
+   main moved past the head meanwhile, the train still releases the commit it
+   validated; the next train releases what came after.
+3. **Preview.** It dispatches `Next Website Preview` with the planned commit as
+   `source_sha`, follows that exact run, and publishes the preview channel URL.
+   Promotion releases that preview's source.
+   `docs/release_operations.md` ("Website release train") is the full account.
 4. **Gate.** A job in the `prod` environment, with the preview URL shown on
    the deployment. `prod` has had no required reviewer since 30 Oct 2026, so
    it passes straight through; adding a reviewer makes it wait for approval
@@ -343,9 +345,7 @@ DNS alone cannot select a URL path.
 
 ## Cross-Surface Feature Identity
 
-`design/features/feature_coverage.json` is the exhaustive migration boundary
-across the Flutter screen registry, marketing route registry, and route-kind
-entries in the admin component registry. It can assign one semantic feature id
+A feature contract in `design/features/` can assign one semantic feature id
 to multiple runtime projections when the user outcome is genuinely shared—for
 example organizer discovery or organizer detail. It does not make Flutter and
 React share a UI runtime: each projection keeps its own screen/route authority,
@@ -396,10 +396,6 @@ operations cannot overlap. The compiled Admin action matrices disable every
 surface action in those pending states. This deliberately trades small amounts
 of operator throughput for deterministic receipts and unambiguous recovery.
 
-Run `node tool/design/check_feature_coverage.mjs --check` after adding or
-removing any registered product surface. A planned decision is migration debt,
-not completed contract coverage; a grouped decision is a secondary route
-projection, not a shortcut for combining unrelated workflows.
 
 ## Organizer Entity Boundary
 
@@ -679,7 +675,7 @@ only `firebase.ts` to import the generated callable types.
   component identity. Each contract's `react` record names its `@catch/web-ui`
   symbol, file, `api` (`headless-control` until Phase 7e ships the styled
   component) and Storybook coverage, and its T1/T2 props carry `tsType` beside
-  `dartType`. `design/website/components.json` and `design/admin/components.json`
+  `dartType`. `design/website/components.json` and `design/admin/components/`
   own routes, sections and surface-specific components; an adapter of a shared
   contract points at it with `componentId`. Admin components that one feature
   or only the app shell renders are `feature-component` entries owned by that
@@ -707,11 +703,9 @@ only `firebase.ts` to import the generated callable types.
   admin entry chunk and largest async chunk. Query/API controllers belong
   behind lazy route wrappers; importing one into `admin/src/app/App.tsx` is a
   performance-boundary regression even when its view remains lazy.
-- `tool/web/react_controller_test_targets.json` classifies every feature
-  controller/mutation hook as `required`, `planned`, or an explained `exempt`.
-  `web:react-controller-test-targets` rejects unclassified hooks and required
-  targets whose named behavior suite is missing, while aggregate coverage stays
-  informational rather than becoming a brittle percentage gate.
+- `web:react-controller-test-targets` rejects a feature controller/mutation hook
+  that no unit test imports, while aggregate coverage stays informational rather
+  than becoming a brittle percentage gate.
 - Admin Storybook uses named feature chunks plus a separate generated-intake
   data chunk. `web:admin-storybook-bundle-budget` ratchets Catch-authored chunks
   independently of Storybook, axe, and other framework/vendor runtime; route
@@ -730,7 +724,7 @@ only `firebase.ts` to import the generated callable types.
 - `apps/consumer/build/web` is the Flutter web deploy artifact for `app.catchdates.com`; the `app` target's predeploy builds it with `./tool/flutter_with_env.sh prod --role consumer build web --release`.
 
 Design-token CSS and web font copies are generated into
-`packages/web-config/generated/` by `dart run tool/design_tokens.dart`, then
+`packages/web-config/generated/` by `node tool/design_tokens.mjs`, then
 bundled by Vite through `packages/web-config/styles/catch-web.css`.
 
 ## React Dependency Topology
@@ -813,7 +807,7 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   only arrange and bind. Run `node tool/run.mjs check web:admin-feature-exports`
   when touching admin feature UI exports. Admin route/workspace entries, shared
   admin primitives, and admin feedback providers must also be declared in
-  `design/admin/components.json`; run
+  `design/admin/components/`; run
   `node tool/run.mjs check web:admin-components` when touching those exports.
   Admin form primitives adopted into the shared Flutter/React interaction
   vocabulary declare an `interactionContract` mode in that registry. Adopted
@@ -837,8 +831,10 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   gaps, adapters and single-owner shared components cannot gain debt identities.
   Page CSS outside the two website foundation layers has a separate newline
   ceiling for each file, so another file or surface cannot spend its allowance.
-  Fixed identities and shorter files must leave the baseline in the same slice.
-  Regenerate with `node tool/web/check_shared_web_ui_adoption.mjs
+  That ceiling is the file's line count on the fetched-main merge base, so a
+  merged reduction lowers it with no edit. Only growth fails: a fixed identity
+  passes and may stay in the baseline as a ceiling. Drop fixed identities when
+  convenient with `node tool/web/check_shared_web_ui_adoption.mjs
   --update-consolidation-baseline`; the generator rejects growth against both
   the local baseline and fetched-main merge base. `--write` still writes only
   the ignored inventory. Bare `--json` is the scorecard's read-only inventory
@@ -868,7 +864,7 @@ Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
 `/organizers/{organizerId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
 `/events/external/{candidateId}`,
-`/growth/signals/{signalId}`, `/finance/issues/{issueId}`,
+`/growth/nominators/{nominatorUid}`, `/finance/issues/{issueId}`,
 `/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
 stays unavailable; controllers must never auto-select another row to make a
 deep link appear valid.
@@ -1041,10 +1037,11 @@ reconciliation, never request or response bodies. Manual actions
 remain in their owning routes; this route does not reproduce their mutation
 forms or authority decisions.
 
-`contracts/admin/admin_action_catalog.json` binds every admin API callable to a
+`contracts/admin/actions/` binds every admin API callable to a
 stable CLI action id, request schema, roles, workflow, GUI path, and
 confirmation policy. `tool/admin/generate_admin_action_catalog.mjs` produces
-the typed browser and Functions views; the operations parity checker rejects
+the typed browser and Functions views at build time, and Git ignores both; the
+operations parity checker rejects
 drift among the catalog, admin API, strict request validators, Functions
 exports, and workflow membership.
 
@@ -1063,7 +1060,9 @@ The module cache shares subsequent loads without bypassing per-request checks.
 `admin/scripts/generateCallableValidators.mjs` discovers every callable name in
 that API module, compiles the applicable `contracts/callables/**` and
 `contracts/callable_responses/**` schemas plus their references, and writes the
-committed typed registry under `admin/src/generated/validators/`. Callables
+typed registry under `admin/src/generated/validators/`. Git ignores that
+directory: Admin's npm lifecycle (`npm --workspace catch-admin run generate`)
+builds it before every dev server, typecheck, test and build. Callables
 without a dedicated JSON contract receive an explicit top-level object
 validator and remain listed separately from strict schema coverage; they must
 not disappear from the registry or be described as strictly validated.
@@ -1080,9 +1079,9 @@ use dedicated strict schemas. Other callables remain explicitly structural
 where no field-level contract exists, so the registry still reports their
 weaker boundary honestly.
 
-Run `node tool/run.mjs check web:admin-callable-validators`. Admin
-`pretypecheck` runs the same drift check, so a callable or schema change cannot
-ship with stale validators. Validation failures use
+Run `node tool/run.mjs check web:admin-callable-validators` to test the
+generator. Admin `pretypecheck` regenerates the validators, so a callable or
+schema change cannot ship with stale ones. Validation failures use
 `AdminCallableValidationError` and include callable name, direction, and the
 first failing JSON instance path.
 

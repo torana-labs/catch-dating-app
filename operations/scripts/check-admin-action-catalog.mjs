@@ -38,17 +38,9 @@ export async function checkAdminActionCatalog({
     path.join(repoRoot, "functions", "src", "index.ts"),
     "utf8"
   );
-  const generatedSource = validatorSource ?? await fs.readFile(
-    path.join(
-      repoRoot,
-      "admin",
-      "src",
-      "generated",
-      "validators",
-      "adminCallableValidators.ts"
-    ),
-    "utf8"
-  );
+  const generatedSource = validatorSource ?? (await import(
+    "../../admin/scripts/generateCallableValidators.mjs"
+  )).adminCallableValidatorRegistrySource();
   const actionIds = resolvedCatalog.actions.map((action) => action.actionId);
   const guiCallables = callableNames(apiSource);
   // Control-plane authority is independent of presentation: an Owner-only

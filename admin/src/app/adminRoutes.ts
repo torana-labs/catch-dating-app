@@ -1,122 +1,31 @@
-import {matchPath, matchRoutes, type NonIndexRouteObject} from "react-router";
+import {matchPath, matchRoutes} from "react-router";
+import type {AdminArea, AdminNavId, AdminRoute, AdminRouteFields} from "./adminAreaKit";
 
-// The route table. Every Admin area registers its destination here and its
-// navigation item and screen in adminAreas.tsx.
-export const adminSections = {
-  now: {path: "/now", title: "Needs you"},
-  support: {path: "/support", title: "Support"},
-  marketplace: {path: "/marketplace", title: "Marketplace"},
-  more: {path: "/more", title: "More"},
-  safety: {path: "/safety", title: "Safety"},
-  "cross-paths": {path: "/cross-paths", title: "Cross Paths showcase"},
-  growth: {path: "/growth", title: "Growth"},
-  "marketing-ops": {path: "/marketing", title: "Marketing"},
-  sales: {path: "/sales/today", title: "Sales"},
-  "organizer-intake": {path: "/intake/organizers", title: "Intake"},
-  organizers: {path: "/organizers", title: "Organizers"},
-  events: {path: "/events", title: "Events"},
-  users: {path: "/users", title: "Users"},
-  finance: {path: "/finance", title: "Finance"},
-  quality: {path: "/quality", title: "Data quality"},
-  operations: {path: "/operations", title: "Agent activity"},
-  "admin-roles": {path: "/admin-roles", title: "Admin roles"},
-} as const;
+export type {AdminNavId} from "./adminAreaKit";
 
-export type AdminNavId = keyof typeof adminSections;
-type MarketingTab = "posts" | "new" | "events" | "media" | "activity" |
-  "diagnostics" | "draft";
-type MarketingStep = "source" | "copy" | "compliance" | "export";
-export type FinanceWorkspace = "issues" | "commercial-terms" | "payment-routing";
-export type GrowthView = "cohorts" | "channels" | "nominators" | "best";
+// The route table: every file in areas/, combined. The sign-in entry loads this, so area data
+// files hold no screens; each screen is in the area's .screen.tsx.
+const areaModules = import.meta.glob<{default: AdminArea}>(["./areas/*.ts", "!./areas/*.test.ts"], {eager: true});
 
-interface RouteState {
-  nav: AdminNavId | null;
-  /** An old address: the shell replaces it with this path. */
-  redirect?: string;
-  title?: string;
-  salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
-  organizerWorkspace?: "directory" | "claims";
-  eventWorkspace?: "directory" | "external";
-  eventTab?: "overview" | "page" | "takedown";
-  organizerTab?: "overview" | "page" | "events" | "sales" | "money" | "history";
-  financeWorkspace?: FinanceWorkspace;
-  supportWorkspace?: "inbox" | "trial";
-  safetyView?: "open" | "actions" | "appeals";
-  growthView?: GrowthView;
-  marketingTab?: MarketingTab;
-  composerStep?: MarketingStep;
-}
+export const adminAreaList: readonly AdminArea[] = Object.values(areaModules)
+  .map((module) => module.default)
+  .sort((a, b) => (a.id < b.id ? -1 : 1));
 
-type AdminRoute = Omit<NonIndexRouteObject, "handle"> & {handle: RouteState};
-function route(path: string, nav: AdminNavId, state: Omit<RouteState, "nav"> = {}): AdminRoute {
-  return {path, caseSensitive: true, handle: {nav, ...state}};
-}
+export const adminSections = Object.fromEntries(adminAreaList.map(({id, path, title}) => [id, {path, title}])) as
+  Record<AdminNavId, {path: string; title: string}>;
 
 // React Router ranks static workspace names ahead of dynamic record IDs.
 // Workspace fallbacks retain existing links without selecting an unrelated record.
 export const adminRoutes: AdminRoute[] = [
-  route("/", "now", {redirect: "/now"}),
-  // Overview split in two: its queues are Needs you, its analytics Marketplace.
-  route("/overview/*", "now", {redirect: "/now"}),
-  ...Object.entries(adminSections).filter(([nav]) => nav !== "organizer-intake").map(([nav, {path}]) => route(
-    `/${path.split("/")[1]}/*`, nav as AdminNavId
-  )),
-  route("/marketing-ops/*", "marketing-ops"),
-  route("/organizer-intake/*", "organizer-intake", {title: "Organizer intake"}),
-  route("/safety/:targetPath", "safety", {title: "Safety case"}),
-  route("/support/:supportConversationId", "support", {title: "Support conversation"}),
-  route("/support/trial/*", "support", {supportWorkspace: "trial", title: "WhatsApp reply trial"}),
-  route("/safety/actions/*", "safety", {safetyView: "actions", title: "Account actions"}),
-  route("/safety/actions/:safetyActionId", "safety", {safetyView: "actions", title: "Account action"}),
-  route("/safety/appeals/*", "safety", {safetyView: "appeals", title: "Appeals"}),
-  route("/safety/appeals/:safetyActionId", "safety", {safetyView: "appeals", title: "Appeal"}),
-  // Launch access moved into the Safety queue.
-  route("/access/*", "safety", {redirect: "/safety"}),
-  route("/organizers/:organizerId", "organizers"),
-  ...(["page", "events", "sales", "money", "history"] as const).map((organizerTab) =>
-    route(`/organizers/:organizerId/${organizerTab}`, "organizers", {organizerTab})),
-  route("/organizers/claims/*", "organizers", {organizerWorkspace: "claims"}),
-  route("/organizers/claims/:claimRequestId", "organizers", {organizerWorkspace: "claims"}),
-  route("/events/:eventId", "events", {title: "Event detail"}),
-  route("/events/:eventId/page", "events", {title: "Event page", eventTab: "page"}),
-  route("/events/external/:externalEventId/takedown", "events", {
-    eventWorkspace: "external", eventTab: "takedown", title: "External event takedown",
-  }),
-  route("/events/external/*", "events", {eventWorkspace: "external", title: "External inventory"}),
-  route("/events/external/:externalEventId", "events", {eventWorkspace: "external", title: "External event"}),
-  // The retired readiness workspace: old links open the directory, not an event named "readiness".
-  route("/events/readiness/*", "events"),
-  ...(["channels", "nominators", "best"] as const).map((growthView) => route(`/growth/${growthView}/*`, "growth", {growthView})),
-  route("/growth/nominators/:nominatorUid", "growth", {growthView: "nominators", title: "Nominator"}),
-  // The retired Growth signals: old links open Growth.
-  route("/growth/signals/*", "growth", {redirect: "/growth"}),
-  route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
-  route("/finance/commercial-terms/*", "finance", {financeWorkspace: "commercial-terms", title: "Commercial terms"}),
-  route("/finance/commercial-terms/organizers/:termsOrganizerId", "finance", {
-    financeWorkspace: "commercial-terms", title: "Organizer commercial terms",
-  }),
-  route("/finance/payment-routing/*", "finance", {financeWorkspace: "payment-routing", title: "Payment routing"}),
-  route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),
-  route("/admin-roles/:adminRoleTargetUid", "admin-roles", {title: "Admin role assignment"}),
-  ...(["today", "hosts", "pipeline", "research", "pilots", "settings"] as const)
-    .map((salesArea) => route(`/sales/${salesArea}/*`, "sales", {salesArea})),
-  route("/sales/hosts/:salesOrganizerId", "sales", {salesArea: "hosts"}),
-  route("/intake/*", "organizer-intake", {title: "Organizer intake"}),
-  route("/intake/events/*", "organizer-intake", {title: "Event intake"}),
-  route("/intake/operations/*", "organizer-intake", {title: "Supply intake operations"}),
-  ...(["posts", "new", "events", "media", "activity", "diagnostics"] as const)
-    .map((marketingTab) => route(`/marketing/${marketingTab}/*`, "marketing-ops", {marketingTab})),
-  route("/marketing/drafts/:draftId/*", "marketing-ops", {marketingTab: "draft", title: "Marketing draft"}),
-  ...(["source", "copy", "compliance", "export"] as const).map((composerStep) =>
-    route(`/marketing/drafts/:draftId/${composerStep}`, "marketing-ops", {
-      marketingTab: "draft", composerStep, title: "Marketing draft",
-    })),
+  ...adminAreaList.flatMap((area) => area.routes),
   {path: "*", handle: {nav: null}},
 ];
 
+const routeDefaults = Object.assign({}, ...adminAreaList.map((area) => area.routeDefaults)) as AdminRouteFields;
+
 export function resolveAdminRoute(pathname: string) {
   const match = matchRoutes(adminRoutes, {pathname})?.at(-1);
-  const state = match?.route.handle;
+  const {nav = null, redirect, title, ...fields} = match?.route.handle ?? {};
   // matchRoutes decodes a path before matching, including an additional %2F
   // replacement. Read parameters from the original path to preserve literal
   // percent-encoded text in opaque IDs (e.g. an ID containing "%2F").
@@ -127,44 +36,9 @@ export function resolveAdminRoute(pathname: string) {
     try { return [key, value === undefined ? undefined : decodeURIComponent(value)]; }
     catch { return [key, value]; }
   }));
-  return {
-    nav: state?.nav ?? null,
-    redirect: state?.redirect ?? null,
-    title: state?.title,
-    params,
-    salesArea: state?.salesArea ?? "today",
-    organizerWorkspace: state?.organizerWorkspace ?? "directory",
-    eventWorkspace: state?.eventWorkspace ?? "directory",
-    eventTab: state?.eventTab ?? "overview",
-    organizerTab: state?.organizerTab ?? "overview",
-    financeWorkspace: state?.financeWorkspace ?? "issues",
-    supportWorkspace: state?.supportWorkspace ?? "inbox",
-    safetyView: state?.safetyView ?? "open",
-    growthView: state?.growthView ?? "cohorts",
-    marketingTab: state?.marketingTab ?? "posts",
-    composerStep: state?.composerStep ?? "source",
-  };
+  return {...routeDefaults, ...fields, nav, redirect: redirect ?? null, title, params};
 }
 
 export function adminPathForNav(nav: AdminNavId): string {
   return adminSections[nav].path;
-}
-
-export function marketingPathForTab(tab: Exclude<MarketingTab, "draft">): string {
-  return `/marketing/${tab}`;
-}
-
-export function financePathForWorkspace(workspace: FinanceWorkspace): string {
-  return workspace === "issues" ? adminSections.finance.path : `/finance/${workspace}`;
-}
-
-/** Growth's view, and one nominator in it. */
-export function growthPath(view: GrowthView, nominatorUid: string | null = null): string {
-  const base = view === "cohorts" ? adminSections.growth.path : `${adminSections.growth.path}/${view}`;
-  return nominatorUid === null ? base : `${base}/${encodeURIComponent(nominatorUid)}`;
-}
-
-export function commercialTermsPathForOrganizer(organizerId: string | null): string {
-  return organizerId === null ? financePathForWorkspace("commercial-terms") :
-    `/finance/commercial-terms/organizers/${encodeURIComponent(organizerId)}`;
 }

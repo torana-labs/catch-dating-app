@@ -3483,21 +3483,6 @@ th {
   }
 }
 
-.admin-profile-photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-  gap: var(--catch-space-s2);
-}
-
-.admin-profile-photo-grid img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface);
-}
-
 @media (max-width: 520px) {
   .intake-stage-rail {
     width: 100%;

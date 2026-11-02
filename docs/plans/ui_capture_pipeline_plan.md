@@ -1,7 +1,7 @@
 ---
 doc_id: ui_capture_pipeline_plan
-version: 0.4.0
-updated: 2026-06-01
+version: 0.4.1
+updated: 2026-11-02
 owner: ui_capture_pipeline
 status: remaining_work
 ---
@@ -58,9 +58,8 @@ old plan to the live repo.
      active marketing captures, and where artifacts are stored.
 
 2. **Promote high-DPR design-gallery flow from optional to documented.**
-   - `run_captures.mjs --profile design-gallery` exists.
-   - It needs a settled artifact policy with the design context pack before people rely
-     on committed gallery PNGs.
+   - `run_captures.mjs --profile design-gallery` exists and writes to the ignored
+     `build/design_gallery`; nothing commits gallery PNGs.
 
 ## Parked / Not Baseline Scope
 

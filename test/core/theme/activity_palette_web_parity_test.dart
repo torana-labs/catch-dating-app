@@ -5,7 +5,7 @@ import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The website reads activity swatches from generated CSS. `tool/design_tokens.dart`
+/// The website reads activity swatches from generated CSS. `tool/design_tokens/lib/values.mjs`
 /// derives them with a port of [ActivitySwatch]'s HSL math, so this pins the two.
 void main() {
   test('generated website activity swatches match the app palette', () {

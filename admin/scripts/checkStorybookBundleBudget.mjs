@@ -17,7 +17,7 @@ if (!fs.existsSync(assetsRoot)) {
   process.exit(1);
 }
 const chunks = fs.readdirSync(assetsRoot)
-  .filter((name) => /^(?:admin-feature-|AdminRoutes\.stories-).+\.js$/u.test(name))
+  .filter((name) => /^(?:admin-feature-|AdminRoutes\w*\.stories-).+\.js$/u.test(name))
   .map((name) => ({name, bytes: fs.statSync(path.join(assetsRoot, name)).size}));
 const findings = validateChunks(chunks, budget);
 if (findings.length > 0) {
@@ -25,20 +25,22 @@ if (findings.length > 0) {
   findings.forEach((finding) => console.error(`- ${finding}`));
   process.exit(1);
 }
-const routeChunk = chunks.find((chunk) => chunk.name.startsWith("AdminRoutes.stories-"));
+const routeChunk = chunks.filter(isRouteStory).sort((a, b) => b.bytes - a.bytes)[0];
 const largest = chunks.slice().sort((a, b) => b.bytes - a.bytes)[0];
 console.log(
-  `Admin Storybook bundle budget passed: route story ${formatBytes(routeChunk.bytes)} / ` +
+  `Admin Storybook bundle budget passed: largest route story ${formatBytes(routeChunk.bytes)} / ` +
   `${formatBytes(budget.maxAdminRoutesStoryBytes)}; largest app chunk ` +
   `${largest.name} ${formatBytes(largest.bytes)} / ${formatBytes(budget.maxAppChunkBytes)}.`
 );
 
+function isRouteStory(chunk) {
+  return /^AdminRoutes\w*\.stories-/u.test(chunk.name);
+}
+
 function validateChunks(chunks, budget) {
   const findings = [];
-  const routeChunks = chunks.filter((chunk) => chunk.name.startsWith("AdminRoutes.stories-"));
-  if (routeChunks.length !== 1) {
-    findings.push(`expected one AdminRoutes story chunk, found ${routeChunks.length}`);
-  }
+  const routeChunks = chunks.filter(isRouteStory);
+  if (routeChunks.length === 0) findings.push("found no AdminRoutes story chunk");
   for (const chunk of chunks) {
     if (chunk.bytes > budget.maxAppChunkBytes) {
       findings.push(`${chunk.name} is ${chunk.bytes} bytes; app limit is ${budget.maxAppChunkBytes}`);
@@ -57,7 +59,7 @@ function validateChunks(chunks, budget) {
 function runSelfTest() {
   const budget = {maxAppChunkBytes: 510000, maxAdminRoutesStoryBytes: 50000};
   const findings = validateChunks([
-    {name: "AdminRoutes.stories-test.js", bytes: 51001},
+    {name: "AdminRoutesMoney.stories-test.js", bytes: 51001},
     {name: "admin-feature-intake-test.js", bytes: 510001},
   ], budget);
   if (findings.length !== 2) {

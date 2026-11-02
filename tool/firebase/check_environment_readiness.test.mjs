@@ -31,15 +31,19 @@ import {
   selectReadinessRequirements,
   validateEnvironmentReadinessManifest,
   validateReadinessSelectors,
+  withSourceSecretConsumers,
 } from "./check_environment_readiness.mjs";
+import {collectSecretConsumers} from "./function_binding_intent.mjs";
 import {dormantFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../..");
-const manifest = JSON.parse(fs.readFileSync(
+const authoredManifest = JSON.parse(fs.readFileSync(
   path.join(testDir, "environment_readiness.json"),
   "utf8",
 ));
+const manifest = withSourceSecretConsumers(authoredManifest,
+  collectSecretConsumers({sourceRoot: repoRoot}));
 const aliases = parseFirebaseProjectAliases(fs.readFileSync(
   path.join(repoRoot, ".firebaserc"),
   "utf8",
@@ -106,7 +110,7 @@ test("manifest completeness catches missing and dynamic defineSecret declaration
   assert.deepEqual([...discoveries.names], ["FIRST_SECRET"]);
   assert.deepEqual(discoveries.unsupported, ["functions/src/example.ts"]);
 
-  const reduced = structuredClone(manifest);
+  const reduced = structuredClone(authoredManifest);
   reduced.requirements = reduced.requirements.filter(
     (entry) => entry.name !== "ALGOLIA_WRITE_API_KEY",
   );
@@ -1008,10 +1012,10 @@ test("candidate readiness is distinct from deployed equivalence and preserves ex
 });
 
 test("offline direct-reader coverage rejects omitted and unsupported consumers", () => {
-  const reduced = structuredClone(manifest); reduced.directReaders.shift();
+  const reduced = structuredClone(authoredManifest); reduced.directReaders.shift();
   assert.throws(() => executeReadinessCli(["--manifest-only"], {manifest: reduced, repoRoot}),
     /Direct secret reader is missing from manifest/u);
-  const unsupported = structuredClone(manifest); unsupported.directReaders[0].consumers.push("missingFunction");
+  const unsupported = structuredClone(authoredManifest); unsupported.directReaders[0].consumers.push("missingFunction");
   assert.throws(() => executeReadinessCli(["--manifest-only"], {manifest: unsupported, repoRoot}),
     /unsupported direct-reader consumer/u);
   assert.deepEqual([...discoverDirectSecretReaders([
@@ -1396,4 +1400,117 @@ test("a new consumer may be deployed before it exists; the post-deploy check sti
       serviceAccount: "123-compute@developer.gserviceaccount.com", reference: null, active: false}]};
   assert.equal(run(["functions:onMessageNominationListingReady"], candidate).exitCode, 1,
     "after the deploy the Function must exist");
+});
+
+// One small repository, so these cases exercise the real CLI: source scan,
+// manifest validation and metadata classification together.
+function secretConsumerFixture(t, {source, requirements = [secretRequirement("PAY_SECRET")]}) {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), "readiness-consumers-"));
+  t.after(() => fs.rmSync(repo, {recursive: true, force: true}));
+  const write = (name, contents) => {
+    fs.mkdirSync(path.dirname(path.join(repo, name)), {recursive: true});
+    fs.writeFileSync(path.join(repo, name), contents);
+  };
+  write("functions/package-lock.json", JSON.stringify({
+    packages: {"node_modules/firebase-functions": {version: "7.4.0"}},
+  }));
+  write("functions/src/index.ts", 'export {pay, refund} from "./payments";\n');
+  write("functions/src/payments.ts", `import {onCall} from "firebase-functions/v2/https";
+import {defineSecret} from "firebase-functions/params";
+const paySecret = defineSecret("PAY_SECRET");
+${source}
+`);
+  const fixtureManifest = {version: 1, environments: ["dev"], requirements, directReaders: [],
+    selectors: {deployTargets: ["functions"], capabilities: ["opt-in"]}};
+  return (argv, runCommand) => executeReadinessCli(argv, {repoRoot: repo, manifest: fixtureManifest,
+    aliases, sourceSha: "a".repeat(40), runCommand});
+}
+
+function secretRequirement(name, extra = {}) {
+  return {id: `functions.secret.${name}`, kind: "secret-version", name, environments: ["dev"],
+    acceptedStates: ["ENABLED"], owner: "payments", sourcePaths: ["functions/src/payments.ts"],
+    credentialClass: "provider-secret", rotationCompatibility: "provider-overlap",
+    activationPolicy: "required-by-selected-consumer",
+    binding: {kind: "firebase-secret-param", exactReference: "observed-numeric-version",
+      identity: "observed-function-service-account"}, ...extra};
+}
+
+const bothBindPaySecret = `export const pay = onCall({secrets: [paySecret]}, () => {});
+export const refund = onCall({secrets: [paySecret]}, () => {});`;
+const usageError = (pattern) => (error) => {
+  assert.equal(error.exitCode, 64);
+  assert.match(error.message, pattern);
+  return true;
+};
+
+test("the checked manifest lists no secret consumer; source supplies them all", () => {
+  for (const requirement of authoredManifest.requirements.filter((entry) => entry.kind === "secret-version")) {
+    assert.equal(requirement.requiredWhen?.anyDeployTarget, undefined, requirement.id);
+  }
+  // The consumer that PR #1388 had to list by hand.
+  assert.ok(selectReadinessRequirements({environment: "dev", manifest,
+    targets: ["functions:adminManageOrganizerBills"]})
+    .some((entry) => entry.name === "RAZORPAY_KEY_SECRET"));
+  assert.throws(() => executeReadinessCli(["--manifest-only"], {repoRoot, manifest}),
+    usageError(/remove anyDeployTarget; consumers come from the Functions that bind/u));
+});
+
+test("binding an existing secret to another Function needs no manifest edit and is still checked", (t) => {
+  const run = secretConsumerFixture(t, {source: bothBindPaySecret});
+  const live = (functions, state = "ENABLED") => run(["--env", "dev", "--targets", "functions:refund"], (spec) => {
+    if (spec.args[0] === "projects") return readyProjectMetadata(spec.args[2]);
+    if (spec.args[0] === "functions") return metadata(functions);
+    if (spec.args[1] === "versions") {
+      return metadata({name: "projects/catchdates-dev/secrets/PAY_SECRET/versions/3", state});
+    }
+    return readyMetadataRunner(spec);
+  });
+  const reason = (execution, suffix = "") => execution.report.environments[0].results
+    .find((entry) => entry.id === `functions.secret.PAY_SECRET:refund${suffix}`).reason;
+
+  const bound = [fakeFunction("refund", "PAY_SECRET", "catchdates-dev", "3")];
+  const ready = live(bound);
+  assert.deepEqual([ready.exitCode, reason(ready)], [0, "selected-version-enabled"]);
+  // Deriving the consumer must not soften any of the deployed-state failures.
+  const unprovisioned = live(bound, "DISABLED");
+  assert.deepEqual([unprovisioned.exitCode, reason(unprovisioned)], [1, "selected-version-not-enabled"]);
+  const unbound = [{...bound[0], serviceConfig: {...bound[0].serviceConfig, secretEnvironmentVariables: []}}];
+  const missing = live(unbound);
+  assert.deepEqual([missing.exitCode, reason(missing)], [1, "selected-secret-binding-missing"]);
+});
+
+test("a Function that stops binding a secret stops requiring it", (t) => {
+  const run = secretConsumerFixture(t, {source: `export const pay = onCall({secrets: [paySecret]}, () => {});
+export const refund = onCall({}, () => {});`});
+  const execution = run(["--env", "dev", "--targets", "functions:refund"],
+    (spec) => spec.args[0] === "projects" ? readyProjectMetadata(spec.args[2]) : assert.fail("nothing to probe"));
+  assert.deepEqual([execution.exitCode, execution.report.environments[0].selectedRequirementCount], [0, 0]);
+});
+
+test("source a readiness run cannot read stops it, naming the file and pattern", (t) => {
+  const run = secretConsumerFixture(t, {source: `const local = (options) => onCall(options, () => {});
+export const pay = local({secrets: [paySecret]});
+export const refund = onCall({}, () => {});`});
+  for (const argv of [["--manifest-only"], ["--env", "dev", "--targets", "functions:refund"]]) {
+    assert.throws(() => run(argv, () => assert.fail("no probe may run")), usageError(
+      /functions\/src\/payments\.ts:5, Function pay: calls a trigger wrapper that is not listed in endpointWrappers/u));
+  }
+});
+
+test("a bound secret without an owner entry and an entry nothing selects both fail offline", (t) => {
+  assert.throws(() => secretConsumerFixture(t, {source: bothBindPaySecret, requirements: [
+    secretRequirement("PAY_SECRET"), secretRequirement("OTHER_SECRET")]})(["--manifest-only"]),
+  usageError(/no Function binds OTHER_SECRET and no capability selects it/u));
+  assert.throws(() => secretConsumerFixture(t, {source: `export const pay = onCall({secrets: [paySecret, "UNOWNED_SECRET"]}, () => {});
+export const refund = onCall({}, () => {});`})(["--manifest-only"]),
+  usageError(/pay binds UNOWNED_SECRET, which has no secret-version requirement/u));
+  // Policy that source cannot express stays, keyed by secret.
+  const optIn = secretConsumerFixture(t, {source: bothBindPaySecret, requirements: [secretRequirement("PAY_SECRET"),
+    secretRequirement("OTHER_SECRET", {requiredWhen: {anyCapability: ["opt-in"]}})]});
+  assert.throws(() => optIn(["--manifest-only"]), /manifest secret is not declared with defineSecret: OTHER_SECRET/u);
+  // Per-Function runtime roles must still name a Function that binds the secret.
+  assert.throws(() => secretConsumerFixture(t, {source: bothBindPaySecret, requirements: [
+    secretRequirement("PAY_SECRET", {runtimeRolesByConsumer: {
+      gone: ["roles/secretmanager.secretAccessor"]}})]})(["--manifest-only"]),
+  usageError(/invalid consumer runtime roles/u));
 });

@@ -335,6 +335,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
 | `adminListOrganizerListingReviews` | `src/admin/organizerListingReviewQueue.ts` | Admin, owner or support read the pages of Supply Intake listings awaiting approval, newest first, with each listing's evidence-backed fields, links, gaps, pages read and content hash, and whether the caller may approve |
+| `adminGetOrganizerListingReview` | `src/admin/organizerListingReviewQueue.ts` | Admin, owner or support read one Supply Intake listing awaiting approval, by its request, for the inbox's approval sheet |
 | `adminListInboxItems` | `src/admin/inbox/callables.ts` | Admin, owner or support read one page of the Admin inbox (listings, imported events, claims, enquiries, launch access, stuck intake) by scope, type and city, oldest first, with real totals per scope and type |
 | `adminGetInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support (or the sales associate who nominated it) read one inbox item and its journey, every step it took |
 | `adminUpdateInboxItem` | `src/admin/inbox/callables.ts` | Admin, owner or support assign, unassign, snooze or wake one inbox item; audited and recorded in its journey |
@@ -343,6 +344,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminRecommendOrganizerClaim` | `src/admin/organizerClaimRecommendation.ts` | Admin, owner or support recommend approving or rejecting a pending organizer claim; audited; only the owner decides it |
 | `adminSearchPeople` | `src/admin/peopleSearch.ts` | Admin, owner, support or safety reviewers search people by name, phone or uid in `adminPeopleIndex`; every search and its query is written to `adminAuditLogs` |
 | `adminListActivityLog` | `src/admin/activityLog.ts` | Admin or owner read the activity log newest first: audited decisions merged with agent execution receipts, filterable to problems |
+| `adminGetListingEventReview` | `src/admin/listingEventImports.ts` | Admin, owner or support read one imported event of an approved listing, for the inbox's publish sheet |
 | `adminListListingEventImports` | `src/admin/listingEventImports.ts` | Admin, owner or support read approved Supply Intake listings, newest first, with each imported event's state (published by the policy or staff, withdrawn, ready, needs a check, blocked) and the reasons |
 | `adminPublishListingEvents` | `src/admin/listingEventImports.ts` | Admin, owner or support dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events; full checklist, per-event resolutions, one transaction and receipt per event |
 | `adminListSupplyIntakePolicies` | `src/admin/supplyIntakePolicies.ts` | Admin, owner or support read the Supply Intake capabilities that wait for the owner's decision, with the decision and whether the policy file switches each on |
@@ -573,6 +575,40 @@ not a Firebase callable function. It uses an explicit CORS origin allowlist for
 Catch domains, Firebase Hosting domains, and local previews. Keep any future
 public web-abuse controls for that endpoint separate from callable App Check
 enforcement.
+
+## Backend rules
+
+No tool checks these. Hold new Functions code to them in review.
+
+- **Idempotent triggers:** every `onDocument*` or `onObject*` trigger and payment
+  webhook guards non-idempotent side effects (push, auto-id flag writes, counter
+  increments) with a deterministic `functionEventReceipts` receipt from
+  `src/shared/eventReceipts.ts`. Writes whose id is already deterministic need no
+  guard.
+- **Payments:** each provider has a signature-verified webhook and a scheduled
+  reconciliation sweep, and a pending payment document is written at order creation,
+  keyed by order id. A failed refund ends in a distinct status (`reviewRequired`)
+  with a structured alert, never silently as complete.
+- **Client ids and paths:** identifiers and storage paths from a client are
+  validated for ownership and format before use as document ids, canonical URLs or
+  slugs, or admin-SDK action targets. A profile photo `storagePath`, for example,
+  must sit under `users/{uid}/`. A client id is never trusted as a deletion target
+  or public path.
+- **Moderation boundary:** moderation runs at the write boundary, so the stored
+  document, the denormalized `lastMessagePreview` and every delivery channel never
+  carry blocked content. Publicly rendered free text (reviews, reviewer names, host
+  responses) is moderated too.
+- **Aggregation triggers:** return early when the relevant fields did not change,
+  and bound queries with `count()`, limits or incremental deltas rather than scanning
+  a whole collection or lifetime history on every write.
+- **Free text and leaks:** user free text (reviews, occupation, company, names) is
+  length-bounded on the server. Logs and client errors never carry PII or a raw
+  upstream error body such as a Google Places `error.message`.
+- **One source of logic:** authorization, eligibility, attendance and state-machine
+  logic lives in one shared module, not copies in sibling features.
+
+See [Write Path Discipline](../docs/data_contracts.md#write-path-discipline) for
+partial writes and denormalized fields.
 
 ## Request validation
 

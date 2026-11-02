@@ -1,0 +1,69 @@
+{
+  "components": [
+    {
+      "id": "workspace_partner_demo_review",
+      "kind": "workspace",
+      "owner": "features/partners",
+      "source": "admin/src/features/partners/ui/PartnerDemoReviewWorkspace.tsx",
+      "exportName": "PartnerDemoReviewWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "review",
+          "unconfirmed",
+          "withdrawn",
+          "expired"
+        ]
+      },
+      "notes": "Current own separately shared synthetic preview and unapproved wording proposal; no invitation or control."
+    },
+    {
+      "id": "workspace_partner_outreach",
+      "kind": "workspace",
+      "owner": "features/partners",
+      "source": "admin/src/features/partners/ui/PartnerOutreachWorkspace.tsx",
+      "exportName": "PartnerOutreachWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "preparation",
+          "pending-review",
+          "manual-copy",
+          "manual-send-attestation",
+          "interrupted",
+          "revoked"
+        ]
+      },
+      "notes": "Own accepted assignment current sources, exact reviewed wording and actor-attested manual sending; no employee capability or provider delivery authority."
+    },
+    {
+      "id": "workspace_partner_sales",
+      "kind": "workspace",
+      "owner": "features/partners",
+      "source": "admin/src/features/partners/ui/PartnerWorkspaceScreen.tsx",
+      "exportName": "PartnerWorkspaceScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "membership",
+          "nomination",
+          "offered",
+          "accepted",
+          "revoked",
+          "pending",
+          "save-conflict"
+        ]
+      },
+      "notes": "Dedicated /partners/ route in existing React console; membership and canonical assignments are server scoped without employee roles."
+    }
+  ]
+}

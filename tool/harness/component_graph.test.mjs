@@ -317,7 +317,7 @@ for (const [file, target] of [
       const result = plan(filePath, mode);
       assert.equal(result.complete, true);
       assert.deepEqual(result.operations.ciTargets, [target, "policy_docs"].sort());
-      assert.deepEqual(result.operations.checkIds, ["agent:harness-v2", "meta:enforcement-integrity"]);
+      assert.deepEqual(result.operations.checkIds, ["agent:harness-v2"]);
     }
   });
 }
@@ -363,8 +363,7 @@ test("shared React validation runs both callers and retains Hosting and policy c
     const tools = planAffectedToolChecks({changedPaths: [file],
       manifest: toolsManifest, componentGraph: graph, mode});
     assert.equal(tools.mode, "affected");
-    for (const id of ["agent:harness-v2", "meta:enforcement-integrity",
-      "ci:web-hosting-delivery-workflow"]) {
+    for (const id of ["agent:harness-v2", "ci:web-hosting-delivery-workflow"]) {
       assert.ok(tools.toolIds.includes(id), `${mode} omitted ${id}`);
     }
   }
@@ -483,7 +482,6 @@ test("native build controls validate their callers with Node-only toolchain setu
       assert.equal(tools.mode, "affected");
       assert.ok(tools.toolIds.includes("env:ci-toolchain"));
       assert.ok(tools.toolIds.includes("agent:harness-v2"));
-      assert.ok(tools.toolIds.includes("meta:enforcement-integrity"));
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
     }
   }
@@ -556,6 +554,8 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness.mjs",
       "/tool/harness/verify_local.mjs",
       "/tool/harness/compare_selectors.mjs",
+      "/tool/nx/select_lanes.mjs",
+      "/tool/nx/shadow_plan.mjs",
       "/tool/ci/toolchain.env",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
@@ -565,6 +565,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/repository_snapshot.mjs",
       "/tool/lib/tool_impact.mjs",
+      "/tool/lib/tool_manifest_rules.mjs",
       "/tool/lib/tool_platform.mjs",
       "/tool/run.mjs",
       "/tool/tools_manifest.json",
@@ -738,10 +739,7 @@ test("agent policy remains distinct from ordinary documentation", () => {
   const result = plan("AGENTS.md");
   assert.deepEqual(result.directComponents, ["policy.agent"]);
   assert.deepEqual(result.operations.ciTargets, ["policy_docs"]);
-  assert.deepEqual(result.operations.checkIds, [
-    "docs:metadata",
-    "meta:enforcement-integrity",
-  ]);
+  assert.deepEqual(result.operations.checkIds, ["docs:metadata"]);
 });
 
 test("terminal Functions documentation never inherits deploy authority", () => {
@@ -761,19 +759,19 @@ test("shared Flutter presentation change selects tests and role-bounded web smok
   const v2Plan = plan(path);
 
   assert.deepEqual(v2Plan.directComponents, ["app.shared"]);
-  assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host", "marketing.capture-freshness"]);
-  assert.deepEqual(v2Plan.operations.ciTargets, ["capture_freshness", "flutter", "flutter_web_smoke", "visual_integration"]);
+  assert.deepEqual(v2Plan.affectedComponents, ["app.consumer", "app.host"]);
+  assert.deepEqual(v2Plan.operations.ciTargets, ["flutter", "flutter_web_smoke", "visual_integration"]);
   assert.deepEqual(v2Plan.operations.buildTargets, [
     "consumer-web-smoke",
     "host-web-smoke",
   ]);
 });
 
-test("host-only Flutter source keeps Host smoke while validating Marketing captures", () => {
+test("host-only Flutter source keeps Host smoke and selects no Marketing captures", () => {
   const result = plan("lib/hosts/presentation/host_home.dart");
   assert.deepEqual(result.directComponents, ["app.host"]);
-  assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness"]);
-  assert.deepEqual(result.operations.ciTargets, ["capture_freshness", "flutter", "flutter_web_smoke", "visual_integration"]);
+  assert.deepEqual(result.affectedComponents, []);
+  assert.deepEqual(result.operations.ciTargets, ["flutter", "flutter_web_smoke", "visual_integration"]);
   assert.deepEqual(result.operations.buildTargets, ["host-web-smoke"]);
   assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
@@ -900,17 +898,6 @@ test("shared React build configuration expands to both web consumers", () => {
   assert.deepEqual(result.operations.ciTargets, ["admin", "capture_freshness", "marketing", "tools"]);
 });
 
-test("Flutter field adoption stays on the Flutter design lane", () => {
-  const result = plan("design/components/flutter_field_surface_adoption.json");
-  assert.deepEqual(result.directComponents, ["app.design-field-adoption"]);
-  assert.deepEqual(result.affectedComponents, []);
-  assert.deepEqual(result.operations.ciTargets, [
-    "flutter",
-    "tools",
-    "visual_integration",
-  ]);
-});
-
 test("authored contracts expand to every declared validation consumer", () => {
   const result = plan("contracts/users/v1.schema.json");
   assert.deepEqual(result.directComponents, ["contracts.source"]);
@@ -937,7 +924,6 @@ test("authored contracts expand to every declared validation consumer", () => {
     "operations",
   ]);
   assert.deepEqual(result.operations.codegenIds, [
-    "admin.callable-validators",
     "contracts.schema-projections",
   ]);
 });
@@ -945,16 +931,15 @@ test("authored contracts expand to every declared validation consumer", () => {
 test("callable contracts select both schema and admin validator codegen", () => {
   const result = plan("contracts/callables/update_event_payload.schema.json");
   assert.deepEqual(result.operations.codegenIds, [
-    "admin.callable-validators",
     "contracts.schema-projections",
   ]);
 });
 
-test("generated Flutter bindings validate Flutter and Marketing without expanding upstream", () => {
+test("generated Flutter bindings validate Flutter without expanding upstream", () => {
   const result = plan("lib/platform/schema_contracts/generated/schema_paths.dart");
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
-  assert.deepEqual(result.affectedComponents, ["marketing.capture-freshness"]);
-  assert.deepEqual(result.operations.ciTargets, ["capture_freshness", "contracts", "flutter"]);
+  assert.deepEqual(result.affectedComponents, []);
+  assert.deepEqual(result.operations.ciTargets, ["contracts", "flutter"]);
   assert.deepEqual(result.operations.codegenIds, ["contracts.schema-projections"]);
 });
 
@@ -1075,12 +1060,20 @@ test("graph validation rejects unknown tool check ids when the manifest is suppl
   assert.ok(errors.some((error) => error.includes('unknown tool check id "missing:check"')));
 });
 
+test("the build-time catalog generator validates every surface that compiles its output", () => {
+  const result = plan("tool/admin/generate_admin_action_catalog.mjs");
+  assert.equal(result.complete, true);
+  for (const target of ["admin", "functions", "tools"]) {
+    assert.ok(result.operations.ciTargets.includes(target), target);
+  }
+});
+
 test("generator scripts and generated outputs select their declared freshness checks", () => {
   const schemaScript = plan("tool/contracts/generate_schema_contracts.mjs");
   assert.deepEqual(schemaScript.operations.codegenIds, ["contracts.schema-projections"]);
 
   const adminScript = plan("admin/scripts/generateCallableValidators.mjs");
-  assert.deepEqual(adminScript.operations.codegenIds, ["admin.callable-validators"]);
+  assert.deepEqual(adminScript.operations.codegenIds, [], "Built on demand; nothing tracked can go stale");
 
   const notificationCatalog = plan("copy/notifications_en.json");
   assert.deepEqual(notificationCatalog.directComponents, ["content.notification"]);
@@ -1140,30 +1133,30 @@ test("post-deploy callable IAM helper is deployment control, without runtime mut
 });
 
 
-test("Flutter token package preserves app and visual checks with Marketing capture freshness", () => {
+test("Flutter token package preserves app and visual checks and selects no captures", () => {
   const result = plan("packages/catch_tokens/lib/src/primitives/catch_spacing.dart");
   assert.deepEqual(result.directComponents, ["app.tokens"]);
   for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
     assert.ok(result.affectedComponents.includes(owner), owner);
   }
-  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "capture_freshness", "visual_integration"]) {
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
-  for (const target of ["admin", "functions"]) {
+  for (const target of ["admin", "capture_freshness", "functions"]) {
     assert.ok(!result.operations.ciTargets.includes(target), target);
   }
 });
 
-test("Flutter UI package preserves app and visual checks with Marketing capture freshness", () => {
+test("Flutter UI package preserves app and visual checks and selects no captures", () => {
   const result = plan("packages/catch_ui/lib/src/foundations/catch_theme.dart");
   assert.deepEqual(result.directComponents, ["app.ui"]);
   for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
     assert.ok(result.affectedComponents.includes(owner), owner);
   }
-  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "capture_freshness", "visual_integration"]) {
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]) {
     assert.ok(result.operations.ciTargets.includes(target), target);
   }
-  for (const target of ["admin", "functions"]) {
+  for (const target of ["admin", "capture_freshness", "functions"]) {
     assert.ok(!result.operations.ciTargets.includes(target), target);
   }
 });
@@ -1171,16 +1164,15 @@ test("Flutter UI package preserves app and visual checks with Marketing capture 
 
 test("freshness routing includes declared indirect inputs and preserves output obligations", () => {
   const cases = [
-    ["tool/admin/callable_inventory.mjs", ["admin.callable-validators"]],
-    ["contracts/admin/admin_action_catalog.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["contracts/operations/common.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["contracts/embedded/event_offer_row.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["contracts/firestore/sales_quotes.schema.json", ["admin.callable-validators", "contracts.schema-projections"]],
-    ["admin/src/features/sales/api/salesRepository.ts", ["admin.callable-validators"]],
-    ["admin/src/features/sales/ui/SalesWorkspaceScreen.tsx", ["admin.callable-validators"]],
+    ["tool/admin/callable_inventory.mjs", []],
+    ["contracts/admin/admin_action_catalog.json", ["contracts.schema-projections"]],
+    ["contracts/operations/common.schema.json", ["contracts.schema-projections"]],
+    ["contracts/embedded/event_offer_row.schema.json", ["contracts.schema-projections"]],
+    ["contracts/firestore/sales_quotes.schema.json", ["contracts.schema-projections"]],
+    ["admin/src/features/sales/api/salesRepository.ts", []],
+    ["admin/src/features/sales/ui/SalesWorkspaceScreen.tsx", []],
     ["admin/src/features/sales/ui/SalesWorkspaceScreen.test.tsx", []],
     ["admin/src/features/sales/ui/SalesWorkspaceScreen.stories.tsx", []],
-    ["admin/src/generated/validators/adminCallableValidators.ts", ["admin.callable-validators"]],
     ["website/src/shared/contracts/generated/joinWaitlistSchemas.ts", ["contracts.schema-projections"]],
     ["tool/lib/repo_paths.mjs", ["copy.native", "copy.notification"]],
     ["functions/package-lock.json", ["contracts.schema-projections"]],
@@ -1219,7 +1211,7 @@ test("every generator requires explicit runtimes and package dependencies", () =
 });
 
 
-test("capture provenance inputs add lightweight freshness without changing source obligations", () => {
+test("only capture tooling and images select capture production; app inputs leave it to the release", () => {
   const baseline = structuredClone(graph);
   baseline.components = baseline.components.filter(entry => entry.id !== "marketing.capture-freshness");
   delete baseline.operationProfiles["capture-freshness"];
@@ -1248,7 +1240,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
   baseline.components = baseline.components.filter((entry) =>
     !["marketing.capture-tooling", "marketing.capture-artifacts", "marketing.capture-docs",
       "marketing.capture-artifact-docs"].includes(entry.id));
-  const inputs = [
+  const appInputs = [
     "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
     "lib/main_consumer.dart", "lib/l10n/app_en.arb",
     "lib/l10n/generated/app_localizations.dart",
@@ -1261,23 +1253,31 @@ test("capture provenance inputs add lightweight freshness without changing sourc
     "packages/catch_ui_lints/pubspec.yaml", "packages/catch_ui_lints/lib/example.dart",
     "packages/example/pubspec.yaml",
     "packages/example/lib/example.dart", "packages/example/assets/example.png",
-    "tool/ui_capture/run_captures.mjs", "tool/lib/repo_paths.mjs",
-    "tool/demo/demo_seed/scenarios/host-demo.json",
-    "tool/demo/demo_seed/personas/india-host.json", "tool/ci/toolchain.env",
-    "artifacts/marketing/app-screenshots/host-event-setup.png",
-    "tool/marketing/lib/capture_provenance.mjs", "assets/audio/celebration/README.md",
+    "tool/ci/toolchain.env", "assets/audio/celebration/README.md",
     "assets/audio/event_success/README.md", "packages/example/assets/README.md",
     "lib/README.md", "test/goldens/README.md", "tool/marketing/README.md",
     "tool/demo/demo_seed/scenarios/README.md",
+  ];
+  const captureInputs = [
+    "tool/ui_capture/run_captures.mjs", "tool/lib/repo_paths.mjs",
+    "tool/demo/demo_seed/scenarios/host-demo.json",
+    "tool/demo/demo_seed/personas/india-host.json",
+    "artifacts/marketing/app-screenshots/host-event-setup.png",
+    "tool/marketing/lib/capture_provenance.mjs",
     "artifacts/marketing/app-screenshots/README.md",
   ];
-  for (const file of inputs) {
+  for (const file of ["lib/main_consumer.dart", "test/example_test.dart", "assets/images/sample.png"]) {
+    assert.ok(!plan(file).operations.ciTargets.includes("capture_freshness"), file);
+  }
+  for (const file of [...appInputs, ...captureInputs]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const before = plan(file, mode, baseline);
       const after = plan(file, mode);
       assert.equal(after.complete, true, `${file} ${mode}`);
-      assert.deepEqual(after.operations.ciTargets,
-        [...new Set([...before.operations.ciTargets, "capture_freshness"])].sort(), `${file} ${mode}`);
+      // A website build imports its images, so a path that selects Marketing keeps them.
+      assert.deepEqual(after.operations.ciTargets, captureInputs.includes(file) || before.operations.ciTargets.includes("marketing")
+        ? [...new Set([...before.operations.ciTargets, "capture_freshness"])].sort()
+        : before.operations.ciTargets, `${file} ${mode}`);
       for (const key of ["checkIds", "codegenIds", "buildTargets"]) {
         assert.deepEqual(after.operations[key], before.operations[key], `${file} ${mode} ${key}`);
       }
@@ -1300,9 +1300,8 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
   for (const mode of ["pr", "merge_group", "main", "nightly"]) {
     const result = planAffected({graph, mode, changedPaths: [
       "lib/auth/presentation/phone_step.dart", "functions/src/payments/razorpay.ts"]});
-    for (const target of ["capture_freshness", "functions"]) {
-      assert.ok(result.operations.ciTargets.includes(target));
-    }
+    assert.ok(result.operations.ciTargets.includes("functions"));
+    assert.ok(!result.operations.ciTargets.includes("capture_freshness"));
     const nativeOnly = plan("lib/auth/presentation/phone_step.dart", mode);
     assert.deepEqual(result.operations.buildTargets, nativeOnly.operations.buildTargets);
     assert.deepEqual(deriveAppRoles(result), deriveAppRoles(nativeOnly));

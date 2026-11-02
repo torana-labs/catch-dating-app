@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.96.1
-updated: 2026-11-01
+version: 1.98.2
+updated: 2026-11-02
 owner: app_architecture
 status: active
 ---
@@ -33,11 +33,10 @@ This spec consolidates and normalizes guidance from:
   token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
-- `tool/policy/rules.json`: active enforceable rules such as
-  `ASYNC-UI-001`, `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
-  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
-  `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
-  `WIDGET-CATALOG-001`.
+- `tool/tools_manifest.json`: rules a tool enforces, on the tool that enforces
+  them, such as `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
+  `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
+  `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and `WIDGET-CATALOG-001`.
 
 ## Quick Decision Layer
 
@@ -140,8 +139,8 @@ in the shared package. Connectivity and rehearsal state remain app callers.
 5. The catalog moves with code: Widgetbook cases, goldens, and registry rows
    for touched shared components update in the same PR.
 
-An `aligned` claim in `tool/architecture/pattern_adoption.json` must name its
-machine check or carry an explicit manual-review line with reviewer and date.
+A claim that code conforms to a pattern must name its machine check or carry
+an explicit manual-review line with reviewer and date.
 
 ## Canonical Decisions And Overrides
 
@@ -273,6 +272,18 @@ Each layer should have one clear job:
 The rule is not "more layers are always better." The rule is "state and side
 effects have one predictable owner."
 
+Two habits reviewers hold every layer to:
+
+- A conditional whose arms produce identical values is dead logic, often left by
+  an incomplete rename or a forgotten variant. Remove the condition or fix the
+  arm that should differ.
+- A public widget, getter or enum value in `lib/` needs a live reference:
+  production code, route or config registration, or a Widgetbook use case or
+  capture-catalog entry for a component with a widget-catalog or contract entry.
+  Test-only references do not count, and Widgetbook alone does not count without
+  that entry. `lib/design_fixtures` and intentional in-dev features are exempt.
+  Delete orphaned symbols together with their dead tests.
+
 ## Bounded Context Contract
 
 Screens are shaped by the design; data is shaped by who owns it. The two live
@@ -281,8 +292,10 @@ app folders without touching repositories, and data ownership never depends
 on which tab shows the data.
 
 `tool/architecture/context_map.json` is the source of truth for the contexts,
-their order and where every current folder belongs. `audit:context-map`
-(`tool/architecture/check_context_map.mjs`) checks it on every app build.
+their order and where every current folder belongs. The `catch_arch_*` lints in
+`packages/catch_ui_lints` read it and check every file inside the analyzer;
+`audit:context-map` (`tool/architecture/check_context_map.mjs`) checks that the
+map is well formed and that the table below matches it.
 
 ### Target layout
 
@@ -385,11 +398,10 @@ may read repositories and platform plugins.
 8. Context names are product nouns used the same way in Flutter,
    `functions/src` and the website. Manual review when a context is added.
 
-Imports in legacy folders that already break rules 1 and 2 are listed in
-`tool/architecture/context_map_baseline.json`. CI fails on a new one and on a
-listed one that no longer exists, so the list only shrinks. Files under
-`lib/contexts/`, `lib/pages/`, `lib/kernel/` and `lib/platform/` cannot be
-listed, and rules 3 to 5 cannot be listed anywhere.
+A legacy import that has to break rules 1 or 2 takes a reasoned `// ignore:`
+next to the import; see [Enforcement And Overrides](#enforcement-and-overrides).
+Files under `lib/contexts/`, `lib/pages/`, `lib/kernel/` and `lib/platform/`
+take no exceptions, and rules 3 to 5 take none anywhere.
 
 ### Placing legacy folders
 
@@ -422,21 +434,22 @@ summaries.
 
 #### Phase 1: contract and check
 
-This contract and `audit:context-map`.
+This contract and the context-map checks.
 
 #### Phase 2: teach path-keyed checks the new roots
 
-`audit:dependency-direction` places each file by layer rather than matching
-`lib/<feature>/<layer>/`, so its rules keep applying after a move. Context
+The `catch_arch_*` lints place each file by layer rather than matching
+`lib/<feature>/<layer>/`, so their rules keep applying after a move. Context
 `domain/` and `data/` folders and `lib/kernel/` get the domain and data rules,
 `actions/` the controller exemptions, `parts/` the provider-free rule, and
 `lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
-under these roots can never be baselined, so moved code arrives clean.
+under these roots take no exceptions, so moved code arrives clean.
 
-The other screen checks still read only `lib/`, and the app packages don't
-load the Catch UI or Riverpod analyzer plugins. Closing that gap is a
-prerequisite for phase 4, not for phase 3. Tools that name specific files
-update in the PR that moves those files.
+The app packages are analyzed from the workspace root and include its
+`analysis_options.yaml`, so the Catch UI and Riverpod plugins reach them. The
+other screen checks still read only `lib/`; closing that gap is a prerequisite
+for phase 4, not for phase 3. Tools that name specific files update in the PR
+that moves those files.
 
 #### Phase 3: move domain and data
 
@@ -535,7 +548,7 @@ remain the explicit entrypoints for a full selected-device pass. Do not use
 Do not add an asynchronous localization delegate when the requested behavior is
 already the component's nonlocalized fallback.
 
-<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 owner=recursive_audit_loop -->
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,
@@ -679,10 +692,8 @@ Hard rules:
   repository/data boundaries or feature-neutral adapter seams that keep those
   SDKs out of domain models and validators.
 - Domain serialization that still needs Firestore `Timestamp` handling routes
-  through `lib/platform/firebase/firestore_converters.dart`. Existing direct
-  Firebase imports in domain are ratcheted debt in
-  `tool/architecture/dependency_direction_baseline.json`; new domain code must
-  not add them. The long-term target is no Firebase API calls or Firebase types
+  through `lib/platform/firebase/firestore_converters.dart`; new domain code
+  must not add direct Firebase imports. The long-term target is no Firebase API calls or Firebase types
   in domain signatures. Full DTO purity is not the target by default.
 - Platform/plugin effects such as URL launch, share, image picker, location,
   calendar, clipboard, haptics, notifications, and connectivity need a seam
@@ -690,7 +701,7 @@ Hard rules:
 
 Between contexts and layers, the
 [Bounded Context Contract](#bounded-context-contract) adds the context order,
-the public API rule and the layer order; `audit:context-map` checks them.
+the public API rule and the layer order; the `catch_arch_*` lints check them.
 
 Temporary exceptions require an override comment described in
 `Enforcement And Overrides`.
@@ -743,10 +754,9 @@ unresolved signal whose changed fields and caller contract still need review.
 Neither disposition claims compliance. Use `accepted-exception` only for a
 named mechanical/framework/service responsibility, such as the router
 Listenable bridge. Do not generate approvals from counts or use directory,
-filename, or whole-file ownership exceptions. Manual provider declarations in
-`dependency_direction_baseline.json` likewise require their exact symbol and
-canonical builder operation; the reviewed private Host family and Programs debt
-do not admit another declaration in the same file.
+filename, or whole-file ownership exceptions. A manual provider declaration
+likewise takes its own `// ignore:` with a reason, so the Programs debt does not
+admit another declaration in the same file.
 
 This is a parsed-source review gate, not whole-program type/flow analysis.
 Dynamic dispatch, typedef/tear-off callback aliases, re-export-only ancestry,
@@ -846,7 +856,7 @@ lazy slivers.
 
 ### Exhibit ARCH-SCREEN-COMPOSITION-001: Semantic Screen Composition
 
-<!-- exhibit-freshness: ARCH-SCREEN-COMPOSITION-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-SCREEN-COMPOSITION-001 owner=app_architecture -->
 
 Screen composition is a closed family, not a per-feature assembly exercise:
 
@@ -1097,7 +1107,7 @@ navigation remains available.
 
 ### Exhibit ARCH-SHELL-SCROLL-001: Adaptive Root-Screen Scroll Clearance
 
-<!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-SHELL-SCROLL-001 owner=app_architecture -->
 
 `AdaptiveTabScaffold` is the single shell placement boundary. Consumer
 destinations and compact Host destinations keep the existing platform-aware
@@ -1378,7 +1388,9 @@ roles upward only when they recur.
 `lib/src/semantic`, and component token contracts in `lib/src/components`.
 `CatchWelcomeTokens` owns Welcome reel geometry and `CatchFormWorkspaceTokens`
 owns form-builder pane geometry. Import the public entrypoint instead of
-package internals. The package uses the repository Dart workspace and its only
+package internals. Read `CatchTokens.of(context)` inside the leaf widget rather
+than passing `CatchTokens` through constructors, unless the widget deliberately
+renders with a token set other than the current one. The package uses the repository Dart workspace and its only
 production dependency is the Flutter SDK, enforced by
 `platform:app-package-graphs` with seeded forbidden-dependency tests.
 The package also enables Flutter lints, including undeclared-package-import
@@ -1564,6 +1576,8 @@ For `NestedScrollView` plus pinned tab rows:
   title group.
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
+- A collapsible title followed by a pinned row moves upward as it collapses; the
+  pinned search, filter or tab row never scrolls over the title.
 - Route-owned tab pages use a semantic `CatchRootScreenPageScrollView`
   constructor. `standard` owns the responsive width clamp, 20 pt gutter, 16 pt
   body start, and terminal clearance. `fullBleed` removes only the outer body
@@ -1640,7 +1654,7 @@ Catch's UI system has separate sources of truth by layer:
 
 | Layer | Source of truth | Mirrors / consumers |
 |---|---|---|
-| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
+| Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables |
 | Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/contexts/*/parts/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
 | Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
 | Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
@@ -1651,11 +1665,10 @@ arbitrary JSX/CSS exports as visual proposal material, not implementation
 source. A handoff is implementation-ready only when it names component contract
 ids, props, slots, and any missing primitive/token deltas.
 
-Style Dictionary is a candidate token transformation engine, not a component
-translator. Keep `dart run tool/design_tokens.dart` as the production generator
-until a spike proves generated Dart/CSS equivalence, custom gradient/semantic
-formats, deterministic `--check`, and real Figma/Tokens Studio value. Component
-contracts remain separate; no Style Dictionary output is widget implementation.
+Style Dictionary is the token transformation engine, not a component
+translator: `node tool/design_tokens.mjs` is the production generator, and
+`--check` fails when a tracked output differs. Component contracts remain
+separate; no Style Dictionary output is widget implementation.
 
 Validate the component registry with:
 
@@ -1805,6 +1818,11 @@ empty, retry, stale data, and mutation failure are handled.
 | Optional enrichment failure | Repository/view model | keep primary UI alive, log through error context when useful |
 | Platform/plugin failure | Service/repository/controller seam | typed app error, transient CatchNotice for a brief user action failure |
 | Framework/runtime failure | Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, `CatchFrameworkErrorState` |
+
+An optional enrichment read may fail silently only when the primary surface
+stays correct and no primary CTA, paid action, safety action or host operation
+depends on it. Anything a primary action depends on is not enrichment and must
+surface its error.
 
 Use `CatchAsyncBoundary` for simple body screens with one async value.
 
@@ -2472,7 +2490,7 @@ implementation.
 
 ### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity
 
-<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2616,6 +2634,10 @@ inside the flow. Prefer auto-dispose unless the flow must survive route/tab
 changes. If `keepAlive` is used, reset or invalidate state on completion,
 sign-out, or cancellation.
 
+Do not change the durable step or navigate past the current one until the
+required repository write or external mutation has succeeded, unless the
+transition is deliberately optimistic with explicit rollback and error UI.
+
 ### Async State Controller
 
 Use `AsyncNotifier<T>` when state is loaded asynchronously and then mutated by
@@ -2688,7 +2710,7 @@ section models when that removes business logic from widgets.
 
 ### Exhibit ARCH-PROVIDER-CODEGEN-001: Generated Auto-Dispose Provider Family
 
-<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-PROVIDER-CODEGEN-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -2742,7 +2764,7 @@ Use these lifecycle rules:
 - Use `@Riverpod(keepAlive: true)` only when the stream is deliberately global
   or prewarmed. Document the reason at the provider or call site with a
   `// keepalive:` marker within the three lines above the annotation or
-  handwritten provider declaration; the dependency-direction scanner enforces
+  handwritten provider declaration; `catch_arch_undocumented_keep_alive` enforces
   that marker.
 - For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
   whether the stream should remain active while its tab is inactive. If not,
@@ -2973,7 +2995,7 @@ or implementation technique cannot justify a second shared implementation.
   component) and it names a responsibility no existing role covers; a synonym
   of an existing role redirects to that role instead. Every registered
   component and role noun records `aliases`, the other names an agent would
-  plausibly write. The generated catalog and context pack index them, and the
+  plausibly write. The generated catalog indexes them, and the
   new-widget gate rejects a new widget whose name matches an existing
   component's name or alias with a pointer to that component (blueprint Phase
   7b delivers the alias data and gate).
@@ -3249,9 +3271,16 @@ must have a bundled fallback, schema/version validation, cache policy, and
 rollback. Authentication, safety, legal, permission, error, and navigation copy
 must remain bundled and release-reviewed.
 
+An automated find-and-replace that can touch prose, such as a rename from run to
+event, needs a human review of the changed string literals before merge. Copy on
+high-traffic surfaces (onboarding, booking and CTA flows, dashboard, event
+detail, chat, notifications, catalog copy under `contracts/`) and any string that
+has regressed before should have a copy snapshot test; every other string need
+not.
+
 ### Exhibit ARCH-COPY-001: Product Copy Boundary
 
-<!-- exhibit-freshness: ARCH-COPY-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-COPY-001 owner=recursive_audit_loop -->
 
 Reference implementation:
 
@@ -3299,9 +3328,8 @@ node tool/run.mjs check copy:event-success-questionnaires
 node tool/run.mjs check copy:structured-domain-content
 ```
 
-The baselines in `tool/copy/mobile_copy_baseline.json` and
-`tool/copy/l10n_orphan_baseline.json` must remain empty. New inline findings or
-missing catalog getters or zero-use ARB keys fail immediately. Exact usage
+Both checks are plain gates with no baseline: any inline finding, missing
+catalog getter or zero-use ARB key fails immediately. Exact usage
 locations are available from live `--json` output; no generated usage inventory
 is committed. An allowlist entry is only appropriate for a technical
 identifier, test/demo fixture, or user-authored value and must contain a narrow
@@ -3743,7 +3771,7 @@ code.
 
 ### Exhibit ARCH-APP-TARGET-001: Installable App Target Resolution
 
-<!-- exhibit-freshness: ARCH-APP-TARGET-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-APP-TARGET-001 owner=recursive_audit_loop -->
 
 The build wrapper resolves entrypoint and native identity from the target
 contract before it activates Firebase or invokes Flutter:
@@ -3852,21 +3880,45 @@ exemption.
 
 Use three enforcement levels.
 
-The enforcement registry is checked by
-`node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
-changes enforcement, update `tool/policy/rules.json`,
-`tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
-baseline reduction together. Manual enforcement is explicit with `stage: manual`;
-absence of an enforcement entry is drift.
+A rule a tool enforces is written on that tool in `tool/tools_manifest.json`:
+its `rules` holds the id, title, paths and instruction, and any other tool that
+helps enforce it names the id in `alsoEnforces`. `node tool/run.mjs check
+--manifest-only` validates those entries. A rule no tool checks is a sentence in
+the document that owns its subject, reviewed by hand.
 
 Every `*_baseline.json`, including checked-in test fixtures, declares `owner`
 (the owning source document's `doc_id`) and `targetPhase` (a repository Markdown
-heading reference to its target-zero phase). Enforcement integrity discovers
-these files directly, including unregistered baselines, and rejects missing
-metadata or broken phase references. Refresh commands retain this metadata.
+heading reference to its target-zero phase). `meta:repository-root-hygiene`
+discovers these files directly, including unregistered baselines, and rejects
+missing metadata or broken phase references. Refresh commands retain this metadata.
 The source-budget split targets Phase 5; remaining domain-owned debt targets
 Phase 6's continuous conformance lanes. A target is an outstanding obligation,
 not evidence that a baseline is already empty.
+
+### Architecture lint exceptions
+
+The `catch_arch_*` lints enforce dependency direction and bounded-context
+placement in the analyzer, on the workspace-root analysis CI runs. An exception
+is one comment next to the code, not a row in a list, so moving a file moves its
+exception:
+
+```dart
+// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt
+final programEventsControllerProvider = Provider.autoDispose
+```
+
+A display-state adapter (`*_state.dart`), a context `parts/` widget and any file
+whose first lines say `// architecture: provider-free` stay free of Riverpod,
+routing, data-layer and repository APIs: `catch_arch_provider_free_boundary`.
+The promise lives in the file, so it moves with the file.
+
+`catch_arch_invalid_ignore` rejects an exception that applies to the whole file,
+gives no reason after `--`, no longer matches a finding, names a rule that holds
+everywhere (barrel exports, parts stay provider-free, the public API rule,
+placement), or sits under `lib/contexts/`, `lib/pages/`, `lib/kernel/`,
+`lib/platform/` or an app destination. `catch_no_allow_debt` still rejects
+ignores of the UI rules. `// keepalive:`, `// public-api:` and
+`// architecture:allow stream-timeout` markers keep their meaning.
 
 ### Screen chrome contracts
 
@@ -3897,7 +3949,7 @@ away; only deliberately declared search/filter/tab controls may pin.
 
 ### Exhibit ARCH-ROUTE-CHROME-001: Pushed Route Chrome
 
-<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 owner=recursive_audit_loop -->
 
 `CatchRouteScaffold` is the reference boundary for pushed Consumer and Host
 routes. The route supplies a `CatchTopBar` builder and body; the shell alone
@@ -4025,16 +4077,16 @@ specific, keep the rule and migrate the call sites.
 
 Architecture migration must proceed from a reference implementation, not from
 abstract prose alone. Before rolling a pattern across many files, create one
-high-quality prototype, copy the relevant code excerpt into this document as an
-exhibit, and record adopters in
-`tool/architecture/pattern_adoption.json`.
+high-quality prototype and copy the relevant code excerpt into this document as
+an exhibit. A pattern that must hold everywhere becomes a lint, not a list of
+adopters.
 
 The workflow is:
 
 1. Pick one concrete pattern id before editing the batch.
    - Use ids such as `ARCH-UI-STATE-001` or `ARCH-CONTROLLER-001`.
-   - Record the prototype file, tests, Widgetbook/catalog surfaces if any, and
-     intended adopters in the tracker.
+   - Name the prototype file, tests and Widgetbook/catalog surfaces if any in
+     the task issue.
 
 2. Build one reference prototype first.
    - The prototype should be better than the average migration target: clear
@@ -4056,25 +4108,23 @@ The workflow is:
    - `exception`: intentionally different, with a debt id or override.
 
 5. When a candidate reveals a better pattern, update the exhibit first.
-   - Then revisit every file already marked as an adopter of the previous
-     exhibit and either update it or record why it remains a variant/exception.
+   - Then revisit every file that follows the previous exhibit and either update
+     it or record why it remains a variant/exception.
    - A migration batch is not complete if earlier adopters silently lag behind
      an edited exhibit.
 
 6. Preserve pattern evidence in source and checks.
-   - Include the pattern id, prototype path, and adopter paths in the authored
-     owner contract; preserve verification in the commit and CI checks.
+   - Include the pattern id and prototype path in the exhibit; preserve
+     verification in the commit and CI checks.
 
-Exhibit freshness is owned by this doc plus
-`tool/architecture/pattern_adoption.json`. Every exhibit block
-must carry an `exhibit-freshness` marker naming its tracker source and owner.
+Exhibit freshness is owned by this doc. Every exhibit block must carry an
+`exhibit-freshness` marker naming the exhibit and its owner.
 `node tool/architecture/check_app_architecture_exhibits.mjs` checks those
-markers, verifies the tracker points back to the current doc anchor, and rejects
-known stale snippets from prior reference shapes.
+markers and rejects known stale snippets from prior reference shapes.
 
 ### Exhibit ARCH-COMMUNICATION-PLAN-001: Intent-Aware Communication Plan
 
-<!-- exhibit-freshness: ARCH-COMMUNICATION-PLAN-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-COMMUNICATION-PLAN-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4132,7 +4182,7 @@ Catch delivery receipt until a later verified receipt workflow exists.
 
 ### Exhibit ARCH-MANUAL-HANDOFF-001: Durable External Handoff Task
 
-<!-- exhibit-freshness: ARCH-MANUAL-HANDOFF-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-MANUAL-HANDOFF-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4195,7 +4245,7 @@ the organizer is deciding what to do.
 
 ### Exhibit ARCH-SAVED-AUDIENCE-001: Customers-Owned Saved Audiences
 
-<!-- exhibit-freshness: ARCH-SAVED-AUDIENCE-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-SAVED-AUDIENCE-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4253,7 +4303,7 @@ but new campaign writes cannot submit legacy segment ids.
 
 ### Exhibit ARCH-CRM-AUTHORITY-001: Provenance And Permission Authority
 
-<!-- exhibit-freshness: ARCH-CRM-AUTHORITY-001 source=tool/architecture/pattern_adoption.json owner=app_architecture -->
+<!-- exhibit-freshness: ARCH-CRM-AUTHORITY-001 owner=app_architecture -->
 
 Reference files:
 
@@ -4298,7 +4348,7 @@ missing canonical evidence, and records zero inferred grants.
 
 ### Exhibit ARCH-ENTITY-MATERIAL-001: Entity Material Composition
 
-<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-ENTITY-MATERIAL-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4379,7 +4429,7 @@ still require a sanitized server-owned suggestion response.
 
 ### Exhibit ARCH-CROSS-PATHS-CONSENT-001: Fail-Closed Layered Consent
 
-<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-CROSS-PATHS-CONSENT-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4502,7 +4552,7 @@ Preserve these boundaries in later adopters:
 
 ### Exhibit ARCH-SCREEN-001: Feature Screen Boundary
 
-<!-- exhibit-freshness: ARCH-SCREEN-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-SCREEN-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4804,7 +4854,7 @@ Widget build(BuildContext context) {
 
 ### Exhibit ARCH-SCREEN-CHROME-001: Root Screen Header Chrome
 
-<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-SCREEN-CHROME-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -4857,7 +4907,7 @@ CatchTopBar.route(
 
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model
 
-<!-- exhibit-freshness: ARCH-UI-STATE-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-UI-STATE-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -5018,7 +5068,7 @@ class CalendarEventSummary {
 
 ### Exhibit ARCH-FORM-DESCRIPTOR-001: Typed Form Row Orchestration
 
-<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-FORM-DESCRIPTOR-001 owner=recursive_audit_loop -->
 
 Reference files:
 
@@ -5120,7 +5170,7 @@ CatchFormList<UpdateUserProfilePatch>(
 
 ### Exhibit ARCH-DATA-CURSOR-001: Bounded Cursor Read Window
 
-<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 source=tool/architecture/pattern_adoption.json owner=recursive_audit_loop -->
+<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 owner=recursive_audit_loop -->
 
 Reference implementation:
 
@@ -5167,7 +5217,8 @@ architecture cleanup within a feature or context:
      completion state.
 
 2. Inventory the current surface.
-   - `node tool/run.mjs check audit:dependency-direction audit:adopted-architecture-boundaries audit:mutation-error-surfaces`
+   - `node tool/ci/check_flutter_workspace_analysis.mjs` for the `catch_arch_*` lints
+   - `node tool/run.mjs check audit:mutation-error-surfaces`
    - `bash tool/widget_cleanup_scan.sh --summary`
    - `dart tool/audit/backend_error_candidates.dart`
    - `dart tool/audit/frontend_error_candidates.dart`

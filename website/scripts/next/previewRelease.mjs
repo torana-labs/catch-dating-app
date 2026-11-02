@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import fs from "node:fs";
+import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {isMainCiSource, waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
@@ -22,6 +23,16 @@ function command(name, args, options = {}) {
 }
 function github(endpoint) {
   return JSON.parse(command("gh", ["api", "-H", "Cache-Control: no-cache", endpoint]));
+}
+/**
+ * The commit a preview builds and releases. The release train passes a
+ * validated commit of main that main may have moved past; the workflow's own
+ * checkout of main then only supplies these trusted scripts.
+ */
+export function previewSourceSha(env) {
+  const value = env.RELEASE_SHA || env.GITHUB_SHA;
+  sha(value);
+  return value;
 }
 export function assertPreviewInvocation(env) {
   assert.equal(env.GITHUB_EVENT_NAME, "workflow_dispatch", "Preview is manual only");
@@ -95,7 +106,7 @@ export async function currentReleaseLineage(repository, sourceSha, options = {})
 
 async function authorize() {
   assertPreviewInvocation(process.env);
-  const repository = canonicalRepository(process.env), sourceSha = process.env.GITHUB_SHA;
+  const repository = canonicalRepository(process.env), sourceSha = previewSourceSha(process.env);
   const result = await waitMainMarketingValidation({repository, sourceSha, maxWaitMs: 0});
   assert.equal(result.validated, true, "Preview requires actual same-source marketing validation");
   assert.ok(result.captureBinding, "Preview requires exact-source captures");
@@ -126,24 +137,26 @@ export function safeArchiveMembers(entries) {
   for (const required of ["image.tar", "release.json", "firebase.json", ".firebaserc"]) assert.ok(names.has(required), `Missing ${required}`);
   assert.ok(entries.reduce((sum, entry) => sum + entry.size, 0) <= 3 * 1024 ** 3, "Archive too large");
 }
-function prepare() {
-  sha(process.env.GITHUB_SHA);
+// Packages the source's own public files and Hosting configuration; the
+// source tree is the release's worktree, not the scripts' checkout.
+function prepare(sourceRoot = process.env.RELEASE_SOURCE || ".") {
+  const sourceSha = previewSourceSha(process.env);
   const output = "build/next-preview/package";
   assert.ok(!fs.existsSync(output), "Preview package already exists");
   fs.mkdirSync(output, {recursive: true});
   fs.copyFileSync("build/next-preview/image.tar", `${output}/image.tar`);
-  fs.cpSync("website/public", `${output}/hosting`, {recursive: true});
-  const config = JSON.parse(fs.readFileSync("website/next-hosting.preview.json", "utf8"));
+  fs.cpSync(path.join(sourceRoot, "website/public"), `${output}/hosting`, {recursive: true});
+  const config = JSON.parse(fs.readFileSync(path.join(sourceRoot, "website/next-hosting.preview.json"), "utf8"));
   assert.equal(config.hosting.public, "public"); config.hosting.public = "hosting";
   fs.writeFileSync(`${output}/firebase.json`, JSON.stringify(config));
-  const rc = JSON.parse(fs.readFileSync(".firebaserc", "utf8"));
+  const rc = JSON.parse(fs.readFileSync(path.join(sourceRoot, ".firebaserc"), "utf8"));
   assert.deepEqual(rc.targets[preview.project].hosting.marketing, [preview.project]);
   fs.writeFileSync(`${output}/.firebaserc`, JSON.stringify({projects: {prod: preview.project},
     targets: {[preview.project]: {hosting: {marketing: [preview.project]}}}}));
   const imageId = command("docker", ["image", "inspect", "catch-website-preview:build", "--format", "{{.Id}}"]);
   assert.match(imageId, /^sha256:[a-f0-9]{64}$/u);
   fs.writeFileSync(`${output}/release.json`, JSON.stringify({schema: "catch.next-preview/v1",
-    sourceSha: process.env.GITHUB_SHA, runId: process.env.GITHUB_RUN_ID,
+    sourceSha, runId: process.env.GITHUB_RUN_ID,
     runAttempt: process.env.GITHUB_RUN_ATTEMPT, imageId, ...preview}));
   // Archive regular files only; the deployment reader rejects links and unsafe names.
   const list = command("find", [".", "-type", "f"], {cwd: output}).split("\n").map(name => name.replace(/^\.\//u, "")).sort();
@@ -151,7 +164,11 @@ function prepare() {
   const hash = digest(fs.readFileSync("build/next-preview/release.tgz"));
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `release_sha256=${hash}\n`);
 }
-export function unpackPreview({sourceSha, runId, runAttempt, archiveHash}) {
+/**
+ * `previewConfig` is the source's own preview Hosting configuration; main's
+ * copy may have changed since the source, which main may have moved past.
+ */
+export function unpackPreview({sourceSha, runId, runAttempt, archiveHash, previewConfig = null}) {
   const archive = "build/next-preview/release.tgz";
   assert.match(archiveHash ?? "", /^[a-f0-9]{64}$/u);
   assert.equal(digest(fs.readFileSync(archive)), archiveHash, "Preview bytes differ from build job");
@@ -177,7 +194,7 @@ with tarfile.open(sys.argv[1],'r:gz') as archive:
   assert.equal(release.runId, runId);
   assert.equal(release.runAttempt, runAttempt);
   for (const [key, value] of Object.entries(preview)) assert.equal(release[key], value);
-  const expectedConfig = JSON.parse(fs.readFileSync("website/next-hosting.preview.json", "utf8"));
+  const expectedConfig = structuredClone(previewConfig ?? sourcePreviewConfig(sourceSha));
   expectedConfig.hosting.public = "hosting";
   assert.deepEqual(JSON.parse(fs.readFileSync(`${output}/firebase.json`, "utf8")), expectedConfig);
   assert.deepEqual(JSON.parse(fs.readFileSync(`${output}/.firebaserc`, "utf8")), {projects: {prod: preview.project},
@@ -186,9 +203,14 @@ with tarfile.open(sys.argv[1],'r:gz') as archive:
   assert.equal(command("docker", ["image", "inspect", "catch-website-preview:build", "--format", "{{.Id}}"]), release.imageId);
   console.log(JSON.stringify(release));
 }
+/** The preview Hosting configuration as the source commit has it, from Git rather than any checkout. */
+export function sourcePreviewConfig(sourceSha, {runCommand = command} = {}) {
+  sha(sourceSha);
+  return JSON.parse(runCommand("git", ["show", `${sourceSha}:website/next-hosting.preview.json`]));
+}
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (process.argv[2] === "authorize") await authorize();
   else if (process.argv[2] === "prepare") prepare();
-  else if (process.argv[2] === "unpack") unpackPreview({sourceSha: process.env.GITHUB_SHA, runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, archiveHash: process.env.RELEASE_SHA256});
+  else if (process.argv[2] === "unpack") unpackPreview({sourceSha: previewSourceSha(process.env), runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, archiveHash: process.env.RELEASE_SHA256});
   else throw new Error("Expected authorize, prepare, or unpack");
 }

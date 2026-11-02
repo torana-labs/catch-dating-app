@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {readAdminComponentRegistry} from "../lib/admin_registries.mjs";
 import {buildReactComponentGraph} from "./lib/react_component_graph.mjs";
 import {buildReactComponentInventory} from "./lib/react_component_inventory.mjs";
 import {graphProbeProblems, inventoryProbeProblems} from "./lib/react_component_inventory_probes.mjs";
@@ -36,7 +37,7 @@ const inventory = buildReactComponentInventory({
   registry: readJson("design/components/catch.components.json"),
   surfaceRegistries: {
     website: readJson("design/website/components.json"),
-    admin: readJson("design/admin/components.json"),
+    admin: readAdminComponentRegistry(),
   },
 });
 const findings = [
@@ -55,8 +56,11 @@ if ((!args.has("--json") || args.has("--check") || args.has("--update-consolidat
     findings.push(...ratchet.findings);
     if (!args.has("--json") && ratchet.findings.length === 0) {
       console.log(`React consolidation ratchet passed: ${JSON.stringify(ratchet.counts)}.`);
+      if (ratchet.fixedAllowances > 0) {
+        console.log(`${ratchet.fixedAllowances} recorded allowance(s) are fixed; --update-consolidation-baseline drops them whenever convenient.`);
+      }
     }
-    if (ratchet.findings.length) findings.push("Remove new debt, or regenerate fixed allowances with --update-consolidation-baseline.");
+    if (ratchet.findings.length) findings.push("Remove the new debt; the baseline cannot grow to admit it.");
   } catch (error) {
     findings.push(error.message);
   }

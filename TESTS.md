@@ -19,6 +19,8 @@ npm run web:typecheck
 node tool/run.mjs check --category meta
 ```
 
+For Admin work, run `npm run check:admin` before pushing. It runs CI's Admin lane locally, reading the steps from `.github/workflows/react-surface-validation.yml`, plus the Admin checks in the contracts and tools lanes: the build with its import boundaries and bundle budget, unused code, Storybook accessibility and the visual report, design parity, the callable validators and the action catalog. It takes about 8 minutes; `-- --pr` skips the Storybook build and visual report, and `-- --only <text>` runs one step.
+
 Use focused tests while iterating, then run the owning surface's full gate before handoff. Never run multiple Flutter analyzer/test processes concurrently. Add regression coverage beside the owned surface and make recurring architectural rules enforceable through the tool manifest.
 
 Functions tests are discovered recursively from compiled
@@ -98,6 +100,19 @@ Expected-error tests and deterministic captures should inject
 `ErrorLogger.silent(...)` or a recording `consoleSink`. Production defaults
 still print and report unexpected failures; never make the global logger silent
 to quiet a test.
+
+## Test and debug habits
+
+- Use `flushTestEventQueue` rather than a raw `Future<void>.delayed(Duration.zero)`
+  when a test needs queued provider, stream or callback delivery.
+- Give a custom tap target stable semantics, a label, a tooltip or a key that
+  describes the user's action before writing a finder for it.
+- When you edit Riverpod, Freezed, json_serializable or other `build_runner`
+  sources, keep what `build_runner` generates rather than reverting hash or output
+  churn. `dart run build_runner watch` suits a long clean-up loop.
+- When someone is clicking through the app on a physical phone, run an interactive
+  `flutter run` through `tool/flutter_with_env.sh`, keep stdin open for reload and
+  restart, and read the fresh logs as your feedback.
 
 ## Catch UI enforcement
 

@@ -198,12 +198,6 @@ jobs:
           git diff --exit-code -- lib/contexts/payments/data/payment_repository.g.dart lib/events/presentation/event_booking_controller.g.dart
           git diff --exit-code -- lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart lib/hosts/today/presentation/host_today_feed_controller.g.dart
 
-      - name: Widgetbook corpus contract gates
-        run: >-
-          node tool/run.mjs check
-          design:widgetbook-use-case-triage
-          design:golden-coverage
-
       # Golden pixel changes are reported, not failed: the app is still
       # changing visually on purpose. CATCH_GOLDEN_REPORT puts the shared
       # comparator in report mode; render errors and every non-golden

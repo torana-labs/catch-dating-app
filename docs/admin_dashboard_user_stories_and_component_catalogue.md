@@ -1,6 +1,6 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.5.0
+version: 0.6.0
 updated: 2026-11-01
 owner: admin_console
 status: active
@@ -66,9 +66,9 @@ Files inspected:
 - `admin/src/features/growth/api/growthRepository.ts`
 - `admin/src/features/growth/controllers/useGrowthController.ts`
 - `admin/src/features/growth/ui/GrowthScreen.tsx`
-- `admin/src/features/finance/api/financeOpsRepository.ts`
-- `admin/src/features/finance/controllers/useFinanceOpsController.ts`
-- `admin/src/features/finance/ui/FinanceOpsScreen.tsx`
+- `admin/src/features/money/api/moneyRepository.ts`
+- `admin/src/features/money/controllers/useMoneyIssuesController.ts`
+- `admin/src/features/money/ui/MoneyScreen.tsx`
 - `admin/src/features/events/api/eventPublishingRepository.ts`
 - `admin/src/features/events/controllers/useEventPublishingController.ts`
 - `admin/src/features/events/controllers/eventPublishingHelpers.ts`
@@ -81,8 +81,8 @@ Files inspected:
 - `admin/src/features/data-quality/api/dataQualityRepository.ts`
 - `admin/src/features/data-quality/controllers/useDataQualityController.ts`
 - `admin/src/features/data-quality/ui/DataQualityScreen.tsx`
-- `admin/src/stories/AdminRoutes.stories.tsx`
-- `design/admin/components.json`
+- `admin/src/stories/AdminRoutes<Feature>.stories.tsx`
+- `design/admin/components/`
 - `functions/src/admin/**` and `functions/src/clubs/organizerClaims.ts` for API
   ownership context
 - the admin and analytics dashboard spec, now
@@ -158,7 +158,7 @@ placeholder screen structure.
 | Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
 | Finance | `features/finance` | independent overview and fixed 30-day host-analytics responses | inspect scoped issue counts, partial-source state, prioritized read-only issue evidence, inferred/unknown fields, malformed-row count, and manual provider handoff | Complete approved read-only reconciliation workflow; typed issue model, point reads, finance-role repair, and all money movement remain contract-first |
 | Data quality | `features/data-quality` | four independently loaded overview, analytics, marketing, and intake sources | inspect source-health dimensions, retry one failed source, filter severity/owner, open URL-owned signal detail or validated owning workflow | Complete approved data-trust register; scheduler receipts, acknowledgement, backfill, and remediation remain absent |
-| Admin roles | `features/admin-roles` | bounded 50-row assignment register plus exact Firebase Auth UID read and audited role mutation | local search, URL-owned UID detail, six governed role policies, before/after diff, self-owner lock, high-risk confirmation, save receipt and token-refresh guidance | Complete approved owner-only role workflow; broad Auth search, pagination, account state, session revocation, and non-admin claims remain absent |
+| Settings → Team and roles | `features/settings` | active assignment register plus exact Firebase Auth UID read and audited role mutation | three jobs (owner, sales associate, ops and support) mapped to role claims, invite by user id, a review note on every change, self-owner lock | Replaced the Admin roles screen on 1 Nov 2026; broad Auth search, account state and session revocation remain absent |
 
 ## Auth And Admin Roles
 
@@ -746,31 +746,20 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Finance is feature-owned under `features/finance` and has a dedicated
-  read-only issue workspace.
-- Good: it combines overview payment issue rows, host analytics payment
-  anomalies, payout restriction counts, search/filter controls, and an
-  explicit issue detail panel.
-- Good: selected rows now show deterministic provider authority, source model,
-  reconciliation status, required evidence, blocked actions, and mutation
-  boundary, so operators can distinguish canonical payment rows, event
-  analytics aggregates, and payout restriction aggregates before touching
-  provider systems.
-- Good: the route wrapper now delegates its rendered body to registered
-  `FinanceOpsWorkspace`, giving Storybook deterministic route/workspace
-  coverage for issue rows, selected detail, and reconciliation evidence without
-  running live query fetches in previews.
-- Weak: no provider ledger, payout lifecycle, reconciliation detail, refund
-  execution, export, or audited finance mutation path exists yet. The tab
-  deliberately surfaces the missing evidence instead of offering retry, refund,
-  payout, or settlement buttons.
-
-Recommended next work:
-
-- Define provider-led ledger/read-model contracts before adding any money
-  movement or reconciliation actions.
-- Keep refund, payout release, and settlement edits out of the tab until each
-  action has an audited finance callable and role gate.
+- Money (`features/money`, Admin redesign PR 10a) replaces the read-only
+  Finance issue workspace:
+  - Payment issues arrive as a queue from `adminManagePaymentIssues`: payments
+    not admitted, refunds pending, payments needing review, failed app
+    bookings and overdue bills.
+  - "Confirm the booking" runs the payment processor's reconcile. Every action
+    is audited.
+  - The month's bills to organizers are sent, reminded, marked paid or written
+    off through `adminManageOrganizerBills`.
+- Finance (`features/finance`, PR 14) shows the month line by line from
+  `adminGetFinanceMonth`, takes costs entered by hand, and downloads the
+  ledger for Zoho Books.
+- Weak: refunds still happen in the organizer's Razorpay and are recorded
+  here. Reminders are recorded, not yet sent to organizers.
 
 ### Data Quality
 
@@ -826,24 +815,11 @@ Acceptance criteria:
 
 Current adherence:
 
-- Good: Admin roles is feature-owned under `features/admin-roles`.
-- Good: `adminGetAdminUserRoles` and `adminSetAdminUserRoles` are
-  `adminOwner`-only callables, rate-limited, and backend-authorized.
-- Good: role changes preserve unrelated custom claims, require notes, write
-  `adminRoleAssignments/{uid}`, write `adminAuditLogs/{id}`, and block
-  self-removal of `adminOwner`.
-- Good: the register is the primary surface. It exposes the 50 most recently
-  updated assignments, generated time, status filtering, and local-only search;
-  exact uid lookup stays below it as the fallback and never becomes broad Auth
-  directory search.
-- Good: `/admin-roles/{uid}` owns selection and supports a target absent from
-  the bounded register. The editor shows before/after roles, capability and risk
-  policy, high-risk confirmation, a visibly locked self-owner control, and a
-  server-confirmed save receipt with token-refresh guidance.
-- Good: the route wrapper now delegates its rendered body to registered
-  `AdminRoleManagementWorkspace`, giving Storybook deterministic
-  route/workspace coverage for one role-assignment detail without running live
-  query fetches or writes in previews.
+- Good (1 Nov 2026): Admin roles became Settings → Team and roles under
+  `features/settings`: three jobs instead of five claims, inviting by user
+  id, a review note on every change. `/admin-roles` links open Team and
+  roles. People (`features/people`) searches by name, phone or user id, and
+  every search is logged.
 - Weak: the bounded register is not a complete Firebase Auth directory. It does
   not search by arbitrary email/name/phone or backfill assignments for claims
   set manually before the register existed.
@@ -936,34 +912,40 @@ and approve, hold, or reject candidates.
 
 Current fit: present. Actual canonical import remains policy-limited.
 
-### Finance: Commercial Terms
+### Settings: Payments
 
-As Finance or the Admin Owner, I need to see and change what Catch charges
-hosts without calling callables or pasting values.
+As the Admin Owner, I need to see and change what Catch charges organizers, who
+collects each kind of payment, the partner credit rule and GST, without
+calling callables or pasting values.
 
-Current fit: present at `/finance/commercial-terms` (feature
-`features/commercial-terms`). It shows the platform defaults and their newest
-revisions with what changed, offers the owner's 30 Oct 2026 decision as the
-starting draft while platform terms are unsaved, and saves only after a
-field-by-field preview against the reviewed revision and a reason. Organizer
-overrides are listed, found by name, and edited at
-`/finance/commercial-terms/organizers/{organizerId}`, where every unticked
-term reads as inherited. An unconfirmed save is retried exactly; a conflict
-keeps the draft and asks for a fresh review. Only the Admin Owner sees it.
+Current fit: `/settings/payments` (feature `features/settings`, Admin redesign
+PR 10b) shows:
+- Platform terms, who collects what, partner credit, tax and invoices, and
+  organizers on their own terms.
 
-### Finance: Payment Routing
+Each "Change" opens an editor in the detail pane:
+- `/settings/payments/terms`: the platform terms. While they are unsaved, it
+  offers the owner's 30 Oct 2026 decision as the starting draft.
+- `/settings/payments/organizer-terms/{organizerId}`: one organizer's own terms.
+  Every unticked term follows the platform terms.
+- `/settings/payments/collection`: who collects event tickets, form fees and
+  host memberships, and in which mode. Turning a purpose live, choosing the
+  Route split or turning it off needs the phrase typed.
+- `/settings/payments/credit`: the nominator credit rule and the bill due day.
 
-As Finance or the Admin Owner, I need to see who collects event tickets, form
-fees and host memberships, in which mode, and change it safely.
+Rules that carry over from the old Commercial terms and Payment routing
+workspaces:
+- Terms and routing are saved only after a field-by-field preview against the
+  reviewed revision. An unconfirmed save is retried exactly.
+- The GST switch asks for confirmation.
+- The monthly ledger CSV downloads for Zoho Books.
 
-Current fit: present at `/finance/payment-routing` (feature
-`features/payment-routing`) for the app policy. Each purpose shows its route
-(host collects through `razorpayOAuth`, or Catch splits through
-`razorpayRoute`) and a test or live badge. A change is previewed against the
-saved revision, and turning a purpose live, choosing the Route split or turning
-it off needs the phrase typed. Before the first app policy exists, the screen
-says that form fees follow each organizer's own connection and that saving
-replaces that. Organizer overrides are not edited here.
+"Granted by hand" (PR 10c) has two editors:
+- `/settings/payments/plans`: load an organizer's entitlement ledger, grant a
+  plan against a settled invoice, or revoke one. Unconfirmed grants and
+  revocations are retried exactly.
+- `/settings/payments/messaging`: review one event's messaging setup, record a
+  decision and stage paused ceilings.
 
 ### Intake: Organizers
 
@@ -1052,7 +1034,7 @@ Admin feature UI files may export route or workspace entry components such as
 should live in shared admin UI or stay private. This is enforced by
 `node tool/run.mjs check web:admin-feature-exports`.
 Admin route/workspace entries, shared admin primitives, and admin feedback
-providers are registered in `design/admin/components.json`. Update that
+providers are registered in `design/admin/components/`. Update that
 registry before exporting or renaming admin screens, workspaces, primitives, or
 providers, then run `node tool/run.mjs check web:admin-components`.
 Admin preview coverage lives in Storybook under `admin/src/stories`. Registry

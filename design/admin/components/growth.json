@@ -1,0 +1,40 @@
+{
+  "components": [
+    {
+      "id": "route_growth",
+      "kind": "route",
+      "owner": "features/growth",
+      "source": "admin/src/features/growth/ui/GrowthScreen.tsx",
+      "exportName": "GrowthScreen",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutesGrowth.stories.tsx",
+        "exportName": "GrowthRouteStory",
+        "states": [
+          "cohorts",
+          "channels-and-ads",
+          "nominators",
+          "best-organizers"
+        ]
+      },
+      "notes": "Growth: organizer cohorts by listing month, channels and what they cost, nominators with credit approval on the CatchDock pane, and the best organizers, on CatchWorkspaceHeader views and CatchPaneLayout feed, queue and wide-table. It replaces the Growth KPI signal directory, whose signups and completed profiles moved to Needs you, and whose host analytics stay on Marketplace and Data quality. Backed by admin/src/features/growth/api/growthSamples.ts."
+    },
+    {
+      "id": "route_growth_live_controller",
+      "kind": "route",
+      "owner": "features/growth",
+      "source": "admin/src/features/growth/ui/GrowthRouteScreen.tsx",
+      "exportName": "GrowthRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper",
+          "route-lazy-boundary"
+        ]
+      },
+      "notes": "Lazy live route wrapper owns the Growth controller and the address; deterministic prop-driven visual coverage remains on route_growth."
+    }
+  ]
+}

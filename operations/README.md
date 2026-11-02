@@ -84,7 +84,7 @@ operations/
 
 The admin action CLI gives agents the same callable operations that employees
 use through the admin console. Its source of truth is
-`contracts/admin/admin_action_catalog.json`; it does not copy callable business
+`contracts/admin/actions/`; it does not copy callable business
 logic or turn every request/response action into a durable workflow.
 
 ```sh

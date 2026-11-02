@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_intake.feature.json",
   "generatedFor": "2026-10-29",
-  "sourceDigest": "sha256:9ee6e86c7f512d84c628d76b8e4186827ac15a5ab4e17ff1d01ee2bab1468508",
-  "resolvedDigest": "sha256:9c387562a86658de3c00b718af93c153f4ce60b0a6c094e0ed36d6684b30a4ab",
+  "sourceDigest": "sha256:dce1ffcf069664b3c54a8b6759f5b0eccd4096f5d8957a0b402500cde59bc2ee",
+  "resolvedDigest": "sha256:18547d48107686cba708eb028013c3674c84ec8e659bf660664e074001c21ac3",
   "feature": {
     "id": "feature.admin_intake",
     "name": "Admin Supply Intake",
@@ -41,7 +41,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesIntake.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -443,7 +443,7 @@
             "exportName": "IntakeWorkspaceScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
               "exportName": "IntakeWorkspaceRouteStory",
               "states": [
                 "event-review"
@@ -473,7 +473,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesIntake.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -1012,7 +1012,7 @@
             "exportName": "OrganizerIntakeScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesIntake.stories.tsx",
               "exportName": "OrganizerIntakeRouteStory",
               "states": [
                 "default",

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_data_quality.feature.json",
   "generatedFor": "2026-10-29",
-  "sourceDigest": "sha256:79019465f1c43d6bc23fcc1e066d892099973e16c94693be80cf529bbeb64f59",
-  "resolvedDigest": "sha256:cb4f0c5ae11fbbeca7573517fd3c88ad676299b726ece385c644c91bc71c4823",
+  "sourceDigest": "sha256:a4ae3b1cd6afc0ee50e5869558617d61cbaeb40fe3d4039a94ed301a46da0a67",
+  "resolvedDigest": "sha256:8aeb4df498850375f71e3c1163d286349caa4f06f93f6dd93c2b96291ecf2191",
   "feature": {
     "id": "feature.admin_data_quality",
     "name": "Admin Data Quality",
@@ -41,7 +41,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesDataQuality.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -383,7 +383,7 @@
             "exportName": "DataQualityScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesDataQuality.stories.tsx",
               "exportName": "DataQualityRouteStory",
               "states": [
                 "source-register"

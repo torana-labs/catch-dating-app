@@ -4,6 +4,14 @@ import {createRequire, isBuiltin} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
+import {
+  catalogFragments,
+  catalogGenerator,
+  catalogSource,
+  functionsCatalogModule,
+  renderFunctions,
+} from "../admin/generate_admin_action_catalog.mjs";
+import {assembleAdminActionCatalog} from "../lib/admin_registries.mjs";
 import {listFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const require = createRequire(import.meta.url);
@@ -43,6 +51,26 @@ function sourceTree(root, sha) {
     offset = end + 1 + size + 1;
   }
   return tree;
+}
+
+// The Functions build generates the action catalog from the contract, so a
+// commit holds its input rather than the module. Rebuild the bytes that commit
+// would deploy, unless it predates untracking and still holds them.
+function withBuiltCatalog(root, sha, tree) {
+  if (!tree.has(functionsCatalogModule)) {
+    const catalog = readCatalog(root, sha);
+    if (catalog) tree.set(functionsCatalogModule, renderFunctions(catalog));
+  }
+  return tree;
+}
+
+function readCatalog(root, sha) {
+  const index = readJson(root, sha, catalogSource);
+  // A commit from before the per-workflow split holds one document.
+  if (!index || index.actions) return index;
+  const names = git(root, ["ls-tree", "-rz", "--name-only", sha, "--", catalogFragments], QUIET)
+    .split("\0").filter(Boolean);
+  return assembleAdminActionCatalog(index, names.map((name) => readJson(root, sha, name)));
 }
 
 function parse(ts, tree, name) {
@@ -364,8 +392,16 @@ export function affectedFunctionTargets({
         options.rootDir && options.rootDir !== "src") {
       return all("Compiler module resolution requires a full deployment");
     }
-    const before = sourceTree(sourceRoot, baseSha);
-    const after = sourceTree(sourceRoot, sourceSha);
+    const before = withBuiltCatalog(sourceRoot, baseSha, sourceTree(sourceRoot, baseSha));
+    const after = withBuiltCatalog(sourceRoot, sourceSha, sourceTree(sourceRoot, sourceSha));
+    // Git reports the tracked copy's removal and every contract edit. Only
+    // different deployed bytes, or a different renderer, change these Functions.
+    const catalogBytesChanged = before.get(functionsCatalogModule) !== after.get(functionsCatalogModule);
+    changed.delete(functionsCatalogModule);
+    if (after.has(functionsCatalogModule) &&
+        (catalogBytesChanged || changed.has(catalogGenerator))) {
+      changed.add(functionsCatalogModule);
+    }
     const oldIndex = indexExports(ts, before);
     const newIndex = indexExports(ts, after);
     if (oldIndex.bootstrap !== newIndex.bootstrap) return all("Global Functions initialization changed");

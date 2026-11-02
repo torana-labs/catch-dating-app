@@ -16,6 +16,7 @@ import {
   useNavigate,
 } from "react-router";
 import {AlertTriangle, Lock} from "lucide-react";
+import {AdminRouteError} from "./AdminRouteError";
 import {
   AdminBrandMark,
   AdminButton,
@@ -26,7 +27,6 @@ import {
   AdminSignInMeta,
   AdminSignInPanel,
   AdminSignInScreen,
-  SegmentedControl,
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
 import {
@@ -41,10 +41,8 @@ import {
   adminPathForNav,
   adminRoutes,
   adminSections,
-  financePathForWorkspace,
   resolveAdminRoute,
   type AdminNavId,
-  type FinanceWorkspace,
 } from "./adminRoutes";
 import {adminAreaRoles, adminNavigation} from "./adminAccess";
 import {adminJobFor, adminJobLabels} from "./adminJobs";
@@ -64,17 +62,19 @@ export function App() {
   const [router] = useState(() => createBrowserRouter([
     {
       path: "/operator-session",
+      errorElement: <AdminRouteError />,
       element: <Suspense fallback={<AdminFeatureLoadingState label="Loading session handoff" />}>
         <OperatorSessionRoute />
       </Suspense>,
     },
     {
       path: "/partners/*",
+      errorElement: <AdminRouteError />,
       element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}>
         <PartnerRouteApp />
       </Suspense>,
     },
-    ...adminRoutes.map((route) => ({...route, element: <AdminRouteApp />})),
+    ...adminRoutes.map((route) => ({...route, element: <AdminRouteApp />, errorElement: <AdminRouteError />})),
   ]));
   return <RouterProvider router={router} />;
 }
@@ -178,24 +178,12 @@ function AdminRouteApp() {
   // Commercial terms and payment routing are Admin Owner only.
   const canManageCommercialTerms = mode === "sample" ||
     hasAnyAdminRole(adminRoles, ["adminOwner"]);
-  const financeWorkspaceSwitch = canManageCommercialTerms ? (
-    <SegmentedControl<FinanceWorkspace>
-      ariaLabel="Finance workspaces"
-      mobileLayout="content"
-      options={[
-        {id: "issues", label: "Finance issues"},
-        {id: "commercial-terms", label: "Commercial terms"},
-        {id: "payment-routing", label: "Payment routing"},
-      ]}
-      onChange={(workspace) => navigate(financePathForWorkspace(workspace))}
-      value={route.financeWorkspace}
-    />
-  ) : null;
 
   useEffect(() => {
     if (!canResolveNavigation) return;
     if (routeNav === currentNav && !route.redirect) return;
-    navigate(adminPathForNav(currentNav), {replace: true});
+    // An old address goes where its redirect names, when the person may open that area.
+    navigate(route.redirect && routeNav === currentNav ? route.redirect : adminPathForNav(currentNav), {replace: true});
   }, [canResolveNavigation, currentNav, navigate, route.redirect, routeNav]);
 
   const handleRequestPhoneCode = useCallback(async () => {
@@ -369,7 +357,6 @@ function AdminRouteApp() {
             session: {sessionKey, isCurrent: session.isCurrent, projectId: firebaseApp.options.projectId ?? ""},
             canOpen,
             canManageCommercialTerms,
-            financeWorkspaceSwitch,
             setError,
             setNotice,
             setMarketingDirty,

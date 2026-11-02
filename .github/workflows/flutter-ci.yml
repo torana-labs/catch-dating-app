@@ -20,11 +20,6 @@ on:
         required: false
         type: boolean
         default: false
-      design_handoff_in_tools:
-        description: The required same-run Tools plan executes all snapshot and context export checks.
-        required: false
-        type: boolean
-        default: false
       ui_lint_smoke_in_tools:
         description: The same CI run selected the registered Tools engine check.
         required: false
@@ -190,11 +185,11 @@ jobs:
       - name: Form and schema constraint alignment
         run: flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart
 
-      - name: Localization catalog and getter usage ratchet
+      - name: Localization catalog and getter usage
         run: |
           mkdir -p build/ci
           node tool/copy/check_l10n_key_usage.mjs --check --json > build/ci/l10n-key-usage.json
-          jq '{summary: .inventory.summary, ratchet: .ratchet}' build/ci/l10n-key-usage.json
+          jq '{summary: .inventory.summary}' build/ci/l10n-key-usage.json
 
       - name: Upload localization key-usage evidence
         if: always()
@@ -228,19 +223,7 @@ jobs:
           node tool/design/check_icon_family_usage.mjs --check
 
       - name: Design token drift check
-        run: dart run tool/design_tokens.dart --check
-
-      - name: Check affected design handoff inputs
-        if: ${{ !inputs.design_handoff_in_tools }}
-        env:
-          BASE_SHA: ${{ inputs.base_sha }}
-          SOURCE_SHA: ${{ github.sha }}
-          FULL: ${{ inputs.full }}
-          COMMIT_WINDOW: ${{ inputs.commit_window || false }}
-        run: >-
-          node tool/design/check_design_parity.mjs --check-handoff
-          --base "$BASE_SHA" --head "$SOURCE_SHA" --full "$FULL"
-          --commit-window "$COMMIT_WINDOW"
+        run: node tool/design_tokens.mjs --check
 
       - name: Backend error boundary gate
         run: npm run audit:backend-errors:check

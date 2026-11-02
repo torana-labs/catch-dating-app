@@ -8,12 +8,11 @@ import {cruiseToolImports, importOwnersByPath, toolEntryFiles} from "./tool_impo
 const dependency = (resolved, extra = {}) => ({module: `./${path.posix.basename(resolved)}`, resolved,
   coreModule: false, couldNotResolve: false, ...extra});
 
-test("entry files are the tool, every script its checks name, and its vacuity proof", () => {
+test("entry files are the tool and every script its checks name", () => {
   assert.deepEqual(toolEntryFiles({
     path: "tool/a/run.mjs",
     checks: ["node --check tool/a/run.mjs", "node --test tool/a/run.test.mjs tool/lib/x.test.mjs", "bash tool/a/gate.sh"],
-    vacuityProof: {path: "tool/a/proof.test.mjs"},
-  }).sort(), ["tool/a/proof.test.mjs", "tool/a/run.mjs", "tool/a/run.test.mjs", "tool/lib/x.test.mjs"]);
+  }).sort(), ["tool/a/run.mjs", "tool/a/run.test.mjs", "tool/lib/x.test.mjs"]);
   assert.deepEqual(toolEntryFiles({path: "tool/a/gate.sh", checks: ["bash tool/a/gate.sh"]}), []);
 });
 

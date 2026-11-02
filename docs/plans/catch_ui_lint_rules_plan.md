@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.5.3
-updated: 2026-08-29
+version: 0.5.4
+updated: 2026-11-02
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -147,8 +147,8 @@ Implement only after the current scanner/lint policy is stable.
 
 - Do not move all rules to resolved AST preemptively. Do it per rule when parsed matching
   cannot give a defensible signal.
-- Do not add Style Dictionary/DTCG codegen unless token editing leaves Dart or a second
-  platform needs the same source.
+- Style Dictionary is adopted (`tool/design_tokens.mjs`); this plan does not add other token
+  codegen.
 - Do not build duplicate dashboard infrastructure while scanner/lint output already gives
   a cheap count.
 

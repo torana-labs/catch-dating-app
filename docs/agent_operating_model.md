@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.10.0
-updated: 2026-10-31
+version: 3.10.2
+updated: 2026-11-02
 owner: agent_operating_model
 status: active
 ---
@@ -125,21 +125,16 @@ elapsed time, a stale status label, or an unverified command assumption.
 
 ## Enforcement Integrity
 
-Rules, tools, CI wiring, and documentation anchors must not drift
-independently. Active rules in `tool/policy/rules.json` name their
-enforcement. Manifest tools that enforce a rule name the reverse mapping and,
-for gates or ratchets, prove that the check cannot pass vacuously. A genuinely
-manual check is declared as manual in its owning rule.
+A rule a tool enforces is written on that tool in `tool/tools_manifest.json`,
+and the tool's tests prove it can fail. A rule no tool checks is a sentence in
+the document that owns its subject. Do not add a prose-only rule that claims
+deterministic enforcement.
 
-Run the meta-gate after changing an enforcement asset:
+Validate the manifest after changing a tool or a rule:
 
 ```sh
-node tool/run.mjs check meta:enforcement-integrity
+node tool/run.mjs check --manifest-only
 ```
-
-Update the rule, manifest entry, documentation anchor, executable known-bad
-proof, and ratchet baseline together when those sources are affected. Do not
-add a prose-only rule that claims deterministic enforcement.
 
 ## Execution Modes
 
@@ -264,7 +259,8 @@ bash tool/git/bootstrap_worktree.sh --target flutter    # Flutter checks
 ```
 
 The command checks the selected committed manifests and lockfiles, then runs
-their `npm ci` or `flutter pub get` in that worktree. Keep installs local to the
+their `npm ci` or `flutter pub get` in that worktree. The root and Functions
+targets also generate the modules their builds need, which Git ignores. Keep installs local to the
 worktree; do not symlink another checkout's `node_modules` or invent `NODE_PATH`
 overrides. A docs-only worktree with dependency-free checks needs no install.
 

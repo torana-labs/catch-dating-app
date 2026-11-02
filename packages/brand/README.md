@@ -69,8 +69,8 @@ name appears in website copy (`website/src/content/**`). The patterns come from
 of matching lines each keeps. It may only shrink: a new file or a higher count
 fails, and a lower count fails until `--prune` records it. A line that uses a
 brand-equal value for another reason (the owner's own inbox, say) carries
-`brand-literal-ok: <reason>` and is not counted. Markdown,
-`design/source_packs/` and `design/sync/` are not scanned.
+`brand-literal-ok: <reason>` and is not counted. Markdown and
+`design/source_packs/` are not scanned.
 
 Firebase project ids, bundle ids (`com.catchdates.*`), Firestore paths and
 `Catch*` code symbols are out of scope: they are identifiers, not brand copy,

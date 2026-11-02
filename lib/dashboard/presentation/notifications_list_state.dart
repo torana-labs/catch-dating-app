@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+// ignore: catch_ui_lints/catch_arch_provider_free_boundary -- deep-link path strings only; no navigation happens here
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 

@@ -30,6 +30,11 @@ export const CAPTURE_PRODUCER_JOBS = Object.freeze([
 const isProducerJob = name => typeof name === "string" &&
   CAPTURE_PRODUCER_JOBS.some(producer => name === producer || name.endsWith(` / ${producer}`));
 
+// Admin's own build outputs, rebuilt from contracts in the same checkout. The
+// website build reads nothing under admin/src.
+export const isAdminBuildOutput = file => file === "admin/src/generated/adminActionCatalog.ts" ||
+  file.startsWith("admin/src/generated/validators/");
+
 export function validateBinding(binding) {
   assert.match(binding?.repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "Invalid capture repository.");
   const callers = ["ci.yml", "tools-ci.yml", "flutter-ci.yml", "marketing-website.yml", "marketing-captures.yml"];
@@ -185,7 +190,7 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
         `Bootstrap output escapes its install: ${file}`);
     }
   }
-  assert.deepEqual(untracked.filter(file => !(toolChecks && bootstrapOutput(file))), [],
+  assert.deepEqual(untracked.filter(file => !isAdminBuildOutput(file) && !(toolChecks && bootstrapOutput(file))), [],
     "Untracked consumer source cannot enter the website build.");
   const receipt = JSON.parse(files.get("capture-receipt.json"));
   assert.equal(receipt.version, 2, "Unsupported capture receipt.");

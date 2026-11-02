@@ -2,10 +2,13 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import type {AdminGetListingEventReviewCallablePayload} from "../shared/generated/adminGetListingEventReviewCallablePayload";
+import type {AdminGetListingEventReviewCallableResponse} from "../shared/generated/adminGetListingEventReviewCallableResponse";
 import type {AdminListListingEventImportsCallablePayload} from "../shared/generated/adminListListingEventImportsCallablePayload";
 import type {AdminListListingEventImportsCallableResponse} from "../shared/generated/adminListListingEventImportsCallableResponse";
 import type {AdminPublishListingEventsCallablePayload} from "../shared/generated/adminPublishListingEventsCallablePayload";
 import type {AdminPublishListingEventsCallableResponse} from "../shared/generated/adminPublishListingEventsCallableResponse";
+import {validateAdminGetListingEventReviewCallablePayload} from "../shared/generated/validators/adminGetListingEventReviewInput";
 import {validateAdminListListingEventImportsCallablePayload} from "../shared/generated/validators/adminListListingEventImportsInput";
 import {validateAdminPublishListingEventsCallablePayload} from "../shared/generated/validators/adminPublishListingEventsInput";
 import {validateCallableWithAjv} from "../shared/validation";
@@ -79,8 +82,8 @@ export async function adminListListingEventImportsHandler(
   const rows: ListRow[] = [];
   let unavailableCount = 0;
   for (const doc of page) {
-    const row = await importRow(db, runtime, doc.id, doc.data(), adminContext.uid, now);
-    if (row) rows.push(row);
+    const imported = await listingEventImportRow(db, runtime, doc.id, doc.data(), adminContext.uid, now);
+    if (imported) rows.push(imported.row);
     else unavailableCount += 1;
   }
   const last = page.at(-1);
@@ -93,14 +96,15 @@ export async function adminListListingEventImportsHandler(
   };
 }
 
-async function importRow(
+/** One approved request's events and where each stands, or null when its organizer is gone. */
+export async function listingEventImportRow(
   db: FirebaseFirestore.Firestore,
   runtime: Awaited<ReturnType<typeof packagedEventPublication>>,
   intakeRequestId: string,
   stored: FirebaseFirestore.DocumentData,
   reviewerUid: string,
   now: string
-): Promise<ListRow | null> {
+): Promise<{row: ListRow; citySlug: string | null} | null> {
   const approval = recordValue(stored.approval);
   const result = recordValue(stored.result);
   const organizerId = typeof approval?.organizerId === "string" ? approval.organizerId : null;
@@ -165,7 +169,7 @@ async function importRow(
         .map((finding) => ({...finding, match: finding.match.slice(0, 500)})),
     };
   }).sort((left, right) => left.startAt.localeCompare(right.startAt));
-  return {
+  return {citySlug: owner.citySlug, row: {
     intakeRequestId,
     listingId,
     approvedAt: approval.approvedAt,
@@ -174,11 +178,39 @@ async function importRow(
       appVisibility: organizer.appVisibility === "discoverable" ? "discoverable" : "hidden",
       pagePublished: !owner.blockers.includes("organizer_page_unpublished")},
     events,
-  };
+  }};
 }
 
 export const adminListListingEventImports = onCall(appCheckCallableOptions,
   (request) => adminListListingEventImportsHandler(request));
+
+/** One imported event, by its request, for the inbox's publish sheet. */
+export async function adminGetListingEventReviewHandler(
+  request: CallableRequest<unknown>,
+  deps: ListingEventImportDeps = defaultDeps
+): Promise<AdminGetListingEventReviewCallableResponse> {
+  const adminContext = requireAdminRole(request, listingEventRoles);
+  const data = validateCallableWithAjv<AdminGetListingEventReviewCallablePayload>(request,
+    validateAdminGetListingEventReviewCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminGetListingEventReview",
+    {maxRequests: 60, windowMs: 60 * 1000}
+  );
+  const snapshot = await db.collection(supplyIntakeCollections.requests).doc(data.intakeRequestId).get();
+  const runtime = await packagedEventPublication();
+  const policy = await (deps.loadEventPublicationPolicy ?? runtime.loadEventPublicationPolicy)();
+  const imported = snapshot.exists ? await listingEventImportRow(db, runtime, snapshot.id, snapshot.data() ?? {},
+    adminContext.uid, deps.now().toISOString()) : null;
+  const event = imported?.row.events.find((entry) => entry.eventWorkItemId === data.eventWorkItemId);
+  if (!imported || !event) throw new HttpsError("not-found", "This event is no longer part of an approved listing.");
+  return {policy: {mode: policy.mode, policyVersion: policy.policyVersion}, organizer: imported.row.organizer, event};
+}
+
+export const adminGetListingEventReview = onCall(appCheckCallableOptions,
+  (request) => adminGetListingEventReviewHandler(request));
 
 /**
  * A staff member publishes (or dry-runs) chosen events of one approved

@@ -10,8 +10,7 @@ max_lines="${WIDGET_CLEANUP_SCAN_MAX_LINES:-80}"
 if [[ "${1:-}" == "--check" ]]; then
   summary="$(bash "$0" --summary)"
   printf '%s\n' "$summary"
-  printf '%s\n' "$summary" | node tool/lib/widget_cleanup_ratchet.mjs \
-    --baseline tool/audit/widget_cleanup_baseline.json
+  printf '%s\n' "$summary" | node tool/lib/widget_cleanup_gate.mjs
   exit 0
 fi
 

@@ -1,111 +1,24 @@
 import {describe, expect, it, vi} from "vitest";
-import {
-  adminPathForNav,
-  adminSections,
-  commercialTermsPathForOrganizer,
-  financePathForWorkspace,
-  growthPath,
-  resolveAdminRoute,
-  type AdminNavId,
-} from "./adminRoutes";
+import {adminAreas} from "./adminAreas";
+import {adminAreaList, adminPathForNav, adminRoutes, resolveAdminRoute} from "./adminRoutes";
 
+// What every area has to satisfy. What one area's routes do is tested beside it in areas/.
 describe("Admin route contract", () => {
-  it.each(Object.keys(adminSections) as AdminNavId[])("resolves the %s navigation destination", (nav) => {
+  it.each(adminAreaList.map((area) => area.id))("resolves the %s navigation destination", (nav) => {
     expect(resolveAdminRoute(adminPathForNav(nav)).nav).toBe(nav);
   });
 
-  it.each([
-    ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
-    ["/support/whatsapp-abc", "support", "supportConversationId", "whatsapp-abc"],
-    ["/safety/actions/action-1", "safety", "safetyActionId", "action-1"],
-    ["/safety/appeals/action-2", "safety", "safetyActionId", "action-2"],
-    ["/organizers/afterfly", "organizers", "organizerId", "afterfly"],
-    ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
-    ["/events/event-1", "events", "eventId", "event-1"],
-    ["/events/external/candidate-1", "events", "externalEventId", "candidate-1"],
-    ["/growth/nominators/sample-neha", "growth", "nominatorUid", "sample-neha"],
-    ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
-    ["/finance/commercial-terms/organizers/org%2F1", "finance", "termsOrganizerId", "org/1"],
-    ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
-    ["/admin-roles/user-1", "admin-roles", "adminRoleTargetUid", "user-1"],
-    ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
-    ["/marketing/drafts/draft%20one/copy", "marketing-ops", "draftId", "draft one"],
-  ])("resolves %s", (path, nav, key, value) => {
-    const route = resolveAdminRoute(path);
-    expect(route.nav).toBe(nav);
-    expect(route.params[key]).toBe(value);
+  it.each(adminAreaList.map((area) => area.id))("gives the %s area a screen", (nav) => {
+    expect(adminAreas[nav].render).toBeTypeOf("function");
   });
 
-  it("opens Safety's views and sends old launch access links to Safety", () => {
-    expect(resolveAdminRoute("/safety").safetyView).toBe("open");
-    expect(resolveAdminRoute("/safety/actions").safetyView).toBe("actions");
-    expect(resolveAdminRoute("/safety/appeals/a1").safetyView).toBe("appeals");
-    expect(resolveAdminRoute("/access/user-1").redirect).toBe("/safety");
+  it("names every route once, so no area takes another's address", () => {
+    const paths = adminRoutes.map((route) => route.path);
+    expect(paths.length).toBe(new Set(paths).size);
   });
 
-  it.each([
-    ["/organizers/claims", "organizerWorkspace", "claims", "organizerId"],
-    ["/events/readiness/", "eventWorkspace", "directory", "eventId"],
-    ["/events/external", "eventWorkspace", "external", "eventId"],
-    ["/finance/commercial-terms", "financeWorkspace", "commercial-terms", "financeIssueId"],
-    ["/finance/payment-routing", "financeWorkspace", "payment-routing", "financeIssueId"],
-    ["/finance", "financeWorkspace", "issues", "financeIssueId"],
-  ])("does not mistake the %s workspace for a record", (path, key, value, recordKey) => {
-    const route = resolveAdminRoute(path);
-    expect(route).toHaveProperty(key, value);
-    expect(route.params[recordKey]).toBeUndefined();
-  });
-
-  it("builds Growth paths that resolve back to their view, and sends old signal links to Growth", () => {
-    for (const view of ["cohorts", "channels", "nominators", "best"] as const) {
-      expect(resolveAdminRoute(growthPath(view)).growthView).toBe(view);
-    }
-    expect(resolveAdminRoute(growthPath("nominators", "a b")).params.nominatorUid).toBe("a b");
-    expect(resolveAdminRoute("/growth/signals/signal-1").redirect).toBe("/growth");
-  });
-
-  it("builds finance workspace paths that resolve back to their workspace", () => {
-    expect(resolveAdminRoute(financePathForWorkspace("payment-routing")).financeWorkspace)
-      .toBe("payment-routing");
-    expect(resolveAdminRoute(financePathForWorkspace("issues")).financeWorkspace).toBe("issues");
-    const organizerPath = commercialTermsPathForOrganizer("club/a b");
-    expect(resolveAdminRoute(organizerPath)).toMatchObject({
-      financeWorkspace: "commercial-terms", params: {termsOrganizerId: "club/a b"},
-    });
-    expect(resolveAdminRoute(commercialTermsPathForOrganizer(null)).params.termsOrganizerId)
-      .toBeUndefined();
-  });
-
-  it("preserves marketing workspace and draft-step defaults", () => {
-    expect(resolveAdminRoute("/marketing").marketingTab).toBe("posts");
-    expect(resolveAdminRoute("/marketing/media").marketingTab).toBe("media");
-    expect(resolveAdminRoute("/marketing/drafts/a/copy")).toMatchObject({
-      marketingTab: "draft", composerStep: "copy", title: "Marketing draft",
-    });
-    expect(resolveAdminRoute("/marketing/drafts/a/unknown")).toMatchObject({
-      marketingTab: "draft", composerStep: "source", params: {draftId: "a"},
-    });
-  });
-
-  it("opens the directory for links to the retired readiness workspace", () => {
-    expect(resolveAdminRoute("/events/readiness/source%2Faction")).toMatchObject({
-      nav: "events", eventWorkspace: "directory",
-    });
-    expect(resolveAdminRoute("/events/readiness/source%2Faction").params.eventId).toBeUndefined();
-  });
-
-  it("keeps unknown nested paths in their workspace without borrowing a record", () => {
-    expect(resolveAdminRoute("/events/unknown/extra")).toMatchObject({nav: "events", eventWorkspace: "directory"});
-    expect(resolveAdminRoute("/events/unknown/extra").params.eventId).toBeUndefined();
-    expect(resolveAdminRoute("/events/trivia/page")).toMatchObject({nav: "events", eventTab: "page",
-      params: {eventId: "trivia"}});
-    expect(resolveAdminRoute("/organizers/afterfly/money")).toMatchObject({nav: "organizers",
-      organizerTab: "money", params: {organizerId: "afterfly"}});
-    expect(resolveAdminRoute("/organizers/afterfly/unknown").params.organizerId).toBeUndefined();
+  it("names an unknown path no area", () => {
     expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
-    expect(resolveAdminRoute("/")).toMatchObject({nav: "now", redirect: "/now"});
-    expect(resolveAdminRoute("/overview")).toMatchObject({nav: "now", redirect: "/now"});
-    expect(resolveAdminRoute("/now").redirect).toBeNull();
   });
 
   it.each(["a/b", "a%2Fb", "a%25b", "a b", "a?b", "a#b"])("round-trips the opaque ID %s without decoding it twice", (id) => {
@@ -119,14 +32,5 @@ describe("Admin route contract", () => {
     } finally {
       warning.mockRestore();
     }
-  });
-
-  it.each([
-    ["/intake/organizers", "Organizer intake"],
-    ["/intake/events", "Event intake"],
-    ["/intake/operations", "Supply intake operations"],
-    ["/events/external", "External inventory"],
-  ])("retains the title for %s", (path, title) => {
-    expect(resolveAdminRoute(path).title).toBe(title);
   });
 });

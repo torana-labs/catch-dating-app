@@ -1,8 +1,7 @@
 # Native Branding Assets
 
 `generate_native_brand_assets.dart` keeps native launcher and splash branding
-aligned with the cached design tokens in
-`design_context_pack/design_system/tokens.json`.
+aligned with the design tokens in `design/tokens/catch.tokens.json`.
 
 Run it after token or base icon changes:
 

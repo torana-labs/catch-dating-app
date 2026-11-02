@@ -1,0 +1,31 @@
+{
+  "workflow": {
+    "workflowId": "intake-operations",
+    "label": "Intake Operations",
+    "guiPath": "/intake/operations"
+  },
+  "actions": [
+    {
+      "actionId": "intake-operations.list",
+      "callable": "adminListIntakeOperations",
+      "workflowIds": [
+        "intake-operations"
+      ],
+      "guiPath": "/intake/operations",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_intake_operations_payload.schema.json",
+      "summary": "List the persisted Supply Intake runs and one bounded item page.",
+      "example": {
+        "workflowId": "supply-intake",
+        "runLimit": 10,
+        "workItemLimit": 50
+      }
+    }
+  ]
+}

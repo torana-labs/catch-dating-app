@@ -1,7 +1,7 @@
 ---
 doc_id: composition_migration_spec
-version: 0.1.4
-updated: 2026-10-29
+version: 0.1.5
+updated: 2026-11-02
 owner: product_design_parity
 status: active
 ---
@@ -51,7 +51,7 @@ without registering components. That would preserve the current drift problem.
 
 The practical loop is:
 
-1. Pick a screen or feature from the parity matrix.
+1. Pick a screen from `design/screens/catch.screens.json`.
 2. Decompose it into sections and component needs.
 3. Register or update missing component contracts.
 4. Add Widgetbook states for the affected primitives/sections.
@@ -92,7 +92,7 @@ reference DTCG token ids.
 | Foundation tokens | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, social CSS, Figma variables, Claude context pack, token specimen pages. |
 | Component contracts | `design/components/catch.components.json` and future split files under `design/components/` | Widgetbook primitive states, Figma/Claude handoff names, Code Connect templates, contract validators. |
 | Section contracts | Screen-local candidate sections stay nested in `design/screens/catch.screens.json`; reused product sections promote to future `design/sections/catch.sections.json`. | Widgetbook section states, screen composition validators, route captures. |
-| Screen contracts | Future `design/screens/catch.screens.json` plus `docs/design_parity/state_matrix.json` | Screen state captures, controller fixture requirements, route tests, visual comparison matrix. |
+| Screen contracts | `design/screens/catch.screens.json` | Screen state captures, controller fixture requirements, route tests, visual comparison matrix. |
 | Flutter runtime behavior | `lib/contexts/*/parts/**` and feature-owned widget folders | Widgetbook, Flutter tests, route captures, app runtime. |
 | Website/social implementations | `website/**`, Claude template exports, social-template tooling | CSS token output, shared screenshots, generated media packs. |
 
@@ -291,7 +291,7 @@ Screens should not:
 
 Definition of done:
 
-- Screen has a `design/screens` or parity-matrix entry.
+- Screen has a `design/screens` entry.
 - Every visible UI block maps to a registered section or component.
 - Every state is listed: loading, populated, empty, error, offline,
   permission, mutation pending, mutation failed, light/dark, text scale,
@@ -653,8 +653,7 @@ state mapper plus section composition.
   `design/components/catch.components.json` focused on primitives,
   cross-screen compounds, and platform bindings.
 - Screen contract storage: `design/screens/catch.screens.json` is the canonical
-  screen contract registry. `docs/design_parity/state_matrix.json` remains the
-  state/proof matrix for feature parity status and captures.
+  screen contract registry, including each screen's states and captures.
 
 ## Definition Of Done For The Whole Program
 

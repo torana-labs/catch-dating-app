@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
-import {CAPTURE_PRODUCER_JOBS, downloadCaptureArtifact, readCaptureArchive, selectCaptureProducerJob, validateBinding, verifyArtifactMetadata} from "./import_hosted_captures.mjs";
+import {CAPTURE_PRODUCER_JOBS, isAdminBuildOutput, downloadCaptureArtifact, readCaptureArchive, selectCaptureProducerJob, validateBinding, verifyArtifactMetadata} from "./import_hosted_captures.mjs";
 
 const hash = bytes => `sha256:${crypto.createHash("sha256").update(bytes).digest("hex")}`;
 function identities() {
@@ -188,4 +188,12 @@ test("ZIP validates local names and CRCs and rejects prefixed or truncated archi
   assert.throws(() => readCaptureArchive(wrongLocalName, names));
   assert.throws(() => readCaptureArchive(Buffer.concat([Buffer.from("prefix"), valid]), names));
   assert.throws(() => readCaptureArchive(valid.subarray(0, -12), names));
+});
+
+test("only Admin's declared build outputs may sit untracked beside the website build", () => {
+  assert.equal(isAdminBuildOutput("admin/src/generated/adminActionCatalog.ts"), true);
+  assert.equal(isAdminBuildOutput("admin/src/generated/validators/groups/money.ts"), true);
+  assert.equal(isAdminBuildOutput("admin/src/generated/contracts/x.ts"), false);
+  assert.equal(isAdminBuildOutput("admin/src/app/App.tsx"), false);
+  assert.equal(isAdminBuildOutput("website/src/generated/adminActionCatalog.ts"), false);
 });

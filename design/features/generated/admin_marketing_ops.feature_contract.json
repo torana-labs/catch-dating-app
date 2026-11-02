@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_marketing_ops.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:549157757d84f556b51cb0b790db07b720b4cd0bdc419339e44fe23b30498790",
-  "resolvedDigest": "sha256:984c02d987396daffd29cc658a891f1f5368b992032ed7aab07d529bb026c9f3",
+  "sourceDigest": "sha256:cc331d246bba67f67e2d1b7ba7e80f241c460323e1d02a036f77449d1d352e32",
+  "resolvedDigest": "sha256:d8c4d6c7f23468d99125c1b3997d4ca65fbae975eb8f081677247f3b70321528",
   "feature": {
     "id": "feature.admin_marketing_ops",
     "name": "Admin Marketing Operations",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "admin/src/stories/AdminRoutes.stories.tsx"
+          "admin/src/stories/AdminRoutesMarketing.stories.tsx"
         ],
         "actionOwners": [
           {
@@ -569,7 +569,7 @@
             "exportName": "MarketingOpsScreen",
             "storybook": {
               "status": "ready",
-              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "story": "admin/src/stories/AdminRoutesMarketing.stories.tsx",
               "exportName": "MarketingOpsRouteStory",
               "states": [
                 "post-board"

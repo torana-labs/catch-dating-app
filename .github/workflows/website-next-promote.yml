@@ -118,8 +118,19 @@ jobs:
           set -euo pipefail
           node website/scripts/next/promoteRelease.mjs recheck
           cd build/next-preview/verified
-          firebase hosting:channel:deploy next-release --expires 3d --project catch-dating-app-64e51 \
-            --only marketing --config firebase.production.json --non-interactive --json > ../../next-promote/candidate.json
+          # Pinning the runtime sometimes fails with "Failed to replace Run
+          # service" just after the deploy above; the same deploy then succeeds.
+          # --json sends the reason to the file, so print it before retrying.
+          for attempt in 1 2 3; do
+            if firebase hosting:channel:deploy next-release --expires 3d --project catch-dating-app-64e51 \
+              --only marketing --config firebase.production.json --non-interactive --json > ../../next-promote/candidate.json; then
+              break
+            fi
+            cat ../../next-promote/candidate.json
+            if (( attempt == 3 )); then exit 1; fi
+            echo "::warning::Channel deploy attempt $attempt failed; retrying."
+            sleep 30
+          done
           node "$GITHUB_WORKSPACE/website/scripts/next/channelState.mjs" record next-release catch-website-next ../../next-promote/candidate-channel.json
           url="$(jq -er .url ../../next-promote/candidate-channel.json)"
           node "$RELEASE_SOURCE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json

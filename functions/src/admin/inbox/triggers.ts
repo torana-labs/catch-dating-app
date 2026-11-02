@@ -12,7 +12,8 @@ import {
   journeyStepDocId,
   sourceCollections,
 } from "./model";
-import {journeyStepDocument, syncInboxSource} from "./store";
+import {syncInboxDocument} from "./listingEvents";
+import {journeyStepDocument} from "./store";
 import {syncPeopleIndex} from "../peopleSearch";
 
 /**
@@ -21,11 +22,12 @@ import {syncPeopleIndex} from "../peopleSearch";
  * re-projects every source, so an item a failed trigger missed catches up.
  */
 function inboxTrigger(kind: InboxSourceKind) {
-  return onDocumentWritten({document: `${sourceCollections[kind]}/{sourceId}`},
+  return onDocumentWritten({document: `${sourceCollections[kind]}/{sourceId}`, timeoutSeconds: 300},
     async (event) => {
-      const result = await syncInboxSource(admin.firestore(), kind, event.params.sourceId,
+      const results = await syncInboxDocument(admin.firestore(), kind, event.params.sourceId,
         event.data?.after.data(), new Date());
-      if (result.outcome === "written") logger.info("Inbox item synced.", {kind, ...result});
+      const written = results.filter((result) => result.outcome === "written");
+      if (written.length) logger.info("Inbox items synced.", {kind, sourceId: event.params.sourceId, written: written.length});
     });
 }
 
@@ -97,8 +99,9 @@ export async function reconcileAdminInbox(db: FirebaseFirestore.Firestore, now: 
         try {
           if (source === "people") {
             if (await syncPeopleIndex(db, doc.id, doc.data(), now())) summary.written += 1;
-          } else if ((await syncInboxSource(db, source, doc.id, doc.data(), now())).outcome === "written") {
-            summary.written += 1;
+          } else {
+            const results = await syncInboxDocument(db, source, doc.id, doc.data(), now());
+            summary.written += results.filter((result) => result.outcome === "written").length;
           }
         } catch (error) {
           summary.failed += 1;

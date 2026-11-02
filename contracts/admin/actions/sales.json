@@ -1,0 +1,2080 @@
+{
+  "workflow": {
+    "workflowId": "sales",
+    "label": "Sales",
+    "guiPath": "/sales/today"
+  },
+  "actions": [
+    {
+      "actionId": "nominations.list",
+      "callable": "adminListMyNominations",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/nominations",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_list_my_nominations_payload.schema.json",
+      "summary": "List the organizers the caller nominated, newest first, published, waiting or stuck, with real totals per filter.",
+      "example": {
+        "filter": "all",
+        "limit": 25,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "sales.accounts.setSuppression",
+      "callable": "adminSetSalesAccountSuppression",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_accounts_set_suppression_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales accounts.setSuppression operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 1,
+        "status": "held",
+        "reason": "Synthetic hold"
+      }
+    },
+    {
+      "actionId": "sales.activities.log",
+      "callable": "adminRecordSalesActivity",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_activities_log_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales activities.log operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "type": "note",
+        "occurredAt": "2026-09-28T00:00:00Z",
+        "note": "Synthetic review note"
+      }
+    },
+    {
+      "actionId": "sales.commercial.detail",
+      "callable": "adminGetSalesCommercialDetail",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_sales_commercial_detail_payload.schema.json",
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "example": {
+        "organizerId": "example-org",
+        "opportunityId": "example-opportunity"
+      }
+    },
+    {
+      "actionId": "sales.commercial.finance.attest",
+      "callable": "adminAttestSalesHostSettlement",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_attest_sales_host_settlement_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_attest_sales_host_settlement_response.schema.json",
+      "summary": "Attest a reviewed host subscription collection against accepted terms.",
+      "example": {
+        "organizerId": "org-example",
+        "opportunityId": "opportunity-example",
+        "requestId": "request-example-001",
+        "expectedQuoteRevision": 3,
+        "termVersion": 1,
+        "amountMinor": 120000,
+        "currency": "INR",
+        "purpose": "host_subscription",
+        "receivedAt": "2026-09-27T00:00:00Z",
+        "settlementMethod": "bank_transfer",
+        "servicePeriod": null,
+        "evidence": {
+          "evidenceId": "evidence-example"
+        },
+        "settlementReference": "synthetic-bank-123",
+        "recipientAccountScope": "synthetic-account"
+      },
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.commercial.pilots.upsert",
+      "callable": "adminUpsertSalesPilotPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_upsert_sales_pilot_plan_payload.schema.json",
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "example": {
+        "organizerId": "example-org",
+        "opportunityId": "example-opportunity",
+        "requestId": "example-pilot-save",
+        "expectedRevision": 0,
+        "plan": {
+          "status": "draft",
+          "workflowId": "synthetic-forms",
+          "objective": "Review one synthetic form",
+          "successMeasures": [
+            "Form reviewed"
+          ],
+          "startsAt": null,
+          "endsAt": null,
+          "reviewEvidence": null,
+          "outcomeEvidence": null
+        }
+      },
+      "confirmation": "action-and-target",
+      "targetField": "opportunityId"
+    },
+    {
+      "actionId": "sales.commercial.quotes.accept",
+      "callable": "adminAcceptSalesQuote",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_accept_sales_quote_payload.schema.json",
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "example": {
+        "organizerId": "example-org",
+        "opportunityId": "example-opportunity",
+        "requestId": "example-quote-accept",
+        "expectedRevision": 2,
+        "termVersion": 1,
+        "evidence": {
+          "evidenceId": "example-evidence"
+        }
+      },
+      "confirmation": "action-and-target",
+      "targetField": "opportunityId"
+    },
+    {
+      "actionId": "sales.commercial.quotes.approve",
+      "callable": "adminApproveSalesQuote",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_approve_sales_quote_payload.schema.json",
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "example": {
+        "organizerId": "example-org",
+        "opportunityId": "example-opportunity",
+        "requestId": "example-quote-approve",
+        "expectedRevision": 1,
+        "termVersion": 1,
+        "evidence": {
+          "evidenceId": "example-evidence"
+        }
+      },
+      "confirmation": "action-and-target",
+      "targetField": "opportunityId"
+    },
+    {
+      "actionId": "sales.commercial.quotes.revise",
+      "callable": "adminReviseSalesQuote",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_revise_sales_quote_payload.schema.json",
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "example": {
+        "organizerId": "example-org",
+        "opportunityId": "example-opportunity",
+        "requestId": "example-quote-revise",
+        "expectedRevision": 0,
+        "terms": {
+          "currency": "USD",
+          "amountMinor": 100,
+          "billingCadence": "monthly",
+          "scope": "Synthetic example only",
+          "validUntil": "2027-01-01T00:00:00Z",
+          "sourceFactRefs": [
+            "example-evidence"
+          ]
+        }
+      },
+      "confirmation": "action-and-target",
+      "targetField": "opportunityId"
+    },
+    {
+      "actionId": "sales.commercial.report",
+      "callable": "adminListSalesCommercialReport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_list_sales_commercial_report_payload.schema.json",
+      "summary": "Review private host pilot or quote records with current evidence.",
+      "example": {
+        "organizerId": "example-org"
+      }
+    },
+    {
+      "actionId": "sales.contacts.list",
+      "callable": "adminListSalesContacts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_contacts_list_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales contacts.list operation.",
+      "example": {
+        "organizerId": "example-org"
+      }
+    },
+    {
+      "actionId": "sales.contacts.setContactability",
+      "callable": "adminSetSalesContactability",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "contactId",
+      "requestSchema": "contracts/callables/admin_sales_contacts_set_contactability_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales contacts.setContactability operation.",
+      "example": {
+        "organizerId": "example-org",
+        "contactId": "example-contact",
+        "requestId": "example-request-001",
+        "expectedRevision": 1,
+        "status": "held",
+        "reason": "Synthetic hold"
+      }
+    },
+    {
+      "actionId": "sales.contacts.upsert",
+      "callable": "adminUpsertSalesContact",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "contactId",
+      "requestSchema": "contracts/callables/admin_sales_contacts_upsert_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales contacts.upsert operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 0,
+        "contact": {
+          "displayName": "Example Contact"
+        },
+        "relationship": {
+          "role": "operator",
+          "decisionInfluence": "operator",
+          "primary": true
+        }
+      }
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoBlueprint",
+      "callable": "adminGetSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "blueprintId": "example-blueprint"
+      }
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoCapability",
+      "callable": "adminGetSalesDemoCapability",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {}
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoInvitation",
+      "callable": "adminGetSalesDemoInvitation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "invitationId": "example-invitation"
+      }
+    },
+    {
+      "actionId": "sales.demo.GetSalesDemoPartnerReview",
+      "callable": "adminGetSalesDemoPartnerReview",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_sales_demo_partner_review_payload.schema.json",
+      "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
+      "example": {
+        "blueprintId": "example-blueprint"
+      }
+    },
+    {
+      "actionId": "sales.demo.IssueSalesDemoInvitation",
+      "callable": "adminIssueSalesDemoInvitation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "requestId": "example-demo-invite",
+        "blueprintId": "example-blueprint",
+        "blueprintRevision": 1,
+        "expiresAt": "2027-01-01T00:00:00Z",
+        "sessionCap": 1
+      },
+      "confirmation": "action-and-target",
+      "targetField": "blueprintId"
+    },
+    {
+      "actionId": "sales.demo.ListSalesDemoBlueprints",
+      "callable": "adminListSalesDemoBlueprints",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "organizerId": "example-organizer"
+      }
+    },
+    {
+      "actionId": "sales.demo.ListSalesDemoInvitations",
+      "callable": "adminListSalesDemoInvitations",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "blueprintId": "example-blueprint"
+      }
+    },
+    {
+      "actionId": "sales.demo.ReviewSalesDemoBlueprint",
+      "callable": "adminReviewSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "requestId": "example-demo-review",
+        "blueprintId": "example-blueprint",
+        "expectedRevision": 1
+      },
+      "confirmation": "action-and-target",
+      "targetField": "blueprintId"
+    },
+    {
+      "actionId": "sales.demo.RevokeSalesDemoInvitation",
+      "callable": "adminRevokeSalesDemoInvitation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "requestId": "example-demo-revoke",
+        "invitationId": "example-invitation",
+        "expectedRevision": 1
+      },
+      "confirmation": "action-and-target",
+      "targetField": "invitationId"
+    },
+    {
+      "actionId": "sales.demo.SaveSalesDemoBlueprint",
+      "callable": "adminSaveSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "requestId": "example-demo-save",
+        "blueprintId": "example-blueprint",
+        "expectedRevision": 0,
+        "evidenceRevision": "example-evidence",
+        "preview": {
+          "brandName": "Example Host",
+          "headline": "A private example",
+          "scenario": "Explore a sample workflow",
+          "steps": [
+            "Review sample application",
+            "Prepare sample reply",
+            "Admit sample guest"
+          ],
+          "retainedTools": [],
+          "limitations": [
+            "Synthetic records only"
+          ],
+          "cta": "Try the sample"
+        },
+        "formCapabilityReview": {
+          "questionTypes": "manual",
+          "branching": "manual",
+          "requiredFields": "manual",
+          "scoringApproval": "manual",
+          "uploads": "manual"
+        },
+        "fieldMappings": []
+      },
+      "confirmation": "action-and-target",
+      "targetField": "blueprintId"
+    },
+    {
+      "actionId": "sales.demo.ShareSalesDemoPartnerReview",
+      "callable": "adminShareSalesDemoPartnerReview",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_share_sales_demo_partner_review_payload.schema.json",
+      "summary": "Review an exact current partner recipient and separately share or withdraw a synthetic composition preview.",
+      "example": {
+        "blueprintId": "example-blueprint",
+        "requestId": "example-demo-share",
+        "expectedBlueprintRevision": 2,
+        "expectedSharingRevision": 0,
+        "partnerUid": "example-partner",
+        "expectedAssignmentRevision": 1,
+        "expectedPreviewHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "decision": "share",
+        "expiresAt": "2026-10-05T12:00:00.000Z"
+      },
+      "confirmation": "action-and-target",
+      "targetField": "blueprintId"
+    },
+    {
+      "actionId": "sales.demo.WithdrawSalesDemoBlueprint",
+      "callable": "adminWithdrawSalesDemoBlueprint",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/sales_demo_management.schema.json",
+      "summary": "Manage a private synthetic workflow invitation through owner-only Sales operations.",
+      "example": {
+        "requestId": "example-demo-withdraw",
+        "blueprintId": "example-blueprint",
+        "expectedRevision": 1
+      },
+      "confirmation": "action-and-target",
+      "targetField": "blueprintId"
+    },
+    {
+      "actionId": "sales.evidence.add",
+      "callable": "adminAddSalesEvidence",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_evidence_add_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales evidence.add operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "claimKey": "other",
+        "sourceType": "human_note",
+        "sourceRef": "synthetic:review",
+        "observedAt": "2026-09-28T00:00:00Z",
+        "confidence": "medium"
+      }
+    },
+    {
+      "actionId": "sales.evidence.list",
+      "callable": "adminListSalesEvidence",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_evidence_list_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales evidence.list operation.",
+      "example": {
+        "organizerId": "example-org"
+      }
+    },
+    {
+      "actionId": "sales.evidence.propose",
+      "callable": "adminProposeSalesEvidence",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_evidence_propose_payload.schema.json",
+      "summary": "Suggest an unreviewed private fact; never grants qualification.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "claimKey": "other",
+        "sourceType": "human_note",
+        "sourceRef": "synthetic:review",
+        "observedAt": "2026-09-28T00:00:00Z",
+        "confidence": "medium"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.evidence.reviewProposal",
+      "callable": "adminReviewSalesEvidenceProposal",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_evidence_review_proposal_payload.schema.json",
+      "summary": "Employee accepts or rejects the exact version of a suggested fact.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-review-001",
+        "proposalId": "proposal-example",
+        "expectedRevision": 1,
+        "decision": "reject",
+        "reason": "Source does not support this observation."
+      }
+    },
+    {
+      "actionId": "sales.evidenceProposals.list",
+      "callable": "adminListSalesEvidenceProposals",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_evidence_proposals_list_payload.schema.json",
+      "summary": "Read private evidence suggestions awaiting employee review.",
+      "example": {
+        "organizerId": "example-org"
+      }
+    },
+    {
+      "actionId": "sales.fields.create",
+      "callable": "adminCreateSalesCustomField",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "field.fieldId",
+      "requestSchema": "contracts/callables/admin_sales_fields_create_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales fields.create operation.",
+      "example": {
+        "requestId": "example-request-001",
+        "field": {
+          "fieldId": "sales.example",
+          "label": "Example field",
+          "type": "string",
+          "recordType": "account"
+        }
+      }
+    },
+    {
+      "actionId": "sales.fields.list",
+      "callable": "adminListSalesCustomFields",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fields_list_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales fields.list operation.",
+      "example": {}
+    },
+    {
+      "actionId": "sales.fields.setValue",
+      "callable": "adminSetSalesCustomFieldValue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "fieldId",
+      "requestSchema": "contracts/callables/admin_sales_fields_set_value_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales fields.setValue operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 0,
+        "fieldId": "sales.example",
+        "value": "Example"
+      }
+    },
+    {
+      "actionId": "sales.fitQueue.list",
+      "callable": "adminListSalesFitQueue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fit_queue_list_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_fit_queue_list_response.schema.json",
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "example": {
+        "view": "ranked"
+      }
+    },
+    {
+      "actionId": "sales.fitQueue.refresh",
+      "callable": "adminRefreshSalesFitQueue",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fit_queue_refresh_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_fit_queue_refresh_response.schema.json",
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "example": {
+        "organizerId": "org-example",
+        "requestId": "request-example-001"
+      },
+      "confirmation": "action-and-target",
+      "controlPlane": true,
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.fitQueue.refresh_batch",
+      "callable": "adminRefreshSalesFitQueueBatch",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_fit_queue_refresh_batch_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_fit_queue_refresh_batch_response.schema.json",
+      "summary": "Review or refresh current private fit ranking without outreach authority.",
+      "example": {
+        "requestId": "request-example-001",
+        "limit": 10
+      },
+      "confirmation": "action",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.hosts.create",
+      "callable": "adminCreateSalesAccount",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_hosts_create_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales hosts.create operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001"
+      }
+    },
+    {
+      "actionId": "sales.hosts.get",
+      "callable": "adminGetSalesAccount",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_hosts_get_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales hosts.get operation.",
+      "example": {
+        "organizerId": "example-org"
+      }
+    },
+    {
+      "actionId": "sales.hosts.search",
+      "callable": "adminListSalesAccounts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_hosts_search_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales hosts.search operation.",
+      "example": {}
+    },
+    {
+      "actionId": "sales.hosts.update",
+      "callable": "adminUpdateSalesAccount",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_hosts_update_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales hosts.update operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 1,
+        "patch": {
+          "summary": "Synthetic review"
+        }
+      }
+    },
+    {
+      "actionId": "sales.imports.apply",
+      "callable": "adminApplySalesImport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "sourceId",
+      "requestSchema": "contracts/callables/admin_sales_imports_apply_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales imports.apply operation.",
+      "example": {
+        "requestId": "example-request-001",
+        "previewHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "sourceId": "synthetic-export",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mappingVersion": "v1",
+        "rows": [
+          {
+            "sourceRowId": "synthetic-export:1",
+            "organizerId": "example-org",
+            "name": "Example Organizer",
+            "researchStatus": "needs_research"
+          }
+        ]
+      }
+    },
+    {
+      "actionId": "sales.imports.compensation.apply",
+      "callable": "adminApplySalesImportCompensation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/imports",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_compensation_apply_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_compensation_apply_response.schema.json",
+      "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
+      "example": {
+        "importId": "import-example",
+        "organizerId": "org-example",
+        "requestId": "request-example-001",
+        "previewHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reason": "Reverse this reviewed import effect."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.imports.compensation.preview",
+      "callable": "adminPreviewSalesImportCompensation",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/imports",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_compensation_preview_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_compensation_preview_response.schema.json",
+      "summary": "Inspect or compensate one proven import effect without deleting the organizer.",
+      "example": {
+        "importId": "import-example",
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.apply",
+      "callable": "adminApplySalesImportHistory",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_history_apply_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_history_apply_response.schema.json",
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "example": {
+        "sourceId": "source-example",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mappingVersion": "v1",
+        "promotionVersion": "v1",
+        "rows": [
+          {
+            "importId": "import-example",
+            "sourceRowId": "row-1",
+            "organizerId": "org-example",
+            "disposition": "review_needed",
+            "reason": "Source date and meaning need review.",
+            "entries": []
+          }
+        ],
+        "requestId": "request-example-001",
+        "previewHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "sourceId"
+    },
+    {
+      "actionId": "sales.imports.history.list",
+      "callable": "adminListSalesImportHistory",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_history_list_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_history_list_response.schema.json",
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.preview",
+      "callable": "adminPreviewSalesImportHistory",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_history_preview_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_history_preview_response.schema.json",
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "example": {
+        "sourceId": "source-example",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mappingVersion": "v1",
+        "promotionVersion": "v1",
+        "rows": [
+          {
+            "importId": "import-example",
+            "sourceRowId": "row-1",
+            "organizerId": "org-example",
+            "disposition": "review_needed",
+            "reason": "Source date and meaning need review.",
+            "entries": []
+          }
+        ]
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.history.rows.list",
+      "callable": "adminListSalesImportHistoryRows",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_import_history_rows_list_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_import_history_rows_list_response.schema.json",
+      "summary": "Review preserved source history without granting current contact, score, or sending authority.",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.imports.preview",
+      "callable": "adminPreviewSalesImport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_imports_preview_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales imports.preview operation.",
+      "example": {
+        "sourceId": "synthetic-export",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mappingVersion": "v1",
+        "rows": [
+          {
+            "sourceRowId": "synthetic-export:1",
+            "organizerId": "example-org",
+            "name": "Example Organizer",
+            "researchStatus": "needs_research"
+          }
+        ]
+      }
+    },
+    {
+      "actionId": "sales.intake.link",
+      "callable": "adminLinkOrganizerIntakeToSales",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/organizer-intake",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_link_organizer_intake_to_sales_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_link_organizer_intake_to_sales_response.schema.json",
+      "summary": "Join an explicitly reviewed Intake identity to its private Sales account.",
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "example": {
+        "workItemId": "work-example",
+        "candidateId": "candidate-example",
+        "expectedWorkItemRevision": 1,
+        "expectedCandidateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "organizerId": "org-example",
+        "curationPath": "organizerIntakeCurationDecisions/example-decision",
+        "requestId": "request-example-001"
+      }
+    },
+    {
+      "actionId": "sales.intake.list-message-nominators",
+      "callable": "adminListSupplyNominators",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "salesStaff"
+      ],
+      "requestSchema": "contracts/callables/admin_list_supply_nominators_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_supply_nominators_response.schema.json",
+      "summary": "List who may nominate organizers by messaging Catch, with numbers shown only as their last four digits.",
+      "example": {},
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intake.nominate-organizer",
+      "callable": "adminNominateOrganizer",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "salesStaff"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "requestId",
+      "requestSchema": "contracts/callables/admin_nominate_organizer_payload.schema.json",
+      "summary": "Nominate an organizer for Supply Intake; the listing is built from its links and waits for staff review before anything is published.",
+      "example": {
+        "requestId": "example-nomination-001",
+        "name": "Example Run Club",
+        "market": "mumbai",
+        "urls": [
+          "https://lu.ma/example"
+        ],
+        "notes": null,
+        "categories": [
+          "running"
+        ]
+      }
+    },
+    {
+      "actionId": "sales.intake.set-message-nominator",
+      "callable": "adminSetSupplyNominator",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "uid",
+      "requestSchema": "contracts/callables/admin_set_supply_nominator_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_set_supply_nominator_response.schema.json",
+      "summary": "Let a sales associate or partner nominate organizers by sending links to Catch's WhatsApp number, or stop their messages counting.",
+      "example": {
+        "phoneE164": "+919800000000",
+        "uid": "example-associate-uid",
+        "role": "associate",
+        "displayName": "Example Associate",
+        "defaultMarket": "mumbai",
+        "active": true
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intelligence.BuildSalesOutreachInput",
+      "callable": "adminBuildSalesOutreachInput",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_draft_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_input_response.schema.json",
+      "example": {
+        "organizerId": "org-example",
+        "contactId": "contact-example",
+        "opportunityId": "opportunity-example",
+        "observationIds": [
+          "observation-example"
+        ],
+        "capabilityIds": [
+          "capability-example"
+        ],
+        "referenceIds": [],
+        "ctaIds": [
+          "cta-example"
+        ],
+        "channel": "email",
+        "purpose": "first_message"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intelligence.CopySalesOutreachDraft",
+      "callable": "adminCopySalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_copy_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_copy_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "draftId": "draft-example",
+        "expectedContentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "draftId"
+    },
+    {
+      "actionId": "sales.intelligence.GenerateSalesOutreachDraft",
+      "callable": "adminGenerateSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_generate_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "sourceRequest": {
+          "organizerId": "org-example",
+          "contactId": "contact-example",
+          "opportunityId": "opportunity-example",
+          "observationIds": [
+            "observation-example"
+          ],
+          "capabilityIds": [
+            "capability-example"
+          ],
+          "referenceIds": [],
+          "ctaIds": [
+            "cta-example"
+          ],
+          "channel": "email",
+          "purpose": "first_message"
+        }
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "requestId"
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesIntelligenceCatalog",
+      "callable": "adminGetSalesIntelligenceCatalog",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_catalog_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_catalog_response.schema.json",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesIntelligenceScore",
+      "callable": "adminGetSalesIntelligenceScore",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_score_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_score_response.schema.json",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesOutreachDraft",
+      "callable": "adminGetSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_draft_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_draft_response.schema.json",
+      "example": {
+        "draftId": "draft-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.GetSalesOutreachDraftJob",
+      "callable": "adminGetSalesOutreachDraftJob",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_job_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_job_response.schema.json",
+      "example": {
+        "requestId": "request-example-001"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.ListSalesOutreachDrafts",
+      "callable": "adminListSalesOutreachDrafts",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_list_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_list_response.schema.json",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft."
+    },
+    {
+      "actionId": "sales.intelligence.ReviewSalesIntelligenceClause",
+      "callable": "adminReviewSalesIntelligenceClause",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_clause_review_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_clause_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "clauseId": "clause-example",
+        "expectedRevision": 1,
+        "decision": "approve"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "clauseId"
+    },
+    {
+      "actionId": "sales.intelligence.ReviewSalesOutreachDraft",
+      "callable": "adminReviewSalesOutreachDraft",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_outreach_review_request.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_outreach_review_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "draftId": "draft-example",
+        "expectedContentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "factualValidity": "verified",
+        "tone": "approved",
+        "channelReadiness": "manual_copy_only"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "draftId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesFactorAssessment",
+      "callable": "adminSaveSalesFactorAssessment",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_assessment_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_assessment_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "organizerId": "org-example",
+        "factorId": "one",
+        "expectedRevision": 0,
+        "state": "known",
+        "value": 3,
+        "evidenceIds": [
+          "evidence-example"
+        ],
+        "reason": null
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesIntelligenceClause",
+      "callable": "adminSaveSalesIntelligenceClause",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_clause_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_clause_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "clauseId": "clause-example",
+        "organizerId": "org-example",
+        "expectedRevision": 0,
+        "kind": "observation",
+        "text": "The synthetic host uses an application step.",
+        "evidenceIds": [
+          "evidence-example"
+        ],
+        "validUntil": "2099-01-01T00:00:00.000Z",
+        "permission": "not_required"
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesIntelligencePolicy",
+      "callable": "adminSaveSalesIntelligencePolicy",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_policy_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_policy_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "expectedRevision": 0,
+        "policy": {
+          "policyId": "policy-example",
+          "version": "v1",
+          "status": "active",
+          "factors": [
+            {
+              "id": "one",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "two",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "three",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "four",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "five",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "six",
+              "weight": 14,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            },
+            {
+              "id": "seven",
+              "weight": 16,
+              "claimKeys": [
+                "operation"
+              ],
+              "maxAgeDays": 30
+            }
+          ],
+          "priorityBands": {
+            "high": 80,
+            "medium": 50
+          },
+          "promptVersion": "zero_model_v1",
+          "playbookVersion": "reviewed_v1"
+        }
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "confirmation": "action-and-target",
+      "targetField": "requestId"
+    },
+    {
+      "actionId": "sales.intelligence.SaveSalesScoreSnapshot",
+      "callable": "adminSaveSalesScoreSnapshot",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intelligence_score_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_intelligence_score_response.schema.json",
+      "example": {
+        "requestId": "request-example-001",
+        "organizerId": "org-example",
+        "expectedAccountRevision": 1,
+        "expectedPolicyRevision": 1
+      },
+      "summary": "Review private fit evidence and prepare an approved manual outreach draft.",
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.intents.link",
+      "callable": "adminLinkSalesInboundIntent",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "intentId",
+      "requestSchema": "contracts/callables/admin_sales_intents_link_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales intents.link operation.",
+      "example": {
+        "intentId": "example-intent",
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 1
+      }
+    },
+    {
+      "actionId": "sales.intents.list",
+      "callable": "adminListSalesInboundIntents",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/research",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_intents_list_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales intents.list operation.",
+      "example": {
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "sales.opportunities.list",
+      "callable": "adminListSalesOpportunities",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/pipeline",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_opportunities_list_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales opportunities.list operation.",
+      "example": {
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "sales.opportunities.upsert",
+      "callable": "adminUpsertSalesOpportunity",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/pipeline",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_opportunities_upsert_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales opportunities.upsert operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 0,
+        "fields": {
+          "motion": "pilot",
+          "stage": "new_enquiry",
+          "ownerUid": "example-admin",
+          "nextStep": null,
+          "nextStepAt": null
+        }
+      }
+    },
+    {
+      "actionId": "sales.partners.offer",
+      "callable": "adminAssignSalesPartner",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_assign_sales_partner_payload.schema.json",
+      "summary": "Offer a reviewed organizer lead to an exact active referral partner with a bounded next action, review time and expiry.",
+      "controlPlane": true,
+      "example": {
+        "requestId": "example-partner-offer",
+        "organizerId": "example-org",
+        "partnerUid": "example-partner",
+        "expectedRevision": 0,
+        "nextAction": "Verify the current organizer contact and relationship.",
+        "reviewAt": "2026-10-19T12:30:00.000Z",
+        "expiresAt": "2026-10-30T12:30:00.000Z",
+        "reason": "Reviewed public organizer identity; contact research pending.",
+        "originatorUid": null
+      }
+    },
+    {
+      "actionId": "sales.privacy.batch.apply",
+      "callable": "adminApplySalesPrivacyBatch",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_apply_sales_privacy_batch_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_apply_sales_privacy_batch_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example",
+        "planId": "privacy-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestId": "request-batch-001",
+        "expectedCursor": 0
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.privacy.case.get",
+      "callable": "adminGetSalesPrivacyCase",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_sales_privacy_case_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_sales_privacy_case_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.organizer.restrict",
+      "callable": "adminRestrictSalesOrganizer",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_restrict_sales_organizer_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_restrict_sales_organizer_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example",
+        "requestId": "request-restrict-001",
+        "reason": "Reviewed privacy request."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.privacy.plan.preview",
+      "callable": "adminPreviewSalesPrivacyPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_preview_sales_privacy_plan_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_preview_sales_privacy_plan_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.privacy.plan.review",
+      "callable": "adminReviewSalesPrivacyPlan",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_review_sales_privacy_plan_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_review_sales_privacy_plan_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "organizerId": "org-example",
+        "requestId": "request-plan-001",
+        "restrictionRevision": 1,
+        "policyHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "inventoryHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expectedActivePlanId": null
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "organizerId"
+    },
+    {
+      "actionId": "sales.privacy.policy.review",
+      "callable": "adminReviewSalesPrivacyPolicy",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_review_sales_privacy_policy_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_review_sales_privacy_policy_response.schema.json",
+      "summary": "Owner-reviewed private Sales restriction and bounded cleanup with explicit retained and unresolved records.",
+      "example": {
+        "requestId": "request-policy-001",
+        "expectedRevision": 0,
+        "sourceReference": "private:reviewed-policy",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "financeReason": "Retain pending finance review.",
+        "auditReason": "Retain pending audit review."
+      },
+      "controlPlane": true,
+      "confirmation": "action-and-target",
+      "targetField": "sourceReference"
+    },
+    {
+      "actionId": "sales.receipts.get",
+      "callable": "adminGetSalesReceipt",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/settings",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_receipts_get_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales receipts.get operation.",
+      "example": {
+        "requestId": "example-request-001"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.reporting.funnel",
+      "callable": "adminGetSalesFunnelReport",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/pipeline",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_funnel_report.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_sales_funnel_report.schema.json",
+      "summary": "Read bounded current funnel totals, stage entries, and follow-up obligations.",
+      "example": {
+        "since": "2026-09-01T00:00:00.000Z"
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.tasks.list",
+      "callable": "adminListSalesTasks",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/today",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_sales_tasks_list_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales tasks.list operation.",
+      "example": {
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "sales.tasks.upsert",
+      "callable": "adminUpsertSalesTask",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/today",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_sales_tasks_upsert_payload.schema.json",
+      "summary": "Review and execute the bounded private Sales tasks.upsert operation.",
+      "example": {
+        "organizerId": "example-org",
+        "requestId": "example-request-001",
+        "expectedRevision": 0,
+        "task": {
+          "kind": "research",
+          "title": "Review evidence",
+          "dueAt": null,
+          "ownerUid": "example-admin",
+          "status": "open"
+        }
+      }
+    }
+  ]
+}

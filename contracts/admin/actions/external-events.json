@@ -1,0 +1,60 @@
+{
+  "workflow": {
+    "workflowId": "external-events",
+    "label": "External events",
+    "guiPath": "/events/external"
+  },
+  "actions": [
+    {
+      "actionId": "external-events.list",
+      "callable": "adminListExternalEventDetails",
+      "workflowIds": [
+        "external-events"
+      ],
+      "guiPath": "/events/external",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_external_event_details_payload.schema.json",
+      "summary": "List bounded read-only external event supply.",
+      "example": {
+        "timeWindow": "upcoming",
+        "limit": 25
+      }
+    },
+    {
+      "actionId": "external-events.takedown",
+      "callable": "adminTakedownExternalEvent",
+      "workflowIds": [
+        "external-events"
+      ],
+      "guiPath": "/events/external",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "eventId",
+      "requestSchema": "contracts/callables/admin_takedown_external_event_payload.schema.json",
+      "summary": "Dry-run or remove one published external event without deleting its audit history.",
+      "example": {
+        "eventId": "example-event",
+        "executionMode": "dry_run",
+        "idempotencyKey": "example-event:takedown:dry-run",
+        "reviewNote": "Fixture takedown; do not apply.",
+        "checklist": {
+          "sourceStatusReviewed": true,
+          "takedownAuthorityReviewed": true,
+          "downstreamVisibilityReviewed": true
+        }
+      }
+    }
+  ]
+}

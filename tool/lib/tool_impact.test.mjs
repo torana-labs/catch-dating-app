@@ -63,8 +63,8 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
     "admin/src/app/App.mutationSession.test.tsx", "admin/src/app/App.session.test.tsx",
     "admin/src/app/App.test.tsx", "admin/src/app/App.tsx", "admin/src/app/sessionRequests.test.tsx",
     "admin/src/app/useAdminSession.test.tsx", "admin/src/app/useAdminSession.ts",
-    "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
-    "admin/src/features/finance/controllers/useFinanceOpsController.ts", "admin/src/main.tsx",
+    "admin/src/features/money/controllers/useBillsController.test.tsx",
+    "admin/src/features/money/controllers/useBillsController.ts", "admin/src/main.tsx",
     "admin/src/shared/query/queryClient.test.tsx", "admin/src/shared/query/queryClient.tsx",
     "admin/src/shared/query/queryKeys.ts",
   ];
@@ -143,12 +143,7 @@ test("widget variants stay narrow while their comparison consumer closes safely"
   assert.equal(widgetbookPlan.mode, "affected");
   assert.equal(widgetbookPlan.repositoryView, "full");
   // Feature contracts validate their Widgetbook bindings with root-installed Ajv.
-  assert.deepEqual(widgetbookPlan.setupRequirements, [
-    "node",
-    "flutter",
-    "flutter-pub",
-    "root-npm",
-  ]);
+  assert.deepEqual(widgetbookPlan.setupRequirements, ["node", "root-npm"]);
   for (const id of ["design:widget-variant-inventory", "design:feature-contracts",
     "design:widgetbook-contract-refs", "design:section-headers"]) {
     assert.ok(widgetbookPlan.toolIds.includes(id), id);
@@ -173,7 +168,6 @@ test("design authority ledgers select their exact consuming checks", () => {
       "design/screens/catch.screens.json",
       [
         "architecture:ui-composition-contracts",
-        "design:parity-matrix",
         "design:screen-contracts",
         "design:screen-coverage",
       ],
@@ -194,7 +188,6 @@ test("design authority ledgers select their exact consuming checks", () => {
       "tool/ui_capture/route_inventory.json",
       [
         "architecture:ui-composition-contracts",
-        "design:parity-matrix",
         "design:screen-contracts",
         "design:screen-coverage",
         "ui-capture:coverage",
@@ -237,66 +230,6 @@ test("design authority ledgers select their exact consuming checks", () => {
   ]);
 });
 
-test("feature coverage and context manifests select executable owners without full fanout", () => {
-  const owners = new Map([
-    ["design/features/feature_coverage.json", "design:feature-coverage"],
-    ["design/features/feature_coverage.schema.json", "design:feature-coverage"],
-    ["tool/design/check_feature_coverage.test.mjs", "design:feature-coverage"],
-    ["design_context_pack/MANIFEST.json", "design:context-pack"],
-    ["design_context_pack/gallery/manifest.json", "design:context-pack"],
-    ["tool/design/context_pack_builder_test.dart", "design:context-pack"],
-  ]);
-  const mixedPaths = [...owners.keys(),
-    "design/screens/catch.screens.json",
-    "lib/programs/presentation/program_workspace_screen.dart",
-    "widgetbook/lib/programs/workspace_use_cases.dart",
-  ];
-  for (const mode of ["pr", "main", "merge_group"]) {
-    for (const [changedPath, owner] of owners) {
-      const plan = planAffectedToolChecks({
-        changedPaths: [changedPath], manifest: productionManifest,
-        componentGraph: productionGraph, mode,
-      });
-      assert.equal(plan.mode, "affected", `${mode}: ${changedPath}`);
-      assert.ok(plan.toolIds.includes(owner), changedPath);
-      assert.equal(plan.repositoryView, "full", changedPath);
-      assert.deepEqual(plan.setupRequirements, owner === "design:context-pack"
-        ? ["node", "flutter", "flutter-pub"] : ["node", "root-npm"]);
-    }
-    const plan = planAffectedToolChecks({
-      changedPaths: mixedPaths, manifest: productionManifest,
-      componentGraph: productionGraph, mode,
-    });
-    assert.equal(plan.mode, "affected");
-    const graphPlan = planAffected({changedPaths: mixedPaths, graph: productionGraph, mode});
-    for (const id of [...owners.values(), ...graphPlan.operations.checkIds,
-      ...productionManifest.ciImpact.mandatoryCheckIds]) {
-      assert.ok(plan.toolIds.includes(id), `${mode} omitted ${id}`);
-    }
-    assert.deepEqual(plan.setupRequirements, ["node", "flutter", "flutter-pub", "root-npm"]);
-    assert.ok(plan.toolIds.length < 40, `selected ${plan.toolIds.length} checks`);
-  }
-  // Reproduce the former full-matrix fallback, rather than treating these
-  // generated files as ignored inputs with no executable validation owner.
-  const previousManifest = structuredClone(productionManifest);
-  for (const tool of previousManifest.tools) {
-    if ([...owners.values()].includes(tool.id)) delete tool.impactPaths;
-  }
-  assert.equal(planAffectedToolChecks({
-    changedPaths: mixedPaths, manifest: previousManifest, componentGraph: productionGraph,
-  }).mode, "full");
-  for (const companion of ["design/unowned-new-input.json", "tool/harness/component_graph.json"]) {
-    assert.equal(planAffectedToolChecks({
-      changedPaths: [...mixedPaths, companion], manifest: productionManifest,
-      componentGraph: productionGraph,
-    }).mode, "full", companion);
-  }
-  assert.equal(planAffectedToolChecks({
-    changedPaths: mixedPaths, manifest: productionManifest,
-    componentGraph: productionGraph, mode: "nightly", full: true,
-  }).mode, "full");
-});
-
 // Each input was an unmapped Tools-lane path in main CI history, so any change
 // fell back to the full matrix. The listed checks are the ones that read it.
 const consumedInputs = new Map([
@@ -307,16 +240,13 @@ const consumedInputs = new Map([
   ["artifacts/marketing/app-screenshots/host-live-console.png", ["marketing:app-media-sync",
     "marketing:app-screenshot-export", "marketing:hosted-capture-export"]],
   ["design/features/event_detail.feature.json", ["design:feature-contracts",
-    "design:feature-coverage", "design:host-feature-responsibilities", "design:screen-contracts"]],
+    "design:host-feature-responsibilities", "design:screen-contracts"]],
   ["design/features/admin_finance_ops.feature.json", ["agent:harness-v2", "design:feature-contracts",
-    "design:feature-coverage", "web:admin-pending-operations"]],
+    "web:admin-pending-operations"]],
   ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
-    "design:parity-matrix", "design:screen-contracts"]],
-  ["tool/architecture/pattern_adoption.json", ["audit:adopted-architecture-boundaries",
-    "audit:app-architecture-exhibits", "audit:dependency-direction", "design:screen-top-bar-contracts"]],
+    "design:screen-contracts"]],
   ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
     "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
-  ["tool/policy/rules.json", ["agent:context-pack", "agent:harness-v2"]],
   ["tool/data/lib/recompute_cli_test_support.mjs", ["data:repair-club-hosts",
     "data:repair-club-member-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
   ["packages/web-config/firebase.ts", ["web:react-controller-test-targets",
@@ -450,9 +380,9 @@ test("combined layout inputs preserve all owner checks and mixed runtime require
   }
   assert.deepEqual(layoutPlan(layoutPaths, unannotated).toolIds, combined.toolIds);
   for (const [paths, setup] of [
-    [["tool/design/context_pack_builder_test.dart"], ["node", "flutter", "flutter-pub"]],
-    [["tool/design/check_feature_coverage.test.mjs"], ["node", "root-npm"]],
-    [["tool/design/context_pack_builder_test.dart", "tool/design/check_feature_coverage.test.mjs"],
+    [["tool/design/check_component_lexicon.mjs"], ["node", "flutter", "flutter-pub"]],
+    [["tool/design/check_public_surface_behavior.test.mjs"], ["node", "root-npm"]],
+    [["tool/design/check_component_lexicon.mjs", "tool/design/check_public_surface_behavior.test.mjs"],
       ["node", "flutter", "flutter-pub", "root-npm"]],
   ]) {
     const companion = layoutPlan(paths);
@@ -491,8 +421,7 @@ test("l10n usage changes keep the full source view with Node-only setup", () => 
   for (const changedPath of [
     "tool/copy/check_l10n_key_usage.mjs",
     "tool/copy/check_l10n_key_usage.test.mjs",
-    "tool/copy/l10n_orphan_baseline.json",
-    "tool/copy/fixtures/l10n_key_usage/reduction/lib/sample.dart",
+    "tool/copy/fixtures/l10n_key_usage/no_orphans/lib/sample.dart",
   ]) {
     const plan = planAffectedToolChecks({
       changedPaths: [changedPath],
@@ -1004,7 +933,7 @@ test("mixed dedicated workflow changes retain policy wiring in the affected Tool
     });
     assert.equal(plan.mode, "affected", workflow);
     assert.ok(plan.toolIds.includes("agent:harness-v2"), workflow);
-    assert.ok(plan.toolIds.includes("meta:enforcement-integrity"), workflow);
+    assert.ok(plan.toolIds.includes("meta:tool-manifest"), workflow);
   }
 });
 

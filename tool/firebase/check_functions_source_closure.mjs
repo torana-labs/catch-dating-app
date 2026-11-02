@@ -3,11 +3,14 @@ import {execFileSync} from "node:child_process";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {functionsCatalogModule} from "../admin/generate_admin_action_catalog.mjs";
 
 const require = createRequire(new URL("../../functions/package.json", import.meta.url));
 const ts = require("typescript");
 const SOURCE_ROOT = "functions/src/";
 const SOURCE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
+// Built from contracts by the Functions build, so no index or commit holds it.
+const BUILT_MODULES = new Set([functionsCatalogModule]);
 
 export class FunctionsSourceClosureError extends Error {}
 
@@ -101,7 +104,8 @@ export function checkFunctionsSourceClosure(tree) {
       if (!specifier.startsWith(".")) continue;
       relativeImports += 1;
       const resolution = candidates(name, specifier);
-      if (resolution.escaped || !resolution.paths.some((candidate) => tree.has(candidate))) {
+      if (resolution.escaped || !resolution.paths.some((candidate) =>
+        tree.has(candidate) || BUILT_MODULES.has(candidate))) {
         unresolved.push(`${name}: ${specifier}`);
       }
     }
