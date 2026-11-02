@@ -150,6 +150,7 @@ export 'src/components/catch_ticket.dart';
 export 'src/components/catch_ticket_divider.dart';
 export 'src/components/catch_ticket_perforation_painter.dart';
 export 'src/components/catch_ticket_shape_clipper.dart';
+export 'src/components/catch_timeline_list.dart';
 export 'src/components/catch_timestamped_message_text.dart';
 export 'src/components/catch_toggle_input.dart';
 export 'src/components/catch_toolbar_button.dart';
