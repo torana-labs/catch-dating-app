@@ -56,10 +56,18 @@ const roleLabels: Record<string, string> = {
   salesStaff: "Sales",
 };
 
+function activityResult(status: AdminActionExecutionRecord["status"]): SystemActivityRow["result"] {
+  if (status === "failed") return {text: "Failed", tone: "danger"};
+  if (status === "indeterminate") return {text: "Unclear", tone: "warning"};
+  if (status === "started") return {text: "Running", tone: "warning"};
+  return {text: "Done"};
+}
+
 /** One activity row from an Admin action execution. */
 export function activityRow(record: AdminActionExecutionRecord): SystemActivityRow {
   const automatic = record.cliVersion !== null;
-  const problem = record.status === "failed";
+  // An unclear action may or may not have happened, so it is a problem until someone checks.
+  const problem = record.status === "failed" || record.status === "indeterminate";
   const role = record.actorRoles.map((claim) => roleLabels[claim] ?? claim)[0] ?? "Admin";
   return {
     key: record.executionId,
@@ -69,8 +77,7 @@ export function activityRow(record: AdminActionExecutionRecord): SystemActivityR
     },
     what: actionSummaries.get(record.actionId) ?? record.actionId,
     when: formatWhen(record.startedAt),
-    result: record.status === "failed" ? {text: "Failed", tone: "danger"} :
-      record.status === "started" ? {text: "Running", tone: "warning"} : {text: "Done"},
+    result: activityResult(record.status),
     errorCode: record.errorCode,
     automatic,
     problem,

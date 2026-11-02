@@ -80,7 +80,7 @@ export function SystemScreen({
       ) : isActivityLoading ? (
         <CatchText as="p" color="ink2" variant="bodyS">Loading activity</CatchText>
       ) : rows.length === 0 ? (
-        <CatchText as="p" color="ink2" variant="bodyM">{filter === "problems" ? "No action failed." : "No activity matches."}</CatchText>
+        <CatchText as="p" color="ink2" variant="bodyM">{filter === "problems" ? "No action failed or needs checking." : "No activity matches."}</CatchText>
       ) : (
         <CatchTable columns={columns} density="compact" label="Activity" rows={rows} />
       )}
