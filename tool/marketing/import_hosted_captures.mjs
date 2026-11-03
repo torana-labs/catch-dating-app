@@ -131,6 +131,17 @@ function execute(command, args) {
   return result.stdout;
 }
 
+// The schema generator's outputs are ignored and regenerated from committed
+// contracts, so nothing but the verified commit's own catalog can tell them from
+// authored files. A commit whose catalog marks none exempts nothing.
+function regeneratedOutputExclusions() {
+  const catalog = spawnSync("git", ["show", "HEAD:tool/harness/component_graph.json"],
+    {cwd: fromRepo("."), encoding: "utf8", maxBuffer: maxBytes});
+  if (catalog.status !== 0) return [];
+  return JSON.parse(catalog.stdout).compileCodegen.filter(entry => entry.tracked === false)
+    .flatMap(entry => entry.outputs.map(output => `:(exclude,glob)${output}`));
+}
+
 function sourceFiles() {
   const manifestBytes = fs.readFileSync(fromRepo(manifestPath));
   const manifest = JSON.parse(manifestBytes);
@@ -161,7 +172,8 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   }
   const sourceRoots = ["lib", "website/src", "website/public", "admin/src", "tool", "test", "design", "contracts", "docs", "assets",
     ":(glob)apps/*/lib/**", ":(glob)packages/*/lib/**", ":(glob)packages/*/src/**"];
-  const untracked = execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots]).split("\0").filter(Boolean);
+  const untracked = execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots, ...regeneratedOutputExclusions()])
+    .split("\0").filter(Boolean);
   // Tools bootstraps this standalone analyzer package, and installs the pinned
   // import-graph tool (npm ci --prefix tool/impact), after strict import. These
   // are their only generated dependency outputs; authored files and every
