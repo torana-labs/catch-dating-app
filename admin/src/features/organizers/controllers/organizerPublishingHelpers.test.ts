@@ -139,6 +139,21 @@ describe("organizerPublishingHelpers", () => {
     }]);
   });
 
+  it("keeps each tag and format apart in the one-line fields", () => {
+    const organizer = sampleOrganizerDetails.afterfly!;
+    const original = formFromOrganizerProfile(organizer);
+    expect(original.formatsText).toBe(organizer.publicProfile.formats.join(", "));
+    expect(diffOrganizerProfile(organizer, original)).toEqual([]);
+
+    const payload = buildOrganizerSavePayload(organizer, {
+      ...original,
+      formatsText: `${original.formatsText}, Track nights`,
+      tagsText: "Run club,  Run club, Community",
+    });
+    expect(payload.fields.tags).toEqual(["Run club", "Community"]);
+    expect(payload.fields.publicProfile?.formats).toEqual([...organizer.publicProfile.formats, "Track nights"]);
+  });
+
   it("keeps the show-until time when the form round-trips it", () => {
     const organizer = sampleOrganizerDetails.afterfly;
     const form = formFromOrganizerProfile(organizer);

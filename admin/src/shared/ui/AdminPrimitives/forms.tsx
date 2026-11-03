@@ -1,11 +1,7 @@
+import {AdminWorkbenchStack} from "./workbench";
 // Slightly above the family target because the generic decision footer shares the review form-state types.
 import type {InputHTMLAttributes, ReactNode} from "react";
-import {
-  CatchAdminIntakeDecisionActions,
-  CatchAdminIntakeDecisionState,
-  CatchField,
-  CheckboxControl,
-} from "@catch/web-ui";
+import {CatchAdminIntakeDecisionActions, CatchAdminIntakeDecisionState, CatchField, CheckboxControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
@@ -16,7 +12,6 @@ import {
 } from "./shared";
 
 import {AlertRow, Panel} from "./data";
-import {AdminDecisionFooterShell} from "./intake";
 import {AdminButton} from "./overview";
 
 export {selectOptions} from "./shared";
@@ -107,7 +102,7 @@ export function DecisionFooter<TTargetType extends string = string>({
 }) {
   const approveDisabled = Boolean(inFlight || approvalDisabledReason);
   return (
-    <AdminDecisionFooterShell compact={compact}>
+    <AdminWorkbenchStack compact={compact}>
       {localDecision ? (
         <CatchAdminIntakeDecisionState>
           <CheckCircle2 size={16} strokeWidth={1.9} />
@@ -201,6 +196,6 @@ export function DecisionFooter<TTargetType extends string = string>({
           ) : null}
         </>
       )}
-    </AdminDecisionFooterShell>
+    </AdminWorkbenchStack>
   );
 }

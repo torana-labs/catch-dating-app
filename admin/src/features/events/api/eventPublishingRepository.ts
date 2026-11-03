@@ -18,12 +18,6 @@ import type {
   AdminUpdateEventDetailsResponse,
 } from "../../../shared/types/adminTypes";
 
-export function listEventProfiles(
-  payload: AdminListEventDetailsPayload = {}
-): Promise<AdminListEventDetailsResponse> {
-  return listEventDetails(payload);
-}
-
 export function listExternalEventProfiles(
   payload: AdminListExternalEventDetailsPayload = {}
 ): Promise<AdminListExternalEventDetailsResponse> {

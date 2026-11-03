@@ -31,10 +31,12 @@
         "exportName": "EventPageRouteStory",
         "states": [
           "catch-event",
-          "imported-event"
+          "imported-event",
+          "page-tab",
+          "pilot-review"
         ]
       },
-      "notes": "One event in the CatchPaneLayout reading pattern: a Catch event's facts and bookings with a Page tab hosting the Event Publishing editor, or an imported event's facts, checks and source link."
+      "notes": "One event in the CatchPaneLayout reading pattern: a Catch event's facts and bookings with a Page tab editing it, or an imported event's facts with a Takedown tab."
     },
     {
       "id": "route_event_publishing",
@@ -50,10 +52,10 @@
         "story": "admin/src/stories/AdminRoutesEvents.stories.tsx",
         "exportName": "EventPublishingRouteStory",
         "states": [
-          "canonical-detail"
+          "imported-takedown"
         ]
       },
-      "notes": "The editors the event page's tabs host: a Catch event's canonical editor (Page) or an imported event's source record and takedown (Takedown). The Events directory replaced its directory and External inventory lists; preview renders the registered EventPublishingWorkspace editor in the route stories."
+      "notes": "An imported event's source record and takedown, for the event page's Takedown tab."
     },
     {
       "id": "route_event_records_live_controller",
@@ -199,10 +201,10 @@
         "story": "admin/src/stories/AdminRoutesEvents.stories.tsx",
         "exportName": "EventPublishingWorkspaceStory",
         "states": [
-          "canonical-detail"
+          "imported-takedown"
         ]
       },
-      "notes": "Prop-driven Event Publishing workspace surface used by the route wrapper and deterministic Storybook previews; canonical detail keeps lifecycle fields read-only with operator-facing rationale while backend paths and callable names stay in repository documentation."
+      "notes": "Prop-driven takedown surface for an imported event, used by the route wrapper and Storybook."
     },
     {
       "id": "workspace_organizer_events",
