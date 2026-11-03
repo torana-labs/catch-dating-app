@@ -11,16 +11,47 @@ import {checkpointAssignmentView, checkpointAvailability,
   checkpointRequestView, CheckpointState, Response} from "./checkpointRecords";
 
 type Options = NonNullable<Response["view"]["reporterOptions"]>;
+/** The actor-free part of the choice list: who could report, until when. */
+export type ReporterCandidates = Pick<Options, "sourceHash" | "reporters">;
 
 /** Current group observers only; never exposes phone or grant details. */
 export async function readCheckpointReporters(db: Firestore, tx: Transaction,
   state: CheckpointState, actorUid: string, clock: () => number
 ): Promise<Options | null> {
-  const {context, groupId} = state.scope;
-  const duty = await readGroupDutySource(db, tx, context, groupId, clock);
+  const duty = await readGroupDutySource(db, tx, state.scope.context,
+    state.scope.groupId, clock);
   if (duty.now < state.now) throw invalidSource();
   if (!duty.source.configured ||
       !isOrganizerManager(duty.organizer, actorUid)) throw denied();
+  const candidates = await readReporterCandidates(db, tx, state, duty, clock);
+  if (!candidates) return null;
+  const now = state.now;
+  if (now >= Number.MAX_SAFE_INTEGER) throw invalidSource();
+  return {actorUid, sourceHash: candidates.sourceHash,
+    validUntil: Math.min(Number.MAX_SAFE_INTEGER, now + 1_800_000),
+    reporters: candidates.reporters};
+}
+
+/**
+ * The managers and current group observers who could take over the original
+ * request, each with the instant their access ends. Trusted: the caller has
+ * authorized a manager, or (the live console's view) serves managers only.
+ */
+export async function readCheckpointReporterCandidates(db: Firestore,
+  tx: Transaction, state: CheckpointState, clock: () => number
+): Promise<ReporterCandidates | null> {
+  const duty = await readGroupDutySource(db, tx, state.scope.context,
+    state.scope.groupId, clock);
+  if (duty.now < state.now) throw invalidSource();
+  if (!duty.source.configured) throw denied();
+  return readReporterCandidates(db, tx, state, duty, clock);
+}
+
+async function readReporterCandidates(db: Firestore, tx: Transaction,
+  state: CheckpointState,
+  duty: Awaited<ReturnType<typeof readGroupDutySource>>, clock: () => number
+): Promise<ReporterCandidates | null> {
+  const {context, groupId} = state.scope;
   const request = checkpointRequestView(state);
   const assignment = checkpointAssignmentView(state);
   if (!request || !assignment ||
@@ -62,9 +93,6 @@ export async function readCheckpointReporters(db: Firestore, tx: Transaction,
     }
   }
   reporters.sort((a, b) => a.operatorId.localeCompare(b.operatorId));
-  if (reporters.length > 92 || now >= Number.MAX_SAFE_INTEGER) {
-    throw invalidSource();
-  }
-  return {actorUid, sourceHash: assignment.sourceHash,
-    validUntil: Math.min(Number.MAX_SAFE_INTEGER, now + 1_800_000), reporters};
+  if (reporters.length > 92) throw invalidSource();
+  return {sourceHash: assignment.sourceHash, reporters};
 }

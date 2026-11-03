@@ -31,13 +31,15 @@ export async function readCheckpoint(db: Firestore, tx: Transaction,
   const roster = parseDepartureRoster(rosterSnap.data(), scope, now);
   const report = parseCheckpointReport(reportSnap.data(), scope, roster, now);
   const state: CheckpointState = {scope, progress, roster, report, now,
-    visits: [], dispositions: [], ownerValidUntil: 0, requestWork: null};
+    visits: [], dispositions: [], ownerValidUntil: 0, requestWork: null,
+    attendees: new Map()};
   if (roster && checkpointAvailability(state).kind === "ready") {
     for (let offset = 0; offset < roster.members.length; offset += 100) {
       const members = roster.members.slice(offset, offset + 100);
       const snapshots = await tx.getAll(...members.map((m) =>
         db.collection("eventAttendees").doc(m.attendeeId)));
       for (const [i, member] of members.entries()) {
+        state.attendees!.set(member.attendeeId, snapshots[i]);
         const visit = checkpointVisit(member, snapshots[i], progress);
         state.visits.push({attendeeId: member.attendeeId, visit,
           displayName: checkpointGuestName(member, snapshots[i], progress)});

@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_departure_views.schema.json",
+  "title": "HostEventDepartureViewDocument",
+  "description": "Server-owned manager projection of one recorded departure roster for the live console's departure history, written ahead of time by triggers on the roster, its checkpoint report, and the event and event success plan (which decide the row's label and sourceState). view is one row of what the retired listEventAssistanceDepartureRosters callable returned. Rosters are immutable; the view is deleted when its roster, its event or its group is gone. A source that fails validation records sourceCoverage invalidSource with incompleteSource and keeps the previous view. The phone pages it with organizerId, progressId and progressRevision descending; the current progress revision comes from the group's hostEventGroupProgressViews document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventDepartureViews",
+  "x-firestore-path": "hostEventDepartureViews/{rosterId}",
+  "x-document-id-field": "rosterId",
+  "x-owner": "Live movement view evaluator (hostReadModels movement view triggers)",
+  "required": [
+    "schemaVersion",
+    "rosterId",
+    "eventId",
+    "organizerId",
+    "groupId",
+    "progressId",
+    "progressRevision",
+    "confirmedAt",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "view"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "rosterId": {
+      "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Roster/properties/rosterId",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The event's organizer; rules key on it.",
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Roster/properties/groupId",
+      "x-catch-ownership": "server-only"
+    },
+    "progressId": {
+      "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Roster/properties/progressId",
+      "x-catch-ownership": "server-only"
+    },
+    "progressRevision": {
+      "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Roster/properties/progressRevision",
+      "description": "The progress revision the roster was recorded at; the history is ordered by it.",
+      "x-catch-ownership": "server-only"
+    },
+    "confirmedAt": {
+      "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Roster/properties/confirmedAt",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation that changed the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the last changing evaluation committed. The phone treats it as a lower bound for the current time.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "invalidSource"
+      ],
+      "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.",
+      "x-catch-ownership": "server-only"
+    },
+    "incompleteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The collection whose document failed validation (eventAssistanceDepartureRosters, events, eventSuccessPlans, eventAssistanceGroupProgress or eventAssistanceCheckpoints), or null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "view": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/HistoryRow"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The history row; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

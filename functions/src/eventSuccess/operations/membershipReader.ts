@@ -1,11 +1,10 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import type {Firestore, Transaction} from "firebase-admin/firestore";
+import type {DocumentSnapshot, Firestore, Transaction} from
+  "firebase-admin/firestore";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import type {EventAssistanceMembershipDocument as Membership} from
   "../../shared/generated/eventAssistanceMembershipDocument";
-import type {GetEventAssistanceMembershipCallablePayload as Scope} from
-  "../../shared/generated/getEventAssistanceMembershipCallablePayload";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {validateEventAttendeeDocument} from
@@ -26,7 +25,12 @@ import {guestCollections, guestIdentity, parseGuest, currentGuest,
   guestSourceFactsFromSnapshots} from "./guestRecords";
 import {invalidSource, timestampEvidence} from "./groupProgressSource";
 
-export type {Membership, Scope};
+export type {Membership};
+/** One attendee of one live event. */
+export interface Scope {
+  context: Membership["context"];
+  attendeeId: string;
+}
 export const MEMBERSHIPS = "eventAssistanceMemberships";
 export const MEMBERSHIP_RECEIPTS = "eventAssistanceMembershipReceipts";
 export function membershipIdentity(scope: Scope) {
@@ -49,18 +53,42 @@ export async function readMembership(db: Firestore, tx: Transaction,
     db.collection(MEMBERSHIPS).doc(membershipId),
     db.collection("eventStaffGrants").doc(eventStaffGrantId(context.eventId,
       actorUid)));
+  const organizer = organizerSnap.data();
+  const now = clock();
+  if (!validateOrganizerDocument(organizer)) throw invalidSource();
+  const state = membershipSourceState({scope, eventSnap, attendeeSnap,
+    planSnap, guestSnap, memberSnap, now});
+  const manager = isOrganizerManager(organizer as unknown as OrganizerDocument,
+    actorUid);
+  return {...state, actorUid, manager,
+    staff: manager ? null :
+      parseStaff(staffSnap.data(), context, actorUid, now),
+    organizer: organizer as unknown as OrganizerDocument};
+}
+
+/**
+ * The actor-free part of a membership read: the attendee's source facts,
+ * guest episode, saved membership and the event's groups, with the hash that
+ * fences membership and accountability commands. Readers that serve many
+ * attendees read the snapshots in batches and call this per attendee.
+ */
+export function membershipSourceState(params: {scope: Scope;
+  eventSnap: DocumentSnapshot; attendeeSnap: DocumentSnapshot;
+  planSnap: DocumentSnapshot; guestSnap: DocumentSnapshot;
+  memberSnap: DocumentSnapshot; now: number}) {
+  const {scope, eventSnap, attendeeSnap, planSnap, guestSnap, memberSnap,
+    now} = params;
+  const {context, attendeeId} = scope;
+  const membershipId = membershipIdentity(scope);
   const event = eventSnap.data();
   const attendee = attendeeSnap.data();
-  const organizer = organizerSnap.data();
   const plan = planSnap.data() ?? null;
-  const now = clock();
   if (!Number.isSafeInteger(now) || now < 0 ||
       !validateEventDocument(event) ||
       event.organizerId !== context.organizerId ||
       !validateEventAttendeeDocument(attendee) ||
       attendee.eventId !== context.eventId ||
       attendee.organizerId !== context.organizerId ||
-      !validateOrganizerDocument(organizer) ||
       (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
         plan.eventId !== context.eventId ||
         (plan.organizerId) !== context.organizerId))) {
@@ -87,14 +115,9 @@ export async function readMembership(db: Firestore, tx: Transaction,
     attendee.status, attendee.linkedUid, groups,
     plan ? timestampEvidence(planSnap.createTime) : null,
     plan?.status ?? null]);
-  const manager = isOrganizerManager(organizer as unknown as OrganizerDocument,
-    actorUid);
-  return {scope, actorUid, now, manager, source, sourceHash, membershipId,
-    membership, guest, groups, complete: plan?.status === "complete",
-    staff: manager ? null :
-      parseStaff(staffSnap.data(), context, actorUid, now),
-    event, attendee, eventGeneration: eventSnap.createTime,
-    organizer: organizer as unknown as OrganizerDocument};
+  return {scope, now, source, sourceHash, membershipId, membership, guest,
+    groups, complete: plan?.status === "complete", event, attendee,
+    eventGeneration: eventSnap.createTime};
 }
 export type MembershipState = Awaited<ReturnType<typeof readMembership>>;
 
