@@ -136,8 +136,8 @@ test("more than 20 connections is over cap with the first 20 kept",
   async () => {
     const docs: Record<string, Data> = {"organizers/org": organizer()};
     for (let index = 0; index <= maxProviderConnections; index++) {
-      docs[`organizerProviderConnections/opc_${String(index).padStart(2, "0")}`] =
-        connection(index);
+      const id = `opc_${String(index).padStart(2, "0")}`;
+      docs[`organizerProviderConnections/${id}`] = connection(index);
     }
     const db = new AudienceTestStore(docs);
     const outcome = await reconcileProviderConnectionView(db.asFirestore(),

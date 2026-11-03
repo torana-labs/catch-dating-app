@@ -6,7 +6,9 @@ import {
   catchSpendProjection,
   eventRelativeAttendanceInsight,
   getEventRosterInsightsHandler,
+  paymentSpendContribution,
   shouldExposeAttendanceInsight,
+  topQuartileSpend,
   withMemberSignal,
 } from "./eventRosterInsights";
 import type {
@@ -216,6 +218,31 @@ test("top Catch spender uses the eligible top quartile", () => {
     [...projection.topUidsByCurrency.get("INR") ?? []],
     ["user-4"]
   );
+});
+
+test("the top quartile threshold is the smallest qualifying amount", () => {
+  const byUid = new Map([1000, 2000, 3000, 4000, 5000].map((amount, index) =>
+    [`user-${index}`, [{currency: "INR", amountMinor: amount,
+      paidOrderCount: 2}]]));
+  byUid.set("single-order", [{currency: "INR", amountMinor: 99000,
+    paidOrderCount: 1}]);
+  const {topUidsByCurrency, thresholdByCurrency} = topQuartileSpend(byUid);
+  // Five eligible accounts: ceil(1.25) = 2 qualify.
+  assert.deepEqual([...topUidsByCurrency.get("INR") ?? []],
+    ["user-4", "user-3"]);
+  assert.equal(thresholdByCurrency.get("INR"), 4000);
+});
+
+test("a payment's contribution says when it cannot be computed", () => {
+  assert.deepEqual(paymentSpendContribution(payment()), {kind: "counted",
+    uid: "user-1", currency: "INR", amountMinor: 1000,
+    atMillis: 10 * day});
+  assert.deepEqual(paymentSpendContribution(payment({amountMinor: 1.5})),
+    {kind: "uncomputable"});
+  assert.deepEqual(paymentSpendContribution(payment({status: "refunded"})),
+    {kind: "none"});
+  assert.deepEqual(paymentSpendContribution(payment({currency: "rupees"})),
+    {kind: "none"});
 });
 
 test("single imported identities stay unlabeled", () => {
