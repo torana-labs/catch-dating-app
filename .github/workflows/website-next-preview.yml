@@ -58,6 +58,11 @@ jobs:
           echo "RELEASE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
           echo "RELEASE_SOURCE=$RUNNER_TEMP/release-source" >> "$GITHUB_ENV"
           echo "sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/generate-contracts
+        with:
+          root: ${{ env.RELEASE_SOURCE }}
+      - name: Keep the generator's dependencies out of the image context
+        run: rm -rf "$RELEASE_SOURCE/functions/node_modules"
       - id: source
         name: Require the source's own CI and exact-source captures
         env:

@@ -527,6 +527,9 @@ test("freshness selection uses explicit graph requirements and never loses unava
     assert.match(check.reasons.join("; "), /missing runtime/u);
     assert.ok(check.command && check.writeCommand);
   }
+  // Untracked outputs have nothing to compare, so the check is a clean generate.
+  const untracked = planCodegenFreshness(options).find((entry) => entry.codegenId === "contracts.schema-projections");
+  assert.equal(untracked.command, untracked.writeCommand);
   const noPackages = planCodegenFreshness({...options, packageAvailable: () => false});
   assert.deepEqual(noPackages.filter((check) => !check.runnable).map((check) => check.codegenId),
     ["contracts.schema-projections", "copy.structured-domain"]);

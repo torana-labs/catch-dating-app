@@ -1085,7 +1085,7 @@ Current verification:
 - `npm --workspace catch-marketing run build`
 - `node website/scripts/checkOrganizerBuildOutputs.mjs`
 - `find website/dist/assets -maxdepth 1 -type f -name '*.map' -print`
-- `node tool/contracts/generate_schema_contracts.mjs --check`
+- `node tool/contracts/generate_schema_contracts.mjs`
 - `npm --prefix functions run build`
 - `node --test functions/lib/clubs/organizerClaims.test.js functions/lib/reviews/mutateReview.test.js functions/lib/analytics/organizerAnalyticsEvents.test.js`
 

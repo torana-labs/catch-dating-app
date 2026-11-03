@@ -898,6 +898,7 @@ test("authored contracts expand to every declared validation consumer", () => {
     "functions",
     "marketing",
     "operations",
+    "tools",
   ]);
   assert.deepEqual(result.operations.codegenIds, [
     "contracts.schema-projections",
@@ -1047,6 +1048,10 @@ test("the build-time catalog generator validates every surface that compiles its
 test("generator scripts and generated outputs select their declared freshness checks", () => {
   const schemaScript = plan("tool/contracts/generate_schema_contracts.mjs");
   assert.deepEqual(schemaScript.operations.codegenIds, ["contracts.schema-projections"]);
+  // Its outputs aren't tracked, so a change here has no output diff to select consumers from.
+  for (const target of ["admin", "capture_freshness", "contracts", "firestore_rules", "flutter", "functions", "marketing", "tools"]) {
+    assert.ok(schemaScript.operations.ciTargets.includes(target), target);
+  }
 
   const adminScript = plan("admin/scripts/generateCallableValidators.mjs");
   assert.deepEqual(adminScript.operations.codegenIds, [], "Built on demand; nothing tracked can go stale");

@@ -14,6 +14,10 @@ on:
       # Every contract can reach Admin's generated validators through $ref.
       - "contracts/**/*.json"
       - "contracts/shared/**"
+      - "tool/contracts/generate_schema_contracts.mjs"
+      - "tool/contracts/lib/schema_specs.mjs"
+      - "tool/contracts/schema_spec_exceptions.json"
+      - "tool/contracts/schema_spec_order.json"
       - "design/admin/**"
       - "design/components/**"
       - "design/website/**"

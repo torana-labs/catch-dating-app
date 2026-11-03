@@ -52,8 +52,9 @@ printf '%s|flutter|%s\\n' "$PWD" "$*" >> "$CATCH_BOOTSTRAP_TEST_LOG"
   assert.match(result.stdout, /Worktree bootstrap complete/u);
   assert.deepEqual(fs.readFileSync(logPath, "utf8").trim().split("\n"), [
     `${fixtureRoot}|npm|ci`,
+    `${fixtureRoot}|npm|--prefix functions ci`,
+    `${fixtureRoot}|npm|run generate:contracts`,
     `${fixtureRoot}|npm|--workspace catch-admin run generate`,
-    `${path.join(fixtureRoot, "functions")}|npm|ci`,
     `${path.join(fixtureRoot, "functions")}|npm|run generate`,
     `${fixtureRoot}|flutter|pub get`,
   ]);
@@ -73,10 +74,10 @@ test("targeted bootstrap installs only its selected locked dependency family", (
     CATCH_BOOTSTRAP_TEST_ROOT: fixtureRoot, CATCH_BOOTSTRAP_TEST_LOG: logPath};
   const families = [
     {target: "root", locks: ["package.json", "package-lock.json"],
-      commands: [`${fixtureRoot}|npm|ci`, `${fixtureRoot}|npm|--workspace catch-admin run generate`]},
+      commands: [`${fixtureRoot}|npm|ci`, `${fixtureRoot}|npm|--prefix functions ci`, `${fixtureRoot}|npm|run generate:contracts`, `${fixtureRoot}|npm|--workspace catch-admin run generate`]},
     {target: "functions", locks: ["functions/package.json", "functions/package-lock.json"],
-      commands: [`${path.join(fixtureRoot, "functions")}|npm|ci`, `${path.join(fixtureRoot, "functions")}|npm|run generate`]},
-    {target: "flutter", locks: ["pubspec.yaml", "pubspec.lock"], commands: [`${fixtureRoot}|flutter|pub get`]},
+      commands: [`${path.join(fixtureRoot, "functions")}|npm|ci`, `${fixtureRoot}|npm|run generate:contracts`, `${path.join(fixtureRoot, "functions")}|npm|run generate`]},
+    {target: "flutter", locks: ["pubspec.yaml", "pubspec.lock"], commands: [`${fixtureRoot}|flutter|pub get`, `${fixtureRoot}|npm|--prefix functions ci`, `${fixtureRoot}|npm|run generate:contracts`]},
   ];
 
   for (const {target, locks, commands} of families) {

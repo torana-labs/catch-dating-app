@@ -113,10 +113,10 @@ test("partially staged Dart fails before formatting can stage unrelated work", (
   assert.equal(commandCalls, 0);
 });
 
-test("contract drift reports the exact regeneration command", () => {
+test("a failed contract generation reports the exact command", () => {
   const failures = [];
   for (const failedCommand of [
-    "node tool/contracts/generate_schema_contracts.mjs --check",
+    "node tool/contracts/generate_schema_contracts.mjs",
   ]) {
     assert.throws(
       () => runPreCommitGeneratedArtifacts({
@@ -174,7 +174,7 @@ test("missing staged Functions dependencies reject the commit", () => {
 });
 
 
-test("schema-generated Dart keeps exact generator ownership while source formats", () => {
+test("a staged contract regenerates its untracked outputs and stages none of them", () => {
   const calls = [];
   const result = runPreCommitGeneratedArtifacts({
     fileExists: () => true, graph, repoRoot: "/fixture",
@@ -183,14 +183,17 @@ test("schema-generated Dart keeps exact generator ownership while source formats
       calls.push({command: spec.command, args: spec.args});
       return {status: 0, stderr: "", stdout: ""};
     },
-    stagedPaths: ["lib/example.dart",
-      "packages/platform/lib/schema_contracts/generated/schemas/example.g.dart"],
+    stagedPaths: ["lib/example.dart", "contracts/callables/create_event.schema.json"],
     unstagedPaths: [],
   });
   assert.deepEqual(result.formattedDartPaths, ["lib/example.dart"]);
   assert.deepEqual(result.checked, ["contracts.schema-projections"]);
   assert.deepEqual(calls.find((call) => call.command === "dart").args,
     ["format", "--", "lib/example.dart"]);
+  assert.ok(calls.some((call) => call.command === "/bin/sh" &&
+    call.args[1] === "node tool/contracts/generate_schema_contracts.mjs"));
+  assert.deepEqual(calls.filter((call) => call.command === "git").flatMap((call) => call.args)
+    .filter((arg) => arg.includes("/generated/")), []);
 });
 
 test("copy-generated Dart keeps exact generator ownership while source formats", () => {
@@ -216,14 +219,14 @@ test("stale generated Dart still rejects the commit without a formatter rewrite"
       calls.push(spec);
       return {status: 1, stderr: "stale schema output", stdout: ""};
     },
-    stagedPaths: ["packages/platform/lib/schema_contracts/generated/schemas/example.g.dart"],
+    stagedPaths: ["packages/l10n/lib/generated/structured_domain_copy.g.dart"],
     unstagedPaths: [],
   }), (error) => error instanceof PreCommitGeneratedArtifactError &&
     /Generated artifact drift/.test(error.message));
   assert.equal(calls.some((call) => call.command === "dart"), false);
   assert.equal(calls.some((call) => call.command === "git"), false);
   assert.deepEqual(calls[0].args,
-    ["-c", "node tool/contracts/generate_schema_contracts.mjs --check"]);
+    ["-c", "dart run tool/copy/sync_structured_domain_copy.dart --check"]);
 });
 
 const arb = "packages/l10n/lib/app_en.arb";

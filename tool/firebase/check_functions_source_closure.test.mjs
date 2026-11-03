@@ -32,8 +32,15 @@ test("the catalog module the Functions build generates counts as resolved", () =
   ]));
   assert.deepEqual(result, {modules: 1, relativeImports: 1});
   assert.throws(() => checkFunctionsSourceClosure(new Map([
-    ["functions/src/admin/actions.ts", 'import {other} from "../shared/generated/otherGeneratedModule";'],
+    ["functions/src/admin/actions.ts", 'import {other} from "../shared/otherMissingModule";'],
   ])), FunctionsSourceClosureError);
+});
+
+test("the schema generator's untracked modules count as resolved", () => {
+  const result = checkFunctionsSourceClosure(new Map([
+    ["functions/src/admin/actions.ts", 'import {validate} from "../shared/generated/validators/createEventInput";'],
+  ]));
+  assert.deepEqual(result, {modules: 1, relativeImports: 1});
 });
 
 test("reports every unresolved production and test import", () => {

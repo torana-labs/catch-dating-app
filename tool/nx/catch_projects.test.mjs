@@ -51,7 +51,7 @@ test("independently locked npm packages and source projects become projects", as
   const operationsPackage = JSON.parse(fs.readFileSync(path.join(workspaceRoot, "operations/package.json"), "utf8"));
   assert.equal(projects.operations.name, operationsPackage.name);
   assert.equal(projects.contracts.name, "contracts");
-  assert.match(projects.contracts.targets.check.options.command, /generate_schema_contracts\.mjs --check$/);
+  assert.match(projects.contracts.targets.check.options.command, /generate_schema_contracts\.mjs$/);
   // The conformance scans read Functions and Dart code, so editing either selects them.
   assert.ok(projects.contracts.targets.conformance.inputs.includes("{workspaceRoot}/functions/src/**/*"));
   assert.ok(projects.contracts.targets.conformance.inputs.includes("{workspaceRoot}/lib/**/*"));
@@ -62,7 +62,7 @@ test("independently locked npm packages and source projects become projects", as
   const nxJson = JSON.parse(fs.readFileSync(path.join(workspaceRoot, "nx.json"), "utf8"));
   assert.equal(nxJson.targetDefaults.check, undefined);
   for (const [project, generator, output] of [
-    ["contracts", "{workspaceRoot}/tool/contracts/**/*", "{workspaceRoot}/admin/src/generated/**/*"],
+    ["contracts", "{workspaceRoot}/tool/contracts/**/*", "{workspaceRoot}/contracts/**/*"],
     ["design/tokens", "{workspaceRoot}/tool/design_tokens/**/*", "{workspaceRoot}/packages/web-config/generated/**/*"],
   ]) {
     assert.equal(projects[project].targets.check.cache, false);

@@ -1,5 +1,6 @@
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import {createRequire, isBuiltin} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -61,6 +62,53 @@ function withBuiltCatalog(root, sha, tree) {
     const catalog = readCatalog(root, sha);
     if (catalog) tree.set(functionsCatalogModule, renderFunctions(catalog));
   }
+  return tree;
+}
+
+// The schema generator writes these modules and they aren't tracked, so a commit
+// holds their contracts. Other generators own the two that stay tracked.
+const GENERATED_CONTRACTS = "functions/src/shared/generated/";
+const TRACKED_GENERATED = new Set([
+  `${GENERATED_CONTRACTS}brand.ts`, `${GENERATED_CONTRACTS}notificationCopyEn.ts`,
+]);
+const SCHEMA_GENERATOR = "tool/contracts/generate_schema_contracts.mjs";
+
+class ContractGenerationError extends Error {}
+
+// Rebuild the modules this commit would deploy, unless it predates untracking
+// and still holds them, or has no generator at all.
+function withGeneratedContracts(root, sha, tree) {
+  const holdsModules = [...tree.keys()].some((name) => name.startsWith(GENERATED_CONTRACTS) &&
+    !TRACKED_GENERATED.has(name) && name !== functionsCatalogModule);
+  if (holdsModules) return tree;
+  try {
+    git(root, ["cat-file", "-e", `${sha}:${SCHEMA_GENERATOR}`], QUIET);
+  } catch {
+    return tree;
+  }
+  const started = Date.now();
+  const checkout = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "catch-contracts-")), "source");
+  try {
+    git(root, ["worktree", "add", "--quiet", "--detach", checkout, sha], QUIET);
+    fs.symlinkSync(path.join(root, "functions/node_modules"), path.join(checkout, "functions/node_modules"));
+    execFileSync(process.execPath, [SCHEMA_GENERATOR], {cwd: checkout, stdio: "pipe", timeout: 180_000});
+    const directory = path.join(checkout, GENERATED_CONTRACTS);
+    for (const entry of fs.readdirSync(directory, {withFileTypes: true, recursive: true})) {
+      if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
+      const absolute = path.join(entry.parentPath, entry.name);
+      tree.set(path.relative(checkout, absolute).split(path.sep).join("/"), fs.readFileSync(absolute, "utf8"));
+    }
+  } catch (error) {
+    throw new ContractGenerationError(`${sha.slice(0, 12)}: ${error.stderr?.toString().trim() || error.message}`);
+  } finally {
+    try {
+      git(root, ["worktree", "remove", "--force", checkout], QUIET);
+    } catch {
+      fs.rmSync(path.dirname(checkout), {recursive: true, force: true});
+      git(root, ["worktree", "prune"], QUIET);
+    }
+  }
+  process.stderr.write(`Generated the contract modules for ${sha.slice(0, 12)} in ${Math.round((Date.now() - started) / 1000)}s.\n`);
   return tree;
 }
 
@@ -392,8 +440,15 @@ export function affectedFunctionTargets({
         options.rootDir && options.rootDir !== "src") {
       return all("Compiler module resolution requires a full deployment");
     }
-    const before = withBuiltCatalog(sourceRoot, baseSha, sourceTree(sourceRoot, baseSha));
-    const after = withBuiltCatalog(sourceRoot, sourceSha, sourceTree(sourceRoot, sourceSha));
+    const before = withGeneratedContracts(sourceRoot, baseSha, withBuiltCatalog(sourceRoot, baseSha, sourceTree(sourceRoot, baseSha)));
+    const after = withGeneratedContracts(sourceRoot, sourceSha, withBuiltCatalog(sourceRoot, sourceSha, sourceTree(sourceRoot, sourceSha)));
+    // Git can't see untracked modules, and reports the tracked copies' removal.
+    // Only different bytes change the Functions that load them.
+    for (const name of new Set([...before.keys(), ...after.keys()])) {
+      if (!name.startsWith(GENERATED_CONTRACTS) || name === functionsCatalogModule) continue;
+      if (before.get(name) === after.get(name)) changed.delete(name);
+      else changed.add(name);
+    }
     // Git reports the tracked copy's removal and every contract edit. Only
     // different deployed bytes, or a different renderer, change these Functions.
     const catalogBytesChanged = before.get(functionsCatalogModule) !== after.get(functionsCatalogModule);
@@ -472,6 +527,10 @@ export function affectedFunctionTargets({
       targets,
     };
   } catch (error) {
+    if (error instanceof ContractGenerationError) {
+      const warning = `Could not generate the schema contracts, so every Function deploys: ${error.message}`;
+      return {...all(warning), warning};
+    }
     return all(`Conservative fallback: ${error.message}`);
   }
 }
@@ -546,6 +605,7 @@ export function backendDeployTargets({
     mode: targets.length ? "changed" : "no-op",
     reason: `Functions: ${functions.mode} (${functions.reason})`,
     targets,
+    ...(functions.warning ? {warning: functions.warning} : {}),
   };
 }
 
@@ -574,6 +634,13 @@ function main() {
   });
   process.stderr.write(`${plan.mode}: ${plan.targets.length} targets from ${baseSha ?? "no recorded deploy"} ` +
     `to ${values.head} (${plan.reason})\n`);
+  if (plan.warning) {
+    process.stderr.write(`::warning title=Function selection fell back to a full deploy::${plan.warning}\n`);
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+        `## Function selection fell back to a full deploy\n\n${plan.warning}\n`);
+    }
+  }
   process.stdout.write(`${JSON.stringify(plan)}\n`);
   if (process.env.GITHUB_OUTPUT) {
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `mode=${plan.mode}\ntargets=${plan.targets.join(",")}\n`);

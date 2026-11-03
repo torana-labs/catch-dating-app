@@ -137,3 +137,7 @@ exact commit is preserved. Shipping, issue status and retirement of the task's
 own worktree follow the mandatory checklist in
 [`docs/agent_operating_model.md`](docs/agent_operating_model.md#completion).
 Ordinary product work must not recreate or replace the removed evidence layer.
+
+## Generated Contract Outputs
+
+The schema contract outputs are generated, not tracked: `packages/platform/lib/schema_contracts/generated`, `lib/contexts/*/data/generated`, `functions/src/shared/generated` (except `brand.ts` and `notificationCopyEn.ts`), `admin/src/generated/contracts`, `tool/contracts/generated` and `website/src/shared/contracts/generated`. Bootstrapping a worktree generates them. Run `npm run generate:contracts` after a pull that touches `contracts/**` or the generator, and the IDE analyzer needs the Dart tree present. The pre-commit hook regenerates them when you stage an input.

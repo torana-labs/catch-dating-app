@@ -527,6 +527,74 @@ test("real generated customer schema selects its consumers and excludes payment 
   assert.deepEqual(f.select({baseSha: f.base}).targets, targets.slice(0, 2));
 });
 
+// The same two consumers, with the modules generated from each commit's contracts.
+function untrackedSchemaFixture(t) {
+  const f = fixture(t);
+  const modules = {};
+  for (const module of ["getOrganizerContactDetailInput", "createRazorpayOrderInput"]) {
+    for (const folder of ["schemas", "validators"]) {
+      const name = `functions/src/shared/generated/${folder}/${module}.ts`;
+      modules[name] = fs.readFileSync(new URL(`../../${name}`, import.meta.url), "utf8");
+    }
+  }
+  const runtime = "functions/src/shared/generated/schemaValidationRuntime.ts";
+  modules[runtime] = fs.readFileSync(new URL(`../../${runtime}`, import.meta.url), "utf8");
+  fs.mkdirSync(path.join(f.root, "functions/node_modules"), {recursive: true});
+  f.write(".gitignore", "functions/src/shared/generated/\nfunctions/node_modules\n");
+  f.write("contracts/modules.json", JSON.stringify(modules));
+  f.write("tool/contracts/generate_schema_contracts.mjs", `import fs from "node:fs";
+import path from "node:path";
+const modules = JSON.parse(fs.readFileSync("contracts/modules.json", "utf8"));
+for (const [name, text] of Object.entries(modules)) {
+  fs.mkdirSync(path.dirname(name), {recursive: true});
+  fs.writeFileSync(name, text);
+}
+`);
+  f.write("functions/src/alpha.ts", 'import {validateGetOrganizerContactDetailCallablePayload} from "./shared/generated/validators/getOrganizerContactDetailInput"; export const alpha = validateGetOrganizerContactDetailCallablePayload;');
+  f.write("functions/src/beta.ts", 'import {validateCreateRazorpayOrderCallablePayload} from "./shared/generated/validators/createRazorpayOrderInput"; export const beta = validateCreateRazorpayOrderCallablePayload;');
+  return {...f, base: f.commit(), modules};
+}
+
+test("a customer schema change selects its consumers and excludes payment functions when the modules are generated", (t) => {
+  const f = untrackedSchemaFixture(t);
+  const name = "functions/src/shared/generated/schemas/getOrganizerContactDetailInput.ts";
+  assert.match(f.modules[name], /"contactId"/);
+  f.write("contracts/modules.json", JSON.stringify({...f.modules,
+    [name]: f.modules[name].replace('"contactId": {', '"contactId": {"description": "Changed contact constraint",')}));
+  const result = f.select({baseSha: f.base});
+  assert.equal(result.warning, undefined);
+  assert.deepEqual(result.targets, targets.slice(0, 2));
+});
+
+test("a contract edit that generates the same modules deploys nothing", (t) => {
+  const f = untrackedSchemaFixture(t);
+  f.write("contracts/unrelated.json", "{}");
+  const result = f.select({baseSha: f.base});
+  assert.equal(result.mode, "no-op");
+  assert.deepEqual(result.targets, []);
+});
+
+test("the commit that untracks the modules deploys nothing when their bytes are the same", (t) => {
+  const f = untrackedSchemaFixture(t);
+  fs.rmSync(path.join(f.root, ".gitignore"));
+  for (const [name, text] of Object.entries(f.modules)) f.write(name, text);
+  const tracked = f.commit();
+  f.write(".gitignore", "functions/src/shared/generated/\nfunctions/node_modules\n");
+  f.git("rm", "-r", "-q", "--cached", "functions/src/shared/generated");
+  const result = f.select({baseSha: tracked});
+  assert.equal(result.mode, "no-op");
+});
+
+test("when generation fails every Function deploys, and the plan says why", (t) => {
+  const f = untrackedSchemaFixture(t);
+  f.write("tool/contracts/generate_schema_contracts.mjs", 'console.error("schema broke"); process.exit(1);');
+  const result = f.select({baseSha: f.base});
+  assert.equal(result.mode, "full");
+  assert.deepEqual(result.targets, targets);
+  assert.match(result.warning, /Could not generate the schema contracts, so every Function deploys/u);
+  assert.match(result.warning, /schema broke/u);
+});
+
 test("shared validation runtime changes select customer and payment consumers", (t) => {
   const f = modularSchemaFixture(t);
   f.write(f.runtime, fs.readFileSync(path.join(f.root, f.runtime), "utf8") + '\n// Runtime revision\n');
