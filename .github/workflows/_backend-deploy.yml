@@ -177,8 +177,21 @@ jobs:
 
       # Missing and indeterminate prerequisites both stop before mutation.
       # Preserve the checker's exit status, including errors without a report.
-      - name: Check this environment is ready
+      # A closed billing account stops Cloud Run from serving every Function
+      # and refuses every deploy. That is not this commit's fault, so the run
+      # defers with a warning and records nothing; the next run after the
+      # project serves again deploys the whole delta. The probe is an
+      # unauthenticated POST to one callable plus a metadata-only gcloud
+      # listing; uncertainty counts as serving.
+      - id: platform
+        name: Check the platform is serving before touching it
         if: ${{ steps.guard.outputs.skip != 'true' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: node tool/firebase/check_platform_availability.mjs --env "$DEPLOY_ENVIRONMENT" --callable adminListEventDirectory --gcloud-probe
+
+      - name: Check this environment is ready
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOY_TARGETS: >-
@@ -196,7 +209,7 @@ jobs:
 
       # New indexes must be READY before Functions that query them deploy.
       - name: Deploy Firestore indexes
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # This run deploys its own exact commit; the record says which one.
@@ -216,7 +229,7 @@ jobs:
       # live in this environment, in every kind of run, and nothing else. A name
       # still in this commit's source is refused before any deletion.
       - name: Retire named Functions
-        if: ${{ steps.guard.outputs.skip != 'true' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
         run: |
@@ -256,7 +269,7 @@ jobs:
       # before any change, with those Functions listed; they deploy by name
       # with --force (which then deletes nothing), and the retry does the rest.
       - name: Deploy Functions
-        if: ${{ steps.guard.outputs.skip != 'true' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOY_ONLY: ${{ steps.choose.outputs.only }}
@@ -289,7 +302,7 @@ jobs:
           exit "$status"
 
       - name: Check callable access and Functions parity
-        if: ${{ steps.guard.outputs.skip != 'true' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # This run deploys its own exact commit; the record says which one.
@@ -298,7 +311,7 @@ jobs:
         run: ./tool/deploy_firebase_targets.sh --functions-postconditions-only "$DEPLOY_ENVIRONMENT" "$TARGETS"
 
       - name: Deploy Firestore and Storage rules
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # This run deploys its own exact commit; the record says which one.
@@ -308,7 +321,7 @@ jobs:
       # Live Firestore and Storage rules must equal this commit's sources before
       # the record claims the environment received it.
       - name: Verify the active rules match this commit
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
         run: >-
@@ -319,7 +332,7 @@ jobs:
       # commit, while GitHub refuses it a tag on a commit whose history changes
       # workflow files. The guard above refuses a commit older than the record.
       - name: Record the deployed commit
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           GH_TOKEN: ${{ github.token }}
