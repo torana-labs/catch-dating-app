@@ -9,11 +9,6 @@
       "count": 1
     }
   },
-  "src/features/events/ui/eventPublishingEditorPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 5
-    }
-  },
   "src/features/events/ui/eventPublishingSupplyPanels.tsx": {
     "react/forbid-elements": {
       "count": 3
@@ -37,11 +32,6 @@
   "src/features/marketing/ui/marketingWorkflowPanels.tsx": {
     "react/forbid-elements": {
       "count": 19
-    }
-  },
-  "src/features/organizers/ui/organizerDetailPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 9
     }
   },
   "src/features/partners/ui/PartnerDemoReviewWorkspace.tsx": {
@@ -69,11 +59,6 @@
       "count": 1
     }
   },
-  "src/features/users/ui/UserAnalyticsScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/shared/ui/AdminPrimitives/actions.tsx": {
     "react/forbid-component-props": {
       "count": 2
@@ -87,10 +72,10 @@
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
     "react/forbid-dom-props": {
-      "count": 11
+      "count": 5
     },
     "react/forbid-elements": {
-      "count": 14
+      "count": 5
     }
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
@@ -113,14 +98,6 @@
     },
     "react/forbid-elements": {
       "count": 8
-    }
-  },
-  "src/shared/ui/AdminPrimitives/intake.tsx": {
-    "react/forbid-dom-props": {
-      "count": 1
-    },
-    "react/forbid-elements": {
-      "count": 1
     }
   },
   "src/shared/ui/AdminPrimitives/marketing-composer.tsx": {
@@ -201,10 +178,10 @@
       "count": 4
     },
     "react/forbid-dom-props": {
-      "count": 10
+      "count": 6
     },
     "react/forbid-elements": {
-      "count": 14
+      "count": 10
     }
   }
 }

@@ -24,30 +24,6 @@
       "componentId": "catch.button"
     },
     {
-      "id": "shared_admin_decision_footer_shell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminDecisionFooterShell",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminDecisionFooterShellStory",
-        "states": [
-          "default",
-          "compact"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "The intake decision footer. Not a pane layout: the decision bar at the foot of one pane; it retires when CatchDock placement=\"pane\" lands."
-    },
-    {
       "id": "shared_admin_detail_screen_stack",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -72,54 +48,6 @@
       "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
     },
     {
-      "id": "shared_admin_diff_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminDiffList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminDiffListStory",
-        "states": [
-          "rows"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
-      "comparedWith": [
-        "catch.journey_steps",
-        "catch.form_step_list"
-      ],
-      "comparisonReason": "Unordered container of field diff rows; CatchStepList is a numbered journey and CatchFormStepList navigates form sections with completion status."
-    },
-    {
-      "id": "shared_admin_diff_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminDiffRow",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminDiffRowStory",
-        "states": [
-          "before-after"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
-      "comparedWith": [
-        "catch.meta_row",
-        "catch.index_row"
-      ],
-      "comparisonReason": "Before/after comparison of one field for review; not passive metadata and not directory navigation."
-    },
-    {
       "id": "shared_admin_directory_screen_stack",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -142,26 +70,6 @@
         "catch.pane_layout"
       ],
       "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
-    },
-    {
-      "id": "shared_admin_editor_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminEditorGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminEditorGridStory",
-        "states": [
-          "section",
-          "div"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
       "id": "shared_admin_editor_panel",
@@ -287,52 +195,6 @@
       "componentId": "catch.button"
     },
     {
-      "id": "shared_admin_metric_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminMetricCard",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "MetricCardStory",
-        "states": [
-          "card",
-          "tile",
-          "attention",
-          "supporting-copy",
-          "ownership-footer"
-        ]
-      },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: label, value and caption are CatchMetricTile, a member of catch.metric_strip. The footer slot and attention tone have no Flutter counterpart, and Flutter grid data requires an icon admin does not render; Phase 7e reconciles the contract.",
-      "componentId": "catch.metric_strip"
-    },
-    {
-      "id": "shared_admin_metric_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminMetricGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "MetricGridStory",
-        "states": [
-          "default",
-          "attention",
-          "explicit-columns"
-        ]
-      },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: D13 metric comparison: a labelled grid of independent measurements is CatchMetricSection.grid.",
-      "componentId": "catch.metric_strip"
-    },
-    {
       "id": "shared_admin_muted_cell",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -369,77 +231,6 @@
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_roadmap_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminRoadmapList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminRoadmapListStory",
-        "states": [
-          "items"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
-      "comparedWith": [
-        "catch.journey_steps",
-        "catch.form_step_list"
-      ],
-      "comparisonReason": "Container of readiness checklist items with arbitrary content; not a numbered, line-traced journey, and it has no section selection or per-step completion status like CatchFormStepList."
-    },
-    {
-      "id": "shared_admin_roadmap_list_item",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminRoadmapListItem",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminRoadmapListItemStory",
-        "states": [
-          "single"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
-      "comparedWith": [
-        "catch.meta_row",
-        "catch.index_row",
-        "catch.icon_tile",
-        "catch.option_card",
-        "catch.analytics_metric"
-      ],
-      "comparisonReason": "Toned checklist item wrapping arbitrary content; none of the matched contracts is a blocker or warning checklist entry."
-    },
-    {
-      "id": "shared_admin_secondary_disclosure",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminSecondaryDisclosure",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminSecondaryDisclosureStory",
-        "states": [
-          "closed",
-          "open"
-        ]
-      },
-      "notes": "Keeps diagnostics, command details, and source-path material available without placing it in the primary task flow."
     },
     {
       "id": "shared_admin_sign_in_panel",
@@ -522,31 +313,6 @@
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
-      "id": "shared_admin_tag_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminTagRow",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTagRowStory",
-        "states": [
-          "div",
-          "span"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.meta_row",
-        "catch.index_row"
-      ],
-      "comparisonReason": "Flex row that lays out badges; CatchMetaRow renders text metadata entries and CatchIndexRow is a navigation row."
-    },
-    {
       "id": "shared_admin_toolbar",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -569,25 +335,6 @@
         "catch.top_bar"
       ],
       "comparisonReason": "A legacy admin row of filter and action controls. Not a top bar: a row of controls inside a pane, not the top of a screen."
-    },
-    {
-      "id": "shared_admin_workbench_note",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminWorkbenchNote",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminWorkbenchNoteStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_workbench_stack",

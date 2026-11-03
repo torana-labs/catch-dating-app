@@ -244,6 +244,16 @@ export function updateOrganizerLaunchMarket(
   };
 }
 
+/** The address follows the slug, because the backend refuses a path that doesn't end with it. */
+export function updateOrganizerSlug(
+  form: OrganizerPublishingFormState,
+  slug: string
+): OrganizerPublishingFormState {
+  const city = form.publicPageCitySlug.trim();
+  const canonicalPath = city ? `/organizers/${city}/${slug.trim()}/` : `/organizers/${slug.trim()}/`;
+  return {...form, publicPageSlug: slug, canonicalPath};
+}
+
 export function formFromOrganizerProfile(
   organizer: AdminOrganizerDetails
 ): OrganizerPublishingFormState {
@@ -596,14 +606,6 @@ export function hasBlockingIssues(issues: OrganizerValidationIssue[]): boolean {
   return issues.some((issue) => issue.severity === "blocker");
 }
 
-export function organizerTypeLabel(type: OrganizerType): string {
-  switch (type) {
-  case "eventProducer": return "Event producer";
-  case "individual": return "Individual organizer";
-  default: return type.charAt(0).toUpperCase() + type.slice(1);
-  }
-}
-
 function validateCanonicalPath(
   form: OrganizerPublishingFormState
 ): OrganizerValidationIssue | null {
@@ -871,13 +873,13 @@ function normalizeComparable(value: unknown): string {
 }
 
 function listToText(items: string[]): string {
-  return items.join("\n");
+  return items.join(", ");
 }
 
 function textToList(value: string): string[] {
   return Array.from(new Set(
     value
-      .split("\n")
+      .split(/[,\n]/u)
       .map((item) => item.trim())
       .filter((item) => item.length > 0)
   ));

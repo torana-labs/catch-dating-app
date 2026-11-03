@@ -2,10 +2,11 @@ import {brand} from "@catch/brand";
 import type {ReactNode} from "react";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {useOrganizerDirectoryController} from "../controllers/useOrganizerDirectoryController";
+import {useOrganizerPageEditorController} from "../controllers/useOrganizerPageEditorController";
 import {useOrganizerOverviewController} from "../controllers/useOrganizerOverviewController";
 import {OrganizerDirectoryScreen} from "./OrganizerDirectoryScreen";
 import {OrganizerPageScreen, type OrganizerPageTab} from "./OrganizerPageScreen";
-import {OrganizerPublishingScreen} from "./OrganizerPublishingScreen";
+import {organizerPageEditorPanels} from "./OrganizerPageEditor";
 
 const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? brand.web.origin
@@ -32,6 +33,7 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
 }) {
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
   const controller = useOrganizerOverviewController(organizerId, {onError, onNotice});
+  const editor = useOrganizerPageEditorController(organizerId, {enabled: tab === "page", onError, onNotice});
   const base = `/organizers/${encodeURIComponent(organizerId)}`;
   return (
     <OrganizerPageScreen
@@ -52,9 +54,11 @@ function PageRoute({canChangeTerms, onNavigate, organizerId, renderBills, render
       }}
       loadError={controller.loadError}
       overview={controller.overview}
-      pageEditor={tab === "page" ?
-        <OrganizerPublishingScreen onBackToList={() => onNavigate("/organizers")} selectedOrganizerId={organizerId} /> :
-        null}
+      editor={tab === "page" ? {
+        main: <organizerPageEditorPanels.OrganizerPageEditorForm editor={editor} />,
+        aside: <organizerPageEditorPanels.OrganizerPageEditorSide editor={editor} />,
+        actions: <organizerPageEditorPanels.OrganizerPageEditorActions editor={editor} />,
+      } : null}
       tab={tab}
     />
   );

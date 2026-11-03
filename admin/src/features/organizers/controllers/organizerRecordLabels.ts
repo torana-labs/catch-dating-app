@@ -29,7 +29,7 @@ export function organizerPageLabel(
 }
 
 export function organizerClaimLabel(
-  row: Pick<OrganizerDirectoryRow, "claimState" | "claimedByName">
+  row: {claimState: string | null; claimedByName: string | null}
 ): ToneText {
   switch (row.claimState) {
   case "claimPending": return {text: "Claim waiting", tone: "warning"};

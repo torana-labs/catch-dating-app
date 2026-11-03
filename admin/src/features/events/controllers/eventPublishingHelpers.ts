@@ -16,7 +16,6 @@ export interface EventPublishingFormState {
   customActivityLabel: string;
   distanceKm: string;
   pace: AdminEventPace;
-  crossPathsDiscoveryEnabled: boolean;
   hostPilotRealEvent: boolean;
   reviewNote: string;
 }
@@ -86,7 +85,6 @@ export function formFromEventProfile(
     customActivityLabel: event.eventFormat.customActivityLabel ?? "",
     distanceKm: String(event.distanceKm),
     pace: event.pace,
-    crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled,
     hostPilotRealEvent: event.hostPilotReview?.realEvent === true,
     reviewNote: "",
   };
@@ -129,12 +127,6 @@ export function buildEventSavePayload(
     normalizeDistance(form.distanceKm)
   );
   addChanged(fields, "pace", original.pace, form.pace);
-  addChanged(
-    fields,
-    "crossPathsDiscoveryEnabled",
-    original.crossPathsDiscoveryEnabled,
-    form.crossPathsDiscoveryEnabled
-  );
 
   if (original.hostPilotRealEvent !== form.hostPilotRealEvent) {
     fields.hostPilotReview = {realEvent: form.hostPilotRealEvent,
@@ -202,22 +194,6 @@ export function hasBlockingEventIssues(
   issues: EventValidationIssue[]
 ): boolean {
   return issues.some((issue) => issue.severity === "blocker");
-}
-
-export function countBlockingEventIssues(
-  issues: EventValidationIssue[]
-): number {
-  return issues.filter((issue) => issue.severity === "blocker").length;
-}
-
-export function countEventDiffRows(rows: EventDiffRow[]): number {
-  return rows.length;
-}
-
-export function eventNeedsSearchBackfill(row: {
-  searchIndexStatus: "missing" | "indexed";
-}): boolean {
-  return row.searchIndexStatus !== "indexed";
 }
 
 export function eventIsFull(row: {

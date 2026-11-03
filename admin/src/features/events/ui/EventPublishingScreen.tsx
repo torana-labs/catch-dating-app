@@ -7,29 +7,21 @@ import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {eventPublishingDirectoryPanels} from "./eventPublishingDirectoryPanels";
 // Panels from "./eventPublishingDirectoryPanels.tsx" and sibling modules stay feature-private.
 
-/**
- * The editors the event page's tabs host: a Catch event's canonical editor (Page), or an imported
- * event's source record and takedown (Takedown). The Events directory lists events itself.
- */
+/** An imported event's source record and takedown, for the event page's Takedown tab. */
 export function EventPublishingScreen({
   onBackToList,
-  selectedEventId = null,
-  selectedExternalEventId = null,
+  selectedExternalEventId,
 }: {
   onBackToList?: () => void;
-  selectedEventId?: string | null;
-  selectedExternalEventId?: string | null;
+  selectedExternalEventId: string;
 }) {
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
   const controller = useEventPublishingController({
-    activeWorkspace: selectedExternalEventId ? "external" : "directory",
-    onBackToList,
     onError,
     onNotice,
     onSelectExternalEventId: (eventId) => {
       if (!eventId) onBackToList?.();
     },
-    selectedEventId,
     selectedExternalEventId,
   });
   return <EventPublishingWorkspace controller={controller} />;
@@ -42,12 +34,10 @@ export function EventPublishingWorkspace({
 }) {
   return (
     <AdminWorkbenchStack compact>
-      {controller.view === "detail" ? (
-        <eventPublishingDirectoryPanels.EventDetailView controller={controller} />
-      ) : controller.view === "external" && controller.selectedExternalEventId ? (
+      {controller.selectedExternalEventId ? (
         <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />
       ) : (
-        <EmptyState variant="workbench">Open an event from Events to edit it.</EmptyState>
+        <EmptyState variant="workbench">Open an imported event from Events.</EmptyState>
       )}
     </AdminWorkbenchStack>
   );

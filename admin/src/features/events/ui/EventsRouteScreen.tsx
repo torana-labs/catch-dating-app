@@ -5,6 +5,9 @@ import {
 } from "../controllers/useEventDirectoryController";
 import {useEventPageController, type EventPageSource} from "../controllers/useEventPageController";
 import {EventDirectoryScreen, OrganizerEventsWorkspace} from "./EventDirectoryScreen";
+import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
+import {useEventPageEditorController} from "../controllers/useEventPageEditorController";
+import {eventPageEditorPanels} from "./EventPageEditor";
 import {EventPageScreen, type EventPageTab} from "./EventPageScreen";
 import {EventPublishingScreen} from "./EventPublishingScreen";
 
@@ -33,18 +36,24 @@ function PageRoute({eventId, onNavigate, source, tab}: {
   tab: EventPageTab;
 }) {
   const controller = useEventPageController(source, eventId);
+  const {setError, setNotice} = useAdminFeedback();
+  const editor = useEventPageEditorController(eventId, {onError: setError, onNotice: setNotice, enabled: source === "catch"});
   const base = eventPath(source, eventId);
   return (
     <EventPageScreen
+      editor={source === "catch" ? {
+        main: <eventPageEditorPanels.EventPageEditorForm editor={editor} />,
+        aside: <eventPageEditorPanels.EventPageEditorSide editor={editor} />,
+        actions: <eventPageEditorPanels.EventPageEditorActions editor={editor} />,
+      } : null}
       loadError={controller.loadError}
       onBack={() => onNavigate("/events")}
       onOpenOrganizer={(organizerId) => onNavigate(`/organizers/${encodeURIComponent(organizerId)}`)}
       onTabChanged={(next) => onNavigate(next === "overview" ? base : `${base}/${next}`)}
-      pageEditor={source === "catch" && tab === "page" ?
-        <EventPublishingScreen onBackToList={() => onNavigate("/events")} selectedEventId={eventId} /> :
-        source === "imported" && tab === "takedown" ?
-          <EventPublishingScreen onBackToList={() => onNavigate("/events")} selectedExternalEventId={eventId} /> :
-          null}
+      pageEditor={source === "imported" && tab === "takedown" ?
+        <EventPublishingScreen onBackToList={() => onNavigate("/events")} selectedExternalEventId={eventId} /> :
+        null}
+      pilots={source === "catch" ? <eventPageEditorPanels.EventPilotReviewSection editor={editor} /> : null}
       record={controller.record}
       tab={tab}
     />

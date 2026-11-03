@@ -34,29 +34,11 @@
           "overview",
           "journey",
           "upcoming",
-          "money"
+          "money",
+          "page-tab"
         ]
       },
-      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview, with CatchMetaRow facts and the CatchSection timeline journey; the Page tab hosts the Organizer Publishing editor for this organizer."
-    },
-    {
-      "id": "route_organizer_publishing",
-      "kind": "route",
-      "owner": "features/organizers",
-      "source": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
-      "exportName": "OrganizerPublishingScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutesOrganizers.stories.tsx",
-        "exportName": "OrganizerPublishingRouteStory",
-        "states": [
-          "canonical-detail"
-        ]
-      },
-      "notes": "The editor the organizer page's Page tab hosts, and the claims review kept under Organizers until the Inbox decides claims. The Organizers directory replaced its directory list; deterministic preview coverage uses shared sample organizer details in the route stories."
+      "notes": "One organizer in the CatchPaneLayout reading pattern with CatchPageTabBar tabs Overview, Page, Events, Sales, Money and History, read from adminGetOrganizerOverview, with CatchMetaRow facts and the CatchSection timeline journey; the Page tab hosts the Organizer Publishing editor for this organizer; its Page tab edits the public page."
     },
     {
       "id": "route_organizer_records_live_controller",
@@ -130,26 +112,6 @@
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "workspace_organizer_publishing",
-      "kind": "workspace",
-      "owner": "features/organizers",
-      "source": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
-      "exportName": "OrganizerPublishingWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminRoutesOrganizers.stories.tsx",
-        "exportName": "OrganizerPublishingWorkspaceStory",
-        "states": [
-          "canonical-detail",
-          "blocked-draft"
-        ]
-      },
-      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; the canonical editor, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
     }
   ]
 }

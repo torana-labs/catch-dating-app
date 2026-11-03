@@ -2,9 +2,7 @@ import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
 
 const operatorWorkflowSources = [
-  "../../features/organizers/ui/organizerDetailPanels.tsx",
   "../../features/events/ui/eventPublishingDirectoryPanels.tsx",
-  "../../features/events/ui/eventPublishingEditorPanels.tsx",
   "../../features/events/ui/eventPublishingSupplyPanels.tsx",
 ];
 
