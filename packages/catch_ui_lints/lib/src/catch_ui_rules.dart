@@ -731,7 +731,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         site.node,
         diagnosticCode: CatchUiLayoutRules.textRequiresStyle,
         arguments: [
-          'Use CatchText with CatchTextVariant.${site.role} instead of styling Text in place.',
+          'Use CatchLegacyText with CatchLegacyTextVariant.${site.role} instead of styling Text in place.',
         ],
       );
     }
@@ -1625,7 +1625,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   ) {
     if (_isRoundedAffordanceConstructor(typeName)) return false;
 
-    if (typeName == 'CatchSurface') {
+    // The legacy surface takes free radius and tone; the system CatchSurface
+    // nests by design (a tile in a tile is the nested block).
+    if (typeName == 'CatchLegacySurface') {
       return isCatchUiDisplaySurface(node);
     }
 

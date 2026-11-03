@@ -6,13 +6,15 @@ import 'package:analyzer/dart/ast/visitor.dart';
 
 import 'migration_scope.dart';
 
+// The steer moves legacy text onto the legacy roles it already uses; the
+// system CatchText and its roles arrive with each redrawn screen (P2.1).
 const _variantPath =
-    'packages/catch_ui/lib/src/primitives/catch_text_variant.dart';
+    'packages/catch_ui/lib/src/primitives/catch_legacy_text_variant.dart';
 typedef TextMigrationSite = ({InstanceCreationExpression node, String role});
 
 bool textMigrationScope(String relative) => migrationScope(relative);
 
-/// Resolved role and canonical Material-slot calls CatchText can preserve.
+/// Resolved role and canonical Material-slot calls CatchLegacyText can preserve.
 List<TextMigrationSite> textMigrationSites(
   CompilationUnit unit,
   Set<String>? variants,
@@ -201,7 +203,7 @@ Set<String> textMigrationVariants(String root) =>
         .declarations
         .whereType<EnumDeclaration>()
         .singleWhere(
-          (node) => node.namePart.typeName.lexeme == 'CatchTextVariant',
+          (node) => node.namePart.typeName.lexeme == 'CatchLegacyTextVariant',
         )
         .body
         .constants

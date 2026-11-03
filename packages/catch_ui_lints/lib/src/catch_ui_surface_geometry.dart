@@ -17,7 +17,7 @@ bool isCatchUiSquareSurface(InstanceCreationExpression node) {
   final typeName =
       resolvedName ??
       node.constructorName.type.toSource().split('<').first.split('.').last;
-  if (typeName != 'CatchSurface') return false;
+  if (typeName != 'CatchLegacySurface') return false;
   final arguments = _arguments(node);
   final borderRadius = arguments['borderRadius'];
   if (borderRadius != null && borderRadius is! NullLiteral) return false;

@@ -448,12 +448,14 @@ function collectRawChrome(root) {
 
 // A CatchText variant delegates to the identically named foundation recipe.
 // Preserve semantic owner identities across the SDK Text -> CatchText migration.
+// Since P2.1 those recipes are the legacy roles: CatchLegacyText with a
+// CatchLegacyTextVariant (the system CatchText has no headline or titleL).
 function manualHeaderOwners(source) {
   const owners = [...source.matchAll(manualHeaderOwnerPattern)].map((match) => match[1]);
   manualHeaderOwnerPattern.lastIndex = 0;
-  for (const call of readCalls(source, "CatchText")) {
+  for (const call of [...readCalls(source, "CatchText"), ...readCalls(source, "CatchLegacyText")]) {
     const variant = readNamedArgument(call.slice(call.indexOf("(")), "variant");
-    const role = /^(?:[A-Za-z_$][\w$]*\.)?CatchTextVariant\.(headline[A-Za-z]*|titleL)$/u.exec(variant ?? "")?.[1];
+    const role = /^(?:[A-Za-z_$][\w$]*\.)?Catch(?:Legacy)?TextVariant\.(headline[A-Za-z]*|titleL)$/u.exec(variant ?? "")?.[1];
     if (role) owners.push(`CatchTextStyles.${role}`);
   }
   return [...new Set(owners)];
