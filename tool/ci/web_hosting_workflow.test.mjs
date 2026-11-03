@@ -1041,6 +1041,43 @@ test("standalone React reuses an existing native-only CI bundle without another 
   assert.equal(marketingJobCondition("validate", {...reuse, captures: "failure"}), false);
 });
 
+// The packages a package's build reads: its own path dependencies, not its dev ones.
+function pathDependencies(directory) {
+  const pubspec = fs.readFileSync(path.join(repoRoot, directory, "pubspec.yaml"), "utf8");
+  const section = pubspec.split(/^dependencies:\n/mu)[1]?.split(/^\S/mu)[0] ?? "";
+  return [...section.matchAll(/^ +path: (\S+)$/gmu)].map(match => path.posix.join(directory, match[1]));
+}
+
+test("the Host trigger follows every package its build depends on", () => {
+  const trigger = caller("host").split("  push:\n")[1].split("  workflow_dispatch:\n")[0];
+  const patterns = [...trigger.matchAll(/^      - "([^"\n]+)"$/gmu)].map(match => match[1]);
+  const triggers = file => patterns.some(pattern => matchesGlob(file, pattern));
+
+  const closure = new Set();
+  const visit = directory => {
+    if (closure.has(directory)) return;
+    closure.add(directory);
+    pathDependencies(directory).forEach(visit);
+  };
+  visit("apps/host");
+  // Pinned so a broken walk can't pass by finding nothing.
+  for (const expected of [".", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n"]) {
+    assert.ok(closure.has(expected), `Host build closure is missing ${expected}`);
+  }
+  for (const directory of closure) {
+    for (const file of ["lib/example.dart", "pubspec.yaml"]) {
+      const changed = path.posix.join(directory, file);
+      assert.ok(triggers(changed), `${changed} must release the Host website`);
+    }
+  }
+
+  // None of these reach the Host build, so they must not deploy it to production.
+  for (const file of ["packages/web-ui/src/CatchButton.tsx", "packages/web-config/generated/catch-tokens.css",
+    "packages/catch_ui_lints/lib/plugin.dart", "packages/brand/brand.json", "admin/src/main.tsx", "website/src/page.tsx"]) {
+    assert.ok(!triggers(file), `${file} must not release the Host website`);
+  }
+});
+
 test("native capture inputs retain the Marketing main publication trigger", () => {
   const trigger = caller("marketing").split("  push:\n")[1].split("  workflow_dispatch:\n")[0];
   const patterns = [...trigger.matchAll(/^      - "([^"\n]+)"$/gmu)].map(match => match[1]);
