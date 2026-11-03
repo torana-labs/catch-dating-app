@@ -1166,6 +1166,57 @@
       ]
     },
     {
+      "id": "hostEventSetupViews",
+      "path": "hostEventSetupViews/{eventId}",
+      "rulesMatch": "/hostEventSetupViews/{eventId}",
+      "typescriptInterface": "HostEventSetupViewDocument",
+      "dartModel": "lib/contexts/events/data/private_event_setup_view.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets active managers get their event setup views and nothing else"
+      ],
+      "owner": "Host event setup view evaluator: hostReadModels event setup view triggers",
+      "read": "current managers of an active organizer get their event's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it and deleted with the event or its setupRevision",
+      "exportedFunctions": [
+        "onHostEventSetupViewEventChanged",
+        "onHostEventSetupViewPreferencesChanged",
+        "onHostEventSetupViewOrganizerChanged",
+        "onHostEventSetupViewAttendeeChanged",
+        "onHostEventSetupViewAttendeeImportChanged",
+        "onHostEventSetupViewParticipationChanged",
+        "onHostEventSetupViewWaitlistOfferChanged",
+        "onHostEventSetupViewEventOfferChanged",
+        "onHostEventSetupViewPaymentChanged",
+        "onHostEventSetupViewPendingOrderChanged"
+      ],
+      "migrationNotes": [
+        "Publication readiness checks every requirement as if the event started one millisecond from now; the phone applies the clock, so the view needs no sweep.",
+        "sourceCoverage invalidSource with its incompleteSource keeps the previous summary and means the step must not show it."
+      ]
+    },
+    {
+      "id": "hostEventSetupDefaultViews",
+      "path": "hostEventSetupDefaultViews/{organizerId}",
+      "rulesMatch": "/hostEventSetupDefaultViews/{organizerId}",
+      "typescriptInterface": "HostEventSetupDefaultViewDocument",
+      "dartModel": "lib/contexts/events/data/manager_event_setup_defaults_view.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets active managers get their setup defaults view and nothing else"
+      ],
+      "owner": "Host event setup defaults evaluator: hostReadModels event setup default view triggers",
+      "read": "current managers of an active organizer get their organizer's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it and deleted with the organizer",
+      "exportedFunctions": [
+        "onHostEventSetupDefaultViewDefaultsChanged",
+        "onHostEventSetupDefaultViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "The view carries the basics, preferences and reviewed-defaults hashes the defaults update command and the first-save basics are fenced by; the client never recomputes them."
+      ]
+    },
+    {
       "id": "organizerEntitlements",
       "path": "organizerEntitlements/{organizerId}",
       "rulesMatch": "/organizerEntitlements/{organizerId}",
@@ -3664,18 +3715,17 @@
       "dartModel": "lib/contexts/live/data/event_rehearsal_repository.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "rulesTestNames": [
-        "keeps all dress rehearsal collections callable-only"
+        "lets managers get their rehearsal milestone and nothing else"
       ],
       "owner": "event rehearsal completion callable",
-      "read": "server only; manager-authorized completion boolean via callable",
+      "read": "current organizer managers get their organizer's document under rules (a missing document is not yet completed); nobody lists the collection",
       "write": "server only; completion transaction",
       "exportedFunctions": [
         "controlEventRehearsal",
-        "completeEventRehearsal",
-        "getEventRehearsalSummary"
+        "completeEventRehearsal"
       ],
       "migrationNotes": [
-        "Permanent completion survives session expiry, reset and fork. Legacy completed sessions are a bounded read-only fallback while retained."
+        "Permanent completion survives session expiry, reset and fork. The phone listens to this document; there is no fallback to completed sessions."
       ]
     },
     {
@@ -3807,11 +3857,11 @@
         "keeps organizer event setup defaults and receipts server-only"
       ],
       "owner": "organizer event setup manager operations",
-      "read": "server only; current manager callable projection",
+      "read": "server only; managers read its projection in hostEventSetupDefaultViews",
       "write": "server only",
       "exportedFunctions": [
-        "getOrganizerEventSetupDefaults",
-        "updateOrganizerEventSetupDefaults"
+        "updateOrganizerEventSetupDefaults",
+        "onHostEventSetupDefaultViewDefaultsChanged"
       ]
     },
     {
@@ -3828,7 +3878,6 @@
       "read": "server only; current manager callable projection",
       "write": "server only",
       "exportedFunctions": [
-        "getOrganizerEventSetupDefaults",
         "updateOrganizerEventSetupDefaults"
       ]
     },
@@ -3857,19 +3906,18 @@
       "path": "eventSetupPreferences/{eventId}",
       "rulesMatch": "/eventSetupPreferences/{eventId}",
       "typescriptInterface": "EventSetupPreferencesDocument",
-      "dartModel": null,
+      "dartModel": "lib/contexts/forms/data/event_offer_configuration_reads.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
+        "lets managers get event setup preferences and nothing else"
       ],
       "owner": "private event setup operations",
-      "read": "server only; current manager callable projection",
+      "read": "current organizer managers get the document under rules for offer settings; an event without saved settings reads as missing; nobody lists the collection",
       "write": "server only",
       "exportedFunctions": [
         "updatePrivateEventPreferences",
-        "getPrivateEventSetup",
-        "getEventOfferConfiguration",
-        "configureEventOfferPreferences"
+        "configureEventOfferPreferences",
+        "onHostEventSetupViewPreferencesChanged"
       ]
     },
     {

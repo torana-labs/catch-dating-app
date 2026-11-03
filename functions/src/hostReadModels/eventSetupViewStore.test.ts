@@ -83,7 +83,7 @@ const view = (db: AudienceTestStore, id = "event-1") =>
 const summary = (db: AudienceTestStore, id = "event-1") =>
   view(db, id)?.summary as Data;
 
-test("a basics-only private event gets a complete view that matches its contract",
+test("a basics-only private event gets a complete, valid view",
   async () => {
     const db = store();
     const outcome = await reconcileEventSetupView(db.asFirestore(), "event-1",

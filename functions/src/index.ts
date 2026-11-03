@@ -174,7 +174,6 @@ export {
   getEventAssistanceGuestView,
   submitEventAssistanceGuestChoice,
 } from "./eventSuccess/operations/guestHandlers";
-export {getEventRehearsalSummary} from "./eventRehearsal/summary";
 export {
   completeEventRehearsal,
   controlEventRehearsal,
@@ -867,7 +866,7 @@ export {getProgramStakeholderCounts} from
   "./programs/stakeholderCountsView";
 
 export {
-  createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
+  createPrivateEventSetup, updatePrivateEventBasics,
   updatePrivateEventPreferences, listPrivateEventSetups,
   updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
   reconcilePrivateEventSeats,
@@ -875,13 +874,12 @@ export {
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
 
-export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+export {updateOrganizerEventSetupDefaults}
   from "./organizers/eventSetupDefaults/callables";
 
 export {
   previewEventOffers, commitEventOffers, mutateEventOffer,
   getEventOffer, listEventOffers, prepareEventOfferHandoff,
-  getEventOfferConfiguration,
   configureEventOfferPreferences, previewEventOfferPreferences,
 } from "./organizerEventOffers/callables";
 
@@ -1051,6 +1049,18 @@ export {onOrganizerAttentionOrganizerChanged,
   onOrganizerAttentionMomentSendChanged, onOrganizerAttentionEventOfferChanged,
   onOrganizerAttentionPaymentAccountChanged, sweepOrganizerAttention} from
   "./hostReadModels/attentionTriggers";
+export {onHostEventSetupViewEventChanged,
+  onHostEventSetupViewPreferencesChanged, onHostEventSetupViewOrganizerChanged,
+  onHostEventSetupViewAttendeeChanged,
+  onHostEventSetupViewAttendeeImportChanged,
+  onHostEventSetupViewParticipationChanged,
+  onHostEventSetupViewWaitlistOfferChanged,
+  onHostEventSetupViewEventOfferChanged, onHostEventSetupViewPaymentChanged,
+  onHostEventSetupViewPendingOrderChanged} from
+  "./hostReadModels/eventSetupViewTriggers";
+export {onHostEventSetupDefaultViewDefaultsChanged,
+  onHostEventSetupDefaultViewOrganizerChanged} from
+  "./hostReadModels/eventSetupDefaultViewTriggers";
 
 export {manageEventApprovalNotifications} from
   "./events/approvalNotifications/preferences";

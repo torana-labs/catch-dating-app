@@ -2,5 +2,9 @@
   "adminListListingEventImports",
   "adminListOrganizerClaimRequests",
   "adminListOrganizerListingReviews",
+  "getEventOfferConfiguration",
+  "getEventRehearsalSummary",
+  "getOrganizerEventSetupDefaults",
+  "getPrivateEventSetup",
   "listOrganizerAttentionItems"
 ]

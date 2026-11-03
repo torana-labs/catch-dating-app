@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import {getOrganizerEventSetupDefaultsHandler,
-  updateOrganizerEventSetupDefaultsHandler,
+import {updateOrganizerEventSetupDefaultsHandler,
   DefaultsCallableDependencies} from "./callables";
 
 const request = (data: unknown, uid?: string) => ({
@@ -18,8 +17,7 @@ const deps: DefaultsCallableDependencies = {
 };
 
 test("defaults auth and validation precede database", async () => {
-  for (const handler of [getOrganizerEventSetupDefaultsHandler,
-    updateOrganizerEventSetupDefaultsHandler]) {
+  for (const handler of [updateOrganizerEventSetupDefaultsHandler]) {
     await assert.rejects(handler(request({}), deps),
       (e) => e instanceof HttpsError && e.code === "unauthenticated");
     await assert.rejects(handler(request({}, "host1"), deps),
