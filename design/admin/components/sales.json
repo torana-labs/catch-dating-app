@@ -108,27 +108,6 @@
       "notes": "Sales · Today: a sales associate's tasks by when they are due (the team's for the owner) on CatchWorkspaceHeader and CatchTable, with the task's host beside it on CatchPaneLayout queue and CatchDock pane: log what happened (completes the task), snooze to Monday, or done."
     },
     {
-      "id": "route_sales_workspace",
-      "kind": "route",
-      "owner": "features/sales",
-      "source": "admin/src/features/sales/ui/SalesWorkspaceScreen.tsx",
-      "exportName": "SalesWorkspaceScreen",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "planned",
-        "states": [
-          "today",
-          "hosts",
-          "pipeline",
-          "detail",
-          "save-conflict"
-        ]
-      },
-      "notes": "The older Sales page, now only one host's custom fields and imported history and Sales settings; account, task, activity and opportunity changes use revision checks and request receipts."
-    },
-    {
       "id": "workspace_sales_add_host",
       "kind": "workspace",
       "owner": "features/sales",
@@ -168,6 +147,40 @@
         ]
       },
       "notes": "Owner-reviewed private synthetic demo setup and revocable invitations; grants remain only in memory. Owner exact recipient/preview opt-in with independent sharing revision, explicit expiry and withdrawal; pending wording needs normal blueprint review."
+    },
+    {
+      "id": "workspace_sales_host_details",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesHostDetailsWorkspace.tsx",
+      "exportName": "SalesHostDetailsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "fields",
+          "empty",
+          "changed-elsewhere"
+        ]
+      },
+      "notes": "A host's private fields on its Overview, each with a Change sheet."
+    },
+    {
+      "id": "workspace_sales_host_history",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesHostHistoryWorkspace.tsx",
+      "exportName": "SalesHostHistoryWorkspace",
+      "css": [],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "finished-steps",
+          "imported-history",
+          "paging"
+        ]
+      },
+      "notes": "A host's History tab: finished next steps and paged imported source history."
     },
     {
       "id": "workspace_sales_host_commercial",
@@ -263,24 +276,6 @@
         ]
       },
       "notes": "Offers a host to a referral partner from More on the host page: one CatchIndexRow and a CatchSheet with its own controller."
-    },
-    {
-      "id": "workspace_sales_records",
-      "kind": "workspace",
-      "owner": "features/sales",
-      "source": "admin/src/features/sales/ui/SalesRecordsPanels.tsx",
-      "exportName": "SalesRecordsWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "planned",
-        "states": [
-          "next-steps",
-          "draft-blocked"
-        ]
-      },
-      "notes": "The older host page's next steps and draft readiness boundary, until those go."
     }
   ]
 }

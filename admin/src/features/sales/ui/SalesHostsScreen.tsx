@@ -35,16 +35,20 @@ import {
   evidenceConfidenceLabels,
   evidenceSourceLabels,
   holdLabels,
+  dealMotions,
   hostActivityTypes,
   isoFrom,
   localInput,
   movableStages,
   researchLabels,
   stageLabel,
+  selectChoices,
   taskKindLabels,
 } from "../controllers/salesLabels";
 import type {HostTab, SalesHostsController} from "../controllers/useSalesHostsController";
 import {SalesHostCommercialWorkspace, type SalesHostCommercialModel} from "./SalesHostCommercialWorkspace";
+import {SalesHostDetailsWorkspace} from "./SalesHostDetailsWorkspace";
+import {SalesHostHistoryWorkspace} from "./SalesHostHistoryWorkspace";
 
 export type SalesHostsModel = Pick<SalesHostsController,
   "query" | "setQuery" | "rows" | "hasNextPage" | "hasPreviousPage" | "nextPage" | "previousPage" | "tab" | "setTab" |
@@ -52,7 +56,8 @@ export type SalesHostsModel = Pick<SalesHostsController,
   "evidence" | "evidenceFailed" | "retryEvidence" | "hasMoreEvidence" | "moreEvidence" | "addEvidence" | "suggestions" | "suggestionsFailed" |
   "retrySuggestions" | "hasMoreSuggestions" | "moreSuggestions" | "reviewSuggestion" | "setHold" |
   "contactsFailed" | "retryContacts" | "hasMoreContacts" | "moreContacts" | "reviewContact" |
-  "validSearch" | "researchStatus" | "setResearchStatus" | "mineOnly" | "setMineOnly"> & {
+  "validSearch" | "researchStatus" | "setResearchStatus" | "mineOnly" | "setMineOnly" |
+  "privateFields" | "privateFieldsLoading" | "privateFieldsFailed" | "retryPrivateFields" | "saveCustomValue"> & {
   /** Who "Assign to me" means. */
   uid: string | null;
   host: SalesAccountDetail | null;
@@ -82,7 +87,7 @@ const columns: CatchTableColumn<Row>[] = [
 
 const tabs: Array<{value: HostTab; label: string}> = [
   {value: "overview", label: "Overview"}, {value: "conversations", label: "Conversations"},
-  {value: "deals", label: "Deals"}, {value: "notes", label: "Notes"},
+  {value: "deals", label: "Deals"}, {value: "notes", label: "Notes"}, {value: "history", label: "History"},
 ];
 
 const nextStepKinds: SalesTaskKind[] = ["follow_up", "reply", "demo", "pilot", "research"];
@@ -97,13 +102,15 @@ function LogActivitySheet({model, onClose}: {model: SalesHostsModel; onClose: ()
   const [type, setType] = useState<typeof hostActivityTypes[number]["value"]>("note");
   const [channel, setChannel] = useState<"email" | "whatsapp" | "other">("whatsapp");
   const [note, setNote] = useState("");
+  const [when, setWhen] = useState(() => localInput(new Date()));
+  const occurredAt = isoFrom(when);
   const manual = type === "outreach_sent_manual";
   const submit = async () => {
-    if (await model.logActivity({type, note: note.trim(), ...(manual ? {channel, attestation: "sent_elsewhere_by_actor" as const} : {})})) onClose();
+    if (await model.logActivity({type, note: note.trim(), ...(occurredAt ? {occurredAt} : {}), ...(manual ? {channel, attestation: "sent_elsewhere_by_actor" as const} : {})})) onClose();
   };
   return (
     <CatchSheet recipe="standard" open onClose={onClose} title="Log activity" subtitle="Hosts"
-      footer={<CatchButton label={model.isSaving ? "Saving" : "Log it"} onPressed={note.trim() && !model.isSaving ? () => void submit() : null} />}>
+      footer={<CatchButton label={model.isSaving ? "Saving" : "Log it"} onPressed={note.trim() && occurredAt && !model.isSaving ? () => void submit() : null} />}>
       <CatchGap size="related">
         <CatchField recipe="select" title="What happened" value={type} values={hostActivityTypes.map((entry) => entry.value)}
           itemLabelBuilder={(value) => hostActivityTypes.find((entry) => entry.value === value)?.label ?? value}
@@ -112,6 +119,7 @@ function LogActivitySheet({model, onClose}: {model: SalesHostsModel; onClose: ()
           itemLabelBuilder={(value) => ({whatsapp: "WhatsApp", email: "Email", other: "Somewhere else"})[value] ?? value}
           helperText="You're saying you sent this outside Catch. Catch can't confirm it arrived."
           onChanged={(value) => setChannel((value ?? "whatsapp") as typeof channel)} /> : null}
+        <CatchField recipe="input" title="When" value={when} onChanged={setWhen} keyboardType="datetime" />
         <CatchField recipe="input" title="What should the team know?" maxLines={3} value={note} onChanged={setNote} />
       </CatchGap>
     </CatchSheet>
@@ -155,6 +163,8 @@ function NextStepSheet({model, onClose}: {model: SalesHostsModel; onClose: () =>
 
 /** Moving a deal says what happens next and when. A closed deal needs a reason, closing or reopening. */
 function DealSheet({model, deal, onClose}: {model: SalesHostsModel; deal: SalesOpportunity | null; onClose: () => void}) {
+  const [motion, setMotion] = useState(deal?.motion ?? "first_workflow_pilot");
+  const [owner, setOwner] = useState(deal?.ownerUid ?? model.uid ?? "");
   const [stage, setStage] = useState(deal?.stage ?? "new_enquiry");
   const [nextStep, setNextStep] = useState(deal?.nextStep ?? "");
   const [due, setDue] = useState(deal?.nextStepAt ? localInput(new Date(deal.nextStepAt)) : tomorrowMorning());
@@ -162,15 +172,19 @@ function DealSheet({model, deal, onClose}: {model: SalesHostsModel; deal: SalesO
   const nextStepAt = isoFrom(due);
   const needsReason = stage === "closed_lost" || deal?.stage === "closed_lost";
   const won = deal?.stage === "closed_won";
-  const ready = !won && nextStep.trim() && nextStepAt && (!needsReason || reason.trim());
+  const ready = !won && owner && nextStep.trim() && nextStepAt && (!needsReason || reason.trim());
   const stages = deal && !movableStages.includes(deal.stage) ? [deal.stage, ...movableStages] : movableStages;
   const submit = async () => {
-    if (await model.saveDeal(deal, {stage, nextStep: nextStep.trim(), nextStepAt, ...(needsReason ? {transitionReason: reason.trim()} : {})})) onClose();
+    if (await model.saveDeal(deal, {motion, ownerUid: owner, stage, nextStep: nextStep.trim(), nextStepAt, ...(needsReason ? {transitionReason: reason.trim()} : {})})) onClose();
   };
   return (
     <CatchSheet recipe="standard" open onClose={onClose} title={deal ? "Move this deal" : "Start a deal"} subtitle="Hosts"
       footer={<CatchButton label={model.isSaving ? "Saving" : "Save"} onPressed={ready && !model.isSaving ? () => void submit() : null} />}>
       <CatchGap size="related">
+        <CatchField recipe="select" title="Kind of deal" value={motion} onChanged={(value) => setMotion(value ?? motion)}
+          {...selectChoices(dealMotions.some((item) => item.value === motion) ? dealMotions : [{value: motion, label: motion}, ...dealMotions])} />
+        {model.canEditResearch && model.uid && owner !== model.uid ?
+          <CatchButton label="Assign to me" variant="secondary" size="sm" onPressed={() => setOwner(model.uid ?? owner)} /> : null}
         <CatchField recipe="select" title="Stage" value={stage} values={stages} itemLabelBuilder={stageLabel}
           helperText={won ? "A won deal is closed by its payment." : "Closing as won needs a recorded payment, under Payment and close."}
           onChanged={(value) => setStage(value ?? stage)} />
@@ -460,13 +474,12 @@ function HoldSheet({model, host, onClose}: {
 type HostSheet = {kind: "log"} | {kind: "step"} | {kind: "edit"} | {kind: "person"} | {kind: "hold"} | {kind: "deal"; deal: SalesOpportunity | null} |
   {kind: "contact"; contactId: string};
 
-/** One host: its facts and history beside what's next and who's involved. Everything rarer is in All tools. */
-function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit, onOpenPrivacy, onOpenDemo}: {
+/** One host: its facts and history beside what's next and who's involved. */
+function HostPage({model, host, onBack, onOpenOrganizer, onOpenFit, onOpenPrivacy, onOpenDemo}: {
   model: SalesHostsModel;
   host: SalesAccountDetail;
   onBack: () => void;
   onOpenOrganizer: () => void;
-  onOpenTools: () => void;
   onOpenFit: () => void;
   onOpenPrivacy: () => void;
   onOpenDemo: () => void;
@@ -494,11 +507,16 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit,
           ...(host.account.summary ? [{label: "Summary", value: host.account.summary, wide: true}] : []),
         ]} />
         <HostResearch model={model} />
+        {model.canEditResearch ? <SalesHostDetailsWorkspace host={host} model={model} /> : null}
       </CatchGap>
     );
+  } else if (model.tab === "history") {
+    body = <SalesHostHistoryWorkspace actorUid={model.uid ?? ""} canSeeImported={model.canEditResearch} organizerId={host.account.organizerId}
+      finished={host.tasks.filter((task) => task.status !== "open").map((task) => ({taskId: task.taskId, title: task.title,
+        subtitle: `${taskKindLabels[task.kind]} · ${task.status.replace(/_/gu, " ")}${task.dueAt ? ` · ${date(task.dueAt)}` : ""}`}))} />;
   } else if (model.tab === "deals") {
     body = <CatchGap size="section"><CatchSection title="Deals" count={host.opportunities.length} dividers="none"
-      action={host.opportunities.length ? undefined : {label: "Start a deal", onPressed: () => setSheet({kind: "deal", deal: null})}}
+      action={{label: "Start a deal", onPressed: () => setSheet({kind: "deal", deal: null})}}
       empty={<CatchEmptyState title="No deal yet" />}>
       {host.opportunities.map((item) => <CatchIndexRow key={item.opportunityId} title={stageLabel(item.stage)} titleVariant="bodyM"
         subtitle={[item.nextStep, item.nextStepAt ? date(item.nextStepAt) : null].filter(Boolean).join(" · ") || undefined}
@@ -564,7 +582,6 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit,
           <CatchIndexRow title="Account hold" titleVariant="bodyM" subtitle={holdLabels[host.account.suppressionStatus ?? "clear"]}
             trailing={model.canEditResearch ? <CatchButton label="Change" variant="secondary" size="sm" onPressed={() => setSheet({kind: "hold"})} /> : undefined} />
           {model.canEditResearch ? <CatchIndexRow title="Fit and outreach" titleVariant="bodyM" subtitle="Fit, reviewed wording and drafts to copy" onTap={onOpenFit} /> : null}
-          <CatchIndexRow title="All tools" titleVariant="bodyM" subtitle="Custom fields and imported history" onTap={onOpenTools} />
           {model.isAdminOwner ? <CatchIndexRow title="Private demo" titleVariant="bodyM" subtitle="A synthetic example to show this host" onTap={onOpenDemo} /> : null}
           {model.isAdminOwner ? <CatchIndexRow title="Privacy" titleVariant="bodyM" subtitle="Restrict this host's private Sales records" onTap={onOpenPrivacy} /> : null}
         </CatchSection>
@@ -572,13 +589,11 @@ function HostPage({model, host, onBack, onOpenOrganizer, onOpenTools, onOpenFit,
   );
 }
 
-/** Hosts: the accounts in Sales, searchable, and one host's page with four tabs. */
-export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenHostTools, onOpenFit, onOpenPrivacy, onOpenDemo, onOpenFitQueue, onAddHost}: {
+/** Hosts: the accounts in Sales, searchable, and one host's page with five tabs. */
+export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOrganizer, onOpenFit, onOpenPrivacy, onOpenDemo, onOpenFitQueue, onAddHost}: {
   model: SalesHostsModel;
   selectedOrganizerId: string | null;
   onSelect: (organizerId: string | null) => void;
-  /** The older host page: custom fields and imported history. */
-  onOpenHostTools: (organizerId: string) => void;
   onOpenFit: (organizerId: string) => void;
   onOpenPrivacy: (organizerId: string) => void;
   onOpenDemo: (organizerId: string) => void;
@@ -589,7 +604,7 @@ export function SalesHostsScreen({model, selectedOrganizerId, onSelect, onOpenOr
 }) {
   if (selectedOrganizerId && model.host) {
     return <HostPage key={selectedOrganizerId} model={model} host={model.host} onBack={() => onSelect(null)}
-      onOpenOrganizer={() => onOpenOrganizer(selectedOrganizerId)} onOpenTools={() => onOpenHostTools(selectedOrganizerId)} onOpenFit={() => onOpenFit(selectedOrganizerId)} onOpenPrivacy={() => onOpenPrivacy(selectedOrganizerId)} onOpenDemo={() => onOpenDemo(selectedOrganizerId)} />;
+      onOpenOrganizer={() => onOpenOrganizer(selectedOrganizerId)} onOpenFit={() => onOpenFit(selectedOrganizerId)} onOpenPrivacy={() => onOpenPrivacy(selectedOrganizerId)} onOpenDemo={() => onOpenDemo(selectedOrganizerId)} />;
   }
   const rows: Row[] = model.rows.map((row) => {
     const research = researchLabels[row.researchStatus];

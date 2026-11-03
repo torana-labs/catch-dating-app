@@ -15,6 +15,8 @@ import {
   upsertSalesContact,
   upsertSalesOpportunity,
   upsertSalesTask,
+  listSalesCustomFields,
+  setSalesCustomFieldValue,
 } from "../api/salesRepository";
 import type {
   SalesContact,
@@ -28,9 +30,9 @@ import type {
   SalesTask,
 } from "../api/salesTypes";
 
-export type HostTab = "overview" | "conversations" | "deals" | "notes";
+export type HostTab = "overview" | "conversations" | "deals" | "notes" | "history";
 
-export type HostActivityInput = Pick<SalesRecordActivityInput, "type" | "note" | "channel" | "attestation">;
+export type HostActivityInput = Pick<SalesRecordActivityInput, "type" | "note" | "channel" | "attestation"> & {occurredAt?: string};
 export type NextStepInput = Pick<SalesTask, "kind" | "title" | "dueAt" | "contactId">;
 export interface HostEditInput {
   researchStatus: SalesResearchStatus;
@@ -40,11 +42,11 @@ export interface HostEditInput {
 }
 export type PersonInput = Pick<SalesContactInput, "contact" | "relationship">;
 export type EvidenceInput = Omit<SalesEvidenceInput, "organizerId" | "requestId">;
-export type DealMoveInput = Pick<SalesOpportunity, "stage" | "nextStep" | "nextStepAt"> & {transitionReason?: string};
+export type DealMoveInput = Pick<SalesOpportunity, "motion" | "ownerUid" | "stage" | "nextStep" | "nextStepAt"> & {transitionReason?: string};
 
 /**
  * Hosts: the accounts a sales associate works (or the team's), searchable,
- * and one host's page with four tabs: overview, conversations, deals, notes.
+ * and one host's page with five tabs: overview, conversations, deals, notes, history.
  * Its everyday work happens there: logging what happened, next steps, moving a deal, research evidence
  * and suggestions, contact reviews, and an account hold.
  */
@@ -85,6 +87,11 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
     getNextPageParam: (page) => page.nextCursor ?? undefined,
     enabled: selectedOrganizerId !== null,
   });
+  const privateFields = useQuery({
+    queryKey: ["sales", "custom-fields"],
+    queryFn: listSalesCustomFields,
+    enabled: selectedOrganizerId !== null && ownerUid === null,
+  });
   const evidence = useInfiniteQuery({
     queryKey: ["sales", "host-evidence", selectedOrganizerId],
     queryFn: ({pageParam}) => listSalesEvidence(selectedOrganizerId as string, pageParam),
@@ -108,6 +115,7 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
   const reviewing = useMutation({mutationFn: reviewSalesEvidenceProposal});
   const holding = useMutation({mutationFn: setSalesAccountSuppression});
   const reviewingContact = useMutation({mutationFn: setSalesContactability});
+  const savingValue = useMutation({mutationFn: setSalesCustomFieldValue});
 
   const run = useCallback(async (action: () => Promise<unknown>, notice: string) => {
     onError(null);
@@ -151,8 +159,8 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
       reason: string, evidenceId: string | null) => run(() => reviewingContact.mutateAsync({organizerId, contactId: contact.contactId,
       expectedRevision, status, reason, requestId: crypto.randomUUID(), ...(status === "draft_reviewed" && evidenceId ? {evidenceId} : {})}),
     "Contact review recorded. No send permission was granted."),
-    logActivity: (input: HostActivityInput) => run(() => logging.mutateAsync({...input, organizerId,
-      requestId: crypto.randomUUID(), occurredAt: new Date().toISOString()}), "Logged."),
+    logActivity: (input: HostActivityInput) => run(() => logging.mutateAsync({occurredAt: new Date().toISOString(), ...input, organizerId,
+      requestId: crypto.randomUUID()}), "Logged."),
     addNextStep: (input: NextStepInput) => run(() => savingTask.mutateAsync({organizerId, requestId: crypto.randomUUID(),
       expectedRevision: 0, task: {...input, ownerUid: uid ?? "", status: "open"}}), "Next step added."),
     completeNextStep: (task: SalesTask) => run(() => savingTask.mutateAsync({organizerId, taskId: task.taskId,
@@ -162,7 +170,7 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
     saveDeal: (deal: SalesOpportunity | null, {transitionReason, ...fields}: DealMoveInput) => run(() => savingDeal.mutateAsync({
       organizerId, requestId: crypto.randomUUID(), expectedRevision: deal?.revision ?? 0,
       ...(deal ? {opportunityId: deal.opportunityId} : {}), ...(transitionReason ? {transitionReason} : {}),
-      fields: {motion: deal?.motion ?? "first_workflow_pilot", ownerUid: deal?.ownerUid ?? uid ?? "", ...fields},
+      fields,
     }), deal ? "Deal moved." : "Deal started."),
     /** Saves the host from what the person opened; a change someone else made comes back as an error to reload. */
     saveHost: (expectedRevision: number, input: HostEditInput) => run(() => savingHost.mutateAsync({organizerId,
@@ -191,9 +199,16 @@ export function useSalesHostsController({ownerUid, selectedOrganizerId, uid, onE
       requestId: crypto.randomUUID()}), decision === "accept" ? "Suggestion accepted." : "Suggestion rejected."),
     setHold: (expectedRevision: number, status: SalesHoldStatus, reason: string) => run(() => holding.mutateAsync({organizerId,
       expectedRevision, status, reason, requestId: crypto.randomUUID()}), "Account hold saved."),
+    privateFields: privateFields.data?.rows ?? [],
+    privateFieldsLoading: privateFields.isPending,
+    privateFieldsFailed: privateFields.isError,
+    retryPrivateFields: () => void privateFields.refetch(),
+    /** Saves against the revision the person opened; a newer one comes back as an error to reload. */
+    saveCustomValue: (fieldId: string, expectedRevision: number, value: string | number | boolean) => run(() => savingValue.mutateAsync({
+      organizerId, fieldId, expectedRevision, value, requestId: crypto.randomUUID()}), "Saved."),
     canEditResearch: ownerUid === null,
     isSaving: logging.isPending || savingTask.isPending || savingDeal.isPending || savingHost.isPending || savingPerson.isPending ||
-      addingEvidence.isPending || reviewing.isPending || holding.isPending || reviewingContact.isPending,
+      addingEvidence.isPending || reviewing.isPending || holding.isPending || reviewingContact.isPending || savingValue.isPending,
   };
 }
 

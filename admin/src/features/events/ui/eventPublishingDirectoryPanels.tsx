@@ -1,13 +1,11 @@
 import {ArrowLeft, CalendarDays, ExternalLink, FileWarning, RefreshCw, Search} from "lucide-react";
 import {
   AdminButton,
-  AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
+  AdminWorkbenchStack,
   AdminEventSupplyReviewGrid,
   AdminMetricCard,
   AdminMetricGrid,
   AdminStatusGrid,
-  AdminToolbar,
   EmptyState,
   PageHeader,
   Panel,
@@ -27,7 +25,7 @@ function ExternalEventDetailView({
 }) {
   if (controller.selectedExternalEventId) {
     return (
-      <AdminDetailScreenStack>
+      <AdminWorkbenchStack>
         <PageHeader
           actions={
             <AdminButton
@@ -95,7 +93,7 @@ function ExternalEventDetailView({
               ) : null}
           </AdminEventSupplyReviewGrid>
         </Panel>
-      </AdminDetailScreenStack>
+      </AdminWorkbenchStack>
     );
   }
 

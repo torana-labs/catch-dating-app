@@ -26,8 +26,6 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   onOpenHost: (organizerId: string) => void;
-  /** The older host page: custom fields and imported history. */
-  onOpenHostTools: (organizerId: string) => void;
   onOpenHostPage: (organizerId: string, page: "fit" | "privacy" | "demo") => void;
   /** Which of one host's own pages is open. */
   hostPage: "main" | "fit" | "privacy" | "demo" | "add" | "fit-queue";
@@ -74,13 +72,13 @@ function FitQueue({uid, ownWorkOnly, onOpenHost, onSelect}: Props) {
   </>} />;
 }
 
-function Hosts({uid, ownWorkOnly, isAdminOwner, hostPage, selectedId, onSelect, onOpenHost, onOpenOrganizer, onOpenHostTools, onOpenHostPage, onOpenFitQueue, onAddHost, onError, onNotice}: Props) {
+function Hosts({uid, ownWorkOnly, isAdminOwner, hostPage, selectedId, onSelect, onOpenHost, onOpenOrganizer, onOpenHostPage, onOpenFitQueue, onAddHost, onError, onNotice}: Props) {
   const controller = useSalesHostsController({ownerUid: ownWorkOnly ? uid : null, selectedOrganizerId: selectedId, uid, onError, onNotice});
   const commercial = useSalesHostCommercialController({organizerId: selectedId, opportunities: controller.host?.opportunities ?? [],
     enabled: !ownWorkOnly, onError, onNotice});
   return <><SalesHostsScreen onOpenFitQueue={ownWorkOnly ? null : onOpenFitQueue} onOpenPrivacy={(id) => onOpenHostPage(id, "privacy")} onOpenDemo={(id) => onOpenHostPage(id, "demo")} onOpenFit={(id) => onOpenHostPage(id, "fit")} model={{...controller, uid, isAdminOwner, commercial: ownWorkOnly ? null : commercial,
     renderPartnerOffer: ownWorkOnly ? null : (organizerId, organizerName) =>
-      <SalesPartnerOfferWorkspace key={`${uid}:${organizerId}`} actorUid={uid ?? ""} organizerId={organizerId} organizerName={organizerName} />}} onAddHost={onAddHost} onOpenHostTools={onOpenHostTools} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />
+      <SalesPartnerOfferWorkspace key={`${uid}:${organizerId}`} actorUid={uid ?? ""} organizerId={organizerId} organizerName={organizerName} />}} onAddHost={onAddHost} onOpenOrganizer={onOpenOrganizer} onSelect={onSelect} selectedOrganizerId={selectedId} />
     {hostPage === "add" ? <SalesAddHostWorkspace canAddExisting={!ownWorkOnly} onAdded={onOpenHost} onClose={() => onSelect(null)} onError={onError} onNotice={onNotice} /> : null}
   </>;
 }

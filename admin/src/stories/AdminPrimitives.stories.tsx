@@ -24,8 +24,6 @@ import {
   AdminButton,
   AdminCard,
   AdminCardList,
-  AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
   AdminEyebrow,
   AdminFieldGrid,
   AdminForm,
@@ -41,7 +39,6 @@ import {
   AdminStateRow,
   AdminStatGrid,
   AdminStatusGrid,
-  AdminToolbar,
   AdminWorkbenchStack,
   AdminWorkspace,
   AlertRow,
@@ -552,26 +549,6 @@ export const AdminEyebrowStory: Story = {
   ),
 };
 
-export const AdminToolbarStory: Story = {
-  name: "Toolbar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_toolbar",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminToolbar>
-        <AdminButton>Reset</AdminButton>
-      </AdminToolbar>
-      <AdminToolbar compact>
-        <AdminButton>Compact action</AdminButton>
-      </AdminToolbar>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminWorkbenchStackStory: Story = {
   name: "Workbench stack",
   parameters: {
@@ -590,44 +567,6 @@ export const AdminWorkbenchStackStory: Story = {
       <AdminWorkbenchStack compact>
         <CatchText as="p" color="ink2" variant="bodyM">Compact stack item.</CatchText>
       </AdminWorkbenchStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDirectoryScreenStackStory: Story = {
-  name: "Directory screen stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_directory_screen_stack",
-      states: ["directory"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDirectoryScreenStack>
-        <PageHeader eyebrow="Directory" title="Organizer queue" />
-        <AdminCard>Directory list content</AdminCard>
-      </AdminDirectoryScreenStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDetailScreenStackStory: Story = {
-  name: "Detail screen stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_detail_screen_stack",
-      states: ["detail"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDetailScreenStack>
-        <PageHeader eyebrow="Detail" title="Afterfly Social" />
-        <AdminPanel icon={<ShieldCheck size={18} />} title="Readiness">
-          <AdminStateRow label="Route" value="Ready" />
-        </AdminPanel>
-      </AdminDetailScreenStack>
     </AdminWorkspace>
   ),
 };
