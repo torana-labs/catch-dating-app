@@ -109,7 +109,8 @@ describe("useSafetyTriageController", () => {
     );
 
     await waitFor(() => expect(result.current.selected?.targetPath).toBe(targetPath));
-    expect(repository.loadSafetyTriageSnapshot).not.toHaveBeenCalled();
+    // A reloaded or shared link still shows the queue beside the case.
+    expect(repository.loadSafetyTriageSnapshot).toHaveBeenCalled();
     expect(repository.loadSafetyTriageItem).toHaveBeenCalledWith(targetPath);
     expect(result.current.selectedDetail?.assignment.severity).toBe("high");
   });

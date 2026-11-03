@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {displayAdminQueueTitle} from "./adminPresentation";
+import {displayAdminCode, displayAdminQueueTitle} from "./adminPresentation";
 
 describe("displayAdminQueueTitle", () => {
   it("uses human operational labels for known queue codes", () => {
@@ -14,5 +14,13 @@ describe("displayAdminQueueTitle", () => {
     expect(displayAdminQueueTitle("source_review_pending"))
       .toBe("Source review pending");
     expect(displayAdminQueueTitle("Maya Shah")).toBe("Maya Shah");
+  });
+});
+
+describe("displayAdminCode", () => {
+  it("turns stored codes into words", () => {
+    expect(displayAdminCode("singlesMixer")).toBe("Singles mixer");
+    expect(displayAdminCode("mumbai")).toBe("Mumbai");
+    expect(displayAdminCode("first_time-host")).toBe("First time host");
   });
 });

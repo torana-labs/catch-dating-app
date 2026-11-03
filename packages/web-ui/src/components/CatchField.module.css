@@ -35,6 +35,12 @@
     box-shadow var(--catch-field-motion-fast) var(--catch-field-motion-curve);
 }
 
+/* A page of fields in the quiet register needs to say it can be edited, so they rest as boxes. */
+:global([data-register="quiet"]) .field {
+  --catch-field-rest-fill: var(--catch-theme-surface);
+  --catch-field-rest-line: var(--catch-theme-line2);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .field { transition: none; }
 }
