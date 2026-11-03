@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/widgets.dart';
 
 /// Current organizer-scoped names; historical answers remain versioned.

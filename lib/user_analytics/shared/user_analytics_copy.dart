@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 
 class UserAnalyticsTipCopy {
   const UserAnalyticsTipCopy({required this.title, required this.body});

@@ -75,6 +75,10 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     fs.mkdirSync(kernelRoot, {recursive: true});
     fs.writeFileSync(path.join(kernelRoot, "pubspec.yaml"),
       "name: catch_kernel\nresolution: workspace\ndependencies:\n  collection: any\n");
+    const l10nRoot = path.join(root, "packages/l10n");
+    fs.mkdirSync(l10nRoot, {recursive: true});
+    fs.writeFileSync(path.join(l10nRoot, "pubspec.yaml"),
+      "name: catch_l10n\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  flutter_localizations:\n    sdk: flutter\n  intl: any\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -105,6 +109,16 @@ test("token package rejects every dependency outside Flutter", () => {
   }
   assert.deepEqual(validateRoleGraph({role: "catch_tokens", declaredPackages: new Set(), pluginPackages: new Set()}),
     ["catch_tokens: required package 'flutter' is absent."]);
+});
+
+// The platform package will read l10n, so it may not reach back into any of ours.
+test("l10n package rejects the root package and anything beyond the localization stack", () => {
+  const allowed = ["flutter", "flutter_localizations", "intl"];
+  assert.deepEqual(validateRoleGraph({role: "catch_l10n", declaredPackages: new Set(allowed), pluginPackages: new Set()}), []);
+  for (const dependency of ["catch_dating_app", "catch_kernel", "catch_ui", "flutter_riverpod"]) {
+    assert.deepEqual(validateRoleGraph({role: "catch_l10n", declaredPackages: new Set([...allowed, dependency]), pluginPackages: new Set()}),
+      [`catch_l10n: dependency '${dependency}' is outside the localization catalog boundary.`]);
+  }
 });
 
 // Every package may read the kernel, so it must stay free of Flutter and of us.

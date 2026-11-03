@@ -9,7 +9,7 @@ import {
   repoRoot as defaultRepoRoot,
 } from "../lib/repo_paths.mjs";
 
-const defaultArbRelativePath = "lib/l10n/app_en.arb";
+const defaultArbRelativePath = "packages/l10n/lib/app_en.arb";
 
 const generatedSuffixPattern =
   /\.(?:freezed|g|gen|gr|mocks)\.dart$/u;
@@ -133,7 +133,6 @@ export function scanL10nKeyUsage({
         "exact ARB-key identifiers and statically recognized l10n.<key> member references in handwritten production Dart",
       excluded: [
         "Dart files under generated directories",
-        "lib/l10n/generated/**",
         "*.g.dart, *.freezed.dart, *.gen.dart, *.gr.dart, and *.mocks.dart",
         "Dart files with a generated-code do-not-edit header",
         "comments and non-interpolated string contents",
@@ -242,9 +241,6 @@ export function stableJson(value) {
 
 function generatedFileExclusionReason({relativePath, source}) {
   const normalizedPath = normalizePath(relativePath);
-  if (normalizedPath.startsWith("lib/l10n/generated/")) {
-    return "l10n-generated-directory";
-  }
   if (normalizedPath.split("/").includes("generated")) {
     return "generated-directory";
   }
@@ -429,7 +425,7 @@ Check options:
   --json                  Print the complete live inventory.
 
 Path options:
-  --arb <path>            Override lib/l10n/app_en.arb.
+  --arb <path>            Override packages/l10n/lib/app_en.arb.
   --source-root <path>    Scan this one source root instead of lib and apps/*/lib.
   --repo-root <path>      Override the checkout root (used by fixture tests).
   --help, -h              Show this help.

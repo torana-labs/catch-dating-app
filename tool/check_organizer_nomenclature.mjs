@@ -217,7 +217,7 @@ function flutterNameFiles(root, relativeDir) {
     const relativePath = `${relativeDir}/${entry.name}`;
     if (entry.isDirectory()) {
       if (!skippedDirectories.has(entry.name)) files.push(...flutterNameFiles(root, relativePath));
-    } else if (entry.name.endsWith(".dart") || relativePath === "lib/l10n/app_en.arb") {
+    } else if (entry.name.endsWith(".dart") || relativePath === "packages/l10n/lib/app_en.arb") {
       files.push(relativePath);
     }
   }
@@ -284,7 +284,7 @@ function checkTaxonomy(root, findings) {
 }
 
 function checkProductCopy(root, findings) {
-  const relativePath = "lib/l10n/app_en.arb";
+  const relativePath = "packages/l10n/lib/app_en.arb";
   const source = read(root, relativePath, findings);
   if (source == null) return;
   try {

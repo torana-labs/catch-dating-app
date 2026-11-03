@@ -9,8 +9,8 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_overvi
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

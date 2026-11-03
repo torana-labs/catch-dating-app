@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
 
 EventRehearsalSetup eventRehearsalConfigurationSetup(
   AppLocalizations l10n,

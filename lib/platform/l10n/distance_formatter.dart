@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 
 abstract final class DistanceFormatter {
   static String? away(AppLocalizations l10n, double? distanceKm) {

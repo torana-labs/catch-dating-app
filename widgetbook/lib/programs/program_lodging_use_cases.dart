@@ -2,11 +2,11 @@ import 'package:catch_dating_app/contexts/programmes/data/program_lodging_reposi
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_layout.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_setup_page_body.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

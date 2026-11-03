@@ -13,6 +13,8 @@ dependencies:
     path: ../packages/catch_tokens
   catch_kernel:
     path: ../packages/kernel
+  catch_l10n:
+    path: ../packages/l10n
   flutter:
     sdk: flutter
   flutter_localizations:

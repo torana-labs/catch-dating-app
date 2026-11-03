@@ -4,7 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
-const defaultCatalog = fromRepo("lib/l10n/app_en.arb");
+const defaultCatalog = fromRepo("packages/l10n/lib/app_en.arb");
 const defaultIdentifierAllowlist = fromRepo(
   "tool/copy/mobile_copy_identifier_allowlist.json",
 );

@@ -98,6 +98,12 @@ const _allowedDomainPackages = <String>{
   'pub_semver',
 };
 
+// The one catch_l10n file the domain may read: it is generated pure Dart, and
+// the rest of that package needs Flutter.
+const _allowedDomainImports = <String>{
+  'package:catch_l10n/generated/structured_domain_copy.g.dart',
+};
+
 const _pluginPackages = <String>{
   'audioplayers',
   'connectivity_plus',
@@ -314,7 +320,8 @@ List<ArchitectureFinding> dependencyDirectionFindings({
     final target = resolveAppImport(relativePath, uri);
     if (layer == 'domain' &&
         target.startsWith('package:') &&
-        !_allowedDomainPackages.contains(_packageName(target))) {
+        !_allowedDomainPackages.contains(_packageName(target)) &&
+        !_allowedDomainImports.contains(target)) {
       addNode(
         ArchitectureCodes.domainFrameworkImport,
         node,

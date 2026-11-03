@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 String eventSuccessRunOfShowStepLabel(

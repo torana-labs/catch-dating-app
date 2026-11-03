@@ -11,7 +11,7 @@ import 'package:catch_dating_app/event_success/presentation/host_components/even
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

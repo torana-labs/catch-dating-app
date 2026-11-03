@@ -7,8 +7,8 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_questions_pa
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';

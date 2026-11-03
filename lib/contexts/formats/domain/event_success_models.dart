@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
 
 const eventSuccessLayerDevelopmentStatus =
     'live_wired_with_preview_lab_and_iterating';
