@@ -12,17 +12,19 @@ double contrast(Color foreground, Color background) {
 }
 
 void main() {
-  test('original small-label failures remain negative controls', () {
-    final t = CatchTokens.light;
-    final fill = Color.alphaBlend(
-      t.success.withValues(alpha: CatchOpacity.subtleFill),
-      GeneratedCatchPaletteTokens.paper,
-    );
-    expect(contrast(t.success, fill), lessThan(4.5));
-    expect(contrast(t.gold, t.surface), lessThan(4.5));
-    expect(contrast(CatchTokens.dark.ink3, CatchTokens.dark.bg), lessThan(4.5));
-    expect(contrast(Colors.black, Colors.white), closeTo(21, 0.001));
-  });
+  test(
+    'the self-tinted recipe the tints replaced stays a negative control',
+    () {
+      final t = CatchTokens.light;
+      final fill = Color.alphaBlend(
+        t.deepMint.withValues(alpha: CatchOpacity.subtleFill),
+        GeneratedCatchPaletteTokens.paper,
+      );
+      expect(contrast(t.deepMint, fill), lessThan(4.5));
+      expect(contrast(t.ink3, t.tile), lessThan(4.5));
+      expect(contrast(Colors.black, Colors.white), closeTo(21, 0.001));
+    },
+  );
 
   for (final t in [CatchTokens.light, CatchTokens.dark]) {
     final dark = t == CatchTokens.dark;

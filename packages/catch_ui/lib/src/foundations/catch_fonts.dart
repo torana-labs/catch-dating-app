@@ -2,11 +2,11 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// Central font registry — the single swap point for the three-role type system.
+/// Central font registry — the single swap point for the two-family type system
+/// (blueprint D22).
 ///
-/// Voice/head: Archivo — brand voice, heroes, and deliberate event/club poster
-/// moments. Function/body: the platform system font. Data: IBM Plex Mono for
-/// kickers, labels, time, price, counts, and codes.
+/// Voice/head: Archivo, for the display roles. Function/body: the platform
+/// system font, for every other role. IBM Plex Mono retires from UI labels.
 ///
 /// The old serif/custom-sans direction is intentionally retired. Keep
 /// production text styles routed through this file so screens inherit the
@@ -18,8 +18,10 @@ abstract final class CatchFonts {
   static const String headFamily = GeneratedCatchFontFamilyTokens.head;
   static const String functionDesignTokenFamily =
       GeneratedCatchFontFamilyTokens.function;
-  static const String dataFamily = GeneratedCatchFontFamilyTokens.data;
-  static const String monoFamily = GeneratedCatchFontFamilyTokens.mono;
+
+  /// The retired data family. It stays bundled for image exports, and the Catch
+  /// UI lint still rejects it as a raw family.
+  static const String monoFamily = 'IBM Plex Mono';
 
   /// Flutter's concrete platform font families for the function/body role.
   ///
@@ -136,9 +138,8 @@ abstract final class CatchFonts {
     );
   }
 
-  /// IBM Plex Mono (data). Static family — weight selects among the bundled
-  /// instances (400/500/600/700; w800 maps to the heaviest, Bold). Tabular
-  /// figures on by default so numerics align in columns.
+  /// Figures on the platform system font (blueprint D22 retires IBM Plex Mono
+  /// from UI labels). Tabular figures on by default so numerics align in columns.
   static TextStyle mono({
     required double fontSize,
     required double height,
@@ -146,17 +147,11 @@ abstract final class CatchFonts {
     FontWeight fontWeight = FontWeight.w500,
     double letterSpacing = 0,
     List<FontFeature> fontFeatures = const [FontFeature.tabularFigures()],
-  }) {
-    return TextStyle(
-      fontFamily: monoFamily,
-      package: 'catch_ui',
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      height: height,
-      letterSpacing: letterSpacing,
-      fontFeatures: fontFeatures,
-      decoration: TextDecoration.none,
-      color: color,
-    );
-  }
+  }) => sans(
+    fontSize: fontSize,
+    height: height,
+    color: color,
+    fontWeight: fontWeight,
+    letterSpacing: letterSpacing,
+  ).copyWith(fontFeatures: fontFeatures);
 }

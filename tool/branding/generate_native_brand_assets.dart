@@ -82,7 +82,7 @@ const _iconVariants = <String, _IconVariant>{
     androidSourceSet: 'consumerDev',
     appleIconSet: 'AppIcon-dev',
     filenamePrefix: 'dev',
-    ribbons: [_IconRibbon(label: 'DEV', fillToken: 'bg', labelToken: 'ink')],
+    ribbons: [_IconRibbon(label: 'DEV', fillToken: 'tile', labelToken: 'ink')],
   ),
   'staging': _IconVariant(
     generatedName: 'catch_icon_staging.png',
@@ -90,7 +90,7 @@ const _iconVariants = <String, _IconVariant>{
     appleIconSet: 'AppIcon-staging',
     filenamePrefix: 'staging',
     ribbons: [
-      _IconRibbon(label: 'STG', fillToken: 'warning', labelToken: 'ink'),
+      _IconRibbon(label: 'STG', fillToken: 'deepYellow', labelToken: 'ink'),
     ],
   ),
   'host-dev': _IconVariant(
@@ -99,7 +99,7 @@ const _iconVariants = <String, _IconVariant>{
     appleIconSet: 'AppIcon-host-dev',
     filenamePrefix: 'host-dev',
     iconBase: _IconBase.host,
-    ribbons: [_IconRibbon(label: 'DEV', fillToken: 'bg', labelToken: 'ink')],
+    ribbons: [_IconRibbon(label: 'DEV', fillToken: 'tile', labelToken: 'ink')],
   ),
   'host-staging': _IconVariant(
     generatedName: 'catch_icon_host_staging.png',
@@ -108,7 +108,7 @@ const _iconVariants = <String, _IconVariant>{
     filenamePrefix: 'host-staging',
     iconBase: _IconBase.host,
     ribbons: [
-      _IconRibbon(label: 'STG', fillToken: 'warning', labelToken: 'ink'),
+      _IconRibbon(label: 'STG', fillToken: 'deepYellow', labelToken: 'ink'),
     ],
   ),
   'host-prod': _IconVariant(
@@ -153,6 +153,7 @@ void main() {
   _writeConsumerProductionAndroidIcons(baseIcon, roundIcon);
   _writeConsumerProductionIosIconSet(baseIcon);
   _writeConsumerLaunchScreen();
+  _writeHostLaunchBackground(tokens);
   _writeHostSplashAssets(hostSplashLight, hostSplashDark);
   _writeHostLaunchScreen();
   _writeWebsiteIcons(baseIcon, tokens);
@@ -377,6 +378,24 @@ void _writeConsumerProductionIosIconSet(image.Image source) {
   }
 }
 
+/// The one-pixel backgrounds the Host launch screen stretches behind its mark.
+void _writeHostLaunchBackground(_NativeBrandTokens tokens) {
+  const directory =
+      '$_hostProjectRoot/ios/Runner/Assets.xcassets/LaunchBackground.imageset';
+  for (final (filename, mode) in const [
+    ('background.png', 'light'),
+    ('darkbackground.png', 'dark'),
+  ]) {
+    _writePng(
+      '$directory/$filename',
+      image.fill(
+        image.Image(width: 1, height: 1),
+        color: tokens.color('tile', mode),
+      ),
+    );
+  }
+}
+
 void _writeHostSplashAssets(image.Image light, image.Image dark) {
   final iosPath =
       '$_hostProjectRoot/ios/Runner/Assets.xcassets/LaunchImage.imageset';
@@ -573,7 +592,7 @@ void _writeHostLaunchScreen() {
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" image="LaunchBackground" translatesAutoresizingMaskIntoConstraints="NO" id="tWc-Dq-wcI"/>
                             <imageView opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFit" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4"/>
                         </subviews>
-                        <color key="backgroundColor" red="0.956862745" green="0.956862745" blue="0.945098039" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.952941176" green="0.952941176" blue="0.945098039" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="tWc-Dq-wcI" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="1Lw-Bg-Ld"/>
                             <constraint firstAttribute="trailing" secondItem="tWc-Dq-wcI" secondAttribute="trailing" id="2Lw-Bg-Tr"/>
@@ -607,11 +626,11 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
   _writeJson('tool/branding/native_branding.generated.json', {
     'source': _tokenPath,
     'colors': {
-      'splash_light_bg': tokens.colorHex('bg', 'light'),
-      'splash_dark_bg': tokens.colorHex('bg', 'dark'),
+      'splash_light_bg': tokens.colorHex('tile', 'light'),
+      'splash_dark_bg': tokens.colorHex('tile', 'dark'),
       'web_theme': tokens.colorHex('ink', 'light'),
-      'dev_ribbon': tokens.colorHex('bg', 'light'),
-      'staging_ribbon': tokens.colorHex('warning', 'light'),
+      'dev_ribbon': tokens.colorHex('tile', 'light'),
+      'staging_ribbon': tokens.colorHex('deepYellow', 'light'),
       'ribbon_ink': tokens.colorHex('ink', 'light'),
     },
     'generated': [
@@ -673,7 +692,7 @@ void _writeWebsiteIcons(image.Image baseIcon, _NativeBrandTokens tokens) {
     _writePng('$_websiteIconDir/icon-$size.png', _resizeSquare(baseIcon, size));
   }
 
-  final background = tokens.colorHex('bg', 'light');
+  final background = tokens.colorHex('tile', 'light');
   _writeJson(_websiteManifestPath, {
     'name': 'Catch',
     'short_name': 'Catch',
@@ -769,8 +788,8 @@ String _projectPath(String projectRoot, String relativePath) {
 
 void _syncPubspecTokens(_NativeBrandTokens tokens) {
   final file = File(_consumerSplashPubspecPath);
-  final splashLight = tokens.colorHex('bg', 'light');
-  final splashDark = tokens.colorHex('bg', 'dark');
+  final splashLight = tokens.colorHex('tile', 'light');
+  final splashDark = tokens.colorHex('tile', 'dark');
   var pubspec = file.readAsStringSync();
 
   pubspec = _replaceRequiredLine(
@@ -821,10 +840,10 @@ String _replaceRequiredLine(String source, RegExp pattern, String replacement) {
 void _verifyPubspecTokens(_NativeBrandTokens tokens) {
   final pubspec = File(_consumerSplashPubspecPath).readAsStringSync();
   final expected = <String>[
-    "color: \"${tokens.colorHex('bg', 'light')}\"",
-    "color_web: \"${tokens.colorHex('bg', 'light')}\"",
-    "color_dark: \"${tokens.colorHex('bg', 'dark')}\"",
-    "color_dark_web: \"${tokens.colorHex('bg', 'dark')}\"",
+    "color: \"${tokens.colorHex('tile', 'light')}\"",
+    "color_web: \"${tokens.colorHex('tile', 'light')}\"",
+    "color_dark: \"${tokens.colorHex('tile', 'dark')}\"",
+    "color_dark_web: \"${tokens.colorHex('tile', 'dark')}\"",
   ];
   final missing = expected.where((line) => !pubspec.contains(line)).toList();
   if (missing.isNotEmpty) {
@@ -874,12 +893,12 @@ class _NativeBrandTokens {
   }
 
   String colorHex(String name, String mode) {
-    final value =
-        (((((_tokens['theme'] as Map<String, dynamic>)[mode]
-                        as Map<String, dynamic>)['color']
-                    as Map<String, dynamic>)[name]
-                as Map<String, dynamic>)['\$value']
-            as Map<String, dynamic>);
+    final value = _resolve(
+      (((((_tokens['theme'] as Map<String, dynamic>)[mode]
+                  as Map<String, dynamic>)['color']
+              as Map<String, dynamic>)[name]
+          as Map<String, dynamic>)['\$value']),
+    );
     // An alpha value has a hex too, but a launcher icon cannot show it.
     if (value.containsKey('alpha')) {
       throw StateError('Token theme.$mode.color.$name must be opaque.');
@@ -891,6 +910,17 @@ class _NativeBrandTokens {
       );
     }
     return color.toUpperCase();
+  }
+
+  /// Follows a `{group.token}` reference to the colour it names.
+  Map<String, dynamic> _resolve(Object? value) {
+    if (value is Map<String, dynamic>) return value;
+    final reference = RegExp(r'^\{(.+)\}$').firstMatch(value! as String)![1]!;
+    Object? node = _tokens;
+    for (final key in reference.split('.')) {
+      node = (node! as Map<String, dynamic>)[key];
+    }
+    return _resolve((node! as Map<String, dynamic>)['\$value']);
   }
 }
 

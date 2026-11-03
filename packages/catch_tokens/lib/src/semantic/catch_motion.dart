@@ -5,6 +5,16 @@ import 'package:flutter/material.dart';
 /// celebratory success moments.
 abstract final class CatchMotion {
   static const Duration none = Duration.zero;
+
+  // System v15 durations and easings (blueprint D22).
+  static const Duration instant = GeneratedCatchDurationTokens.instant;
+  static const Duration quick = GeneratedCatchDurationTokens.quick;
+  static const Duration emphasized = GeneratedCatchDurationTokens.emphasized;
+  static const Duration shimmer = GeneratedCatchDurationTokens.shimmer;
+  static const Curve enterCurve = GeneratedCatchEasingTokens.enter;
+  static const Curve exitCurve = GeneratedCatchEasingTokens.exit;
+
+  // Older names: aliases of the system durations until P7 deletes them.
   static const Duration fast = GeneratedCatchMotionTokens.fast;
   static const Duration micro = GeneratedCatchMotionTokens.micro;
   static const Duration chatScroll = GeneratedCatchMotionTokens.chatScroll;

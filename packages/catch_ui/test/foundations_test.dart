@@ -41,7 +41,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text('12:30')).style!.fontFamily,
-        'packages/catch_ui/IBM Plex Mono',
+        CatchFonts.functionFamily,
       );
       expect(tester.takeException(), isNull);
     });

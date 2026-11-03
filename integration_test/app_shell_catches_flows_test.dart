@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/events/events_test_helpers.dart' as event_helpers;
@@ -89,7 +90,17 @@ void main() {
     final promptLikeButton = find.byTooltip(
       'Like A perfect event with me looks like...',
     );
-    await tester.ensureVisible(promptLikeButton);
+    // The profile body builds lazily, so scroll until the prompt exists.
+    await tester.scrollUntilVisible(
+      promptLikeButton,
+      180,
+      scrollable: find
+          .descendant(
+            of: find.byKey(ProfileBody.scrollViewKey),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     await tester.pump();
     await tester.drag(
       find.byKey(ProfileBody.scrollViewKey),

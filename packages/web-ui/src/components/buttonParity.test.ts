@@ -30,9 +30,9 @@ describe("CatchButton parity", () => {
     }
   });
 
-  it("draws D20's corners and Flutter's size table: sm 32, md 40, lg 48 by default", () => {
-    expect(tokens).toContain("radius = CatchRadius.xs");
-    expect(css).toContain("border-radius: var(--catch-radius-xs)");
+  it("draws D22's corners and Flutter's size table: sm 32, md 40, lg 48 by default", () => {
+    expect(tokens).toContain("radius = CatchRadius.sm");
+    expect(css).toContain("border-radius: var(--catch-radius-sm)");
     const sizes = {sm: ["small", "s8", "s3"], md: ["medium", "s10", "s4"], lg: ["large", "s12", "s5"]} as const;
     for (const [size, [name, height, padding]] of Object.entries(sizes)) {
       expect(button).toMatch(new RegExp(`CatchButtonSize\\.${size} => const _ButtonSizeSpec\\(\\s*height: CatchButtonTokens\\.${name}Height,\\s*padding: CatchButtonTokens\\.${name}PaddingX`));

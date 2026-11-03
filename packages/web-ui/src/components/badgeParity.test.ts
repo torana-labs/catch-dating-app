@@ -47,11 +47,8 @@ describe("CatchBadge parity", () => {
     const alphas: Array<[string, string]> = [
       ["--catch-badge-subtle-fill-alpha", "subtleFill"],
       ["--catch-badge-subtle-border-alpha", "subtleBorder"],
-      ["--catch-badge-warning-fill-alpha", "warningFill"],
-      ["--catch-badge-danger-fill-alpha", "dangerFill"],
       ["--catch-badge-on-dark-fill-alpha", "badgeOnDarkFill"],
       ["--catch-badge-on-dark-border-alpha", "badgeOnDarkBorder"],
-      ["--catch-badge-overlay-pressed-alpha", "controlOverlayPressed"],
       ["--catch-badge-dark-pill-fill-alpha", "darkPillFill"],
     ];
     for (const [property, name] of alphas) {
@@ -114,23 +111,25 @@ describe("CatchBadge parity", () => {
   });
 });
 
-it("shares text-strength tone inks, quiet inks and pigment derivation with Flutter", () => {
-  for (const [tone, native, web] of [
-    ["success", "positiveText", "positive-text"],
-    ["warning", "attentionText", "attention-text"],
-    ["danger", "dangerText", "danger-text"],
-    ["gold", "goldText", "gold-text"],
+it("shares the system's tint fills, quiet inks and pigment derivation with Flutter", () => {
+  for (const [tone, fill, ink] of [
+    ["success", "tintMint", "deepMint"],
+    ["warning", "tintYellow", "deepYellow"],
+    ["danger", "tintCoral", "deepCoral"],
+    ["gold", "tintYellow", "deepYellow"],
+    ["affinity", "tintPink", "deepPink"],
   ]) {
-    expect(badgeDart).toContain(`foreground: t.${native},`);
-    expect(badgeDart).toContain(`CatchBadgeTone.${tone} => t.${native},`);
+    expect(badgeDart).toContain(`background: t.${fill},`);
+    expect(badgeDart).toContain(`foreground: t.${ink},`);
     const selector = `.badge[data-tone="${tone}"] {`;
     const start = badgeCss.indexOf(selector);
     expect(start).toBeGreaterThanOrEqual(0);
     const rule = badgeCss.slice(start, badgeCss.indexOf("}", start));
-    expect(rule).toContain(`--catch-badge-ink: var(--catch-theme-${web});`);
-    expect(rule).toContain(`--catch-badge-fill: color-mix(in srgb, var(--catch-theme-${tone})`);
+    const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+    expect(rule).toContain(`--catch-badge-ink: var(--catch-theme-${kebab(ink)});`);
+    expect(rule).toContain(`--catch-badge-fill: var(--catch-theme-${kebab(fill)});`);
   }
-  expect(badgeDart).toContain("foreground: error ? t.dangerText : t.ink2,");
+  expect(badgeDart).toContain("foreground: error ? t.deepCoral : t.ink2,");
   expect(badgeDart).not.toContain("foreground: t.ink3");
   expect(badgeCss).not.toContain("--catch-badge-ink: var(--catch-theme-ink3)");
   expect(badgeDart).toContain("alpha: GeneratedCatchOpacityTokens.badgePigmentInk");

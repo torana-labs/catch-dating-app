@@ -64,7 +64,7 @@ class CatchSkeleton extends StatelessWidget {
           width: width ?? double.infinity,
           height: height,
           decoration: BoxDecoration(
-            color: CatchTokens.of(context).raised,
+            color: CatchTokens.of(context).tile,
             borderRadius: BorderRadius.circular(CatchRadius.md),
           ),
         ),
@@ -86,7 +86,7 @@ class CatchSkeleton extends StatelessWidget {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: CatchTokens.of(context).raised,
+            color: CatchTokens.of(context).tile,
             borderRadius:
                 borderRadius ?? BorderRadius.all(Radius.circular(radius)),
             border: borderColor == null ? null : Border.all(color: borderColor),
@@ -104,7 +104,7 @@ class CatchSkeleton extends StatelessWidget {
           width: width,
           height: CatchLayout.skeletonTextHeight,
           decoration: BoxDecoration(
-            color: CatchTokens.of(context).raised,
+            color: CatchTokens.of(context).tile,
             borderRadius: BorderRadius.circular(CatchRadius.xs),
           ),
         ),
@@ -131,7 +131,7 @@ class CatchSkeleton extends StatelessWidget {
                   child: Container(
                     height: CatchLayout.skeletonTextHeight,
                     decoration: BoxDecoration(
-                      color: CatchTokens.of(context).raised,
+                      color: CatchTokens.of(context).tile,
                       borderRadius: BorderRadius.circular(CatchRadius.xs),
                     ),
                   ),
@@ -153,7 +153,7 @@ class CatchSkeleton extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: CatchTokens.of(context).raised,
+            color: CatchTokens.of(context).tile,
             shape: BoxShape.circle,
           ),
         ),

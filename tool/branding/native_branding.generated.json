@@ -1,12 +1,12 @@
 {
   "source": "design/tokens/catch.tokens.json",
   "colors": {
-    "splash_light_bg": "#F4F4F1",
-    "splash_dark_bg": "#0F0E10",
-    "web_theme": "#16140F",
-    "dev_ribbon": "#F4F4F1",
-    "staging_ribbon": "#B9770F",
-    "ribbon_ink": "#16140F"
+    "splash_light_bg": "#F3F3F1",
+    "splash_dark_bg": "#231E23",
+    "web_theme": "#141114",
+    "dev_ribbon": "#F3F3F1",
+    "staging_ribbon": "#8A6410",
+    "ribbon_ink": "#141114"
   },
   "generated": [
     "assets/branding/catch_hosts_icon.png",

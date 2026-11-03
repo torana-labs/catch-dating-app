@@ -7,10 +7,10 @@ PaintingEffect catchSkeletonEffect(BuildContext context) {
   final t = CatchTokens.of(context);
   final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations == true;
   return reduceMotion
-      ? SolidColorEffect(color: t.raised)
+      ? SolidColorEffect(color: t.tile)
       : ShimmerEffect(
-          baseColor: t.raised,
-          highlightColor: t.surface,
+          baseColor: t.tile,
+          highlightColor: t.ground,
           duration: CatchMotion.skeletonShimmer,
         );
 }
