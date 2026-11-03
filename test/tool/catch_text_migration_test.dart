@@ -78,7 +78,7 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
   Text(data, style: CatchTextStyles.supporting(context)),
   Text('nullable clamp', maxLines: nullableLines, overflow: TextOverflow.ellipsis,
     style: CatchTextStyles.supporting(context)),
-  const CatchText('library', variant: CatchTextVariant.supporting),
+  const CatchText('library'),
 ]);
 
 Widget themeProbe(BuildContext context, TextTheme suppliedTheme, TextStyle suppliedStyle) {
@@ -112,11 +112,11 @@ abstract final class OtherTheme {
       // A part is read on its own: the analyzer registers rules per library.
       Directory('${fixture.path}/.git').createSync();
       final variants = File(
-        '${fixture.path}/packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
+        '${fixture.path}/packages/catch_ui/lib/src/primitives/catch_legacy_text_variant.dart',
       );
       variants.createSync(recursive: true);
       variants.writeAsStringSync(
-        'enum CatchTextVariant { supporting, titleL; }',
+        'enum CatchLegacyTextVariant { supporting, titleL; }',
       );
       Directory('${fixture.path}/lib').createSync();
       File('${fixture.path}/lib/host.dart').writeAsStringSync(
@@ -182,7 +182,7 @@ abstract final class OtherTheme {
       );
       // A new variant makes its existing calls report; nothing reserves them.
       variants.writeAsStringSync(
-        'enum CatchTextVariant { supporting, titleL, bodyM; }',
+        'enum CatchLegacyTextVariant { supporting, titleL, bodyM; }',
       );
       variants.setLastModifiedSync(
         DateTime.now().add(const Duration(seconds: 2)),

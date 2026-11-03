@@ -130,6 +130,7 @@ test("generated files, the hand-written system and legacy files, the lint packag
     "packages/catch_ui/test/goldens/surface_family_test.dart",
     "widgetbook/lib/primitives/contracts/text.dart",
     "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
+    "test/tool/catch_text_migration_test.dart",
     "design/components/fixture.dart",
     "lib/notes.md",
   ]) {

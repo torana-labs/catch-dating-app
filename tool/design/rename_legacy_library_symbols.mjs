@@ -79,6 +79,9 @@ export const handWrittenFiles = new Set([
   ...["root_family", "surface_family", "text_roles", "icon_family", "stack_family"]
     .map((name) => `${library}/test/goldens/${name}_test.dart`),
   ...["root", "surface", "text", "icon", "stack"].map((name) => `${widgetbookContracts}/${name}.dart`),
+  // The lint's own test: its fixture names the legacy enum and file, and its
+  // library-text probe is the system CatchText.
+  "test/tool/catch_text_migration_test.dart",
 ]);
 
 /** Packages whose sources name the legacy API on purpose and are edited by hand. */
