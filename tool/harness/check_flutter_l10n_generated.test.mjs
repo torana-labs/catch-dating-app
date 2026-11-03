@@ -81,3 +81,16 @@ test("the disposable project takes the app's language version from its SDK lower
   assert.equal(languageVersion("name: app\nenvironment:\n  flutter: any\n  sdk: \">=3.12.1 <4.0.0\"\n"), "3.12");
   assert.throws(() => languageVersion("name: app\ndependencies:\n  sdk: flutter\n"), /no environment\.sdk/u);
 });
+
+test("the SDK lower bound may follow other indented lines in the environment block", () => {
+  assert.equal(languageVersion("environment:\n  flutter: any\n  other: value\n  sdk: '>= 3.12.1'\nname: app\n"), "3.12");
+});
+
+test("an environment block with no SDK line has no lower bound, even when a later block has one", () => {
+  assert.throws(() => languageVersion("environment:\n  flutter: any\ndependencies:\n  sdk: ^9.9.0\n"), /no environment\.sdk/u);
+});
+
+test("a long run of whitespace lines fails without backtracking", () => {
+  assert.throws(() => languageVersion(`environment:\n${"\t\t\n".repeat(50_000)}`), /no environment\.sdk/u);
+  assert.throws(() => languageVersion(`environment:\n  sdk:${" ".repeat(50_000)}`), /no environment\.sdk/u);
+});
