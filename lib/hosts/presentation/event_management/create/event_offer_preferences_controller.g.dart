@@ -59,7 +59,7 @@ final class EventOfferPreferencesDependenciesProvider
 }
 
 String _$eventOfferPreferencesDependenciesHash() =>
-    r'8a5be242187150b7bafc0d8ed745866fbd8f72d1';
+    r'f64b9ffe93a67f23c24091bf738d049f4d71a435';
 
 @ProviderFor(EventOfferPreferencesController)
 final eventOfferPreferencesControllerProvider =
@@ -117,7 +117,7 @@ final class EventOfferPreferencesControllerProvider
 }
 
 String _$eventOfferPreferencesControllerHash() =>
-    r'7aa22f892dc29c1cabc8f78b942fe309e865bed5';
+    r'bc20bc356d30aac2d1263aafe1bda17d5f5fbbd3';
 
 final class EventOfferPreferencesControllerFamily extends $Family
     with

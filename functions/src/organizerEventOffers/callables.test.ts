@@ -5,7 +5,7 @@ import {
   commitEventOffersHandler, getEventOfferHandler, listEventOffersHandler,
   mutateEventOfferHandler, OfferCallableDependencies,
   previewEventOffersHandler, prepareEventOfferHandoffHandler,
-  configureEventOfferPreferencesHandler,
+  getEventOfferConfigurationHandler, configureEventOfferPreferencesHandler,
   previewEventOfferPreferencesHandler,
 } from "./callables";
 import {applyEventOfferAction, EventOffer} from "./eventOfferDomain";
@@ -75,7 +75,7 @@ test("all offer endpoints require auth and exact input before database access",
     };
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
       mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
-      prepareEventOfferHandoffHandler,
+      prepareEventOfferHandoffHandler, getEventOfferConfigurationHandler,
       configureEventOfferPreferencesHandler,
       previewEventOfferPreferencesHandler]) {
       await assert.rejects(handler(request({}, ""), h.deps),
@@ -145,6 +145,16 @@ test("handoff rejects stale review before loading recipient data", async () => {
   await assert.rejects(prepareEventOfferHandoffHandler(request({...scope,
     expectedOfferRevision: 1, expectedGeneration: 1}), h.deps),
   code("permission-denied"));
+});
+
+test("configuration reports missing private terms", async () => {
+  const h = fixture();
+  const result = await getEventOfferConfigurationHandler(request({
+    organizerId: "org1", eventId: "event1"}), h.deps);
+  assert.equal(result.paymentTerms, null);
+  assert.equal(result.suggestedExpiresAtMillis, null);
+  assert.equal(result.nowMillis, now);
+  assert.deepEqual(h.actions, ["getEventOfferConfiguration"]);
 });
 
 test("event preference payload cannot carry server-owned fields", async () => {

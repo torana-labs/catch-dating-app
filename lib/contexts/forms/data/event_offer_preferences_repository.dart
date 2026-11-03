@@ -1,9 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';
 
@@ -11,10 +8,8 @@ final _offerPreferenceId = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
 final _offerPreferenceRequestId = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$');
 final _offerPreferenceHash = RegExp(r'^[a-f0-9]{64}$');
 
-/// Manager view of one event's offer settings, composed on the phone from the
-/// `eventSetupPreferences/{eventId}` document and the event's own fields: the
-/// event's setupRevision is the offer command's source revision, and the
-/// suggested expiry follows the server rule against the app clock.
+/// Manager read for an active legacy or progressive event. This uses the
+/// event source revision, not private setupRevision, as its update fence.
 class EventOfferConfiguration {
   const EventOfferConfiguration({
     required this.organizerId,
@@ -31,108 +26,71 @@ class EventOfferConfiguration {
   final String eventId;
   final int eventSourceRevision;
   final int startsAtMillis;
-
-  /// The app clock when this configuration was composed. Transitional: the
-  /// offer payment page reads the clock itself once its shared-library
-  /// rename lands, and this field goes.
   final int nowMillis;
   final int? suggestedExpiresAtMillis;
   final int preferencesRevision;
   final PrivateEventPreferencesSnapshot? preferences;
 
-  /// The server's expiry rule: a validity of 5 to 10,080 minutes counted from
-  /// [nowMillis], clamped at the event start; null while the event has
-  /// started or no valid validity is saved.
-  static int? suggestedExpiry({
-    required Map<String, Object?>? paymentTerms,
-    required int startsAtMillis,
-    required int nowMillis,
-  }) {
-    final validity = paymentTerms?['offerValidityMinutes'];
-    if (validity is! int ||
-        validity < 5 ||
-        validity > 10080 ||
-        startsAtMillis <= nowMillis) {
-      return null;
+  factory EventOfferConfiguration.fromResponse(Object? response) {
+    if (response is! Map) throw const FormatException('Invalid offer settings');
+    final data = Map<String, Object?>.from(response);
+    final organizerId = data['organizerId'];
+    final eventId = data['eventId'];
+    final sourceRevision = data['eventSourceRevision'];
+    final startsAt = data['startsAtMillis'];
+    final now = data['nowMillis'];
+    final expiry = data['suggestedExpiresAtMillis'];
+    final preferencesRevision = data['preferencesRevision'];
+    final preferences = data['preferences'];
+    final terms = data['paymentTerms'];
+    if (data.length != 9 ||
+        data.keys.toSet().difference({
+          'organizerId',
+          'eventId',
+          'eventSourceRevision',
+          'startsAtMillis',
+          'nowMillis',
+          'suggestedExpiresAtMillis',
+          'preferencesRevision',
+          'preferences',
+          'paymentTerms',
+        }).isNotEmpty ||
+        organizerId is! String ||
+        !_offerPreferenceId.hasMatch(organizerId) ||
+        eventId is! String ||
+        !_offerPreferenceId.hasMatch(eventId) ||
+        sourceRevision is! int ||
+        sourceRevision < 1 ||
+        startsAt is! int ||
+        startsAt < 1 ||
+        now is! int ||
+        now < 0 ||
+        (expiry != null && (expiry is! int || expiry < 1)) ||
+        preferencesRevision is! int ||
+        preferencesRevision < 0 ||
+        preferencesRevision > 1000000000 ||
+        (preferences == null) != (terms == null) ||
+        (preferences == null) != (preferencesRevision == 0)) {
+      throw const FormatException('Invalid offer settings');
     }
-    return math.min(nowMillis + validity * 60000, startsAtMillis);
-  }
-
-  /// Composes the configuration from the two documents; [preferences] is
-  /// null while none is saved. An event that is gone, belongs to another
-  /// organizer, is cancelled or has no setupRevision cannot take offer
-  /// settings.
-  factory EventOfferConfiguration.compose({
-    required String organizerId,
-    required String eventId,
-    required Map<String, Object?>? event,
-    required Map<String, Object?>? preferences,
-    required DateTime now,
-  }) {
-    if (event == null || event['organizerId'] != organizerId) {
-      throw const EventOfferSettingsUnavailable(
-        EventOfferSettingsUnavailableReason.eventUnavailable,
-      );
-    }
-    if (event['status'] == 'cancelled') {
-      throw const EventOfferSettingsUnavailable(
-        EventOfferSettingsUnavailableReason.eventCancelled,
-      );
-    }
-    final revision = event['setupRevision'];
-    final start = event['startTime'];
-    if (revision is! int || revision < 1) {
-      throw const EventOfferSettingsUnavailable(
-        EventOfferSettingsUnavailableReason.eventRevisionMissing,
-      );
-    }
-    if (start is! Timestamp || start.millisecondsSinceEpoch < 1) {
-      throw const FormatException('Invalid offer settings event');
-    }
-    PrivateEventPreferencesSnapshot? snapshot;
-    if (preferences != null) {
-      if (preferences['organizerId'] != organizerId ||
-          preferences['eventId'] != eventId) {
-        throw const FormatException('Offer settings changed identity');
-      }
-      snapshot = PrivateEventPreferencesSnapshot.fromResponse({
-        'revision': preferences['revision'],
-        'preferences': preferences['preferences'],
-        'paymentTerms': preferences['paymentTerms'],
-      });
-    }
-    final startsAtMillis = start.millisecondsSinceEpoch;
-    final nowMillis = now.millisecondsSinceEpoch;
+    final snapshot = preferences == null
+        ? null
+        : PrivateEventPreferencesSnapshot.fromResponse({
+            'revision': preferencesRevision,
+            'preferences': preferences,
+            'paymentTerms': terms,
+          });
     return EventOfferConfiguration(
       organizerId: organizerId,
       eventId: eventId,
-      eventSourceRevision: revision,
-      startsAtMillis: startsAtMillis,
-      nowMillis: nowMillis,
-      suggestedExpiresAtMillis: suggestedExpiry(
-        paymentTerms: snapshot?.paymentTerms,
-        startsAtMillis: startsAtMillis,
-        nowMillis: nowMillis,
-      ),
-      preferencesRevision: snapshot?.revision ?? 0,
+      eventSourceRevision: sourceRevision,
+      startsAtMillis: startsAt,
+      nowMillis: now,
+      suggestedExpiresAtMillis: expiry as int?,
+      preferencesRevision: preferencesRevision,
       preferences: snapshot,
     );
   }
-}
-
-enum EventOfferSettingsUnavailableReason {
-  eventUnavailable,
-  eventCancelled,
-  eventRevisionMissing,
-}
-
-/// The typed reason an event cannot take offer settings.
-class EventOfferSettingsUnavailable implements Exception {
-  const EventOfferSettingsUnavailable(this.reason);
-  final EventOfferSettingsUnavailableReason reason;
-
-  @override
-  String toString() => 'EventOfferSettingsUnavailable(${reason.name})';
 }
 
 class EventOfferPreferencesUpdateRequest {
@@ -304,6 +262,27 @@ class EventOfferPreferencesRepository {
   const EventOfferPreferencesRepository(this._functions);
 
   final FirebaseFunctions _functions;
+
+  Future<EventOfferConfiguration> get({
+    required String organizerId,
+    required String eventId,
+  }) => withBackendErrorContext(
+    () async {
+      final response = await _functions
+          .httpsCallable('getEventOfferConfiguration')
+          .call<Object?>({'organizerId': organizerId, 'eventId': eventId});
+      final result = EventOfferConfiguration.fromResponse(response.data);
+      if (result.organizerId != organizerId || result.eventId != eventId) {
+        throw const FormatException('Offer settings identity changed');
+      }
+      return result;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'read event offer configuration',
+      resource: 'getEventOfferConfiguration',
+    ),
+  );
 
   Future<EventOfferPreferencesPreview> preview(
     EventOfferPreferencesUpdateRequest request,

@@ -3906,16 +3906,17 @@
       "path": "eventSetupPreferences/{eventId}",
       "rulesMatch": "/eventSetupPreferences/{eventId}",
       "typescriptInterface": "EventSetupPreferencesDocument",
-      "dartModel": "lib/contexts/forms/data/event_offer_configuration_reads.dart",
+      "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "rulesTestNames": [
-        "lets managers get event setup preferences and nothing else"
+        "keeps organizer event setup defaults and receipts server-only"
       ],
       "owner": "private event setup operations",
-      "read": "current organizer managers get the document under rules for offer settings; an event without saved settings reads as missing; nobody lists the collection",
+      "read": "server only; current manager callable projection (getEventOfferConfiguration) and the event's hostEventSetupViews summary",
       "write": "server only",
       "exportedFunctions": [
         "updatePrivateEventPreferences",
+        "getEventOfferConfiguration",
         "configureEventOfferPreferences",
         "onHostEventSetupViewPreferencesChanged"
       ]

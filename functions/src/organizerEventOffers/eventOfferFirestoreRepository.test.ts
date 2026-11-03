@@ -16,7 +16,7 @@ import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {FirestoreEventOfferRepository} from
   "./eventOfferFirestoreRepository";
 import {commitEventOffers, prepareEventOfferHandoff,
-  previewEventOffers} from "./eventOfferService";
+  previewEventOffers, getEventOfferConfiguration} from "./eventOfferService";
 
 const now = 1_800_000_000_000;
 const organizerId = "organizer-one";
@@ -212,3 +212,21 @@ test("app-free manual handoff respects opt-out, admin suppression and STOP",
     }
   });
 
+test("configuration reopens saved intent provenance without private metadata",
+  async () => {
+    const store = fixture();
+    const repository = new FirestoreEventOfferRepository(
+      store.asFirestore(), () => now);
+    const result = await getEventOfferConfiguration({repository, actor,
+      organizerId, eventId});
+    assert.equal(result.preferencesRevision, 1);
+    assert.deepEqual(result.preferences, preferences);
+    assert.equal(result.paymentTerms?.expectedAmountMinor, 0);
+    assert.equal("updatedByUid" in result, false);
+    delete store.docs[`eventSetupPreferences/${eventId}`];
+    const missing = await getEventOfferConfiguration({repository, actor,
+      organizerId, eventId});
+    assert.equal(missing.preferencesRevision, 0);
+    assert.equal(missing.preferences, null);
+    assert.equal(missing.paymentTerms, null);
+  });

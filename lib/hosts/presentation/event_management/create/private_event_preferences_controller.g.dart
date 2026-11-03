@@ -119,7 +119,7 @@ final class PrivateEventPreferencesControllerProvider
 }
 
 String _$privateEventPreferencesControllerHash() =>
-    r'3546dbe7e47e6127dd33fdcd41c6bf5bc5fc413f';
+    r'199bca505c22454172e2e40f9a4702a7c4c18b62';
 
 final class PrivateEventPreferencesControllerFamily extends $Family
     with

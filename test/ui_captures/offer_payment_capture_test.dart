@@ -5,7 +5,6 @@ import 'package:catch_dating_app/contexts/events/data/manager_event_setup_prefer
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,19 +21,18 @@ import 'support/capture_pump.dart';
 const _out = String.fromEnvironment('OFFER_PAYMENT_CAPTURE_OUTPUT');
 final _hash = List.filled(64, 'a').join();
 
-EventOfferConfiguration _config() => EventOfferConfiguration.compose(
-  organizerId: 'club-1',
-  eventId: 'event-1',
-  event: {
-    'organizerId': 'club-1',
-    'status': 'active',
-    'setupRevision': 8,
-    // 2026-10-03 19:00 IST-ish; validity clamps the resolved expiry row.
-    'startTime': Timestamp.fromMillisecondsSinceEpoch(1791043800000),
-  },
-  preferences: null,
-  now: DateTime.fromMillisecondsSinceEpoch(1790000000000),
-);
+EventOfferConfiguration _config() => EventOfferConfiguration.fromResponse({
+  'organizerId': 'club-1',
+  'eventId': 'event-1',
+  'eventSourceRevision': 8,
+  // 2026-10-03 19:00 IST-ish; validity clamps the resolved expiry row.
+  'startsAtMillis': 1791043800000,
+  'nowMillis': 1790000000000,
+  'suggestedExpiresAtMillis': null,
+  'preferencesRevision': 0,
+  'preferences': null,
+  'paymentTerms': null,
+});
 
 ManagerEventSetupDefaults _defaults({
   ManagerEventSetupPreferences preferences =

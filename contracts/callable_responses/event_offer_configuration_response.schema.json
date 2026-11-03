@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_offer_configuration_response.schema.json",
+  "title": "EventOfferConfigurationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "eventSourceRevision",
+    "startsAtMillis",
+    "nowMillis",
+    "paymentTerms",
+    "suggestedExpiresAtMillis",
+    "preferencesRevision",
+    "preferences"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventSourceRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "nowMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "paymentTerms": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../embedded/event_payment_terms.schema.json"
+        }
+      ]
+    },
+    "suggestedExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "preferencesRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "preferences": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../embedded/resolved_event_preferences.schema.json"
+        }
+      ]
+    }
+  }
+}

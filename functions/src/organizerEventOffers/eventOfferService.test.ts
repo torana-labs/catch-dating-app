@@ -10,7 +10,7 @@ import {
   OfferBatchInput, OfferBatchReceipt, OfferContact, OfferEvent, OfferOrigin,
   OfferRepository, OfferSourceState, OfferTransaction, previewEventOffers,
   getEventOffer, listEventOffers,
-  prepareEventOfferHandoff,
+  prepareEventOfferHandoff, getEventOfferConfiguration,
 } from "./eventOfferService";
 import {parseStoredEventOffer} from "./eventOfferFirestoreRepository";
 import {BRAND} from "../shared/generated/brand";
@@ -793,6 +793,29 @@ test("late manual attestation uses historical terms, not current terms",
       offer.paymentSnapshot.eventPaymentHash);
     assert.equal("admitted" in reviewed.offer, false);
     assert.equal("providerReceipt" in reviewed.offer.manualPayment, false);
+  });
+
+test("event configuration uses current terms and server expiry with no writes",
+  async () => {
+    const store = new AtomicStore();
+    const read = () => getEventOfferConfiguration({repository: store, actor,
+      organizerId: row.organizerId, eventId: row.eventId});
+    const first = await read();
+    assert.equal(first.paymentTerms?.revision, 1);
+    assert.equal(first.preferencesRevision, 1);
+    assert.equal(first.suggestedExpiresAtMillis, Math.min(
+      first.nowMillis + first.paymentTerms!.offerValidityMinutes! * 60_000,
+      first.startsAtMillis));
+    store.state.paymentTerms.delete(row.eventId);
+    const missing = await read();
+    assert.equal(missing.paymentTerms, null);
+    assert.equal(missing.preferences, null);
+    assert.equal(missing.preferencesRevision, 0);
+    assert.equal(missing.suggestedExpiresAtMillis, null);
+    assert.equal(store.state.audit.length, 0);
+    assert.equal(store.state.offers.size, 0);
+    store.state.managers.clear();
+    await assert.rejects(read, (error) => assertCode(error, "denied"));
   });
 
 for (const free of [false, true]) {

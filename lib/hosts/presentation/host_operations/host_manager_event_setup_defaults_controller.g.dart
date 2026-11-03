@@ -120,7 +120,7 @@ final class HostManagerEventSetupDefaultsControllerProvider
 }
 
 String _$hostManagerEventSetupDefaultsControllerHash() =>
-    r'f4c0e3f7ffe8c731170fea33bdade9510700fbd7';
+    r'20aecc20641c2e930e8eb2c9f949a7af9aaee0a5';
 
 final class HostManagerEventSetupDefaultsControllerFamily extends $Family
     with

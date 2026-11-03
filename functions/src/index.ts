@@ -880,6 +880,7 @@ export {updateOrganizerEventSetupDefaults}
 export {
   previewEventOffers, commitEventOffers, mutateEventOffer,
   getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  getEventOfferConfiguration,
   configureEventOfferPreferences, previewEventOfferPreferences,
 } from "./organizerEventOffers/callables";
 

@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
@@ -30,10 +29,6 @@ Widget eventPreferencesPreview(
   overrides: [
     uidProvider.overrideWith((ref) => Stream.value(previewEventScope.userId)),
     if (state.published) ...[
-      eventOfferConfigurationProvider(
-        organizerId: previewEventScope.organizerId,
-        eventId: previewEventScope.eventId,
-      ).overrideWith((ref) => Stream.value(state.configuration!)),
       managerEventSetupDefaultsViewProvider(
         previewEventScope.organizerId,
       ).overrideWith(
@@ -43,6 +38,8 @@ Widget eventPreferencesPreview(
       ),
       eventOfferPreferencesDependenciesProvider.overrideWithValue(
         EventOfferPreferencesDependencies(
+          readConfiguration: ({required organizerId, required eventId}) async =>
+              state.configuration!,
           write: (_) async =>
               throw StateError('Preview does not submit settings'),
         ),

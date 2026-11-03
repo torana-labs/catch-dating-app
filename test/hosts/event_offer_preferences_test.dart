@@ -6,23 +6,11 @@ import 'package:catch_dating_app/contexts/events/data/private_event_preferences_
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'event_controller_test_support.dart';
-
-Map<String, Object?> offerEvent({
-  String organizerId = 'club-1',
-  String status = 'active',
-  Object? setupRevision = 8,
-}) => {
-  'organizerId': organizerId,
-  'status': status,
-  'setupRevision': ?setupRevision,
-  'startTime': Timestamp.fromMillisecondsSinceEpoch(1791043800000),
-};
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -39,13 +27,17 @@ void main() {
           preferencesRevision: 1,
           preferences: null,
         )
-      : EventOfferConfiguration.compose(
-          organizerId: 'club-1',
-          eventId: 'event-1',
-          event: offerEvent(),
-          preferences: null,
-          now: DateTime.fromMillisecondsSinceEpoch(1790000000000),
-        );
+      : EventOfferConfiguration.fromResponse({
+          'organizerId': 'club-1',
+          'eventId': 'event-1',
+          'eventSourceRevision': 8,
+          'startsAtMillis': 1791043800000,
+          'nowMillis': 1790000000000,
+          'suggestedExpiresAtMillis': null,
+          'preferencesRevision': revision,
+          'preferences': null,
+          'paymentTerms': null,
+        });
   ManagerEventSetupDefaults defaults() => ManagerEventSetupDefaults(
     organizerId: 'club-1',
     cityId: 'in-mh-mumbai',
@@ -75,63 +67,6 @@ void main() {
         ),
       );
 
-  test('the event fences offer settings by its own setupRevision', () {
-    final now = DateTime.fromMillisecondsSinceEpoch(1790000000000);
-    EventOfferConfiguration compose(Map<String, Object?>? event) =>
-        EventOfferConfiguration.compose(
-          organizerId: 'club-1',
-          eventId: 'event-1',
-          event: event,
-          preferences: null,
-          now: now,
-        );
-    expect(compose(offerEvent()).eventSourceRevision, 8);
-    expect(compose(offerEvent()).nowMillis, now.millisecondsSinceEpoch);
-    for (final (event, reason) in [
-      (null, EventOfferSettingsUnavailableReason.eventUnavailable),
-      (
-        offerEvent(organizerId: 'other'),
-        EventOfferSettingsUnavailableReason.eventUnavailable,
-      ),
-      (
-        offerEvent(status: 'cancelled'),
-        EventOfferSettingsUnavailableReason.eventCancelled,
-      ),
-      (
-        offerEvent(setupRevision: null),
-        EventOfferSettingsUnavailableReason.eventRevisionMissing,
-      ),
-    ]) {
-      expect(
-        () => compose(event),
-        throwsA(
-          isA<EventOfferSettingsUnavailable>().having(
-            (error) => error.reason,
-            'reason',
-            reason,
-          ),
-        ),
-      );
-    }
-  });
-
-  test('suggested expiry follows the server rule against the clock', () {
-    const start = 1791043800000;
-    int? expiry(Object? validity, {int now = 1790000000000}) =>
-        EventOfferConfiguration.suggestedExpiry(
-          paymentTerms: {'offerValidityMinutes': validity},
-          startsAtMillis: start,
-          nowMillis: now,
-        );
-    expect(expiry(60), 1790000000000 + 60 * 60000);
-    // Clamped at the event start.
-    expect(expiry(60, now: start - 30 * 60000), start);
-    expect(expiry(4), isNull);
-    expect(expiry(10081), isNull);
-    expect(expiry(null), isNull);
-    expect(expiry(60, now: start), isNull);
-  });
-
   test(
     'published event read and write reject malformed authority receipts',
     () {
@@ -139,19 +74,17 @@ void main() {
       expect(projection.eventSourceRevision, 8);
       expect(projection.preferences, isNull);
       expect(
-        () => EventOfferConfiguration.compose(
-          organizerId: 'club-1',
-          eventId: 'event-1',
-          event: offerEvent(),
-          preferences: const {
-            'organizerId': 'club-1',
-            'eventId': 'event-1',
-            'revision': 1,
-            'preferences': null,
-            'paymentTerms': null,
-          },
-          now: DateTime.fromMillisecondsSinceEpoch(1790000000000),
-        ),
+        () => EventOfferConfiguration.fromResponse({
+          'organizerId': 'club-1',
+          'eventId': 'event-1',
+          'eventSourceRevision': 8,
+          'startsAtMillis': 1791043800000,
+          'nowMillis': 1790000000000,
+          'suggestedExpiresAtMillis': null,
+          'preferencesRevision': 1,
+          'preferences': null,
+          'paymentTerms': null,
+        }),
         throwsFormatException,
       );
       expect(
@@ -245,16 +178,12 @@ void main() {
     );
     await controller.load();
     expect(controller.canEdit, isTrue);
-    // The listener reports the revoked access; nothing stale stays editable.
     denied = true;
-    await controller.configurationFeed.refresh();
-    await pumpEventQueue();
-    expect(controller.configuration, isNull);
-    expect(controller.canEdit, isFalse);
-    // Retrying restarts only the failed listener.
-    denied = false;
     await controller.load();
-    expect(controller.canEdit, isTrue);
+    expect(controller.configuration, isNull);
+    // The defaults come from their listener, which still answers.
+    expect(controller.defaults, isNotNull);
+    expect(controller.canEdit, isFalse);
     controller.dispose();
   });
 
@@ -387,7 +316,8 @@ void main() {
         await controller.save(request('request-1').intents);
         expect(controller.hasPending, kind != 'exact');
         if (kind == 'exact') {
-          // The listeners already hold the current settings: no reload.
+          expect(controller.configuration, isNull);
+          await controller.load();
           expect(controller.canEdit, isTrue);
           expect(controller.hasPending, isFalse);
         }

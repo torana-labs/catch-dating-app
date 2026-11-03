@@ -1543,23 +1543,6 @@ describe("firestore.rules", () => {
         await assertDeletedUserDenied("hostEventSetupDefaultViews", "org");
       });
 
-      it("lets managers get event setup preferences and nothing else", async () => {
-        await seedOrganizers();
-        const preferences = (organizerId, eventId) => ({organizerId, eventId,
-          revision: 1, preferences: {}, paymentTerms: {},
-          updatedByUid: "host-1", updatedAt: evaluatedAt});
-        await seed(["eventSetupPreferences", "own"], preferences("org", "own"));
-        await seed(["eventSetupPreferences", "foreign"],
-          preferences("other", "foreign"));
-        await assertGetOnly("eventSetupPreferences", "own", "foreign",
-          preferences("org", "own"));
-        // An event without saved settings reads as missing.
-        const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
-          "eventSetupPreferences", "unsaved")));
-        assert.equal(missing.exists(), false);
-        await assertDeletedUserDenied("eventSetupPreferences", "own");
-      });
-
       it("lets managers get their rehearsal milestone and nothing else", async () => {
         await seedOrganizers();
         const milestone = (organizerId) => ({organizerId,
@@ -1785,7 +1768,7 @@ describe("firestore.rules", () => {
 
     it("keeps organizer event setup defaults and receipts server-only", async () => {
       for (const collectionName of ["organizerEventSetupDefaults",
-        "organizerEventSetupDefaultReceipts",
+        "organizerEventSetupDefaultReceipts", "eventSetupPreferences",
         "eventOfferConfigurationReceipts"]) {
         await seed([collectionName, "organizer-1"], {
           organizerId: "organizer-1", revision: 1,

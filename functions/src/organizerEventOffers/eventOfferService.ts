@@ -766,3 +766,40 @@ export async function commitEventOffers(params: {
   });
 }
 
+/** Current manager-only settings; reading never authorizes offer issuance. */
+export async function getEventOfferConfiguration(params: {
+  repository: OfferRepository;
+  actor: OfferActor;
+  organizerId: string;
+  eventId: string;
+}) {
+  const {organizerId, eventId, actor} = params;
+  if (![organizerId, eventId, actor.uid].every(validId)) {
+    fail("invalid", "Invalid event offer configuration request.");
+  }
+  return params.repository.transaction(async (tx) => {
+    if (!await tx.managerAuthorized(organizerId, actor.uid)) {
+      fail("denied", "Current organizer manager authority is required.");
+    }
+    const event = await tx.event(eventId);
+    if (!event || event.organizerId !== organizerId || event.cancelled) {
+      fail("denied", "Event is unavailable.");
+    }
+    const nowMillis = tx.nowMillis();
+    if (!Number.isSafeInteger(nowMillis) || nowMillis < 0) {
+      fail("conflict", "Server time is unavailable.");
+    }
+    const saved = await tx.eventPreferences(eventId);
+    const paymentTerms = saved?.paymentTerms ?? null;
+    if (paymentTerms) validateEventPaymentTerms(paymentTerms);
+    const validity = paymentTerms?.offerValidityMinutes;
+    const suggestedExpiresAtMillis = validity != null &&
+      Number.isSafeInteger(validity) && validity >= 5 && validity <= 10080 &&
+      event.startsAtMillis > nowMillis ?
+      Math.min(nowMillis + validity * 60_000, event.startsAtMillis) : null;
+    return {organizerId, eventId, eventSourceRevision: event.sourceRevision,
+      startsAtMillis: event.startsAtMillis, nowMillis, paymentTerms,
+      suggestedExpiresAtMillis, preferencesRevision: saved?.revision ?? 0,
+      preferences: saved?.preferences ?? null};
+  });
+}

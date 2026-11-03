@@ -2236,18 +2236,11 @@ The offer picker uses `listOfferEventTargets` for both private and already
 published owned events, including valid rich legacy events. The bounded index
 uses canonical `organizerId`, status, start time and document ID; contradictory
 organizer ownership fails. This list exposes no payment settings.
-The offer settings screen reads the event's `eventSetupPreferences/{eventId}`
-document directly: current managers of the event's organizer get it under rules,
-and an event without saved settings reads as missing. The phone combines it with
-the event document: the event's `setupRevision` is the offer commands' source
-revision and its `startTime` the start; a cancelled event, or one without a
-`setupRevision`, cannot take offer settings. The preference revision and resolved
-intent provenance keep editing's inherit/set/clear decisions. Missing settings
-remain null with revision zero, never an invented free price or expiry. The
-suggested expiry is the server's rule applied with the app clock: an
-`offerValidityMinutes` of 5 to 10,080 counted from now and clamped at the event
-start while the event is in the future, otherwise none; the preview and commit
-recheck it.
+`getEventOfferConfiguration` separately reads manager-only current terms for
+the selected event and suggests expiry from the server clock and event policy.
+The read includes the private preference revision and resolved intent provenance
+so editing preserves inherit/set/clear decisions. Missing configuration remains
+null with revision zero, never an invented free price or expiry.
 `previewEventOfferPreferences` authorizes the same manager and resolves the
 complete candidate against the event, saved preferences and organizer defaults
 in one read-only transaction. Its before/after projection includes inherited
@@ -2814,8 +2807,8 @@ the evaluator that writes them ahead of time is described in
 
 The create flow reads `hostEventSetupViews/{eventId}` and
 `hostEventSetupDefaultViews/{organizerId}` under the active-organizer manager
-authority (`isActiveHostSummaryManager`), and `eventSetupPreferences/{eventId}`
-and `eventRehearsalMilestones/{organizerId}` under the plain manager authority;
+authority (`isActiveHostSummaryManager`), and
+`eventRehearsalMilestones/{organizerId}` under the plain manager authority;
 their evaluators and rules are described in
 [Progressive Event Setup Contracts](#progressive-event-setup-contracts) and
 [Event Dress Rehearsal Isolation Contract](#event-dress-rehearsal-isolation-contract).

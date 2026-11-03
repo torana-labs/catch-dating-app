@@ -110,7 +110,7 @@ final class EventPublicationControllerProvider
 }
 
 String _$eventPublicationControllerHash() =>
-    r'475bd3956b5ad44c437d1bc1a2f993eb0ba4b242';
+    r'f1adc7795acb9ea18cc033b83a2195e22679f17b';
 
 final class EventPublicationControllerFamily extends $Family
     with

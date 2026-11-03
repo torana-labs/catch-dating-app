@@ -35,12 +35,18 @@ import {
   listEventOffers as list, mutateEventOffer as mutate,
   previewEventOffers as preview, OfferRepository,
   prepareEventOfferHandoff as prepareHandoff,
+  getEventOfferConfiguration as configuration,
 } from "./eventOfferService";
 
 import {validatePrepareEventOfferHandoffCallablePayload} from
   "../shared/generated/validators/prepareEventOfferHandoffInput";
 import {validateEventOfferHandoffCallableResponse} from
   "../shared/generated/validators/eventOfferHandoffOutput";
+
+import {validateGetEventOfferConfigurationCallablePayload} from
+  "../shared/generated/validators/getEventOfferConfigurationInput";
+import {validateEventOfferConfigurationCallableResponse} from
+  "../shared/generated/validators/eventOfferConfigurationOutput";
 
 import {configureEventOfferPreferences as configurePreferences} from
   "./eventOfferConfigurationService";
@@ -187,6 +193,21 @@ export async function prepareEventOfferHandoffHandler(
 }
 export const prepareEventOfferHandoff = onCall(appCheckCallableOptions,
   (request) => prepareEventOfferHandoffHandler(request));
+
+/** Reads private payment configuration only after current manager authority. */
+export async function getEventOfferConfigurationHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const uid = requireAuth(request);
+  const input = validateCallableWithAjv(request,
+    validateGetEventOfferConfigurationCallablePayload);
+  return execute({uid, action: "getEventOfferConfiguration", deps,
+    limit: {maxRequests: 60, windowMs: 60 * 1000},
+    run: (repository) => configuration({repository, actor: {uid}, ...input}),
+    validate: validateEventOfferConfigurationCallableResponse});
+}
+export const getEventOfferConfiguration = onCall(appCheckCallableOptions,
+  (request) => getEventOfferConfigurationHandler(request));
 
 /** Changes future offer defaults; issued offer snapshots remain immutable. */
 export async function configureEventOfferPreferencesHandler(
