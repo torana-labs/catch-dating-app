@@ -27,6 +27,7 @@ workspace:
   - packages/catch_tokens
   - packages/catch_ui
   - packages/kernel
+  - packages/l10n
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -41,6 +42,8 @@ dependencies:
     path: packages/catch_tokens
   catch_kernel:
     path: packages/kernel
+  catch_l10n:
+    path: packages/l10n
   flutter:
     sdk: flutter
 
@@ -129,8 +132,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-  generate: true
-
   config:
     # Keep iOS/macOS on CocoaPods while FirebaseFirestore is supplied by the
     # prebuilt Invertase pod; Flutter SPM integration links duplicate symbols.
