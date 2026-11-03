@@ -19,7 +19,7 @@ Current implementation roots:
 
 - Own the /host/today route, its authentication and organizer-selection states, and its provider-free body composition.
 - Fetch the bounded active-event context independently of the Events inventory controller.
-- Consume the manager-authorized attention callable, parse exhaustive coverage, and merge device-local attendance retry or conflict work.
+- Listen to the server-evaluated attention rows and their evaluation schedule under manager rules, compute coverage from the generated policy catalog, and merge device-local attendance retry or conflict work.
 - Order work by urgency, consequence, deadline, and stable identity without inferring mandatory tasks from missing optional data.
 - Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience Responses, Inbox, and Payouts.
 - Keep incomplete attention sources visible so the screen cannot claim a false all-clear.
@@ -65,12 +65,11 @@ Typed handoffs:
 
 ## Data contracts
 
-- `contracts/callable_responses/list_organizer_attention_items_response.schema.json`
-- `contracts/callables/list_organizer_attention_items_payload.schema.json`
 - `contracts/catalogs/host_attention_policies.json`
 - `contracts/firestore/event_assistance_cases.schema.json`
 - `contracts/firestore/events.schema.json`
 - `contracts/firestore/organizer_attention_items.schema.json`
+- `contracts/firestore/organizer_attention_schedules.schema.json`
 - `contracts/operations/event_assistance_delivery_work.schema.json`
 - `contracts/operations/work_item.schema.json`
 - `contracts/shared/host_attention_common.schema.json`
