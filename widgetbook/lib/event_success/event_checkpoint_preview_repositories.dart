@@ -42,12 +42,15 @@ class CheckpointPreviewLiveRepository
   CheckpointPreviewLiveRepository(this.fixtures);
   final Map<String, Object?> fixtures;
   @override
-  Future<EventAssistanceCheckpointView> fetch(
-    EventAssistanceCheckpointScope scope,
-  ) async => EventAssistanceCheckpointResult.fromCallableData(
-    fixtures['initial'],
-    expectedScope: scope,
-  ).view;
+  Stream<EventAssistanceCheckpointView> watch(
+    EventAssistanceCheckpointScope scope, {
+    required String actorUid,
+  }) => Stream.value(
+    EventAssistanceCheckpointResult.fromCallableData(
+      fixtures['initial'],
+      expectedScope: scope,
+    ).view,
+  );
   @override
   Future<EventAssistanceCheckpointResult> apply(
     EventAssistanceCheckpointChange change,
@@ -65,13 +68,15 @@ class CheckpointPreviewHistoryRepository
   CheckpointPreviewHistoryRepository(this.fixtures);
   final Map<String, Object?> fixtures;
   @override
-  Future<EventAssistanceDepartureHistoryPage> fetch(
+  Stream<EventAssistanceDepartureHistoryPage> watch(
     EventAssistanceDepartureHistoryQuery query, {
     required String actorUid,
-  }) async => EventAssistanceDepartureHistoryPage.fromCallableData(
-    fixtures['historyInitial'],
-    expectedQuery: query,
-    expectedActorUid: actorUid,
+  }) => Stream.value(
+    EventAssistanceDepartureHistoryPage.fromCallableData(
+      fixtures['historyInitial'],
+      expectedQuery: query,
+      expectedActorUid: actorUid,
+    ),
   );
 }
 
@@ -80,23 +85,25 @@ class EmptyDeparturePreviewHistoryRepository
     implements EventAssistanceDepartureHistoryRepository {
   const EmptyDeparturePreviewHistoryRepository();
   @override
-  Future<EventAssistanceDepartureHistoryPage> fetch(
+  Stream<EventAssistanceDepartureHistoryPage> watch(
     EventAssistanceDepartureHistoryQuery query, {
     required String actorUid,
-  }) async => EventAssistanceDepartureHistoryPage.fromCallableData(
-    {
-      'context': query.group.context,
-      'groupId': query.group.groupId,
-      'actorUid': actorUid,
-      'validUntil': 9007199254740991,
-      'serverTime': 1000,
-      'progressRevision': 0,
-      'coverage': 'page',
-      'rosters': <Object?>[],
-      'nextBeforeRevision': null,
-    },
-    expectedQuery: query,
-    expectedActorUid: actorUid,
+  }) => Stream.value(
+    EventAssistanceDepartureHistoryPage.fromCallableData(
+      {
+        'context': query.group.context,
+        'groupId': query.group.groupId,
+        'actorUid': actorUid,
+        'validUntil': 9007199254740991,
+        'serverTime': 1000,
+        'progressRevision': 0,
+        'coverage': 'page',
+        'rosters': <Object?>[],
+        'nextBeforeRevision': null,
+      },
+      expectedQuery: query,
+      expectedActorUid: actorUid,
+    ),
   );
 }
 

@@ -61,40 +61,51 @@ class EventAssistanceDeparture extends _$EventAssistanceDeparture {
     );
   }
 
+  /// Restarts the listener only after it ended in an error; a healthy one
+  /// already delivers every change.
   void reload() {
     final account = ref
         .read(eventAssistanceDepartureAccountProvider)
         .asData
         ?.value;
     if (account == null) return;
-    ref.invalidate(
-      eventAssistanceDepartureForAccountProvider(scope, account: account),
+    final listener = eventAssistanceDepartureForAccountProvider(
+      scope,
+      account: account,
     );
+    if (ref.read(listener).hasError) ref.invalidate(listener);
   }
 }
 
+/// The group's departure view for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review
+/// instead of being replaced in the background.
 @Riverpod(retry: _noDepartureReadRetry)
-Future<EventDepartureSession> eventAssistanceDepartureForAccount(
+Stream<EventDepartureSession> eventAssistanceDepartureForAccount(
   Ref ref,
   EventAssistanceGroupScope scope, {
   required EventDepartureAccount account,
-}) async {
+}) {
   // Keep the account identity alive while this read is observed. Watch also
   // cancels this cache entry when authentication changes.
   ref.watch(eventAssistanceDepartureAccountProvider);
   requireDepartureAccount(ref, account);
-  final view = await ref
+  EventDepartureSession? latest;
+  ref.onDispose(() => latest?._current = false);
+  return ref
       .watch(eventAssistanceDepartureRepositoryProvider)
-      .fetch(scope, actorUid: account.uid);
-  requireDepartureAccount(ref, account);
-  if (view.scope != scope) {
-    throw const FormatException('Foreign departure review.');
-  }
-  final session = EventDepartureSession._(account: account, view: view);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watch(scope, actorUid: account.uid)
+      .map((view) {
+        requireDepartureAccount(ref, account);
+        if (view.scope != scope) {
+          throw const FormatException('Foreign departure review.');
+        }
+        latest?._current = false;
+        return latest = EventDepartureSession._(account: account, view: view);
+      });
 }
 
-// A fresh progress snapshot is an explicit host review, not a background
-// replacement for the decision currently being edited.
+// A listener error is shown with a retry; it is never retried silently.
 Duration? _noDepartureReadRetry(int retryCount, Object error) => null;

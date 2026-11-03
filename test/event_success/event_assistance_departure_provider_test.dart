@@ -110,32 +110,30 @@ void main() {
   );
 
   test(
-    'explicit reload wins over an older completion without automatic retry',
+    'a reload keeps a healthy listener; each delivery retires the last session',
     () async {
-      await h.signIn();
+      await h.load();
+      final first = h.session;
       h.container
           .read(eventAssistanceDepartureProvider(departureScope()).notifier)
           .reload();
       await h.container.pump();
-      await h.repository.waitForReads(2);
-      h.repository.completeRead(
-        1,
+      expect(h.repository.reads, hasLength(1));
+      expect(identical(h.session, first), isTrue);
+      h.repository.deliver(
         response: departureResponse(revision: 3, freshness: 'current'),
       );
       await h.container.pump();
-      final latest = h.session;
-      h.repository.completeRead(0);
-      await h.container.pump();
-      expect(identical(h.session, latest), isTrue);
       expect(h.session.view.revision, 3);
+      expect(first.isCurrent, isFalse);
+      expect(h.session.isCurrent, isTrue);
+      expect(h.automaticRetries, isEmpty);
     },
   );
 
-  test('failed reads remain errors until an explicit reload', () async {
+  test('a failed listener stays an error until an explicit reload', () async {
     await h.signIn();
-    h.repository.reads.single.pending.completeError(
-      const NetworkException('unavailable', 'Offline'),
-    );
+    h.repository.failRead(0, const NetworkException('unavailable', 'Offline'));
     await h.container.pump();
     expect(h.current.error, isA<NetworkException>());
     expect(h.repository.reads, hasLength(1));

@@ -1,16 +1,13 @@
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
-import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_checkpoint_request_provider.g.dart';
-
-typedef CheckpointRequestSessionFuture =
-    Future<EventAssistanceCheckpointRequestSession>;
 
 final class EventAssistanceCheckpointRequestSession {
   EventAssistanceCheckpointRequestSession._(this.account, this.view);
@@ -72,57 +69,75 @@ class EventAssistanceCheckpointRequest
     return page;
   }
 
+  /// Restarts the checkpoint and group listeners only after they ended in an
+  /// error; healthy ones already deliver every change.
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    ref.invalidate(
-      eventAssistanceCheckpointForAccountProvider(
-        scope,
-        account: authState.value!,
-      ),
+    final account = authState.value!;
+    final checkpoint = eventAssistanceCheckpointForAccountProvider(
+      scope,
+      account: account,
     );
-    ref.invalidate(
-      eventAssistanceCheckpointRequestForAccountProvider(
-        scope,
-        account: switch (auth) {
-          AsyncData(:final value) => value,
-          AsyncError(:final error) => throw error,
-          AsyncLoading() => throw AssertionError(),
-        },
-      ),
+    final group = eventAssistanceDepartureForAccountProvider(
+      scope.group,
+      account: account,
     );
+    if (ref.read(checkpoint).hasError) ref.invalidate(checkpoint);
+    if (ref.read(group).hasError) ref.invalidate(group);
   }
 }
 
-@Riverpod(retry: _noCheckpointRequestReadRetry)
-CheckpointRequestSessionFuture eventAssistanceCheckpointRequestForAccount(
+/// The checkpoint request review: the checkpoint view and the group's view
+/// (the manager's authority) composed on the phone, with no document of its
+/// own. A new session follows every delivery of either listener and retires
+/// the previous one.
+@riverpod
+AsyncValue<EventAssistanceCheckpointRequestSession>
+eventAssistanceCheckpointRequestForAccount(
   Ref ref,
   EventAssistanceCheckpointScope scope, {
   required AuthenticatedSession account,
-}) async {
+}) {
   ref.watch(authenticatedSessionProvider);
-  requireCheckpointRequestAccount(ref, account);
-  final checkpoint = await ref.watch(
-    eventAssistanceCheckpointForAccountProvider(scope, account: account).future,
+  final checkpoint = ref.watch(
+    eventAssistanceCheckpointForAccountProvider(scope, account: account),
   );
-  requireCheckpointRequestAccount(ref, account);
-  final operator = await ref
-      .watch(eventAssistanceDepartureRepositoryProvider)
-      .fetch(scope.group, actorUid: account.uid);
-  requireCheckpointRequestAccount(ref, account);
-  if (!checkpoint.isCurrent || operator.actorUid != account.uid) {
-    throw checkpointRequestSessionChanged;
+  final operator = ref.watch(
+    eventAssistanceDepartureForAccountProvider(scope.group, account: account),
+  );
+  final checkpointState = catchAsyncStateFromAsyncValue(checkpoint);
+  final operatorState = catchAsyncStateFromAsyncValue(operator);
+  if (checkpointState.error case final error?) {
+    return AsyncError(error, checkpointState.stackTrace!);
   }
-  final view = EventAssistanceCheckpointRequestReview(
-    checkpoint: checkpoint.view,
-    operator: operator,
-  );
-  final session = EventAssistanceCheckpointRequestSession._(account, view);
-  ref.onDispose(() => session._current = false);
-  return session;
+  if (operatorState.error case final error?) {
+    return AsyncError(error, operatorState.stackTrace!);
+  }
+  final checkpointSession = checkpointState.value;
+  final operatorSession = operatorState.value;
+  if (checkpointSession == null || operatorSession == null) {
+    return const AsyncLoading();
+  }
+  try {
+    requireCheckpointRequestAccount(ref, account);
+    if (!checkpointSession.isCurrent ||
+        operatorSession.view.actorUid != account.uid) {
+      throw checkpointRequestSessionChanged;
+    }
+    final session = EventAssistanceCheckpointRequestSession._(
+      account,
+      EventAssistanceCheckpointRequestReview(
+        checkpoint: checkpointSession.view,
+        operator: operatorSession.view,
+      ),
+    );
+    ref.onDispose(() => session._current = false);
+    return AsyncData(session);
+  } on Object catch (error, stackTrace) {
+    return AsyncError(error, stackTrace);
+  }
 }
-
-Duration? _noCheckpointRequestReadRetry(int count, Object error) => null;

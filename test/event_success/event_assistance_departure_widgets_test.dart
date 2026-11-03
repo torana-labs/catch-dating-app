@@ -306,18 +306,20 @@ class _Live extends Fake implements EventAssistanceDepartureRepository {
         })
       >[];
   @override
-  Future<EventAssistanceGroupProgressView> fetch(
+  Stream<EventAssistanceGroupProgressView> watch(
     EventAssistanceGroupScope scope, {
     required String actorUid,
-  }) async => parseDeparture(
-    departureResponse(
+  }) => Stream.value(
+    parseDeparture(
+      departureResponse(
+        actorUid: actorUid,
+        scope: scope,
+        validUntil: departureNow + 86400000,
+      ),
       actorUid: actorUid,
       scope: scope,
-      validUntil: departureNow + 86400000,
-    ),
-    actorUid: actorUid,
-    scope: scope,
-  ).view;
+    ).view,
+  );
   @override
   Future<EventAssistanceDepartureRosterReview> reviewRoster(
     EventAssistanceGroupProgressView snapshot,

@@ -17,9 +17,32 @@ import 'event_assistance_checkpoint_request_fixtures.dart';
 
 const checkpointRequestReason = 'Reviewed every outstanding guest.';
 
+/// Listeners deliver the current wire at once. Assigning a new [wire] stands
+/// in for the triggers: once the current synchronous edit finishes, every
+/// open listener receives it.
 class CheckpointRequestUiLive extends Fake
     implements EventAssistanceCheckpointRepository {
-  Map<String, Object?> wire = requestReadyWire();
+  Map<String, Object?> _wire = requestReadyWire();
+  Map<String, Object?> get wire => _wire;
+  set wire(Map<String, Object?> value) {
+    _wire = value;
+    scheduleMicrotask(_deliver);
+  }
+
+  void _deliver() {
+    for (final view in _views) {
+      if (view.controller.isClosed) continue;
+      view.controller.add(checkpointResult(_wire, scope: view.scope).view);
+    }
+  }
+
+  final _views =
+      <
+        ({
+          EventAssistanceCheckpointScope scope,
+          StreamController<EventAssistanceCheckpointView> controller,
+        })
+      >[];
   final writes =
       <
         ({
@@ -28,9 +51,17 @@ class CheckpointRequestUiLive extends Fake
         })
       >[];
   @override
-  Future<EventAssistanceCheckpointView> fetch(
-    EventAssistanceCheckpointScope scope,
-  ) async => checkpointResult(wire, scope: scope).view;
+  Stream<EventAssistanceCheckpointView> watch(
+    EventAssistanceCheckpointScope scope, {
+    required String actorUid,
+  }) {
+    late final StreamController<EventAssistanceCheckpointView> controller;
+    controller = StreamController(onCancel: () => controller.close())
+      ..add(checkpointResult(wire, scope: scope).view);
+    _views.add((scope: scope, controller: controller));
+    return controller.stream;
+  }
+
   @override
   Future<EventAssistanceCheckpointResult> manageRequest(
     EventAssistanceCheckpointRequestChange change,
@@ -51,13 +82,15 @@ class CheckpointRequestUiPermissions extends Fake
     implements EventAssistanceDepartureRepository {
   bool observerOnly = false;
   @override
-  Future<EventAssistanceGroupProgressView> fetch(
+  Stream<EventAssistanceGroupProgressView> watch(
     EventAssistanceGroupScope scope, {
     required String actorUid,
-  }) async => checkpointOperator(
-    scope: scope,
-    actorUid: actorUid,
-    authority: observerOnly ? 'readOnly' : 'canConfirm',
+  }) => Stream.value(
+    checkpointOperator(
+      scope: scope,
+      actorUid: actorUid,
+      authority: observerOnly ? 'readOnly' : 'canConfirm',
+    ),
   );
 }
 

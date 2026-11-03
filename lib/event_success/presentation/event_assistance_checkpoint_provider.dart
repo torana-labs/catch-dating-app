@@ -70,43 +70,45 @@ class EventAssistanceCheckpoint extends _$EventAssistanceCheckpoint {
     return page;
   }
 
+  /// Restarts the listener only after it ended in an error.
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    ref.invalidate(
-      eventAssistanceCheckpointForAccountProvider(
-        scope,
-        account: switch (auth) {
-          AsyncData(:final value) => value,
-          AsyncError(:final error) => throw error,
-          AsyncLoading() => throw AssertionError(),
-        },
-      ),
+    final listener = eventAssistanceCheckpointForAccountProvider(
+      scope,
+      account: authState.value!,
     );
+    if (ref.read(listener).hasError) ref.invalidate(listener);
   }
 }
 
+/// The checkpoint view for one sign-in period. It is a Firestore listener:
+/// no cache tags or lifetime, and writes never invalidate it. Each delivery
+/// is a new session and retires the previous one.
 @Riverpod(retry: _noCheckpointReadRetry)
-Future<EventAssistanceCheckpointSession> eventAssistanceCheckpointForAccount(
+Stream<EventAssistanceCheckpointSession> eventAssistanceCheckpointForAccount(
   Ref ref,
   EventAssistanceCheckpointScope scope, {
   required AuthenticatedSession account,
-}) async {
+}) {
   ref.watch(authenticatedSessionProvider);
   requireCheckpointAccount(ref, account);
-  final view = await ref
+  EventAssistanceCheckpointSession? latest;
+  ref.onDispose(() => latest?._current = false);
+  return ref
       .watch(eventAssistanceCheckpointRepositoryProvider)
-      .fetch(scope);
-  requireCheckpointAccount(ref, account);
-  if (view.scope != scope) {
-    throw const FormatException('Foreign checkpoint review.');
-  }
-  final session = EventAssistanceCheckpointSession._(account, view);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watch(scope, actorUid: account.uid)
+      .map((view) {
+        requireCheckpointAccount(ref, account);
+        if (view.scope != scope) {
+          throw const FormatException('Foreign checkpoint review.');
+        }
+        latest?._current = false;
+        return latest = EventAssistanceCheckpointSession._(account, view);
+      });
 }
 
 Duration? _noCheckpointReadRetry(int count, Object error) => null;

@@ -59,4 +59,4 @@ final class EventAssistanceCheckpointRepositoryProvider
 }
 
 String _$eventAssistanceCheckpointRepositoryHash() =>
-    r'949ab5dbd8614fde2bc6ae07eeb59888aadc5121';
+    r'efd956f7b73f7f2574d83d970bc8849e7924e766';

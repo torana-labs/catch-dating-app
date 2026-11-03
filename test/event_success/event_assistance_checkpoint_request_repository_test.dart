@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_checkpoint_
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_assistance_checkpoint_fixtures.dart';
@@ -25,7 +26,10 @@ void main() {
             code: 'unavailable',
             message: 'Offline',
           );
-        final repository = EventAssistanceCheckpointRepository(functions);
+        final repository = EventAssistanceCheckpointRepository(
+          functions,
+          FakeFirebaseFirestore(),
+        );
         await expectLater(
           repository.manageRequest(change),
           throwsA(isA<NetworkException>()),
@@ -56,7 +60,10 @@ void main() {
           'other';
       final functions = _Functions()..response = wire;
       await expectLater(
-        EventAssistanceCheckpointRepository(functions).manageRequest(change),
+        EventAssistanceCheckpointRepository(
+          functions,
+          FakeFirebaseFirestore(),
+        ).manageRequest(change),
         throwsA(isA<BackendOperationException>()),
       );
     },
@@ -77,6 +84,7 @@ void main() {
         await expectLater(
           EventAssistanceCheckpointRepository(
             functions,
+            FakeFirebaseFirestore(),
           ).manageRequest(requestChange()),
           throwsA(isA<AppException>()),
         );

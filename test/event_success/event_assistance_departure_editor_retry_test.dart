@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_editor.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,16 +108,12 @@ void main() {
       expect(h.form(session).phase, EventDepartureFormPhase.refreshRequired);
       await expectLater(editor.submit(), throwsA(isA<ValidationException>()));
       expect(h.repository.changes, hasLength(1));
-      h.container
-          .read(eventAssistanceDepartureProvider(departureScope()).notifier)
-          .reload();
-      await h.container.pump();
-      await h.repository.waitForReads(2);
-      h.repository.completeRead(
-        1,
+      // The listener delivers the other operator's departure.
+      h.repository.deliver(
         response: departureResponse(revision: 4, freshness: 'current'),
       );
       await h.container.pump();
+      expect(h.repository.reads, hasLength(1));
       final fresh = h.session;
       final next = h.editor();
       expect(h.form(fresh).destination, isNull);
@@ -135,7 +130,7 @@ void main() {
   );
 
   test(
-    'success refreshes group progress and existing Host assistance reads',
+    'success refreshes Host assistance reads and keeps the progress listener',
     () async {
       final guests = eventAssistanceHostGuestsProvider(hostGuestsSelection());
       h.container.listen(guests, (_, _) {});
@@ -145,10 +140,15 @@ void main() {
       final first = editor.submit();
       h.repository.completeConfirmation(0);
       await first;
-      await h.repository.waitForReads(2);
-      await h.container.pump();
+      for (var i = 0; i < 5 && h.guests.reads.length < 2; i++) {
+        await h.container.pump();
+      }
       expect(h.guests.reads, hasLength(2));
-      expect(h.repository.reads[1].scope, departureScope());
+      expect(
+        h.repository.reads,
+        hasLength(1),
+        reason: 'the trigger delivers the departure to the open listener',
+      );
     },
   );
 
@@ -170,7 +170,7 @@ void main() {
       expect(
         h.repository.reads,
         hasLength(2),
-        reason: 'no invalidation of the new account',
+        reason: 'one listener per account, never restarted by the save',
       );
     },
   );
@@ -209,12 +209,7 @@ void main() {
       final old = h.session;
       final editor = h.editor()..selectDestination(departureStop);
       final first = editor.submit();
-      h.container
-          .read(eventAssistanceDepartureProvider(departureScope()).notifier)
-          .reload();
-      await h.container.pump();
-      await h.repository.waitForReads(2);
-      h.repository.completeRead(1);
+      h.repository.deliver();
       await h.container.pump();
       final fresh = h.session;
       final next = h.editor();

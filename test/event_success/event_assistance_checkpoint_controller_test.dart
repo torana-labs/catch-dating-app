@@ -51,9 +51,15 @@ void main() {
     EventAssistanceCheckpointView? view,
   }) async {
     await repository.waitForReads(index + 1);
-    repository.reads[index].result.complete(view ?? checkpointView());
+    if (!repository.reads[index].result.isClosed) {
+      repository.reads[index].result.add(view ?? checkpointView());
+    }
     await container.pump();
   }
+
+  /// A newer snapshot on the open listener, as a trigger write delivers it.
+  Future<void> deliver({EventAssistanceCheckpointView? view}) =>
+      completeRead(repository.reads.length - 1, view: view);
 
   Future<EventAssistanceCheckpointSession> review() async {
     await signIn('host-1');
@@ -118,8 +124,7 @@ void main() {
       expect(form().error, isA<FormatException>());
       expect(form().change, isNull);
       actions.select(observedA);
-      container.read(query.notifier).reload();
-      await container.pump();
+      await deliver();
       expect(session.isCurrent, isFalse);
       await expectLater(actions.submit(), throwsA(isA<ValidationException>()));
       expect(repository.writes, isEmpty);
@@ -156,7 +161,11 @@ void main() {
       expect(form().phase, CheckpointPhase.saved);
       expect(await actions.submit(), same(result));
       expect(repository.writes.length, 1);
-      expect(repository.reads.length, 2);
+      expect(
+        repository.reads.length,
+        1,
+        reason: 'the trigger delivers the report to the open listener',
+      );
     },
   );
 
@@ -173,9 +182,7 @@ void main() {
       subscription.close();
       await container.pump();
       expect(container.exists(commandProvider), isTrue);
-      container.read(query.notifier).reload();
-      await container.pump();
-      await completeRead(1, view: checkpointView(observed: ['a']));
+      await deliver(view: checkpointView(observed: ['a']));
       final fresh = container.read(query).requireValue;
       container.listen(commandProvider, (_, _) {});
       final reopened = container.read(commandProvider.notifier)..open(fresh);
@@ -287,7 +294,7 @@ void main() {
       );
       expect(form().phase, CheckpointPhase.refreshRequired);
       await expectLater(actions.retry(), throwsA(isA<ValidationException>()));
-      await completeRead(1);
+      await deliver();
       actions.open(container.read(query).requireValue);
       actions.select(observedBoth);
       final pending = actions.submit();
@@ -350,7 +357,7 @@ void main() {
       await signIn('host-2');
       await completeRead(0);
       expect(container.read(query).isLoading, isTrue);
-      repository.reads[1].result.completeError(
+      repository.reads[1].result.addError(
         const NetworkException('unavailable', 'Offline'),
       );
       await container.pump();
@@ -368,7 +375,7 @@ void main() {
   );
 
   test(
-    'equal scopes share a read and a later reload wins over an older completion',
+    'equal scopes share a listener; a reload keeps it and deliveries replace',
     () async {
       final first = await review();
       final sameScope = EventAssistanceCheckpointScope(
@@ -382,13 +389,11 @@ void main() {
       expect(repository.reads.length, 1);
       container.read(query.notifier).reload();
       await container.pump();
-      container.read(query.notifier).reload();
-      await container.pump();
-      await completeRead(2, view: checkpointView(observed: ['a']));
+      expect(repository.reads.length, 1);
+      await deliver(view: checkpointView(observed: ['a']));
       final fresh = container.read(query).requireValue;
-      await completeRead(1);
-      expect(container.read(query).requireValue, same(fresh));
       expect(first.isCurrent, isFalse);
+      expect(fresh.isCurrent, isTrue);
       expect(fresh.view.report?.accountedFor, ['a']);
     },
   );
@@ -400,7 +405,7 @@ class _Repository extends Fake implements EventAssistanceCheckpointRepository {
       <
         ({
           EventAssistanceCheckpointScope scope,
-          Completer<EventAssistanceCheckpointView> result,
+          StreamController<EventAssistanceCheckpointView> result,
         })
       >[];
   final writes =
@@ -417,14 +422,16 @@ class _Repository extends Fake implements EventAssistanceCheckpointRepository {
   }
 
   @override
-  Future<EventAssistanceCheckpointView> fetch(
-    EventAssistanceCheckpointScope scope,
-  ) {
-    final result = Completer<EventAssistanceCheckpointView>();
+  Stream<EventAssistanceCheckpointView> watch(
+    EventAssistanceCheckpointScope scope, {
+    required String actorUid,
+  }) {
+    late final StreamController<EventAssistanceCheckpointView> result;
+    result = StreamController(onCancel: () => result.close());
     reads.add((scope: scope, result: result));
     _changed.complete();
     _changed = Completer<void>();
-    return result.future;
+    return result.stream;
   }
 
   @override

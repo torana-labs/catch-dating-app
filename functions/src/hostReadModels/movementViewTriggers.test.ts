@@ -17,6 +17,10 @@ import {
 import {asFirestore, allowDeletes, documentsOf, viewDeps} from
   "./movementViewTestFixtures";
 import {FakeFirestore} from "../operations/testFirestore";
+import {progressIdentity} from
+  "../eventSuccess/operations/groupProgressSource";
+import {checkpointIdentity} from
+  "../eventSuccess/operations/checkpointRecords";
 
 const day = 24 * 60 * 60 * 1000;
 
@@ -108,3 +112,16 @@ test("an event change re-evaluates its group views and every roster view",
     assert.equal(documentsOf(h.fake, departureViewsCollection).size, 1);
     assert.equal(documentsOf(h.fake, checkpointViewsCollection).size, 1);
   });
+
+test("view ids are pinned: the phone derives the same ones", () => {
+  const context = {mode: "live" as const, organizerId: "org-1",
+    eventId: "event-1"};
+  // test/contexts/live/event_assistance_view_identity_test.dart pins these.
+  assert.equal(progressIdentity(context, "event:whole"), "progress:" +
+    "763536da95cdb87bce6bad6f19ac4b406a48212521bb493f673300ca87bde7a5");
+  assert.equal(progressIdentity(context, "easy"), "progress:" +
+    "ecbd2b57677bea99746c770abdce60b48bd7ecd6a1739e9585d771bdf84d2a1f");
+  assert.equal(checkpointIdentity({context, groupId: "event:whole",
+    progressRevision: 3, checkpointId: "stop-2"}), "checkpoint:" +
+    "b0cd2cb234df1869e45add17f36e3d810453a98739a899ac6e12ad09d7301ed1");
+});

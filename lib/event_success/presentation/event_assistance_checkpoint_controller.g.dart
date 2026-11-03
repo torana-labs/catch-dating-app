@@ -70,7 +70,7 @@ final class EventAssistanceCheckpointControllerProvider
 }
 
 String _$eventAssistanceCheckpointControllerHash() =>
-    r'b984ab4197bbdbb88914db0a43c649824fd4b3b6';
+    r'ec7021507e563ecc13b60c250ad1bec5e66d301c';
 
 /// One recorded departure owns one pending checkpoint report across review refresh and sheet closure.
 

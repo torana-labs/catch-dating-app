@@ -91,6 +91,7 @@ final class DepartureSessionHarness {
   }
 }
 
+/// Each `watch` is one listener; the test delivers its snapshots.
 final class DepartureSessionRepository extends Fake
     implements EventAssistanceDepartureRepository {
   Completer<void> _readChanged = Completer<void>();
@@ -99,7 +100,7 @@ final class DepartureSessionRepository extends Fake
         ({
           EventAssistanceGroupScope scope,
           String actorUid,
-          Completer<EventAssistanceGroupProgressView> pending,
+          StreamController<EventAssistanceGroupProgressView> pending,
         })
       >[];
   final reviews =
@@ -114,16 +115,17 @@ final class DepartureSessionRepository extends Fake
   final confirmations = <Completer<EventAssistanceGroupProgressResult>>[];
 
   @override
-  Future<EventAssistanceGroupProgressView> fetch(
+  Stream<EventAssistanceGroupProgressView> watch(
     EventAssistanceGroupScope scope, {
     required String actorUid,
   }) {
-    final pending = Completer<EventAssistanceGroupProgressView>();
+    late final StreamController<EventAssistanceGroupProgressView> pending;
+    pending = StreamController(onCancel: () => pending.close());
     reads.add((scope: scope, actorUid: actorUid, pending: pending));
     final changed = _readChanged;
     _readChanged = Completer<void>();
     changed.complete();
-    return pending.future;
+    return pending.stream;
   }
 
   Future<void> waitForReads(int count) async {
@@ -132,9 +134,11 @@ final class DepartureSessionRepository extends Fake
     }
   }
 
+  /// Delivers a snapshot on listener [index]; a cancelled listener drops it.
   void completeRead(int index, {Map<String, Object?>? response}) {
     final request = reads[index];
-    request.pending.complete(
+    if (request.pending.isClosed) return;
+    request.pending.add(
       parseDeparture(
         response ??
             departureResponse(actorUid: request.actorUid, scope: request.scope),
@@ -143,6 +147,15 @@ final class DepartureSessionRepository extends Fake
       ).view,
     );
   }
+
+  /// Fails listener [index], as a rules denial or a lost connection would.
+  void failRead(int index, Object error) {
+    if (!reads[index].pending.isClosed) reads[index].pending.addError(error);
+  }
+
+  /// A newer snapshot on the latest listener, as a trigger write delivers it.
+  void deliver({Map<String, Object?>? response}) =>
+      completeRead(reads.length - 1, response: response);
 
   @override
   Future<EventAssistanceDepartureRosterReview> reviewRoster(

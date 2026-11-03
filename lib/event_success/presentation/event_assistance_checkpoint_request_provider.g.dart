@@ -74,7 +74,7 @@ final class EventAssistanceCheckpointRequestProvider
 }
 
 String _$eventAssistanceCheckpointRequestHash() =>
-    r'4b9185dbb7ddc53437cf66ef6704ebc92e8b34e4';
+    r'af07becdf8188218db6084f805330751d7170c0d';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 
@@ -140,26 +140,38 @@ abstract class _$EventAssistanceCheckpointRequest
   }
 }
 
+/// The checkpoint request review: the checkpoint view and the group's view
+/// (the manager's authority) composed on the phone, with no document of its
+/// own. A new session follows every delivery of either listener and retires
+/// the previous one.
+
 @ProviderFor(eventAssistanceCheckpointRequestForAccount)
 final eventAssistanceCheckpointRequestForAccountProvider =
     EventAssistanceCheckpointRequestForAccountFamily._();
+
+/// The checkpoint request review: the checkpoint view and the group's view
+/// (the manager's authority) composed on the phone, with no document of its
+/// own. A new session follows every delivery of either listener and retires
+/// the previous one.
 
 final class EventAssistanceCheckpointRequestForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceCheckpointRequestSession>,
-          EventAssistanceCheckpointRequestSession,
-          FutureOr<EventAssistanceCheckpointRequestSession>
+          AsyncValue<EventAssistanceCheckpointRequestSession>,
+          AsyncValue<EventAssistanceCheckpointRequestSession>
         >
-    with
-        $FutureModifier<EventAssistanceCheckpointRequestSession>,
-        $FutureProvider<EventAssistanceCheckpointRequestSession> {
+    with $Provider<AsyncValue<EventAssistanceCheckpointRequestSession>> {
+  /// The checkpoint request review: the checkpoint view and the group's view
+  /// (the manager's authority) composed on the phone, with no document of its
+  /// own. A new session follows every delivery of either listener and retires
+  /// the previous one.
   EventAssistanceCheckpointRequestForAccountProvider._({
     required EventAssistanceCheckpointRequestForAccountFamily super.from,
     required (EventAssistanceCheckpointScope, {AuthenticatedSession account})
     super.argument,
   }) : super(
-         retry: _noCheckpointRequestReadRetry,
+         retry: null,
          name: r'eventAssistanceCheckpointRequestForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -179,11 +191,11 @@ final class EventAssistanceCheckpointRequestForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceCheckpointRequestSession>
-  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+  $ProviderElement<AsyncValue<EventAssistanceCheckpointRequestSession>>
+  $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceCheckpointRequestSession> create(Ref ref) {
+  AsyncValue<EventAssistanceCheckpointRequestSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceCheckpointScope, {AuthenticatedSession account});
@@ -191,6 +203,19 @@ final class EventAssistanceCheckpointRequestForAccountProvider
       ref,
       argument.$1,
       account: argument.account,
+    );
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    AsyncValue<EventAssistanceCheckpointRequestSession> value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<
+            AsyncValue<EventAssistanceCheckpointRequestSession>
+          >(value),
     );
   }
 
@@ -207,22 +232,32 @@ final class EventAssistanceCheckpointRequestForAccountProvider
 }
 
 String _$eventAssistanceCheckpointRequestForAccountHash() =>
-    r'2ac5051f6a2c81224b7b4eeb4289c513205c402a';
+    r'a0bc8f780468c0c64c82b47bc8d1fffbea7a32dd';
+
+/// The checkpoint request review: the checkpoint view and the group's view
+/// (the manager's authority) composed on the phone, with no document of its
+/// own. A new session follows every delivery of either listener and retires
+/// the previous one.
 
 final class EventAssistanceCheckpointRequestForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceCheckpointRequestSession>,
+          AsyncValue<EventAssistanceCheckpointRequestSession>,
           (EventAssistanceCheckpointScope, {AuthenticatedSession account})
         > {
   EventAssistanceCheckpointRequestForAccountFamily._()
     : super(
-        retry: _noCheckpointRequestReadRetry,
+        retry: null,
         name: r'eventAssistanceCheckpointRequestForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The checkpoint request review: the checkpoint view and the group's view
+  /// (the manager's authority) composed on the phone, with no document of its
+  /// own. A new session follows every delivery of either listener and retires
+  /// the previous one.
 
   EventAssistanceCheckpointRequestForAccountProvider call(
     EventAssistanceCheckpointScope scope, {
