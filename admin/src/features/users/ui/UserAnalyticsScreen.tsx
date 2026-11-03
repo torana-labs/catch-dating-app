@@ -34,7 +34,6 @@ import {
   AdminFieldGrid,
   AdminMetricCard,
   AdminMetricGrid,
-  AdminToolbar,
   AdminWorkbenchStack,
   AlertRow,
   EmptyState,
@@ -91,7 +90,7 @@ export function UserAnalyticsWorkspace({
         action={controller.isLoading ? "Loading new user" : "read-only"}
         span={2}
       >
-        <AdminToolbar>
+        <CatchGap direction="horizontal" size="related" wrap crossAxisAlignment="end">
           <CatchField
             recipe="input"
             title="users/{uid}"
@@ -132,7 +131,7 @@ export function UserAnalyticsWorkspace({
           >
             Load
           </AdminButton>
-        </AdminToolbar>
+        </CatchGap>
         {controller.rangePreset === "custom" && (
           <AdminFieldGrid columns={2}>
             <CatchField

@@ -989,7 +989,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminToolbar and its typed props such as compact instead of rendering admin workbench toolbar shells or class modifiers directly.",
+    guidance: "Use CatchGap instead of rendering admin workbench toolbar shells or class modifiers directly.",
   },
   {
     family: "admin-workbench-layout",
@@ -1024,7 +1024,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminDetailScreenStack, AdminWorkbenchStack, AdminEditorGrid, and AdminEditorPanel instead of rendering or class-configuring admin workbench/editor layout shells directly.",
+    guidance: "Use AdminWorkbenchStack, AdminEditorGrid, and AdminEditorPanel instead of rendering or class-configuring admin workbench/editor layout shells directly.",
   },
   {
     family: "admin-utility-shell",

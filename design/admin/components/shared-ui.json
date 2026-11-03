@@ -24,30 +24,6 @@
       "componentId": "catch.button"
     },
     {
-      "id": "shared_admin_detail_screen_stack",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminDetailScreenStack",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminDetailScreenStackStory",
-        "states": [
-          "detail"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.section_stack",
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
-    },
-    {
       "id": "shared_admin_editor_panel",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -287,30 +263,6 @@
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_toolbar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminToolbar",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminToolbarStory",
-        "states": [
-          "default",
-          "compact"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.top_bar"
-      ],
-      "comparisonReason": "A legacy admin row of filter and action controls. Not a top bar: a row of controls inside a pane, not the top of a screen."
     },
     {
       "id": "shared_admin_workbench_stack",

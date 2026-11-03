@@ -41,24 +41,6 @@ import {
   type PanelProps,
 } from "./shared";
 
-export function AdminToolbar({
-  children,
-  className = "",
-  compact = false,
-}: {
-  children: ReactNode;
-  className?: string;
-  compact?: boolean;
-}) {
-  return (
-    <div className={classNames("workbench-toolbar", compact && "compact", className)}>
-      {children}
-    </div>
-  );
-}
-
-
-
 export function AdminWorkbenchStack({
   alignStart = false,
   children,
@@ -126,17 +108,6 @@ export function AdminChecklistCopy({
       <strong>{label}</strong>
       <small>{detail}</small>
     </span>
-  );
-}
-
-export function AdminDetailScreenStack({
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <AdminWorkbenchStack {...props} className={classNames("admin-detail-screen", className)} />
   );
 }
 

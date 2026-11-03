@@ -406,14 +406,6 @@ select {
   grid-column: 1;
 }
 
-.workbench-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--catch-space-s3);
-  margin-bottom: var(--catch-space-s3);
-}
-
 .workbench-note {
   max-width: 520px;
   color: var(--muted);
@@ -517,10 +509,6 @@ select {
   width: 9px;
   height: 9px;
   border-radius: var(--catch-radius-pill);
-}
-
-.admin-detail-screen .marketing-ops-header {
-  margin-bottom: 0;
 }
 
 .admin-status-grid {
@@ -2124,11 +2112,6 @@ th {
   .admin-decision-footer.publishing-actions > .ghost-button,
   .admin-decision-footer.publishing-actions > .primary-button {
     width: 100%;
-  }
-
-  .workbench-toolbar {
-    align-items: stretch;
-    flex-direction: column;
   }
 
   .form-grid.three {

@@ -165,13 +165,13 @@
   },
   "src/shared/ui/AdminPrimitives/workbench.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 6
+      "count": 5
     },
     "react/forbid-elements": {
-      "count": 10
+      "count": 9
     }
   }
 }
