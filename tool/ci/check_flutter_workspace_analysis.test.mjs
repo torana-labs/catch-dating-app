@@ -19,6 +19,7 @@ const repositoryPubspecs = {
   "packages/catch_tokens/pubspec.yaml": "name: catch_tokens\nresolution: workspace\n",
   "packages/kernel/pubspec.yaml": "name: catch_kernel\nresolution: workspace\n",
   "packages/kernel/test/labelled_test.dart": "",
+  "packages/l10n/pubspec.yaml": "name: catch_l10n\nresolution: workspace\n",
   "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",
   "apps/host/pubspec.yaml": "name: catch_host_app\nresolution: workspace\n",
   "pubspec.yaml": "name: catch_dating_app\nworkspace:\n  - apps/host\n",
@@ -29,13 +30,13 @@ test("workspace plan discovers every pubspec and resolves workspace members once
   const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
   assert.deepEqual(
     plan.packages.map((entry) => entry.directory),
-    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "tool/widget_dedupe", "widgetbook"],
   );
   assert.deepEqual(
     plan.steps.filter((step) => step.phase === "resolve").map((step) => step.directory),
     ["", "tool/widget_dedupe", "widgetbook"],
   );
-  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 7);
+  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 8);
   assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_tokens" && step.phase === "analyze"), {
     phase: "analyze", directory: "packages/catch_tokens", command: "dart",
     args: ["analyze", "lib", "--fatal-infos"],
@@ -62,7 +63,7 @@ test("every nested package is analyzed from its own package boundary", () => {
     .map((step) => step.directory);
   assert.deepEqual(
     analyzedDirectories,
-    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "tool/widget_dedupe", "widgetbook"],
   );
 });
 
@@ -111,11 +112,15 @@ test("analyzer plugin crashes cannot be reused as successful diagnostics", (t) =
   assert.equal(fs.readFileSync(path.join(directory, "analyze.status"), "utf8"), "1\n");
 });
 
-test("UI and kernel source and tests both receive explicit analyzer targets", () => {
+test("UI, kernel and l10n source and tests receive explicit analyzer targets", () => {
   const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
   assert.deepEqual(plan.steps.find((step) => step.directory === "packages/kernel" && step.phase === "analyze"), {
     phase: "analyze", directory: "packages/kernel", command: "dart",
     args: ["analyze", "lib", "test", "--fatal-infos"],
+  });
+  assert.deepEqual(plan.steps.find((step) => step.directory === "packages/l10n" && step.phase === "analyze"), {
+    phase: "analyze", directory: "packages/l10n", command: "dart",
+    args: ["analyze", "lib", "--fatal-infos"],
   });
   assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_ui" && step.phase === "analyze"), {
     phase: "analyze", directory: "packages/catch_ui", command: "dart",
@@ -151,8 +156,10 @@ test("app packages reach the plugins through the root options, not a block of th
     assert.doesNotMatch(options, /^plugins:/mu, app);
   }
 
-  assert.doesNotMatch(rootOptions, /^\s*- packages\/kernel(?:\/|\b)/mu);
-  const kernelOptions = fs.readFileSync(path.join(root, "packages/kernel/analysis_options.yaml"), "utf8");
-  assert.match(kernelOptions, /^include: \.\.\/\.\.\/analysis_options\.yaml$/mu);
-  assert.doesNotMatch(kernelOptions, /^plugins:/mu);
+  for (const name of ["kernel", "l10n"]) {
+    assert.doesNotMatch(rootOptions, new RegExp(`^\\s*- packages/${name}(?:/|\\b)`, "mu"));
+    const options = fs.readFileSync(path.join(root, "packages", name, "analysis_options.yaml"), "utf8");
+    assert.match(options, /^include: \.\.\/\.\.\/analysis_options\.yaml$/mu, name);
+    assert.doesNotMatch(options, /^plugins:/mu, name);
+  }
 });

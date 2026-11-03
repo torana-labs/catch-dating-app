@@ -7,9 +7,9 @@ import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehears
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

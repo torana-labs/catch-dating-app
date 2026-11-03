@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_insights.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 
 typedef ProfileQualitySuggestionCopy = ({String title, String detail});
 

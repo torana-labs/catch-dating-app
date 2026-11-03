@@ -6,8 +6,8 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_lat
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

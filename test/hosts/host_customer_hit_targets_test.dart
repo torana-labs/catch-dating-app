@@ -20,7 +20,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_load
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/device/connectivity_service.dart';
@@ -29,6 +28,7 @@ import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';

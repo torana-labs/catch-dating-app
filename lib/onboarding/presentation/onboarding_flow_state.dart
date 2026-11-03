@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_l10n/l10n.dart';
 
 enum OnboardingEntryMode {
   standard,

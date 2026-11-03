@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

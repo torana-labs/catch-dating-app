@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibi
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
 
 enum EventSuccessSetupStatus {
   needsWork(StructuredDomainCopy.eventSuccessSetupNeedsWork),

@@ -10,9 +10,9 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/host
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_mode_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_review_sheet.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

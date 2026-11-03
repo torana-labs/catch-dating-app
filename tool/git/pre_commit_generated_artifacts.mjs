@@ -20,7 +20,7 @@ export function planPreCommitActions({graph, stagedPaths}) {
   });
   const l10n = generators.find((generator) => generator.id === "flutter.l10n");
   const l10nInputChanged = paths.some((candidate) =>
-    matchesGlobPath(candidate, "lib/l10n/*.arb") ||
+    matchesGlobPath(candidate, "packages/l10n/lib/*.arb") ||
       (l10n != null && matchesCodegenInput(candidate, l10n)));
   return {
     // Generator outputs have an exact canonical generator format. Formatting
@@ -155,7 +155,7 @@ export function runPreCommitGeneratedArtifacts({
 function matchesGeneratorPath(candidate, generator) {
   return matchesCodegenInput(candidate, generator) ||
     generator.outputs.some(pattern => matchesGlobPath(candidate, pattern)) ||
-    generator.id === "flutter.l10n" && matchesGlobPath(candidate, "lib/l10n/*.arb");
+    generator.id === "flutter.l10n" && matchesGlobPath(candidate, "packages/l10n/lib/*.arb");
 }
 
 function readIndexedGraph({repoRoot, runCommand}) {
@@ -211,11 +211,11 @@ function assertIndexIntegrity({
   const matchesSelected = candidate => stagedDart.has(candidate) ||
     candidate === "tool/harness/component_graph.json" ||
     plan.triggeredGenerators.some(generator => matchesGeneratorPath(candidate, generator)) ||
-    plan.l10nInputChanged && matchesGlobPath(candidate, "lib/l10n/generated/**");
+    plan.l10nInputChanged && matchesGlobPath(candidate, "packages/l10n/lib/generated/**");
   const patterns = [...stagedDart, "tool/harness/component_graph.json",
     ...plan.triggeredGenerators.flatMap(generator => [...generator.inputs, ...generator.outputs]),
     ...(plan.triggeredGeneratorIds.includes("flutter.l10n") ?
-      ["lib/l10n/*.arb", ...(plan.l10nInputChanged ? ["lib/l10n/generated/**"] : [])] : [])];
+      ["packages/l10n/lib/*.arb", ...(plan.l10nInputChanged ? ["packages/l10n/lib/generated/**"] : [])] : [])];
   // Bound discovery to declared families. Do not exclude ignored files: a
   // generator can consume or overwrite them just like ordinary untracked files.
   const wildcardRoots = patterns.filter(pattern => /[*?]/u.test(pattern)).map(pattern => {

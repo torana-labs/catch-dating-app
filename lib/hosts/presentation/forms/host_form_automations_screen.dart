@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
@@ -12,6 +11,7 @@ import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_stat
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/platform/time/time_formatters.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

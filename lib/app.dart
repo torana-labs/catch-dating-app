@@ -5,7 +5,6 @@ import 'package:catch_dating_app/contexts/account/data/force_update_provider.dar
 import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
@@ -16,6 +15,7 @@ import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/platform/startup/native_splash.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';

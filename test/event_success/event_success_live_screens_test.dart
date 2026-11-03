@@ -36,10 +36,10 @@ import 'package:catch_dating_app/event_success/presentation/event_success_setup_
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_bar.dart';
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_host_live_page_body.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';

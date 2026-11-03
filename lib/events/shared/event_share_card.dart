@@ -5,10 +5,10 @@ import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.da
 import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
 import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

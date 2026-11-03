@@ -5,7 +5,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
-const _l10nImport = "import 'package:catch_dating_app/l10n/l10n.dart';";
+const _l10nImport = "import 'package:catch_l10n/l10n.dart';";
 
 const _copyArgumentNames = <String>{
   'actionLabel',
@@ -97,7 +97,7 @@ void main(List<String> arguments) {
       .where((path) => path.isNotEmpty)
       .toList(growable: false);
   final root = Directory.current.path;
-  final arbFile = File('$root/lib/l10n/app_en.arb');
+  final arbFile = File('$root/packages/l10n/lib/app_en.arb');
   final catalog = (jsonDecode(arbFile.readAsStringSync()) as Map)
       .cast<String, Object?>();
   if (arguments.contains('--rollback-generated-batch')) {
@@ -757,7 +757,7 @@ bool _isCandidate(
       relative == 'lib/contexts/events/domain/event_policy/settlement.dart') {
     return false;
   }
-  if (relative.startsWith('lib/l10n/') ||
+  if (relative.startsWith('packages/l10n/lib/') ||
       relative.startsWith('lib/platform/schema_contracts/generated/')) {
     return false;
   }
@@ -886,7 +886,7 @@ void _fixGeneratedImports(String root, Map<String, Object?> catalog) {
     var insertionOffset = catchImports.last.end;
     for (final directive in catchImports) {
       final uri = directive.uri.stringValue!;
-      if (uri.compareTo('package:catch_dating_app/l10n/l10n.dart') > 0) {
+      if (uri.compareTo('package:catch_l10n/l10n.dart') > 0) {
         insertionOffset = directive.offset;
         break;
       }

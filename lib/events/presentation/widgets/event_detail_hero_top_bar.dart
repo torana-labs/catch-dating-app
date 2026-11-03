@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.da
 import 'package:catch_dating_app/contexts/events/parts/event_thumbnail.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

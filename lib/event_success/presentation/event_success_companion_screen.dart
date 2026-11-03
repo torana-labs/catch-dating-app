@@ -39,7 +39,6 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -50,6 +49,7 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/field_const
 import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

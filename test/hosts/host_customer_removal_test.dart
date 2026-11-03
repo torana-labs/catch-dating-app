@@ -13,13 +13,13 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

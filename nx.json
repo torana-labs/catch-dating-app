@@ -258,7 +258,7 @@
                   "{workspaceRoot}/firebase/*/host/android/**/*",
                   "{workspaceRoot}/pubspec.yaml",
                   "{workspaceRoot}/pubspec.lock",
-                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/packages/l10n/l10n.yaml",
                   "{workspaceRoot}/analysis_options.yaml",
                   "{workspaceRoot}/build.yaml",
                   "{workspaceRoot}/dart_test.yaml",
@@ -295,7 +295,7 @@
                   "{workspaceRoot}/.github/actions/cache-cocoapods/**/*",
                   "{workspaceRoot}/pubspec.yaml",
                   "{workspaceRoot}/pubspec.lock",
-                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/packages/l10n/l10n.yaml",
                   "{workspaceRoot}/analysis_options.yaml",
                   "{workspaceRoot}/build.yaml",
                   "{workspaceRoot}/dart_test.yaml",
@@ -326,7 +326,7 @@
                   "{workspaceRoot}/apps/*/web/**/*",
                   "{workspaceRoot}/pubspec.yaml",
                   "{workspaceRoot}/pubspec.lock",
-                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/packages/l10n/l10n.yaml",
                   "{workspaceRoot}/analysis_options.yaml",
                   "{workspaceRoot}/build.yaml",
                   "{workspaceRoot}/dart_test.yaml",
@@ -358,7 +358,7 @@
                   "{workspaceRoot}/apps/host/**/*",
                   "{workspaceRoot}/copy/event_success_questionnaires_en.json",
                   "{workspaceRoot}/copy/structured_domain_copy_en.json",
-                  "{workspaceRoot}/lib/l10n/app_en.arb",
+                  "{workspaceRoot}/packages/l10n/lib/app_en.arb",
                   "{workspaceRoot}/.github/workflows/app-build-matrix.yml",
                   "^production"
                 ]
@@ -383,7 +383,7 @@
                   "{workspaceRoot}/.github/actions/cache-cocoapods/**/*",
                   "{workspaceRoot}/pubspec.yaml",
                   "{workspaceRoot}/pubspec.lock",
-                  "{workspaceRoot}/l10n.yaml",
+                  "{workspaceRoot}/packages/l10n/l10n.yaml",
                   "{workspaceRoot}/analysis_options.yaml",
                   "{workspaceRoot}/build.yaml",
                   "{workspaceRoot}/dart_test.yaml",
@@ -476,6 +476,9 @@
             "contracts",
             "@catch/brand"
           ],
+          "catch_l10n": [
+            "@catch/brand"
+          ],
           "functions": [
             "contracts",
             "@catch/brand",
@@ -520,6 +523,7 @@
             "catch_consumer_app",
             "catch_host_app",
             "catch_kernel",
+            "catch_l10n",
             "catch_tokens",
             "catch_ui"
           ],

@@ -204,7 +204,7 @@ test("check accepts outputs owned by other generators without writes", (t) => {
   for (const relativePath of [
     "lib/platform/schema_contracts/generated/domain_producer.g.dart",
     "lib/platform/schema_contracts/generated/schemas_other/current.g.dart",
-    "lib/l10n/generated/structured_domain_copy.g.dart",
+    "packages/l10n/lib/generated/structured_domain_copy.g.dart",
     "functions/src/shared/generated/anotherProducer.ts",
   ]) fixture.write(relativePath, "// independently generated\n");
   assert.deepEqual(fixture.check(), []);
