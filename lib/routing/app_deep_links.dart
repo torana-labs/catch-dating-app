@@ -1,6 +1,6 @@
-import 'package:catch_kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_kernel/brand.dart';
 
 const _deepLinkHost = Brand.webDomain;
 
