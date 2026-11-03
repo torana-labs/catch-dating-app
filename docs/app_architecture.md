@@ -2476,6 +2476,9 @@ epoch and in-flight syntax alone does not justify converting them to
 AsyncNotifier. Preserve the pending-snapshot and account/authorization fences
 below when changing ownership.
 
+How long a read owner keeps its data, and which writes make it stale, is the
+[screen data caching contract](screen_data_caching.md).
+
 Mutation key grain must match the UI interaction grain. Route-level single
 actions such as book, cancel, submit, and delete for the route's single subject
 may use static `Mutation` fields. Repeated row or list actions such as

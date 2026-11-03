@@ -10,8 +10,7 @@ How long screen data stays in memory, when a returning screen refetches, which
 writes make data stale, and what the provider graph checks. The owner approved
 this contract on 1 November 2026 (issue #1323) together with fourteen
 freshness answers; on 2 November the owner decided the read path below, and
-this text is adapted to it. `docs/app_architecture.md` gains a pointer to this
-document in the next PR that touches it (another lane holds that file now).
+this text is adapted to it.
 
 ## Read path
 
