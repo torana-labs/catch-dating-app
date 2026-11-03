@@ -43,7 +43,6 @@
 
     {"path": "lib/firebase_options", "layer": "platform"},
     {"path": "lib/l10n/", "layer": "platform"},
-    {"path": "lib/routing/route_contract.dart", "layer": "platform"},
 
     {"path": "lib/auth/", "context": "account"},
     {"path": "lib/force_update/", "context": "account"},

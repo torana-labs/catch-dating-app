@@ -36,18 +36,18 @@ dev_dependencies:
 # Regenerate from this directory with `dart run flutter_native_splash:create`,
 # then rerun the brand generator (release operations guide, Native Splash Assets).
 flutter_native_splash:
-  color: "#F4F4F1"
-  color_web: "#F4F4F1"
-  color_dark: "#0F0E10"
-  color_dark_web: "#0F0E10"
+  color: "#F3F3F1"
+  color_web: "#F3F3F1"
+  color_dark: "#231E23"
+  color_dark_web: "#231E23"
   image: assets/branding/catch_splash_mark_light.png
   image_dark: assets/branding/catch_splash_mark_dark.png
   android: true
   ios: true
   web: true
   android_12:
-    color: "#F4F4F1"
-    color_dark: "#0F0E10"
+    color: "#F3F3F1"
+    color_dark: "#231E23"
     image: assets/branding/catch_splash_mark_light.png
     image_dark: assets/branding/catch_splash_mark_dark.png
 

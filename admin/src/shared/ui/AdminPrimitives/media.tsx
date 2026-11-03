@@ -20,15 +20,10 @@ import {
   type MetricTone,
   type MetricVariant,
   type QualityRowTone,
-  type AdminOverviewQueueIntent,
-  type AdminOverviewSignalTone,
   type AdminFormVariant,
-  type AdminEditorGridElement,
-  type AdminTagRowElement,
   type EmptyStateVariant,
   type AdminLayoutSpan,
   type AdminEyebrowElement,
-  type AdminIntakeGateTone,
   type AdminBrandMarkSize,
   type AdminMarketingStepStatus,
   type AdminMarketingNewPostAccent,
@@ -155,4 +150,3 @@ export function AdminMarketingImageEmpty({
     </div>
   );
 }
-

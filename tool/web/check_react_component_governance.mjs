@@ -142,7 +142,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminForm variant=\"publishing\", AdminPublishingFormShell, and AdminEditorSection instead of rendering or class-configuring admin editor form shells directly.",
+    guidance: "Use CatchField and CatchSection instead of rendering or class-configuring admin editor form shells directly.",
   },
   {
     family: "admin-layout-span",
@@ -162,7 +162,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use the shared span={2} layout prop on AdminPanel, Panel, AdminEditorPanel, AdminCard, TextField, or TextareaField instead of passing the raw admin span-2 class from feature code.",
+    guidance: "Use the shared span={2} layout prop on AdminPanel, Panel, or AdminCard instead of passing the raw admin span-2 class from feature code.",
   },
   {
     family: "admin-eyebrow-label",
@@ -542,7 +542,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminPublishingLoadbar, AdminSurfacePreview, and AdminMutedCell instead of passing raw admin publishing utility classes from feature code.",
+    guidance: "Use CatchSection, CatchGap, and CatchText instead of passing raw admin publishing utility classes from feature code.",
   },
   {
     family: "admin-event-supply-shell",
@@ -1024,7 +1024,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminWorkbenchStack, AdminEditorGrid, and AdminEditorPanel instead of rendering or class-configuring admin workbench/editor layout shells directly.",
+    guidance: "Use AdminWorkbenchStack and CatchPaneLayout instead of rendering or class-configuring admin workbench/editor layout shells directly.",
   },
   {
     family: "admin-utility-shell",
@@ -1049,7 +1049,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminWorkbenchNote and AdminChecklistStack instead of rendering admin utility shells directly.",
+    guidance: "Use CatchSection and CatchIndexRow instead of rendering admin utility shells directly.",
   },
   {
     family: "admin-command-list",
@@ -1194,7 +1194,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminStatusGrid and StateRow/AdminStateRow instead of rendering admin status-display shells directly.",
+    guidance: "Use StateRow or CatchMetaRow instead of rendering admin status-display shells directly.",
   },
   {
     family: "admin-app-shell-status",

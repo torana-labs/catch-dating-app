@@ -21,15 +21,10 @@ import {
   type MetricVariant,
   type AdminMetricGridColumns,
   type QualityRowTone,
-  type AdminOverviewQueueIntent,
-  type AdminOverviewSignalTone,
   type AdminFormVariant,
-  type AdminEditorGridElement,
-  type AdminTagRowElement,
   type EmptyStateVariant,
   type AdminLayoutSpan,
   type AdminEyebrowElement,
-  type AdminIntakeGateTone,
   type AdminBrandMarkSize,
   type AdminMarketingStepStatus,
   type AdminMarketingNewPostAccent,
@@ -113,42 +108,6 @@ export function AdminMetricCard({
       {caption ? <small className="metric-caption">{caption}</small> : null}
       {footer ? <small className="metric-footer">{footer}</small> : null}
     </article>
-  );
-}
-
-export function AdminPublishingLoadbar({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div {...props} className={classNames("publishing-loadbar", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminSurfacePreview({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div {...props} className={classNames("surface-preview", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminMutedCell({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span {...props} className={classNames("muted-cell", className)}>
-      {children}
-    </span>
   );
 }
 

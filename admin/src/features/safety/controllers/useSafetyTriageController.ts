@@ -75,7 +75,6 @@ export function useSafetyTriageController({
     useState<SafetyAssignmentFormState>({assigneeUid: "", note: ""});
   const queueQueryKey = adminQueryKeys.safety.queue();
   const queueQuery = useQuery({
-    enabled: !selectedTargetPath,
     queryKey: queueQueryKey,
     queryFn: loadSafetyTriageSnapshot,
     placeholderData: (previousData) => previousData,

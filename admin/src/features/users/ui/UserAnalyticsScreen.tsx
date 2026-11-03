@@ -30,7 +30,6 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
-  AdminEditorPanel,
   AdminFieldGrid,
   AdminMetricCard,
   AdminMetricGrid,

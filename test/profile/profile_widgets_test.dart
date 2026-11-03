@@ -9,6 +9,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dar
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -16,8 +18,6 @@ import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/device/connectivity_service.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
