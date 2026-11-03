@@ -26,8 +26,8 @@ describe("CatchText", () => {
 
   const responsive: Array<[CatchTextVariant, CatchSizeClass, string, string]> = [
     ["page-title", "compact", "display-title", "H1"],
-    ["page-title", "medium", "display-section", "H1"],
-    ["page-title", "expanded", "display-section", "H1"],
+    ["page-title", "medium", "display-lg", "H1"],
+    ["page-title", "expanded", "display-xl", "H1"],
     ["section-title", "compact", "display-sm", "H2"],
     ["section-title", "medium", "display-sm", "H2"],
     ["section-title", "expanded", "display-section", "H2"],

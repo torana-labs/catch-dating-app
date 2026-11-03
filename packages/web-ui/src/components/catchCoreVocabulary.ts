@@ -92,9 +92,14 @@ export type CatchTextRole = (typeof catchTextRoles)[number];
 export const catchTextResponsiveVariants = ["page-title", "section-title", "hero"] as const;
 export type CatchTextResponsiveVariant = (typeof catchTextResponsiveVariants)[number];
 
-/** The system's table: the role each responsive variant takes at each size class. */
+/**
+ * The role each responsive variant takes at each size class, as the token
+ * file's --catch-typography-variant-* blocks say (decision O, 3 Nov: a page
+ * title is 38, 48 and 64; the design source's RESPONSIVE table disagrees with
+ * its own comment and is not followed). The vocabulary test pins the two.
+ */
 export const catchTextResponsiveRoles = {
-  "page-title": {compact: "display-title", medium: "display-section", expanded: "display-section"},
+  "page-title": {compact: "display-title", medium: "display-lg", expanded: "display-xl"},
   "section-title": {compact: "display-sm", medium: "display-sm", expanded: "display-section"},
   hero: {compact: "display-lg", medium: "display-xl", expanded: "display-hero"},
 } as const satisfies Record<CatchTextResponsiveVariant, Record<CatchSizeClass, CatchTextRole>>;
