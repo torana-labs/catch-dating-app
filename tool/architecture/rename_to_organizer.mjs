@@ -27,7 +27,7 @@ const arbPath = "lib/l10n/app_en.arb";
 const contextMapPath = "tool/architecture/context_map.json";
 // Route names are Routes constant names (Routes.x.name); the capture
 // catalog, registries and docs quote them, so quoted route names follow.
-const routeContractPath = "lib/routing/route_contract.dart";
+const routeContractPath = "lib/platform/routing/route_contract.dart";
 // Dart the codemod edits; Dart files under movedRoots also take new names.
 const dartRoots = ["lib/", "test/", "integration_test/", "apps/", "widgetbook/", "packages/", "tool/"];
 const movedRoots = ["lib/", "test/", "integration_test/", "apps/", "widgetbook/", "packages/"];

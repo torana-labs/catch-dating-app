@@ -23,7 +23,7 @@ function fixture(t) {
     assert.equal(result.status, 0, result.stderr);
     return result.stdout.trim();
   };
-  write("lib/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  ;\n}\n");
+  write("lib/platform/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  ;\n}\n");
   write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen())]); }\n");
   write("apps/host/lib/feature.dart", "/// Host-only feature.\nclass HostScreen extends StatelessWidget {}\nvoid open() { MaterialPageRoute(builder: (_) => const HostScreen()); }\n");
   write("lib/home.dart", "/// Home contract.\nclass HomeScreen extends StatelessWidget {}\n");
@@ -127,7 +127,7 @@ test("a newly generated route still fails the actual authored capture coverage g
   const check = () => spawnSync(process.execPath, ["tool/ui_capture/check_capture_coverage.mjs", "--check"], {cwd: f.root, encoding: "utf8"});
   const before = check();
   assert.equal(before.status, 0, before.stderr);
-  f.write("lib/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  detail('/detail'),\n  ;\n}\n");
+  f.write("lib/platform/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  detail('/detail'),\n  ;\n}\n");
   f.write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen()), GoRoute(path: Routes.detail.path, name: Routes.detail.name, builder: (_) => const DetailScreen())]); }\n");
   sourceSha = f.commit();
   materializeInventories({repoRoot: f.root, sourceSha});

@@ -22,15 +22,10 @@ import {
   type MetricTone,
   type MetricVariant,
   type QualityRowTone,
-  type AdminOverviewQueueIntent,
-  type AdminOverviewSignalTone,
   type AdminFormVariant,
-  type AdminEditorGridElement,
-  type AdminTagRowElement,
   type EmptyStateVariant,
   type AdminLayoutSpan,
   type AdminEyebrowElement,
-  type AdminIntakeGateTone,
   type AdminBrandMarkSize,
   type AdminMarketingStepStatus,
   type AdminMarketingNewPostAccent,
@@ -62,66 +57,6 @@ export function AdminWorkbenchStack({
         className
       )}
     >
-      {children}
-    </div>
-  );
-}
-
-export function AdminChecklistStack({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("checklist-stack", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminChecklistHeader({
-  detail,
-  label,
-}: {
-  detail: ReactNode;
-  label: ReactNode;
-}) {
-  return (
-    <div className="checklist-heading">
-      <strong>{label}</strong>
-      <span>{detail}</span>
-    </div>
-  );
-}
-
-export function AdminChecklistCopy({
-  detail,
-  label,
-}: {
-  detail: ReactNode;
-  label: ReactNode;
-}) {
-  return (
-    <span className="checklist-copy">
-      <strong>{label}</strong>
-      <small>{detail}</small>
-    </span>
-  );
-}
-
-export function AdminStatusGrid({
-  children,
-  className = "",
-  compact = false,
-}: {
-  children: ReactNode;
-  className?: string;
-  compact?: boolean;
-}) {
-  return (
-    <div className={classNames("admin-status-grid", compact && "compact", className)}>
       {children}
     </div>
   );

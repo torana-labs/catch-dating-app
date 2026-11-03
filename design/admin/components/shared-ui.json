@@ -24,47 +24,6 @@
       "componentId": "catch.button"
     },
     {
-      "id": "shared_admin_editor_panel",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "AdminEditorPanel",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminEditorPanelStory",
-        "states": [
-          "editor",
-          "wide"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Panel with editor styling; same contract as Panel.",
-      "componentId": "catch.section"
-    },
-    {
-      "id": "shared_admin_editor_section",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
-      "exportName": "AdminEditorSection",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminEditorSectionStory",
-        "states": [
-          "fieldset"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench. Phase 7d: Fieldset that groups editor fields: the form-rows recipe of catch.section.",
-      "componentId": "catch.section"
-    },
-    {
       "id": "shared_admin_eyebrow",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -147,44 +106,6 @@
       "componentId": "catch.button"
     },
     {
-      "id": "shared_admin_muted_cell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminMutedCell",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminMutedCellStory",
-        "states": [
-          "inline"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_publishing_loadbar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminPublishingLoadbar",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminPublishingLoadbarStory",
-        "states": [
-          "loaded"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
       "id": "shared_admin_sign_in_panel",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -224,45 +145,6 @@
         ]
       },
       "notes": "Phone-only admin authentication shell with deterministic phone-entry and phone-otp preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_status_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminStatusGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminStatusGridStory",
-        "states": [
-          "default",
-          "compact"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_surface_preview",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminSurfacePreview",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminSurfacePreviewStory",
-        "states": [
-          "listing-preview"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
       "id": "shared_admin_workbench_stack",

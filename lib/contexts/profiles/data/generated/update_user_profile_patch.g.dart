@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 // Typed callable request DTO emitted from patches/update_user_profile.schema.json.
-// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
+// Owned by its context, so the platform barrel does not re-export it.
 
 /// Typed patch helper generated from Callable request body for updateUserProfile. Values are normalized before Firestore writes.
 final class UpdateUserProfilePatch {

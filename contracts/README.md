@@ -214,7 +214,8 @@ node tool/contracts/check_storage_contract.mjs
 ## Dart Patch Classes
 
 `UpdateUserProfilePatch` is a generated patch helper class emitted into
-`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart`.
+`lib/contexts/profiles/data/generated/update_user_profile_patch.g.dart` and exported
+by `lib/contexts/profiles/profiles.dart`.
 `UpdateOrganizerPatch` stays handwritten in
 `lib/contexts/organizers/domain/update_organizer_patch.dart`, because the
 generator cannot emit patch helpers for arrays of embedded objects. Their

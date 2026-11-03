@@ -29,11 +29,6 @@ import {
 import {
   AdminButton,
   AdminCard,
-  AdminChecklistCopy,
-  AdminChecklistHeader,
-  AdminChecklistStack,
-  AdminEditorPanel,
-  AdminEditorSection,
   AdminFieldGrid,
   AdminEventSupplyDetail,
   AdminEventSupplyEmptyState,
@@ -46,12 +41,9 @@ import {
   AdminFeatureDropPreviewCard,
   AdminFeatureDropPreviewGrid,
   AdminFeatureDropWideField,
-  AdminMutedCell,
-  AdminPublishingLoadbar,
   AdminQueryList,
   AdminQueryRow,
   AdminStateRow,
-  AdminSurfacePreview,
   AdminWorkspace,
   AlertRow,
   DecisionFooter,
@@ -80,62 +72,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const AdminPublishingLoadbarStory: Story = {
-  name: "Publishing loadbar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_publishing_loadbar",
-      states: ["loaded"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminPublishingLoadbar>
-        <span>Publication packet loaded</span>
-        <CatchBadge recipe="status" tone="success" label="Synced" />
-      </AdminPublishingLoadbar>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSurfacePreviewStory: Story = {
-  name: "Surface preview",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_surface_preview",
-      states: ["listing-preview"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSurfacePreview>
-        <CatchGap direction="horizontal" size="inline" wrap>
-          <CatchBadge label="public listing" />
-          <CatchBadge recipe="status" tone="success" label="claim CTA" />
-        </CatchGap>
-        <QualityRow icon={<Eye size={16} />} tone="success">
-          Preview copy matches the generated route payload.
-        </QualityRow>
-      </AdminSurfacePreview>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMutedCellStory: Story = {
-  name: "Muted cell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_muted_cell",
-      states: ["inline"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMutedCell>Last checked 3 minutes ago</AdminMutedCell>
-    </AdminWorkspace>
-  ),
-};
 
 export const AdminEventSupplyReviewGridStory: Story = {
   name: "Event supply review grid",
@@ -239,61 +175,6 @@ export const AdminCommandRowStory: Story = {
         <span>Regenerate route manifest</span>
         <AdminButton>Queue job</AdminButton>
       </CatchAdminCommandRow>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminChecklistStackStory: Story = {
-  name: "Checklist stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_checklist_stack",
-      states: ["checks"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminChecklistStack>
-        <AlertRow icon={<CheckCircle2 size={16} />} title="Route contract" tone="success">
-          Public path is present.
-        </AlertRow>
-        <AlertRow icon={<FileWarning size={16} />} title="Claim copy" tone="warning">
-          Needs owner review.
-        </AlertRow>
-      </AdminChecklistStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminChecklistHeaderStory: Story = {
-  name: "Checklist header",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_checklist_header",
-      states: ["incomplete"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminChecklistHeader label="Publication checks" detail="3 tasks remaining" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminChecklistCopyStory: Story = {
-  name: "Checklist copy",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_checklist_copy",
-      states: ["actionable"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminChecklistCopy
-        label="Source evidence verified"
-        detail="Open the captured source and confirm it supports the listing."
-      />
     </AdminWorkspace>
   ),
 };
@@ -517,31 +398,6 @@ export const AdminFeatureDropCaptureThumbStory: Story = {
   ),
 };
 
-export const AdminEditorSectionStory: Story = {
-  name: "Editor section",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_editor_section",
-      states: ["fieldset"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEditorSection>
-        <legend>Review fields</legend>
-        <AdminFieldGrid columns={1}>
-          <CatchField
-            recipe="input"
-            title="Canonical owner"
-            value="Organizer team"
-            onChanged={noop}
-          />
-        </AdminFieldGrid>
-      </AdminEditorSection>
-    </AdminWorkspace>
-  ),
-};
-
 export const PanelStory: Story = {
   name: "Panel",
   parameters: {
@@ -561,41 +417,6 @@ export const PanelStory: Story = {
           <QualityRow icon={<Lock size={16} />}>Claim handoff remains staff reviewed.</QualityRow>
         </QualityList>
       </Panel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminEditorPanelStory: Story = {
-  name: "Editor panel",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_editor_panel",
-      states: ["editor", "wide"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEditorPanel
-        action={<AdminButton variant="primary">Save</AdminButton>}
-        icon={<ClipboardList size={18} />}
-        span={2}
-        title="Listing editor"
-      >
-        <CatchGap size="section">
-          <CatchField
-            recipe="input"
-            title="Listing title"
-            value="Rooftop Social"
-            onChanged={noop}
-          />
-          <CatchField
-            recipe="input"
-            title="Path"
-            value="/organizers/rooftop-social"
-            onChanged={noop}
-          />
-        </CatchGap>
-      </AdminEditorPanel>
     </AdminWorkspace>
   ),
 };

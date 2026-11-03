@@ -1,10 +1,10 @@
 {
   "src/styles.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 73
+      "count": 64
     },
     "declaration-property-value-allowed-list": {
-      "count": 16
+      "count": 11
     },
     "media-feature-name-value-allowed-list": {
       "count": 4
