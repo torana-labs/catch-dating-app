@@ -1570,6 +1570,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | `tool/contracts/generated/schema_contract_registry.mjs` | Node-side schema registry for validation tooling. |
 | `tool/contracts/generated/schema_contract_validators.mjs` | Node-side Ajv validators for contract checks. |
 | `lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart` | Dart profile catalog and storage policy constants. |
+| `lib/platform/schema_contracts/generated/host_attention_policies.g.dart` | Dart Host Today attention policy versions, horizons and per-kind delivery modes. |
 | `lib/platform/schema_contracts/generated/field_constraints.g.dart` | UI constraints for the schema fields declared in `contracts/forms/field_constraint_bindings.json`. |
 | `lib/platform/schema_contracts/generated/callable_request_dtos.g.dart` | Generated Dart callable request and patch helper barrel. |
 | `lib/contexts/*/data/generated/*.g.dart` | Generated Dart callable requests that carry a context's domain types. |

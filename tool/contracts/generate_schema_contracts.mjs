@@ -256,6 +256,10 @@ async function main() {
   const hostAttentionPolicyCatalog = readContractJson(
     "catalogs/host_attention_policies.json"
   );
+  addTextOutput(
+    "lib/platform/schema_contracts/generated/host_attention_policies.g.dart",
+    renderDartHostAttentionPolicies(hostAttentionPolicyCatalog)
+  );
   const organizerEntitlementSkuCatalog = readContractJson(
     "catalogs/organizer_entitlement_skus.json"
   );
@@ -1381,6 +1385,62 @@ extension EventAssistanceCommandBindingCatalogLookup
   EventAssistanceCommandBindingDescriptor get binding =>
       eventAssistanceCommandBindingCatalog[index];
 }
+`;
+}
+
+// The delivery modes validate_schema_contracts.mjs accepts for the catalog.
+const HOST_ATTENTION_DELIVERY_MODES = [
+  "serverProjected",
+  "clientMerged",
+  "shortcutOnly",
+  "blockedMissingTruth",
+];
+
+/** The Host Today attention catalog facts the client needs to compute
+ * coverage without a callable: versions, horizons and each kind's delivery. */
+function renderDartHostAttentionPolicies(catalog) {
+  for (const definition of catalog.definitions) {
+    if (!HOST_ATTENTION_DELIVERY_MODES.includes(definition.deliveryMode)) {
+      throw new Error(`Host attention kind ${definition.kind} has unknown ` +
+        `delivery mode ${definition.deliveryMode}.`);
+    }
+  }
+  const rows = catalog.definitions.map((definition) =>
+    "  HostAttentionPolicyDefinition(\n" +
+    `    kind: ${dartString(definition.kind)},\n` +
+    `    deliveryMode: HostAttentionDeliveryMode.${definition.deliveryMode},\n` +
+    `    readinessReason: ${dartString(definition.readinessReason)},\n` +
+    "  ),"
+  ).join("\n");
+  return `${dartGeneratedHeader()}// Source: contracts/catalogs/host_attention_policies.json.
+
+/// How the Host Today queue delivers one attention kind.
+enum HostAttentionDeliveryMode {
+${HOST_ATTENTION_DELIVERY_MODES.map((mode) => `  ${mode},`).join("\n")}
+}
+
+class HostAttentionPolicyDefinition {
+  const HostAttentionPolicyDefinition({
+    required this.kind,
+    required this.deliveryMode,
+    required this.readinessReason,
+  });
+
+  final String kind;
+  final HostAttentionDeliveryMode deliveryMode;
+  final String readinessReason;
+}
+
+const int hostAttentionPolicyVersion = ${catalog.policyVersion};
+const int hostAttentionHorizonHours = ${catalog.horizonHours};
+const int hostAttentionImmediateHours = ${catalog.immediateHours};
+const int hostAttentionSoonHours = ${catalog.soonHours};
+
+/// One entry per attention kind, in catalog order.
+const List<HostAttentionPolicyDefinition> hostAttentionPolicyDefinitions =
+    <HostAttentionPolicyDefinition>[
+${rows}
+];
 `;
 }
 
@@ -2746,6 +2806,7 @@ ${ungenerableRows}
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
 | \`lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
+| \`lib/platform/schema_contracts/generated/host_attention_policies.g.dart\` | Dart Host Today attention policy versions, horizons and per-kind delivery modes. |
 | \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
 | \`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
 | \`lib/contexts/*/data/generated/*.g.dart\` | Generated Dart callable requests that carry a context's domain types. |
