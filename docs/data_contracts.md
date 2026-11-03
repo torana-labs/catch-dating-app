@@ -2367,7 +2367,10 @@ every callable payload schema (and the `update_user_profile` patch) into
 has a named-parameter constructor, typed fields, and a `toJson()` that the
 existing `test/core/callable_dto_contracts_test.dart` validates against the
 source schema. Generated patch helpers expose `toFieldsJson()` for repository
-tests and `toCallableJson()` for the actual callable payload wrapper.
+tests and `toCallableJson()` for the actual callable payload wrapper. A DTO that
+carries a context's domain types (`CreateEventCallableRequest`,
+`UpdateUserProfilePatch`) is written to `lib/contexts/<context>/data/generated/`
+instead and left out of that barrel, so the platform layer imports nothing above it.
 
 Feature-level `lib/**/data/*_callable_dtos.dart` files remain only when they
 own hand-written response parsers, normalization, or other behavior. Pure

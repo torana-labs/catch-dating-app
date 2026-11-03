@@ -23,7 +23,7 @@ const requiredMarkers = [
   ["lib/contexts/organizers/data/organizer_posts_repository.dart", "createOrganizerPost"],
   ["lib/contexts/organizers/data/organizers_repository.dart", "startOrganizerConversation"],
   ["lib/contexts/profiles/data/image_upload_repository.dart", "organizers/"],
-  ["lib/routing/route_contract.dart", "/host/organizer"],
+  ["lib/platform/routing/route_contract.dart", "/host/organizer"],
   ["website/src/firebase.ts", "requestOrganizerClaim"],
   ["website/src/firebase.ts", "createPublicOrganizerReview"],
   ["admin/src/shared/api/adminApi.ts", "adminGetOrganizerDetails"],

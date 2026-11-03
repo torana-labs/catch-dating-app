@@ -175,8 +175,8 @@ String? architectureRelativePath(String absolutePath) {
   if (RegExp(r'^packages/kernel/lib/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'kernel', owner: 'kernel', layer: 'kernel');
   }
-  // Temporary, with the re-exports left at lib/kernel/ for importers that other
-  // open pull requests hold.
+  // Temporary: the lib/kernel/ids.dart probe in tool/check_catch_ui_lints.sh expects
+  // this placement until that file can take its package probe.
   if (RegExp(r'^lib/kernel/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'kernel', owner: 'kernel', layer: 'domain');
   }

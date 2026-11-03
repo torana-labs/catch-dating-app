@@ -44,7 +44,7 @@ function fixture(extra = {}) {
       "{\"symbol\": \"ClubCard\", \"provider\": \"clubsProvider\", \"callable\": \"createClub\", \"file\": \"lib/clubs/club_card.dart\"}\n",
     "test/ui_captures/fixtures/club_fixtures.dart": "final captureClub = Club();\n",
     "tool/copy/fixtures/club_sample.dart": "final captureClub = Club();\n",
-    "lib/routing/route_contract.dart": "enum Routes {\n  hostClubsScreen('/host/organizers'),\n  homeScreen('/');\n  const Routes(this.path);\n  final String path;\n}\n",
+    "lib/platform/routing/route_contract.dart": "enum Routes {\n  hostClubsScreen('/host/organizers'),\n  homeScreen('/');\n  const Routes(this.path);\n  final String path;\n}\n",
     "test/ui_captures/catalog/routes.dart": "final ids = ['hostClubsScreen', 'clubId', 'homeScreen'];\n",
     "design/screens/screens.json": "{\"route\": \"hostClubsScreen\", \"param\": \"clubId\"}\n",
     "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",

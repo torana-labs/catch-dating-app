@@ -287,3 +287,15 @@ test("check reports and publish removes retired outputs only when present", (t) 
   assert.deepEqual(publishSchemaOutputs({root: fixture.directory,
     files: fixture.files, checkOnly: true, retiredFiles: [retired]}), []);
 });
+
+// The analyzer skips generated files, so this is what holds the platform layer's
+// generated output below the contexts until the output moves into catch_platform.
+test("generated platform Dart imports nothing from a context", () => {
+  const root = new URL("../../", import.meta.url).pathname;
+  const generated = path.join(root, "lib/platform/schema_contracts/generated");
+  const upward = fs.readdirSync(generated, {recursive: true})
+    .filter((file) => file.endsWith(".dart"))
+    .filter((file) => fs.readFileSync(path.join(generated, file), "utf8")
+      .includes("package:catch_dating_app/contexts/"));
+  assert.deepEqual(upward, []);
+});

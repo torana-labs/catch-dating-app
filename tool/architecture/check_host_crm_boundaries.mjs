@@ -501,7 +501,7 @@ function scanHostCrmCountCopy(root) {
 }
 
 function scanApplicationRouteOwnership(root) {
-  const routeContractPath = "lib/routing/route_contract.dart";
+  const routeContractPath = "lib/platform/routing/route_contract.dart";
   const routerPath = "lib/routing/go_router.dart";
   const routeContractFile = path.join(root, routeContractPath);
   const routerFile = path.join(root, routerPath);
@@ -530,7 +530,7 @@ function scanAudienceWorkspacePresentation(root) {
     "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart";
   const editorSheetsPath =
     "lib/hosts/presentation/customers/host_save_audience_sheet.dart";
-  const routeContractPath = "lib/routing/route_contract.dart";
+  const routeContractPath = "lib/platform/routing/route_contract.dart";
   const paths = [
     audienceViewPath,
     customersPath,

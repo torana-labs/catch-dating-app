@@ -12,10 +12,10 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_contro
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/platform/routing/route_contract.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart'
     show hostOrganizerScreenForUri;
-import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

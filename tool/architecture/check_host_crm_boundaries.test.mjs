@@ -369,7 +369,7 @@ test("flags visible Host CRM counts without ICU plurals", () => {
 
 test("flags application queue ownership outside Audience", () => {
   const findings = applicationRouteOwnershipFindings({
-    routeContractPath: "lib/routing/route_contract.dart",
+    routeContractPath: "lib/platform/routing/route_contract.dart",
     routeContractSource:
       "hostApplicationsScreen('/host/customers/applications'",
     routerPath: "lib/routing/go_router.dart",
@@ -388,11 +388,11 @@ test("flags application queue ownership outside Audience", () => {
 
 test("shared workspace keeps application routes in the Audience branch", () => {
   const routeContractSource = fs.readFileSync(
-    new URL("../../lib/routing/route_contract.dart", import.meta.url), "utf8");
+    new URL("../../lib/platform/routing/route_contract.dart", import.meta.url), "utf8");
   const routerSource = fs.readFileSync(
     new URL("../../lib/routing/go_router.dart", import.meta.url), "utf8");
   const scan = (source) => applicationRouteOwnershipFindings({
-    routeContractPath: "lib/routing/route_contract.dart", routeContractSource,
+    routeContractPath: "lib/platform/routing/route_contract.dart", routeContractSource,
     routerPath: "lib/routing/go_router.dart", routerSource: source,
   });
   assert.deepEqual(scan(routerSource), []);
