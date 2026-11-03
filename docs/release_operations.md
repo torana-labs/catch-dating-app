@@ -1424,6 +1424,41 @@ incremental one.
 
 Their source and runbook sections remain in Git history before that deletion.
 
+
+### Platform unavailable: deploys and releases defer
+
+A closed or disabled billing account stops Cloud Run from serving every
+2nd-gen Function (each callable answers Google's HTML "500 Server Error", not
+a callable JSON error) and refuses every image push and deploy with "requires
+billing to be enabled". None of that is the commit's fault, so the main-branch
+deploy and release runs defer instead of failing (added 4 Nov 2026 during the
+"Firebase Payment" billing outage):
+
+- `tool/firebase/check_platform_availability.mjs` probes one callable with an
+  unauthenticated POST and, where asked, lists Cloud Run services with a
+  metadata-only `gcloud` call. A JSON answer of any status means serving; an
+  HTML 5xx or a billing refusal means not serving; anything uncertain counts as
+  serving, so the real deploy fails on its own evidence. It writes
+  `available` and `reason` to the step outputs, a warning annotation and a
+  step-summary heading, and optionally a `deferred.json` marker. It never fails
+  the job.
+- `_backend-deploy.yml` runs it after choosing the Functions and before the
+  readiness check; every later step, including "Record the deployed commit",
+  is skipped while `available` is `false`, so the next run after the project
+  serves again deploys the whole delta from the last recorded commit.
+- `_web-hosting-build.yml` runs it before the Admin callable verification,
+  which cannot tell a missing callable from a dead platform; the verification
+  is skipped and the Admin bytes still build and publish.
+- `website-next-preview.yml` runs it before pushing the image; while deferred
+  it writes `build/next-preview/deferred.json` into the serving artifact, and
+  `releaseTrain.mjs preview` reads that marker, reports the deferral, sets
+  `deferred=true`, and the approval and promotion jobs skip. The next train
+  retries; a manual re-run of Website Release releases it sooner.
+
+What to do when it fires: restore billing (reopen the account or link a new one
+to both projects), then re-run the deferred `Deploy backend`, `Admin Website`
+and `Website Release` runs, or wait for the next merge to main.
+
 ## CD Policy
 
 Backend promotion follows [Deploy Backend](#deploy-backend). Store, Hosting

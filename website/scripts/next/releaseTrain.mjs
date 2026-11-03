@@ -181,6 +181,23 @@ async function runValidation() {
     `Full CI validated \`${sourceSha}\`; main has since moved to \`${mainSha}\`, which a later train releases.`);
 }
 
+/**
+ * What a finished preview run left for the train: the preview channel it
+ * published, or the marker that it deferred because the project was not
+ * serving (a closed billing account), in which case nothing is promoted.
+ */
+export function previewOutcome(directory) {
+  const marker = path.join(directory, "deferred.json");
+  if (fs.existsSync(marker)) {
+    const deferred = JSON.parse(fs.readFileSync(marker, "utf8"));
+    assert.equal(deferred.deferred, true, "a deferral marker says deferred");
+    return {deferred: true, reason: deferred.reason, detail: deferred.detail ?? null};
+  }
+  const channel = JSON.parse(fs.readFileSync(path.join(directory, "channel.json"), "utf8"));
+  assert.match(channel.url ?? "", /^https:\/\/[a-z0-9-]+--next-candidate-[a-z0-9]+\.web\.app\/?$/u, "Unexpected preview URL");
+  return {deferred: false, url: channel.url};
+}
+
 async function runPreview() {
   const repository = canonicalRepository(process.env);
   const sourceSha = process.env.SOURCE_SHA;
@@ -188,10 +205,16 @@ async function runPreview() {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "website-preview-"));
   command("gh", ["run", "download", String(run.id), "--repo", repository,
     "--name", `next-preview-serving-${run.id}-${run.run_attempt}`, "--dir", directory]);
-  const channel = JSON.parse(fs.readFileSync(path.join(directory, "channel.json"), "utf8"));
-  assert.match(channel.url ?? "", /^https:\/\/[a-z0-9-]+--next-candidate-[a-z0-9]+\.web\.app\/?$/u, "Unexpected preview URL");
-  output({preview_run_id: String(run.id), preview_url: channel.url});
-  summary(`Preview of \`${sourceSha}\`: ${channel.url}\n\nIt is promoted once the ${APPROVAL_ENVIRONMENT} environment's gate passes.`);
+  const outcome = previewOutcome(directory);
+  if (outcome.deferred) {
+    output({preview_run_id: String(run.id), preview_url: "", deferred: "true"});
+    summary(`Preview of \`${sourceSha}\` deferred: the project is not serving (${outcome.reason}` +
+      `${outcome.detail ? `: ${outcome.detail}` : ""}). Nothing is promoted; the next train retries, ` +
+      "or re-run Website Release once the project serves again.");
+    return;
+  }
+  output({preview_run_id: String(run.id), preview_url: outcome.url, deferred: "false"});
+  summary(`Preview of \`${sourceSha}\`: ${outcome.url}\n\nIt is promoted once the ${APPROVAL_ENVIRONMENT} environment's gate passes.`);
 }
 
 async function runPromotion() {
