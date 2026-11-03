@@ -507,7 +507,7 @@ per-file plan into an environment variable:
 large pull requests can exceed the operating system argument limit before the
 summary shell even starts.
 
-Generated Dart bindings under `lib/platform/schema_contracts/generated/**` are
+Generated Dart bindings under `packages/platform/lib/schema_contracts/generated/**` are
 validation inputs, not mobile-release authorization. They run the Flutter
 analysis/test lane but do not select iOS, Android, web artifact builds, or a
 Consumer/Host internal release on their own. A mobile release requires an
@@ -2581,7 +2581,7 @@ sends **nothing** — this is expected, not a bug.
 
 ### When collection is on
 
-`AppConfig.shouldCollectObservability` (in `lib/platform/app_config.dart`) controls
+`AppConfig.shouldCollectObservability` (in `packages/platform/lib/app_config.dart`) controls
 both Firebase Analytics and Crashlytics. It is true only when:
 
 - the build is release mode **and** the environment is `prod`; or

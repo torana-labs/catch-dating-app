@@ -273,6 +273,8 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   );
 
   assert.match(shard, /flutter test[^\n]*--coverage/u);
+  // Without this the report measures nothing under packages/platform and still passes.
+  assert.match(shard, /--coverage-package '\^catch_\(dating_app\|platform\)\$'/u);
   const coverage = namedStep(flutter, "Merge coverage without rerunning tests");
   assert.match(coverage, /--merge-shards coverage\/shards/u);
   assert.match(coverage, /--expected-shards "\$SHARD_TOTAL"/u);

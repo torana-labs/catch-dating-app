@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
-import 'package:catch_dating_app/platform/errors/app_error_context.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/errors/app_error_context.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

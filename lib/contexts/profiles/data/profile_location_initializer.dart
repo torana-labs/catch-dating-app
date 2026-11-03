@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/platform/cities/city_repository.dart';
-import 'package:catch_dating_app/platform/device/device_location.dart';
+import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_platform/device/device_location.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'profile_location_initializer.g.dart';

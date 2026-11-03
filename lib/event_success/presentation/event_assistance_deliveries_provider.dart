@@ -3,8 +3,8 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliverie
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_deliveries_provider.g.dart';

@@ -23,7 +23,7 @@ const iconLayer = [
   "packages/phosphor_flutter/",
 ];
 
-const dartRoots = ["lib/", "apps/", "packages/catch_ui/", "widgetbook/", "test/", "integration_test/"];
+const dartRoots = ["lib/", "apps/", "packages/catch_ui/", "packages/platform/", "widgetbook/", "test/", "integration_test/"];
 const reactRoots = ["website/", "admin/", "packages/web-ui/"];
 
 const dartFamilyPackages = /^\s*import\s+'package:(phosphor_flutter|lucide_icons[\w]*|flutter_lucide|font_awesome_flutter|material_symbols_icons|cupertino_icons)\//u;

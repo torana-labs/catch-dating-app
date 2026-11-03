@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inve
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 

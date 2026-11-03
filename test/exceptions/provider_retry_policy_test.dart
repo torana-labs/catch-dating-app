@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/app_bootstrap.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
-import 'package:catch_dating_app/platform/errors/provider_retry_policy.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

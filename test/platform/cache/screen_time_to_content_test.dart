@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
-import 'package:catch_dating_app/platform/cache/app_clock.dart';
-import 'package:catch_dating_app/platform/cache/screen_time_to_content.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/screen_time_to_content.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

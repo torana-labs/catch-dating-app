@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_draft_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

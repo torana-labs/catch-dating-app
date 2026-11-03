@@ -71,8 +71,8 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage \
 
 echo "==> Running focused Flutter analysis"
 flutter analyze --fatal-infos \
-  lib/platform/schema_contracts/generated/callable_request_dtos.g.dart \
-  lib/platform/schema_contracts/generated/callables \
+  packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart \
+  packages/platform/lib/schema_contracts/generated/callables \
   lib/contexts/events/data/generated \
   lib/contexts/profiles/data/generated \
   lib/contexts/organizers/data/organizers_repository.dart \

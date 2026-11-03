@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_set
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

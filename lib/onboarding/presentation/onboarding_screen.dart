@@ -10,8 +10,8 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

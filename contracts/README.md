@@ -233,7 +233,7 @@ Remove the escape hatches once the remaining dynamic callers are migrated.
 ## Dart Callable Requests
 
 Callable request classes that are safe to generate live in
-`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart` and are
+`packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart` and are
 re-exported from feature-local `*_callable_dtos.dart` files. The generator
 emits typed nested/domain fields for create payloads that already have stable
 Dart domain objects, including `EventMeetingLocation`, `EventPolicyBundle`,

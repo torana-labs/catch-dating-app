@@ -418,7 +418,7 @@ final class ProviderGraph {
     }
     return {
       'schemaVersion': providerGraphSchemaVersion,
-      'sourceRoots': ['lib', 'apps/*/lib'],
+      'sourceRoots': ['lib', 'packages/platform/lib', 'apps/*/lib'],
       'summary': summary,
       'health': health,
       'providersByFeature': _countsBy(
@@ -545,8 +545,10 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
     throw StateError('Expected a lib directory under ${absoluteRoot.path}.');
   }
   final apps = Directory('${absoluteRoot.path}/apps');
+  final platform = Directory('${absoluteRoot.path}/packages/platform/lib');
   final sourceRoots = [
     lib,
+    if (platform.existsSync()) platform,
     if (apps.existsSync())
       for (final app in apps.listSync().whereType<Directory>())
         if (Directory('${app.path}/lib').existsSync())
@@ -1057,6 +1059,10 @@ final class _OwnershipIndex {
       if (uri.startsWith('package:catch_dating_app/')) {
         imported.add(
           'lib/${uri.substring('package:catch_dating_app/'.length)}',
+        );
+      } else if (uri.startsWith('package:catch_platform/')) {
+        imported.add(
+          'packages/platform/lib/${uri.substring('package:catch_platform/'.length)}',
         );
       } else if (uri.startsWith('package:catch_host_app/')) {
         imported.add(
@@ -2027,7 +2033,7 @@ bool _isKeepAlive(List<Annotation> metadata) => metadata.any(
       (annotation.arguments?.toSource().contains('keepAlive: true') ?? false),
 );
 
-// lib/platform/ holds the framework seams lib/core/ held; both may declare
+// packages/platform/lib/ holds the framework seams lib/core/ held; both may declare
 // providers by hand and must not depend on feature data.
 bool _isPlatformFeature(String feature) =>
     feature == 'core' || feature == 'platform';
@@ -2508,8 +2514,8 @@ final class _ReadFacts {
       }
     }
     // CACHE-POLICY-001: no policy is built outside the freshness table.
-    if (file.path != 'lib/platform/cache/cache_policies.dart' &&
-        file.path != 'lib/platform/cache/cache_policy.dart') {
+    if (file.path != 'packages/platform/lib/cache/cache_policies.dart' &&
+        file.path != 'packages/platform/lib/cache/cache_policy.dart') {
       final constructions = _PolicyConstructions(file);
       file.unit.accept(constructions);
       for (final symbol in constructions.symbols) {

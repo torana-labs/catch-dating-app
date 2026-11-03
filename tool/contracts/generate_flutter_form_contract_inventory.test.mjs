@@ -193,7 +193,7 @@ test("declared field bindings must stay referenced by Dart source", () => {
       lookupPrefixes: ["formProfile.profile."],
       fields: {eventDocument: ["title", "capacity"], formProfile: ["profile.city"]},
     }));
-    write(root, "lib/platform/schema_contracts/generated/field_constraints.g.dart", `
+    write(root, "packages/platform/lib/schema_contracts/generated/field_constraints.g.dart", `
       static const eventDocumentTitle = CatchContractFieldConstraints(
         path: 'eventDocument.title',
       );

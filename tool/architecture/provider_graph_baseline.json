@@ -671,7 +671,7 @@
     },
     {
       "rule": "CACHE-LIFETIME-001",
-      "path": "lib/platform/cities/city_repository.dart",
+      "path": "packages/platform/lib/cities/city_repository.dart",
       "symbol": "cityListProvider",
       "detail": "keepAlive"
     },
@@ -731,25 +731,25 @@
     },
     {
       "rule": "KEEPALIVE-MANUAL-001",
-      "path": "lib/platform/device/clipboard.dart",
+      "path": "packages/platform/lib/device/clipboard.dart",
       "symbol": "clipboardControllerProvider",
       "detail": "no-keepalive-marker"
     },
     {
       "rule": "KEEPALIVE-MANUAL-001",
-      "path": "lib/platform/device/clipboard.dart",
+      "path": "packages/platform/lib/device/clipboard.dart",
       "symbol": "clipboardSetterProvider",
       "detail": "no-keepalive-marker"
     },
     {
       "rule": "KEEPALIVE-MANUAL-001",
-      "path": "lib/platform/device/device_location.dart",
+      "path": "packages/platform/lib/device/device_location.dart",
       "symbol": "deviceLocationGatewayProvider",
       "detail": "no-keepalive-marker"
     },
     {
       "rule": "KEEPALIVE-MANUAL-001",
-      "path": "lib/platform/persistence/command_journal_provider.dart",
+      "path": "packages/platform/lib/persistence/command_journal_provider.dart",
       "symbol": "commandJournalStorageProvider",
       "detail": "no-keepalive-marker"
     },

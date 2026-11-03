@@ -6,11 +6,11 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/platform/routing/route_contract.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

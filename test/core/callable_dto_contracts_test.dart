@@ -21,7 +21,10 @@ import 'package:catch_dating_app/contexts/payments/data/payment_callable_request
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/brand.dart';
+import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         BlockUserCallableRequest,
         CancelEventCallableRequest,
@@ -40,9 +43,6 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/callable_re
         UnblockUserCallableRequest,
         UpdateEventCallableRequest,
         UpdateEventReviewCallableRequest;
-import 'package:catch_kernel/activity_taxonomy.dart';
-import 'package:catch_kernel/brand.dart';
-import 'package:catch_kernel/location_coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

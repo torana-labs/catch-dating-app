@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/forms/data/forms/host_form_admission_g
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_section.dart';
-import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
+import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/catches/catalog/profile_sections.dart';

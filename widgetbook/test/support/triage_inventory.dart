@@ -36,6 +36,12 @@ Map<String, AstNode> _members(String path) =>
 
 String? _resolveUri(String from, String? uri) {
   if (uri == null || uri.startsWith('dart:')) return null;
+  if (uri.startsWith('package:catch_platform/')) {
+    return uri.replaceFirst(
+      'package:catch_platform/',
+      'packages/platform/lib/',
+    );
+  }
   if (uri.startsWith('package:catch_dating_app/')) {
     return uri.replaceFirst('package:catch_dating_app/', 'lib/');
   }
@@ -157,6 +163,7 @@ Map<String, Object?> _reach(String path, String builder) {
         pending.add((target, ref));
       } else if (target.startsWith('lib/') ||
           target.startsWith('packages/catch_ui/lib/') ||
+          target.startsWith('packages/platform/lib/') ||
           target.startsWith('packages/catch_tokens/lib/')) {
         final declaration = _members(target)[ref];
         if (declaration is ClassDeclaration || _isUiDeclaration(declaration)) {
@@ -273,7 +280,7 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
 /// component_naming.mjs names the same homes.
 bool isAppSharedWidgetSource(String path) =>
     RegExp(r'^lib/contexts/[^/]+/parts/').hasMatch(path) ||
-    path.startsWith('lib/platform/media/') ||
+    path.startsWith('packages/platform/lib/media/') ||
     path.startsWith('lib/pages/startup/');
 
 Map<String, Object?> readWidgetbookInventory({String repoRoot = '.'}) {

@@ -7,7 +7,7 @@
       "sources": [
         "docs/design_language.md",
         "packages/catch_tokens/lib/catch_tokens.dart",
-        "lib/platform/theme/activity_palette.dart",
+        "packages/platform/lib/theme/activity_palette.dart",
         "packages/catch_ui/lib/src/foundations/catch_fonts.dart",
         "packages/catch_ui/lib/src/foundations/catch_text_styles.dart"
       ],

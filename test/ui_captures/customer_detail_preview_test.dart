@@ -8,8 +8,8 @@ import 'package:catch_dating_app/hosts/presentation/applications/host_applicatio
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/platform/device/external_links.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/device/external_links.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

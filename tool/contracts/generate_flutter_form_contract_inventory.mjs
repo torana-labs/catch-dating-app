@@ -11,7 +11,7 @@ const DEFAULT_OUTPUT =
   "build/reports/flutter_form_contract_inventory.json";
 const FIELD_BINDINGS = "contracts/forms/field_constraint_bindings.json";
 const FIELD_CONSTRAINTS_OUTPUT =
-  "lib/platform/schema_contracts/generated/field_constraints.g.dart";
+  "packages/platform/lib/schema_contracts/generated/field_constraints.g.dart";
 const EDITABLE_SYMBOLS = new Set([
   "choices",
   "choiceInputForm",

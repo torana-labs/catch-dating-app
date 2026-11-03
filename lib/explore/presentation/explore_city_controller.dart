@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/platform/cities/city_repository.dart';
-import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_platform/device/device_location.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_city_controller.g.dart';

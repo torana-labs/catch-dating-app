@@ -9,12 +9,12 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
-import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
-import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

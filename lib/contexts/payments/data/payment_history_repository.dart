@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
-import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
-import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

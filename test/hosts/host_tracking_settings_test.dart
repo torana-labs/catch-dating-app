@@ -6,10 +6,10 @@ import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';

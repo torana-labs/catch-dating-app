@@ -70,12 +70,6 @@ import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_scr
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/platform/routing/route_contract.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
@@ -109,6 +103,12 @@ import 'package:catch_dating_app/user_profile/presentation/form_profile_review_s
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +116,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-export 'package:catch_dating_app/platform/routing/route_contract.dart';
+export 'package:catch_platform/routing/route_contract.dart';
 
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';

@@ -287,13 +287,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>CatchAsyncBoundary</code> | <code>lib/platform/riverpod_ui/catch_async_boundary.dart</code> | <code>AsyncBoundary</code> | <code>catch.async_value</code> | Exhaustive async-state selection with one timeout and recovery lifecycle. Also called: <code>AsyncValueView</code>, <code>AsyncBuilder</code>, <code>LoadingErrorBuilder</code>, <code>AsyncStateView</code>. |
-| <code>CatchExternalShareSheet</code> | <code>lib/platform/riverpod_ui/catch_external_share_sheet.dart</code> | <code>Sheet</code> | <code>catch.sheet</code> | UI adapter for the app's Riverpod-backed external share controller. |
-| <code>CatchLocalizedErrorBanner</code> | <code>lib/platform/riverpod_ui/catch_localized_error_banner.dart</code> | <code>Banner</code> | <code>catch.banner</code> | Resolves app errors and retry copy at the caller's localization boundary. |
-| <code>CatchLocalizedErrorScaffold</code> | <code>lib/platform/riverpod_ui/catch_localized_error_scaffold.dart</code> | <code>Scaffold</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorScaffold]. |
-| <code>CatchLocalizedErrorState</code> | <code>lib/platform/riverpod_ui/catch_localized_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorState]. |
-| <code>CatchLocalizedSliverErrorState</code> | <code>lib/platform/riverpod_ui/catch_localized_sliver_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
-| <code>CatchNoticeOverlay</code> | <code>lib/platform/riverpod_ui/catch_notice_overlay.dart</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
+| <code>CatchAsyncBoundary</code> | <code>packages/platform/lib/riverpod_ui/catch_async_boundary.dart</code> | <code>AsyncBoundary</code> | <code>catch.async_value</code> | Exhaustive async-state selection with one timeout and recovery lifecycle. Also called: <code>AsyncValueView</code>, <code>AsyncBuilder</code>, <code>LoadingErrorBuilder</code>, <code>AsyncStateView</code>. |
+| <code>CatchExternalShareSheet</code> | <code>packages/platform/lib/riverpod_ui/catch_external_share_sheet.dart</code> | <code>Sheet</code> | <code>catch.sheet</code> | UI adapter for the app's Riverpod-backed external share controller. |
+| <code>CatchLocalizedErrorBanner</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_error_banner.dart</code> | <code>Banner</code> | <code>catch.banner</code> | Resolves app errors and retry copy at the caller's localization boundary. |
+| <code>CatchLocalizedErrorScaffold</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_error_scaffold.dart</code> | <code>Scaffold</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorScaffold]. |
+| <code>CatchLocalizedErrorState</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorState]. |
+| <code>CatchLocalizedSliverErrorState</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_sliver_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
+| <code>CatchNoticeOverlay</code> | <code>packages/platform/lib/riverpod_ui/catch_notice_overlay.dart</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
 
 ### L5 (975)
 
@@ -1105,10 +1105,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentHistoryTile</code> | <code>lib/payments/presentation/payment_history_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryTileSkeleton</code> | <code>lib/payments/presentation/payment_history_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentReceiptSheet</code> | <code>lib/payments/presentation/payment_history_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoAddTile</code> | <code>lib/platform/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoPicker</code> | <code>lib/platform/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoTile</code> | <code>lib/platform/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
-| <code>StartupAnimationScope</code> | <code>lib/platform/startup/startup_animation_scope.dart</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
 | <code>ProgramArrivalActionMenu</code> | <code>lib/programs/presentation/program_arrivals_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramArrivalReadinessBadge</code> | <code>lib/programs/presentation/program_arrivals_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramArrivalRow</code> | <code>lib/programs/presentation/program_arrivals_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1274,6 +1270,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProfileInfoSkeletonTile</code> | <code>lib/user_profile/presentation/widgets/profile_tab_skeleton.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePhotosSkeletonSection</code> | <code>lib/user_profile/presentation/widgets/profile_tab_skeleton.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileTabSkeletonSliverBody</code> | <code>lib/user_profile/presentation/widgets/profile_tab_skeleton.dart</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoAddTile</code> | <code>packages/platform/lib/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoPicker</code> | <code>packages/platform/lib/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoTile</code> | <code>packages/platform/lib/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
+| <code>StartupAnimationScope</code> | <code>packages/platform/lib/startup/startup_animation_scope.dart</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
 
 ### L6 (131)
 
@@ -1380,7 +1380,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryScreen</code> | <code>lib/payments/presentation/payment_history_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoManagerScreen</code> | <code>lib/platform/media/ordered_photo_picker.dart</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
 | <code>ProgramArrivalsScreen</code> | <code>lib/programs/presentation/program_arrivals_screen.dart</code> | — | — | The greeter's live arrivals roster for one pickup station. |
 | <code>ProgramAttendanceReportScreen</code> | <code>lib/programs/presentation/program_attendance_report_screen.dart</code> | — | — | The reconciliationViewer's attendance report: program-wide RSVP-vs-door totals, then one row per function with its exception counts. Everything here is counts and guest ids — the callable never returns PII. |
 | <code>ProgramAttentionScreen</code> | <code>lib/programs/presentation/program_attention_screen.dart</code> | — | — | Function-lead attention feed: program-scoped staffAttention moment sends filtered server-side to the caller's duties — late-arrival and disruption alerts raised by Moments land here for whoever holds the stamped duty. |
@@ -1410,5 +1409,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>FormProfileReviewScreen</code> | <code>lib/user_profile/presentation/form_profile_review_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>FormProfilesScreen</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileScreen</code> | <code>lib/user_profile/presentation/profile_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoManagerScreen</code> | <code>packages/platform/lib/media/ordered_photo_picker.dart</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
 
 <!-- END GENERATED WIDGET INVENTORY -->

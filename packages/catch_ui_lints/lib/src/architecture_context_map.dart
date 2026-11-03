@@ -290,7 +290,7 @@ List<ArchitectureFinding> ignorePolicyFindings({
         report('$name holds everywhere and cannot be ignored.');
       } else if (inCleanRoot) {
         report(
-          'Code under lib/contexts, lib/pages, packages/kernel, lib/platform and app destinations carries no architecture exceptions.',
+          'Code under lib/contexts, lib/pages, packages/kernel, packages/platform/lib and app destinations carries no architecture exceptions.',
         );
       }
       final live = findings.any(

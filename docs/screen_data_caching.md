@@ -51,7 +51,7 @@ decision in its `// keepalive:` marker.
 
 ## The owner's freshness table
 
-Every caching duration lives in `lib/platform/cache/cache_policies.dart`,
+Every caching duration lives in `packages/platform/lib/cache/cache_policies.dart`,
 which names the owner. Changing a value is a product decision; no read owner
 writes a `Duration` inline.
 
@@ -131,7 +131,7 @@ stale in the same `Mutation.run`:
   persisted-read store (#1330), for data marked "must open offline".
 - At sign-out both apps terminate the Firestore instance and clear its
   persistence before another account can sign in
-  (`lib/platform/cache/firestore_cache_wipe.dart`, called by
+  (`packages/platform/lib/cache/firestore_cache_wipe.dart`, called by
   `AuthSessionController`). Native plugins start a fresh instance on the next
   call; on the web the terminated instance cannot restart, so the page
   reloads. A failed wipe is reported and sign-out continues.
@@ -140,7 +140,7 @@ stale in the same `Mutation.run`:
 
 ## App clock and time to content
 
-`appClockProvider` (`lib/platform/cache/app_clock.dart`) gives now and timers;
+`appClockProvider` (`packages/platform/lib/cache/app_clock.dart`) gives now and timers;
 tests drive it with `fake_async` through `AppClock.custom`. `dashboardNow`,
 `exploreDiscoveryReferenceNow`, `eventChatNow` and `programProjectionClock`
 are deprecated aliases until 1.3b moves their callers.
@@ -213,12 +213,12 @@ the rules gate with no list.
 
 | Piece | File |
 |---|---|
-| App clock | `lib/platform/cache/app_clock.dart` |
-| Lifetimes, `CachePolicy`, `CacheSession` | `lib/platform/cache/cache_policy.dart` |
-| Freshness table | `lib/platform/cache/cache_policies.dart` |
-| Key rules, time buckets | `lib/platform/cache/cache_time_bucket.dart` |
-| Stale-while-revalidate client | `lib/platform/cache/callable_read.dart` |
-| Cache tags and registry | `lib/platform/cache/cache_tags.dart` |
-| Sign-out wipe | `lib/platform/cache/firestore_cache_wipe.dart` |
-| Time to content | `lib/platform/cache/screen_time_to_content.dart` |
+| App clock | `packages/platform/lib/cache/app_clock.dart` |
+| Lifetimes, `CachePolicy`, `CacheSession` | `packages/platform/lib/cache/cache_policy.dart` |
+| Freshness table | `packages/platform/lib/cache/cache_policies.dart` |
+| Key rules, time buckets | `packages/platform/lib/cache/cache_time_bucket.dart` |
+| Stale-while-revalidate client | `packages/platform/lib/cache/callable_read.dart` |
+| Cache tags and registry | `packages/platform/lib/cache/cache_tags.dart` |
+| Sign-out wipe | `packages/platform/lib/cache/firestore_cache_wipe.dart` |
+| Time to content | `packages/platform/lib/cache/screen_time_to_content.dart` |
 | Tests and harness | `test/platform/cache/` |

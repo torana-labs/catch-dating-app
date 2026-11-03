@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
 
-const scannedRoots = ["lib", "functions/src"];
+const scannedRoots = ["lib", "packages/platform/lib", "functions/src"];
 const allowedSuffixes = new Set([".dart", ".ts"]);
 const ignoredPathParts = [
   `${path.sep}generated${path.sep}`,

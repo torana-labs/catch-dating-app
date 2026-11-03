@@ -257,6 +257,7 @@ ScanResult scanMobileCopy(Directory root) {
         Directory('${app.path}/lib'),
     Directory('${root.path}/packages/catch_ui/lib'),
     Directory('${root.path}/packages/kernel/lib'),
+    Directory('${root.path}/packages/platform/lib'),
   ];
   final files =
       sourceRoots
@@ -383,7 +384,7 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     // AppException messages are diagnostic fallbacks. Presentation adapters
     // localize them before display, so treating their constructor defaults as
     // product copy would invert the ownership boundary.
-    if (file.startsWith('lib/platform/errors/')) return null;
+    if (file.startsWith('packages/platform/lib/errors/')) return null;
     AstNode? diagnosticAncestor = node.parent;
     while (diagnosticAncestor != null) {
       if (diagnosticAncestor is ThrowExpression ||
@@ -565,7 +566,9 @@ bool _isCandidate(String path, String root) {
     return false;
   }
   if (relative.startsWith('packages/l10n/lib/') ||
-      relative.startsWith('lib/platform/schema_contracts/generated/')) {
+      relative.startsWith(
+        'packages/platform/lib/schema_contracts/generated/',
+      )) {
     return false;
   }
   // Generated from packages/brand/brand.json; the brand record, not copy.

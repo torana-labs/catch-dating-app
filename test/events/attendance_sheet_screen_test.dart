@@ -9,7 +9,7 @@ import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart'
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
-import 'package:catch_dating_app/platform/device/external_share.dart';
+import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

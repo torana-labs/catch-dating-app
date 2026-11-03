@@ -12,8 +12,8 @@ import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -8,9 +8,9 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step_state.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

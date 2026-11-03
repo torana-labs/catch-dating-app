@@ -6,12 +6,12 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/notifications/notifications.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
-import 'package:catch_dating_app/platform/push/fcm_service.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

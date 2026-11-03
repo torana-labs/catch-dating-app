@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'events_test_helpers.dart';

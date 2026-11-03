@@ -2,11 +2,11 @@ import 'dart:io';
 
 bool migrationScope(String relative) =>
     (relative.startsWith('lib/') ||
+        relative.startsWith('packages/platform/lib/') ||
         RegExp(r'^apps/[^/]+/lib/').hasMatch(relative) ||
         relative.startsWith('tool/catch_ui_lints_probe/')) &&
-    !relative.startsWith('lib/platform/theme/') &&
-    !relative.startsWith('lib/platform/schema_contracts/generated/') &&
-    !relative.startsWith('lib/l10n/generated/') &&
+    !relative.startsWith('packages/platform/lib/theme/') &&
+    !relative.startsWith('packages/platform/lib/schema_contracts/generated/') &&
     !relative.endsWith('.g.dart') &&
     !relative.endsWith('.freezed.dart');
 

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
+import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

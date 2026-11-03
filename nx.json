@@ -76,6 +76,7 @@
                   "{workspaceRoot}/functions/src/**/*",
                   "{workspaceRoot}/lib/**/*",
                   "{workspaceRoot}/packages/kernel/lib/**/*",
+                  "{workspaceRoot}/packages/platform/lib/**/*",
                   "{workspaceRoot}/admin/src/generated/**/*",
                   "{workspaceRoot}/website/src/shared/contracts/generated/**/*"
                 ]
@@ -89,6 +90,7 @@
                   "{workspaceRoot}/functions/package-lock.json",
                   "{workspaceRoot}/lib/**/*",
                   "{workspaceRoot}/packages/kernel/lib/**/*",
+                  "{workspaceRoot}/packages/platform/lib/**/*",
                   "{workspaceRoot}/firestore.rules"
                 ]
               }
@@ -402,7 +404,7 @@
                   "{workspaceRoot}/design/components/**/*",
                   "{workspaceRoot}/design/visual_baselines/**/*",
                   "{workspaceRoot}/design/public_surface_behavior.json",
-                  "!{workspaceRoot}/lib/platform/schema_contracts/generated/**/*",
+                  "!{workspaceRoot}/packages/platform/lib/schema_contracts/generated/**/*",
                   "!{workspaceRoot}/lib/contexts/*/data/generated/**/*",
                   "!{workspaceRoot}/**/*.md"
                 ]
@@ -479,6 +481,9 @@
           "catch_l10n": [
             "@catch/brand"
           ],
+          "catch_platform": [
+            "contracts"
+          ],
           "functions": [
             "contracts",
             "@catch/brand",
@@ -524,6 +529,7 @@
             "catch_host_app",
             "catch_kernel",
             "catch_l10n",
+            "catch_platform",
             "catch_tokens",
             "catch_ui"
           ],

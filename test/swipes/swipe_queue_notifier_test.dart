@@ -5,9 +5,9 @@ import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repos
 import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

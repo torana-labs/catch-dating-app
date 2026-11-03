@@ -23,12 +23,12 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/platform/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/platform/push/fcm_service.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_platform/persistence/command_journal_provider.dart';
+import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
+import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

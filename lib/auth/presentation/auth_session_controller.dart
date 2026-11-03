@@ -4,9 +4,9 @@ import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/platform/cache/cache_tags.dart';
-import 'package:catch_dating_app/platform/cache/firestore_cache_wipe.dart';
-import 'package:catch_dating_app/platform/push/fcm_service.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
+import 'package:catch_platform/cache/firestore_cache_wipe.dart';
+import 'package:catch_platform/push/fcm_service.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

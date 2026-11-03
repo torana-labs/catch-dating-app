@@ -6,7 +6,7 @@ import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_slot_tile.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
-import 'package:catch_dating_app/platform/media/ordered_photo_picker.dart';
+import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

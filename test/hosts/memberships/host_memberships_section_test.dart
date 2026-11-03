@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

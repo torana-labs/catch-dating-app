@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/platform/device/external_links.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_platform/device/external_links.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_payment_controller.g.dart';

@@ -257,7 +257,7 @@ async function main() {
     "catalogs/host_attention_policies.json"
   );
   addTextOutput(
-    "lib/platform/schema_contracts/generated/host_attention_policies.g.dart",
+    "packages/platform/lib/schema_contracts/generated/host_attention_policies.g.dart",
     renderDartHostAttentionPolicies(hostAttentionPolicyCatalog)
   );
   const organizerEntitlementSkuCatalog = readContractJson(
@@ -308,7 +308,7 @@ async function main() {
       variant.properties.payload?.properties?.[field]?.enum ?? [])
   ))];
   addTextOutput(
-    "lib/platform/schema_contracts/generated/event_assistance_kinds.g.dart",
+    "packages/platform/lib/schema_contracts/generated/event_assistance_kinds.g.dart",
     renderDartEventAssistanceCatalog({
       catalog: eventAssistanceCatalog,
       commandBindingCatalog: eventAssistanceCommandBindingCatalog,
@@ -433,14 +433,14 @@ async function main() {
     )
   );
   addTextOutput(
-    "lib/platform/schema_contracts/generated/" +
+    "packages/platform/lib/schema_contracts/generated/" +
       "event_success_moment_presentations.g.dart",
     renderDartEventSuccessMomentPresentations(
       eventSuccessMomentPresentationCatalog
     )
   );
   addTextOutput(
-    "lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart",
+    "packages/platform/lib/schema_contracts/generated/profile_schema_contracts.g.dart",
     renderDartContracts({
       profileCatalog,
       personFieldCatalog,
@@ -459,7 +459,7 @@ async function main() {
   );
 
   addTextOutput(
-    "lib/platform/schema_contracts/generated/field_constraints.g.dart",
+    "packages/platform/lib/schema_contracts/generated/field_constraints.g.dart",
     renderDartFieldConstraints({
       schemaSpecs,
       schemaMap: bundledSchemas,
@@ -473,14 +473,14 @@ async function main() {
     commonSchema: readContractJson("shared/profile_common.schema.json"),
   });
   addTextOutput(
-    "lib/platform/schema_contracts/generated/callable_request_dtos.g.dart",
+    "packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart",
     dartCallableRequests.text
   );
   for (const file of dartCallableRequests.files) {
     addTextOutput(file.path, file.content);
   }
   addTextOutput(
-    "lib/platform/schema_contracts/generated/INDEX.md",
+    "packages/platform/lib/schema_contracts/generated/INDEX.md",
     renderGeneratedIndex({dartCallableRequests, runtimeModules})
   );
   if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
@@ -541,11 +541,11 @@ export function publishSchemaOutputs({root, files, checkOnly, retiredFiles = []}
   }
   if (!checkOnly) {
     fs.rmSync(
-      path.join(root, "lib/platform/schema_contracts/generated/callables"),
+      path.join(root, "packages/platform/lib/schema_contracts/generated/callables"),
       {recursive: true, force: true}
     );
     fs.rmSync(
-      path.join(root, "lib/platform/schema_contracts/generated/schemas"),
+      path.join(root, "packages/platform/lib/schema_contracts/generated/schemas"),
       {recursive: true, force: true}
     );
     for (const directory of DART_CONTEXT_OWNED_CALLABLE_REQUESTS.values()) {
@@ -2467,7 +2467,7 @@ const schemaUpdateUserProfileCallablePayloadSchema =
 
 // Retired output: Dart tests read contracts/ directly. Check mode still
 // reports leftovers here and publishing removes the directory.
-const DART_SCHEMA_OUTPUT_DIR = "lib/platform/schema_contracts/generated/schemas";
+const DART_SCHEMA_OUTPUT_DIR = "packages/platform/lib/schema_contracts/generated/schemas";
 
 function renderDartFieldConstraints({schemaSpecs, schemaMap, bindings}) {
   const projected = [];
@@ -2805,12 +2805,12 @@ ${ungenerableRows}
 | \`functions/src/shared/generated/schemaPaths.ts\` | Generated storage/path constants for migrated logical paths. |
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
-| \`lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
-| \`lib/platform/schema_contracts/generated/host_attention_policies.g.dart\` | Dart Host Today attention policy versions, horizons and per-kind delivery modes. |
-| \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
-| \`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
+| \`packages/platform/lib/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
+| \`packages/platform/lib/schema_contracts/generated/host_attention_policies.g.dart\` | Dart Host Today attention policy versions, horizons and per-kind delivery modes. |
+| \`packages/platform/lib/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
+| \`packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
 | \`lib/contexts/*/data/generated/*.g.dart\` | Generated Dart callable requests that carry a context's domain types. |
-| \`lib/platform/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
+| \`packages/platform/lib/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
 `;
 }
 
@@ -2843,7 +2843,7 @@ const DART_CALLABLE_REQUEST_SKIP = new Set([
 ]);
 
 const DART_CALLABLE_REQUEST_OUTPUT_DIR =
-  "lib/platform/schema_contracts/generated/callables";
+  "packages/platform/lib/schema_contracts/generated/callables";
 
 // These DTOs carry a context's domain types, so they live with that context: the
 // platform layer imports nothing above it, and its barrel does not re-export them.
@@ -3027,7 +3027,7 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
 // Patch helper classes are emitted for schemas with x-callable-shape: patch.
 // This file is a stable barrel; individual generated classes live under
-// lib/platform/schema_contracts/generated/callables/. DTOs that carry a context's
+// packages/platform/lib/schema_contracts/generated/callables/. DTOs that carry a context's
 // domain types live in that context's data/generated/ folder instead.
 //
 // Hand-written callable request/response helpers may still exist for schemas
@@ -3046,7 +3046,7 @@ function dartCallableRequestOutputPath(className) {
 }
 
 function dartGeneratedExportPath(outputPath) {
-  return outputPath.replace("lib/platform/schema_contracts/generated/", "");
+  return outputPath.replace("packages/platform/lib/schema_contracts/generated/", "");
 }
 
 function renderDartCallableRequestClassFile({className, imports, schemaSource, body}) {
@@ -3056,7 +3056,7 @@ function renderDartCallableRequestClassFile({className, imports, schemaSource, b
 // Typed callable request DTO emitted from ${schemaSource}.
 ${DART_CONTEXT_OWNED_CALLABLE_REQUESTS.has(className) ?
     "// Owned by its context, so the platform barrel does not re-export it." :
-    "// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart."}
+    "// Re-exported by packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart."}
 
 ${normalizedBody}
 `;
@@ -3890,6 +3890,6 @@ List<String> missingProfileFields(
   return [
     {path: "functions/src/shared/generated/profileRequirements.ts", content: ts},
     {path: "website/src/shared/contracts/generated/profileRequirements.ts", content: ts},
-    {path: "lib/platform/schema_contracts/generated/profile_requirements.g.dart", content: dart},
+    {path: "packages/platform/lib/schema_contracts/generated/profile_requirements.g.dart", content: dart},
   ];
 }

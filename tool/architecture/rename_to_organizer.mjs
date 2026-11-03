@@ -27,16 +27,16 @@ const arbPath = "packages/l10n/lib/app_en.arb";
 const contextMapPath = "tool/architecture/context_map.json";
 // Route names are Routes constant names (Routes.x.name); the capture
 // catalog, registries and docs quote them, so quoted route names follow.
-const routeContractPath = "lib/platform/routing/route_contract.dart";
+const routeContractPath = "packages/platform/lib/routing/route_contract.dart";
 // Dart the codemod edits; Dart files under movedRoots also take new names.
 const dartRoots = ["lib/", "test/", "integration_test/", "apps/", "widgetbook/", "packages/", "tool/"];
 const movedRoots = ["lib/", "test/", "integration_test/", "apps/", "widgetbook/", "packages/"];
 // Generated contracts follow their contracts; gen-l10n rewrites localizations.
-const notMoved = [/^lib\/platform\/schema_contracts\//u, /^lib\/l10n\/generated\//u];
+const notMoved = [/^packages\/platform\/lib\/schema_contracts\//u, /^lib\/l10n\/generated\//u];
 // The tools' tests read synthetic fixture sources; app fixtures do rename.
 const toolFixtures = /^(?:test\/)?tool\/(?:.*\/)?fixtures\//u;
 const notEdited = [/^lib\/l10n\/generated\//u, toolFixtures];
-const contractDeclarations = /^lib\/platform\/schema_contracts\/generated\//u;
+const contractDeclarations = /^packages\/platform\/lib\/schema_contracts\/generated\//u;
 // A club that is the subtype or a run club keeps its name.
 const subtypeName = /(?:[Rr]un|Type)Club/u;
 export const keptEnumConstants = new Map([
@@ -58,7 +58,7 @@ const symbolTextExtensions = /\.(?:json|md|mjs|js|sh|yaml|yml)$/u;
 // The schema generator and its outputs name contracts; its few Dart-facing
 // type names are edited by hand.
 const symbolTextExcluded = [codemodTests, /(?:^|\/)node_modules\//u, toolFixtures,
-  /^tool\/contracts\//u, /^lib\/platform\/schema_contracts\//u, /^design\/website\//u];
+  /^tool\/contracts\//u, /^packages\/platform\/lib\/schema_contracts\//u, /^design\/website\//u];
 // Registries that name Dart members (screen state controllers, feature action
 // code values, component roles, capture builders) rename every Dart name but
 // the stored enum values; a test's strings rename the symbols they describe.

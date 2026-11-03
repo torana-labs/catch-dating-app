@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/platform/errors/app_error_context.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/app_error_context.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

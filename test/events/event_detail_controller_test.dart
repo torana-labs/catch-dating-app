@@ -13,9 +13,9 @@ import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
