@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {applySalesImport, previewSalesImport} from "./imports";
+import {
+  applySalesImport,
+  listSalesImportHosts,
+  listSalesImports,
+  previewSalesImport,
+} from "./imports";
 import type {ImportPacket} from "./imports";
 import type {SalesPrincipal} from "./types";
 
@@ -232,4 +237,76 @@ test("archived companion rejects later import membership", async () => {
   assert.deepEqual(db.docs.get("organizerSalesAccounts/org-1")?.cohortIds,
     []);
   assert.equal(db.docs.get("organizerSalesAccounts/org-1")?.revision, 3);
+});
+
+/** Just enough of a collection for the two list reads. */
+function listDb(
+  jobs: Array<Doc & {id: string}>,
+  accounts: Record<string, Doc>,
+) {
+  const ordered = [...jobs].sort((a, b) =>
+    String(b.createdAt).localeCompare(String(a.createdAt)));
+  const snap = (id: string, data?: Doc) => ({id, exists: data !== undefined,
+    data: () => data});
+  const query = (start = 0) => ({
+    startAfter: (cursor: {id: string}) => query(
+      ordered.findIndex((job) => job.id === cursor.id) + 1),
+    limit: (count: number) => ({get: async () => ({docs: ordered
+      .slice(start, start + count).map((job) => snap(job.id, job))})}),
+  });
+  return {collection: (name: string) => name === "salesImportJobs" ? {
+    orderBy: () => query(),
+    doc: (id: string) => ({get: async () =>
+      snap(id, jobs.find((job) => job.id === id))}),
+  } : {
+    doc: (id: string) => ({get: async () => snap(id, accounts[id])}),
+  }} as unknown as FirebaseFirestore.Firestore;
+}
+
+const reader = {uid: "staff-1", roles: ["adminOwner"]} as SalesPrincipal;
+const job = (id: string, createdAt: string, effects: string[] = []) => ({id,
+  sourceId: "october-list", rowCount: 2, counts: {created: 2}, createdAt,
+  createdBy: "owner-1", contentHash: "private", previewHash: "private",
+  accountEffects: effects.map((organizerId) => ({organizerId}))});
+
+test("import list pages newest first, without hosts or hashes", async () => {
+  const db = listDb([
+    job("older", "2026-10-01T00:00:00.000Z", ["org-1"]),
+    job("newest", "2026-10-03T00:00:00.000Z"),
+    job("middle", "2026-10-02T00:00:00.000Z"),
+  ], {});
+  const first = await listSalesImports(db, reader, {limit: 2});
+  assert.deepEqual((first.rows as Doc[]).map((row) => row.importId),
+    ["newest", "middle"]);
+  assert.equal(first.nextCursor, "middle");
+  assert.deepEqual((first.rows as Doc[])[0], {importId: "newest",
+    sourceId: "october-list", rowCount: 2, counts: {created: 2},
+    appliedAt: "2026-10-03T00:00:00.000Z", appliedBy: "owner-1"});
+  const second = await listSalesImports(db, reader,
+    {limit: 2, cursor: "middle"});
+  assert.deepEqual(
+    (second.rows as Doc[]).map((row) => row.importId), ["older"]);
+  assert.equal(second.nextCursor, null);
+  await assert.rejects(
+    listSalesImports(db, reader, {cursor: "missing"}), /out of date/);
+});
+
+test("import hosts come from the batch's effects, with names", async () => {
+  const db = listDb([job("batch", "2026-10-01T00:00:00.000Z",
+    ["org-1", "org-2", "org-1"])], {"org-1": {name: "Harbor"}});
+  assert.deepEqual(await listSalesImportHosts(db, reader, {importId: "batch"}),
+    {rows: [
+      {importId: "batch", organizerId: "org-1", name: "Harbor"},
+      {importId: "batch", organizerId: "org-2", name: "org-2"},
+    ]});
+  await assert.rejects(
+    listSalesImportHosts(db, reader, {importId: "missing"}), /not found/);
+});
+
+test("import lists refuse a client session", async () => {
+  const client = {...reader, clientId: "assistant"} as SalesPrincipal;
+  const db = listDb([], {});
+  await assert.rejects(listSalesImports(db, client, {}), /employee session/);
+  await assert.rejects(
+    listSalesImportHosts(db, client, {importId: "batch"}), /employee session/);
 });

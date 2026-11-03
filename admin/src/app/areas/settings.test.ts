@@ -6,6 +6,7 @@ describe("Settings routes", () => {
   it.each([
     ["/settings/team/user-1", "teamMemberUid", "user-1"],
     ["/settings/safety", "settingsPage", "safety"],
+    ["/settings/sales", "settingsPage", "sales"],
     ["/settings/payments/organizer-terms/org%2F1", "termsOrganizerId", "org/1"],
   ])("resolves %s", (path, key, value) => {
     const route = resolveAdminRoute(path);

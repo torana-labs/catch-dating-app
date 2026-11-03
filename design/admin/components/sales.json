@@ -71,6 +71,23 @@
       "notes": "My nominations: what happened to every organizer a sales associate sent, from the inbox items ops work, with real totals per filter and the journey beside it. They cannot approve."
     },
     {
+      "id": "route_sales_settings",
+      "kind": "route",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesSettingsRouteScreen.tsx",
+      "exportName": "SalesSettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "fields",
+          "imports",
+          "owner-privacy-search"
+        ]
+      },
+      "notes": "Settings → Sales: private host fields, applied imports and the owner's privacy case search."
+    },
+    {
       "id": "route_sales_today",
       "kind": "route",
       "owner": "features/sales",
@@ -174,23 +191,40 @@
       "notes": "One deal's pilot, quote, payment and close under Deals on a host's page, on CatchSection and CatchMetaRow with CatchSheet editors bound to the revision that was opened."
     },
     {
-      "id": "workspace_sales_import",
+      "id": "workspace_sales_import_sheet",
       "kind": "workspace",
       "owner": "features/sales",
-      "source": "admin/src/features/sales/ui/SalesImportPanel.tsx",
-      "exportName": "SalesImportWorkspace",
-      "css": [
-        "admin/src/styles.css"
-      ],
+      "source": "admin/src/features/sales/ui/SalesImportSheetWorkspace.tsx",
+      "exportName": "SalesImportSheetWorkspace",
+      "css": [],
       "preview": {
         "status": "planned",
         "states": [
-          "csv-mapping",
+          "no-file",
           "batch-preview",
+          "skipped-rows",
           "batch-applied"
         ]
       },
-      "notes": "CSV mapping and explicit server preview before each bounded import batch is applied."
+      "notes": "The CSV review sheet from Settings → Sales: column choices and a server preview of each batch of up to 25 before it is applied."
+    },
+    {
+      "id": "workspace_sales_import_correction",
+      "kind": "workspace",
+      "owner": "features/sales",
+      "source": "admin/src/features/sales/ui/SalesImportCorrectionWorkspace.tsx",
+      "exportName": "SalesImportCorrectionWorkspace",
+      "css": [],
+      "preview": {
+        "status": "planned",
+        "states": [
+          "choose-host",
+          "plan",
+          "blocked",
+          "already-corrected"
+        ]
+      },
+      "notes": "The owner corrects one host from an applied import, from the server's plan, with a reason."
     },
     {
       "id": "workspace_sales_intelligence",

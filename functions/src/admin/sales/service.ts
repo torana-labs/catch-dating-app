@@ -20,6 +20,8 @@ import {proposeSalesEvidence, reviewSalesEvidenceProposal,
 import {assertQualifiedByRuntimePolicy} from "./qualificationPolicy";
 import {
   applySalesImport,
+  listSalesImportHosts,
+  listSalesImports,
   previewSalesImport,
   type ImportApply,
   type ImportPacket,
@@ -532,6 +534,14 @@ export async function executeSalesRead(
     break;
   case "intents.list":
     response = await listSalesInboundIntents(db, principal, input);
+    break;
+  case "imports.list":
+    response = await listSalesImports(db, principal,
+      input as {limit?: number; cursor?: string});
+    break;
+  case "imports.hosts":
+    response = await listSalesImportHosts(db, principal,
+      input as {importId: string});
     break;
   case "imports.preview":
     response = await previewSalesImport(
