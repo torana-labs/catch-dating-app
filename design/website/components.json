@@ -1603,10 +1603,9 @@
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimeNoticeStack",
       "comparedWith": [
-        "catch.section_stack",
-        "catch.pane_layout"
+        "catch.stack"
       ],
-      "comparisonReason": "Vertical stack of runtime notices, not of complete sections. Not a pane layout: one column of notices, with no panes to arrange.",
+      "comparisonReason": "Event runtime notice list, not the system Stack: a grid at the s2 gap that also draws each paragraph child as a paper notice card (runtime paper fill, hairline border, md radius, s3/s4 padding) in the event runtime theme. The system Stack draws nothing; it only arranges its children along one axis with a token gap.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -3218,6 +3217,10 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchGrid.tsx",
       "exportName": "CatchGrid",
+      "comparedWith": [
+        "catch.stack"
+      ],
+      "comparisonReason": "The deprecated two-dimensional grid of equal columns, counted from the page's catch-page container. CatchStack with direction row, equal and collapseBelow replaces it, and it is deleted in P7, as its JSDoc says; until then it is compared with the contract, not an implementation of it.",
       "css": [
         "packages/web-ui/src/components/CatchGrid.module.css"
       ],
