@@ -63,6 +63,7 @@ class EventAssistanceDeliveriesRepository {
   );
 
   // Rules list a view only for a manager of the organizer the query names.
+  // firestore-index: hostEventDeliveryViews (organizerId:ASCENDING,eventId:ASCENDING,__name__:ASCENDING)
   Stream<_ViewRows> _views(EventAssistanceDeliveryQuery query) =>
       withBackendErrorStream(
         () {

@@ -21,6 +21,7 @@ class EventSuccessPresenceReads {
 
   /// The event's heartbeats; a row the server could not have written (no
   /// uid or heartbeat time) is skipped, as the retired summary skipped it.
+  // firestore-index: eventSuccessPresence (organizerId:ASCENDING,eventId:ASCENDING,__name__:ASCENDING)
   Stream<List<EventSuccessPresenceHeartbeatRow>> watchHeartbeats({
     required String organizerId,
     required String eventId,
@@ -53,6 +54,7 @@ class EventSuccessPresenceReads {
   );
 
   /// The event's late-arrival placements, each for one target round.
+  // firestore-index: eventSuccessLateArrivals (organizerId:ASCENDING,eventId:ASCENDING,__name__:ASCENDING)
   Stream<List<EventSuccessLateArrivalPlacementRow>> watchPlacements({
     required String organizerId,
     required String eventId,

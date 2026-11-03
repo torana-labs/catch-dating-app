@@ -61,6 +61,7 @@ class EventAssistanceCasesRepository {
   );
 
   // Rules list a view only for a manager of the organizer the query names.
+  // firestore-index: hostEventCaseViews (organizerId:ASCENDING,eventId:ASCENDING,status:ASCENDING,__name__:ASCENDING)
   Stream<_ViewRows> _views(EventAssistanceCaseQuery query) =>
       withBackendErrorStream(
         () {
