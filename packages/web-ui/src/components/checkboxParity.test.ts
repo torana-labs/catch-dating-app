@@ -12,7 +12,7 @@ describe("CatchCheckboxInput twin contract",()=>{
     expect(dart).toContain("CheckboxListTile(");expect(ts).toContain('type="checkbox"');expect(ts).not.toContain('role="switch"');
   });
   it("uses the same text roles without dropping longer descriptions",()=>{
-    for(const role of ["bodyM","bodyS"]) {expect(dart).toContain(`CatchTextVariant.${role}`);expect(ts).toContain(`variant="${role}"`);}
+    for(const role of ["bodyM","bodyS"]) {expect(dart).toContain(`CatchLegacyTextVariant.${role}`);expect(ts).toContain(`variant="${role}"`);}
     expect(dart).not.toContain("maxLines:");expect(ts).not.toContain("maxLines=");
     expect(ts).toContain("aria-describedby=");expect(dart).toContain("checkboxSemanticLabel: semanticLabel");
   });

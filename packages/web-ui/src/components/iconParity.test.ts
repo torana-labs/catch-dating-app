@@ -6,7 +6,7 @@ import {catchIconGlyphs, catchIconStrokeWidth} from "../icons/catchIconGlyphs";
 import {catchIconSizes} from "./CatchLegacyIcon";
 
 // The Flutter implementation is the reference (blueprint D11). These tests
-// read its sources so a web size or tone cannot drift from the Flutter one.
+// read its sources so a web size cannot drift from the Flutter one.
 const read = (relative: string) =>
   fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 
@@ -32,12 +32,13 @@ describe("CatchLegacyIcon parity with Flutter", () => {
     }
   });
 
-  it("offers the same tones as CatchIconTone", () => {
-    const dartTones = iconDart.match(/enum CatchIconTone \{([^}]*)\}/u)?.[1]
-      .split(",").map((tone) => tone.trim()).filter(Boolean);
+  // Since P2.1 the Flutter CatchIcon has no tone: it takes the IconTheme its
+  // ground sets. The web's legacy tones retire with CatchLegacyIcon in P7.
+  it("leaves tones to the legacy web icon alone", () => {
+    expect(iconDart).not.toMatch(/\bCatchIconTone\b/u);
     const tsTones = iconTs.match(/export type CatchIconTone = ([^;]*);/u)?.[1]
       .split("|").map((tone) => tone.trim().replace(/"/gu, ""));
-    expect(tsTones).toEqual(dartTones);
+    expect(tsTones).toEqual(["inherit", "ink", "muted", "primary", "success", "warning", "danger"]);
   });
 
   it("draws every catalog role at the catalog's stroke width", () => {

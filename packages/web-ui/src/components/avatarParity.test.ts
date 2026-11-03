@@ -9,7 +9,7 @@ import {grounds} from "./palette";
 const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
 const opacity = read("../../../catch_tokens/lib/src/semantic/catch_opacity.dart");
-const ground = read("../../../catch_tokens/lib/src/semantic/catch_ground.dart");
+const ground = read("../../../catch_tokens/lib/src/semantic/catch_band_ground.dart");
 const avatar = read("../../../catch_ui/lib/src/components/catch_avatar.dart");
 const css = read("./CatchAvatar.module.css");
 const ts = read("./CatchAvatar.tsx");
