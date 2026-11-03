@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.103.0
+version: 1.104.0
 updated: 2026-11-03
 owner: app_architecture
 status: active
@@ -3038,6 +3038,16 @@ legacy screens still call it, raising `shims` in
 `tool/design/library_shims_baseline.json` by hand so the rise is in its diff.
 Each redrawn screen removes the shims whose last caller it was and records the
 fall with `--update`. The count reaches 0 in P7.
+
+A legacy component counts too: one whose `@Deprecated` message begins with
+`Legacy`. P2.1 gave the system names to `CatchSurface`, `CatchText` and
+`CatchTextVariant`, so the pre-redesign classes became `CatchLegacySurface`,
+`CatchLegacyText` and `CatchLegacyTextVariant`, and they and the absorbed
+`CatchKickerText`, `CatchMetadataText` and `CatchCountText` are the six legacy
+symbols the baseline records. `tool/design/rename_legacy_library_symbols.mjs`
+renamed their callers and gave each legacy file outside `catch_ui` a file-wide
+`deprecated_member_use` ignore (the ratchet is the guard, not the analyzer hint);
+a branch cut before that rename re-runs it to resolve its conflicts.
 
 ### Contexts as packages
 

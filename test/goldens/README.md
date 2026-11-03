@@ -5,17 +5,32 @@ Dynamic-Type visual QA that can't be eyeballed in CI. They guard the UI-elevatio
 migration (token re-skin, the 186-site sizing pass, the activity re-grade) from
 **silent** visual breakage.
 
+## Where goldens live
+
+Since P2.1 (amendment G) the library's own golden families live with the
+library: every test that renders only `package:catch_ui` and
+`package:catch_tokens` is in `packages/catch_ui/test/goldens`, with its
+baselines, its own `flutter_test_config.dart`, comparator, `golden_pump.dart`
+(in `CatchTheme`) and font loader. That covers the component families moved
+from here and the system families for Root, Surface, Text roles, Icon and
+Stack. This folder keeps the goldens that import the app or the platform
+(`avatar_family`, `design_system_sheet`, `entity_material`, `profile_view`)
+and the Widgetbook corpus baselines.
+
 ## Run
 
 ```bash
-flutter test test/goldens                    # verify against committed baselines
-flutter test --update-goldens test/goldens   # regenerate baselines (review the diff!)
+flutter test test/goldens                    # the app goldens left here
+flutter test --update-goldens test/goldens   # regenerate them (review the diff!)
+cd packages/catch_ui && flutter test --concurrency=1 --tags=golden  # the library's
 ```
 
-Baselines live in `test/goldens/baseline/<name>.<light|dark>.png`.
+Baselines live in `test/goldens/baseline/<name>.<light|dark>.png` and
+`packages/catch_ui/test/goldens/baseline/`.
 
-These tests are tagged `golden`. The Ubuntu Flutter CI unit/widget step runs
-with `--exclude-tags=golden` because the committed baselines are macOS-rendered.
+These tests are tagged `golden`. The Ubuntu Flutter CI unit/widget step, and
+the Linux "Catch UI package tests" job, run with `--exclude-tags=golden` because
+the committed baselines are macOS-rendered.
 The dedicated macOS lane uses `CatchGoldenFileComparator`. App goldens keep the
 0.30% pixel tolerance: their reviewed hosted-runner variance is at most 0.29%.
 The larger, text-heavy Widgetbook corpus uses a separately checked 0.60%
@@ -29,8 +44,10 @@ Flutter's normal master, test, isolated-diff, and masked-diff artifacts.
 | Golden | What it locks |
 |---|---|
 | `design_system_sheet` | All `CatchTokens` color roles + activity pigments, the full `CatchTextStyles` ramp (serif/sans/mono, weights, italic), and the activity-art duotone + pattern + glyph — light **and** dark. |
-| `adaptive_tab_bar_ios_chrome` | Floating/glass `CatchTabBar` chrome, 64/48/8 dock-indicator geometry, active-label pill, badge placement, safe-area offset, and light/dark token mapping on iOS. |
-| `adaptive_tab_bar_android_chrome` | Anchored `CatchTabBar` chrome, 64/48/8 dock-indicator geometry, active-label pill, badge placement, safe-area behavior, and light/dark token mapping on Android. |
+| `adaptive_tab_bar_ios_chrome` (package) | Floating/glass `CatchTabBar` chrome, 64/48/8 dock-indicator geometry, active-label pill, badge placement, safe-area offset, and light/dark token mapping on iOS. |
+| `adaptive_tab_bar_android_chrome` (package) | Anchored `CatchTabBar` chrome, 64/48/8 dock-indicator geometry, active-label pill, badge placement, safe-area behavior, and light/dark token mapping on Android. |
+| `root_family`, `surface_family*`, `text_roles*`, `icon_family`, `stack_family*` (package) | The system Root, Surface, Text roles, Icon and Stack in day and night. |
+| `legacy_text_atoms` (package) | The kicker and metadata atoms the system Text absorbs, until P7 deletes them. |
 
 Add coverage as components stabilize (ticket card, polaroid, profile sections, …).
 
