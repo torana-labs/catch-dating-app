@@ -253,7 +253,7 @@ class _HostOperationalRosterSectionState
   var _creatingHandoff = false;
   String? _pendingAttendanceId;
   String? _pendingClaimUid;
-  AsyncValue<HostProviderSetup>? _providerSetup;
+  var _providerSetupRequested = false;
   var _providerMutationPending = false;
   String? _providerSyncOperationId;
   Object? _mutationError;
@@ -324,14 +324,12 @@ class _HostOperationalRosterSectionState
         creatingHandoff: _creatingHandoff,
         providerMutationPending: _providerMutationPending,
         showsProviderSource: _showsProviderSource,
-        providerSetup: _providerSetup,
+        providerSetup: _watchProviderSetup(),
         bookingProvider: widget.bookingProvider,
         mutationError: _mutationError,
         onOpenChanged: (open) {
           if (open) unawaited(_loadRosterIntakeDraft());
-          if (open && _showsProviderSource) {
-            unawaited(_loadProviderSetup());
-          }
+          if (open && _showsProviderSource) _openProviderSetup();
         },
         onImport: () => unawaited(_pickRoster()),
         onResume: _savedRosterIntakeSessionId == null
@@ -339,7 +337,7 @@ class _HostOperationalRosterSectionState
             : () => unawaited(_resumeRosterIntake()),
         onAddGuest: () => unawaited(_showManualGuest()),
         onForward: () => unawaited(_showRosterHandoff()),
-        onRetryProvider: () => unawaited(_loadProviderSetup(force: true)),
+        onRetryProvider: _retryProviderSetup,
         onConnect: () => unawaited(_connectLuma()),
         onSync: () => unawaited(_syncProvider()),
         onDisconnect: () => unawaited(_disconnectProvider()),

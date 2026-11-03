@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/contexts/audience/data/host_provider_setup_reads.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -6,7 +9,39 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'host_provider_setup_reads.dart'
+    show externalEventMappingId, hostProviderCatalog, hostProviderSetupProvider;
+
 part 'host_provider_repository.g.dart';
+
+/// Whether the server's connection view could be read completely.
+enum HostProviderSetupCoverage {
+  /// The connections are every connection the organizer has.
+  complete,
+
+  /// The organizer has more than 20 connections; the first 20 are shown.
+  overCap,
+
+  /// A connection failed validation; the rows are the last valid ones.
+  invalidSource,
+
+  /// The server has not written the organizer's connection view yet.
+  missing,
+}
+
+/// The typed reason the door cannot show provider setup.
+class HostProviderSetupUnavailable implements Exception {
+  const HostProviderSetupUnavailable(this.coverage);
+
+  final HostProviderSetupCoverage coverage;
+
+  @override
+  String toString() => 'HostProviderSetupUnavailable(${coverage.name})';
+}
+
+/// How long a connect or disconnect waits for the listeners to deliver its
+/// write before it lets the listeners catch up on their own.
+const hostProviderSetupReflectionTimeout = Duration(seconds: 20);
 
 enum HostProviderAvailability {
   available,
@@ -185,6 +220,7 @@ class HostProviderSetup {
     required this.providers,
     required this.connections,
     required this.mapping,
+    this.sourceCoverage = HostProviderSetupCoverage.complete,
   });
 
   factory HostProviderSetup.fromCallableData(Object? data) {
@@ -213,6 +249,28 @@ class HostProviderSetup {
   final List<HostProviderCatalogEntry> providers;
   final List<HostProviderConnection> connections;
   final HostProviderEventMapping? mapping;
+
+  /// Whether [connections] is complete; a command response always is.
+  final HostProviderSetupCoverage sourceCoverage;
+
+  /// Whether this listener delivery reflects a command's [receipt]: its
+  /// mapping and mapped connection at or past the receipt's revisions.
+  bool reflects(HostProviderSetup receipt) {
+    if (sourceCoverage != HostProviderSetupCoverage.complete) return false;
+    final wanted = receipt.mapping;
+    if (wanted == null) return mapping == null;
+    final current = mapping;
+    if (current == null ||
+        current.mappingId != wanted.mappingId ||
+        current.revision < wanted.revision) {
+      return false;
+    }
+    final wantedConnection = receipt.mappedConnection;
+    if (wantedConnection == null) return true;
+    final connection = mappedConnection;
+    return connection != null &&
+        connection.revision >= wantedConnection.revision;
+  }
 
   HostProviderCatalogEntry? catalogFor(ExternalBookingProvider provider) {
     for (final entry in providers) {
@@ -317,22 +375,58 @@ class HostProviderEventChoices {
 }
 
 class HostProviderRepository {
-  const HostProviderRepository(this._functions);
+  const HostProviderRepository(this._functions, {this.setups});
 
   final FirebaseFunctions _functions;
 
-  Future<HostProviderSetup> getSetup({
+  /// The manager listeners behind provider setup; reads need them.
+  final HostProviderSetupReads? setups;
+
+  /// The catalog, the organizer's connections and the event's mapping,
+  /// updated while it is listened to.
+  Stream<HostProviderSetup> watch({
     required String organizerId,
     required String eventId,
-  }) => _call(
-    name: 'getOrganizerProviderSetup',
-    payload: GetOrganizerProviderSetupCallableRequest(
-      organizerId: organizerId,
-      eventId: eventId,
-    ).toJson(),
-    action: 'load booking provider setup',
-    parse: HostProviderSetup.fromCallableData,
-  );
+  }) {
+    final reads = setups;
+    if (reads == null) {
+      throw StateError('Provider setup reads need the setup listeners.');
+    }
+    return reads.watch(organizerId: organizerId, eventId: eventId);
+  }
+
+  /// Completes when the listeners deliver a setup that reflects a command's
+  /// [receipt], so the door leaves its pending state on the listener's data
+  /// instead of rereading. After [timeout], or if a listener fails, it
+  /// completes anyway: the command succeeded, and the door's own listener
+  /// shows whatever arrives next.
+  Future<void> untilReflected(
+    HostProviderSetup receipt, {
+    Duration timeout = hostProviderSetupReflectionTimeout,
+  }) async {
+    final settled = Completer<void>();
+    void settle() {
+      if (!settled.isCompleted) settled.complete();
+    }
+
+    // The command's write stands either way: a listener failure is the door
+    // listener's to report, and the wait never outlives [timeout].
+    final deadline = Timer(timeout, settle);
+    final subscription =
+        watch(
+          organizerId: receipt.organizerId,
+          eventId: receipt.eventId,
+        ).listen(
+          (setup) {
+            if (setup.reflects(receipt)) settle();
+          },
+          onError: (Object _) => settle(),
+          onDone: settle,
+        );
+    await settled.future;
+    deadline.cancel();
+    await subscription.cancel();
+  }
 
   Future<HostProviderSetup> connectLuma({
     required String organizerId,
@@ -420,16 +514,10 @@ class HostProviderRepository {
 // across every external-booking management surface.
 @Riverpod(keepAlive: true)
 HostProviderRepository hostProviderRepository(Ref ref) =>
-    HostProviderRepository(ref.watch(firebaseFunctionsProvider));
-
-@riverpod
-Future<HostProviderSetup> hostProviderSetup(
-  Ref ref,
-  String organizerId,
-  String eventId,
-) => ref
-    .read(hostProviderRepositoryProvider)
-    .getSetup(organizerId: organizerId, eventId: eventId);
+    HostProviderRepository(
+      ref.watch(firebaseFunctionsProvider),
+      setups: HostProviderSetupReads(ref.watch(firebaseFirestoreProvider)),
+    );
 
 ExternalBookingProvider _providerFromWire(String value) => switch (value) {
   'generic' => ExternalBookingProvider.generic,
