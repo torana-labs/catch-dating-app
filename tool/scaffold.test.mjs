@@ -165,7 +165,7 @@ describe("arguments and names", () => {
 });
 
 describe("templates", () => {
-  // PR 1.4's lints enforce this on new roots; until they land, nothing else does.
+  // catch_ui_lints holds written screens to this; these hold the templates.
   const zeroDrawing = /\b(?:Color|Colors|Container|DecoratedBox|Text|TextStyle|BoxDecoration|SizedBox|Padding|EdgeInsets|BorderRadius|Border|BoxShadow|Theme)\b(?:\.|\()/u;
 
   for (const file of ["screen.dart", "body.dart", "view_model.dart"]) {
@@ -248,6 +248,9 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
       ...excluded.map((entry) => `:(exclude)${entry}`)]), "archiving the tree");
     assertOk(run("tar", ["-x", "-f", archive, "-C", tree]), "unpacking the tree");
     fs.rmSync(archive);
+    // catch_ui_lints finds the repository by its .git. Without one the rules for
+    // the new roots stay silent, and the root analysis below proves nothing.
+    fs.mkdirSync(inTree(".git"));
     // The tool under test may not be committed yet.
     fs.copyFileSync(scaffold, inTree("tool/scaffold.mjs"));
     fs.cpSync(fromRepo("tool/scaffold"), inTree("tool/scaffold"), {recursive: true});
@@ -324,6 +327,10 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     for (const file of probes) {
       assert.ok(findings.some((finding) => finding.file === file && finding.code === "CATCH_NO_RAW_COLOR"),
         `the plugins did not reach ${file}`);
+    }
+    for (const file of probes.filter((candidate) => !candidate.startsWith("packages/"))) {
+      assert.ok(findings.some((finding) => finding.file === file && finding.code === "CATCH_NO_RAW_SURFACE_SHELL"),
+        `the zero-drawing rules did not reach ${file}`);
     }
     const inOutput = findings.filter((finding) => created.has(finding.file));
     assert.deepEqual(inOutput, []);

@@ -1,6 +1,7 @@
 import {
   featureWidgetNamingIssues,
   isAppSharedWidgetSource,
+  isNewRootCompositionFile,
   roleNouns,
 } from "./lib/component_naming.mjs";
 
@@ -44,7 +45,9 @@ export function newWidgetPolicyIssues(
   if (entry.visibility === "private") return ["private-widget-class"];
 
   const issues = featureWidgetNamingIssues(entry);
-  if (!widgetbookCovered) issues.push("missing-widgetbook");
+  if (!widgetbookCovered && !isNewRootCompositionFile(entry.file)) {
+    issues.push("missing-widgetbook");
+  }
   // Design-system homes require the reserved prefix; app-coupled shared
   // widgets follow feature naming but stay registered.
   if (["lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]

@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/ast/ast.dart';
 
 import 'architecture_findings.dart';
+import 'migration_scope.dart';
 
 final _marker = RegExp(
   r'^\s*//\s*architecture:\s*provider-free\b',
@@ -32,7 +33,8 @@ final _forbiddenImport = RegExp(
 
 /// Files that promise to stay provider-free: display-state adapters by name,
 /// context parts by folder, and anything marked `// architecture: provider-free`.
-/// The promise is stated by the file, so it moves with the file.
+/// The promise is stated by the file, so it moves with the file. Under the D24
+/// roots the path makes the promise for bodies, states and `widgets/`.
 List<ArchitectureFinding> providerFreeFindings({
   required String relativePath,
   required String source,
@@ -45,7 +47,14 @@ List<ArchitectureFinding> providerFreeFindings({
       !relativePath.endsWith('_empty_state.dart');
   final isParts = layer == 'parts';
   final isMarked = _marker.hasMatch(source);
-  if (!isStateFile && !isParts && !isMarked) return const [];
+  final isNewRootComposition =
+      newRootPath(relativePath) &&
+      (relativePath.endsWith('_body.dart') ||
+          relativePath.endsWith('_state.dart') ||
+          relativePath.contains('/widgets/'));
+  if (!isStateFile && !isParts && !isMarked && !isNewRootComposition) {
+    return const [];
+  }
   // Those rules already cover Riverpod imports and ref reads in these files.
   final coveredElsewhere =
       layer == 'parts' ||

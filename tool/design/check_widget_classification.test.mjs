@@ -9,6 +9,7 @@ import {publicWidgetNamingProblems} from "./component_concepts.mjs";
 import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
 import {
   buildWidgetClassification,
+  catalogStatusFor,
   collectProductionWidgetClassificationDeclarations,
   collectWidgetClassificationDeclarations,
   isScreen,
@@ -70,6 +71,17 @@ test("a private class in an app-package screen file classifies as screen, as it 
   assert.equal(isScreen("_TodayContent", "apps/host/lib/today/today_screen.dart"), true);
   assert.equal(isScreen("_TodayRow", "apps/host/lib/today/widgets/today_screen.dart"), false);
   assert.equal(isScreen("_TodayRow", "apps/host/lib/today/today_body.dart"), false);
+});
+
+test("new-root composition is covered by its route, and the library is not", () => {
+  const status = (name, file) =>
+    catalogStatusFor({name, file, classKind: "widget"}, null, "public", new Set());
+  assert.equal(status("TodayScreen", "apps/host/lib/today/today_screen.dart"), "route-covered");
+  assert.equal(status("TodayBody", "apps/host/lib/today/today_body.dart"), "route-covered");
+  assert.equal(status("TodayRow", "apps/host/lib/today/widgets/today_row.dart"), "route-covered");
+  assert.equal(status("WelcomeBody", "lib/pages/welcome/welcome_body.dart"), "route-covered");
+  assert.equal(status("CatchMeter", "packages/catch_ui/lib/src/components/catch_meter.dart"), "uncataloged");
+  assert.equal(status("ProfileBody", "lib/profile/presentation/profile_body.dart"), "uncataloged");
 });
 
 test("classification discovers indirect and nontraditional Widgets across roots", () => {

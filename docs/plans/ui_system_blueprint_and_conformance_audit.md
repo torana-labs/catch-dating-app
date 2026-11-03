@@ -1150,7 +1150,8 @@ bundle and tokens are byte-equal to what the repo generates.
 ### D24. Zero drawing in the new roots
 
 The new roots are `apps/*/lib` and `lib/pages`. They start clean: from the first
-screen PR they have no baseline and no exceptions.
+screen PR they have no baseline and no exceptions, apart from the two older files
+named under **Checked by**.
 
 1. **File kinds.** A destination or page folder holds these files:
 
@@ -1190,14 +1191,17 @@ library and made agents split files to comply.
 everywhere else. The first wording of the programme's decision 6, which capped
 each file at one screen and one body or state class.
 
-**Checked by.** PR 1.4 lands these before any screen does, each at an empty
-baseline with seeded probes in `tool/check_catch_ui_lints.sh`: the D18 drawing,
-text, token and surface-geometry lints, extended to reject `Theme.of`,
-`TextStyle`, `BoxDecoration` and numeric `SizedBox` and `Padding` there;
+**Checked by.** PR 1.4 landed these before any screen did, with seeded probes in
+`tool/check_catch_ui_lints.sh`: the D18 drawing, text, token and surface-geometry
+lints, extended to reject `Theme.of`, `TextStyle`, `BoxDecoration` and numeric
+`SizedBox` and `Padding` there, with no reasoned ignore;
 `catch_arch_provider_free_boundary` for bodies, states and `widgets/`;
-`catch_arch_parts_provider_coupling` for `parts/`; and a new `check_library_shims`.
-The registry gate holds a new `catch_ui` export to a registry record in the same
-PR.
+`catch_arch_parts_provider_coupling` for `parts/`; and
+`tool/design/check_library_shims.mjs`. The registry gate holds a new `catch_ui`
+export to a registry record in the same PR. The two named files under `lib/pages`
+that predate D24 (`startup/splash_screen.dart`, `celebration/celebration_screen.dart`)
+are listed shrink-only until their P6 redraw; the list cannot grow. `apps/*/lib`
+stays at zero with no list.
 
 ### D25. Contexts are packages
 

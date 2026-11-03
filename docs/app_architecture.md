@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.102.0
+version: 1.103.0
 updated: 2026-11-03
 owner: app_architecture
 status: active
@@ -2476,6 +2476,9 @@ epoch and in-flight syntax alone does not justify converting them to
 AsyncNotifier. Preserve the pending-snapshot and account/authorization fences
 below when changing ownership.
 
+How long a read owner keeps its data, and which writes make it stale, is the
+[screen data caching contract](screen_data_caching.md).
+
 Mutation key grain must match the UI interaction grain. Route-level single
 actions such as book, cancel, submit, and delete for the route's single subject
 may use static `Mutation` fields. Repeated row or list actions such as
@@ -3009,11 +3012,31 @@ counts the classes in a file.
 - A visual that repeats goes to `catch_ui`, registry entry first, and T4 is
   allowed. A visual the library lacks is a library change, not a screen change.
 
-PR 1.4 lands the checks before any screen, each at an empty baseline with seeded
-probes in `tool/check_catch_ui_lints.sh`: the D18 drawing, text, token and
-surface-geometry lints, extended to reject `Theme.of`, `TextStyle`, `BoxDecoration`
-and numeric `SizedBox` and `Padding` here; `catch_arch_provider_free_boundary` for
-bodies, states and `widgets/`; `catch_arch_parts_provider_coupling` for `parts/`.
+These hold from PR 1.4, with seeded probes in `tool/check_catch_ui_lints.sh`, one
+of them a real file under `apps/host/lib`. `newRootPath` in
+`packages/catch_ui_lints/lib/src/migration_scope.dart` names the roots, and every
+screen rule runs there whatever the folder is called. `catch_no_raw_surface_shell`
+also rejects `Theme.of` and a raw `Icon` here; `catch_text_requires_style` any raw
+`Text`, `RichText` or `SelectableText`; `catch_no_raw_ui_spacing` any number in
+`SizedBox` or `EdgeInsets`, and a non-zero one in a spacing argument of any widget;
+`catch_no_raw_color` `Colors.transparent`; and `catch_no_allow_debt` every `ignore`
+of a Catch code.
+`catch_arch_provider_free_boundary` holds `*_body.dart`, `*_state.dart` and
+`widgets/` by path, `catch_arch_parts_provider_coupling` holds `parts/`, and
+`tool/design/check_library_shims.mjs` refuses a deprecated `catch_ui` symbol.
+Screens, bodies, states and `widgets/` here take no Widgetbook case: captures and
+body render tests cover them, and Widgetbook cannot import an app package. Two
+files under `lib/pages` predate D24 and are listed shrink-only in `migration_scope.dart`
+until their P6 redraw (`splash_screen.dart`, `celebration_screen.dart`); the list
+cannot grow, and `apps/*/lib` stays at zero with no list.
+
+#### Phase library shims reach zero
+
+A library PR may leave an absorbed component as a `@Deprecated` wrapper while
+legacy screens still call it, raising `shims` in
+`tool/design/library_shims_baseline.json` by hand so the rise is in its diff.
+Each redrawn screen removes the shims whose last caller it was and records the
+fall with `--update`. The count reaches 0 in P7.
 
 ### Contexts as packages
 

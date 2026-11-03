@@ -110,6 +110,43 @@ test("feature widgets require preview coverage without becoming shared concepts"
   }), ["missing-widgetbook"]);
 });
 
+test("screens, bodies, states and widgets/ under the new roots take no Widgetbook case", () => {
+  const uncovered = {widgetbookCovered: false, componentContracted: false};
+  for (const [name, file] of [
+    ["TodayScreen", "apps/host/lib/today/today_screen.dart"],
+    ["TodayBody", "apps/host/lib/today/today_body.dart"],
+    ["TodayState", "apps/host/lib/today/today_state.dart"],
+    ["TodayRow", "apps/host/lib/today/widgets/today_row.dart"],
+    ["ExploreBody", "apps/consumer/lib/explore/explore_body.dart"],
+    ["WelcomeBody", "lib/pages/welcome/welcome_body.dart"],
+    ["WelcomeRow", "lib/pages/welcome/widgets/welcome_row.dart"],
+  ]) {
+    assert.deepEqual(newWidgetPolicyIssues({name, file, visibility: "public"}, uncovered), [], file);
+  }
+  // Anything else still needs one, the library first of all.
+  for (const [name, file] of [
+    ["TodayRow", "apps/host/lib/today/today_row.dart"],
+    ["ProfileBody", "lib/profile/presentation/profile_body.dart"],
+    ["ProfileScreen", "lib/profile/presentation/profile_screen.dart"],
+  ]) {
+    assert.deepEqual(newWidgetPolicyIssues({name, file, visibility: "public"}, uncovered),
+      ["missing-widgetbook"], file);
+  }
+  assert.ok(newWidgetPolicyIssues({
+    name: "CatchMeter",
+    file: "packages/catch_ui/lib/src/components/catch_meter_body.dart",
+    visibility: "public",
+  }, {widgetbookCovered: false, componentContracted: true}).includes("missing-widgetbook"));
+  // `<Name>State` is a new-root file kind, and only there.
+  assert.ok(newWidgetPolicyIssues({
+    name: "ProfileState", file: "lib/profile/presentation/profile_state.dart", visibility: "public",
+  }, {widgetbookCovered: true, componentContracted: false}).includes("noncanonical-feature-widget-name"));
+  // The exemption is Widgetbook's alone: a private class or a registered name still fails.
+  assert.deepEqual(newWidgetPolicyIssues({
+    name: "_TodayRow", file: "apps/host/lib/today/today_body.dart", visibility: "private",
+  }, uncovered), ["private-widget-class"]);
+});
+
 test("ungoverned normalized names and exact public duplicates fail", () => {
   const base = {
     classKind: "widget",

@@ -40,6 +40,18 @@ export function isAppSharedWidgetSource(file) {
     file.startsWith("lib/pages/startup/");
 }
 
+const newRootCompositionFile =
+  /^(?:apps\/[^/]+\/lib|lib\/pages)\/(?:.+\/widgets\/.+|(?:.+\/)?[^/]+_(?:screen|body|state))\.dart$/u;
+
+/**
+ * Screens, bodies, states and screen-local `widgets/` under the D24 roots. They
+ * draw nothing, captures and body render tests cover them, and Widgetbook cannot
+ * import an app package, so they take no Widgetbook case.
+ */
+export function isNewRootCompositionFile(file) {
+  return newRootCompositionFile.test(file);
+}
+
 /**
  * Feature UI is distinct from app bootstraps and the platform and kernel
  * layers. App-coupled shared widgets follow feature naming.
@@ -55,7 +67,10 @@ export function featureWidgetNamingIssues(entry) {
   if (!isFeatureWidgetSource(entry.file) || sharedWidgetLevel(entry.file)) return [];
   const issues = [];
   if (reservedPrefixPattern.test(entry.name)) issues.push("reserved-feature-widget-prefix");
-  const role = [...roleNouns, ...routeSuffixes].sort((a, b) => b.length - a.length)
+  // D24 makes `<Name>State` a file kind under the new roots, beside `<Name>Body`.
+  const stateRole = isNewRootCompositionFile(entry.file) && entry.file.endsWith("_state.dart") ?
+    ["State"] : [];
+  const role = [...roleNouns, ...routeSuffixes, ...stateRole].sort((a, b) => b.length - a.length)
     .find((candidate) => entry.name.endsWith(candidate));
   const feature = role ? entry.name.slice(0, -role.length) : "";
   if (!/^(?:[A-Z][a-z0-9]*)+$/u.test(feature)) issues.push("noncanonical-feature-widget-name");
