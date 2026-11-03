@@ -198,13 +198,21 @@ export function sharedWidgetNamingProblems({components, declarations}) {
       problems.push(`${entry.id}: useCase must be PascalCase words`);
     }
     const words = useCase.match(/[A-Z][a-z0-9]*/gu) ?? [];
-    if (words.some((word) => /^(?:Custom|New|Modern|Legacy|Old|V\d+)$/u.test(word))) {
+    const legacy = entry.governance?.conceptRole === "member" &&
+      entry.governance?.qualifier === "legacy";
+    // A legacy member, the retiring implementation of its record's
+    // responsibility (redesign plan 5.8, D24), may lead with Legacy when its
+    // parent holds the canonical Dart symbol in the same role.
+    const legacyLead = legacy && words[0] === "Legacy" && hasCanonicalParent(entry);
+    if (words.some((word, index) => /^(?:Custom|New|Modern|Legacy|Old|V\d+)$/u.test(word) &&
+      !(legacyLead && index === 0))) {
       problems.push(`${entry.id}: useCase '${useCase}' is an implementation/version escape`);
     }
     if (entry.symbol !== canonicalWidgetName(entry)) {
       problems.push(`${entry.id}: expected ${canonicalWidgetName(entry)}, found ${entry.symbol}`);
     }
-    if (useCase) validateComparison(entry);
+    if (legacy) validateLegacyReason(entry);
+    else if (useCase) validateComparison(entry);
   }
 
   for (const entry of entries) {
@@ -249,6 +257,21 @@ export function sharedWidgetNamingProblems({components, declarations}) {
     visited.add(base);
     const parents = bySourceSymbol.get(base) ?? [];
     return parents.length === 1 && isInheritedScope(parents[0], visited);
+  }
+
+  function hasCanonicalParent(entry) {
+    const parent = byId.get(entry.governance?.parentConceptId);
+    return Boolean(parent?.symbol) && parent.roleNoun === entry.roleNoun &&
+      parent.symbol === canonicalWidgetName(parent);
+  }
+
+  // A legacy member is not a reviewed distinction from its parent, so it
+  // skips comparedWith; its reason names the PR that retired it.
+  function validateLegacyReason(entry) {
+    const reason = entry.naming?.reason;
+    if (typeof reason !== "string" || !/#\d+|\bP\d+(?:\.\d+)*\b/u.test(reason)) {
+      problems.push(`${entry.id}: a legacy member's naming.reason names the PR that retired it (#<number> or a programme row such as P2.1)`);
+    }
   }
 
   function validateComparison(entry) {

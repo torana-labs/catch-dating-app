@@ -3127,6 +3127,13 @@ or use case requires the same source comparison, recorded in the registry and
 reviewed with the code. `Custom`, `New`, `Modern`, `Legacy`, `Old`, and version
 qualifiers such as `V2` do not describe a new responsibility. A feature prefix
 or implementation technique cannot justify a second shared implementation.
+One exception keeps a retiring implementation callable while its callers are
+redrawn (redesign plan 5.8, D24): a member with the `legacy` qualifier is the
+retiring implementation of its record's responsibility, and it may lead its use
+case with `Legacy` when its parent record holds the canonical Dart symbol in the
+same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
+`naming.comparedWith`, its `naming.reason` names the PR that retired it, and
+`tool/design/check_library_shims.mjs` counts it until P7 deletes it.
 
 - **Prefixes.** `Catch` is reserved for design-system symbols (L0–L4a).
   Public feature widgets are `<Feature><RoleNoun>`. Private widget classes
@@ -3144,7 +3151,8 @@ or implementation technique cannot justify a second shared implementation.
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
-  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition.
+  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition, Root,
+  Stack.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a
@@ -3178,6 +3186,12 @@ or implementation technique cannot justify a second shared implementation.
   descendants. Transition: animates its child in or out (opacity, offset, scale)
   and owns motion only, after Flutter's `FadeTransition` and
   `SlideTransition`; layout and paint stay with the child.
+- **Nouns added 2026-11-03 (redesign P2.1, decision O).** Root: the context
+  root of a screen or app subtree; it sets the theme, size class, format and
+  register, installs the token theme and paints the ground (`CatchRoot`).
+  Stack: a one-axis arrangement of children with a token gap that collapses to
+  a column below a size class (`CatchStack`). Gap and Inset are spacers,
+  Layout arranges regions, and Grid is two-dimensional.
 - **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
   containment); Page is Step (a flow stage) or Body (a tab or pager page);
   Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
@@ -3186,7 +3200,7 @@ or implementation technique cannot justify a second shared implementation.
   Tile or Card; Container, Box, Wrapper, Shell and Frame are Surface, Scaffold
   or Layout; Modal and Popup are Dialog or Sheet; Toast and Snackbar are
   Notice; Spinner and Loader are Indicator; Tag and Pill are Chip; Label,
-  Eyebrow and Caption are Text; Stack is Layout or SectionList; Selector is
+  Eyebrow and Caption are Text; Selector is
   Picker; Scrim is Overlay; Block is Card or Section; Controls is Action or
   Dock; Loading is Skeleton or Indicator; Wrap, Group and Groups are List or
   Section; Stat is Tile or Text; Value is Text; Artwork is Cover or Image;
@@ -3320,7 +3334,8 @@ by the component registry (`design/components/README.md`).
   through the package index. `*Control` exports are package internals, retired
   as styled `Catch*` components replace them.
 - **Banned qualifiers** (`Custom`, `New`, `Modern`, `Legacy`, `Old`, version
-  qualifiers such as `V2`) apply in both frameworks.
+  qualifiers such as `V2`) apply in both frameworks, with the one `legacy`
+  member exception of the Naming Grammar.
 
 React exports that predate this subsection migrate under blueprint Phase 7.
 The React component inventory (`web:shared-ui-adoption`, Phase 7d) already

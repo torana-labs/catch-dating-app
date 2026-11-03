@@ -208,6 +208,47 @@ test("version and cosmetic qualifiers cannot avoid a canonical-name decision", (
   }
 });
 
+function legacyFamily({parent = component("CatchSurface", "Surface"), member = {}} = {}) {
+  parent.contract = {members: [{
+    id: `${parent.id}.legacy`, symbol: "CatchLegacySurface", roleNoun: "Surface", level: "L3",
+    file: `${home}catch_legacy_surface.dart`,
+    naming: {useCase: "Legacy", reason: "The pre-redesign surface, kept for legacy callers since P2.1."},
+    governance: {conceptRole: "member", conceptId: parent.id, parentConceptId: parent.id, qualifier: "legacy"},
+    ...member,
+  }]};
+  return [parent];
+}
+
+test("a legacy member may lead with Legacy beside its parent's canonical symbol", () => {
+  assert.deepEqual(problems(legacyFamily()), []);
+  // Any legacy member skips comparedWith; its reason names the retiring PR.
+  const count = legacyFamily({member: {symbol: "CatchCountSurface", file: `${home}catch_count_surface.dart`,
+    naming: {useCase: "Count", reason: "Absorbed by the system Text (#1530)."}}});
+  assert.deepEqual(problems(count), []);
+});
+
+test("Legacy stays an escape outside the legacy-member rule", () => {
+  const escape = (components) => assert.match(problems(components).join("\n"), /implementation\/version escape/u);
+  // Not a legacy member.
+  escape(legacyFamily({member: {governance: {conceptRole: "member", conceptId: "catch.surface",
+    parentConceptId: "catch.surface", qualifier: "variant"}, naming: {useCase: "Legacy",
+    comparedWith: ["catch.surface"], reason: "Another implementation."}}}));
+  // Not the first word.
+  escape(legacyFamily({member: {symbol: "CatchCompactLegacySurface", file: `${home}catch_compact_legacy_surface.dart`,
+    naming: {useCase: "CompactLegacy", reason: "Since P2.1."}}}));
+  // The parent's symbol is in another role.
+  escape(legacyFamily({parent: component("CatchText", "Text")}));
+  // The parent's symbol is not canonical for its role and use case.
+  escape(legacyFamily({parent: component("CatchPanel", "Surface")}));
+});
+
+test("a legacy member's reason names the PR that retired it", () => {
+  for (const reason of [undefined, "", "Kept for legacy callers."]) {
+    const family = legacyFamily({member: {naming: {useCase: "Legacy", reason}}});
+    assert.match(problems(family).join("\n"), /names the PR that retired it/u);
+  }
+});
+
 test("missing roles, missing levels and role substrings cannot satisfy grammar", () => {
   for (const roleNoun of [undefined, "Pill", "Imagery"]) {
     const entry = component("CatchImagery", roleNoun);
