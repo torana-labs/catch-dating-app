@@ -17,7 +17,8 @@ Static.
 <!-- generated:flutter:start -->
 ## Flutter
 
-`catch.stack`: No Flutter symbol yet.
+`catch.stack`:
+- `CatchStack`
 <!-- generated:flutter:end -->
 
 ## Replaces

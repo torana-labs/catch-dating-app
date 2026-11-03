@@ -19,8 +19,6 @@ Pressable blocks: hover layer, pressed scale 0.99 over 100 ms, focus ring.
 
 `catch.surface`:
 - `CatchSurface`
-- `CatchSurface.card`
-- `CatchSurface.tinted`
 <!-- generated:flutter:end -->
 
 ## Replaces

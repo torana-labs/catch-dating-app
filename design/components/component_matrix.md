@@ -11,12 +11,12 @@ symbol outside `catch_ui`.
 
 | System | Registry | Tier | Flutter today | React today | Action |
 |---|---|---|---|---|---|
-| Root | `catch.root` | T1 | — | `CatchRoot` | port flutter |
+| Root | `catch.root` | T1 | `CatchRoot` | `CatchRoot` | align |
 | Surface | `catch.surface` | T1 | `CatchSurface` | `CatchSurface` | align; absorbs: `CatchGroundCard`, `CatchBand`, `CatchPhotoTile`, `CatchFormatTile` |
 | Text | `catch.text` | T1 | `CatchText` | `CatchText` | align; absorbs: `CatchKickerText`, `CatchMetadataText`, `CatchCountText` |
 | Text | `catch.typography` | T1 | `CatchKickerText` | `UiLabel` | align |
 | Icon | `catch.icon` | T1 | `CatchIcon` | `CatchIcon` | align |
-| Stack | `catch.stack` | T1 | — | `CatchStack` | port flutter; absorbs: `CatchGap`, `CatchInset`, `CatchGrid`, `CatchSplit`, `CatchSectionList` |
+| Stack | `catch.stack` | T1 | `CatchStack` | `CatchStack` | align; absorbs: `CatchGap`, `CatchInset`, `CatchGrid`, `CatchSplit`, `CatchSectionList` |
 | Button | `catch.button` | T1 | `CatchButton` | `CatchButton` | align; absorbs: `CatchNavigationButton`, `CatchToolbarButton`, `CatchChoiceButton` |
 | IconButton | `catch.icon_button` | T1 | `CatchIconAction` | — | port react |
 | Chip | `catch.chip` | T1 | `CatchChip` | `CatchChip` | align |
