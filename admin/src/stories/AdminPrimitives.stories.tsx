@@ -1,4 +1,8 @@
-import {CatchBadge, CatchField} from "@catch/web-ui";
+import {
+  CatchBadge,
+  CatchField,
+  CatchText,
+} from "@catch/web-ui";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
@@ -20,7 +24,6 @@ import {
   AdminButton,
   AdminCard,
   AdminCardList,
-  AdminDecisionFooterShell,
   AdminDetailScreenStack,
   AdminDirectoryScreenStack,
   AdminEyebrow,
@@ -31,7 +34,6 @@ import {
   AdminMetricCard,
   AdminMetricGrid,
   AdminPanel,
-  AdminSecondaryDisclosure,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
@@ -39,9 +41,7 @@ import {
   AdminStateRow,
   AdminStatGrid,
   AdminStatusGrid,
-  AdminTagRow,
   AdminToolbar,
-  AdminWorkbenchNote,
   AdminWorkbenchStack,
   AdminWorkspace,
   AlertRow,
@@ -572,21 +572,6 @@ export const AdminToolbarStory: Story = {
   ),
 };
 
-export const AdminWorkbenchNoteStory: Story = {
-  name: "Workbench note",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_workbench_note",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminWorkbenchNote>Generated bridge data is read-only in this view.</AdminWorkbenchNote>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminWorkbenchStackStory: Story = {
   name: "Workbench stack",
   parameters: {
@@ -603,30 +588,8 @@ export const AdminWorkbenchStackStory: Story = {
         </AdminCard>
       </AdminWorkbenchStack>
       <AdminWorkbenchStack compact>
-        <AdminWorkbenchNote>Compact stack item.</AdminWorkbenchNote>
+        <CatchText as="p" color="ink2" variant="bodyM">Compact stack item.</CatchText>
       </AdminWorkbenchStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSecondaryDisclosureStory: Story = {
-  name: "Secondary disclosure",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_secondary_disclosure",
-      states: ["closed", "open"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSecondaryDisclosure summary="Diagnostics and source details">
-        <AdminWorkbenchNote>
-          Technical context remains available without competing with the task.
-        </AdminWorkbenchNote>
-      </AdminSecondaryDisclosure>
-      <AdminSecondaryDisclosure open summary="Expanded diagnostics">
-        <AdminWorkbenchNote>Source generated at 14 Jul 2026, 15:10.</AdminWorkbenchNote>
-      </AdminSecondaryDisclosure>
     </AdminWorkspace>
   ),
 };
@@ -743,7 +706,7 @@ export const AdminPanelStory: Story = {
         </QualityList>
       </AdminPanel>
       <AdminPanel icon={<Sparkles size={18} />} span={2} title="Wide panel">
-        <AdminWorkbenchNote>Spans the workbench grid.</AdminWorkbenchNote>
+        <CatchText as="p" color="ink2" variant="bodyM">Spans the workbench grid.</CatchText>
       </AdminPanel>
     </AdminWorkspace>
   ),
@@ -763,27 +726,6 @@ export const AdminCardListStory: Story = {
         <AdminCard>Queue card one</AdminCard>
         <AdminCard>Queue card two</AdminCard>
       </AdminCardList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminTagRowStory: Story = {
-  name: "Admin tag row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_tag_row",
-      states: ["div", "span"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTagRow>
-        <CatchBadge label="organizer" />
-        <CatchBadge label="profile" />
-      </AdminTagRow>
-      <AdminTagRow as="span">
-        <CatchBadge label="inline" />
-      </AdminTagRow>
     </AdminWorkspace>
   ),
 };
@@ -920,27 +862,6 @@ export const QualityRowStory: Story = {
         <strong>Blocked row</strong>
         <span>Cannot publish.</span>
       </QualityRow>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDecisionFooterShellStory: Story = {
-  name: "Decision footer shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_decision_footer_shell",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDecisionFooterShell>
-        <AdminButton>Needs changes</AdminButton>
-        <AdminButton variant="primary">Approve</AdminButton>
-      </AdminDecisionFooterShell>
-      <AdminDecisionFooterShell compact>
-        <AdminButton>Hold</AdminButton>
-      </AdminDecisionFooterShell>
     </AdminWorkspace>
   ),
 };

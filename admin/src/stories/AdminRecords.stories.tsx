@@ -3,7 +3,14 @@ import {brand} from "@catch/brand";
 import type {EventDirectoryController} from "../features/events/controllers/useEventDirectoryController";
 import {initialEventDirectoryFilters} from "../features/events/controllers/useEventDirectoryController";
 import {EventDirectoryScreen, OrganizerEventsWorkspace} from "../features/events/ui/EventDirectoryScreen";
+import {formFromEventProfile} from "../features/events/controllers/eventPublishingHelpers";
+import type {EventPageEditorController} from "../features/events/controllers/useEventPageEditorController";
+import {eventPageEditorPanels} from "../features/events/ui/EventPageEditor";
 import {EventPageScreen} from "../features/events/ui/EventPageScreen";
+import {emptyPublishChecklist, formFromOrganizerProfile} from "../features/organizers/controllers/organizerPublishingHelpers";
+import type {OrganizerPageEditorController} from "../features/organizers/controllers/useOrganizerPageEditorController";
+import {organizerPageEditorPanels} from "../features/organizers/ui/OrganizerPageEditor";
+import type {AdminOrganizerDetails} from "../shared/types/adminTypes";
 import {OrganizerBillsWorkspace} from "../features/money/ui/OrganizerBillsWorkspace";
 import {
   organizerMonthBreakdown,
@@ -15,7 +22,7 @@ import type {OrganizerDirectoryController} from "../features/organizers/controll
 import {initialOrganizerDirectoryFilters} from "../features/organizers/controllers/useOrganizerDirectoryController";
 import {OrganizerDirectoryScreen} from "../features/organizers/ui/OrganizerDirectoryScreen";
 import {OrganizerPageScreen, type OrganizerPageLinks} from "../features/organizers/ui/OrganizerPageScreen";
-import {sampleEventDetails, sampleExternalEventRows} from "../shared/api/sampleData";
+import {sampleEventDetails, sampleExternalEventRows, sampleOrganizerDetails} from "../shared/api/sampleData";
 import {
   sampleGetOrganizerOverview,
   sampleListEventDirectory,
@@ -94,7 +101,7 @@ export const OrganizerPageRouteStory: Story = {
       links={organizerLinks}
       loadError={null}
       overview={sampleGetOrganizerOverview({organizerId: "afterfly"})}
-      pageEditor={null}
+      editor={null}
       tab="overview"
     />
   ),
@@ -108,7 +115,7 @@ export const OrganizerMoneyRouteStory: Story = {
       links={organizerLinks}
       loadError={null}
       overview={sampleGetOrganizerOverview({organizerId: "mumbai-padel-social"})}
-      pageEditor={null}
+      editor={null}
       tab="money"
     />
   ),
@@ -142,6 +149,104 @@ export const EventPageRouteStory: Story = {
       onOpenOrganizer={noop}
       onTabChanged={noop}
       pageEditor={null}
+      record={{source: "catch", event: sampleEventDetails["mumbai-padel-mixer-1"]!}}
+      tab="overview"
+    />
+  ),
+};
+
+function sampleOrganizerEditor(organizer: AdminOrganizerDetails): OrganizerPageEditorController {
+  return {
+    organizer,
+    form: {...formFromOrganizerProfile(organizer), headline: "Run first, then the party"},
+    setForm: noop,
+    diffRows: [{field: "Headline", before: "empty", after: "Run first, then the party"}],
+    issues: [],
+    publishIssues: [],
+    checklist: emptyPublishChecklist,
+    setChecklist: noop,
+    isBusy: false,
+    canSave: true,
+    canPublish: true,
+    save: async () => true,
+    saveAndPublish: async () => true,
+    discard: noop,
+  };
+}
+
+export const OrganizerPageEditorStory: Story = {
+  name: "Organizer page, Page tab",
+  parameters: {catchComponent: {id: "route_organizer_page", states: ["page-tab"]}},
+  render: () => {
+    const editor = sampleOrganizerEditor(sampleOrganizerDetails.afterfly!);
+    return (
+      <OrganizerPageScreen
+        editor={{
+          main: <organizerPageEditorPanels.OrganizerPageEditorForm editor={editor} />,
+          aside: <organizerPageEditorPanels.OrganizerPageEditorSide editor={editor} />,
+          actions: <organizerPageEditorPanels.OrganizerPageEditorActions editor={editor} />,
+        }}
+        links={organizerLinks}
+        loadError={null}
+        overview={sampleGetOrganizerOverview({organizerId: "afterfly"})}
+        tab="page"
+      />
+    );
+  },
+};
+
+function sampleEventEditor(overrides: Partial<EventPageEditorController> = {}): EventPageEditorController {
+  const event = sampleEventDetails["mumbai-padel-mixer-1"]!;
+  return {
+    event,
+    form: {...formFromEventProfile(event), description: "Teams of up to six and five rounds."},
+    update: noop,
+    diffRows: [{field: "Description", before: event.description, after: "Teams of up to six and five rounds."}],
+    issues: [{id: "review-note", label: "Review note", detail: "Add a review note so the audited event save has context.", severity: "blocker"}],
+    isSaving: false,
+    canSave: false,
+    save: async () => true,
+    discard: noop,
+    savePilotReview: async () => true,
+    ...overrides,
+  };
+}
+
+export const EventPageEditorStory: Story = {
+  name: "Event page, Page tab",
+  parameters: {catchComponent: {id: "route_event_page", states: ["page-tab"]}},
+  render: () => {
+    const editor = sampleEventEditor();
+    return (
+      <EventPageScreen
+        editor={{
+          main: <eventPageEditorPanels.EventPageEditorForm editor={editor} />,
+          aside: <eventPageEditorPanels.EventPageEditorSide editor={editor} />,
+          actions: <eventPageEditorPanels.EventPageEditorActions editor={editor} />,
+        }}
+        loadError={null}
+        onBack={noop}
+        onOpenOrganizer={noop}
+        onTabChanged={noop}
+        pageEditor={null}
+        record={{source: "catch", event: sampleEventDetails["mumbai-padel-mixer-1"]!}}
+        tab="page"
+      />
+    );
+  },
+};
+
+export const EventPilotReviewStory: Story = {
+  name: "Event page, pilot review",
+  parameters: {catchComponent: {id: "route_event_page", states: ["pilot-review"]}},
+  render: () => (
+    <EventPageScreen
+      loadError={null}
+      onBack={noop}
+      onOpenOrganizer={noop}
+      onTabChanged={noop}
+      pageEditor={null}
+      pilots={<eventPageEditorPanels.EventPilotReviewSection editor={sampleEventEditor()} />}
       record={{source: "catch", event: sampleEventDetails["mumbai-padel-mixer-1"]!}}
       tab="overview"
     />

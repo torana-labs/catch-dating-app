@@ -20,16 +20,10 @@ export const launchMarkets = [
 ] as const;
 
 export type LaunchMarket = typeof launchMarkets[number];
-export const launchMarketIds = launchMarkets.map((market) => market.id);
 export const launchMarketSlugs =
   launchMarkets.map((market) => market.publicPageCitySlug);
 
-export const launchMarketIdSet = new Set<string>(launchMarketIds);
 export const launchMarketSlugSet = new Set<string>(launchMarketSlugs);
-
-export function isLaunchMarketId(value: string | null | undefined): boolean {
-  return value != null && launchMarketIdSet.has(value);
-}
 
 export function isLaunchMarketSlug(value: string | null | undefined): boolean {
   return value != null && launchMarketSlugSet.has(value);

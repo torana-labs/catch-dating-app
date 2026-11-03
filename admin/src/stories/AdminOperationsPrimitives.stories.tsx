@@ -3,6 +3,7 @@ import {
   CatchAdminCommandStack,
   CatchBadge,
   CatchField,
+  CatchGap,
   CatchTable,
 } from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
@@ -31,9 +32,6 @@ import {
   AdminChecklistCopy,
   AdminChecklistHeader,
   AdminChecklistStack,
-  AdminDiffList,
-  AdminDiffRow,
-  AdminEditorGrid,
   AdminEditorPanel,
   AdminEditorSection,
   AdminFieldGrid,
@@ -52,10 +50,7 @@ import {
   AdminPublishingLoadbar,
   AdminQueryList,
   AdminQueryRow,
-  AdminRoadmapList,
-  AdminRoadmapListItem,
   AdminStateRow,
-  AdminTagRow,
   AdminSurfacePreview,
   AdminWorkspace,
   AlertRow,
@@ -115,10 +110,10 @@ export const AdminSurfacePreviewStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminSurfacePreview>
-        <AdminTagRow>
+        <CatchGap direction="horizontal" size="inline" wrap>
           <CatchBadge label="public listing" />
           <CatchBadge recipe="status" tone="success" label="claim CTA" />
-        </AdminTagRow>
+        </CatchGap>
         <QualityRow icon={<Eye size={16} />} tone="success">
           Preview copy matches the generated route payload.
         </QualityRow>
@@ -303,33 +298,6 @@ export const AdminChecklistCopyStory: Story = {
   ),
 };
 
-export const AdminEditorGridStory: Story = {
-  name: "Editor grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_editor_grid",
-      states: ["section", "div"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEditorGrid aria-label="Publishing editor">
-        <CatchField recipe="input" title="Title" value="Friday Social" onChanged={noop} />
-        <CatchField recipe="input" title="Slug" value="friday-social" onChanged={noop} />
-      </AdminEditorGrid>
-      <AdminEditorGrid as="div">
-        <CatchField
-          recipe="input"
-          title="Review note"
-          maxLines={3}
-          value="Approved with source evidence."
-          onChanged={noop}
-        />
-      </AdminEditorGrid>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminEventSupplyEmptyStateStory: Story = {
   name: "Event supply empty state",
   parameters: {
@@ -343,72 +311,6 @@ export const AdminEventSupplyEmptyStateStory: Story = {
       <AdminEventSupplyEmptyState icon={<CalendarDays size={18} />}>
         Select an event candidate to inspect its source evidence.
       </AdminEventSupplyEmptyState>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDiffListStory: Story = {
-  name: "Diff list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_diff_list",
-      states: ["rows"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDiffList>
-        <AdminDiffRow field="Title" before="Old meetup" after="Friday Social" />
-        <AdminDiffRow field="CTA" before="Join" after="Claim listing" />
-      </AdminDiffList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDiffRowStory: Story = {
-  name: "Diff row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_diff_row",
-      states: ["before-after"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDiffRow field="Status" before="Draft" after="Ready" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminRoadmapListStory: Story = {
-  name: "Roadmap list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_roadmap_list",
-      states: ["items"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminRoadmapList>
-        <AdminRoadmapListItem>Move public route copy to generated contract.</AdminRoadmapListItem>
-        <AdminRoadmapListItem>Promote claim CTA once ownership is verified.</AdminRoadmapListItem>
-      </AdminRoadmapList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminRoadmapListItemStory: Story = {
-  name: "Roadmap list item",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_roadmap_list_item",
-      states: ["single"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminRoadmapListItem>Backfill listing screenshots after route launch.</AdminRoadmapListItem>
     </AdminWorkspace>
   ),
 };
@@ -468,10 +370,10 @@ export const AdminFeatureDropFeatureListStory: Story = {
       <AdminFeatureDropFeatureList>
         <AdminFeatureDropFeatureEditor>
           <strong>Organizer profiles</strong>
-          <AdminTagRow>
+          <CatchGap direction="horizontal" size="inline" wrap>
             <CatchBadge recipe="status" tone="success" label="ready" />
             <CatchBadge label="public route" />
-          </AdminTagRow>
+          </CatchGap>
         </AdminFeatureDropFeatureEditor>
       </AdminFeatureDropFeatureList>
     </AdminWorkspace>
@@ -679,7 +581,7 @@ export const AdminEditorPanelStory: Story = {
         span={2}
         title="Listing editor"
       >
-        <AdminEditorGrid as="div">
+        <CatchGap size="section">
           <CatchField
             recipe="input"
             title="Listing title"
@@ -692,7 +594,7 @@ export const AdminEditorPanelStory: Story = {
             value="/organizers/rooftop-social"
             onChanged={noop}
           />
-        </AdminEditorGrid>
+        </CatchGap>
       </AdminEditorPanel>
     </AdminWorkspace>
   ),

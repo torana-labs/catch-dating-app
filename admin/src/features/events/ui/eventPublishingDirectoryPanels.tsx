@@ -17,47 +17,8 @@ import {
 import {
   type ExternalEventSupplyFilter,
   type EventPublishingController,
-  type EventPublishingFilter,
 } from "../controllers/useEventPublishingController";
 import {eventPublishingSupplyPanels} from "./eventPublishingSupplyPanels";
-import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
-
-function EventDetailView({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  const title = controller.event?.title || controller.eventId || "Event";
-  return (
-    <AdminDetailScreenStack>
-      <PageHeader
-        actions={
-          <AdminButton
-            icon={<ArrowLeft size={15} strokeWidth={1.9} />}
-            onClick={controller.backToList}
-          >
-            Directory
-          </AdminButton>
-        }
-        title={title}
-      />
-      <EventDetailSummary controller={controller} />
-      <eventPublishingEditorPanels.EventEditor
-        diffRows={controller.diffRows}
-        event={controller.event}
-        eventId={controller.eventId}
-        form={controller.form}
-        isDetailLoading={controller.isDetailLoading}
-        isSaving={controller.isSaving}
-        validationIssues={controller.validationIssues}
-        onEventIdChange={controller.setEventId}
-        onFormChange={controller.setForm}
-        onLoad={() => void controller.selectEvent(controller.eventId)}
-        onSave={() => void controller.save()}
-      />
-    </AdminDetailScreenStack>
-  );
-}
 
 function ExternalEventDetailView({
   controller,
@@ -141,61 +102,6 @@ function ExternalEventDetailView({
   return null;
 }
 
-function EventDetailSummary({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  const event = controller.event;
-  const capacityFill = event && event.capacityLimit > 0 ?
-    Math.round((event.bookedCount / event.capacityLimit) * 100) :
-    null;
-  const checkInRate = event && event.bookedCount > 0 ?
-    Math.round((event.checkedInCount / event.bookedCount) * 100) :
-    null;
-  return (
-    <Panel
-      span={2}
-      icon={<CalendarDays size={18} strokeWidth={1.9} />}
-      title="Event status"
-      action={event?.status ?? "Not loaded"}
-    >
-      <AdminMetricGrid ariaLabel="Backed event performance">
-        <AdminMetricCard
-          label="Capacity fill"
-          value={capacityFill === null ? "—" : `${capacityFill}%`}
-        />
-        <AdminMetricCard
-          label="Checked in"
-          value={event ? `${event.checkedInCount} (${checkInRate ?? 0}%)` : "—"}
-        />
-        <AdminMetricCard
-          label="Waitlist"
-          value={event?.waitlistedCount ?? "—"}
-        />
-        <AdminMetricCard
-          label="Listed price"
-          value={event ? eventPublishingEditorPanels.formatMoney(event) : "—"}
-        />
-      </AdminMetricGrid>
-      <AdminStatusGrid>
-        <StateRow label="Document" value={event?.eventId ?? controller.eventId} />
-        <StateRow label="Organizer" value={event?.organizerName} />
-        <StateRow label="City" value={event?.discovery.citySlug} />
-        <StateRow label="Venue" value={event?.meetingPoint} />
-        <StateRow label="Starts" value={eventPublishingEditorPanels.formatDateTime(event?.startTime)} />
-        <StateRow label="Bookings" value={event ? `${event.bookedCount}/${event.capacityLimit}` : null} />
-        <StateRow label="Search" value={event?.searchIndexStatus} />
-        <StateRow
-          label="Changes"
-          value={`${controller.diffRows.length} pending`}
-        />
-      </AdminStatusGrid>
-    </Panel>
-  );
-}
-
 export const eventPublishingDirectoryPanels = {
-  EventDetailView,
   ExternalEventDetailView,
 };
