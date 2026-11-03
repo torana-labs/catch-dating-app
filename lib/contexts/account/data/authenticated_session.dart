@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/platform/cache/cache_policy.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -6,9 +9,35 @@ part 'authenticated_session.g.dart';
 
 /// An opaque, uninterrupted authenticated period. UID equality alone cannot
 /// restore a review that predates sign-out, an auth failure or account change.
-final class AuthenticatedSession {
+///
+/// The period ends when [authenticatedSessionProvider] moves on to another
+/// value; reads kept with `ref.retainForSession` are released then.
+final class AuthenticatedSession implements CacheSession {
   AuthenticatedSession._(this.uid);
   final String uid;
+
+  var _ended = false;
+  final _onEnded = <void Function()>[];
+
+  @override
+  void Function() whenEnded(void Function() callback) {
+    if (_ended) {
+      scheduleMicrotask(callback);
+      return () {};
+    }
+    _onEnded.add(callback);
+    return () => _onEnded.remove(callback);
+  }
+
+  void _end() {
+    if (_ended) return;
+    _ended = true;
+    final callbacks = [..._onEnded];
+    _onEnded.clear();
+    for (final callback in callbacks) {
+      callback();
+    }
+  }
 }
 
 // keepalive: Long-lived feature providers share one authenticated account view.
@@ -24,5 +53,7 @@ AsyncValue<AuthenticatedSession> authenticatedSession(Ref ref) {
       StackTrace.current,
     );
   }
-  return AsyncData(AuthenticatedSession._(uid));
+  final session = AuthenticatedSession._(uid);
+  ref.onDispose(session._end);
+  return AsyncData(session);
 }

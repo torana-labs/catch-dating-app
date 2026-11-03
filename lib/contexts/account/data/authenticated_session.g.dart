@@ -57,4 +57,4 @@ final class AuthenticatedSessionProvider
 }
 
 String _$authenticatedSessionHash() =>
-    r'fe81a2a56c8fc75e7fc9c4d1f0db4575a3cfef08';
+    r'b0dfcc7d4d941c9afb62bff8e69d03d4ef78d9c5';
