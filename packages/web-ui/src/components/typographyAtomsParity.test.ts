@@ -9,16 +9,8 @@ const styles = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dar
 const css = read("./CatchKickerText.module.css");
 const source = read("./CatchKickerText.tsx");
 const tokens = read("../../../web-config/generated/catch-tokens.css");
-const field = read("../../../catch_tokens/lib/src/components/catch_field_tokens.dart");
 const fonts = read("../../../catch_ui/lib/src/foundations/catch_fonts.dart");
 const roles = [["kicker", "kicker", ".kicker"], ["kickerLg", "kicker-lg", '.kicker[data-variant="lg"]'], ["fieldSectionKicker", "field-section-kicker", '.kicker[data-variant="fieldSection"]'], ["monoLabel", "mono-label", ".metadata"], ["monoCapsLabel", "mono-caps-label", ".metadata[data-uppercase]"]];
-function number(value: string) {
-  if (/^[\d.]+$/.test(value)) return Number(value);
-  const owner = value.startsWith("CatchFieldTokens.") ? field : styles;
-  const name = value.replace("CatchFieldTokens.", "");
-  const match = owner.match(new RegExp(`static const double ${name} = ([\\d.]+);`));
-  expect(match, value).not.toBeNull(); return Number(match![1]);
-}
 function body(role: string) {
   const start = styles.indexOf(`static TextStyle ${role}(`);
   expect(start).toBeGreaterThan(-1);
@@ -40,15 +32,16 @@ describe("Typography atom source parity", () => {
         const key = `--catch-typography-brand-${token}-${metric}`;
         expect(tokens).toContain(`${key}:`); expect(block).toContain(`${property}: var(${key})`);
       }
-      const dart = body(role); const weight = dart.match(/FontWeight\.w(\d+)/)?.[1];
-      expect(tokens).toContain(`--catch-typography-brand-${token}-weight: ${weight};`);
-      const height = dart.match(/height: ([\d.]+)/)?.[1];
-      expect(tokens).toContain(`--catch-typography-brand-${token}-line-height: ${height};`);
-      const size = dart.match(/size: ([\w.]+)/)?.[1];
-      expect(size).toBeDefined();
-      expect(tokens).toContain(`--catch-typography-brand-${token}-size: ${number(size!)}px;`);
-      const tracking = dart.match(/letterSpacing: ([\w.]+)/)?.[1] ?? "0";
-      expect(tokens).toContain(`--catch-typography-brand-${token}-tracking: ${number(tracking)}px;`);
+      // Flutter reads the system role directly; the web's older token aliases it.
+      const systemRole = body(role).match(/GeneratedCatchTypeRoleTokens\.(\w+)/)?.[1];
+      expect(systemRole, role).toBeDefined();
+      const kebab = systemRole!.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+      const value = (name: string) => tokens.match(new RegExp(`${name}: ([^;]+);`))?.[1];
+      for (const metric of ["family", "size", "weight", "line-height", "tracking"]) {
+        const expected = value(`--catch-typography-role-${kebab}-${metric}`);
+        expect(expected, `${systemRole} ${metric}`).toBeDefined();
+        expect(value(`--catch-typography-brand-${token}-${metric}`), `${role} ${metric}`).toBe(expected);
+      }
     });
   }
   it("retains native defaults and fixed metadata clamping", () => {

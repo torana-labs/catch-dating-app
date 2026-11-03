@@ -17,7 +17,7 @@ void main() {
     expect(CatchGaps.inline, CatchSpacing.s2);
     expect(CatchGaps.related, CatchSpacing.s3);
     expect(CatchGaps.formField, CatchSpacing.s4);
-    expect(CatchGaps.section, CatchSpacing.s6);
+    expect(CatchGaps.section, CatchSpacing.s7);
     expect(CatchGaps.majorSection, CatchSpacing.s8);
 
     expect(

@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.35.0
-updated: 2026-10-23
+version: 1.36.0
+updated: 2026-11-03
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -54,29 +54,55 @@ discipline (grid, whitespace, hairlines, tracked labels, muted grading) but our
 
 ## 2. Color — base is black & white
 
-The base system is **paper + ink**. Neutral surfaces (profile, chat, onboarding,
-settings, forms) use **no decorative color at all**. Light is the browse/forms register;
-**dark is reserved for "wow" surfaces** (event spotlight and celebration) and is
-first-class.
+The base system is **ink on white**. System v15 sets the values
+([blueprint D22](plans/ui_system_blueprint_and_conformance_audit.md)) and
+`design/tokens/catch.tokens.json` holds them; `CatchTokens` and
+`--catch-theme-*` read those tokens. Neutral surfaces use no decorative color.
+Day is the browse and forms register. Night is for screens that run in a dark
+room, such as the door, the live console and staff.
 
-| Role (`CatchTokens`) | Light | Dark (wow) | Notes |
+| Role (`CatchTokens`) | Day | Night | Use |
 |---|---|---|---|
-| `bg` | `#F4F4F1` | `#0F0E10` | cooler gallery off-white — **never cream** |
-| `surface` | `#FFFFFF` | `#18171A` | |
-| `raised` | `#FAFAF8` | `#211F23` | input/raised fills |
-| `overlay` | ink @ 55% | `#000` @ 72% | scrims |
-| `ink` / `ink2` / `ink3` | `#16140F` / `#544F47` / `#9C958A` | `#F4F0E8` / `#BAB2A7` / `#7E776D` | primary/secondary/tertiary text |
-| `line` / `line2` | ink @ 8% / 14% | paper @ 13% / 22% | hairlines |
-| `primary` (default action) | `#16140F` (ink) | `#F4F0E8` (paper) | **actions are ink/paper**, not a brand hue |
-| `primaryInk` | `#F4F4F1` | `#16140F` | text on a primary fill |
-| `success`/`warning`/`danger` | `#2F7D55` / `#B9770F` / `#C2261A` | lighter variants | functional only |
+| `ground` | `#FFFFFF` | `#141114` | Page background |
+| `tile` | `#F3F3F1` | `#231E23` | The grey tile block and segmented tracks |
+| `nested` | `#FFFFFF` | `#2E2630` | Anything inside a tile: chips, fields, nested boxes |
+| `paper` | `#F6F0E8` | same | Website bands and the night primary button |
+| `map` | `#EDEBE6` | `#2A252A` | Map ground behind pins and routes |
+| `scrim` | ink @ 45% | black @ 60% | Dims the screen behind sheets and dialogs |
+| `ink` / `ink2` / `ink3` | `#141114` / `#5A5450` / `#767069` | `#F6EFE6` / `#BDB3A7` / `#948A80` | Primary, secondary and tertiary text. `ink3` is only 4.4:1 on a day tile, so never small text there |
+| `primary` / `onPrimary` | ink / white | paper / ink | Primary button fill and its label: **actions are ink or paper**, not a brand hue |
+| `line` | ink @ 10% | paper @ 12% | Hairline between list rows |
+| `controlLine` | ink @ 18% | paper @ 28% | Outline of secondary buttons, chips, icon buttons and choice cards |
+| `fieldLine` | ink @ 22% | paper @ 25% | Text field outline at rest |
+| `focus` | ink | paper | Focus ring, 2px, offset 2px |
+| `track` / `switchOff` | `#EEEDEA` / `#D9D6D1` | paper @ 14% / 22% | Meter and slider tracks; a switch track when off |
+| `formatRun`, `formatDinner`, `formatGames`, `formatCourts`, `formatNightsOut` | `#F07A55`, `#F08AA0`, `#F5C451`, `#5CCB9F`, `#E58AC8` | same | Event format colours, with `onFormat` (`#141114`) text on them |
+| `indigo` | `#8C9BF2` | same | Person colours for avatars, placeholders and charts; never an event colour |
+| `tintMint`, `tintYellow`, `tintCoral`, `tintIndigo`, `tintPink` | `#DDF3EA`, `#FFF4D6`, `#FDE7DF`, `#E8EBFD`, `#FDE4EA` | `#1F3A2E`, `#3A321A`, `#3A2420`, `#22263F`, `#3A2129` | Status fills: success, warning, danger, information, social |
+| `deepMint`, `deepYellow`, `deepCoral`, `deepIndigo`, `deepPink` | `#1F7A57`, `#8A6410`, `#B5451F`, `#4C5BC4`, `#B23A5A` | the matching format colour, or `indigo` | Text and icons on the matching tint |
 
-**Token model change:** there is **no brand accent**. `primary` becomes the
-default *action* color (ink in light, paper in dark). On activity surfaces the action
-color is overridden by the activity pigment (§3). The old `heroGrad` brand gradient is
-**deprecated** — hero/wow gradients derive from the activity pigment or ink instead.
-`like`/`pass`: `like` defaults to ink (bold); optional systematic flourish — a "Like"
-may inherit the activity color of the event where the two people would cross paths.
+Older role names stay as deprecated aliases until P7 deletes them. Code that has
+not been redrawn reads them and takes the new values:
+
+| Older role | Now resolves to |
+|---|---|
+| `bg` | `tile` |
+| `surface` | `ground` |
+| `raised` | `nested` |
+| `overlay` | `scrim` |
+| `line2` | `controlLine` |
+| `primaryInk`, `accentInk` | `onPrimary` |
+| `primarySoft` | `tile` |
+| `accent`, `like` | `primary` |
+| `pass` | `ink3` |
+| `success`, `positiveText` | `deepMint` |
+| `warning`, `gold`, `attentionText`, `goldText` | `deepYellow` |
+| `danger`, `dangerText` | `deepCoral` |
+| `affinityText` | `deepPink` |
+
+**There is no brand accent.** On activity surfaces the action color is overridden
+by the activity pigment (§3). The old `heroGrad` brand gradient is **deprecated**:
+hero gradients derive from the activity pigment or ink instead.
 
 ---
 
@@ -129,13 +155,15 @@ User photos are inconsistent and low-quality. We **do not edit them on upload** 
 
 ## 5. Typography
 
-Three roles, no competition:
+Two families, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, event/club display titles, and the welcome reel |
-| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | app bars, root titles, prose, bios, descriptions, user-authored names, buttons, navigation controls, inputs, and dense UI controls |
-| **Data** | **IBM Plex Mono** | time, price, counts, OTP digits, kickers, and explicit uppercase labels |
+| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | the seven `display-*` roles: brand moments, page and section titles, big numbers |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | every other role: app bars, prose, names, buttons, labels, kickers, badges and codes |
+
+IBM Plex Mono retires from UI labels. Codes use the sans with tracking
+(`label-code`).
 
 **Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
 gives Catch a deliberate display voice without reintroducing a decorative brand accent.
@@ -158,18 +186,17 @@ imported through `package:catch_tokens/catch_tokens.dart`. Shared theme wiring, 
   90/92/94/100 widths were pre-decision drift and are retired. This is the
   Archivo half of the identity migration; the Newsreader→Archivo family swap
   completed earlier.
-- **Dramatic scale jumps** — a large display over a small mono kicker; avoid many mid sizes.
-- **Zero tracking by default.** Only explicit uppercase kicker/mono/badge roles add
-  tracking. `CatchWelcomeText` owns the ratified `-0.5px` welcome exception inside its package-internal paint recipe.
+- **Dramatic scale jumps** — a large display over a small kicker; avoid many mid sizes.
+- **Zero tracking by default.** Only the `display-*` roles and `label-code` track.
+  `CatchWelcomeText` owns the ratified `-0.5px` welcome exception inside its package-internal paint recipe.
 - **Near-1.0 display leading** and **generous body leading (~1.5–1.6)**.
 - **Archivo is roman-only in the app.** Do not request Archivo italics or add ignored
   `fontStyle` parameters.
 - Flutter native bundles `Archivo-Roman-VF.ttf`; web surfaces keep the WOFF2 build.
   Both formats are covered by the bundled Archivo OFL license.
 
-These map onto semantic `CatchTextStyles` roles: brand display styles use
-Archivo, numeric and explicitly uppercase data labels use IBM Plex Mono, and
-app bars, names, sentence-case labels, controls and prose use the platform font. App UI calls semantic
+These map onto semantic `CatchTextStyles` roles: display styles use Archivo, and
+everything else uses the platform font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
 
 All app-bar text uses the platform function family. `CatchTopBar.route` and
@@ -177,7 +204,7 @@ All app-bar text uses the platform function family. `CatchTopBar.route` and
 `CatchTextStyles.headline`. Context always follows the primary title using
 `bodyS`. A screen's purpose is primary; an event or organizer name is
 secondary context. Person-identity destinations may use the person's name as
-the primary title. No app-bar eyebrow, kicker, IBM Plex, Archivo, raw title
+the primary title. No app-bar eyebrow, kicker, Archivo, raw title
 widget or feature-owned typography/geometry is valid.
 
 Toolbar navigation, icon actions, menu triggers and collapsed search share a
@@ -196,40 +223,73 @@ The shared bar asserts these constraints. Semantic text commands and step
 counters retain their existing text recipe; photo/map controls outside the
 canonical bar retain their separately registered media treatment.
 
-IBM Plex is reserved for numerals and explicitly uppercase labels. Sentence
-case and user-authored text use the platform function family; do not uppercase
-user data to make it fit a font role. Legacy mono roles outside app bars require
-separate caller migration and are not approval for new lowercase mono text.
+Sentence case and user-authored text keep their case; do not uppercase user data
+to make it fit a role.
 
 Golden snapshots are regression evidence, not design authority. Establish the
 semantic and geometry rules, translate invalid configurations into valid
 recipes, inspect fresh renders, then deliberately update affected baselines.
 
-### 5.1 Platform function scale and readable records
+### 5.1 The type roles and readable records
 
-The Audience review promotes these selected metrics into
-`design/tokens/catch.tokens.json`, generated as immutable iOS/Android profiles.
-Numbers below are size / line height / weight in logical units. They are Catch
-composition choices informed by the 2026-09-03 platform inventory, **not a claim
-that every value is a native default**. iOS Footnote informs context (Caption 1
-is 12/16, not 13/18); Material
-Title Medium and Body Small inform Android names/context. Compact 16/24 reading
-text and zero tracking are deliberate Catch choices.
+Nineteen roles set all type (blueprint D22). Nothing is set below 12px. Archivo's
+floor is 20px (`display-xs`). Each role carries its own weight, and 760 is display
+only. Tracking is in em, so it scales with the size.
 
-| Semantic use | iOS | Android |
-| --- | --- | --- |
-| Functional headline | 24 / 30 / 600 | 24 / 32 / 600 |
-| UI title | 20 / 25 / 600 | 20 / 28 / 500 |
-| Person or record title | 16 / 20 / 600 | 16 / 24 / 500 |
-| Reading body | 16 / 24 / 400 | 16 / 24 / 400 |
-| Secondary metadata | 14 / 20 / 400 | 14 / 20 / 400 |
-| Record context | 13 / 18 / 400 | 12 / 16 / 400 |
-| Command | 15 / 20 / 400 | 14 / 20 / 400 |
-| Sentence-case status | 12 / 16 / 600 | 12 / 16 / 600 |
-| Prominent quantity | 24 / 30 / 600 | 24 / 32 / 600 |
-| Editable field value | 16 / 24 / 500 | 16 / 24 / 500 |
-| Field caption/support | 13 / 18 / 500 | 12 / 16 / 500 |
-| Minimum interactive hit area | 44 | 48 |
+| Role | Size | Line height | Weight | Letter-spacing | Use |
+| --- | --- | --- | --- | --- | --- |
+| `display-hero` | 96px | 0.9 | 760 | −0.045em | Website hero lines |
+| `display-xl` | 64px | 0.95 | 760 | −0.04em | Page titles on desktop; celebration numbers |
+| `display-lg` | 48px | 1.0 | 760 | −0.03em | Page titles on tablets; moments |
+| `display-title` | 38px | 1.0 | 760 | −0.03em | Page titles on phones; subject titles |
+| `display-section` | 30px | 1.05 | 760 | −0.02em | Tab-home section titles and step titles |
+| `display-sm` | 24px | 1.1 | 760 | −0.01em | Section titles; big numbers in stats |
+| `display-xs` | 20px | 1.1 | 760 | 0 | Titles on small posters and cards |
+| `body-lead` | 20px | 1.5 | 400 | 0 | Website lead paragraphs |
+| `body-input` | 16px | 1.5 | 400 | 0 | Typed text in fields; long reading |
+| `body` | 15px | 1.45 | 400 | 0 | Body copy |
+| `body-small` | 14px | 1.43 | 400 | 0 | Second lines and notes |
+| `body-meta` | 13px | 1.38 | 400 | 0 | Meta lines and timestamps |
+| `title-bar` | 17px | 1.3 | 700 | 0 | Top bar titles and card titles |
+| `title-row` | 16px | 1.35 | 600 | 0 | List row titles and names |
+| `label-button` | 15px | 1.3 | 600 | 0 | Large and medium button labels |
+| `label-action` | 14px | 1.3 | 600 | 0 | Small buttons, chips, text links |
+| `label-kicker` | 13px | 1.35 | 600 | 0 | Kickers, field labels, small grey labels |
+| `label-badge` | 12px | 1.2 | 700 | 0 | Badges and counts |
+| `label-code` | 13px | 1.35 | 500 | 0.12em | Ticket and join codes |
+
+Three responsive variants resolve to a role by size class. Medium starts at
+`bp-medium` (600px) and expanded at `bp-expanded` (840px). The system's reading
+and form lane is `pane-lane`, 600px.
+
+| Variant | Compact | Medium | Expanded |
+| --- | --- | --- | --- |
+| `page-title` | `display-title` | `display-lg` | `display-xl` |
+| `section-title` | `display-sm` | `display-sm` | `display-section` |
+| `hero` | `display-lg` | `display-xl` | `display-hero` |
+
+The D19 display steps and the IBM Plex Mono roles (`typography.brand`) stay as
+deprecated aliases until P7 deletes them; `CatchTextStyles` reads the role that
+replaces each one. IBM Plex Mono stays bundled for image exports.
+
+The platform profiles in `typography.ios`, `.android` and `.web` keep their
+values for now, and P2.1 moves `CatchText` onto the roles above:
+
+| Semantic use | iOS | Android | Role that replaces it |
+| --- | --- | --- | --- |
+| Functional headline | 24 / 30 / 600 | 24 / 32 / 600 | None yet |
+| UI title | 20 / 25 / 600 | 20 / 28 / 500 | `title-bar` |
+| Person or record title | 16 / 20 / 600 | 16 / 24 / 500 | `title-row` |
+| Reading body | 16 / 24 / 400 | 16 / 24 / 400 | `body-input` |
+| Secondary metadata | 14 / 20 / 400 | 14 / 20 / 400 | `body-small` |
+| Record context | 13 / 18 / 400 | 12 / 16 / 400 | `body-meta` |
+| Command | 15 / 20 / 400 | 14 / 20 / 400 | `label-button` |
+| Sentence-case status | 12 / 16 / 600 | 12 / 16 / 600 | `label-badge` |
+| Prominent quantity | 24 / 30 / 600 | 24 / 32 / 600 | None yet |
+| Editable field value | 16 / 24 / 500 | 16 / 24 / 500 | `body-input` |
+| Field caption/support | 13 / 18 / 500 | 12 / 16 / 500 | `label-kicker` |
+
+The minimum interactive hit area stays 44 on iOS and 48 on Android.
 
 `CatchPlatformTokens` selects the same `defaultTargetPlatform` used by
 `CatchFonts`. Flutter treats that native target as a compiler constant in
@@ -295,7 +355,7 @@ bounds behind `CatchWindowSize`, and `layout.pageBodyEnd` the page body's
 bottom inset; Flutter reads all four from the generated constants. `layer` is a
 web-only z-index scale. `typography.web` is the function profile for the web,
 aliasing the iOS profile, and `typography.brand` holds the Archivo voice and
-IBM Plex Mono data roles under their `CatchTextStyles` names. The generator also
+older data roles under their `CatchTextStyles` names. The generator also
 emits `--catch-theme-<role>` for every colour role: light on `:root` and
 `[data-catch-theme="light"]`, dark on `[data-catch-theme="dark"]`.
 `test/core/theme/web_token_families_parity_test.dart` pins the generated CSS to
@@ -363,8 +423,38 @@ tiers within one list.
 
 ## 7. Surfaces, layout, motion, scope
 
-- **Light + dark, used intentionally** — light for browse/forms, dark for wow surfaces.
+- **Day + night, used intentionally** — day for browse and forms, night for screens
+  that run in a dark room.
 - **Hairlines over boxes; generous whitespace; grid discipline.**
+
+### 7.0 Ground, tile and nested (blueprint D22)
+
+Three surfaces stack. The page is `ground`, white by day. A block on it is a
+`tile`, grey with `radius-lg` corners. Anything inside a tile is `nested`, white
+again with `radius-md` corners; `CatchSurface` sets it automatically. Only
+floating things cast shadows: `shadow-float` (popovers, the booking card, pinned
+bars), `shadow-sheet` (bottom sheets and docks over content) and `shadow-dialog`
+(dialogs and toasts).
+
+| Radius | Value | Use |
+| --- | --- | --- |
+| `radius-xs` | 6px | Checkboxes only |
+| `radius-sm` | 10px | Buttons, fields, squares under 64px such as date and icon tiles |
+| `radius-md` | 16px | Anything nested inside a tile; choice cards |
+| `radius-lg` | 20px | Tiles |
+| `radius-xl` | 24px | Spotlights, floating blocks, sheets |
+| `radius-pill` | 999px | Chips, badges, avatars, switches, segmented items |
+
+`interactiveTile` (12px) is deleted; its name stays as a deprecated alias of
+`radius-sm` until P7.
+
+**The button shape.** Every button has 10px corners (`radius-sm`) in every
+framework; pills are for chips and filters, not actions. Heights are `control-lg`,
+`control-md` and `control-sm` (48, 40 and 32px). There are six variants: primary,
+secondary, ghost, quiet, accent and danger. Secondary carries a `stroke-control`
+(1.5px) outline in `controlLine`. Hover is `opacity-hover` (4%) and press is
+`opacity-pressed` (8%) with a 0.98 scale. Transform takes `duration-instant`
+(100ms) and colour takes `duration-quick` (160ms).
 
 ### 7.1 Containment doctrine — when a surface earns a border
 
@@ -381,7 +471,7 @@ A bordered or filled surface in product UI must pass at least one of:
 - **R3 · Plane change** — sheets, menus, overlays, docks, floating
   controls. Elevation resets the rules; content inside starts flat again.
 - **R4 · Status tone** — the fill/border carries semantic state
-  (warning/error/success notices, primarySoft signal cards).
+  (warning/error/success notices, tinted signal cards).
 - **R5 · Field or list frame** — ONE hairline container around related rows
   or a controlling setting and its dependent configuration. Peer rows may
   have separators; dependents attach through a subtle tint inside the same
@@ -429,7 +519,7 @@ Body compositions selecta semantic recipe before paint. Ordinary informational
 sections and successful-empty content stay flat; emptiness alone never earns a
 surface. `CatchSection.action` owns a single task: title, optional structured
 facts, explanation, then a full-width action. It uses 16 pt padding, 12 pt content
-gaps, a 16 pt action gap, radius.md and primarySoft fill without a shadow or
+gaps, a 16 pt action gap, radius.md and a `tile` fill without a shadow or
 outline. Primary, secondary and destructive action roles change the button;
 a destructive action does not recolor its whole module. Callers supply content,
 callbacks and busy state, never padding, shadows or arbitrary button variants.
@@ -462,7 +552,7 @@ pair a color and width independently.
 | Role | Stroke | Contrast and state policy |
 |---|---:|---|
 | `separator` | 1 px | Quiet internal division; resolves from `line`. |
-| `boundary` | 1 px | Passive object/list perimeter; resolves from `line2`. |
+| `boundary` | 1 px | Passive object/list perimeter; resolves from `controlLine` (`line2`). |
 | `control` | 1 px | Resting interactive perimeter; resolves to at least 3:1 against both `bg` and `surface` in light and dark themes. |
 | `selected` | 1.5 px | Selected/active perimeter in the semantic action color. |
 | `danger` / `warning` | 1.5 px | Validation or status perimeter in the corresponding semantic color. |

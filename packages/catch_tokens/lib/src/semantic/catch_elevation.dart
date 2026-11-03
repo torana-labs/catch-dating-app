@@ -43,15 +43,32 @@ abstract final class CatchElevation {
   /// Material menu elevation.
   static const double menu = 8.0;
 
-  /// Subtle lift for content cards that should read as "above the page" while
-  /// keeping the hairline border style. Use for hero event cards, editorial
-  /// picks, and selected map peek tiles.
+  /// Floating block: popovers, the booking card, pinned bars.
+  static List<BoxShadow> float(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? GeneratedCatchThemeElevationTokens.darkFloat
+      : GeneratedCatchThemeElevationTokens.lightFloat;
+
+  /// Bottom sheets and docks over content.
+  static List<BoxShadow> sheet(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? GeneratedCatchThemeElevationTokens.darkSheet
+      : GeneratedCatchThemeElevationTokens.lightSheet;
+
+  /// Dialogs and toasts.
+  static List<BoxShadow> dialog(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? GeneratedCatchThemeElevationTokens.darkDialog
+      : GeneratedCatchThemeElevationTokens.lightDialog;
+
+  /// Alias of the day [float]; P7 deletes it.
   static const List<BoxShadow> card = GeneratedCatchElevationTokens.card;
 
-  /// Bottom sheets, floating action buttons, popovers.
+  /// Alias of the day [float]; P7 deletes it. Its readers are floating controls
+  /// and popovers, and the sheet shadow points up.
   static const List<BoxShadow> raised = GeneratedCatchElevationTokens.raised;
 
-  /// Toasts, snackbars, dropdown overlays.
+  /// Alias of the day [dialog]; P7 deletes it.
   static const List<BoxShadow> overlay = GeneratedCatchElevationTokens.overlay;
 
   static List<BoxShadow> focusRing(CatchTokens t) => <BoxShadow>[
