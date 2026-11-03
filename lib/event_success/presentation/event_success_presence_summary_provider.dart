@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_presence_reads.dart';
@@ -7,29 +5,11 @@ import 'package:catch_dating_app/contexts/live/data/event_success_repository.dar
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence_derivation.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_presence_policy.dart';
-import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_success_presence_summary_provider.g.dart';
-
-/// The app clock, ticking at the presence heartbeat interval so present,
-/// idle and likely-departed move on screen with no new snapshot.
-@riverpod
-Stream<DateTime> eventSuccessPresenceClock(Ref ref) {
-  final clock = ref.watch(appClockProvider);
-  final controller = StreamController<DateTime>();
-  final timer = clock.periodic(
-    Duration(seconds: eventSuccessPresencePolicy.heartbeatIntervalSeconds),
-    (_) => controller.add(clock.now()),
-  );
-  ref.onDispose(() {
-    timer.cancel();
-    unawaited(controller.close());
-  });
-  controller.add(clock.now());
-  return controller.stream;
-}
 
 /// The live console's presence and late arrivals, derived on the phone from
 /// listeners: heartbeats and late-arrival placements, plus the plan, the next
@@ -59,7 +39,7 @@ AsyncValue<EventSuccessPresenceSummary> eventSuccessPresenceSummary(
   );
   final plan = ref.watch(watchEventSuccessPlanProvider(eventId));
   // Only guided rotations prepare drafts; other plans never open the listener.
-  final usesDrafts = switch (plan.value) {
+  final usesDrafts = switch (catchAsyncStateFromAsyncValue(plan).value) {
     final saved? =>
       saved.hasModule(EventSuccessModuleCatalog.guidedRotations.id) &&
           saved.structureConfig.rotates,
@@ -70,27 +50,39 @@ AsyncValue<EventSuccessPresenceSummary> eventSuccessPresenceSummary(
       : const AsyncData(<EventSuccessAssignmentDraft>[]);
   final roster = ref.watch(watchEventAttendeesProvider(eventId));
   final now = ref.watch(eventSuccessPresenceClockProvider);
-  for (final source in <AsyncValue<Object?>>[
-    heartbeats,
-    placements,
-    plan,
-    drafts,
-    roster,
-    now,
+  final heartbeatState = catchAsyncStateFromAsyncValue(heartbeats);
+  final placementState = catchAsyncStateFromAsyncValue(placements);
+  final planState = catchAsyncStateFromAsyncValue(plan);
+  final draftState = catchAsyncStateFromAsyncValue(drafts);
+  final rosterState = catchAsyncStateFromAsyncValue(roster);
+  final nowState = catchAsyncStateFromAsyncValue(now);
+  for (final state in <CatchAsyncState<Object?>>[
+    heartbeatState,
+    placementState,
+    planState,
+    draftState,
+    rosterState,
+    nowState,
   ]) {
-    if (source case AsyncError(:final error, :final stackTrace)) {
-      return AsyncError(error, stackTrace);
+    final error = state.error;
+    if (error != null) {
+      return AsyncError(error, state.stackTrace ?? StackTrace.current);
     }
   }
-  if (!heartbeats.hasValue ||
-      !placements.hasValue ||
-      !plan.hasValue ||
-      !drafts.hasValue ||
-      !roster.hasValue ||
-      !now.hasValue) {
+  final heartbeatRows = heartbeatState.value;
+  final placementRows = placementState.value;
+  final draftRows = draftState.value;
+  final rosterRows = rosterState.value;
+  final clockNow = nowState.value;
+  if (!planState.hasData ||
+      heartbeatRows == null ||
+      placementRows == null ||
+      draftRows == null ||
+      rosterRows == null ||
+      clockNow == null) {
     return const AsyncLoading();
   }
-  final savedPlan = plan.requireValue;
+  final savedPlan = planState.value;
   if (savedPlan == null) {
     return AsyncError(
       StateError('Event-success setup has not been saved.'),
@@ -105,12 +97,12 @@ AsyncValue<EventSuccessPresenceSummary> eventSuccessPresenceSummary(
           publishedRotationRoundIndex: savedPlan.publishedRotationRoundIndex,
           assignmentDraftRevision: savedPlan.assignmentDraftRevision,
         ),
-        heartbeats: heartbeats.requireValue,
-        roster: roster.requireValue,
-        drafts: drafts.requireValue,
-        placements: placements.requireValue,
+        heartbeats: heartbeatRows,
+        roster: rosterRows,
+        drafts: draftRows,
+        placements: placementRows,
         eventStartMillis: eventStartMillis,
-        nowMillis: now.requireValue.millisecondsSinceEpoch,
+        nowMillis: clockNow.millisecondsSinceEpoch,
       ),
     );
   } on FormatException catch (error, stackTrace) {

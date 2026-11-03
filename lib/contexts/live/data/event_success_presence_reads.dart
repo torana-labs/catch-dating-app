@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence_derivation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence_policy.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -111,3 +115,22 @@ eventSuccessLateArrivalPlacements(
 }) => ref
     .watch(eventSuccessPresenceReadsProvider)
     .watchPlacements(organizerId: organizerId, eventId: eventId);
+
+/// The app clock, ticking at the presence heartbeat interval so present,
+/// idle and likely departed move on screen with no new snapshot. A pure
+/// recomputation input: it never touches the listeners.
+@riverpod
+Stream<DateTime> eventSuccessPresenceClock(Ref ref) {
+  final clock = ref.watch(appClockProvider);
+  final controller = StreamController<DateTime>();
+  final timer = clock.periodic(
+    Duration(seconds: eventSuccessPresencePolicy.heartbeatIntervalSeconds),
+    (_) => controller.add(clock.now()),
+  );
+  ref.onDispose(() {
+    timer.cancel();
+    unawaited(controller.close());
+  });
+  controller.add(clock.now());
+  return controller.stream;
+}

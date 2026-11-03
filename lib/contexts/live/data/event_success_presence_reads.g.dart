@@ -275,3 +275,49 @@ final class EventSuccessLateArrivalPlacementsFamily extends $Family
   @override
   String toString() => r'eventSuccessLateArrivalPlacementsProvider';
 }
+
+/// The app clock, ticking at the presence heartbeat interval so present,
+/// idle and likely departed move on screen with no new snapshot. A pure
+/// recomputation input: it never touches the listeners.
+
+@ProviderFor(eventSuccessPresenceClock)
+final eventSuccessPresenceClockProvider = EventSuccessPresenceClockProvider._();
+
+/// The app clock, ticking at the presence heartbeat interval so present,
+/// idle and likely departed move on screen with no new snapshot. A pure
+/// recomputation input: it never touches the listeners.
+
+final class EventSuccessPresenceClockProvider
+    extends
+        $FunctionalProvider<AsyncValue<DateTime>, DateTime, Stream<DateTime>>
+    with $FutureModifier<DateTime>, $StreamProvider<DateTime> {
+  /// The app clock, ticking at the presence heartbeat interval so present,
+  /// idle and likely departed move on screen with no new snapshot. A pure
+  /// recomputation input: it never touches the listeners.
+  EventSuccessPresenceClockProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventSuccessPresenceClockProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventSuccessPresenceClockHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<DateTime> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<DateTime> create(Ref ref) {
+    return eventSuccessPresenceClock(ref);
+  }
+}
+
+String _$eventSuccessPresenceClockHash() =>
+    r'96d5bd4a1f3a79bfa6109fe3983c0dde08dc50a7';

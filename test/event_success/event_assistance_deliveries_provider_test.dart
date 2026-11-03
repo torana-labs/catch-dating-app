@@ -8,6 +8,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
 import 'event_assistance_deliveries_fixtures.dart';
 import 'event_assistance_deliveries_test_repository.dart';
 
@@ -136,7 +137,7 @@ void main() {
       // An unchanged message keeps its review current across pages.
       repository.reads.single.result.complete(deliveryPage());
       await container.pump();
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
       expect(first.isCurrent, isFalse);
       expect(review.isCurrent, isTrue);
       // A handoff elsewhere changes the message: the review is retired.
@@ -148,7 +149,7 @@ void main() {
         ),
       );
       await container.pump();
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
       expect(review.isCurrent, isFalse);
       expect(container.read(provider).requireValue.isCurrent, isTrue);
     },
