@@ -1,4 +1,4 @@
-import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchMetaRow, CatchSection, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchMetaRow, CatchSection, CatchLegacyText} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {dataMode} from "../../../shared/api/dataMode";
 import {selectChoices} from "../controllers/salesLabels";
@@ -99,10 +99,10 @@ function IntelligenceBody({organizerId, organizerName, currentUserUid,
   return <CatchGap size="section">
     <CatchSection title="Fit and private outreach" dividers="none">
       <CatchGap size="related">
-        <CatchText as="p" variant="supporting">Evidence, reviewed wording and current contact restrictions decide what
-          can be drafted for {organizerName}. Nothing here sends a message.</CatchText>
-        {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
-        {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
+        <CatchLegacyText as="p" variant="supporting">Evidence, reviewed wording and current contact restrictions decide what
+          can be drafted for {organizerName}. Nothing here sends a message.</CatchLegacyText>
+        {c.error ? <CatchLegacyText as="p" variant="supporting" role="alert">{c.error}</CatchLegacyText> : null}
+        {c.notice ? <CatchLegacyText as="p" variant="supporting" role="status">{c.notice}</CatchLegacyText> : null}
         {c.pending ? <CatchButton {...small} label="Retry unchanged request" onPressed={c.busy ? null : () => void c.retry()} /> : null}
         <CatchButton {...small} label="Refresh current source" onPressed={c.busy || c.pending ? null : () => void c.refresh()} />
       </CatchGap>
@@ -151,15 +151,15 @@ function PolicyPanel({c}: {c: Controller}) {
   const mode = locked ? "inactive" : "editable";
   return <CatchSection title="Private fit policy" dividers="none">
     <CatchGap size="related">
-      <CatchText as="p" variant="supporting">An Admin owner sets the seven reviewed factors, evidence kinds and
-        thresholds. No weights or host strategy are supplied by this page.</CatchText>
+      <CatchLegacyText as="p" variant="supporting">An Admin owner sets the seven reviewed factors, evidence kinds and
+        thresholds. No weights or host strategy are supplied by this page.</CatchLegacyText>
       {existing ? <CatchMetaRow entries={[{label: "Current policy", value: `${label(existing.status)} · revision ${existing.revision}`}]} /> :
-        <CatchText as="p" variant="supporting">No private fit policy has been saved yet.</CatchText>}
-      {stale ? <CatchText as="p" variant="supporting" role="alert">This policy changed since it was opened.
-        Refresh and compare before saving.</CatchText> : null}
+        <CatchLegacyText as="p" variant="supporting">No private fit policy has been saved yet.</CatchLegacyText>}
+      {stale ? <CatchLegacyText as="p" variant="supporting" role="alert">This policy changed since it was opened.
+        Refresh and compare before saving.</CatchLegacyText> : null}
       {!editing ? <CatchButton {...small} label={existing ? "Review policy settings" : "Set up private fit policy"} onPressed={locked ? null : () => setEditing(true)} /> : null}
       {editing ? <>
-        <CatchText as="h3" variant="sectionTitle">Seven factors</CatchText>
+        <CatchLegacyText as="h3" variant="sectionTitle">Seven factors</CatchLegacyText>
         {form.factors.map((row, index) => <CatchSection key={index} title={`Factor ${index + 1}`} dividers="none">
           <CatchGap size="related">
             <CatchField recipe="input" title={`Factor ${index + 1} name`} value={row.name} onChanged={(name) => changeFactor(index, {name})} inputMode={mode} />
@@ -167,25 +167,25 @@ function PolicyPanel({c}: {c: Controller}) {
               onChanged={(weight) => changeFactor(index, {weight})} inputMode={mode} keyboardType="number" />
             <CatchField recipe="input" title={`Factor ${index + 1} evidence age limit in days`} min="1" max="365" value={row.maxAgeDays}
               onChanged={(maxAgeDays) => changeFactor(index, {maxAgeDays})} inputMode={mode} keyboardType="number" />
-            <CatchText as="p" variant="supporting">Evidence kinds for factor {index + 1}</CatchText>
+            <CatchLegacyText as="p" variant="supporting">Evidence kinds for factor {index + 1}</CatchLegacyText>
             {claimOptions.map((option) => <CatchCheckboxInput key={`${index}-${option.value}`} value={row.claimKeys.includes(option.value)}
               label={`${option.label} · factor ${index + 1}`}
               onChanged={locked ? null : (checked) => changeFactor(index, {claimKeys: checked ?
                 [...row.claimKeys, option.value] : row.claimKeys.filter((key) => key !== option.value)})} />)}
           </CatchGap>
         </CatchSection>)}
-        <CatchText as="p" variant="supporting">Weights must total 100. Current total: {form.factors.reduce((sum,
-          row) => sum + (Number(row.weight) || 0), 0)}.</CatchText>
+        <CatchLegacyText as="p" variant="supporting">Weights must total 100. Current total: {form.factors.reduce((sum,
+          row) => sum + (Number(row.weight) || 0), 0)}.</CatchLegacyText>
         <CatchField recipe="input" title="High priority begins at" min="0" max="100" value={form.high} onChanged={(high) => update({high})} inputMode={mode} keyboardType="number" />
         <CatchField recipe="input" title="Medium priority begins at" min="0" max="100" value={form.medium} onChanged={(medium) => update({medium})} inputMode={mode} keyboardType="number" />
         <CatchField recipe="select" title="Policy availability" value={form.status} inputMode={mode}
           onChanged={(status) => update({status: (status ?? "") as PolicyForm["status"]})}
           {...selectChoices([{value: "paused", label: "Paused · no scoring or drafting"}, {value: "active", label: "Active after owner review"}])} />
         {existing && form.factors.some((row, index) => resolvedFactorId(row.name, existing.factors[index]?.id) !== existing.factors[index]?.id) ?
-          <CatchText as="p" variant="supporting" role="alert">Changing a factor name creates a new factor. Its previous ratings will not carry over.</CatchText> : null}
-        {!candidate ? <CatchText as="p" variant="supporting" role="alert">Enter seven distinct factor names,
+          <CatchLegacyText as="p" variant="supporting" role="alert">Changing a factor name creates a new factor. Its previous ratings will not carry over.</CatchLegacyText> : null}
+        {!candidate ? <CatchLegacyText as="p" variant="supporting" role="alert">Enter seven distinct factor names,
           evidence kinds, freshness limits and weights totaling 100. High
-          priority must be above medium priority.</CatchText> : null}
+          priority must be above medium priority.</CatchLegacyText> : null}
         <CatchGap size="inline" direction="horizontal" wrap>
           <CatchButton size="sm" label="Save reviewed policy" onPressed={!candidate || stale || locked || (Boolean(existing) && !dirty) ? null : () => void save()} />
           <CatchButton {...small} label="Cancel changes" onPressed={locked ? null : () => {
@@ -238,7 +238,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
   };
   return <CatchSection title="Evidence-backed fit" dividers="none">
     <CatchGap size="related">
-      {c.catalog.isPending || c.score.isPending ? <CatchText as="p" variant="supporting">Checking current fit…</CatchText> : null}
+      {c.catalog.isPending || c.score.isPending ? <CatchLegacyText as="p" variant="supporting">Checking current fit…</CatchLegacyText> : null}
       {c.catalog.isError ? <QueryProblem message="Current fit policy could not load." retry={() => void c.catalog.refetch()} /> : null}
       {c.score.isError ? <QueryProblem message="Current fit could not be evaluated." retry={() => void c.score.refetch()} /> : null}
       {!policy && !c.catalog.isPending && !c.catalog.isError ?
@@ -254,12 +254,12 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
               current?.state === "disputed" ? "Disputed · review needed" : "Unknown · evidence needed"};
           }),
         ]} />
-        {score?.status === "review_required" ? <CatchText as="p" variant="supporting" role="alert">A factor needs
-          review before a priority can be assigned.</CatchText> : null}
-        <CatchText as="h3" variant="sectionTitle">Review one fit factor</CatchText>
+        {score?.status === "review_required" ? <CatchLegacyText as="p" variant="supporting" role="alert">A factor needs
+          review before a priority can be assigned.</CatchLegacyText> : null}
+        <CatchLegacyText as="h3" variant="sectionTitle">Review one fit factor</CatchLegacyText>
         {stale ? <CatchGap size="inline">
-          <CatchText as="p" variant="bodyM" role="alert">This factor or policy changed during your review.
-            Your edits are retained. Compare the current review before saving.</CatchText>
+          <CatchLegacyText as="p" variant="bodyM" role="alert">This factor or policy changed during your review.
+            Your edits are retained. Compare the current review before saving.</CatchLegacyText>
           <CatchButton {...small} label="Use current factor review" onPressed={() => selectFactor(factorId)} />
         </CatchGap> : null}
         <CatchField recipe="select" title="Factor" value={factorId} onChanged={(value) => selectFactor(value ?? "")}
@@ -304,8 +304,8 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
   const locked = c.busy || Boolean(c.pending);
   return <CatchSection title="Reviewed wording" dividers="none">
     <CatchGap size="related">
-      <CatchText as="p" variant="supporting">Only approved, current sentences can appear in a draft. A reference
-        needs explicit private-mention permission.</CatchText>
+      <CatchLegacyText as="p" variant="supporting">Only approved, current sentences can appear in a draft. A reference
+        needs explicit private-mention permission.</CatchLegacyText>
       {catalog?.clauses.length ? catalog.clauses.map((row) => {
         const selectionKey = `${row.clauseId}:${row.revision}`;
         const selected = citationSelections[selectionKey] ?? [];
@@ -327,7 +327,7 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
         </CatchGap>;
       }) : <CatchEmptyState title="No reviewed wording is available for this host." />}
       {isAdminOwner ? <>
-        <CatchText as="h3" variant="sectionTitle">Prepare an exact sentence for review</CatchText>
+        <CatchLegacyText as="h3" variant="sectionTitle">Prepare an exact sentence for review</CatchLegacyText>
         <CatchField recipe="select" title="Sentence purpose" value={kind} onChanged={(value) => setKind((value ?? "") as typeof kind)}
           {...selectChoices([{value: "observation", label: "Host observation"}, {value: "capability", label: "Catch capability"},
             {value: "reference", label: "Private reference"}, {value: "cta", label: "Question or next step"}])} />
@@ -393,13 +393,13 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
         onPreviousContacts: c.previousContactPage,
         onGenerate: c.generate})}
       {c.jobRequestId ? <CatchGap size="inline">
-        <CatchText as="p" variant="bodyM" role="status">Preparation status: {
+        <CatchLegacyText as="p" variant="bodyM" role="status">Preparation status: {
           c.job.data?.status === "completed" ? "Ready for review" :
             c.job.data?.status === "running" ? "Still preparing" :
-              c.job.isError ? "Could not confirm status" : "Checking"}</CatchText>
+              c.job.isError ? "Could not confirm status" : "Checking"}</CatchLegacyText>
         <CatchButton {...small} label="Check again" onPressed={() => void c.job.refetch()} />
       </CatchGap> : null}
-      <CatchText as="h3" variant="sectionTitle">Saved drafts</CatchText>
+      <CatchLegacyText as="h3" variant="sectionTitle">Saved drafts</CatchLegacyText>
       {c.drafts.isError ? <QueryProblem message="Saved drafts could not load." retry={() => void c.drafts.refetch()} /> : null}
       {c.drafts.data?.rows.length ? c.drafts.data.rows.map((row) => <CatchIndexRow key={row.draftId} title={row.subject ?? "Message draft"} titleVariant="bodyM"
         subtitle={`${label(row.status)} · ${date(row.createdAt)}`}
@@ -408,7 +408,7 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
         }} />} />) : <CatchEmptyState title="No drafts have been prepared for this host." />}
       {c.draft.isError ? <QueryProblem message="This draft is no longer current." retry={() => void c.draft.refetch()} /> : null}
       {selected ? <>
-        <CatchText as="h3" variant="sectionTitle">Review exact draft</CatchText>
+        <CatchLegacyText as="h3" variant="sectionTitle">Review exact draft</CatchLegacyText>
         {selected.draft.subject ? <CatchMetaRow entries={[{label: "Subject", value: selected.draft.subject}]} /> : null}
         <CatchField recipe="input" title="Draft text" maxLines={8} value={selected.draft.text} onChanged={() => undefined} inputMode="readOnly" />
         <CatchMetaRow columns={2} entries={[
@@ -426,7 +426,7 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
           <CatchButton {...small} label="Approve exact draft" onPressed={!factsChecked || !toneChecked || acknowledgedDraftKey !== reviewKey || locked ? null :
             () => void c.review(selected.draftId, selected.draft.contentHash)} />
         </> : <CatchButton {...small} label="Copy approved text" onPressed={locked ? null : () => void copy()} />}
-        {copyStatus ? <CatchText as="p" variant="supporting" role="status">{copyStatus}</CatchText> : null}
+        {copyStatus ? <CatchLegacyText as="p" variant="supporting" role="status">{copyStatus}</CatchLegacyText> : null}
       </> : null}
     </CatchGap>
   </CatchSection>;

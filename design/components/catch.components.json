@@ -6907,21 +6907,22 @@
         "symbol": "CatchText",
         "file": "packages/web-ui/src/components/CatchText.tsx",
         "api": "styled",
+        "additionalSymbols": [
+          "CatchLegacyText"
+        ],
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/components/foundations.stories.tsx",
-          "exportName": "Text",
+          "story": "packages/web-ui/src/components/CatchText.stories.tsx",
+          "exportName": "Contract",
           "states": [
             "roles",
-            "dark",
             "recolored",
-            "clamped",
             "aligned",
-            "heading-element",
-            "accent-labels"
+            "clamped",
+            "numeric"
           ]
         },
-        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name or a palette accent. An accent (CatchTextAccent) is the deep shade under a light theme and the accent under a dark one; with supportingStrong it is the Website v2 coloured sentence-case label, which Flutter draws by passing the palette colour."
+        "notes": "React takes the text as children, variant as the kebab-case role (display-hero … label-code, page-title, section-title, hero), and as, htmlFor, className and style, which are web-only. The responsive roles resolve through the size class. CatchLegacyText (with CatchLegacyTextVariant and the CatchTextColor and CatchTextAccent colours) is the pre-redesign text, kept @deprecated for legacy callers until P7."
       },
       "design": {
         "figma": {
@@ -8118,6 +8119,9 @@
         "symbol": "CatchIcon",
         "file": "packages/web-ui/src/components/CatchIcon.tsx",
         "api": "styled",
+        "additionalSymbols": [
+          "CatchLegacyIcon"
+        ],
         "storybook": {
           "status": "ready",
           "story": "packages/web-ui/src/components/CatchIcon.stories.tsx",
@@ -8128,7 +8132,7 @@
             "labelled"
           ]
         },
-        "notes": "Flutter passes CatchIcons.<role> (IconData); React passes the same role name as a string. Both resolve through design/tokens/catch.icons.json."
+        "notes": "React passes the role name as name, a size of 16, 18, 20 or 24 and an optional label; it takes the colour of the text around it, and direction roles mirror in right-to-left layouts. Both frameworks resolve roles through design/tokens/catch.icons.json. CatchLegacyIcon (icon, size step name, tone) is the pre-redesign icon, kept @deprecated for legacy callers until P7."
       },
       "design": {
         "figma": {
@@ -10215,6 +10219,28 @@
           "CatchSurface.card",
           "CatchSurface.tinted"
         ]
+      },
+      "react": {
+        "symbol": "CatchSurface",
+        "file": "packages/web-ui/src/components/CatchSurface.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchLegacySurface"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSurface.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "five-blocks",
+            "tile-in-tile",
+            "tile-in-spotlight",
+            "floating-on-night",
+            "band-colours",
+            "pressable"
+          ]
+        },
+        "notes": "React takes children, onPress (a button of type button) or href (a link), and as for the element; as and href are web-only. A band's padding is vertical; horizontally it keeps the size class's gutter and holds its content to --catch-website-content-max. CatchLegacySurface is the pre-redesign tone and emphasis surface, kept @deprecated for legacy callers until P7."
       },
       "design": {
         "figma": {

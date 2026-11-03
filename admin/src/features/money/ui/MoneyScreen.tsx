@@ -9,7 +9,7 @@ import {
   CatchPaneLayout,
   CatchSection,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchMetaEntry,
   type CatchTableColumn,
@@ -218,8 +218,8 @@ export function MoneyScreen({
 
 function issuesMain(issues: MoneyIssuesController, view: MoneyView, nowMillis: number,
   onSelect: (issueId: string) => void) {
-  if (issues.loadState === "loading") return <CatchText as="p" color="ink2" variant="bodyM">Loading payment issues</CatchText>;
-  if (issues.loadState === "error") return <CatchText as="p" color="danger" variant="bodyM">{issues.loadError ?? "Payment issues could not load."}</CatchText>;
+  if (issues.loadState === "loading") return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading payment issues</CatchLegacyText>;
+  if (issues.loadState === "error") return <CatchLegacyText as="p" color="danger" variant="bodyM">{issues.loadError ?? "Payment issues could not load."}</CatchLegacyText>;
   if (issues.rows.length === 0) {
     return view === "issues" && issues.data?.counts.all === 0 ?
       <CatchEmptyState kind="done" message="Every payment, refund and bill is where it should be." title="No payment issues" /> :
@@ -248,8 +248,8 @@ function issuesMain(issues: MoneyIssuesController, view: MoneyView, nowMillis: n
 }
 
 function billsMain(bills: BillsController, nowMillis: number, onSelect: (billId: string) => void) {
-  if (bills.loadState === "loading") return <CatchText as="p" color="ink2" variant="bodyM">Loading bills</CatchText>;
-  if (bills.loadState === "error") return <CatchText as="p" color="danger" variant="bodyM">{bills.loadError ?? "Bills could not load."}</CatchText>;
+  if (bills.loadState === "loading") return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading bills</CatchLegacyText>;
+  if (bills.loadState === "error") return <CatchLegacyText as="p" color="danger" variant="bodyM">{bills.loadError ?? "Bills could not load."}</CatchLegacyText>;
   if (bills.data && bills.data.counts.all === 0) {
     return (
       <CatchEmptyState
@@ -399,7 +399,7 @@ function MoneyIssueInspector({
           <CatchButton label="Open the bill" onPressed={() => onOpenBill(issue.targetId)} size="sm" variant="secondary" />
         ) : null}
         <CatchSection timeline={steps} title="How it got here" />
-        {actionError ? <CatchText as="p" color="danger" variant="bodyS">{actionError}</CatchText> : null}
+        {actionError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{actionError}</CatchLegacyText> : null}
       </CatchGap>
       {dock}
     </>
@@ -407,7 +407,7 @@ function MoneyIssueInspector({
 }
 
 function Amount({minor, empty}: {minor: number; empty?: boolean}) {
-  return <CatchText as="span" variant="supportingStrong">{empty ? "—" : rupees(minor)}</CatchText>;
+  return <CatchLegacyText as="span" variant="supportingStrong">{empty ? "—" : rupees(minor)}</CatchLegacyText>;
 }
 
 /** One bill: what it charges and why, the organizer's own costs, how it got here, and its decision bar. */
@@ -529,7 +529,7 @@ function MoneyBillInspector({
           />
         </CatchSection>
         <CatchSection timeline={billJourney(bill, nowMillis)} title="How it got here" />
-        {actionError ? <CatchText as="p" color="danger" variant="bodyS">{actionError}</CatchText> : null}
+        {actionError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{actionError}</CatchLegacyText> : null}
       </CatchGap>
       {dock}
       <CatchDialog

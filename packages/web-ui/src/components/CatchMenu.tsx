@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchMenu.module.css";
 
 export type CatchMenuItemVariant = "action" | "choice";
@@ -154,8 +154,8 @@ function Panel<T>({id, items, label, onDone, onSelected, panelRef, place, style,
           >
             {item.icon != null ? <span aria-hidden="true" className={styles.icon}>{item.icon}</span> : null}
             <span className={styles.copy}>
-              <CatchText as="span" color="inherit" maxLines={2} variant="titleS">{item.label}</CatchText>
-              {item.sublabel?.trim() ? <>{" "}<CatchText as="span" color="ink2" maxLines={2} variant="bodyS">{item.sublabel}</CatchText></> : null}
+              <CatchLegacyText as="span" color="inherit" maxLines={2} variant="titleS">{item.label}</CatchLegacyText>
+              {item.sublabel?.trim() ? <>{" "}<CatchLegacyText as="span" color="ink2" maxLines={2} variant="bodyS">{item.sublabel}</CatchLegacyText></> : null}
             </span>
             {item.selected ? <span className={styles.check}>{checkGlyph}</span> : null}
           </button>

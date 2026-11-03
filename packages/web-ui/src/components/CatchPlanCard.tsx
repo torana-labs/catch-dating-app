@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {formatAccents, type Format} from "./palette";
 import styles from "./CatchPlanCard.module.css";
 
@@ -45,16 +45,16 @@ export function CatchPlanCard({availability, detail, format, href, label, onClic
         <img alt="" className={styles.media} decoding="async" loading="lazy" onError={() => setFailedUrl(photo)} src={photo} />
       ) : (
         <span aria-hidden="true" className={`${styles.media} ${styles.poster}`} data-ground={ground}>
-          <CatchText as="span" maxLines={2} variant="displayXs">{posterLabel}</CatchText>
+          <CatchLegacyText as="span" maxLines={2} variant="displayXs">{posterLabel}</CatchLegacyText>
         </span>
       )}
       <span className={styles.body}>
-        <CatchText as="span" color={format ? formatAccents[format] : "ink2"} variant="statusLabel">{label}</CatchText>{" "}
-        <CatchText as="span" maxLines={2} variant="titleS">{title}</CatchText>{" "}
-        <CatchText as="span" color="ink2" maxLines={2} variant="bodyS">{detail}</CatchText>{" "}
+        <CatchLegacyText as="span" color={format ? formatAccents[format] : "ink2"} variant="statusLabel">{label}</CatchLegacyText>{" "}
+        <CatchLegacyText as="span" maxLines={2} variant="titleS">{title}</CatchLegacyText>{" "}
+        <CatchLegacyText as="span" color="ink2" maxLines={2} variant="bodyS">{detail}</CatchLegacyText>{" "}
         <span className={styles.foot}>
-          <CatchText as="span" variant="supportingStrong">{price}</CatchText>
-          {availability ? <>{" "}<CatchText as="span" color="ink2" variant="supportingStrong">{availability}</CatchText></> : null}
+          <CatchLegacyText as="span" variant="supportingStrong">{price}</CatchLegacyText>
+          {availability ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="supportingStrong">{availability}</CatchLegacyText></> : null}
         </span>
       </span>
     </a>

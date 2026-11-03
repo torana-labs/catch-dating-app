@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchAppCaptureImage.module.css";
 
 export interface CatchAppCaptureImageProps {
@@ -44,8 +44,8 @@ export function CatchAppCaptureImage({
       />
       {hasCaption ? (
         <figcaption className={styles.caption}>
-          {caption != null ? <CatchText as="span" variant="supporting">{caption}</CatchText> : null}
-          {disclosure != null ? <CatchText as="small" color="ink2" variant="bodyS">{disclosure}</CatchText> : null}
+          {caption != null ? <CatchLegacyText as="span" variant="supporting">{caption}</CatchLegacyText> : null}
+          {disclosure != null ? <CatchLegacyText as="small" color="ink2" variant="bodyS">{disclosure}</CatchLegacyText> : null}
         </figcaption>
       ) : null}
     </figure>

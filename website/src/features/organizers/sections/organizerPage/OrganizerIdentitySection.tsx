@@ -5,10 +5,10 @@ import {
   CatchGap,
   CatchGrid,
   CatchGroundCard,
-  CatchIcon,
+  CatchLegacyIcon,
   CatchProfileHeader,
   CatchQrCode,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import {renderAccountForm} from "../../../account/accountForm";
@@ -33,7 +33,7 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
             <CatchButton
               fullWidth
               label={copy.share}
-              leading={<CatchIcon icon="share" size="md" />}
+              leading={<CatchLegacyIcon icon="share" size="md" />}
               onPressed={share.toggle}
               variant="secondary"
             />
@@ -54,18 +54,18 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
       {follow.phone ? <OrganizerFollowSheet name={view.name} phone={follow.phone} error={follow.error} /> : null}
       {/* CatchField is borderless; it shows its box only on a ground, never on the white page. */}
       {follow.account ? <CatchGroundCard>{renderAccountForm(follow.account)}</CatchGroundCard> : null}
-      {!follow.phone && follow.error ? <CatchText color="danger" role="alert" variant="bodyS">{follow.error}</CatchText> : null}
+      {!follow.phone && follow.error ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{follow.error}</CatchLegacyText> : null}
       {share.open ? (
         <CatchGroundCard>
           <CatchGap crossAxisAlignment="center" direction="horizontal" size="formField">
             <CatchQrCode label={copy.qrLabel(share.displayUrl)} size="m" value={share.url} />
             <CatchGap size="inline">
-              <CatchText color="ink2" variant="bodyM">{copy.shareCaption}</CatchText>
-              <CatchText variant="sectionTitle">{share.displayUrl}</CatchText>
+              <CatchLegacyText color="ink2" variant="bodyM">{copy.shareCaption}</CatchLegacyText>
+              <CatchLegacyText variant="sectionTitle">{share.displayUrl}</CatchLegacyText>
               <CatchGap crossAxisAlignment="start" size="inline">
                 <CatchButton label={share.copyState === "copied" ? copy.copied : copy.copyLink} onPressed={share.copy} size="md" />
               </CatchGap>
-              {share.copyState === "failed" ? <CatchText color="danger" role="alert" variant="bodyS">{copy.copyFailed}</CatchText> : null}
+              {share.copyState === "failed" ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{copy.copyFailed}</CatchLegacyText> : null}
             </CatchGap>
           </CatchGap>
         </CatchGroundCard>
@@ -83,8 +83,8 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
     return (
       <CatchGroundCard>
         <CatchGap role="status" size="inline">
-          <CatchText variant="sectionTitle">{sheet.doneTitle(name)}</CatchText>
-          <CatchText color="ink2" variant="bodyM">{sheet.doneBody}</CatchText>
+          <CatchLegacyText variant="sectionTitle">{sheet.doneTitle(name)}</CatchLegacyText>
+          <CatchLegacyText color="ink2" variant="bodyM">{sheet.doneBody}</CatchLegacyText>
         </CatchGap>
       </CatchGroundCard>
     );
@@ -93,8 +93,8 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
     <CatchGroundCard>
       <CatchGap size="related">
         <CatchGap size="headerTitleToSubtitle">
-          <CatchText variant="sectionTitle">{phone.step === "phone" ? sheet.phoneTitle : sheet.codeTitle}</CatchText>
-          <CatchText color="ink2" variant="bodyM">{phone.step === "phone" ? sheet.phoneBody(name) : sheet.codeBody(phone.shown)}</CatchText>
+          <CatchLegacyText variant="sectionTitle">{phone.step === "phone" ? sheet.phoneTitle : sheet.codeTitle}</CatchLegacyText>
+          <CatchLegacyText color="ink2" variant="bodyM">{phone.step === "phone" ? sheet.phoneBody(name) : sheet.codeBody(phone.shown)}</CatchLegacyText>
         </CatchGap>
         {phone.step === "phone" ? (
           <CatchField
@@ -120,7 +120,7 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
               status={error ? "error" : "ready"}
               value={phone.code}
             />
-            {error ? <CatchText color="danger" role="alert" variant="bodyS">{error}</CatchText> : null}
+            {error ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{error}</CatchLegacyText> : null}
           </CatchGap>
         )}
         <CatchButton

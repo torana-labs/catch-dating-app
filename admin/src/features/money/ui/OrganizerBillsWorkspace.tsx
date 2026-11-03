@@ -4,7 +4,7 @@ import {
   CatchIndexRow,
   CatchMetaRow,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {billState, moneyNowMillis, monthLabel, rupees} from "../controllers/moneyLabels";
 import {
@@ -22,7 +22,7 @@ function amountRow(title: string, amount: string, subtitle?: string) {
       subtitle={subtitle}
       title={title}
       titleVariant="bodyM"
-      trailing={<CatchText as="span" variant="supportingStrong">{amount}</CatchText>}
+      trailing={<CatchLegacyText as="span" variant="supportingStrong">{amount}</CatchLegacyText>}
     />
   );
 }
@@ -41,10 +41,10 @@ export function OrganizerBillsWorkspace({
   onOpenBill: (billId: string) => void;
 }) {
   if (controller.loadState === "loading") {
-    return <CatchText as="p" color="ink2" variant="bodyM">Loading bills</CatchText>;
+    return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading bills</CatchLegacyText>;
   }
   if (controller.loadState === "error") {
-    return <CatchText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Bills could not load."}</CatchText>;
+    return <CatchLegacyText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Bills could not load."}</CatchLegacyText>;
   }
   if (controller.bills.length === 0) {
     return <CatchSection dividers="none" empty="No bills yet." title="Bills" />;
@@ -80,9 +80,9 @@ export function OrganizerBillsWorkspace({
               title={`${monthLabel(bill.month)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
               titleVariant="bodyM"
               trailing={(
-                <CatchText as="span" color={state.tone ? stateColor[state.tone] : "ink"} variant="supportingStrong">
+                <CatchLegacyText as="span" color={state.tone ? stateColor[state.tone] : "ink"} variant="supportingStrong">
                   {state.text}
-                </CatchText>
+                </CatchLegacyText>
               )}
             />
           );

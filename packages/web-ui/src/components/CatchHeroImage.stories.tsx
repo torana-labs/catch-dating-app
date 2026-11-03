@@ -6,7 +6,7 @@ import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchHeroImage} from "./CatchHeroImage";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchHeroImage",
@@ -24,7 +24,7 @@ function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
       <span style={{display: "block", height: 180}}>{children}</span>
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
     </CatchGap>
   );
 }

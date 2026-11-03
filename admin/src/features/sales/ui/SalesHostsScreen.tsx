@@ -12,7 +12,7 @@ import {
   CatchSection,
   CatchSheet,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
@@ -152,9 +152,9 @@ function NextStepSheet({model, onClose}: {model: SalesHostsModel; onClose: () =>
             itemLabelBuilder={(value) => reviewed.find((contact) => contact.contactId === value)?.displayName ?? "Choose someone"}
             helperText="Only people reviewed for drafts. This records the step; it doesn't send anything."
             onChanged={(value) => setContactId(value ?? "")} />
-        ) : <CatchText as="p" variant="bodyM" role="alert">
+        ) : <CatchLegacyText as="p" variant="bodyM" role="alert">
           {model.canEditResearch ? "Nobody here is reviewed for drafts yet. Review someone under People, or choose another kind." :
-            "Nobody here is reviewed for drafts yet. Ask a reviewer, or choose another kind."}</CatchText>) : null}
+            "Nobody here is reviewed for drafts yet. Ask a reviewer, or choose another kind."}</CatchLegacyText>) : null}
         <CatchField recipe="input" title="Due" value={due} onChanged={setDue} keyboardType="datetime" />
       </CatchGap>
     </CatchSheet>
@@ -284,8 +284,8 @@ function ContactReviewSheet({model, contact, onClose}: {model: SalesHostsModel; 
       footer={changed ? <CatchButton label="Use the latest" variant="secondary" onPressed={useLatest} /> :
         <CatchButton label={model.isSaving ? "Saving" : "Save"} onPressed={ready && !model.isSaving ? () => void submit() : null} />}>
       <CatchGap size="related">
-        {changed ? <CatchText as="p" variant="bodyM" role="alert">
-          This person changed since you opened this. They're now {contactReviewLabels[relationship.contactabilityStatus].text.toLowerCase()}. Check that before you decide.</CatchText> : null}
+        {changed ? <CatchLegacyText as="p" variant="bodyM" role="alert">
+          This person changed since you opened this. They're now {contactReviewLabels[relationship.contactabilityStatus].text.toLowerCase()}. Check that before you decide.</CatchLegacyText> : null}
         <CatchField recipe="select" title="Status" value={status} values={keysOf(contactReviewLabels)}
           itemLabelBuilder={(value) => contactReviewLabels[value as ContactStatus].text}
           onChanged={(value) => setStatus((value ?? status) as ContactStatus)} />
@@ -296,8 +296,8 @@ function ContactReviewSheet({model, contact, onClose}: {model: SalesHostsModel; 
               return item ? `${evidenceClaimLabels[item.claimKey]}: ${item.sourceRef}` : "Choose evidence";
             }}
             onChanged={(value) => setEvidenceId(value ?? "")} />
-        ) : <CatchText as="p" variant="bodyM" role="alert">{model.hasMoreEvidence ? "No evidence about them is loaded yet." :
-          "Add evidence about them on this page before reviewing them for drafts."}</CatchText>) : null}
+        ) : <CatchLegacyText as="p" variant="bodyM" role="alert">{model.hasMoreEvidence ? "No evidence about them is loaded yet." :
+          "Add evidence about them on this page before reviewing them for drafts."}</CatchLegacyText>) : null}
         {draft && model.hasMoreEvidence ? <CatchButton label="Show more evidence" variant="secondary" size="sm" onPressed={model.moreEvidence} /> : null}
         <CatchField recipe="input" title="Why" maxLines={2} value={reason} onChanged={setReason}
           helperText="A review for drafts doesn't verify their details, give consent or send anything." />
@@ -394,7 +394,7 @@ function SuggestionSheet({model, proposal, onClose}: {model: SalesHostsModel; pr
           <CatchField recipe="input" title="Why" maxLines={2} maxLength={2000} value={reason} onChanged={setReason}
             helperText="Check the source first." /> : null}
         {pending && !model.canEditResearch ?
-          <CatchText as="p" variant="supporting">Waiting for a reviewer.</CatchText> : null}
+          <CatchLegacyText as="p" variant="supporting">Waiting for a reviewer.</CatchLegacyText> : null}
       </CatchGap>
     </CatchSheet>
   );
@@ -459,8 +459,8 @@ function HoldSheet({model, host, onClose}: {
       footer={changed ? <CatchButton label="Use the latest" variant="secondary" onPressed={useLatest} /> :
         <CatchButton label={model.isSaving ? "Saving" : "Save"} onPressed={reason.trim() && !model.isSaving ? () => void submit() : null} />}>
       <CatchGap size="related">
-        {changed ? <CatchText as="p" variant="bodyM" role="alert">
-          This host changed since you opened this. It's now {holdLabels[current].toLowerCase()}. Check that before you decide.</CatchText> : null}
+        {changed ? <CatchLegacyText as="p" variant="bodyM" role="alert">
+          This host changed since you opened this. It's now {holdLabels[current].toLowerCase()}. Check that before you decide.</CatchLegacyText> : null}
         <CatchField recipe="select" title="Status" value={status} values={keysOf(holdLabels)}
           itemLabelBuilder={(value) => holdLabels[value as SalesHoldStatus]}
           onChanged={(value) => setStatus((value ?? status) as SalesHoldStatus)} />

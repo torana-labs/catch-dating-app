@@ -1,5 +1,5 @@
 import type {CSSProperties} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchShareBar.module.css";
 
@@ -38,7 +38,7 @@ export function CatchShareBar({label, segments}: CatchShareBarProps) {
         {segments.map((segment) => (
           <li className={styles.key} key={segment.label}>
             <span aria-hidden="true" className={styles.swatch} data-ground={segment.ground} />
-            <CatchText as="span" color="ink" variant="bodyS">{`${segment.label} · ${segment.valueLabel}`}</CatchText>
+            <CatchLegacyText as="span" color="ink" variant="bodyS">{`${segment.label} · ${segment.valueLabel}`}</CatchLegacyText>
           </li>
         ))}
       </ul>

@@ -6,7 +6,7 @@ import {
   CatchGap,
   CatchIndexRow,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import {useState, type ReactNode} from "react";
@@ -56,7 +56,7 @@ const roleLabels: Record<MoneySettings["nominatorCredit"]["earningRoles"][number
 };
 
 function Value({children, tone}: {children: ReactNode; tone?: "positiveText" | "attentionText" | "ink2"}) {
-  return <CatchText as="span" color={tone} variant="supportingStrong">{children}</CatchText>;
+  return <CatchLegacyText as="span" color={tone} variant="supportingStrong">{children}</CatchLegacyText>;
 }
 
 function Row({title, subtitle, value, action}: {title: string; subtitle?: string; value?: ReactNode; action?: ReactNode}) {
@@ -128,9 +128,9 @@ function PaymentsOverview({terms, routing, money, isExporting, lastMonthLabel, o
               value={<Value tone={mode === "Live" ? "positiveText" : mode === "Off" ? "ink2" : "attentionText"}>{mode}</Value>}
             />
           );
-        }) : <CatchText as="p" color={routing.loadState === "error" ? "danger" : "ink2"} variant="bodyS">
+        }) : <CatchLegacyText as="p" color={routing.loadState === "error" ? "danger" : "ink2"} variant="bodyS">
           {routing.loadState === "error" ? routing.loadError ?? "Payment routing could not load." : "Loading who collects"}
-        </CatchText>}
+        </CatchLegacyText>}
       </CatchSection>
       {credit ? (
         <CatchSection container="tile" note="decided 1 Nov" title="Partner credit">
@@ -201,7 +201,7 @@ function PaymentsOverview({terms, routing, money, isExporting, lastMonthLabel, o
           title="Messaging budgets"
         />
       </CatchSection>
-      {money.saveError ? <CatchText as="p" color="danger" variant="bodyS">{money.saveError}</CatchText> : null}
+      {money.saveError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{money.saveError}</CatchLegacyText> : null}
       <CatchDialog
         cancel={{label: "Cancel", onPressed: () => setConfirmingGst(null)}}
         confirm={{
@@ -238,9 +238,9 @@ function OrganizerSearch({terms, onOpen}: {terms: CommercialTermsController; onO
         />
         {change(terms.canManage ? terms.search : null, "Find")}
       </CatchGap>
-      {terms.searchState === "loading" ? <CatchText as="p" color="ink2" variant="bodyS">Searching organizers</CatchText> :
-        terms.searchState === "error" ? <CatchText as="p" color="danger" variant="bodyS">Organizers could not be searched. Try again.</CatchText> :
-          terms.searchState === "ready" && terms.searchMatches.length === 0 ? <CatchText as="p" color="ink2" variant="bodyS">No organizer matches that name.</CatchText> :
+      {terms.searchState === "loading" ? <CatchLegacyText as="p" color="ink2" variant="bodyS">Searching organizers</CatchLegacyText> :
+        terms.searchState === "error" ? <CatchLegacyText as="p" color="danger" variant="bodyS">Organizers could not be searched. Try again.</CatchLegacyText> :
+          terms.searchState === "ready" && terms.searchMatches.length === 0 ? <CatchLegacyText as="p" color="ink2" variant="bodyS">No organizer matches that name.</CatchLegacyText> :
             terms.searchMatches.map((match) => (
               <Row
                 action={change(() => onOpen(match.organizerId), "Open")}
@@ -308,20 +308,20 @@ function TermsEditor({controller, onDone}: {controller: CommercialTermsControlle
       <>
         {header}
         {controller.loadState === "ready" && !listing?.platform && organizer ?
-          <CatchText as="p" color="attentionText" variant="bodyM">Save Catch's platform terms before giving this organizer their own.</CatchText> :
+          <CatchLegacyText as="p" color="attentionText" variant="bodyM">Save Catch's platform terms before giving this organizer their own.</CatchLegacyText> :
           controller.loadState === "ready" && !listing?.platform ? (
             <CatchGap crossAxisAlignment="start" size="related">
-              <CatchText as="p" color="attentionText" variant="bodyM">
+              <CatchLegacyText as="p" color="attentionText" variant="bodyM">
                 Platform terms are not saved yet. Until they are, payments Catch splits and host memberships stay unavailable, and host-collected payments record no terms for the bills.
-              </CatchText>
+              </CatchLegacyText>
               <CatchGap direction="horizontal" size="related" wrap>
                 <CatchButton label="Start from the owner's 30 Oct decision" onPressed={controller.startFromOwnerDecision} size="sm" />
                 <CatchButton label="Enter terms by hand" onPressed={controller.startEdit} size="sm" variant="secondary" />
               </CatchGap>
             </CatchGap>
-          ) : <CatchText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
+          ) : <CatchLegacyText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
             {controller.loadState === "error" ? controller.loadError ?? "Terms could not load." : "Loading terms"}
-          </CatchText>}
+          </CatchLegacyText>}
       </>
     );
   }
@@ -331,15 +331,15 @@ function TermsEditor({controller, onDone}: {controller: CommercialTermsControlle
       <>
         {header}
         <CatchGap size="section">
-          <CatchText as="p" color="ink2" variant="bodyM">
+          <CatchLegacyText as="p" color="ink2" variant="bodyM">
             {`${changed.length} ${changed.length === 1 ? "term changes" : "terms change"} against ${editor.baseRevision === 0 ? "the unsaved state" : `revision ${editor.baseRevision}`}. ` +
               "New payments use the saved terms; payments already recorded keep the terms they were taken under."}
-          </CatchText>
+          </CatchLegacyText>
           <CatchSection title="What changes">
             {changed.map((row) => <Row key={row.id} subtitle={`Now ${row.before}`} title={row.field} value={<Value>{row.after}</Value>} />)}
           </CatchSection>
           <Row subtitle={editor.reason.trim()} title="Reason" />
-          {editor.unconfirmed ? <CatchText as="p" color="attentionText" variant="bodyS">Catch did not confirm the last save. Retrying sends exactly the same change, and it is applied only once.</CatchText> : null}
+          {editor.unconfirmed ? <CatchLegacyText as="p" color="attentionText" variant="bodyS">Catch did not confirm the last save. Retrying sends exactly the same change, and it is applied only once.</CatchLegacyText> : null}
           <CatchGap direction="horizontal" size="related" wrap>
             <CatchButton
               label={controller.isSaving ? "Saving" : editor.unconfirmed ? "Retry the same save" : `Save as revision ${editor.baseRevision + 1}`}
@@ -358,7 +358,7 @@ function TermsEditor({controller, onDone}: {controller: CommercialTermsControlle
     <>
       {header}
       <CatchGap size="section">
-        {organizer ? <CatchText as="p" color="ink2" variant="bodyM">Tick a term to set it for this organizer. Unticked terms follow the platform terms when they change.</CatchText> : null}
+        {organizer ? <CatchLegacyText as="p" color="ink2" variant="bodyM">Tick a term to set it for this organizer. Unticked terms follow the platform terms when they change.</CatchLegacyText> : null}
         {groups(termsFields).map(([group, fields]) => (
           <CatchSection key={group} title={group}>
             {fields.map((field) => {
@@ -391,7 +391,7 @@ function TermsEditor({controller, onDone}: {controller: CommercialTermsControlle
           title="Reason for this change"
           value={editor.reason}
         />
-        {editor.errors.length > 0 ? <CatchText as="p" color="danger" variant="bodyS">{editor.errors.join(" ")}</CatchText> : null}
+        {editor.errors.length > 0 ? <CatchLegacyText as="p" color="danger" variant="bodyS">{editor.errors.join(" ")}</CatchLegacyText> : null}
         <CatchGap direction="horizontal" size="related" wrap>
           <CatchButton label="Review the change" onPressed={controller.review} size="sm" />
           <CatchButton label="Cancel" onPressed={() => { controller.cancelEdit(); onDone(); }} size="sm" variant="secondary" />
@@ -412,9 +412,9 @@ function RoutingEditor({controller, onDone}: {controller: PaymentRoutingControll
   const editor = controller.editor;
   const header = <CatchWorkspaceHeader back={{label: "Back to Payments", onPressed: () => { controller.cancelEdit(); onDone(); }}} kicker="Settings · Payments" title="Who collects what" />;
   if (!editor) {
-    return <>{header}<CatchText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
+    return <>{header}<CatchLegacyText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
       {controller.loadState === "error" ? controller.loadError ?? "Payment routing could not load." : "Loading who collects"}
-    </CatchText></>;
+    </CatchLegacyText></>;
   }
   if (editor.preview) {
     const changed = editor.preview.filter((row) => row.changed);
@@ -435,7 +435,7 @@ function RoutingEditor({controller, onDone}: {controller: PaymentRoutingControll
               value={editor.typed[confirmation.id] ?? ""}
             />
           ))}
-          {editor.error ? <CatchText as="p" color="danger" variant="bodyS">{editor.error}</CatchText> : null}
+          {editor.error ? <CatchLegacyText as="p" color="danger" variant="bodyS">{editor.error}</CatchLegacyText> : null}
           <CatchGap direction="horizontal" size="related" wrap>
             <CatchButton
               label={controller.isSaving ? "Saving" : editor.unconfirmed ? "Retry the same save" : "Save who collects"}
@@ -453,9 +453,9 @@ function RoutingEditor({controller, onDone}: {controller: PaymentRoutingControll
     <>
       {header}
       <CatchGap size="section">
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           Who collects each kind of payment, and whether it is real money. An organizer override still takes precedence, and a route here does not prove the Razorpay account behind it is ready.
-        </CatchText>
+        </CatchLegacyText>
         {routingPurposes.map((purpose) => {
           const draft = editor.draft[purpose];
           const stored = describeSelection(storedSelection(editor.base, purpose));
@@ -484,11 +484,11 @@ function RoutingEditor({controller, onDone}: {controller: PaymentRoutingControll
           );
         })}
         {live.length > 0 ? (
-          <CatchText as="p" color="attentionText" variant="bodyS">
+          <CatchLegacyText as="p" color="attentionText" variant="bodyS">
             {`Live mode moves real money: ${live.map((purpose) => routingPurposeLabels[purpose]).join(", ")} ${live.length === 1 ? "is" : "are"} set to live.`}
-          </CatchText>
+          </CatchLegacyText>
         ) : null}
-        {editor.error ? <CatchText as="p" color="danger" variant="bodyS">{editor.error}</CatchText> : null}
+        {editor.error ? <CatchLegacyText as="p" color="danger" variant="bodyS">{editor.error}</CatchLegacyText> : null}
         <CatchGap direction="horizontal" size="related" wrap>
           <CatchButton label="Review the change" onPressed={controller.review} size="sm" />
           <CatchButton label="Cancel" onPressed={() => { controller.cancelEdit(); onDone(); }} size="sm" variant="secondary" />
@@ -563,8 +563,8 @@ function CreditEditor({controller, settings, onDone}: {controller: PaymentSettin
         <CatchSection title="Bills">
           <CatchField keyboardType="number" onChanged={setDueDay} recipe="input" title="Bills are due on this day of the next month" value={dueDay} />
         </CatchSection>
-        {errors.length > 0 ? <CatchText as="p" color="danger" variant="bodyS">{errors.join(" ")}</CatchText> : null}
-        {controller.saveError ? <CatchText as="p" color="danger" variant="bodyS">{controller.saveError}</CatchText> : null}
+        {errors.length > 0 ? <CatchLegacyText as="p" color="danger" variant="bodyS">{errors.join(" ")}</CatchLegacyText> : null}
+        {controller.saveError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{controller.saveError}</CatchLegacyText> : null}
         <CatchGap direction="horizontal" size="related" wrap>
           <CatchButton label={controller.isSaving ? "Saving" : "Save"} onPressed={controller.isSaving || errors.length > 0 ? null : () => void save()} size="sm" />
           <CatchButton label="Cancel" onPressed={onDone} size="sm" variant="secondary" />

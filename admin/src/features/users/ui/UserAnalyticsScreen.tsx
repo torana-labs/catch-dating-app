@@ -5,7 +5,7 @@ import {
   CatchField,
   CatchGap,
   CatchIndexRow,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {
   BarChart3,
@@ -188,10 +188,10 @@ export function UserAnalyticsWorkspace({
           action="retry available"
           span={2}
         >
-          <CatchText as="p" color="ink2" variant="bodyM">
+          <CatchLegacyText as="p" color="ink2" variant="bodyM">
             {controller.errorMessage ??
               "No aggregate analytics are available for this exact UID and range."}
-          </CatchText>
+          </CatchLegacyText>
           <AdminButton
             icon={<RefreshCw size={15} strokeWidth={1.9} />}
             onClick={() => void controller.load()}
@@ -260,10 +260,10 @@ function UserLookupContractPanel({
       title="Privacy and action boundary"
       action="aggregate-only"
     >
-      <CatchText as="p" color="ink2" variant="bodyM">
+      <CatchLegacyText as="p" color="ink2" variant="bodyM">
         Reads aggregate analytics for one exact UID. It does not search identity,
         expose raw scoring data, or provide account, safety, support, or payment actions.
-      </CatchText>
+      </CatchLegacyText>
       <CatchSection dividers="none" title="Exact scope and unavailable capabilities">
         <QualityList>
           <StateRow label="Normalized uid" value={contract.normalizedUserId} />

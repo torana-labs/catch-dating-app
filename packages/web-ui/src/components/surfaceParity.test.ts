@@ -4,9 +4,9 @@ import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 const read = (path: string) => fs.readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 const dart = read("../../../catch_ui/lib/src/primitives/catch_surface.dart");
-const css = read("./CatchSurface.module.css");
-const ts = read("./CatchSurface.tsx");
-describe("CatchSurface native recipe parity", () => {
+const css = read("./CatchLegacySurface.module.css");
+const ts = read("./CatchLegacySurface.tsx");
+describe("CatchLegacySurface native recipe parity", () => {
   it("retains native tone and emphasis names with the same mappings", () => {
     for (const [type, values] of [["CatchSurfaceTone", ["surface", "raised", "primarySoft", "transparent"]], ["CatchSurfaceEmphasis", ["flat", "subtle", "raised", "floating"]]] as const) {
       expect(dart).toContain(`enum ${type} { ${values.join(", ")} }`);

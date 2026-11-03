@@ -1,5 +1,5 @@
 import {CatchHeroImage} from "./CatchHeroImage";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchPhotoTile.module.css";
 
@@ -33,9 +33,9 @@ export function CatchPhotoTile({title, caption, figure, imageUrl, imageAlt, grou
     >
       {photo ? <span className={styles.media}><CatchHeroImage imageUrl={imageUrl} semanticLabel={imageAlt} /></span> : null}
       <figcaption className={styles.copy}>
-        {figure ? <><CatchText as="span" variant="displayXl">{figure}</CatchText>{" "}</> : null}
-        <CatchText as="span" variant="titleS">{title}</CatchText>
-        {caption ? <>{" "}<CatchText as="span" color="ink2" variant="supporting">{caption}</CatchText></> : null}
+        {figure ? <><CatchLegacyText as="span" variant="displayXl">{figure}</CatchLegacyText>{" "}</> : null}
+        <CatchLegacyText as="span" variant="titleS">{title}</CatchLegacyText>
+        {caption ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="supporting">{caption}</CatchLegacyText></> : null}
       </figcaption>
     </figure>
   );

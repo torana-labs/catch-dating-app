@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchLegacyText, CatchField} from "@catch/web-ui";
 import {useEffect, useRef, useState} from "react";
 import {auth} from "../../../shared/api/firebase";
 import {AdminButton, AdminSignInPanel, AdminSignInScreen} from "../../../shared/ui/AdminPrimitives";
@@ -97,15 +97,15 @@ export function OperatorSessionScreen() {
     } catch {setStatus("Cancellation unconfirmed. Check the helper/session file before restarting.");}
   };
   return <AdminSignInScreen><AdminSignInPanel>
-    <CatchText as="h1" variant="headline">Catch operator session</CatchText><CatchText as="p" variant="supporting">{status}</CatchText>
-    {initial ? <><CatchText as="p" variant="supporting">Selected local directory: {initial.home}. Source: {initial.runtime.sourceSha}.</CatchText>
-      <CatchText as="p" variant="supporting">Runtime fingerprint: {initial.runtime.executionSha256}.</CatchText>
+    <CatchLegacyText as="h1" variant="headline">Catch operator session</CatchLegacyText><CatchLegacyText as="p" variant="supporting">{status}</CatchLegacyText>
+    {initial ? <><CatchLegacyText as="p" variant="supporting">Selected local directory: {initial.home}. Source: {initial.runtime.sourceSha}.</CatchLegacyText>
+      <CatchLegacyText as="p" variant="supporting">Runtime fingerprint: {initial.runtime.executionSha256}.</CatchLegacyText>
       <CatchField recipe="input" title="Selected profile configuration — never enter tokens, passwords or secret payloads" maxLines={12} value={configuration} onChanged={setConfiguration}
         inputMode={pending || cancelled || consumed ? "inactive" : initial.profile || request ? "readOnly" : "editable"} />
       <AdminButton disabled={pending || cancelled || Boolean(request)} onClick={() => void configure()}>Validate configuration</AdminButton></> : null}
-    {request ? <CatchText as="p" variant="supporting">Project: {request.projectId}. Google account: {request.actorUid}. Endpoint scope: {request.scopeSha256}.</CatchText> : null}
+    {request ? <CatchLegacyText as="p" variant="supporting">Project: {request.projectId}. Google account: {request.actorUid}. Endpoint scope: {request.scopeSha256}.</CatchLegacyText> : null}
     <AdminButton disabled={!request || pending || consumed || cancelled || !alive.current} onClick={() => void transfer()}>Save my current Google session</AdminButton>
     <AdminButton disabled={!initial || cancelled || !alive.current} onClick={() => void cancel()}>Cancel</AdminButton>
-    <CatchText as="p" variant="supporting">This creates no plan, approval or Admin grant. Sign in only through Catch’s normal Google UI.</CatchText>
+    <CatchLegacyText as="p" variant="supporting">This creates no plan, approval or Admin grant. Sign in only through Catch’s normal Google UI.</CatchLegacyText>
   </AdminSignInPanel></AdminSignInScreen>;
 }

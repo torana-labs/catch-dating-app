@@ -3,7 +3,7 @@ import {
   CatchAdminCommandStack,
   CatchBadge,
   CatchField,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {
   CheckCircle2,
@@ -448,7 +448,7 @@ function MarketingRecommendations({
           >
             <div>
               <AdminEyebrow>{set.tone} / {set.status}</AdminEyebrow>
-              <CatchText as="h3" variant="sectionTitle">{set.title}</CatchText>
+              <CatchLegacyText as="h3" variant="sectionTitle">{set.title}</CatchLegacyText>
             </div>
           </CardHeader>
           <AdminMarketingHelpText>{set.explanation}</AdminMarketingHelpText>
@@ -606,7 +606,7 @@ function MarketingAppFeatureMediaView({
                   <AdminEyebrow>
                     {capture.audience} / {capture.walkthroughStep}
                   </AdminEyebrow>
-                  <CatchText as="h3" variant="sectionTitle">{capture.surface}</CatchText>
+                  <CatchLegacyText as="h3" variant="sectionTitle">{capture.surface}</CatchLegacyText>
                 </div>
               </CardHeader>
               {previewUrl ? (

@@ -1,6 +1,6 @@
 import type {CSSProperties, ReactNode} from "react";
 import {CatchGap} from "../components/CatchGap";
-import {CatchText} from "../components/CatchText";
+import {CatchLegacyText} from "../components/CatchLegacyText";
 import type {Ground} from "../components/palette";
 import {PageFrame} from "./referenceScreens";
 
@@ -38,9 +38,9 @@ export function StoryTile({
 }) {
   return (
     <div data-catch-theme={ground === "ink" ? "dark" : "light"} style={{...groundStyle(ground), minHeight}}>
-      {kicker ? <CatchText as="span" color="inherit" variant="supportingStrong">{kicker}</CatchText> : null}
-      <CatchText as="h3" color="inherit" variant="displayXs">{title}</CatchText>
-      {body ? <CatchText as="p" color="inherit" variant="bodyM">{body}</CatchText> : null}
+      {kicker ? <CatchLegacyText as="span" color="inherit" variant="supportingStrong">{kicker}</CatchLegacyText> : null}
+      <CatchLegacyText as="h3" color="inherit" variant="displayXs">{title}</CatchLegacyText>
+      {body ? <CatchLegacyText as="p" color="inherit" variant="bodyM">{body}</CatchLegacyText> : null}
     </div>
   );
 }
@@ -49,9 +49,9 @@ export function StoryTile({
 export function StoryHeading({eyebrow, lead, title}: {eyebrow?: string; lead?: string; title: string}) {
   return (
     <CatchGap size="related">
-      {eyebrow ? <CatchText as="span" variant="supportingStrong">{eyebrow}</CatchText> : null}
-      <CatchText as="h2" variant="displayL">{title}</CatchText>
-      {lead ? <CatchText as="p" color="ink2" variant="bodyL">{lead}</CatchText> : null}
+      {eyebrow ? <CatchLegacyText as="span" variant="supportingStrong">{eyebrow}</CatchLegacyText> : null}
+      <CatchLegacyText as="h2" variant="displayL">{title}</CatchLegacyText>
+      {lead ? <CatchLegacyText as="p" color="ink2" variant="bodyL">{lead}</CatchLegacyText> : null}
     </CatchGap>
   );
 }

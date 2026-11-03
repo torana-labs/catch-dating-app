@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchPaneLayout, type CatchPaneLayoutMode} from "./CatchPaneLayout";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {CatchViewport} from "./CatchViewport";
 import {CatchWorkspaceHeader} from "./CatchWorkspaceHeader";
 
@@ -17,7 +17,7 @@ function Pane({title, body}: {title: string; body: string}) {
   return (
     <>
       <CatchWorkspaceHeader kicker="Inbox" title={title} />
-      <CatchText as="p" color="ink2" variant="bodyS">{body}</CatchText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">{body}</CatchLegacyText>
     </>
   );
 }

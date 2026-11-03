@@ -1,4 +1,4 @@
-import {CatchField, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {CatchField, CatchLoadingIndicator, CatchLegacyText} from "@catch/web-ui";
 import {
   lazy,
   Suspense,
@@ -423,8 +423,8 @@ function SignInScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <CatchText as="h1" variant="headline">Catch Admin</CatchText>
-        <CatchText as="p" variant="supporting">Internal admin access requires Firebase Auth and an admin claim.</CatchText>
+        <CatchLegacyText as="h1" variant="headline">Catch Admin</CatchLegacyText>
+        <CatchLegacyText as="p" variant="supporting">Internal admin access requires Firebase Auth and an admin claim.</CatchLegacyText>
         {error && (
           <StatusBanner
             icon={<AlertTriangle size={17} strokeWidth={1.9} />}
@@ -509,8 +509,8 @@ function AuthCheckScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <CatchText as="h1" variant="headline">Checking admin access</CatchText>
-        <CatchText as="p" variant="supporting">{email}</CatchText>
+        <CatchLegacyText as="h1" variant="headline">Checking admin access</CatchLegacyText>
+        <CatchLegacyText as="p" variant="supporting">{email}</CatchLegacyText>
         {error ? (
           <StatusBanner
             icon={<AlertTriangle size={17} strokeWidth={1.9} />}
@@ -549,11 +549,11 @@ function UnauthorizedAdminScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <CatchText as="h1" variant="headline">Admin claim required</CatchText>
-        <CatchText as="p" variant="supporting">
+        <CatchLegacyText as="h1" variant="headline">Admin claim required</CatchLegacyText>
+        <CatchLegacyText as="p" variant="supporting">
           {email} is signed in, but this Firebase session does not include a
           Catch admin custom claim.
-        </CatchText>
+        </CatchLegacyText>
         <AdminSignInMeta>
           <Lock size={17} strokeWidth={1.9} />
           <span>Ask an admin owner to assign a role, then refresh claims.</span>

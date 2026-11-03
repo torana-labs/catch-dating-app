@@ -5,7 +5,7 @@ import {
   CatchPaneLayout,
   CatchSection,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   useCatchPane,
   type CatchTableColumn,
@@ -59,14 +59,14 @@ function ActivityReceipt({onClose, row}: {onClose: () => void; row: SystemActivi
         title={row.what}
       />
       {row.record.status === "indeterminate" ? (
-        <CatchText as="p" color="attentionText" variant="bodyS">
+        <CatchLegacyText as="p" color="attentionText" variant="bodyS">
           The result was lost, so this may or may not have happened. Check the record before trying again.
-        </CatchText>
+        </CatchLegacyText>
       ) : null}
       <CatchMetaRow entries={receiptFacts(row.record)} />
-      <CatchText as="p" color="ink2" variant="bodyS">
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">
         Requests and responses are never stored here, only their hashes.
-      </CatchText>
+      </CatchLegacyText>
     </>
   );
 }
@@ -97,9 +97,9 @@ function SignalDetail({canOpenPath, onClose, onOpenPath, signal}: {
         {label: "Runbook", value: signal.runbook, wide: true},
       ]} />
       {path ? <CatchButton label="Open where it's handled" onPressed={() => onOpenPath(path)} size="sm" variant="secondary" /> : null}
-      <CatchText as="p" color="ink2" variant="bodyS">
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">
         This only reads. Nothing here acknowledges a signal or changes a record.
-      </CatchText>
+      </CatchLegacyText>
     </>
   );
 }
@@ -118,7 +118,7 @@ function SignalRows({onSignalSelected, signals, title}: {
           onTap={() => onSignalSelected(signal.id)}
           subtitle={`${signal.source} · ${signal.owner}`}
           title={signal.label}
-          trailing={<CatchText as="span" color={healthColor[signal.tone]} variant="supportingStrong">{signalWord[signal.tone]}</CatchText>}
+          trailing={<CatchLegacyText as="span" color={healthColor[signal.tone]} variant="supportingStrong">{signalWord[signal.tone]}</CatchLegacyText>}
         />
       ))}
     </CatchSection>
@@ -197,9 +197,9 @@ export function SystemScreen({
         note={counts.everyone > 0 ? `${counts.everyone} loaded` : undefined}
         title="Activity"
       />
-      {activityError ? <CatchText as="p" color="danger" variant="bodyS">{activityError}</CatchText> : null}
+      {activityError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{activityError}</CatchLegacyText> : null}
       {isActivityLoading ? (
-        <CatchText as="p" color="ink2" variant="bodyS">Loading activity</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyS">Loading activity</CatchLegacyText>
       ) : rows.length > 0 ? (
         <CatchTable
           columns={columns}
@@ -210,9 +210,9 @@ export function SystemScreen({
           selectedKey={selected?.key ?? null}
         />
       ) : activityError ? null : (
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           {filter === "problems" ? "No action failed or needs checking." : "No activity matches."}
-        </CatchText>
+        </CatchLegacyText>
       )}
       {hasMore ? (
         <CatchButton
@@ -237,7 +237,7 @@ export function SystemScreen({
             trailing={source.failed ? (
               <CatchButton label="Try again" onPressed={() => onRetrySource(source.id)} size="sm" variant="secondary" />
             ) : (
-              <CatchText as="span" color={healthColor[source.tone]} variant="supportingStrong">{sourceWord[source.tone]}</CatchText>
+              <CatchLegacyText as="span" color={healthColor[source.tone]} variant="supportingStrong">{sourceWord[source.tone]}</CatchLegacyText>
             )}
           />
         ))}

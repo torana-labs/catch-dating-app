@@ -1,4 +1,4 @@
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchEventPoster.module.css";
 
@@ -23,11 +23,11 @@ export function CatchEventPoster({ground = "coral", kicker, date, title, place}:
   return (
     <span aria-hidden="true" className={styles.poster} data-catch-theme={ground === "ink" ? "dark" : "light"} data-ground={ground}>
       <span className={styles.top}>
-        <CatchText as="span" maxLines={1} variant="sectionTitle">{kicker}</CatchText>
-        <CatchText as="span" variant="sectionTitle">{date}</CatchText>
+        <CatchLegacyText as="span" maxLines={1} variant="sectionTitle">{kicker}</CatchLegacyText>
+        <CatchLegacyText as="span" variant="sectionTitle">{date}</CatchLegacyText>
       </span>
-      <CatchText as="span" maxLines={3} variant="displayXxl">{title}</CatchText>
-      <CatchText as="span" maxLines={1} variant="sectionTitle">{place}</CatchText>
+      <CatchLegacyText as="span" maxLines={3} variant="displayXxl">{title}</CatchLegacyText>
+      <CatchLegacyText as="span" maxLines={1} variant="sectionTitle">{place}</CatchLegacyText>
     </span>
   );
 }

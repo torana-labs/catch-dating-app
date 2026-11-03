@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./MapPreview.module.css";
 
 export interface MapPreviewCoordinate {
@@ -48,7 +48,7 @@ export function MapPreview({coordinate, fallbackLabel, imageUrl, framed = false}
       ) : (
         <span className={styles.fallback}>
           {mapGlyph}
-          {label ? <CatchText as="span" color="ink2" maxLines={2} textAlign="center" variant="supporting">{label}</CatchText> : null}
+          {label ? <CatchLegacyText as="span" color="ink2" maxLines={2} textAlign="center" variant="supporting">{label}</CatchLegacyText> : null}
         </span>
       )}
     </span>

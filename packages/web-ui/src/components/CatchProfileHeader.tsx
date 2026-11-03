@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
 import {CatchAvatar} from "./CatchAvatar";
 import {CatchHeroImage} from "./CatchHeroImage";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchProfileHeader.module.css";
 
@@ -78,7 +78,7 @@ export function CatchProfileHeader({
       </div>
       <div className={styles.copy}>
         <span className={styles.nameRow}>
-          <CatchText as={nameElement} variant="displayM">{name}</CatchText>
+          <CatchLegacyText as={nameElement} variant="displayM">{name}</CatchLegacyText>
           {verifiedLabel ? (
             <svg aria-label={verifiedLabel} className={styles.seal} focusable="false" role="img" viewBox="0 0 24 24">
               <title>{verifiedLabel}</title>
@@ -87,15 +87,15 @@ export function CatchProfileHeader({
             </svg>
           ) : null}
         </span>
-        {tag ? <span className={styles.tag}><CatchText as="span" color="inherit" variant="statusLabel">{tag}</CatchText></span> : null}
-        {headline ? <CatchText variant="bodyL">{headline}</CatchText> : null}
-        {meta ? <CatchText color="ink2" variant="bodyM">{meta}</CatchText> : null}
+        {tag ? <span className={styles.tag}><CatchLegacyText as="span" color="inherit" variant="statusLabel">{tag}</CatchLegacyText></span> : null}
+        {headline ? <CatchLegacyText variant="bodyL">{headline}</CatchLegacyText> : null}
+        {meta ? <CatchLegacyText color="ink2" variant="bodyM">{meta}</CatchLegacyText> : null}
         {stats.length ? (
           <p className={styles.stats}>
             {stats.map((stat) => (
-              <CatchText as="span" key={`${stat.value} ${stat.label}`} variant="bodyM">
+              <CatchLegacyText as="span" key={`${stat.value} ${stat.label}`} variant="bodyM">
                 <strong className={styles.value}>{stat.value}</strong>{` ${stat.label}`}
-              </CatchText>
+              </CatchLegacyText>
             ))}
           </p>
         ) : null}

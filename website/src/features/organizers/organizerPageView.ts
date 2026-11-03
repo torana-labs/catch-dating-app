@@ -1,11 +1,11 @@
-import {catchAvatarInitialsOf, catchFormatAccentOf, type CatchGround, type CatchIconName} from "@catch/web-ui";
+import {catchAvatarInitialsOf, catchFormatAccentOf, type CatchBandGround, type CatchIconName} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../content/organizerPage";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
 import {brand} from "@catch/brand";
 
 /** `claimed` is the organiser's own page; `generated` is built from public pages before a claim. */
 export type OrganizerPageKind = "claimed" | "generated";
-type Accent = Exclude<CatchGround, "white" | "paper" | "ink">;
+type Accent = Exclude<CatchBandGround, "white" | "paper" | "ink">;
 
 export interface OrganizerEventView {
   key: string;
@@ -15,7 +15,7 @@ export interface OrganizerEventView {
   href: string;
   title: string;
   date: {dateTime: string; day: string; month: string; weekday: string};
-  ground: CatchGround;
+  ground: CatchBandGround;
   /** "6:30 AM · Carter Road jetty" */
   detail: string;
   sourceLabel: string;
@@ -39,7 +39,7 @@ export interface OrganizerLinkView {
   title: string;
   subtitle?: string;
   pinned: boolean;
-  /** The CatchIcon role for where the link goes. */
+  /** The CatchLegacyIcon role for where the link goes. */
   icon: CatchIconName;
   /** Owner links count as link clicks against their id (CAT-254). */
   analytics: {eventName: "contactClick" | "outboundClick"; source: string} | {eventName: "linkClick"; source: string; linkId: string};
@@ -52,7 +52,7 @@ export interface OrganizerMomentView {
   figure?: string;
   imageUrl?: string;
   imageAlt?: string;
-  ground: CatchGround;
+  ground: CatchBandGround;
   placeholder?: boolean;
 }
 
@@ -60,7 +60,7 @@ export interface OrganizerReviewView {
   key: string;
   name: string;
   initials: string;
-  ground: CatchGround;
+  ground: CatchBandGround;
   meta: string;
   rating: number;
   ratingLabel: string;
@@ -80,7 +80,7 @@ export interface OrganizerPageView {
     coverAlt?: string;
     accent: Accent;
     monogram: string;
-    monogramGround: CatchGround;
+    monogramGround: CatchBandGround;
     verified: boolean;
     tag?: string;
     headline: string;
@@ -122,7 +122,7 @@ const siteOrigin = brand.web.origin;
 const internalSourceTypes = new Set(["user_supplied", "embedded_event_data", "catch_demo"]);
 // Review notes from listing intake that are not facts about the organiser.
 const internalFactLabels = new Set(["claim state", "indexing", "city evidence", "location target"]);
-const reviewGrounds: readonly CatchGround[] = ["pink", "indigo", "mint", "yellow", "coral"];
+const reviewGrounds: readonly CatchBandGround[] = ["pink", "indigo", "mint", "yellow", "coral"];
 const reviewLimit = 6;
 const factLimit = 6;
 
@@ -412,7 +412,7 @@ function eventSourceNames(record: OrganizerPageRecord): string[] {
     .flatMap((item) => item.source === "external" ? [item.booking.label] : []))];
 }
 
-/** The CatchIcon for each role an owner can give a link (CAT-254). */
+/** The CatchLegacyIcon for each role an owner can give a link (CAT-254). */
 const ownerLinkIcons = {
   community: "chat",
   social: "photo",

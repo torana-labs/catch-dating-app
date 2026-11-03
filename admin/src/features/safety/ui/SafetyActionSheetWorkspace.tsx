@@ -5,7 +5,7 @@ import {
   CatchField,
   CatchGap,
   CatchSheet,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {
   ACTION_STEPS,
@@ -122,9 +122,9 @@ export function SafetyActionSheetWorkspace({
           value={draft.appealable}
         />
         {sheet.error ? (
-          <CatchText as="p" color="danger" variant="bodyS">
+          <CatchLegacyText as="p" color="danger" variant="bodyS">
             {sheet.error}
-          </CatchText>
+          </CatchLegacyText>
         ) : null}
       </CatchGap>
     </CatchSheet>

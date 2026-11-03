@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {catchActivityKinds} from "./activityArtwork";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {EventBackdropImage} from "./EventBackdropImage";
 
 const meta = {
@@ -25,7 +25,7 @@ export const AllActivities: Story = {
       {catchActivityKinds.map((kind) => (
         <figure key={kind} style={{margin: 0}}>
           <div style={{blockSize: 112}}><EventBackdropImage activityKind={kind} /></div>
-          <CatchText as="figcaption" variant="supporting">{kind}</CatchText>
+          <CatchLegacyText as="figcaption" variant="supporting">{kind}</CatchLegacyText>
         </figure>
       ))}
     </div>

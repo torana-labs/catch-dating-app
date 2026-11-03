@@ -5,7 +5,7 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchStarInput} from "./CatchStarInput";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchStarInput",
@@ -26,9 +26,9 @@ function Choice({disabled = false, initial = 0}: {disabled?: boolean; initial?: 
   const headingId = useId();
   return (
     <CatchGap size="related">
-      <CatchText as="span" id={headingId} variant="sectionTitle">How was it?</CatchText>
+      <CatchLegacyText as="span" id={headingId} variant="sectionTitle">How was it?</CatchLegacyText>
       <CatchStarInput disabled={disabled} labelledBy={headingId} onChanged={setValue} optionLabel={optionLabel} value={value} />
-      <CatchText as="p" color="ink2" variant="bodyS">{value === 0 ? "No rating yet" : `Chosen: ${optionLabel(value)}`}</CatchText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">{value === 0 ? "No rating yet" : `Chosen: ${optionLabel(value)}`}</CatchLegacyText>
     </CatchGap>
   );
 }

@@ -1,12 +1,12 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {expect, fn, userEvent, within} from "storybook/test";
 import {CatchControlSurface} from "./CatchControlSurface";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchControlSurface",
   component: CatchControlSurface,
-  args: {child: <CatchText as="span" variant="bodyM">Choose a city</CatchText>},
+  args: {child: <CatchLegacyText as="span" variant="bodyM">Choose a city</CatchLegacyText>},
 } satisfies Meta<typeof CatchControlSurface>;
 export default meta;
 type Story = StoryObj<typeof meta>;

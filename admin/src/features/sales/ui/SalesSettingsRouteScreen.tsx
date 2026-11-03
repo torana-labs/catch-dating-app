@@ -1,5 +1,5 @@
 import {
-  CatchButton, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchSheet, CatchText, CatchWorkspaceHeader,
+  CatchButton, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchSheet, CatchLegacyText, CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import {useState} from "react";
 import type {SalesCustomFieldDefinition, SalesCustomFieldType} from "../api/salesTypes";
@@ -49,13 +49,13 @@ function AddFieldSheet({controller, fields, onClose}: {
     <CatchSheet recipe="standard" pinFooter open onClose={onClose} title="Add a field" subtitle="Settings · Sales"
       footer={<CatchButton fullWidth label="Add field" onPressed={controller.isSaving ? null : () => void save()} />}>
       <CatchGap size="formField">
-        <CatchText as="p" variant="supporting">
+        <CatchLegacyText as="p" variant="supporting">
           Add a field when the team needs the same information for several hosts. A field can't be changed once added.
-        </CatchText>
+        </CatchLegacyText>
         <CatchField recipe="input" title="Field label" value={label} onChanged={setLabel}
           inputHint="For example, preferred demo language" />
-        {similar.length ? <CatchText as="p" variant="supporting" role="status">
-          Similar fields: {similar.map((field) => field.label).join(", ")}. Check these before adding another.</CatchText> : null}
+        {similar.length ? <CatchLegacyText as="p" variant="supporting" role="status">
+          Similar fields: {similar.map((field) => field.label).join(", ")}. Check these before adding another.</CatchLegacyText> : null}
         <CatchField recipe="select" title="Type" value={type} onChanged={(value) => setType((value ?? "string") as SalesCustomFieldType)}
           {...selectChoices((Object.entries(typeLabels) as Array<[SalesCustomFieldType, string]>).map(([value, text]) => ({value, label: text})))} />
         {type === "enum" ? <CatchField recipe="input" title="Choices, separated by commas" value={choices} onChanged={setChoices} /> : null}
@@ -64,7 +64,7 @@ function AddFieldSheet({controller, fields, onClose}: {
           <CatchIndexRow title={label.trim() || "Field label"} titleVariant="bodyM"
             subtitle={fieldSummary({type, helpText: helpText.trim(), enumOptions})} />
         </CatchSection>
-        {problem ? <CatchText as="p" variant="supporting" role="alert">{problem}</CatchText> : null}
+        {problem ? <CatchLegacyText as="p" variant="supporting" role="alert">{problem}</CatchLegacyText> : null}
       </CatchGap>
     </CatchSheet>
   );
@@ -77,7 +77,7 @@ function FieldsSection({controller, onAdd}: {controller: SalesSettingsController
     <CatchSection title="Private host fields" count={rows.length} container="tile" action={{label: "Add a field", onPressed: onAdd}}>
       {customFields.isError ? <CatchEmptyState title="Fields could not be loaded"
         actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={() => void customFields.refetch()} />} /> : null}
-      {customFields.isPending ? <CatchText as="p" variant="supporting">Loading fields…</CatchText> : null}
+      {customFields.isPending ? <CatchLegacyText as="p" variant="supporting">Loading fields…</CatchLegacyText> : null}
       {customFields.isSuccess && !rows.length ? <CatchEmptyState title="No private fields yet"
         message="Sales fill these in on a host. Hosts never see them." /> : null}
       {rows.map((field) => <CatchIndexRow key={field.fieldId} title={field.label} titleVariant="bodyM" subtitle={fieldSummary(field)} />)}
@@ -94,7 +94,7 @@ function ImportsSection({canCorrect, controller, currentUserUid, onCorrect, onIm
     <CatchSection title="Imports" count={groups.length} container="tile" action={{label: "Import a CSV", onPressed: onImport}}>
       {imports.isError ? <CatchEmptyState title="Imports could not be loaded"
         actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={() => void imports.refetch()} />} /> : null}
-      {imports.isPending ? <CatchText as="p" variant="supporting">Loading imports…</CatchText> : null}
+      {imports.isPending ? <CatchLegacyText as="p" variant="supporting">Loading imports…</CatchLegacyText> : null}
       {imports.isSuccess && !groups.length ? <CatchEmptyState title="No imports yet" /> : null}
       {groups.map((group) => <CatchIndexRow key={group.sourceId} title={group.name} titleVariant="bodyM"
         subtitle={salesImportSummary(group, currentUserUid)}
@@ -112,7 +112,7 @@ function PrivacySection({controller, onOpen}: {controller: SalesSettingsControll
       <CatchGap size="related">
         <CatchField recipe="input" title="Host name" value={privacyText} onChanged={setPrivacyText}
           helperText="Includes hosts no longer in Sales. Opening one changes nothing." />
-        {privacyQuery.length >= 2 && matches.isPending ? <CatchText as="p" variant="supporting" role="status">Searching hosts…</CatchText> : null}
+        {privacyQuery.length >= 2 && matches.isPending ? <CatchLegacyText as="p" variant="supporting" role="status">Searching hosts…</CatchLegacyText> : null}
         {matches.isError ? <CatchEmptyState title="Host search failed"
           actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={() => void matches.refetch()} />} /> : null}
         {matches.data?.length === 0 ? <CatchEmptyState title="No matching hosts" /> : null}

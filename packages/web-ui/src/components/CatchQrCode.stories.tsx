@@ -4,7 +4,7 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchQrCode} from "./CatchQrCode";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchQrCode",
@@ -18,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 // catchComponent names the website registry's T4 entry (design/website/components.json).
 const storyRoutes = ["home", "organizer_listing_canonical"];
 
-const caption = (text: string) => <CatchText as="span" color="ink2" variant="bodyS">{text}</CatchText>;
+const caption = (text: string) => <CatchLegacyText as="span" color="ink2" variant="bodyS">{text}</CatchLegacyText>;
 
 /** The three sizes, and a long and a non-Latin value, which grow the code's version. */
 export const Sizes: Story = {
@@ -69,7 +69,7 @@ export const Reference: Story = {
       render={() => (
         <CatchGap crossAxisAlignment="center" size="inline">
           <CatchQrCode label="QR code for the Catch app" size="l" value="https://catchdates.com/app" />
-          <CatchText as="span" variant="supportingStrong">Scan to get the app</CatchText>
+          <CatchLegacyText as="span" variant="supportingStrong">Scan to get the app</CatchLegacyText>
         </CatchGap>
       )}
     />

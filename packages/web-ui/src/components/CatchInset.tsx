@@ -29,7 +29,10 @@ export interface CatchInsetProps
   padding: CatchInsetPadding;
 }
 
-/** Pads its child by one semantic inset: Flutter `Padding(CatchInsets.*)`. */
+/**
+ * Pads its child by one semantic inset: Flutter `Padding(CatchInsets.*)`.
+ * @deprecated Legacy: use CatchSurface padding (block="plain" for no box) or CatchStack; deleted in P7.
+ */
 export function CatchInset({
   as: Element = "div",
   children,

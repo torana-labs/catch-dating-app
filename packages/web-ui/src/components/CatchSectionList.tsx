@@ -22,6 +22,7 @@ export type CatchSectionListProps =
 /**
  * Ordered complete sections separated by the section rhythm, as Flutter's
  * plain `CatchSectionList`. Sections keep their own delimiters.
+ * @deprecated Legacy: use CatchStack gap="section"; deleted in P7.
  */
 export function CatchSectionList({
   as: Element = "div",

@@ -1,0 +1,30 @@
+.icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  color: inherit;
+}
+
+.icon[data-tone="ink"] {
+  color: var(--catch-theme-ink);
+}
+
+.icon[data-tone="muted"] {
+  color: var(--catch-theme-ink2);
+}
+
+.icon[data-tone="primary"] {
+  color: var(--catch-theme-primary);
+}
+
+.icon[data-tone="success"] {
+  color: var(--catch-theme-success);
+}
+
+.icon[data-tone="warning"] {
+  color: var(--catch-theme-warning);
+}
+
+.icon[data-tone="danger"] {
+  color: var(--catch-theme-danger);
+}

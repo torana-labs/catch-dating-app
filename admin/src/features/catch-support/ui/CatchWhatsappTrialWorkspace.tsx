@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchLegacyText, CatchField} from "@catch/web-ui";
 import {MessageCircle} from "lucide-react";
 import {AdminButton, CheckboxField, Panel} from
   "../../../shared/ui/AdminPrimitives";
@@ -19,8 +19,8 @@ export function CatchWhatsappTrialWorkspace({scope, enabled: override, api}: {
   const canEdit = enabled && !locked && !controller.terminal &&
     Boolean(controller.inbound) && !controller.expired;
   return <Panel title="WhatsApp support" icon={<MessageCircle size={18} />}>
-    {!enabled ? <CatchText as="p" variant="supporting">WhatsApp support is currently unavailable.</CatchText> : <>
-      <CatchText as="p" variant="supporting">Review one approved support request, then confirm the exact reply.</CatchText>
+    {!enabled ? <CatchLegacyText as="p" variant="supporting">WhatsApp support is currently unavailable.</CatchLegacyText> : <>
+      <CatchLegacyText as="p" variant="supporting">Review one approved support request, then confirm the exact reply.</CatchLegacyText>
       <CatchField
         recipe="input"
         title="Support request ID"
@@ -44,8 +44,8 @@ export function CatchWhatsappTrialWorkspace({scope, enabled: override, api}: {
           inputMode="readOnly"
           maxLines={4}
         />
-        <CatchText as="p" variant="supporting">Reply before {new Date(controller.inbound.deadlineMillis)
-          .toLocaleString()}.</CatchText>
+        <CatchLegacyText as="p" variant="supporting">Reply before {new Date(controller.inbound.deadlineMillis)
+          .toLocaleString()}.</CatchLegacyText>
         <CatchField
           recipe="input"
           title="Exact reply"
@@ -64,14 +64,14 @@ export function CatchWhatsappTrialWorkspace({scope, enabled: override, api}: {
           Send this reply once
         </AdminButton>
       </> : null}
-      {controller.expired ? <CatchText as="p" variant="supporting" role="alert">The reply window has expired.</CatchText> : null}
-      {controller.phase === "unknown" ? <CatchText as="p" variant="supporting" role="status">
+      {controller.expired ? <CatchLegacyText as="p" variant="supporting" role="alert">The reply window has expired.</CatchLegacyText> : null}
+      {controller.phase === "unknown" ? <CatchLegacyText as="p" variant="supporting" role="status">
         This attempt is reserved. Do not send again while its outcome is unconfirmed.
-      </CatchText> : null}
-      {controller.result ? <CatchText as="p" variant="supporting" role="status">
+      </CatchLegacyText> : null}
+      {controller.result ? <CatchLegacyText as="p" variant="supporting" role="status">
         Reply recorded. Delivery status: {controller.result.deliveryStatus}.
-      </CatchText> : null}
+      </CatchLegacyText> : null}
     </>}
-    {controller.error ? <CatchText as="p" variant="supporting" role="alert">{controller.error}</CatchText> : null}
+    {controller.error ? <CatchLegacyText as="p" variant="supporting" role="alert">{controller.error}</CatchLegacyText> : null}
   </Panel>;
 }

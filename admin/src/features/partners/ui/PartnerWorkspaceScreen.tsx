@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchLegacyText, CatchField} from "@catch/web-ui";
 import {AlertCircle, CheckCircle2, Handshake} from "lucide-react";
 import {useCallback, useState} from "react";
 import {
@@ -39,14 +39,14 @@ export function PartnerWorkspaceScreen({actorUid, isCurrentSession, onSignOut}: 
     <PageHeader title="Catch referral partners">Introduce an organizer, review the preparation, and keep the next action clear.</PageHeader>
     <AdminButton disabled={operationPending} onClick={onSignOut}>Sign out</AdminButton>
     <AdminButton disabled={operationPending || c.workspace.isFetching} onClick={() => void c.workspace.refetch()}>Refresh partner access</AdminButton>
-    {unresolvedOutreach && <CatchText as="p" variant="supporting">A preparation action is unconfirmed. Refresh access to reconcile it, or sign out to leave this session. Signing out discards local retry details.</CatchText>}
+    {unresolvedOutreach && <CatchLegacyText as="p" variant="supporting">A preparation action is unconfirmed. Refresh access to reconcile it, or sign out to leave this session. Signing out discards local retry details.</CatchLegacyText>}
     {c.error && <StatusBanner tone="error" icon={<AlertCircle />}>{c.error}</StatusBanner>}
     {c.needsRetry && <AdminButton disabled={pending || c.workspace.isFetching} onClick={() => void c.retry()}>Retry interrupted save</AdminButton>}
     {c.notice && <StatusBanner tone="success" icon={<CheckCircle2 />}>{c.notice}</StatusBanner>}
     {c.workspace.isLoading && <StateRow label="Partner access" value="Checking your workspace…" />}
     {membershipRequired ? <Panel icon={<Handshake />} title="Accept a bounded referral role">
-      <CatchText as="p" variant="supporting">You can nominate organizers and review leads assigned to you. You are a prospective collaborator.
-        This role does not make you a Catch employee or grant organizer control. Marketing access is granted separately.</CatchText>
+      <CatchLegacyText as="p" variant="supporting">You can nominate organizers and review leads assigned to you. You are a prospective collaborator.
+        This role does not make you a Catch employee or grant organizer control. Marketing access is granted separately.</CatchLegacyText>
       <AdminForm onSubmit={(e) => {e.preventDefault(); void c.save("register", {
         displayName: displayName.trim(), termsVersion: "referral-preview-v1"});}}>
         <CatchField
@@ -61,7 +61,7 @@ export function PartnerWorkspaceScreen({actorUid, isCurrentSession, onSignOut}: 
     </Panel> : c.workspace.error ? <StatusBanner tone="error" icon={<AlertCircle />}>{c.workspace.error.message}</StatusBanner> : null}
     {data && <>
       <Panel icon={<Handshake />} title="Nominate an organizer">
-        <CatchText as="p" variant="supporting">A nomination is self-reported and requires identity review. It creates no claim or published listing.</CatchText>
+        <CatchLegacyText as="p" variant="supporting">A nomination is self-reported and requires identity review. It creates no claim or published listing.</CatchLegacyText>
         <AdminForm onSubmit={(e) => {e.preventDefault(); void c.save("nominate", {
           name: name.trim(), city: city.trim(), url: url.trim(), relationshipContext: relationship.trim() || null})
           .then((saved) => {if (saved) {setName(""); setCity(""); setUrl(""); setRelationship("");}});}}>
@@ -126,8 +126,8 @@ function LeadReview({lead, pending, save, actorUid, isCurrentSession, membership
   const [reviewAt, setReviewAt] = useState(lead.assignment.reviewAt.slice(0, 16));
   return <>
     {visible && <Panel icon={<Handshake />} title={lead.organizer.name}>
-    <CatchText as="p" variant="supporting">{lead.organizer.city} · {lead.assignment.status} · claim: {lead.organizer.claimState}</CatchText>
-    <CatchText as="p" variant="supporting">Next action: {lead.assignment.nextAction}. Review by {new Date(lead.assignment.reviewAt).toLocaleDateString()}.</CatchText>
+    <CatchLegacyText as="p" variant="supporting">{lead.organizer.city} · {lead.assignment.status} · claim: {lead.organizer.claimState}</CatchLegacyText>
+    <CatchLegacyText as="p" variant="supporting">Next action: {lead.assignment.nextAction}. Review by {new Date(lead.assignment.reviewAt).toLocaleDateString()}.</CatchLegacyText>
     {lead.assignment.status === "offered" && <AdminForm onSubmit={(e) => {e.preventDefault(); void save("decide", {
       organizerId: lead.organizer.organizerId, expectedRevision: lead.assignment.revision,
       decision: "accept", channel, relationshipContext: relationship.trim() || null});}}>
@@ -191,7 +191,7 @@ function LeadReview({lead, pending, save, actorUid, isCurrentSession, membership
         keyboardType="datetime"
       />
       <AdminButton type="submit" disabled={pending || !nextAction.trim() || !reviewAt}>Save private next step</AdminButton>
-      <CatchText as="p" variant="supporting">Saving context or a next step does not send outreach, claim or publish this organizer.</CatchText>
+      <CatchLegacyText as="p" variant="supporting">Saving context or a next step does not send outreach, claim or publish this organizer.</CatchLegacyText>
     </AdminForm>}
     </Panel>}
     {lead.assignment.status === "accepted" && <PartnerOutreachWorkspace actorUid={actorUid}

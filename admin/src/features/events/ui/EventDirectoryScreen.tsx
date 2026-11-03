@@ -4,7 +4,7 @@ import {
   CatchPageTabBar,
   CatchPaneLayout,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
@@ -82,13 +82,13 @@ function EventTable({
   forOrganizer?: boolean;
 }) {
   if (controller.loadState === "loading") {
-    return <CatchText as="p" color="ink2" variant="bodyM">Loading events</CatchText>;
+    return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading events</CatchLegacyText>;
   }
   if (controller.loadState === "error") {
-    return <CatchText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Events could not load."}</CatchText>;
+    return <CatchLegacyText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Events could not load."}</CatchLegacyText>;
   }
   if (controller.rows.length === 0) {
-    return <CatchText as="p" color="ink2" variant="bodyM">No events match.</CatchText>;
+    return <CatchLegacyText as="p" color="ink2" variant="bodyM">No events match.</CatchLegacyText>;
   }
   const byKey = new Map(controller.rows.map((row) => [row.key, row]));
   return (

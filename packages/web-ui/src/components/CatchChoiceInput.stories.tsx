@@ -3,7 +3,7 @@ import {useState} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {CatchChoiceInput, type CatchChoiceInputVariant} from "./CatchChoiceInput";
 import {CatchGap} from "./CatchGap";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 const values = ["Morning", "Afternoon", "Evening"];
 const itemLabelBuilder = (value: string) => value;
 const noop = () => {};
@@ -15,7 +15,7 @@ export default meta;
 type Story = StoryObj<typeof CatchChoiceInput<string>>;
 function States() {
   return <CatchGap size="formField">
-    <CatchText variant="titleS">Single, multiple, disabled and described</CatchText>
+    <CatchLegacyText variant="titleS">Single, multiple, disabled and described</CatchLegacyText>
     <CatchChoiceInput values={values} itemLabelBuilder={itemLabelBuilder} selected={new Set(["Morning"])} mode="single" onChanged={noop} />
     <CatchChoiceInput values={values} itemLabelBuilder={itemLabelBuilder} selected={new Set(["Morning", "Evening"])} mode="multiple" onChanged={noop} />
     <CatchChoiceInput values={values} itemLabelBuilder={itemLabelBuilder} selected={new Set(["Morning"])} mode="single" onChanged={null} />
@@ -26,7 +26,7 @@ function States() {
       selected="Morning" onChanged={noop} />)}
     <CatchChoiceInput recipe="segmented" variant="operational" selected="Morning" onChanged={noop} accent="pickleball"
       options={[{value: "Morning", label: "Morning"}, {value: "Afternoon", label: "Afternoon", enabled: false, disabledReason: "Full"}]}
-      trailing={<CatchText as="span" variant="supporting">2 sessions</CatchText>} />
+      trailing={<CatchLegacyText as="span" variant="supporting">2 sessions</CatchLegacyText>} />
     <CatchChoiceInput recipe="form" label="Preferred time" copy={copy} isOptional values={values} itemLabelBuilder={itemLabelBuilder}
       selected={new Set<string>()} mode="single" onChanged={noop} />
   </CatchGap>;

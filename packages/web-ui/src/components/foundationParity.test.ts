@@ -15,7 +15,7 @@ const insetsDart = read("../../../catch_tokens/lib/src/semantic/catch_insets.dar
 const textStylesDart = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dart");
 const fontsDart = read("../../../catch_ui/lib/src/foundations/catch_fonts.dart");
 const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_text_variant.dart");
-const textVariantTs = read("./CatchText.tsx");
+const textVariantTs = read("./CatchLegacyText.tsx");
 const textStoriesTs = read("./foundations.stories.tsx");
 const textPreviewDart = read("../../../../widgetbook/lib/primitives/contracts/text.dart");
 const textContract = JSON.parse(read("../../../../design/components/catch.components.json"))
@@ -23,7 +23,7 @@ const textContract = JSON.parse(read("../../../../design/components/catch.compon
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
 const insetCss = read("./CatchInset.module.css");
-const textCss = read("./CatchText.module.css");
+const textCss = read("./CatchLegacyText.module.css");
 
 const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
@@ -225,13 +225,13 @@ describe("CatchTextStyles parity", () => {
     }
   });
 
-  it("offers exactly the Flutter CatchTextVariant values", () => {
+  it("offers exactly the Flutter CatchLegacyTextVariant values", () => {
     expect(values.length).toBeGreaterThan(0);
     expect(selectorValues(textCss, "variant").sort()).toEqual([...values].sort());
   });
 
   it("publishes the same roles in TypeScript and the registry contract", () => {
-    const union = textVariantTs.match(/export type CatchTextVariant =([^;]*);/)?.[1] ?? "";
+    const union = textVariantTs.match(/export type CatchLegacyTextVariant =([^;]*);/)?.[1] ?? "";
     const tsValues = [...union.matchAll(/"(\w+)"/g)].map((match) => match[1]);
     const registered = textContract.contract.props
       .find((prop: {name: string}) => prop.name === "variant").values;
@@ -243,13 +243,13 @@ describe("CatchTextStyles parity", () => {
     const flutterList = textPreviewDart.match(/const variants = \[([\s\S]*?)\];/)?.[1] ?? "";
     const flutterPreview = [...flutterList.matchAll(/CatchTextVariant\.(\w+)/g)]
       .map((match) => match[1]);
-    const reactList = textStoriesTs.match(/const textVariants: readonly CatchTextVariant\[\] = \[([\s\S]*?)\];/)?.[1] ?? "";
+    const reactList = textStoriesTs.match(/const textVariants: readonly CatchLegacyTextVariant\[\] = \[([\s\S]*?)\];/)?.[1] ?? "";
     const reactPreview = [...reactList.matchAll(/"(\w+)"/g)].map((match) => match[1]);
     expect(flutterPreview.sort()).toEqual([...values].sort());
     expect(reactPreview.sort()).toEqual([...values].sort());
   });
 
-  it("binds each CatchText variant to its Flutter role's profile, weight and color", () => {
+  it("binds each CatchLegacyText variant to its Flutter role's profile, weight and color", () => {
     const variants = selectorValues(textCss, "variant");
     expect(variants.length).toBeGreaterThan(0);
     for (const variant of variants) {

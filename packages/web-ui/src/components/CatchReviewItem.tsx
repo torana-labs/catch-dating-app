@@ -1,6 +1,6 @@
 import {useId, type ReactNode} from "react";
 import {CatchStarRating} from "./CatchStarRating";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchReviewItem.module.css";
 
 /** The organiser's reply, shown under the review as "<author> <verb> <text>". */
@@ -57,8 +57,8 @@ export function CatchReviewItem({
 }: CatchReviewItemProps) {
   const nameId = useId();
   const stars = <CatchStarRating label={ratingLabel} size={variant === "card" ? "m" : "s"} value={rating} />;
-  const metaLine = meta ? <CatchText as="span" color="ink2" variant="bodyS">{meta}</CatchText> : null;
-  const reviewer = <CatchText as={nameElement} id={nameId} variant="sectionTitle">{name}</CatchText>;
+  const metaLine = meta ? <CatchLegacyText as="span" color="ink2" variant="bodyS">{meta}</CatchLegacyText> : null;
+  const reviewer = <CatchLegacyText as={nameElement} id={nameId} variant="sectionTitle">{name}</CatchLegacyText>;
   return (
     <article aria-labelledby={nameId} className={styles.review} data-variant={variant}>
       {variant === "card" ? (
@@ -84,7 +84,7 @@ export function CatchReviewItem({
           </div>
         </div>
       )}
-      <CatchText variant="bodyL">{body}</CatchText>
+      <CatchLegacyText variant="bodyL">{body}</CatchLegacyText>
       {reply ? (
         <p className={styles.reply}>
           <strong>{reply.author}</strong>

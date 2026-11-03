@@ -1,7 +1,7 @@
 import {
   CatchBadge,
   CatchField,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
@@ -564,7 +564,7 @@ export const AdminWorkbenchStackStory: Story = {
         </AdminCard>
       </AdminWorkbenchStack>
       <AdminWorkbenchStack compact>
-        <CatchText as="p" color="ink2" variant="bodyM">Compact stack item.</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">Compact stack item.</CatchLegacyText>
       </AdminWorkbenchStack>
     </AdminWorkspace>
   ),
@@ -623,7 +623,7 @@ export const AdminPanelStory: Story = {
         </QualityList>
       </AdminPanel>
       <AdminPanel icon={<Sparkles size={18} />} span={2} title="Wide panel">
-        <CatchText as="p" color="ink2" variant="bodyM">Spans the workbench grid.</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">Spans the workbench grid.</CatchLegacyText>
       </AdminPanel>
     </AdminWorkspace>
   ),

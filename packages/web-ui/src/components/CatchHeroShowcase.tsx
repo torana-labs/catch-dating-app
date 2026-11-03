@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CatchText, type CatchTextAccent} from "./CatchText";
+import {CatchLegacyText, type CatchTextAccent} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchHeroShowcase.module.css";
 
@@ -40,8 +40,8 @@ export function CatchHeroShowcase({device, ground, stickers = []}: CatchHeroShow
           data-slot={index}
           key={`${sticker.label}-${sticker.title}`}
         >
-          <CatchText as="span" color={sticker.labelAccent} variant="statusLabel">{sticker.label}</CatchText>
-          <CatchText as="span" variant="titleS">{sticker.title}</CatchText>
+          <CatchLegacyText as="span" color={sticker.labelAccent} variant="statusLabel">{sticker.label}</CatchLegacyText>
+          <CatchLegacyText as="span" variant="titleS">{sticker.title}</CatchLegacyText>
         </span>
       ))}
     </div>

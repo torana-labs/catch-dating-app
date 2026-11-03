@@ -1,4 +1,4 @@
-import type {CatchFormat, CatchGround} from "@catch/web-ui";
+import type {CatchFormat, CatchBandGround} from "@catch/web-ui";
 import {homeFormats, homePageCopy as copy, otherFormatPoster} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import type {HomeCity, HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "./homeTypes";
@@ -97,14 +97,14 @@ export interface OrganizerCardView {
   name: string;
   subtitle: string;
   initials: string;
-  monogramGround: CatchGround;
+  monogramGround: CatchBandGround;
   href?: string;
   next: string;
   footnote: string;
   action: OrganizerAction;
 }
 
-const formatGrounds: Record<CatchFormat, CatchGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
+const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
 
 export function organizerCard(organizer: HomeOrganizer, city: HomeCity): OrganizerCardView {
   const firstFormat = organizer.formats.find((format): format is CatchFormat => format !== "other");

@@ -7,7 +7,7 @@ import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchNotice, type CatchNoticeData} from "./CatchNotice";
 import {CatchNoticeRegion} from "./CatchNoticeRegion";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchNotice",
@@ -23,7 +23,7 @@ const noop = () => undefined;
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       {children}
     </CatchGap>
   );
@@ -79,7 +79,7 @@ export const Region: Story = {
   render: () => (
     <StoryPage>
       <CatchBand aria-label="Page" pb="spacious" pt="compact">
-        <CatchText as="p" variant="bodyM">The region sits fixed above the bottom edge and safe area.</CatchText>
+        <CatchLegacyText as="p" variant="bodyM">The region sits fixed above the bottom edge and safe area.</CatchLegacyText>
       </CatchBand>
       <CatchNoticeRegion label="Notifications">
         <CatchNotice dismissLabel="Dismiss" notice={{id: "copied", title: "Link copied"}} onDismiss={noop} />

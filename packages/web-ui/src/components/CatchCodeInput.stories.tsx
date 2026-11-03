@@ -5,7 +5,7 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchCodeInput, type CatchCodeInputProps} from "./CatchCodeInput";
 import {CatchGap} from "./CatchGap";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchCodeInput",
@@ -21,7 +21,7 @@ const noop = () => undefined;
 function Labelled({label, ...props}: Partial<CatchCodeInputProps> & {label: string}) {
   return (
     <CatchGap size="inline">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       <CatchCodeInput onChanged={noop} onSubmitted={noop} semanticsLabel={label} {...props} />
     </CatchGap>
   );
@@ -57,7 +57,7 @@ function Verify() {
   return (
     <CatchGap size="related">
       <CatchCodeInput onChanged={noop} onSubmitted={setSubmitted} semanticsLabel="Enter the 6-digit code" />
-      <CatchText as="p" color="ink2" variant="bodyS">{submitted ? `Submitted ${submitted}` : "Not submitted"}</CatchText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">{submitted ? `Submitted ${submitted}` : "Not submitted"}</CatchLegacyText>
     </CatchGap>
   );
 }

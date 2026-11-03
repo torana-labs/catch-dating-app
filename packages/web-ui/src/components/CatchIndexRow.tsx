@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CatchText, type CatchTextVariant} from "./CatchText";
+import {CatchLegacyText, type CatchLegacyTextVariant} from "./CatchLegacyText";
 import styles from "./CatchIndexRow.module.css";
 
 export interface CatchIndexRowProps {
@@ -19,7 +19,7 @@ export interface CatchIndexRowProps {
   /** Replaces the name read from the row's content. */
   semanticLabel?: string;
   /** Flutter's titleStyle, as a text role. */
-  titleVariant?: CatchTextVariant;
+  titleVariant?: CatchLegacyTextVariant;
   titleMaxLines?: number;
 }
 
@@ -46,8 +46,8 @@ export function CatchIndexRow({
     <>
       {leading != null ? <span className={styles.leading}>{leading}</span> : null}
       <span className={styles.copy}>
-        <CatchText as="span" color="ink" maxLines={titleMaxLines} variant={titleVariant}>{title}</CatchText>
-        {subtitleText ? <CatchText as="span" color="ink2" maxLines={2} variant="supporting">{subtitleText}</CatchText> : null}
+        <CatchLegacyText as="span" color="ink" maxLines={titleMaxLines} variant={titleVariant}>{title}</CatchLegacyText>
+        {subtitleText ? <CatchLegacyText as="span" color="ink2" maxLines={2} variant="supporting">{subtitleText}</CatchLegacyText> : null}
         {footer != null ? <span className={styles.footer}>{footer}</span> : null}
       </span>
       {trailing != null ? <span className={styles.trailing}>{trailing}</span> : null}

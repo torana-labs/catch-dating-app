@@ -3,7 +3,7 @@ import {
   CatchGap,
   CatchIndexRow,
   CatchPaneLayout,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import type {
@@ -23,7 +23,7 @@ const sourceColor = {success: "positiveText", warning: "attentionText", danger: 
 
 function Waiting({item}: {item: NowItem}) {
   return item.waiting ? (
-    <CatchText as="span" color={toneColor[item.tone]} variant="supportingStrong">{item.waiting}</CatchText>
+    <CatchLegacyText as="span" color={toneColor[item.tone]} variant="supportingStrong">{item.waiting}</CatchLegacyText>
   ) : null;
 }
 
@@ -31,8 +31,8 @@ function Waiting({item}: {item: NowItem}) {
 function Stat({label, value}: {label: string; value: number}) {
   return (
     <CatchGap size="headerTitleToSubtitle">
-      <CatchText as="span" color="ink2" variant="supporting">{label}</CatchText>
-      <CatchText as="span" variant="metric">{value.toLocaleString("en-IN")}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="supporting">{label}</CatchLegacyText>
+      <CatchLegacyText as="span" variant="metric">{value.toLocaleString("en-IN")}</CatchLegacyText>
     </CatchGap>
   );
 }
@@ -73,7 +73,7 @@ export function NowScreen({
       <>
         {header}
         <CatchPaneLayout
-          main={<CatchText as="p" color={error ? "danger" : "ink2"} variant="bodyM">{error ?? "Loading what needs you"}</CatchText>}
+          main={<CatchLegacyText as="p" color={error ? "danger" : "ink2"} variant="bodyM">{error ?? "Loading what needs you"}</CatchLegacyText>}
           pattern="feed"
         />
       </>
@@ -81,7 +81,7 @@ export function NowScreen({
   }
   const oldest = (
     <CatchGap size="section">
-      {error ? <CatchText as="p" color="danger" variant="bodyS">{error} The list below is from the last load.</CatchText> : null}
+      {error ? <CatchLegacyText as="p" color="danger" variant="bodyS">{error} The list below is from the last load.</CatchLegacyText> : null}
       <CatchGap direction="horizontal" size="section" wrap>
         <Stat label="Waiting on you" value={model.waiting} />
         <Stat label="Over 2 days" value={model.overTwoDays} />
@@ -91,9 +91,9 @@ export function NowScreen({
         {model.completedProfiles !== null ? <Stat label="Completed profiles" value={model.completedProfiles} /> : null}
       </CatchGap>
       <CatchGap size="related">
-        <CatchText as="h2" variant="sectionTitle">Oldest first</CatchText>
+        <CatchLegacyText as="h2" variant="sectionTitle">Oldest first</CatchLegacyText>
         {model.items.length === 0 ? (
-          <CatchText as="p" color="ink2" variant="bodyM">Nothing is waiting on you.</CatchText>
+          <CatchLegacyText as="p" color="ink2" variant="bodyM">Nothing is waiting on you.</CatchLegacyText>
         ) : model.items.map((item) => (
           <CatchIndexRow
             key={item.id}
@@ -109,28 +109,28 @@ export function NowScreen({
   const aside = (
     <CatchGap size="section">
       <CatchGap size="related">
-        <CatchText as="h2" variant="sectionTitle">By kind</CatchText>
+        <CatchLegacyText as="h2" variant="sectionTitle">By kind</CatchLegacyText>
         {model.kinds.map((kind) => (
           <CatchIndexRow
             key={kind.destination}
             onTap={canOpen(kind.destination) ? () => onOpenKind(kind.destination) : null}
             subtitle={kind.summary}
             title={kind.title}
-            trailing={<CatchText as="span" variant="supportingStrong">{String(kind.count)}</CatchText>}
+            trailing={<CatchLegacyText as="span" variant="supportingStrong">{String(kind.count)}</CatchLegacyText>}
           />
         ))}
       </CatchGap>
       {model.sources.length > 0 ? (
         <CatchGap size="related">
-          <CatchText as="h2" variant="sectionTitle">Data sources</CatchText>
+          <CatchLegacyText as="h2" variant="sectionTitle">Data sources</CatchLegacyText>
           {model.sources.map((source) => (
             <CatchIndexRow
               key={source.id}
               subtitle={source.detail}
               title={source.title}
-              trailing={<CatchText as="span" color={sourceColor[source.tone]} variant="supportingStrong">
+              trailing={<CatchLegacyText as="span" color={sourceColor[source.tone]} variant="supportingStrong">
                 {source.tone === "success" ? "Fresh" : source.tone === "warning" ? "Check" : "Blocked"}
-              </CatchText>}
+              </CatchLegacyText>}
             />
           ))}
         </CatchGap>

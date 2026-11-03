@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchGap, CatchSheet, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchSheet, CatchLegacyText} from "@catch/web-ui";
 import {useState} from "react";
 import {selectChoices} from "../controllers/salesLabels";
 import {useSalesAddHostController} from "../controllers/useSalesAddHostController";
@@ -55,23 +55,23 @@ export function SalesAddHostWorkspace({canAddExisting, onAdded, onClose, onError
         {canAddExisting ? <CatchField recipe="select" title="What are you doing?" value={mode} onChanged={(value) => setMode(value === "nominate" ? "nominate" : "add")}
           {...selectChoices([{value: "add", label: "Adding an organizer Catch lists"}, {value: "nominate", label: "Nominating one it doesn't"}])} /> : null}
         {mode === "add" ? <>
-          <CatchText as="p" variant="supporting">Adding it to Sales creates a private record. It doesn't publish a listing or approve a claim.</CatchText>
+          <CatchLegacyText as="p" variant="supporting">Adding it to Sales creates a private record. It doesn't publish a listing or approve a claim.</CatchLegacyText>
           <CatchField recipe="input" title="Search organizers" value={c.search} inputHint="Organizer name"
             onChanged={(value) => { c.setSearch(value); setSelectedId(""); }} />
-          {c.isSearching ? <CatchText as="p" variant="supporting">Searching organizers…</CatchText> : null}
-          {c.searchFailed ? <CatchText as="p" variant="supporting" role="alert">Organizer search failed. Try again.</CatchText> : null}
+          {c.isSearching ? <CatchLegacyText as="p" variant="supporting">Searching organizers…</CatchLegacyText> : null}
+          {c.searchFailed ? <CatchLegacyText as="p" variant="supporting" role="alert">Organizer search failed. Try again.</CatchLegacyText> : null}
           {c.matches.length ? <CatchField recipe="select" title="Organizer" value={selectedId} onChanged={(value) => setSelectedId(value ?? "")}
             {...selectChoices([{value: "", label: "Choose a match"}, ...c.matches.map((item) => ({value: item.organizerId,
               label: `${item.name} · ${item.cityName || "Location unknown"} · ${(item.publishStatus ?? "unknown").replaceAll("_", " ")}`}))])} /> : null}
         </> : <>
-          <CatchText as="p" variant="supporting">For an organizer Catch doesn't list yet. Catch reads their links, drafts a listing and finds their
-            upcoming events. Staff review the draft in the Inbox, and nothing is published before then.</CatchText>
+          <CatchLegacyText as="p" variant="supporting">For an organizer Catch doesn't list yet. Catch reads their links, drafts a listing and finds their
+            upcoming events. Staff review the draft in the Inbox, and nothing is published before then.</CatchLegacyText>
           <CatchField recipe="input" title="Organizer name" maxLength={160} value={name} onChanged={setName} />
           <CatchField recipe="input" title="City" maxLength={80} value={city} onChanged={setCity} required />
           <CatchField recipe="input" title="Links, one per line" maxLines={4} value={links} onChanged={setLinks}
             helperText="Their website, Instagram, Luma, District or Urbanaut pages." />
           <CatchField recipe="input" title="What should the reviewer know?" maxLines={3} maxLength={2000} value={notes} onChanged={setNotes} />
-          {touched && problem ? <CatchText as="p" variant="supporting" role="status">{problem}</CatchText> : null}
+          {touched && problem ? <CatchLegacyText as="p" variant="supporting" role="status">{problem}</CatchLegacyText> : null}
         </>}
       </CatchGap>
     </CatchSheet>

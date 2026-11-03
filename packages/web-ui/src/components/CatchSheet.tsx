@@ -3,7 +3,7 @@
 import {type CSSProperties, type ReactNode, useEffect, useId, useRef} from "react";
 import {CatchBadge, type CatchBadgeTone} from "./CatchBadge";
 import {CatchButton} from "./CatchButton";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchSheet.module.css";
 
 export type CatchSheetMode = "content" | "scrollable";
@@ -112,8 +112,8 @@ export function CatchSheet(props: CatchSheetProps) {
             <div className={styles.header} data-branded={glyph != null || undefined}>
               {glyph != null ? <span aria-hidden="true" className={styles.glyph}>{glyph}</span> : null}
               <span className={styles.heading}>
-                {title ? <CatchText as="h2" id={titleId} variant="titleL">{title}</CatchText> : null}
-                {subtitle ? <CatchText as="p" color="ink2" variant={glyph != null ? "bodyS" : "bodyM"}>{subtitle}</CatchText> : null}
+                {title ? <CatchLegacyText as="h2" id={titleId} variant="titleL">{title}</CatchLegacyText> : null}
+                {subtitle ? <CatchLegacyText as="p" color="ink2" variant={glyph != null ? "bodyS" : "bodyM"}>{subtitle}</CatchLegacyText> : null}
               </span>
               {right != null ? <span className={styles.trailing}>{right}</span> : null}
             </div>
