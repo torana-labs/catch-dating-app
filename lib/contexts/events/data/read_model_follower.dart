@@ -98,21 +98,23 @@ class ReadModelFollower<V> {
       _failWith(error);
       return;
     }
-    if (next case AsyncValue(hasValue: true, :final value?)) {
-      final rejected = reject?.call(value);
+    if (next case AsyncValue(:final value, hasValue: true)) {
+      // A value is present, so it has the listener's type.
+      final delivered = value as V;
+      final rejected = reject?.call(delivered);
       if (rejected != null) {
         _failWith(rejected);
         return;
       }
-      _latest = value;
+      _latest = delivered;
       _failure = null;
       for (final waiter in [..._waiters]) {
-        if (waiter.test(value)) {
+        if (waiter.test(delivered)) {
           _waiters.remove(waiter);
-          waiter.done.complete(value);
+          waiter.done.complete(delivered);
         }
       }
-      onValue(value);
+      onValue(delivered);
       if (!_first.isCompleted) _first.complete();
     }
   }

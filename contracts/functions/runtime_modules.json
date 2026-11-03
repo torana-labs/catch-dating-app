@@ -307,7 +307,6 @@
     "EventRegistrationReceiptDocument",
     "EventRehearsalCaseDocument",
     "EventRehearsalMessageDocument",
-    "EventRehearsalMilestoneDocument",
     "EventRehearsalMovementCallableResponse",
     "EventRehearsalMovementDocument",
     "EventRehearsalRouteDecisionDocument",

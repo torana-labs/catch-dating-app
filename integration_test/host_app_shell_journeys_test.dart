@@ -237,9 +237,14 @@ void main() {
 
     expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
     expect(find.text('Rooftop supper club'), findsWidgets);
+    // The saved event comes from its setup view listener, not a callable.
     expect(
       backend.functions.calls.skip(reopenFrom).map((call) => call.input),
-      anyElement(equals({'organizerId': _saketRunClub.id, 'eventId': eventId})),
+      isNot(
+        anyElement(
+          equals({'organizerId': _saketRunClub.id, 'eventId': eventId}),
+        ),
+      ),
     );
     expectHostSurfaceLoaded(tester, backend, surface: 'reopened event');
     await unmountHostAppShell(tester);
