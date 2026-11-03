@@ -73,29 +73,24 @@ class FakeFirestore {
   }
 }
 
-test("presence policy uses defaults and valid deployment overrides", () => {
-  assert.deepEqual(eventSuccessPresencePolicy({}), {
-    heartbeatIntervalSeconds: 30,
-    presentWindowSeconds: 90,
-    likelyDepartedAfterSeconds: 300,
-  });
-  assert.deepEqual(eventSuccessPresencePolicy({
-    EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS: "45",
-    EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS: "120",
-    EVENT_SUCCESS_PRESENCE_LIKELY_DEPARTED_SECONDS: "420",
-  }), {
-    heartbeatIntervalSeconds: 45,
-    presentWindowSeconds: 120,
-    likelyDepartedAfterSeconds: 420,
-  });
-  assert.deepEqual(eventSuccessPresencePolicy({
-    EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS: "120",
-    EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS: "90",
-  }), eventSuccessPresencePolicy({}));
+test("presence policy is the catalog, with no deployment override", () => {
+  const previous = process.env.EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS;
+  process.env.EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS = "45";
+  try {
+    assert.deepEqual(eventSuccessPresencePolicy(), {
+      heartbeatIntervalSeconds: 30,
+      presentWindowSeconds: 90,
+      likelyDepartedAfterSeconds: 300,
+    });
+  } finally {
+    if (previous === undefined) {
+      delete process.env.EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS;
+    } else process.env.EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS = previous;
+  }
 });
 
 test("presence state observes the exact liveness boundaries", () => {
-  const policy = eventSuccessPresencePolicy({});
+  const policy = eventSuccessPresencePolicy();
   assert.equal(deriveEventSuccessPresenceState({
     heartbeatAtMillis: 0,
     nowMillis: 90_000,
@@ -141,7 +136,6 @@ test("checked-in heartbeat is server-owned and returns policy", async () => {
     serverTimestamp: () => serverTimestamp as unknown as
       FirebaseFirestore.FieldValue,
     nowMillis: () => 10_000,
-    environment: {},
   });
 
   assert.deepEqual(result, {

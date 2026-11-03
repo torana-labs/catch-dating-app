@@ -101,7 +101,6 @@ interface EventSuccessRotationsDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   checkRateLimit?: typeof defaultCheckRateLimit;
   nowMillis?: () => number;
-  environment?: NodeJS.ProcessEnv;
 }
 
 interface EventSuccessPlanDocument {
@@ -245,7 +244,6 @@ const defaultDeps: EventSuccessRotationsDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
   nowMillis: () => Date.now(),
-  environment: process.env,
 };
 
 /**
@@ -317,7 +315,7 @@ export async function prepareEventSuccessRotationDraft(
       input.eventId,
       questionnaireMode !== "icebreaker",
       deps.nowMillis?.() ?? Date.now(),
-      eventSuccessPresencePolicy(deps.environment ?? process.env),
+      eventSuccessPresencePolicy(),
       featureRules.length ? 1000 : undefined
     );
   const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
@@ -464,7 +462,7 @@ export async function overrideEventSuccessRotationsHandler(
       payload.eventId,
       false,
       deps.nowMillis?.() ?? Date.now(),
-      eventSuccessPresencePolicy(deps.environment ?? process.env)
+      eventSuccessPresencePolicy()
     );
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const topology = {

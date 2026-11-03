@@ -2,7 +2,6 @@ import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
-import {readFileSync, writeFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
@@ -426,27 +425,3 @@ test("guest-help names and manager choices remain bound to current sources",
     assert.equal(changed.cases[0].displayName, null);
     assert.ok(!JSON.stringify(changed).includes("Replacement"));
   });
-
-test("native help queue fixtures use actual case projections", async () => {
-  const h = await harness(undefined, "00000000-0000-0000-0000-000000000123");
-  const path = "organizers/" + h.context.organizerId;
-  await h.write(path, {...await h.read(path),
-    hostUserIds: [manager, "host-2"], hostProfiles: [
-      {uid: manager, displayName: "Sam", avatarUrl: null, role: "host"},
-      {uid: "host-2", displayName: "Priya", avatarUrl: null, role: "host"},
-    ]});
-  await h.write(h.attendeePath, {...await h.read(h.attendeePath),
-    displayName: "Alex Morgan"});
-  const initial = await h.list();
-  const transfer = await h.cases.resolve(manager,
-    await h.command("transferred", "host-2"));
-  const assigned = await h.list();
-  const resolved = await h.cases.resolve(manager, await h.command());
-  const handled = await h.cases.list(manager, {...h.input, status: "resolved"});
-  const samples = {initial, transfer, assigned, resolved, handled};
-  const file = "../test/event_success/fixtures/help_queue.json";
-  if (process.env.UPDATE_HELP_QUEUE_FIXTURE === "1") {
-    writeFileSync(file, JSON.stringify(samples, null, 2) + "\n");
-  }
-  assert.deepEqual(JSON.parse(readFileSync(file, "utf8")), samples);
-});

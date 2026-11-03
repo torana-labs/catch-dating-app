@@ -2,6 +2,8 @@ import type {DocumentSnapshot} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventAssistanceCaseDocument as Case} from
   "../../shared/generated/eventAssistanceCaseDocument";
+import type {EventAssistanceCaseCallableResponse as CaseResponse} from
+  "../../shared/generated/eventAssistanceCaseCallableResponse";
 import type {EventAssistanceCasesCallableResponse as Response} from
   "../../shared/generated/eventAssistanceCasesCallableResponse";
 import type {OrganizerDocument} from
@@ -18,11 +20,11 @@ import {sameMessageContext} from "./messagingPolicy";
 
 export type HostCase = Extract<Case, {owner: "eventLead"}>;
 export type ManagedHostCase = Extract<HostCase, {handling: unknown}>;
-export type HostCaseView = Response["cases"][number];
+export type HostCaseView = CaseResponse["view"];
 
 /** Validate persisted identity before projecting or accepting a command. */
 export function parseHostCase(value: unknown, id: string,
-  context: Response["context"], now: number): HostCase {
+  context: CaseResponse["context"], now: number): HostCase {
   if (!validateEventAssistanceCaseDocument(value) ||
       value.owner !== "eventLead" || value.caseId !== id ||
       value.caseId !== "case:" + operationContentHash(value.responseId) ||

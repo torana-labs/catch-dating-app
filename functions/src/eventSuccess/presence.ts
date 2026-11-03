@@ -31,6 +31,7 @@ import {
   loadEventSuccessRoster,
   loadEventSuccessRosterParticipant,
 } from "./eventSuccessRoster";
+import {eventSuccessPresencePolicyCatalog} from "./presencePolicy";
 
 export type EventSuccessPresenceState =
   "present" | "idle" | "likelyDeparted";
@@ -45,58 +46,26 @@ interface EventSuccessPresenceDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
-  environment: NodeJS.ProcessEnv;
   checkRateLimit?: typeof defaultCheckRateLimit;
 }
-
-const DEFAULT_PRESENCE_POLICY: EventSuccessPresencePolicy = {
-  heartbeatIntervalSeconds: 30,
-  presentWindowSeconds: 90,
-  likelyDepartedAfterSeconds: 300,
-};
 
 const defaultDeps: EventSuccessPresenceDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   nowMillis: () => Date.now(),
-  environment: process.env,
   checkRateLimit: defaultCheckRateLimit,
 };
 
-/** Resolves bounded deployment configuration or the reviewed defaults. */
-export function eventSuccessPresencePolicy(
-  environment: NodeJS.ProcessEnv = process.env
-): EventSuccessPresencePolicy {
-  const candidate = {
-    heartbeatIntervalSeconds: boundedInteger(
-      environment.EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS,
-      10,
-      300,
-      DEFAULT_PRESENCE_POLICY.heartbeatIntervalSeconds
-    ),
-    presentWindowSeconds: boundedInteger(
-      environment.EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS,
-      30,
-      900,
-      DEFAULT_PRESENCE_POLICY.presentWindowSeconds
-    ),
-    likelyDepartedAfterSeconds: boundedInteger(
-      environment.EVENT_SUCCESS_PRESENCE_LIKELY_DEPARTED_SECONDS,
-      60,
-      3600,
-      DEFAULT_PRESENCE_POLICY.likelyDepartedAfterSeconds
-    ),
-  };
-  if (
-    candidate.heartbeatIntervalSeconds > candidate.presentWindowSeconds ||
-    candidate.presentWindowSeconds >= candidate.likelyDepartedAfterSeconds
-  ) {
-    return {...DEFAULT_PRESENCE_POLICY};
-  }
-  return candidate;
+/**
+ * The presence timing every surface shares: the heartbeat callable returns
+ * it, rotation generation and late placement apply it on the server clock,
+ * and the manager's phone applies the same catalog to its own clock.
+ */
+export function eventSuccessPresencePolicy(): EventSuccessPresencePolicy {
+  return {...eventSuccessPresencePolicyCatalog};
 }
 
-/** Derives liveness from the server clock; no stale state enum is persisted. */
+/** Derives liveness from a clock; no stale state enum is persisted. */
 export function deriveEventSuccessPresenceState(params: {
   heartbeatAtMillis: number;
   nowMillis: number;
@@ -191,7 +160,7 @@ export async function heartbeatEventSuccessPresenceHandler(
       updatedAt: now,
     });
   });
-  const policy = eventSuccessPresencePolicy(deps.environment);
+  const policy = eventSuccessPresencePolicy();
   return {
     presenceState: "present",
     serverTimeMillis: deps.nowMillis(),
@@ -266,7 +235,7 @@ export async function getEventSuccessPresenceSummaryHandler(
       .get(),
   ]);
   const nowMillis = deps.nowMillis();
-  const policy = eventSuccessPresencePolicy(deps.environment);
+  const policy = eventSuccessPresencePolicy();
   const checkedInByUid = new Map(
     roster
       .filter((participant) => participant.status === "attended")
@@ -348,17 +317,6 @@ export const getEventSuccessPresenceSummary = onCall(
 
 export function eventSuccessPresenceId(eventId: string, uid: string): string {
   return `${eventId}_${uid}`;
-}
-
-function boundedInteger(
-  value: string | undefined,
-  minimum: number,
-  maximum: number,
-  fallback: number
-): number {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= minimum && parsed <= maximum ?
-    parsed : fallback;
 }
 
 function timestampMillis(value: unknown): number | null {
