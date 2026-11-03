@@ -880,8 +880,6 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | ImportOrganizerApplicationsCallableResponse | `callable_responses/import_organizer_applications_response.schema.json` | `functions/src/shared/generated/importOrganizerApplicationsCallableResponse.ts` | no |
 | ListOrganizerApplicationsCallablePayload | `callables/list_organizer_applications_payload.schema.json` | `functions/src/shared/generated/listOrganizerApplicationsCallablePayload.ts` | yes |
 | ListOrganizerApplicationsCallableResponse | `callable_responses/list_organizer_applications_response.schema.json` | `functions/src/shared/generated/listOrganizerApplicationsCallableResponse.ts` | no |
-| ListOrganizerAttentionItemsCallablePayload | `callables/list_organizer_attention_items_payload.schema.json` | `functions/src/shared/generated/listOrganizerAttentionItemsCallablePayload.ts` | yes |
-| ListOrganizerAttentionItemsCallableResponse | `callable_responses/list_organizer_attention_items_response.schema.json` | `functions/src/shared/generated/listOrganizerAttentionItemsCallableResponse.ts` | yes |
 | GetOrganizerApplicationDetailCallablePayload | `callables/get_organizer_application_detail_payload.schema.json` | `functions/src/shared/generated/getOrganizerApplicationDetailCallablePayload.ts` | yes |
 | GetOrganizerApplicationDetailCallableResponse | `callable_responses/get_organizer_application_detail_response.schema.json` | `functions/src/shared/generated/getOrganizerApplicationDetailCallableResponse.ts` | no |
 | ReviewOrganizerApplicationCallablePayload | `callables/review_organizer_application_payload.schema.json` | `functions/src/shared/generated/reviewOrganizerApplicationCallablePayload.ts` | yes |
@@ -1416,7 +1414,6 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | PreviewOrganizerApplicationImportCallableRequest | PreviewOrganizerApplicationImportCallablePayload | `callables/preview_organizer_application_import_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/preview_organizer_application_import_callable_request.g.dart` |
 | ImportOrganizerApplicationsCallableRequest | ImportOrganizerApplicationsCallablePayload | `callables/import_organizer_applications_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/import_organizer_applications_callable_request.g.dart` |
 | ListOrganizerApplicationsCallableRequest | ListOrganizerApplicationsCallablePayload | `callables/list_organizer_applications_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_applications_callable_request.g.dart` |
-| ListOrganizerAttentionItemsCallableRequest | ListOrganizerAttentionItemsCallablePayload | `callables/list_organizer_attention_items_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_organizer_attention_items_callable_request.g.dart` |
 | GetOrganizerApplicationDetailCallableRequest | GetOrganizerApplicationDetailCallablePayload | `callables/get_organizer_application_detail_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/get_organizer_application_detail_callable_request.g.dart` |
 | ReviewOrganizerApplicationCallableRequest | ReviewOrganizerApplicationCallablePayload | `callables/review_organizer_application_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/review_organizer_application_callable_request.g.dart` |
 | CreateOrganizerContactCallableRequest | CreateOrganizerContactCallablePayload | `callables/create_organizer_contact_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_organizer_contact_callable_request.g.dart` |
@@ -1573,6 +1570,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | `tool/contracts/generated/schema_contract_registry.mjs` | Node-side schema registry for validation tooling. |
 | `tool/contracts/generated/schema_contract_validators.mjs` | Node-side Ajv validators for contract checks. |
 | `lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart` | Dart profile catalog and storage policy constants. |
+| `lib/platform/schema_contracts/generated/host_attention_policies.g.dart` | Dart Host Today attention policy versions, horizons and per-kind delivery modes. |
 | `lib/platform/schema_contracts/generated/field_constraints.g.dart` | UI constraints for the schema fields declared in `contracts/forms/field_constraint_bindings.json`. |
 | `lib/platform/schema_contracts/generated/callable_request_dtos.g.dart` | Generated Dart callable request and patch helper barrel. |
 | `lib/contexts/*/data/generated/*.g.dart` | Generated Dart callable requests that carry a context's domain types. |

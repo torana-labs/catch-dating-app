@@ -1,5 +1,6 @@
 [
   "adminListListingEventImports",
   "adminListOrganizerClaimRequests",
-  "adminListOrganizerListingReviews"
+  "adminListOrganizerListingReviews",
+  "listOrganizerAttentionItems"
 ]

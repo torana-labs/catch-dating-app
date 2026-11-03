@@ -378,14 +378,9 @@ function checkHostAttentionPolicyCatalog(parsed) {
     contractRoot,
     "shared/host_attention_common.schema.json"
   );
-  const responsePath = path.join(
-    contractRoot,
-    "callable_responses/list_organizer_attention_items_response.schema.json"
-  );
   const catalog = parsed.get(catalogPath);
   const common = parsed.get(commonPath);
-  const response = parsed.get(responsePath);
-  if (!catalog || !common || !response) {
+  if (!catalog || !common) {
     fail("Missing Host attention policy catalog or companion schemas.");
     return;
   }
@@ -519,15 +514,6 @@ function checkHostAttentionPolicyCatalog(parsed) {
         "all blockedMissingTruth definitions must be blocked."
       );
     }
-  }
-
-  const coverage = response.properties?.coverage;
-  if (coverage?.minItems !== expectedKinds.length ||
-      coverage?.maxItems !== expectedKinds.length) {
-    fail(
-      `${relative(responsePath)}: coverage bounds must equal the policy kind ` +
-      `count (${expectedKinds.length}).`
-    );
   }
 }
 

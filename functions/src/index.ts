@@ -282,8 +282,6 @@ export {reconcileHostMembershipCharges} from "./hostMemberships/charges";
 export {processHostMembershipBillingPause} from
   "./hostMemberships/billingPause";
 export {refreshHostMembershipSegments} from "./hostMemberships/crmRefresh";
-export {listOrganizerAttentionItems} from
-  "./organizers/organizerAttention";
 export {
   createOrganizerForm,
   deleteOrganizerFormDraft,
@@ -1042,6 +1040,17 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from
   "./hostReadModels/triggers";
+export {onOrganizerAttentionOrganizerChanged,
+  onOrganizerAttentionEventChanged, onOrganizerAttentionParticipationChanged,
+  onOrganizerAttentionAssistanceCaseChanged,
+  onOrganizerAttentionDeliveryReviewChanged,
+  onOrganizerAttentionApplicationChanged,
+  onOrganizerAttentionProviderSyncChanged,
+  onOrganizerAttentionAutomationRuleChanged,
+  onOrganizerAttentionAutomationRunChanged,
+  onOrganizerAttentionMomentSendChanged, onOrganizerAttentionEventOfferChanged,
+  onOrganizerAttentionPaymentAccountChanged, sweepOrganizerAttention} from
+  "./hostReadModels/attentionTriggers";
 
 export {manageEventApprovalNotifications} from
   "./events/approvalNotifications/preferences";

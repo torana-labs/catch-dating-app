@@ -4,7 +4,6 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_today_preference_repository.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -16,6 +15,7 @@ import 'package:catch_dating_app/platform/persistence/memory_command_journal_sto
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -79,10 +79,28 @@ class HostShellBackend {
   /// them. Reads project these records the way the backend does.
   final privateEvents = <String, Map<String, Object?>>{};
 
-  Future<void> seedOrganizer(Organizer organizer) => firestore
-      .collection('organizers')
-      .doc(organizer.id)
-      .set(organizer.toJson());
+  /// Writes the organizer and, as the backend's attention evaluator does on
+  /// that write, its evaluated (empty) Today attention schedule.
+  Future<void> seedOrganizer(Organizer organizer) async {
+    await firestore
+        .collection('organizers')
+        .doc(organizer.id)
+        .set(organizer.toJson());
+    await firestore
+        .collection('organizerAttentionSchedules')
+        .doc(organizer.id)
+        .set({
+          'schemaVersion': 1,
+          'organizerId': organizer.id,
+          'policyVersion': hostAttentionPolicyVersion,
+          'revision': 1,
+          'evaluatedAt': Timestamp.now(),
+          'nextEvaluationAt': null,
+          'sourceCoverage': 'complete',
+          'incompleteSource': null,
+          'openItemCount': 0,
+        });
+  }
 
   /// Writes a published event as the backend's publication command leaves it;
   /// `publicationState` is backend-owned and absent from [Event.toJson].
@@ -149,21 +167,6 @@ class HostShellBackend {
         'preferences': const <String, Object?>{},
         'preferencesHash': _journeyHash,
         'reviewedDefaultsHash': _journeyHash,
-      },
-      'listOrganizerAttentionItems' => {
-        'organizerId': organizerId,
-        'policyVersion': 1,
-        'generatedAtMillis': now,
-        'horizonEndsAtMillis': now + const Duration(days: 7).inMilliseconds,
-        'items': const <Object?>[],
-        'coverage': [
-          for (final kind in HostAttentionKind.values)
-            {
-              'kind': kind.name,
-              'state': HostAttentionCoverageState.complete.name,
-              'reason': 'Host journey fixture.',
-            },
-        ],
       },
       'getEventRehearsalSummary' => {'hasCompletedRehearsal': false},
       'listOrganizerPrograms' => {'programs': const <Object?>[]},

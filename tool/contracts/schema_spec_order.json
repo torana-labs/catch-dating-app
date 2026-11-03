@@ -1224,8 +1224,6 @@
   "ImportOrganizerApplicationsCallableResponse",
   "ListOrganizerApplicationsCallablePayload",
   "ListOrganizerApplicationsCallableResponse",
-  "ListOrganizerAttentionItemsCallablePayload",
-  "ListOrganizerAttentionItemsCallableResponse",
   "GetOrganizerApplicationDetailCallablePayload",
   "GetOrganizerApplicationDetailCallableResponse",
   "ReviewOrganizerApplicationCallablePayload",

@@ -11,6 +11,9 @@ const {backfillSimpleSummaries, activateSimpleSummaries} =
 const {backfillResponseSummaries, activateResponseSummaries} =
   require("../lib/hostReadModels/responseStore");
 
+const {backfillOrganizerAttention} =
+  require("../lib/hostReadModels/attentionStore");
+
 async function main(argv = process.argv.slice(2)) {
   const args = new Map();
   for (let index = 0; index < argv.length; index++) {
@@ -27,16 +30,29 @@ async function main(argv = process.argv.slice(2)) {
     throw new Error("Provide explicit --project and --organizer identifiers.");
   }
   const model = args.get("--model") ?? "contacts";
-  if (!["contacts", "forms", "events", "groups", "responses"].includes(model)) {
-    throw new Error("Use --model contacts, forms, events, groups or responses.");
+  if (!["contacts", "forms", "events", "groups", "responses", "attention"]
+    .includes(model)) {
+    throw new Error(
+      "Use --model contacts, forms, events, groups, responses or attention.");
   }
   const apply = args.get("--apply") === true;
+  // Every environment is reseeded under the clean-schema mandate, so the
+  // attention listener has no cutover marker to activate.
+  if (model === "attention" && args.has("--activate")) {
+    throw new Error("The attention model has no activation; omit --activate.");
+  }
   if (args.has("--activate") && !apply) {
     throw new Error("Activation requires --apply and successful parity.");
   }
   const app = admin.initializeApp({projectId});
   try {
     const db = app.firestore();
+    if (model === "attention") {
+      const report = await backfillOrganizerAttention(db, organizerId, apply);
+      console.log(JSON.stringify({projectId, organizerId, model, apply,
+        ...report}));
+      return;
+    }
     const scanned = model === "contacts" ?
       await backfillContactSummaries(db, organizerId, apply) :
       model === "responses" ?

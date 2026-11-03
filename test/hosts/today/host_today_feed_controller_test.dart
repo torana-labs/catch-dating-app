@@ -9,11 +9,13 @@ import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.da
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
 import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 
 typedef _EventPage = CursorPage<Event, DocumentSnapshot<Event>>;
 
@@ -182,6 +184,106 @@ void main() {
       });
     },
   );
+
+  test(
+    'Today flags a missing or incomplete evaluation and keeps the count open',
+    () async {
+      final boundary = DateTime(2026, 9, 1, 12);
+      final active = buildEvent(
+        id: 'active',
+        startTime: boundary.add(const Duration(hours: 2)),
+        endTime: boundary.add(const Duration(hours: 4)),
+      );
+      for (final coverage in [
+        HostAttentionSourceCoverage.missing,
+        HostAttentionSourceCoverage.overCap,
+        HostAttentionSourceCoverage.invalidSource,
+      ]) {
+        final container = _container(
+          events: _TodayEventRepository(
+            activePage: _EventPage(items: [active], hasMore: false),
+          ),
+          attention: _FakeAttentionRepository(
+            _projection(
+              boundary,
+              items: [_serverAttentionItem(boundary)],
+              sourceCoverage: coverage,
+            ),
+          ),
+        );
+        addTearDown(container.dispose);
+
+        final result = await _settledFeed(
+          container,
+          HostTodayFeedRequest(
+            organizerId: 'organizer-1',
+            accountId: 'host-1',
+            sessionBoundary: boundary,
+          ),
+        );
+
+        expect(result.attentionItems.map((item) => item.id), [
+          'attention-waitlist',
+        ], reason: coverage.name);
+        final issue = result.attentionIssues.single;
+        expect(issue.source, HostTodayAttentionIssueSource.serverProjection);
+        expect(
+          issue.error,
+          isA<HostTodayAttentionIncompleteException>().having(
+            (error) => error.sourceCoverage,
+            'sourceCoverage',
+            coverage,
+          ),
+        );
+      }
+    },
+  );
+
+  test(
+    'Today updates its queue while open without re-reading events',
+    () async {
+      final boundary = DateTime(2026, 9, 1, 12);
+      final active = buildEvent(
+        id: 'active',
+        startTime: boundary.add(const Duration(hours: 2)),
+        endTime: boundary.add(const Duration(hours: 4)),
+      );
+      final events = _TodayEventRepository(
+        activePage: _EventPage(items: [active], hasMore: false),
+      );
+      final attention = _FakeAttentionRepository(_projection(boundary));
+      final container = _container(events: events, attention: attention);
+      addTearDown(container.dispose);
+      final request = HostTodayFeedRequest(
+        organizerId: 'organizer-1',
+        accountId: 'host-1',
+        sessionBoundary: boundary,
+      );
+      final provider = hostTodayFeedControllerProvider(request);
+
+      final settled = await _settledFeed(container, request);
+      expect(settled.attentionItems, isEmpty);
+
+      attention.emit(
+        _projection(boundary, items: [_serverAttentionItem(boundary)]),
+      );
+      await flushTestEventQueue();
+
+      final updated = container.read(provider).requireValue;
+      expect(updated.activeEvents, [active]);
+      expect(updated.attentionItems.map((item) => item.id), [
+        'attention-waitlist',
+      ]);
+      expect(events.activeRequests, 1);
+
+      container.read(provider.notifier).retry();
+      await container.read(provider.future);
+      expect(events.activeRequests, 2, reason: 'retry re-reads the events');
+      expect(attention.organizerIds, [
+        'organizer-1',
+      ], reason: 'retry keeps the attention listener open');
+    },
+  );
 }
 
 Future<HostTodayFeedData> _settledFeed(
@@ -257,24 +359,28 @@ class _TodayEventRepository extends Fake implements EventRepository {
   }
 }
 
+/// A live attention listener: [emit] pushes a new server evaluation.
 class _FakeAttentionRepository implements HostAttentionRepository {
   _FakeAttentionRepository(this.projection);
 
   final HostAttentionProjection projection;
   final List<String> organizerIds = [];
+  final _updates = StreamController<HostAttentionProjection>.broadcast();
+
+  void emit(HostAttentionProjection next) => _updates.add(next);
 
   @override
-  Future<HostAttentionProjection> fetch(String organizerId) async {
+  Stream<HostAttentionProjection> watch(String organizerId) async* {
     organizerIds.add(organizerId);
-    return projection;
+    yield projection;
+    yield* _updates.stream;
   }
 }
 
 class _ThrowingAttentionRepository implements HostAttentionRepository {
   @override
-  Future<HostAttentionProjection> fetch(String organizerId) async {
-    throw StateError('attention unavailable');
-  }
+  Stream<HostAttentionProjection> watch(String organizerId) =>
+      Stream.error(StateError('attention unavailable'));
 }
 
 class _MemoryOutboxStore extends Fake implements HostAttendanceOutboxStore {
@@ -310,33 +416,17 @@ class _NoopAttendanceMutator implements HostAttendanceMutator {
 HostAttentionProjection _projection(
   DateTime now, {
   List<HostAttentionItem> items = const [],
+  HostAttentionSourceCoverage sourceCoverage =
+      HostAttentionSourceCoverage.complete,
 }) => HostAttentionProjection(
   organizerId: 'organizer-1',
-  policyVersion: 1,
-  generatedAt: now,
-  horizonEndsAt: now.add(const Duration(days: 7)),
+  policyVersion: hostAttentionPolicyVersion,
   items: items,
-  coverage: [
-    for (final kind in HostAttentionKind.values)
-      HostAttentionCoverage(
-        kind: kind,
-        state: switch (kind) {
-          HostAttentionKind.attendanceSync =>
-            HostAttentionCoverageState.clientMergeRequired,
-          HostAttentionKind.dressRehearsal =>
-            HostAttentionCoverageState.shortcutOnly,
-          HostAttentionKind.eventSuccessPreparation ||
-          HostAttentionKind.roomLayoutSetup ||
-          HostAttentionKind.eventStaffing ||
-          HostAttentionKind.formResponseReview ||
-          HostAttentionKind.inboxReply ||
-          HostAttentionKind.postEventReconciliation =>
-            HostAttentionCoverageState.blockedMissingTruth,
-          _ => HostAttentionCoverageState.complete,
-        },
-        reason: 'Fixture coverage for ${kind.name}.',
-      ),
-  ],
+  coverage: hostAttentionCatalogCoverage,
+  evaluatedAt: sourceCoverage == HostAttentionSourceCoverage.missing
+      ? null
+      : now,
+  sourceCoverage: sourceCoverage,
 );
 
 HostAttentionItem _serverAttentionItem(DateTime now) => HostAttentionItem(

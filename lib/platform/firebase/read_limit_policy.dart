@@ -46,4 +46,10 @@ abstract final class ReadLimitPolicy {
 
   /// The fixed provider-account set for one Host organizer.
   static const int hostPaymentProviders = 2;
+
+  /// Open Host Today attention rows for one organizer. This is the server
+  /// evaluator's cap (`maxAttentionSourceRows` in
+  /// `functions/src/organizers/organizerAttention.ts`): it never keeps more
+  /// open rows, and records an over-cap schedule instead.
+  static const int hostAttentionQueue = 400;
 }

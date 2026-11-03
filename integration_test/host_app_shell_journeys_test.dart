@@ -63,9 +63,14 @@ void main() {
       find.byKey(const ValueKey<String>('host-organizer-navigation-avatar')),
       findsOneWidget,
     );
-    final firstRead = backend.functions.calls.first;
-    expect(firstRead.name, 'listOrganizerAttentionItems');
-    expect(firstRead.input, {'organizerId': _saketRunClub.id});
+    // Today listens to its attention queue in Firestore; booting the shell
+    // makes no attention callable.
+    expect(
+      backend.functions.calls.where(
+        (call) => call.name.toLowerCase().contains('attention'),
+      ),
+      isEmpty,
+    );
     expectHostSurfaceLoaded(tester, backend, surface: 'Host boot');
     await unmountHostAppShell(tester);
   });
