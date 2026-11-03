@@ -46,16 +46,23 @@ void main() {
   test(
     'missing names and choices remain unknown; stale identity stays hidden',
     () {
-      final raw = helpQueueFixture('initial');
-      final row = Map<String, Object?>.from(
-        (raw['cases'] as List).single as Map,
-      )..remove('displayName');
-      raw['cases'] = [row];
-      raw.remove('managerOptions');
-      final legacy = EventAssistanceCasesPage.fromCallableData(
-        raw,
-        expectedQuery: helpQueueQuery(),
+      final views = helpQueueViews(helpQueueFixture('initial'));
+      final view = views.single;
+      final row = Map<String, Object?>.from(view.data['view']! as Map)
+        ..remove('displayName');
+      EventAssistanceCasesPage page() => EventAssistanceCasesPage.fromViews(
+        query: helpQueueQuery(),
+        views: [
+          (
+            id: view.id,
+            data: {...view.data, 'view': row},
+            evaluatedAtMillis: view.evaluatedAtMillis,
+          ),
+        ],
+        hasMore: false,
+        managerOptions: null,
       );
+      final legacy = page();
       expect(legacy.cases.single.displayName, isNull);
       expect(legacy.managerOptions, isNull);
       row.addAll({
@@ -64,29 +71,26 @@ void main() {
         'assignment': {'kind': 'unavailable'},
         'canChange': false,
       });
-      expect(
-        EventAssistanceCasesPage.fromCallableData(
-          raw,
-          expectedQuery: helpQueueQuery(),
-        ).cases.single,
-        isA<AssistanceStaleHostCase>(),
-      );
+      expect(page().cases.single, isA<AssistanceStaleHostCase>());
       row['displayName'] = 'Alex Morgan';
-      expect(
-        () => EventAssistanceCasesPage.fromCallableData(
-          raw,
-          expectedQuery: helpQueueQuery(),
-        ),
-        throwsFormatException,
-      );
+      expect(page, throwsFormatException);
     },
   );
 
   test(
     'manager choices reject duplicates, missing caller and unknown authority',
     () {
-      final raw = helpQueueFixture('initial');
-      final options = Map<String, Object?>.from(raw['managerOptions'] as Map);
+      final options = <String, Object?>{
+        'actorUid': 'host-1',
+        'managers': [
+          {'uid': 'host-1', 'displayName': 'Sam'},
+          {'uid': 'host-2', 'displayName': 'Priya'},
+        ],
+      };
+      expect(
+        AssistanceCaseManagerOptions.fromJson(options).managers,
+        hasLength(2),
+      );
       for (final patch in <Map<String, Object?>>[
         {'actorUid': 'foreign'},
         {

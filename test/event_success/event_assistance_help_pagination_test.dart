@@ -71,24 +71,38 @@ void main() {
 class _Pages extends Fake implements EventAssistanceCasesRepository {
   final reads = <EventAssistanceCaseQuery>[];
   @override
-  Future<EventAssistanceCasesPage> fetch(EventAssistanceCaseQuery query) async {
+  Stream<EventAssistanceCasesPage> watchPage(
+    EventAssistanceCaseQuery query, {
+    required String actorUid,
+  }) {
     reads.add(query);
-    final raw = helpQueueFixture('initial');
-    final row = (raw['cases'] as List).single as Map;
+    final stage = helpQueueFixture('initial');
+    final view = helpQueueViews(stage).single;
+    final row = view.data['view']! as Map;
     final first = query.cursor == null;
-    raw['status'] = query.status.name;
-    raw['cases'] = [
-      if (query.status == AssistanceCaseStatus.open)
-        for (var i = first ? 1 : 51; i <= (first ? 50 : 51); i++)
-          {
-            ...row,
-            'caseId': 'case:${i.toString().padLeft(3, '0')}',
-            'displayName': 'Guest ${i.toString().padLeft(3, '0')}',
-          },
-    ];
-    raw['nextCursor'] = query.status == AssistanceCaseStatus.open && first
-        ? 'case:050'
-        : null;
-    return EventAssistanceCasesPage.fromCallableData(raw, expectedQuery: query);
+    return Stream.value(
+      EventAssistanceCasesPage.fromViews(
+        query: query,
+        views: [
+          if (query.status == AssistanceCaseStatus.open)
+            for (var i = first ? 1 : 51; i <= (first ? 50 : 51); i++)
+              (
+                id: 'case:${i.toString().padLeft(3, '0')}',
+                data: {
+                  ...view.data,
+                  'caseId': 'case:${i.toString().padLeft(3, '0')}',
+                  'view': {
+                    ...row,
+                    'caseId': 'case:${i.toString().padLeft(3, '0')}',
+                    'displayName': 'Guest ${i.toString().padLeft(3, '0')}',
+                  },
+                },
+                evaluatedAtMillis: view.evaluatedAtMillis,
+              ),
+        ],
+        hasMore: query.status == AssistanceCaseStatus.open && first,
+        managerOptions: null,
+      ),
+    );
   }
 }

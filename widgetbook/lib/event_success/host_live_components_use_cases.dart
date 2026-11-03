@@ -221,7 +221,6 @@ Widget previewEventSuccessPresenceSection(BuildContext context) =>
       children: [
         EventSuccessPresenceSection(
           summary: const EventSuccessPresenceSummary(
-            serverTimeMillis: 1,
             liveControlRevision: 1,
             nextRoundIndex: 1,
             policy: EventSuccessPresencePolicy(

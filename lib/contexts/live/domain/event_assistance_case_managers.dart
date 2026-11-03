@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
+import 'package:catch_dating_app/contexts/organizers/organizers.dart';
 
 final class AssistanceCaseManager {
   const AssistanceCaseManager._(this.uid, this.displayName);
@@ -36,5 +37,51 @@ final class AssistanceCaseManagerOptions {
       List.unmodifiable(managers),
     );
   }
+
+  /// The organizer's current managers with their display names, as the
+  /// server's projectCaseManagerOptions built them: authority from the
+  /// owner, primary host and host ids (the fields rules check), names from
+  /// the host profiles or, without any, the primary host's name. The actor
+  /// must be one of them.
+  factory AssistanceCaseManagerOptions.fromOrganizer({
+    required Organizer organizer,
+    required String actorUid,
+  }) {
+    final managerIds = <String>{
+      for (final uid in [
+        organizer.hostUserId,
+        organizer.ownerUserId,
+        ...organizer.hostUserIds,
+      ])
+        if (uid != null && uid.isNotEmpty) uid,
+    };
+    final primaryHostId = organizer.hostUserId;
+    final primaryHostName = organizer.hostName;
+    final profiles = organizer.hostProfiles.isNotEmpty
+        ? [
+            for (final profile in organizer.hostProfiles)
+              (uid: profile.uid, displayName: profile.displayName),
+          ]
+        : primaryHostId != null &&
+              primaryHostId.isNotEmpty &&
+              primaryHostName != null &&
+              primaryHostName.isNotEmpty
+        ? [(uid: primaryHostId, displayName: primaryHostName)]
+        : const <({String uid, String displayName})>[];
+    return AssistanceCaseManagerOptions.fromJson({
+      'actorUid': actorUid,
+      'managers': [
+        for (final uid in managerIds)
+          {
+            'uid': uid,
+            'displayName': profiles
+                .where((profile) => profile.uid == uid)
+                .firstOrNull
+                ?.displayName,
+          },
+      ],
+    });
+  }
+
   bool contains(String uid) => managers.any((m) => m.uid == uid);
 }

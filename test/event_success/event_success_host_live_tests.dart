@@ -296,7 +296,6 @@ void _registerEventSuccessHostLiveTests() {
                 waitlistedIds: [],
               ),
               presenceSummary: const EventSuccessPresenceSummary(
-                serverTimeMillis: 10,
                 liveControlRevision: 4,
                 nextRoundIndex: 1,
                 policy: EventSuccessPresencePolicy(

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_deliveries_repository.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_deliveries_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_decision_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_sheet.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -41,10 +40,6 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(EventAssistanceDeliverySheet)),
-        listen: false,
-      );
       Future<void> tap(Finder finder) async {
         await tester.ensureVisible(finder);
         await tester.tap(finder);
@@ -58,17 +53,13 @@ void main() {
       await pumpFeatureUi(tester);
       expect(find.text('Alex Morgan'), findsOneWidget);
       repository.stage = 'replaced';
-      container
-          .read(eventAssistanceDeliveriesProvider(query).notifier)
-          .reload();
+      repository.deliverToListeners();
       await pumpFeatureUi(tester);
       expect(find.text('Alex Morgan'), findsNothing);
       expect(find.text('Guest details unavailable'), findsOneWidget);
       expect(find.text('Confirm this handoff'), findsOneWidget);
       repository.readError = const PermissionException('Access removed.');
-      container
-          .read(eventAssistanceDeliveriesProvider(query).notifier)
-          .reload();
+      repository.deliverToListeners();
       await pumpFeatureUi(tester);
       expect(find.byType(EventAssistanceDeliveryDecisionSection), findsNothing);
       expect(find.text('Alex Morgan'), findsNothing);

@@ -122,16 +122,37 @@ void main() {
     },
   );
 
-  test('explicit reload wins over an older completion', () async {
-    await signIn('host-1');
-    container.read(provider.notifier).reload();
-    await container.pump();
-    await repository.waitForReads(2);
-    await complete(1);
-    final latest = container.read(provider).requireValue;
-    await complete(0);
-    expect(identical(container.read(provider).requireValue, latest), isTrue);
-  });
+  test(
+    'a healthy listener is never restarted; a newer page replaces the session',
+    () async {
+      await signIn('host-1');
+      await complete(0);
+      final first = container.read(provider).requireValue;
+      final open = first.page.deliveries.single as AssistanceActionableDelivery;
+      final review = first.review(open);
+      container.read(provider.notifier).reload();
+      await container.pump();
+      expect(repository.reads, hasLength(1));
+      // An unchanged message keeps its review current across pages.
+      repository.reads.single.result.complete(deliveryPage());
+      await container.pump();
+      await Future<void>.delayed(Duration.zero);
+      expect(first.isCurrent, isFalse);
+      expect(review.isCurrent, isTrue);
+      // A handoff elsewhere changes the message: the review is retired.
+      repository.reads.single.result.complete(
+        deliveryPage(
+          rows: [
+            deliveryRow(patch: {'revision': 1, 'reviewHash': 'c' * 64}),
+          ],
+        ),
+      );
+      await container.pump();
+      await Future<void>.delayed(Duration.zero);
+      expect(review.isCurrent, isFalse);
+      expect(container.read(provider).requireValue.isCurrent, isTrue);
+    },
+  );
 
   test(
     'read errors persist until explicit reload, without automatic retries',

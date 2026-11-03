@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/repair_event_assistance_delivery_callable_request.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
@@ -17,9 +18,17 @@ void main() {
         scope: deliveryQuery().scopeFor(deliveryId()),
         serverTime: now,
       );
-  final pageSchema = JsonSchema.create(
-    contractSchema('EventAssistanceDeliveriesCallableResponse'),
+  // A view row has the shape the single-delivery command response returns.
+  final rowSchema = JsonSchema.create(
+    contractSchema('EventAssistanceDeliveryCallableResponse'),
   );
+  Map<String, Object?> rowResponse(Map<String, Object?> row) => {
+    'context': deliveryQuery().context,
+    'serverTime': 2000,
+    'outcome': 'applied',
+    'operationRevision': row['revision'],
+    'view': row,
+  };
 
   test(
     'canonical requests keep one immutable message review and no caller authority',
@@ -137,8 +146,7 @@ void main() {
             ],
           },
         );
-        final raw = deliveryPageResponse(rows: [row]);
-        expect(pageSchema.validate(raw).isValid, isTrue);
+        expect(rowSchema.validate(rowResponse(row)).isValid, isTrue);
         final parsed = parse(row);
         expect(parsed.status.name, state.name);
         expect(parsed.attempts.single.channel, channel);
@@ -350,52 +358,83 @@ void main() {
       (i) => deliveryRow(messageId: deliveryId(i + 1)),
     );
     final query = deliveryQuery();
-    final raw = deliveryPageResponse(rows: rows, nextCursor: deliveryId(50));
-    expect(pageSchema.validate(raw).isValid, isTrue);
-    final page = EventAssistanceDeliveriesPage.fromCallableData(
-      raw,
-      expectedQuery: query,
-    );
+    for (final row in rows) {
+      expect(rowSchema.validate(rowResponse(row)).isValid, isTrue);
+    }
+    final page = deliveryPage(rows: rows, hasMore: true);
     expect(page.nextQuery, deliveryQuery(cursor: deliveryId(50)));
     expect(() => page.deliveries.clear(), throwsUnsupportedError);
     expect(deliveryQuery(), query);
     expect(deliveryQuery().hashCode, query.hashCode);
-    for (final wrong in [
-      {...raw, 'coverage': 'event'},
-      {...raw, 'total': 50},
-      {
-        ...raw,
-        'context': {'mode': 'rehearsal'},
-      },
-      {...raw, 'context': deliveryQuery(eventId: 'foreign').context},
-      {...raw, 'deliveries': rows.reversed.toList()},
-      {
-        ...raw,
-        'deliveries': [rows.first, rows.first],
-        'nextCursor': null,
-      },
-      {...raw, 'nextCursor': deliveryId(49)},
-      {
-        ...raw,
-        'deliveries': [rows.first],
-      },
-      {...raw, 'deliveries': [], 'nextCursor': deliveryId(50)},
-    ]) {
-      expect(
-        () => EventAssistanceDeliveriesPage.fromCallableData(
-          wrong,
-          expectedQuery: query,
-        ),
-        throwsFormatException,
+    EventAssistanceDeliveriesPage pageOf(
+      List<AssistanceDeliveryViewDocument> views, {
+      bool hasMore = false,
+      EventAssistanceDeliveryQuery? expected,
+    }) => EventAssistanceDeliveriesPage.fromViews(
+      query: expected ?? query,
+      views: views,
+      hasMore: hasMore,
+      nowMillis: 2000,
+    );
+    AssistanceDeliveryViewDocument patched(
+      Map<String, Object?> row,
+      Map<String, Object?> data,
+    ) {
+      final view = deliveryView(row);
+      return (
+        id: view.id,
+        data: {...view.data, ...data},
+        evaluatedAtMillis: view.evaluatedAtMillis,
       );
     }
-    expect(
-      () => EventAssistanceDeliveriesPage.fromCallableData(
-        raw,
-        expectedQuery: deliveryQuery(cursor: deliveryId()),
-      ),
-      throwsFormatException,
-    );
+
+    final views = rows.map(deliveryView).toList();
+    for (final wrong in [
+      () => pageOf([
+        patched(rows.first, {'eventId': 'foreign'}),
+      ]),
+      () => pageOf([
+        patched(rows.first, {'organizerId': 'foreign'}),
+      ]),
+      () => pageOf([
+        patched(rows.first, {'messageId': deliveryId(9)}),
+      ]),
+      () => pageOf([
+        patched(rows.first, {'sourceCoverage': 'invalidSource'}),
+      ]),
+      () => pageOf([
+        patched(rows.first, {'view': null}),
+      ]),
+      () => pageOf([
+        patched(rows.first, {'relevantUntilMillis': null}),
+      ]),
+      () => pageOf(views.reversed.toList()),
+      () => pageOf([views.first, views.first]),
+      () => pageOf([views.first], hasMore: true),
+      () => pageOf([], hasMore: true),
+      () => pageOf([
+        ...views,
+        deliveryView(deliveryRow(messageId: deliveryId(51))),
+      ]),
+      () => pageOf(views, expected: deliveryQuery(cursor: deliveryId())),
+    ]) {
+      expect(wrong, throwsFormatException);
+    }
+  });
+
+  test('a handoff lapses on the app clock at relevantUntilMillis', () {
+    final row = deliveryRow();
+    EventAssistanceDeliveriesPage at(int now) =>
+        EventAssistanceDeliveriesPage.fromViews(
+          query: deliveryQuery(),
+          views: [deliveryView(row, relevantUntil: 5000)],
+          hasMore: false,
+          nowMillis: now,
+        );
+    expect(at(4999).deliveries.single, isA<AssistanceActionableDelivery>());
+    expect(at(4999).nextActionLapseMillis, 5000);
+    expect(at(5000).deliveries.single, isA<AssistanceObservedDelivery>());
+    expect(at(5000).nextActionLapseMillis, isNull);
   });
 
   test(

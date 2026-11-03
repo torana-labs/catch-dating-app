@@ -9,10 +9,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_deliveries_provider.g.dart';
 
+/// The pages one listener subscription has delivered: only the latest is
+/// current, and none is once the subscription ends.
+final class _DeliveriesFeed {
+  EventAssistanceDeliveriesSession? latest;
+  bool open = true;
+}
+
 final class EventAssistanceDeliveriesSession {
-  EventAssistanceDeliveriesSession._(this.account, this.page);
-  bool _current = true;
-  bool get isCurrent => _current;
+  EventAssistanceDeliveriesSession._(this.account, this.page, this._feed);
+  final _DeliveriesFeed _feed;
+
+  /// Whether this is the newest page its listener has delivered.
+  bool get isCurrent => _feed.open && identical(_feed.latest, this);
   final EventAssistanceAccount account;
   final EventAssistanceDeliveriesPage page;
 
@@ -28,7 +37,23 @@ final class EventAssistanceDeliveryReview {
   const EventAssistanceDeliveryReview._(this.session, this.delivery);
   final EventAssistanceDeliveriesSession session;
   EventAssistanceAccount get account => session.account;
-  bool get isCurrent => session.isCurrent;
+
+  /// A review outlives later pages while its message is unchanged and still
+  /// offers a handoff in the newest one: same revision and review hash.
+  bool get isCurrent {
+    final feed = session._feed;
+    final latest = feed.latest;
+    if (!feed.open || latest == null) return false;
+    if (identical(latest, session)) return true;
+    return latest.page.deliveries.any(
+      (row) =>
+          row is AssistanceActionableDelivery &&
+          row.scope == delivery.scope &&
+          row.revision == delivery.revision &&
+          row.reviewHash == delivery.reviewHash,
+    );
+  }
+
   final AssistanceActionableDelivery delivery;
 }
 
@@ -83,33 +108,45 @@ class EventAssistanceDeliveries extends _$EventAssistanceDeliveries {
     );
   }
 
+  /// Restarts the listener only when it ended in an error: a healthy
+  /// listener already delivers every change.
   void reload() {
     final account = ref.read(eventAssistanceAccountProvider);
     if (account.isLoading || account.hasError || account.asData == null) return;
-    ref.invalidate(
-      eventAssistanceDeliveriesForAccountProvider(
-        query,
-        account: account.requireValue,
-      ),
+    final source = eventAssistanceDeliveriesForAccountProvider(
+      query,
+      account: account.requireValue,
     );
+    if (ref.exists(source) && ref.read(source).hasError) {
+      ref.invalidate(source);
+    }
   }
 }
 
+/// The delivery page read owner. It is a Firestore listener: it declares no
+/// cache tags or lifetime, and commands never invalidate it; the delivery
+/// view triggers deliver their result.
 @Riverpod(retry: _noDeliveryReadRetry)
-Future<EventAssistanceDeliveriesSession> eventAssistanceDeliveriesForAccount(
+Stream<EventAssistanceDeliveriesSession> eventAssistanceDeliveriesForAccount(
   Ref ref,
   EventAssistanceDeliveryQuery query, {
   required EventAssistanceAccount account,
-}) async {
+}) {
   ref.watch(eventAssistanceAccountProvider);
   requireDeliveryReviewAccount(ref, account);
-  final page = await ref
+  final feed = _DeliveriesFeed();
+  ref.onDispose(() => feed.open = false);
+  return ref
       .watch(eventAssistanceDeliveriesRepositoryProvider)
-      .fetch(query);
-  requireDeliveryReviewAccount(ref, account);
-  final session = EventAssistanceDeliveriesSession._(account, page);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watchPage(query)
+      .map((page) {
+        requireDeliveryReviewAccount(ref, account);
+        return feed.latest = EventAssistanceDeliveriesSession._(
+          account,
+          page,
+          feed,
+        );
+      });
 }
 
 Duration? _noDeliveryReadRetry(int retryCount, Object error) => null;

@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_cases_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_managers.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_cases_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_decision_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_sheet.dart';
@@ -42,10 +41,6 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(EventAssistanceHelpSheet)),
-        listen: false,
-      );
       Future<void> tap(Finder finder) async {
         await tester.ensureVisible(finder);
         await tester.tap(finder);
@@ -60,7 +55,11 @@ void main() {
       await pumpFeatureUi(tester);
       expect(find.text('Alex Morgan'), findsOneWidget);
       final raw = helpQueueFixture('initial');
-      ((raw['cases'] as List).single as Map).addAll(<String, Object?>{
+      final view = (raw['views']! as List).single as Map;
+      final data = view['data']! as Map;
+      // The source change reaches the open listener as a newer evaluation.
+      data['evaluatedAt'] = (data['evaluatedAt']! as int) + 5000;
+      (data['view']! as Map).addAll(<String, Object?>{
         'availability': 'sourceChanged',
         'attendeeId': null,
         'displayName': null,
@@ -69,13 +68,13 @@ void main() {
         'assignment': {'kind': 'unavailable'},
       });
       repository.pageOverride = raw;
-      container.read(eventAssistanceCasesProvider(query).notifier).reload();
+      repository.deliverToListeners();
       await pumpFeatureUi(tester);
       expect(find.text('Alex Morgan'), findsNothing);
       expect(find.text('Guest details unavailable'), findsOneWidget);
       expect(find.text('Retry this decision'), findsOneWidget);
       repository.readError = const PermissionException('Access removed.');
-      container.read(eventAssistanceCasesProvider(query).notifier).reload();
+      repository.deliverToListeners();
       await pumpFeatureUi(tester);
       expect(find.byType(EventAssistanceHelpDecisionSection), findsNothing);
       expect(find.text('Alex Morgan'), findsNothing);

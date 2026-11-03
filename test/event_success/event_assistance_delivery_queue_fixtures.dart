@@ -26,11 +26,39 @@ EventAssistanceDeliveryQuery deliveryQueueQuery({String? cursor}) {
   );
 }
 
+/// A fixture stage's views as the data layer hands them over.
+List<AssistanceDeliveryViewDocument> deliveryQueueViews(
+  Map<String, Object?> stage,
+) => [
+  for (final raw in stage['views']! as List)
+    (
+      id: (raw as Map)['id'] as String,
+      data: Map<String, Object?>.from(raw['data'] as Map),
+      evaluatedAtMillis: (raw['data'] as Map)['evaluatedAt'] as int,
+    ),
+];
+
+/// The stage read at the moment its newest view was evaluated.
 EventAssistanceDeliveriesPage deliveryQueuePage(String stage) =>
-    EventAssistanceDeliveriesPage.fromCallableData(
-      deliveryQueueFixture(stage),
-      expectedQuery: deliveryQueueQuery(),
-    );
+    deliveryQueuePageFor(deliveryQueueFixture(stage), deliveryQueueQuery());
+
+/// A fixture stage as the listener for [query] would deliver it, read at the
+/// moment its newest view was evaluated.
+EventAssistanceDeliveriesPage deliveryQueuePageFor(
+  Map<String, Object?> stage,
+  EventAssistanceDeliveryQuery query,
+) {
+  final views = deliveryQueueViews(stage);
+  return EventAssistanceDeliveriesPage.fromViews(
+    query: query,
+    views: views,
+    hasMore: false,
+    nowMillis: views
+        .map((view) => view.evaluatedAtMillis)
+        .reduce((a, b) => a > b ? a : b),
+  );
+}
+
 EventRehearsalBootstrap practiceDeliveryQueue(String stage) =>
     EventRehearsalBootstrap.fromCallableData(
       deliveryQueueFixture(stage, practice: true),

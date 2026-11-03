@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_deliveries_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_delivery_queue_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_delivery_section.dart';
@@ -120,10 +119,7 @@ class _PreviewState extends State<_Preview> {
             organizerId: scope['organizerId'] as String,
             eventId: scope['eventId'] as String,
           );
-          final page = EventAssistanceDeliveriesPage.fromCallableData(
-            raw,
-            expectedQuery: query,
-          );
+          final page = live.pageFor(query);
           final rehearsal = practice.snapshot;
           return ProviderScope(
             overrides: [

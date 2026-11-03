@@ -42,7 +42,7 @@ void main() {
     );
   }
 
-  Future<void> finishRead(int index, {List<Object?>? rows}) async {
+  Future<void> finishRead(int index, {List<Map<String, Object?>>? rows}) async {
     final read = repository.reads[index];
     read.result.complete(deliveryPage(query: read.query, rows: rows));
     await container.pump();
@@ -84,9 +84,13 @@ void main() {
       expect(form().canDismiss, isTrue);
       expect(form().change, isNull);
       expect(repository.writes, isEmpty);
-      container.read(queue.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(2);
+      // Another manager's handoff reaches the listener: the message changed.
+      await finishRead(
+        0,
+        rows: [
+          deliveryRow(patch: {'revision': 1, 'reviewHash': 'c' * 64}),
+        ],
+      );
       expect(review.isCurrent, isFalse);
       expect(form().canTakeOver, isFalse);
       expect(
@@ -97,14 +101,14 @@ void main() {
         controller().takeOver(),
         throwsA(isA<ValidationException>()),
       );
-      await finishRead(1);
+      await finishRead(0);
       controller().open(currentReview());
       expect(form().review, isNot(same(review)));
     },
   );
 
   test(
-    'duplicate triggers share one frozen command and refresh the page after success',
+    'duplicate triggers share one frozen command and the listener delivers the result',
     () async {
       controller().open(review);
       final a = controller().takeOver();
@@ -129,10 +133,31 @@ void main() {
       final result = await a;
       await b;
       await container.pump();
-      await repository.waitForReads(2);
       expect(form().phase, AssistanceDeliveryPhase.saved);
       expect(form().result, same(result));
-      expect(container.read(queue).hasValue, isFalse);
+      expect(repository.reads, hasLength(1));
+      await finishRead(
+        0,
+        rows: [
+          deliveryRow(
+            patch: {
+              'revision': 1,
+              'reviewHash': 'b' * 64,
+              'actions': [],
+              'handling': {
+                'kind': 'manual',
+                'actorUid': 'host-1',
+                'at': 2000,
+                'authority': 'current',
+              },
+            },
+          ),
+        ],
+      );
+      expect(
+        container.read(queue).requireValue.page.deliveries.single,
+        isA<AssistanceObservedDelivery>(),
+      );
       expect(await controller().takeOver(), same(result));
       expect(repository.writes, hasLength(1));
     },
@@ -187,11 +212,8 @@ void main() {
         review.delivery.scope,
       });
       expect(() => controller().reload(), throwsA(isA<ValidationException>()));
-      container.read(queue.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(2);
       await finishRead(
-        1,
+        0,
         rows: [
           deliveryRow(patch: {'revision': 2, 'reviewHash': 'c' * 64}),
         ],
@@ -238,10 +260,8 @@ void main() {
         () => controller().open(review),
         throwsA(isA<ValidationException>()),
       );
-      await container.pump();
-      await repository.waitForReads(2);
       await finishRead(
-        1,
+        0,
         rows: [
           deliveryRow(patch: {'revision': 1, 'reviewHash': 'c' * 64}),
         ],
@@ -346,7 +366,7 @@ void main() {
       write.result.complete(deliveryResult(write.change));
       expect((await pending).outcome, AssistanceDeliveryChangeOutcome.applied);
       await container.pump();
-      await repository.waitForReads(2);
+      expect(repository.reads, hasLength(1));
       expect(repository.writes, hasLength(1));
     },
   );
@@ -354,11 +374,8 @@ void main() {
   test(
     'different message actions and mutation keys remain independent',
     () async {
-      container.read(queue.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(2);
       await finishRead(
-        1,
+        0,
         rows: [
           deliveryRow(),
           deliveryRow(messageId: deliveryId(2)),

@@ -9,10 +9,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_cases_provider.g.dart';
 
+/// The pages one listener subscription has delivered: only the latest is
+/// current, and none is once the subscription ends.
+final class _CasesFeed {
+  EventAssistanceCasesSession? latest;
+  bool open = true;
+}
+
 final class EventAssistanceCasesSession {
-  EventAssistanceCasesSession._(this.account, this.page);
-  bool _current = true;
-  bool get isCurrent => _current;
+  EventAssistanceCasesSession._(this.account, this.page, this._feed);
+  final _CasesFeed _feed;
+
+  /// Whether this is the newest page its listener has delivered.
+  bool get isCurrent => _feed.open && identical(_feed.latest, this);
   final EventAssistanceAccount account;
   final EventAssistanceCasesPage page;
 
@@ -28,7 +37,23 @@ final class EventAssistanceCaseReview {
   const EventAssistanceCaseReview._(this.session, this.request);
   final EventAssistanceCasesSession session;
   EventAssistanceAccount get account => session.account;
-  bool get isCurrent => session.isCurrent;
+
+  /// A review outlives later pages while its request is unchanged in the
+  /// newest one: same case, still open, same revision and source hash.
+  bool get isCurrent {
+    final feed = session._feed;
+    final latest = feed.latest;
+    if (!feed.open || latest == null) return false;
+    if (identical(latest, session)) return true;
+    return latest.page.cases.any(
+      (row) =>
+          row is AssistanceOpenHostCase &&
+          row.scope == request.scope &&
+          row.revision == request.revision &&
+          row.sourceHash == request.sourceHash,
+    );
+  }
+
   final AssistanceOpenHostCase request;
 }
 
@@ -83,39 +108,47 @@ class EventAssistanceCases extends _$EventAssistanceCases {
     );
   }
 
+  /// Restarts the listener only when it ended in an error: a healthy
+  /// listener already delivers every change.
   void reload() {
     final account = ref.read(eventAssistanceAccountProvider);
     if (account.isLoading || account.hasError || account.asData == null) return;
-    ref.invalidate(
-      eventAssistanceCasesForAccountProvider(
-        query,
-        account: account.requireValue,
-      ),
+    final source = eventAssistanceCasesForAccountProvider(
+      query,
+      account: account.requireValue,
     );
+    if (ref.exists(source) && ref.read(source).hasError) {
+      ref.invalidate(source);
+    }
   }
 }
 
+/// The help-request page read owner. It is a Firestore listener: it declares
+/// no cache tags or lifetime, and commands never invalidate it; the case view
+/// triggers deliver their result.
 @Riverpod(retry: _noCaseReadRetry)
-Future<EventAssistanceCasesSession> eventAssistanceCasesForAccount(
+Stream<EventAssistanceCasesSession> eventAssistanceCasesForAccount(
   Ref ref,
   EventAssistanceCaseQuery query, {
   required EventAssistanceAccount account,
-}) async {
+}) {
   ref.watch(eventAssistanceAccountProvider);
   requireCaseReviewAccount(ref, account);
-  final page = await ref
+  final feed = _CasesFeed();
+  ref.onDispose(() => feed.open = false);
+  return ref
       .watch(eventAssistanceCasesRepositoryProvider)
-      .fetch(query);
-  requireCaseReviewAccount(ref, account);
-  if (page.managerOptions != null &&
-      page.managerOptions!.actorUid != account.uid) {
-    throw const FormatException(
-      'Guest-help choices belong to another manager.',
-    );
-  }
-  final session = EventAssistanceCasesSession._(account, page);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watchPage(query, actorUid: account.uid)
+      .map((page) {
+        requireCaseReviewAccount(ref, account);
+        if (page.managerOptions != null &&
+            page.managerOptions!.actorUid != account.uid) {
+          throw const FormatException(
+            'Guest-help choices belong to another manager.',
+          );
+        }
+        return feed.latest = EventAssistanceCasesSession._(account, page, feed);
+      });
 }
 
 Duration? _noCaseReadRetry(int retryCount, Object error) => null;

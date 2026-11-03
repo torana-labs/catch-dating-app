@@ -64,7 +64,7 @@ final class EventAssistanceCasesProvider
 }
 
 String _$eventAssistanceCasesHash() =>
-    r'0d4fbf7209432373b5a7127a5e28093080a9be10';
+    r'05820c62c0b8b0d502d5f90b306e108cf7796134';
 
 final class EventAssistanceCasesFamily extends $Family
     with
@@ -121,20 +121,31 @@ abstract class _$EventAssistanceCases
   }
 }
 
+/// The help-request page read owner. It is a Firestore listener: it declares
+/// no cache tags or lifetime, and commands never invalidate it; the case view
+/// triggers deliver their result.
+
 @ProviderFor(eventAssistanceCasesForAccount)
 final eventAssistanceCasesForAccountProvider =
     EventAssistanceCasesForAccountFamily._();
+
+/// The help-request page read owner. It is a Firestore listener: it declares
+/// no cache tags or lifetime, and commands never invalidate it; the case view
+/// triggers deliver their result.
 
 final class EventAssistanceCasesForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceCasesSession>,
           EventAssistanceCasesSession,
-          FutureOr<EventAssistanceCasesSession>
+          Stream<EventAssistanceCasesSession>
         >
     with
         $FutureModifier<EventAssistanceCasesSession>,
-        $FutureProvider<EventAssistanceCasesSession> {
+        $StreamProvider<EventAssistanceCasesSession> {
+  /// The help-request page read owner. It is a Firestore listener: it declares
+  /// no cache tags or lifetime, and commands never invalidate it; the case view
+  /// triggers deliver their result.
   EventAssistanceCasesForAccountProvider._({
     required EventAssistanceCasesForAccountFamily super.from,
     required (EventAssistanceCaseQuery, {EventAssistanceAccount account})
@@ -159,12 +170,12 @@ final class EventAssistanceCasesForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceCasesSession> $createElement(
+  $StreamProviderElement<EventAssistanceCasesSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceCasesSession> create(Ref ref) {
+  Stream<EventAssistanceCasesSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceCaseQuery, {EventAssistanceAccount account});
@@ -188,12 +199,16 @@ final class EventAssistanceCasesForAccountProvider
 }
 
 String _$eventAssistanceCasesForAccountHash() =>
-    r'ef9a1cc254333a48d6b960b19ac7c65047b46e7a';
+    r'f23ace2070ceb369b70790599e5f96458e880b74';
+
+/// The help-request page read owner. It is a Firestore listener: it declares
+/// no cache tags or lifetime, and commands never invalidate it; the case view
+/// triggers deliver their result.
 
 final class EventAssistanceCasesForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceCasesSession>,
+          Stream<EventAssistanceCasesSession>,
           (EventAssistanceCaseQuery, {EventAssistanceAccount account})
         > {
   EventAssistanceCasesForAccountFamily._()
@@ -204,6 +219,10 @@ final class EventAssistanceCasesForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The help-request page read owner. It is a Firestore listener: it declares
+  /// no cache tags or lifetime, and commands never invalidate it; the case view
+  /// triggers deliver their result.
 
   EventAssistanceCasesForAccountProvider call(
     EventAssistanceCaseQuery query, {
