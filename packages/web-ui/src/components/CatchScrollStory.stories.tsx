@@ -6,7 +6,7 @@ import {StoryHeading, StoryPage, StoryPhone} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchScrollStory, type CatchScrollStoryChapter} from "./CatchScrollStory";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchScrollStory",
@@ -56,9 +56,9 @@ const night = [
 const chapters: CatchScrollStoryChapter[] = night.map((moment, index) => ({
   content: (
     <CatchGap size="related">
-      <CatchText as="span" variant="supportingStrong">{`${String(index + 1).padStart(2, "0")} · ${moment.marker}`}</CatchText>
-      <CatchText as="h3" variant="displayL">{moment.title}</CatchText>
-      <CatchText as="p" color="ink2" variant="bodyL">{moment.body}</CatchText>
+      <CatchLegacyText as="span" variant="supportingStrong">{`${String(index + 1).padStart(2, "0")} · ${moment.marker}`}</CatchLegacyText>
+      <CatchLegacyText as="h3" variant="displayL">{moment.title}</CatchLegacyText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyL">{moment.body}</CatchLegacyText>
     </CatchGap>
   ),
   id: moment.title,
@@ -110,7 +110,7 @@ function Controlled() {
     <StoryPage>
       <CatchBand aria-label="Controlled" ground="ink">
         <CatchGap size="section">
-          <CatchText as="p" variant="bodyM">{`Active chapter: ${active + 1}`}</CatchText>
+          <CatchLegacyText as="p" variant="bodyM">{`Active chapter: ${active + 1}`}</CatchLegacyText>
           <CatchScrollStory
             activeIndex={active}
             chapters={chapters}

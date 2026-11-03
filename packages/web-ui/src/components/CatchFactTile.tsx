@@ -1,4 +1,4 @@
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchFactTile.module.css";
 
@@ -25,12 +25,12 @@ export function CatchFactTile({label, value, note, noteTone = "neutral", emphasi
   const stat = emphasis === "stat";
   return (
     <div className={styles.tile} data-emphasis={emphasis} data-ground={ground}>
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>{" "}
-      <CatchText as="span" variant={stat ? "displayS" : "sectionTitle"}>{value}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>{" "}
+      <CatchLegacyText as="span" variant={stat ? "displayS" : "sectionTitle"}>{value}</CatchLegacyText>
       {note ? (
         <>
           {" "}
-          <CatchText as="span" color={noteTone === "positive" ? "positiveText" : "ink"} variant={stat ? "statusLabel" : "bodyM"}>{note}</CatchText>
+          <CatchLegacyText as="span" color={noteTone === "positive" ? "positiveText" : "ink"} variant={stat ? "statusLabel" : "bodyM"}>{note}</CatchLegacyText>
         </>
       ) : null}
     </div>

@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import type {CatchTextColor} from "./CatchText";
+import type {CatchTextColor} from "./CatchLegacyText";
 import styles from "./CatchIconTile.module.css";
 
 export type CatchIconTileVariant = "tile" | "plain" | "bubble" | "error";

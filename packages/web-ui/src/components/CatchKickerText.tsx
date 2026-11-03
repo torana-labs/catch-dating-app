@@ -1,5 +1,5 @@
 import type {CSSProperties} from "react";
-import type {CatchTextColor} from "./CatchText";
+import type {CatchTextColor} from "./CatchLegacyText";
 import styles from "./CatchKickerText.module.css";
 
 export type CatchKickerTextVariant = "md" | "lg" | "fieldSection";

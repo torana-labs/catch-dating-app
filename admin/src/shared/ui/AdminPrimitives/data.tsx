@@ -5,7 +5,7 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import {CatchBadge, CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchLegacyText} from "@catch/web-ui";
 import {Lock} from "lucide-react";
 
 import {
@@ -126,7 +126,7 @@ export function AdminPanel({
       <header className="panel-header">
         <div className="panel-title">
           {icon}
-          <CatchText as="h2" variant="titleL">{title}</CatchText>
+          <CatchLegacyText as="h2" variant="titleL">{title}</CatchLegacyText>
         </div>
         {action ? <span>{action}</span> : null}
       </header>
@@ -148,7 +148,7 @@ export function Panel({
       <header className="panel-header">
         <div className="panel-title">
           {icon}
-          <CatchText as="h2" variant="titleL">{title}</CatchText>
+          <CatchLegacyText as="h2" variant="titleL">{title}</CatchLegacyText>
         </div>
         <span>{action}</span>
       </header>

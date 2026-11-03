@@ -7,7 +7,7 @@ import {CatchBand} from "./CatchBand";
 import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
 import {CatchGap} from "./CatchGap";
 import {CatchIndexRow} from "./CatchIndexRow";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchIndexRow",
@@ -23,7 +23,7 @@ const noop = () => undefined;
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       {children}
     </CatchGap>
   );
@@ -38,11 +38,11 @@ function States() {
     <CatchGap size="section">
       <State label="default"><CatchIndexRow onTap={noop} title="Dinner" /></State>
       <State label="selected, leading and trailing">
-        <CatchIndexRow leading={<Dot />} onTap={noop} selected title="Social run" trailing={<CatchText as="span" variant="bodyS">12</CatchText>} />
+        <CatchIndexRow leading={<Dot />} onTap={noop} selected title="Social run" trailing={<CatchLegacyText as="span" variant="bodyS">12</CatchLegacyText>} />
       </State>
       <State label="stacked: subtitle and footer, as a link">
         <CatchIndexRow
-          footer={<><StoryBadge label="On Catch" tone="catch" /><CatchText as="span" variant="supportingStrong">₹500</CatchText></>}
+          footer={<><StoryBadge label="On Catch" tone="catch" /><CatchLegacyText as="span" variant="supportingStrong">₹500</CatchLegacyText></>}
           href="#long-run"
           leading={<CatchDateTile dateTime="2026-11-02" day="2" ground="pink" month="Nov" weekday="Sun" />}
           subtitle="6:30 AM · Carter Road jetty"
@@ -104,8 +104,8 @@ function EventRows() {
       footer={
         <>
           <StoryBadge label={source === "catch" ? "On Catch" : "Luma"} tone={source} />
-          <CatchText as="span" variant="supportingStrong">{price}</CatchText>
-          <CatchText as="span" color="ink2" variant="bodyS">{note}</CatchText>
+          <CatchLegacyText as="span" variant="supportingStrong">{price}</CatchLegacyText>
+          <CatchLegacyText as="span" color="ink2" variant="bodyS">{note}</CatchLegacyText>
         </>
       }
       href="#event"

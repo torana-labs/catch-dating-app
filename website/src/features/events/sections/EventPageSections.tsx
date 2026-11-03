@@ -8,12 +8,12 @@ import {
   CatchGrid,
   CatchGroundCard,
   CatchHeroImage,
-  CatchIcon,
+  CatchLegacyIcon,
   CatchPreviewCard,
   CatchReviewItem,
   CatchSectionList,
   CatchStepList,
-  CatchText,
+  CatchLegacyText,
   MapPreview,
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
@@ -28,12 +28,12 @@ export function EventPageHeader({view, onShare}: {view: EventPageView; onShare: 
       <CatchButton href={view.organizer.path} label={view.organizer.name} onPressed={() => undefined}
         recipe="command" semanticsLabel={copy.back(view.organizer.name)} leading={
           <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline">
-            <CatchIcon icon="back" />
+            <CatchLegacyIcon icon="back" />
             <CatchAvatar ground={view.accent} initials={view.organizer.initials} name={view.organizer.name}
               recipe="monogram" size={34} />
           </CatchGap>
         } />
-      <CatchButton label={copy.share} leading={<CatchIcon icon="share" />} onPressed={onShare} size="md" variant="secondary" />
+      <CatchButton label={copy.share} leading={<CatchLegacyIcon icon="share" />} onPressed={onShare} size="md" variant="secondary" />
     </CatchGap>
   );
 }
@@ -65,10 +65,10 @@ function Section({id, title, aside, children}: {id: string; title: string; aside
     <CatchGap as="section" aria-labelledby={id} size="formField">
       {aside ? (
         <CatchGap crossAxisAlignment="baseline" direction="horizontal" mainAxisAlignment="spaceBetween" size="related" wrap>
-          <CatchText as="h2" id={id} variant="displayS">{title}</CatchText>
+          <CatchLegacyText as="h2" id={id} variant="displayS">{title}</CatchLegacyText>
           {aside}
         </CatchGap>
-      ) : <CatchText as="h2" id={id} variant="displayS">{title}</CatchText>}
+      ) : <CatchLegacyText as="h2" id={id} variant="displayS">{title}</CatchLegacyText>}
       {children}
     </CatchGap>
   );
@@ -82,13 +82,13 @@ function EventIntro({view}: {view: EventPageView}) {
         <CatchHeroImage framed imageUrl={media.url} semanticLabel={media.alt} showScrim={false} /> :
         <CatchEventPoster date={media.date} ground={view.accent} kicker={media.kicker} place={media.place} title={media.title} />}
       <CatchGap size="related">
-        <CatchText as="span" color={view.accent} variant="supportingStrong">{view.kindLabel}</CatchText>
-        <CatchText as="h1" id="event-title" variant="displayXl">{view.title}</CatchText>
+        <CatchLegacyText as="span" color={view.accent} variant="supportingStrong">{view.kindLabel}</CatchLegacyText>
+        <CatchLegacyText as="h1" id="event-title" variant="displayXl">{view.title}</CatchLegacyText>
         <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline" wrap>
-          <CatchText as="span" variant="bodyM">{copy.hostedBy}</CatchText>
+          <CatchLegacyText as="span" variant="bodyM">{copy.hostedBy}</CatchLegacyText>
           <CatchButton href={host.path} label={host.name} onPressed={() => undefined} recipe="text" tone="neutral" />
-          {host.verified ? <CatchIcon icon="verified" semanticLabel={copy.verified} tone="primary" /> : null}
-          {host.rating ? <CatchText as="span" color="ink2" variant="bodyM">{host.rating}</CatchText> : null}
+          {host.verified ? <CatchLegacyIcon icon="verified" semanticLabel={copy.verified} tone="primary" /> : null}
+          {host.rating ? <CatchLegacyText as="span" color="ink2" variant="bodyM">{host.rating}</CatchLegacyText> : null}
         </CatchGap>
       </CatchGap>
       <CatchGrid columns={3} compactColumns={1} gap="inline">
@@ -96,7 +96,7 @@ function EventIntro({view}: {view: EventPageView}) {
           <CatchFactTile key={fact.label} label={fact.label} note={fact.note} value={fact.value} />
         ))}
       </CatchGrid>
-      {view.description ? <CatchText variant="bodyL">{view.description}</CatchText> : null}
+      {view.description ? <CatchLegacyText variant="bodyL">{view.description}</CatchLegacyText> : null}
     </CatchGap>
   );
 }
@@ -105,13 +105,13 @@ function EventMoments({moments, accent}: {moments: NonNullable<EventPageView["mo
   return (
     <CatchGroundCard aria-labelledby="event-moments" as="section" ground="ink" padding="spacious">
       <CatchGap size="formField">
-        <CatchText as="span" color={accent} variant="supportingStrong">{copy.moments.label}</CatchText>
-        <CatchText as="h2" id="event-moments" variant="displayS">{copy.moments.title}</CatchText>
+        <CatchLegacyText as="span" color={accent} variant="supportingStrong">{copy.moments.label}</CatchLegacyText>
+        <CatchLegacyText as="h2" id="event-moments" variant="displayS">{copy.moments.title}</CatchLegacyText>
         <CatchGrid columns={2} compactColumns={1} gap="section">
           {moments.map((moment) => (
             <CatchGap key={moment.title} size="headerTitleToSubtitle">
-              <CatchText as="h3" variant="sectionTitle">{moment.title}</CatchText>
-              <CatchText color="ink2" variant="bodyM">{moment.body}</CatchText>
+              <CatchLegacyText as="h3" variant="sectionTitle">{moment.title}</CatchLegacyText>
+              <CatchLegacyText color="ink2" variant="bodyM">{moment.body}</CatchLegacyText>
             </CatchGap>
           ))}
         </CatchGrid>
@@ -134,14 +134,14 @@ function EventWhere({where, mapImageUrl, onMapsClick}: {
   return (
     <Section id="event-where" title={copy.where.title} aside={
       <CatchButton href={where.mapsHref} label={copy.where.openMaps} newTab onPressed={onMapsClick}
-        recipe="command" trailing={<CatchIcon icon="openExternal" />} />
+        recipe="command" trailing={<CatchLegacyIcon icon="openExternal" />} />
     }>
       {where.map && mapImageUrl ? (
         <MapPreview coordinate={where.map} fallbackLabel={where.map.alt} framed imageUrl={mapImageUrl} />
       ) : null}
       <CatchGap size="headerTitleToSubtitle">
-        <CatchText variant="sectionTitle">{where.place}</CatchText>
-        {where.note ? <CatchText color="ink2" variant="bodyM">{where.note}</CatchText> : null}
+        <CatchLegacyText variant="sectionTitle">{where.place}</CatchLegacyText>
+        {where.note ? <CatchLegacyText color="ink2" variant="bodyM">{where.note}</CatchLegacyText> : null}
       </CatchGap>
     </Section>
   );
@@ -154,8 +154,8 @@ function EventGoodToKnow({items}: {items: EventPageView["goodToKnow"]}) {
         {items.map((item) => (
           <CatchGroundCard as="article" aria-labelledby={`event-know-${item.key}`} ground="paper" key={item.key}>
             <CatchGap size="headerTitleToSubtitle">
-              <CatchText as="h3" color={item.accent} id={`event-know-${item.key}`} variant="supportingStrong">{item.label}</CatchText>
-              <CatchText variant="bodyM">{item.body}</CatchText>
+              <CatchLegacyText as="h3" color={item.accent} id={`event-know-${item.key}`} variant="supportingStrong">{item.label}</CatchLegacyText>
+              <CatchLegacyText variant="bodyM">{item.body}</CatchLegacyText>
             </CatchGap>
           </CatchGroundCard>
         ))}
@@ -168,8 +168,8 @@ function EventGoing({going}: {going: NonNullable<EventPageView["going"]>}) {
   return (
     <CatchGroundCard aria-labelledby="event-going" as="section" ground="paper">
       <CatchGap size="headerTitleToSubtitle">
-        <CatchText as="h2" id="event-going" variant="sectionTitle">{going.title}</CatchText>
-        <CatchText color="ink2" variant="bodyM">{going.note}</CatchText>
+        <CatchLegacyText as="h2" id="event-going" variant="sectionTitle">{going.title}</CatchLegacyText>
+        <CatchLegacyText color="ink2" variant="bodyM">{going.note}</CatchLegacyText>
       </CatchGap>
     </CatchGroundCard>
   );
@@ -182,8 +182,8 @@ function EventOrganizer({organizer, accent}: {organizer: EventPageView["organize
         <CatchGap crossAxisAlignment="center" direction="horizontal" size="formField">
           <CatchAvatar ground={accent} initials={organizer.initials} name={organizer.name} recipe="monogram" size={64} />
           <CatchGap size="headerTitleToSubtitle">
-            <CatchText as="h2" id="event-organizer" variant="sectionTitle">{organizer.name}</CatchText>
-            {organizer.summary ? <CatchText color="ink2" variant="bodyM">{organizer.summary}</CatchText> : null}
+            <CatchLegacyText as="h2" id="event-organizer" variant="sectionTitle">{organizer.name}</CatchLegacyText>
+            {organizer.summary ? <CatchLegacyText color="ink2" variant="bodyM">{organizer.summary}</CatchLegacyText> : null}
           </CatchGap>
         </CatchGap>
         <CatchButton href={organizer.path} label={copy.organizer.see} onPressed={() => undefined} size="md" variant="secondary" />
@@ -195,7 +195,7 @@ function EventOrganizer({organizer, accent}: {organizer: EventPageView["organize
 function EventReviews({reviews}: {reviews: NonNullable<EventPageView["reviews"]>}) {
   return (
     <Section id="event-reviews" title={copy.reviews.title}
-      aside={<CatchText as="span" color="ink2" variant="bodyM">{reviews.note}</CatchText>}>
+      aside={<CatchLegacyText as="span" color="ink2" variant="bodyM">{reviews.note}</CatchLegacyText>}>
       <CatchGrid columns={2} compactColumns={1} gap="related">
         {reviews.items.map((review) => (
           <CatchReviewItem body={review.body} key={review.id} meta={review.meta} name={review.name} rating={review.rating}
@@ -236,16 +236,16 @@ export function EventBookingCard({view, catchEntry, onExternalClick}: {
     <CatchGroundCard ground="white" outlined>
       <CatchGap size="formField">
         <CatchGap crossAxisAlignment="baseline" direction="horizontal" size="inline" wrap>
-          <CatchText as="h2" variant="displayM">{view.priceLabel}</CatchText>
-          {facts.price.note ? <CatchText as="span" color="ink2" variant="bodyM">{facts.price.note}</CatchText> : null}
+          <CatchLegacyText as="h2" variant="displayM">{view.priceLabel}</CatchLegacyText>
+          {facts.price.note ? <CatchLegacyText as="span" color="ink2" variant="bodyM">{facts.price.note}</CatchLegacyText> : null}
         </CatchGap>
-        <CatchText variant="sectionTitle">{when}</CatchText>
-        {!booking.open ? <CatchText color="ink2" variant="bodyM">{copy.booking.closed}</CatchText> :
+        <CatchLegacyText variant="sectionTitle">{when}</CatchLegacyText>
+        {!booking.open ? <CatchLegacyText color="ink2" variant="bodyM">{copy.booking.closed}</CatchLegacyText> :
           booking.kind === "catch" ? catchEntry : (
             <CatchGap size="related">
-              <CatchText color="ink2" variant="bodyS">{copy.booking.externalNote(booking.label)}</CatchText>
+              <CatchLegacyText color="ink2" variant="bodyS">{copy.booking.externalNote(booking.label)}</CatchLegacyText>
               <CatchButton fullWidth href={booking.url} label={copy.booking.externalAction(booking.label)} newTab
-                onPressed={onExternalClick} trailing={<CatchIcon icon="openExternal" />} />
+                onPressed={onExternalClick} trailing={<CatchLegacyIcon icon="openExternal" />} />
             </CatchGap>
           )}
       </CatchGap>

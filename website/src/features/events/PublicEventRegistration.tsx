@@ -1,4 +1,4 @@
-import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
 import {renderAccountForm} from "../account/accountForm";
 import {useFreeEventRegistrationController} from "./useFreeEventRegistrationController";
@@ -70,7 +70,7 @@ function FreeEventRegistration({
           onChanged={pending || stage !== "details" ? null : setWhatsappUpdates} />
         <CatchCheckboxInput label={copy.smsConsent} value={smsUpdates}
           onChanged={pending || stage !== "details" ? null : setSmsUpdates} />
-        <CatchText as="p" color="ink2" variant="bodyS">{copy.consentDetail}</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.consentDetail}</CatchLegacyText>
         {stage === "code" ? (
           <CatchField
             recipe="input"
@@ -90,7 +90,7 @@ function FreeEventRegistration({
           <CatchButton fullWidth onPressed={noop} status={pending ? "loading" : "idle"} type="submit"
             label={stage === "details" ? verified ? copy.registerAction : copy.sendCodeAction : copy.confirmAction} />
         ) : null}
-        <CatchText as="p" color={status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">{status.message}</CatchText>
+        <CatchLegacyText as="p" color={status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">{status.message}</CatchLegacyText>
         {stage === "success" && registeredScope?.eventId === eventId ?
           <>
             <CatchButton fullWidth href={`/booking/${encodeURIComponent(eventId)}/`} label={eventDetailCopy.hero.guestAction}
@@ -99,7 +99,7 @@ function FreeEventRegistration({
             <EventRcsPreferencesPanel {...registeredScope} />
             <EventWhatsappPreferencesPanel {...registeredScope} />
           </> : null}
-        <CatchText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchLegacyText>
       </CatchGap>
     </Form>
   );

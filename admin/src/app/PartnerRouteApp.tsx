@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchLegacyText, CatchField} from "@catch/web-ui";
 import {AlertCircle} from "lucide-react";
 import {lazy, Suspense, useEffect, useRef, useState} from "react";
 import {confirmPhoneSignInCode, requestPhoneSignInCode, resetPhoneSignIn,
@@ -72,8 +72,8 @@ function PartnerSignIn({error: sessionError}: {error: string | null}) {
     }
   };
   return <AdminSignInScreen><AdminSignInPanel>
-    <CatchText as="h1" variant="headline">Catch referral partners</CatchText>
-    <CatchText as="p" variant="supporting">Sign in to nominate organizers and review assigned leads.</CatchText>
+    <CatchLegacyText as="h1" variant="headline">Catch referral partners</CatchLegacyText>
+    <CatchLegacyText as="p" variant="supporting">Sign in to nominate organizers and review assigned leads.</CatchLegacyText>
     {(error || sessionError) && <StatusBanner tone="error" icon={<AlertCircle />}>{error ?? sessionError}</StatusBanner>}
     <AdminForm onSubmit={(event) => {event.preventDefault(); submit();}}>
       {codeSent ? <>

@@ -1,4 +1,4 @@
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 import styles from "./CatchDateTile.module.css";
 
@@ -27,10 +27,10 @@ export function CatchDateTile({dateTime, day, ground = "paper", month, weekday}:
       data-ground={ground}
       dateTime={dateTime}
     >
-      <CatchText as="span" color="inherit" variant="statusLabel">{weekday}</CatchText>
+      <CatchLegacyText as="span" color="inherit" variant="statusLabel">{weekday}</CatchLegacyText>
       {/* The spaces keep the date one phrase when read aloud. */}
-      <CatchText as="span" color="inherit" variant="displayS">{` ${day} `}</CatchText>
-      <CatchText as="span" color="inherit" variant="statusLabel">{month}</CatchText>
+      <CatchLegacyText as="span" color="inherit" variant="displayS">{` ${day} `}</CatchLegacyText>
+      <CatchLegacyText as="span" color="inherit" variant="statusLabel">{month}</CatchLegacyText>
     </time>
   );
 }

@@ -1,4 +1,4 @@
-import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchMetaRow, CatchSection, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchMetaRow, CatchSection, CatchLegacyText} from "@catch/web-ui";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useSalesDemoPartnerReviewController} from "../controllers/useSalesDemoPartnerReviewController";
 import type {SalesDemoPartnerReviewApi} from "../api/salesDemoPartnerReview";
@@ -194,17 +194,17 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   return <CatchSection title="Private workflow example" dividers="none">
     <CatchGap size="section">
       <CatchGap size="related">
-        <CatchText as="p" variant="supporting">Build a private, synthetic example for {organizerName}. No real guests,
-          messages, charges, membership, or publication are changed.</CatchText>
-        {controller.capability.isPending ? <CatchText as="p" variant="supporting">Checking supported example…</CatchText> : null}
-        {!capabilityReady ? <CatchText as="p" variant="supporting" role="alert">The supported demo capability is
-          unavailable. The demo has not been enabled for this environment.</CatchText> : null}
-        {controller.error ? <CatchText as="p" variant="supporting" role="alert">{controller.error}</CatchText> : null}
-        {controller.notice ? <CatchText as="p" variant="supporting" role="status">{controller.notice}</CatchText> : null}
+        <CatchLegacyText as="p" variant="supporting">Build a private, synthetic example for {organizerName}. No real guests,
+          messages, charges, membership, or publication are changed.</CatchLegacyText>
+        {controller.capability.isPending ? <CatchLegacyText as="p" variant="supporting">Checking supported example…</CatchLegacyText> : null}
+        {!capabilityReady ? <CatchLegacyText as="p" variant="supporting" role="alert">The supported demo capability is
+          unavailable. The demo has not been enabled for this environment.</CatchLegacyText> : null}
+        {controller.error ? <CatchLegacyText as="p" variant="supporting" role="alert">{controller.error}</CatchLegacyText> : null}
+        {controller.notice ? <CatchLegacyText as="p" variant="supporting" role="status">{controller.notice}</CatchLegacyText> : null}
         {controller.pending ? <CatchButton {...small} label="Retry unchanged request" onPressed={controller.busy ? null : () => void controller.retry()} /> : null}
         {controller.blueprintExists ? <CatchButton {...small} label="Refresh example and access" onPressed={controller.busy || controller.blueprint.isFetching ? null :
           () => {void controller.blueprint.refetch(); void controller.capability.refetch();}} /> : null}
-        {!sourceCurrent ? <CatchText as="p" variant="supporting">Current example access is being checked or was denied. Refresh to review it.</CatchText> : null}
+        {!sourceCurrent ? <CatchLegacyText as="p" variant="supporting">Current example access is being checked or was denied. Refresh to review it.</CatchLegacyText> : null}
       </CatchGap>
       {sourceCurrent ? <CatchGap size="related">
         <CatchSection title="Saved examples" dividers="none"
@@ -230,10 +230,10 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
       {active && sourceCurrent ? <>
         <CatchSection title={selected ? "Edit example" : "New example"} dividers="none">
           <CatchGap size="related">
-            {controller.blueprint.isError ? <CatchText as="p" variant="supporting" role="alert">This blueprint could not
-              be loaded. Choose it again from the list.</CatchText> : null}
-            {stale ? <CatchText as="p" variant="supporting" role="alert">This blueprint changed while you were editing.
-              Review the current version before saving.</CatchText> : null}
+            {controller.blueprint.isError ? <CatchLegacyText as="p" variant="supporting" role="alert">This blueprint could not
+              be loaded. Choose it again from the list.</CatchLegacyText> : null}
+            {stale ? <CatchLegacyText as="p" variant="supporting" role="alert">This blueprint changed while you were editing.
+              Review the current version before saving.</CatchLegacyText> : null}
             <BlueprintEditor form={form} edit={edit} templateOptions={controller.capability.data?.templateOptions ?? []}
               disabled={locked || selected?.state === "withdrawn"} />
             <CatchGap size="inline" direction="horizontal" wrap>
@@ -248,8 +248,8 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         </CatchSection>
         {selected?.state === "reviewed" && !dirty ? <CatchSection title="Issue private invitation" dividers="none">
           <CatchGap size="related">
-            <CatchText as="p" variant="supporting">An unbound link shows the preview only. Interactive access requires
-              an intended email or verified phone.</CatchText>
+            <CatchLegacyText as="p" variant="supporting">An unbound link shows the preview only. Interactive access requires
+              an intended email or verified phone.</CatchLegacyText>
             <CatchField recipe="select" title="Who may try it?" value={contactKind} inputMode={locked ? "inactive" : "editable"}
               onChanged={(value) => setContactKind((value ?? "") as typeof contactKind)}
               {...selectChoices([{value: "preview", label: "Preview only"}, {value: "email", label: "Verified email"}, {value: "phone", label: "Verified phone"}])} />
@@ -258,7 +258,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
               inputMode={locked ? "inactive" : "editable"} /> : null}
             <CatchField recipe="input" title="Expires (within seven days)" value={expiresAt} onChanged={setExpiresAt}
               inputMode={locked ? "inactive" : "editable"} keyboardType="datetime" />
-            {expiresAt && !expiryValid ? <CatchText as="p" variant="supporting" role="alert">Choose a future expiry within seven days.</CatchText> : null}
+            {expiresAt && !expiryValid ? <CatchLegacyText as="p" variant="supporting" role="alert">Choose a future expiry within seven days.</CatchLegacyText> : null}
             <CatchField recipe="select" title="Maximum trial sessions" value={sessionCap} onChanged={(value) => setSessionCap(value ?? "")}
               inputMode={locked ? "inactive" : "editable"}
               {...selectChoices([{value: "1", label: "One"}, {value: "2", label: "Two"}, {value: "3", label: "Three"}])} />
@@ -280,12 +280,12 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
           {controller.invitationHistory.length ? <CatchButton {...small} label="Previous invitations" onPressed={locked ? null : controller.previousInvitationPage} /> : null}
           {controller.invitationHistory.length > 1 ? <CatchButton {...small} label="First invitations" onPressed={locked ? null : controller.firstInvitationPage} /> : null}
         </CatchGap>
-        {controller.issuedGrant ? <CatchText as="p" variant="supporting" role="status">Invitation issued.
-          The private link is available here until you leave this view.</CatchText> : null}
+        {controller.issuedGrant ? <CatchLegacyText as="p" variant="supporting" role="status">Invitation issued.
+          The private link is available here until you leave this view.</CatchLegacyText> : null}
         {controller.issuedGrant && validOrigin() ? <CatchButton {...small} label="Copy private link" onPressed={locked ? null : () => void copyLink()} /> : null}
-        {controller.issuedGrant && !validOrigin() ? <CatchText as="p" variant="supporting" role="alert">
-          Public site origin is unavailable; link copying is disabled.</CatchText> : null}
-        {copyNotice ? <CatchText as="p" variant="supporting" role="status">{copyNotice}</CatchText> : null}
+        {controller.issuedGrant && !validOrigin() ? <CatchLegacyText as="p" variant="supporting" role="alert">
+          Public site origin is unavailable; link copying is disabled.</CatchLegacyText> : null}
+        {copyNotice ? <CatchLegacyText as="p" variant="supporting" role="status">{copyNotice}</CatchLegacyText> : null}
       </> : null}
     </CatchGap>
   </CatchSection>;
@@ -297,9 +297,9 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
   const setPreview = (patch: Partial<DemoPreviewCopy>) => edit({...form,
     preview: {...form.preview, ...patch}});
   return <CatchGap size="related">
-    <CatchText as="h4" variant="titleS">After the sample</CatchText>
-    <CatchText as="p" variant="supporting">This plan is reviewed separately. It never publishes a form or copies
-      sample answers into a real form.</CatchText>
+    <CatchLegacyText as="h4" variant="titleS">After the sample</CatchLegacyText>
+    <CatchLegacyText as="p" variant="supporting">This plan is reviewed separately. It never publishes a form or copies
+      sample answers into a real form.</CatchLegacyText>
     <CatchField
       recipe="select"
       title="Setup approach"
@@ -346,7 +346,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       onChanged={(value) => edit({...form, setupPlan: {...form.setupPlan,
         requirements: splitLines(value)}})}
     />
-    <CatchText as="p" variant="supporting">Up to twelve steps, 160 characters each. Manual handoff needs at least one.</CatchText>
+    <CatchLegacyText as="p" variant="supporting">Up to twelve steps, 160 characters each. Manual handoff needs at least one.</CatchLegacyText>
     <CatchField
       recipe="input"
       title="Host name in preview"
@@ -401,7 +401,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       onChanged={(cta) => setPreview({cta})}
       inputMode={disabled ? "inactive" : "editable"}
     />
-    <CatchText as="h4" variant="titleS">Form capability review</CatchText>
+    <CatchLegacyText as="h4" variant="titleS">Form capability review</CatchLegacyText>
     {reviewAreas.map(([area, label]) => <CatchField
       recipe="select"
       key={area}
@@ -412,7 +412,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       onChanged={(value) => edit({...form,
         review: {...form.review, [area]: (value ?? "") as DemoDisposition}})}
     />)}
-    <CatchText as="h4" variant="titleS">Field mapping</CatchText>
+    <CatchLegacyText as="h4" variant="titleS">Field mapping</CatchLegacyText>
     {form.mappings.map((mapping, index) => <CatchGap key={index} size="related">
       <CatchField recipe="input" title={`Source field ${index + 1}`} value={mapping.sourceField} inputMode={disabled ? "inactive" : "editable"}
         onChanged={(sourceField) => edit({...form, mappings: form.mappings.map((part, at) => at === index ? {...part, sourceField} : part)})} />
@@ -444,9 +444,9 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
   const small = {variant: "secondary", size: "sm"} as const;
   return <CatchSection title="Share a preview with the assigned partner" dividers="none">
     <CatchGap size="related">
-      <CatchText as="p" variant="supporting">Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</CatchText>
-      {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
-      {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
+      <CatchLegacyText as="p" variant="supporting">Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</CatchLegacyText>
+      {c.error ? <CatchLegacyText as="p" variant="supporting" role="alert">{c.error}</CatchLegacyText> : null}
+      {c.notice ? <CatchLegacyText as="p" variant="supporting" role="status">{c.notice}</CatchLegacyText> : null}
       <CatchButton {...small} label="Refresh sharing scope" onPressed={operationPending || c.busy ? null : () => void c.refresh()} />
       {c.ticket ? <CatchButton {...small} label="Retry unchanged sharing action" onPressed={operationPending || c.busy || !value ? null : () => void c.retry()} /> : null}
       {!value ? <CatchEmptyState title="A current accepted partner and reviewed canonical preview are required." /> : <>
@@ -456,15 +456,15 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
           {label: "Preview fingerprint", value: value.previewHash, wide: true},
           {label: "Current sharing", value: value.sharingCurrent ? `Active until ${value.expiresAt}` : value.sharingState, wide: true},
         ]} />
-        <CatchText as="h3" variant="sectionTitle">{value.preview.headline}</CatchText>
-        <CatchText as="p" variant="supporting">{value.preview.scenario}</CatchText>
-        {value.preview.steps.map((step, i) => <CatchText as="p" variant="supporting" key={i}>{i + 1}. {step}</CatchText>)}
-        {value.preview.retainedTools.map((tool, i) => <CatchText as="p" variant="supporting" key={i}>Keep: {tool}</CatchText>)}
-        {value.preview.limitations.map((limit, i) => <CatchText as="p" variant="supporting" key={i}>{limit}</CatchText>)}
-        <CatchText as="p" variant="supporting">{value.preview.cta}</CatchText>
+        <CatchLegacyText as="h3" variant="sectionTitle">{value.preview.headline}</CatchLegacyText>
+        <CatchLegacyText as="p" variant="supporting">{value.preview.scenario}</CatchLegacyText>
+        {value.preview.steps.map((step, i) => <CatchLegacyText as="p" variant="supporting" key={i}>{i + 1}. {step}</CatchLegacyText>)}
+        {value.preview.retainedTools.map((tool, i) => <CatchLegacyText as="p" variant="supporting" key={i}>Keep: {tool}</CatchLegacyText>)}
+        {value.preview.limitations.map((limit, i) => <CatchLegacyText as="p" variant="supporting" key={i}>{limit}</CatchLegacyText>)}
+        <CatchLegacyText as="p" variant="supporting">{value.preview.cta}</CatchLegacyText>
         <CatchField recipe="input" title="Share until (UTC)" value={expires} inputMode={blocked ? "inactive" : "editable"}
           onChanged={(v) => {setExpires(v); setReviewKey(null);}} keyboardType="datetime" />
-        <CatchText as="p" variant="supporting">Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</CatchText>
+        <CatchLegacyText as="p" variant="supporting">Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</CatchLegacyText>
         <CatchCheckboxInput label="I approve this exact synthetic preview for this assigned partner" value={!!key && reviewKey === key}
           onChanged={blocked ? null : (checked) => setReviewKey(checked ? key : null)} />
         <CatchGap size="inline" direction="horizontal" wrap>
@@ -474,12 +474,12 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
             setReviewKey(null); void c.share("withdraw", null);}} />
         </CatchGap>
         {value.proposedWording ? <>
-          <CatchText as="h3" variant="sectionTitle">Pending partner wording</CatchText>
-          <CatchText as="p" variant="supporting">{value.proposedWording.headline}</CatchText>
-          <CatchText as="p" variant="supporting">{value.proposedWording.scenario}</CatchText>
-          <CatchText as="p" variant="supporting">{value.proposedWording.cta}</CatchText>
+          <CatchLegacyText as="h3" variant="sectionTitle">Pending partner wording</CatchLegacyText>
+          <CatchLegacyText as="p" variant="supporting">{value.proposedWording.headline}</CatchLegacyText>
+          <CatchLegacyText as="p" variant="supporting">{value.proposedWording.scenario}</CatchLegacyText>
+          <CatchLegacyText as="p" variant="supporting">{value.proposedWording.cta}</CatchLegacyText>
           <CatchButton {...small} label="Load proposal into draft editor" onPressed={blocked ? null : () => props.onLoadWording(value.proposedWording!)} />
-          <CatchText as="p" variant="supporting">Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</CatchText>
+          <CatchLegacyText as="p" variant="supporting">Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</CatchLegacyText>
         </> : null}
       </>}
     </CatchGap>

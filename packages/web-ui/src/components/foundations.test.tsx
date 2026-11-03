@@ -4,13 +4,13 @@ import {CatchGap} from "./CatchGap";
 import {CatchInset} from "./CatchInset";
 import {CatchPageBody} from "./CatchPageBody";
 import {CatchSectionList} from "./CatchSectionList";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 afterEach(cleanup);
 
-describe("CatchText", () => {
+describe("CatchLegacyText", () => {
   it("renders a paragraph in its role by default", () => {
-    render(<CatchText variant="bodyM">Doors open at eight.</CatchText>);
+    render(<CatchLegacyText variant="bodyM">Doors open at eight.</CatchLegacyText>);
 
     const text = screen.getByText("Doors open at eight.");
     expect(text.tagName).toBe("P");
@@ -20,16 +20,16 @@ describe("CatchText", () => {
   });
 
   it("renders the semantic element the caller chooses", () => {
-    render(<CatchText as="h2" variant="titleL">Tonight</CatchText>);
+    render(<CatchLegacyText as="h2" variant="titleL">Tonight</CatchLegacyText>);
 
     expect(screen.getByRole("heading", {level: 2, name: "Tonight"}).dataset.variant).toBe("titleL");
   });
 
   it("records color, alignment and line clamp overrides", () => {
     render(
-      <CatchText color="danger" maxLines={2} textAlign="center" variant="supporting">
+      <CatchLegacyText color="danger" maxLines={2} textAlign="center" variant="supporting">
         Payment failed
-      </CatchText>,
+      </CatchLegacyText>,
     );
 
     const text = screen.getByText("Payment failed");
@@ -40,7 +40,7 @@ describe("CatchText", () => {
   });
 
   it("ignores a non-positive line clamp", () => {
-    render(<CatchText maxLines={0} variant="bodyS">Unclamped</CatchText>);
+    render(<CatchLegacyText maxLines={0} variant="bodyS">Unclamped</CatchLegacyText>);
 
     expect(screen.getByText("Unclamped").hasAttribute("data-max-lines")).toBe(false);
   });

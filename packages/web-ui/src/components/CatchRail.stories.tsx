@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchBadge} from "./CatchBadge";
 import {CatchRail} from "./CatchRail";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {CatchViewport} from "./CatchViewport";
 
 const meta = {
@@ -24,7 +24,7 @@ export const Contract: Story = {
           <CatchRail itemWidth={200} label="More from Afterfly, phone">
             {cards.map((title) => (
               <div key={title} style={{background: "var(--catch-theme-bg)", borderRadius: "var(--catch-radius-md)", height: 120, padding: 16}}>
-                <CatchText as="span" variant="bodyM">{title}</CatchText>
+                <CatchLegacyText as="span" variant="bodyM">{title}</CatchLegacyText>
               </div>
             ))}
           </CatchRail>
@@ -32,7 +32,7 @@ export const Contract: Story = {
       </div>
       <CatchViewport fill="parent" sizeClass="expanded">
         <CatchRail itemWidth={200} label="More from Afterfly, desktop">
-          {cards.map((title) => <CatchText as="span" key={title} variant="bodyM">{title}</CatchText>)}
+          {cards.map((title) => <CatchLegacyText as="span" key={title} variant="bodyM">{title}</CatchLegacyText>)}
         </CatchRail>
       </CatchViewport>
       <CatchRail itemWidth="auto" label="Event formats" wrap="never">

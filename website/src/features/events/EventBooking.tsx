@@ -1,4 +1,4 @@
-import {CatchGap, CatchStickyAside, CatchText} from "@catch/web-ui";
+import {CatchGap, CatchStickyAside, CatchLegacyText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {eventPageCopy as copy} from "../../content/events";
 import type {EventPageView} from "./eventPageModel";
@@ -25,8 +25,8 @@ export function EventBooking({view, catchEntry, onExternalClick}: {
       closeLabel={copy.booking.close}
       dock={(
         <CatchGap size="headerTitleToSubtitle">
-          <CatchText as="span" variant="sectionTitle">{view.priceLabel}</CatchText>
-          <CatchText as="span" color="ink2" maxLines={1} variant="bodyS">{note}</CatchText>
+          <CatchLegacyText as="span" variant="sectionTitle">{view.priceLabel}</CatchLegacyText>
+          <CatchLegacyText as="span" color="ink2" maxLines={1} variant="bodyS">{note}</CatchLegacyText>
         </CatchGap>
       )}
       label={copy.booking.label}

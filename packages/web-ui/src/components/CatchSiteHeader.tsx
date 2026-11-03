@@ -1,6 +1,6 @@
 import type {ReactNode} from "react";
 import {CatchBand} from "./CatchBand";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchSiteHeader.module.css";
 
 export interface CatchSiteHeaderLink {
@@ -37,14 +37,14 @@ export function CatchSiteHeader({actions, brandHref, brandLabel, links, navLabel
     <CatchBand as="header" pb="none" pt="none">
       <div className={styles.row}>
         <a className={styles.brand} href={brandHref}>
-          <CatchText as="span" color="inherit" variant="displayS">{brandLabel}</CatchText>
+          <CatchLegacyText as="span" color="inherit" variant="displayS">{brandLabel}</CatchLegacyText>
         </a>
         <nav aria-label={navLabel} className={styles.nav}>
           <ul className={styles.links}>
             {links.map((link) => (
               <li data-compact={link.compact || undefined} key={link.href}>
                 <a aria-current={link.current ? "page" : undefined} className={styles.link} href={link.href}>
-                  <CatchText as="span" color="inherit" variant="supportingStrong">{link.label}</CatchText>
+                  <CatchLegacyText as="span" color="inherit" variant="supportingStrong">{link.label}</CatchLegacyText>
                 </a>
               </li>
             ))}

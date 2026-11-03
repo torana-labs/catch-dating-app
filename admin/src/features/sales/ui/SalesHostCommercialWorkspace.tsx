@@ -8,7 +8,7 @@ import {
   CatchMetaRow,
   CatchSection,
   CatchSheet,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {useState, type ReactNode} from "react";
 import type {
@@ -88,7 +88,7 @@ function BoundSheet({title, changed, changedText, onUseLatest, saveLabel, onSave
       footer={changed ? <CatchButton label="Use the latest" variant="secondary" onPressed={onUseLatest} /> :
         <CatchButton label={saveLabel} onPressed={onSave} />}>
       <CatchGap size="related">
-        {changed ? <CatchText as="p" variant="bodyM" role="alert">{changedText}</CatchText> : null}
+        {changed ? <CatchLegacyText as="p" variant="bodyM" role="alert">{changedText}</CatchLegacyText> : null}
         {children}
       </CatchGap>
     </CatchSheet>
@@ -250,9 +250,9 @@ function CollectionSheet({model, record, evidence, hasMoreEvidence, moreEvidence
       changedText="This quote changed since you opened this. Check the latest before you save."
       onUseLatest={() => setRevision(quote.revision)} saveLabel={model.isSaving ? "Saving" : "Record payment"}
       onSave={ready && !model.isSaving ? () => void submit() : null}>
-      <CatchText as="p" variant="bodyM">
+      <CatchLegacyText as="p" variant="bodyM">
         Exactly {moneyLabel(terms.amountMinor, terms.currency)}, received outside Catch. This doesn't charge anything, confirm it with a provider or count guest bookings.
-      </CatchText>
+      </CatchLegacyText>
       <CatchField recipe="input" title="Received on" keyboardType="datetime" value={receivedAt} onChanged={setReceivedAt} />
       <CatchField recipe="select" title="How" value={method} values={keysOf(settlementMethodLabels)}
         itemLabelBuilder={(value) => settlementMethodLabels[value as CommercialSettlementInput["settlementMethod"]]}
@@ -291,7 +291,7 @@ function CloseSheet({model, record, onClose}: Pick<Shared, "model" | "record" | 
         {label: "Reference", value: attestation.settlementReference},
         {label: "Proof", value: attestation.evidence.sourceRef},
       ]} />
-      <CatchText as="p" variant="bodyM">This records the outcome against this quote and payment. It doesn't confirm the payment with a provider or switch on a product.</CatchText>
+      <CatchLegacyText as="p" variant="bodyM">This records the outcome against this quote and payment. It doesn't confirm the payment with a provider or switch on a product.</CatchLegacyText>
     </BoundSheet>
   );
 }

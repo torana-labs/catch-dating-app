@@ -1,5 +1,5 @@
 import type {CSSProperties} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchRatingSummary.module.css";
 
 /** One row of the distribution: how many reviews gave this many stars. */
@@ -30,8 +30,8 @@ export function CatchRatingSummary({average, countLabel, distribution, note}: Ca
   return (
     <div className={styles.summary}>
       <p className={styles.headline}>
-        <CatchText as="span" variant="displayXxl">{average}</CatchText>
-        <CatchText as="span" color="ink2" variant="bodyM">{countLabel}</CatchText>
+        <CatchLegacyText as="span" variant="displayXxl">{average}</CatchLegacyText>
+        <CatchLegacyText as="span" color="ink2" variant="bodyM">{countLabel}</CatchLegacyText>
       </p>
       <ul className={styles.rows}>
         {distribution.map((row) => (
@@ -48,7 +48,7 @@ export function CatchRatingSummary({average, countLabel, distribution, note}: Ca
           </li>
         ))}
       </ul>
-      {note ? <CatchText color="ink2" variant="bodyS">{note}</CatchText> : null}
+      {note ? <CatchLegacyText color="ink2" variant="bodyS">{note}</CatchLegacyText> : null}
     </div>
   );
 }

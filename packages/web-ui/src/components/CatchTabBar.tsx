@@ -1,6 +1,6 @@
 import {Fragment, type MouseEvent, type ReactNode} from "react";
 import type {CatchIconName} from "../icons/catchIconGlyphs";
-import {CatchIcon} from "./CatchIcon";
+import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTabBar.module.css";
 
@@ -138,7 +138,7 @@ export function CatchTabBar({
   const itemContent = (icon: CatchIconName | undefined, text: string, badge: number | undefined) => (
     <>
       <span className={styles.icon}>
-        {icon ? <CatchIcon icon={icon} size="lg" /> : null}
+        {icon ? <CatchLegacyIcon icon={icon} size="lg" /> : null}
         {badge ? <span className={styles.badge}>{countLabel(badge)}</span> : null}
       </span>
       <span className={styles.label}>{text}</span>
@@ -154,7 +154,7 @@ export function CatchTabBar({
         destination(
           "primary",
           <>
-            <CatchIcon icon={primaryAction.icon ?? "add"} size="control" />
+            <CatchLegacyIcon icon={primaryAction.icon ?? "add"} size="control" />
             <span className={placed === "rail" ? styles.hiddenLabel : undefined}>{primaryAction.label}</span>
           </>,
           false,

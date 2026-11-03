@@ -3,7 +3,7 @@ import {
   CatchGap,
   CatchPaneLayout,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
@@ -99,11 +99,11 @@ export function OrganizerDirectoryScreen({
   const {filters, views} = controller;
   let main;
   if (controller.loadState === "loading") {
-    main = <CatchText as="p" color="ink2" variant="bodyM">Loading organizers</CatchText>;
+    main = <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading organizers</CatchLegacyText>;
   } else if (controller.loadState === "error") {
-    main = <CatchText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Organizers could not load."}</CatchText>;
+    main = <CatchLegacyText as="p" color="danger" variant="bodyM">{controller.loadError ?? "Organizers could not load."}</CatchLegacyText>;
   } else if (controller.rows.length === 0) {
-    main = <CatchText as="p" color="ink2" variant="bodyM">No organizers match.</CatchText>;
+    main = <CatchLegacyText as="p" color="ink2" variant="bodyM">No organizers match.</CatchLegacyText>;
   } else {
     main = (
       <CatchGap size="related">

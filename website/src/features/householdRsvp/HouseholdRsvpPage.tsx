@@ -1,4 +1,4 @@
-import {CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {useMemo} from "react";
 import {
   Button,
@@ -81,7 +81,7 @@ function MemberFunctionCard({
       {fn.dressCode ? <p>{copy.dressCodeLabel} {fn.dressCode}</p> : null}
       {fn.instructions ? <p>{fn.instructions}</p> : null}
       <CatchGap size="inline">
-        <CatchText as="span" id={`${inputId}-label`} variant="fieldLabel">{member.displayName}</CatchText>
+        <CatchLegacyText as="span" id={`${inputId}-label`} variant="fieldLabel">{member.displayName}</CatchLegacyText>
         <ChoiceChipGrid aria-labelledby={`${inputId}-label`}>
           {STATUS_CHOICES.map((choice) => (
             <ChoiceChip key={choice.status}

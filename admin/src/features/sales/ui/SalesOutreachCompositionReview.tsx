@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchGap, CatchMetaRow, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchMetaRow, CatchLegacyText} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import type {ReactNode} from "react";
 import {selectChoices} from "../controllers/salesLabels";
@@ -149,13 +149,13 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
 
   const mode = interactionBlocked ? "inactive" : "editable";
   return <>
-    <CatchText as="p" variant="supporting">This editable composition plan chooses current approved wording. It is
+    <CatchLegacyText as="p" variant="supporting">This editable composition plan chooses current approved wording. It is
       not the final draft, cannot send a message, and does not grant contact
-      authority. The deterministic server draft still needs separate exact-content review.</CatchText>
-    {!eligible ? <CatchText as="p" variant="supporting" role="alert">This host needs an active fit policy, a
-      qualified Sales record and clear contact restrictions before drafting.</CatchText> : null}
+      authority. The deterministic server draft still needs separate exact-content review.</CatchLegacyText>
+    {!eligible ? <CatchLegacyText as="p" variant="supporting" role="alert">This host needs an active fit policy, a
+      qualified Sales record and clear contact restrictions before drafting.</CatchLegacyText> : null}
     <CatchGap size="related">
-      <CatchText as="h3" variant="sectionTitle">Review a first-message composition plan</CatchText>
+      <CatchLegacyText as="h3" variant="sectionTitle">Review a first-message composition plan</CatchLegacyText>
       <CatchField recipe="select" title="Reviewed contact" value={contactId} onChanged={(value) => setContactId(value ?? "")} inputMode={mode}
         {...selectChoices([{value: "", label: "Choose contact"},
           ...contacts.map((row) => ({value: row.contactId, label: `${row.displayName} · ${row.relationship.role}`}))])} />
@@ -176,7 +176,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         {...selectChoices(options("cta"))} />
       <CatchField recipe="select" title="Draft channel" value={channel} onChanged={(value) => setChannel((value ?? "") as typeof channel)} inputMode={mode}
         {...selectChoices([{value: "email", label: "Email draft"}, {value: "message", label: "Message draft"}])} />
-      <CatchText as="h3" variant="sectionTitle">Composition review</CatchText>
+      <CatchLegacyText as="h3" variant="sectionTitle">Composition review</CatchLegacyText>
       <CatchMetaRow columns={2} entries={[
         {label: "Contact", value: selectedContact?.displayName ?? "Not selected"},
         {label: "Opportunity", value: selectedOpportunity ? `${label(selectedOpportunity.motion)} · ${label(selectedOpportunity.stage)}` : "Not selected"},
@@ -187,7 +187,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
       ]} />
       <CatchButton size="sm" label={submitting ? "Submitting composition plan" : "Review plan and prepare private draft"} onPressed={canSubmit ? () => void submit() : null} />
     </CatchGap>
-    {notice ? <CatchText as="p" variant="supporting" role="status">{notice}</CatchText> : null}
-    {error ? <CatchText as="p" variant="supporting" role="alert">{error}</CatchText> : null}
+    {notice ? <CatchLegacyText as="p" variant="supporting" role="status">{notice}</CatchLegacyText> : null}
+    {error ? <CatchLegacyText as="p" variant="supporting" role="alert">{error}</CatchLegacyText> : null}
   </>;
 }

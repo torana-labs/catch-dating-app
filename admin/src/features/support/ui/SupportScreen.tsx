@@ -5,7 +5,7 @@ import {
   CatchIndexRow,
   CatchPaneLayout,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
@@ -114,10 +114,10 @@ export function SupportScreen({
             }}
           />
           {rows.length === 0 ? (
-            <CatchText as="p" color="ink2" variant="bodyM">
+            <CatchLegacyText as="p" color="ink2" variant="bodyM">
               {inbox.loadState === "loading" ? "Loading conversations" :
                 "No one is waiting."}
-            </CatchText>
+            </CatchLegacyText>
           ) : (
             <CatchTable
               columns={columns}
@@ -139,8 +139,8 @@ function Fact({label, value, tone}: {label: string; value: string;
   tone?: "attentionText"}) {
   return (
     <CatchIndexRow title={label} titleVariant="supporting"
-      trailing={<CatchText as="span" color={tone ?? "ink"}
-        variant="supportingStrong">{value}</CatchText>} />
+      trailing={<CatchLegacyText as="span" color={tone ?? "ink"}
+        variant="supportingStrong">{value}</CatchLegacyText>} />
   );
 }
 
@@ -200,7 +200,7 @@ function ConversationDetail({
           ))}
         </CatchGap>
         <CatchGap size="related">
-          <CatchText as="h2" variant="sectionTitle">Conversation</CatchText>
+          <CatchLegacyText as="h2" variant="sectionTitle">Conversation</CatchLegacyText>
           {detail.messages.map((message) => (
             <CatchIndexRow
               key={message.messageId}
@@ -214,7 +214,7 @@ function ConversationDetail({
           ))}
         </CatchGap>
         <CatchGap size="related">
-          <CatchText as="h2" variant="sectionTitle">Reply</CatchText>
+          <CatchLegacyText as="h2" variant="sectionTitle">Reply</CatchLegacyText>
           {inbox.savedReplies.length > 0 ? (
             <CatchField<SavedReply>
               hintText="Start from a saved reply"

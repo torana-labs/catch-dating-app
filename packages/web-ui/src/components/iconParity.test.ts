@@ -3,7 +3,7 @@ import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 import {catchIconGlyphs, catchIconStrokeWidth} from "../icons/catchIconGlyphs";
-import {catchIconSizes} from "./CatchIcon";
+import {catchIconSizes} from "./CatchLegacyIcon";
 
 // The Flutter implementation is the reference (blueprint D11). These tests
 // read its sources so a web size or tone cannot drift from the Flutter one.
@@ -13,7 +13,7 @@ const read = (relative: string) =>
 const sizeDart = read("../../../catch_tokens/lib/src/primitives/catch_icon_size.dart");
 const generatedTokensDart = read("../../../catch_tokens/lib/generated/catch_design_tokens.g.dart");
 const iconDart = read("../../../catch_ui/lib/src/primitives/catch_icon.dart");
-const iconTs = read("./CatchIcon.tsx");
+const iconTs = read("./CatchLegacyIcon.tsx");
 const catalog = JSON.parse(read("../../../../design/tokens/catch.icons.json"));
 
 function spacing(step: string) {
@@ -22,7 +22,7 @@ function spacing(step: string) {
   return Number(match![1]);
 }
 
-describe("CatchIcon parity with Flutter", () => {
+describe("CatchLegacyIcon parity with Flutter", () => {
   it("names each size after the CatchIconSize constant with the same extent", () => {
     for (const [name, extent] of Object.entries(catchIconSizes)) {
       const value = sizeDart.match(new RegExp(`static const double ${name} = ([\\w.]+);`))?.[1];

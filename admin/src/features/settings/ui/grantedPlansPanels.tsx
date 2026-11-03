@@ -4,7 +4,7 @@ import {
   CatchGap,
   CatchIndexRow,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import type {
@@ -82,7 +82,7 @@ function Fact({title, value}: {title: string; value: string}) {
 }
 
 function Warning({children}: {children: string}) {
-  return <CatchText as="p" color="attentionText" variant="bodyS">{children}</CatchText>;
+  return <CatchLegacyText as="p" color="attentionText" variant="bodyS">{children}</CatchLegacyText>;
 }
 
 function grantStatus(grant: Grant): string {
@@ -127,9 +127,9 @@ function PlansEditor({controller, onDone}: {controller: OrganizerEntitlementCont
     <>
       <CatchWorkspaceHeader back={back(onDone)} kicker="Settings · Payments" title="Plans granted by hand" />
       <CatchGap size="section">
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           A grant records an invoice that was settled outside checkout. It cannot bill, refund, collect a payment or contact a provider.
-        </CatchText>
+        </CatchLegacyText>
         <CatchGap crossAxisAlignment="end" direction="horizontal" size="related">
           <CatchField onChanged={controller.setOrganizerId} recipe="input" title="Organizer ID" value={controller.organizerId} />
           <CatchButton label={controller.isLoading ? "Loading" : "Load"} onPressed={controller.isLoading ? null : () => void controller.load()} size="sm" variant="secondary" />
@@ -137,7 +137,7 @@ function PlansEditor({controller, onDone}: {controller: OrganizerEntitlementCont
         {entitlement ? (
           <CatchSection count={entitlement.grants.length} note={`ledger revision ${entitlement.revision}`} title="Their plans">
             <Fact title="Used so far" value={`${count.format(entitlement.meters.flightDaysUsed)} flight days · ${count.format(entitlement.meters.waConversationsUsed)} WhatsApp conversations`} />
-            {entitlement.grants.length === 0 ? <CatchText as="p" color="ink2" variant="bodyS">No plan has been granted to this organizer.</CatchText> : null}
+            {entitlement.grants.length === 0 ? <CatchLegacyText as="p" color="ink2" variant="bodyS">No plan has been granted to this organizer.</CatchLegacyText> : null}
             {entitlement.grants.map((grant) => (
               <CatchIndexRow
                 key={grant.grantId}
@@ -211,9 +211,9 @@ function MessagingBudgetEditor({controller, onDone}: {controller: MessagingBudge
     <>
       <CatchWorkspaceHeader back={back(onDone)} kicker="Settings · Payments" title="Messaging budgets" />
       <CatchGap size="section">
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           Review one event's messaging setup, record a decision and stage paused ceilings. Nothing here spends, sends a message, contacts a provider or starts a worker.
-        </CatchText>
+        </CatchLegacyText>
         <CatchSection title="Which event">
           <CatchField onChanged={(value) => controller.setScope("organizerId", value)} recipe="input" title="Organizer ID" value={controller.scope.organizerId} />
           <CatchField onChanged={(value) => controller.setScope("eventId", value)} recipe="input" title="Event ID" value={controller.scope.eventId} />
@@ -267,9 +267,9 @@ function MessagingBudgetEditor({controller, onDone}: {controller: MessagingBudge
           </CatchSection>
         ) : null}
         {controller.stagedResult ? (
-          <CatchText as="p" color="positiveText" variant="bodyS">
+          <CatchLegacyText as="p" color="positiveText" variant="bodyS">
             The ceilings are staged and paused. The provider was not contacted, the worker stays inactive and nothing is sent.
-          </CatchText>
+          </CatchLegacyText>
         ) : null}
       </CatchGap>
     </>

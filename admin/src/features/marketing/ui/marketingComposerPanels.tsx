@@ -3,7 +3,7 @@ import {
   CatchAdminCommandStack,
   CatchBadge,
   CatchField,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {
   CheckCircle2,
@@ -383,10 +383,10 @@ function MarketingDraftComposer({
         <AdminMarketingPostTypeBadge draftType={draftType}>
           {marketingPreviewPanels.draftLabel(draftType)}
         </AdminMarketingPostTypeBadge>
-        <CatchText as="h3" variant="sectionTitle">{marketingPreviewPanels.draftTitle(draft)}</CatchText>
-        <CatchText as="p" variant="supporting">
+        <CatchLegacyText as="h3" variant="sectionTitle">{marketingPreviewPanels.draftTitle(draft)}</CatchLegacyText>
+        <CatchLegacyText as="p" variant="supporting">
           {draft.format} / {draft.aspectRatio} / manual Instagram export
-        </CatchText>
+        </CatchLegacyText>
       </AdminMarketingComposerHeader>
 
       <AdminMarketingStepStrip>

@@ -1,40 +1,142 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {useState} from "react";
+import {useState, type ReactNode} from "react";
 import {expect, userEvent, within} from "storybook/test";
+import {catchFormats, catchSurfaceBlocks, type CatchSurfaceColor} from "./catchCoreVocabulary";
+import {useGround} from "./CatchGroundProvider";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
 import {CatchSurface} from "./CatchSurface";
-import {CatchInset} from "./CatchInset";
-import {CatchGap} from "./CatchGap";
-import {CatchPageBody} from "./CatchPageBody";
 import {CatchText} from "./CatchText";
-const copy = (label: string) => <CatchInset padding="contentRelaxed"><CatchText variant="bodyM">{label}</CatchText></CatchInset>;
-const meta = {title: "Web UI/CatchSurface", component: CatchSurface, args: {child: copy("A bounded group of content")}} satisfies Meta<typeof CatchSurface>;
+
+const meta = {
+  title: "Web UI/CatchSurface",
+  component: CatchSurface,
+  args: {children: null},
+} satisfies Meta<typeof CatchSurface>;
+
 export default meta;
 type Story = StoryObj<typeof meta>;
-function States() {
-  return <CatchPageBody constrainToContentWidth><CatchGap size="formField">
-    {(["surface", "raised", "primarySoft", "transparent"] as const).map((tone) => <CatchSurface key={tone} tone={tone} child={copy(tone)} />)}
-    {(["flat", "subtle", "raised", "floating"] as const).map((emphasis) => <CatchSurface key={emphasis} emphasis={emphasis} child={copy(`${emphasis} emphasis`)} />)}
-    <CatchSurface recipe="card" child={copy("Card recipe, with composed padding")} />
-    <CatchSurface recipe="tinted" child={copy("Only attendees can see this matching detail.")} />
-    <CatchSurface onTap={() => {}} child={copy("Open candidate details")} />
-  </CatchGap></CatchPageBody>;
+
+/** Names the ground the content sits on, so each state shows what its block tells its children. */
+function Ground({title}: {title: string}) {
+  const ground = useGround();
+  return (
+    <CatchStack gap={2}>
+      <CatchText variant="title-row">{title}</CatchText>
+      <CatchText variant="body-meta">{`On ${ground}`}</CatchText>
+    </CatchStack>
+  );
 }
-export const Contract: Story = {render: () => <><States /><div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}><States /></div></>};
-export const Surface: Story = {};
-export const Raised: Story = {args: {tone: "raised"}};
-export const PrimarySoft: Story = {args: {tone: "primarySoft"}};
-export const Transparent: Story = {args: {tone: "transparent"}};
-export const Card: Story = {args: {recipe: "card"}};
-export const Tinted: Story = {args: {recipe: "tinted"}};
-export const Elevated: Story = {args: {emphasis: "floating"}};
-export const LongContent: Story = {args: {child: copy("A long candidate summary remains complete and can wrap at a narrow viewport without clipping or changing its meaning. ".repeat(5))}};
-function InteractiveSurface() {
+
+function State({label, children}: {label: string; children: ReactNode}) {
+  return (
+    <CatchStack gap={8}>
+      <CatchText tone="secondary" variant="label-kicker">{label}</CatchText>
+      {children}
+    </CatchStack>
+  );
+}
+
+const bandColours: Array<CatchSurfaceColor | undefined> = [undefined, "tile", "ink", ...catchFormats];
+
+function PressableSurface() {
   const [count, setCount] = useState(0);
-  return <CatchGap size="formField"><CatchSurface recipe="card" onTap={() => setCount((n) => n + 1)} child={copy("Open candidate")} /><CatchText variant="bodyM">{`Opened ${count} times`}</CatchText></CatchGap>;
+  return (
+    <CatchStack gap={8}>
+      <CatchSurface onPress={() => setCount((value) => value + 1)}>
+        <CatchText variant="title-row">Open the event</CatchText>
+      </CatchSurface>
+      <CatchSurface href="#surface">
+        <CatchText variant="title-row">A tile that links</CatchText>
+      </CatchSurface>
+      <CatchText variant="body-small">{`Opened ${count} times`}</CatchText>
+    </CatchStack>
+  );
 }
-export const Interactive: Story = {render: () => <InteractiveSurface />, play: async ({canvasElement}) => {
-  const canvas = within(canvasElement), control = canvas.getByRole("button", {name: "Open candidate"});
-  await userEvent.click(control); await expect(canvas.getByText("Opened 1 times")).toBeVisible();
-  control.focus(); await userEvent.keyboard("{Enter}"); await userEvent.keyboard(" ");
-  await expect(canvas.getByText("Opened 3 times")).toBeVisible();
-}};
+
+/**
+ * catch.surface on the web: the five blocks, a tile in a tile, a tile in a
+ * spotlight of each format, floating on night, a band in each colour, and a
+ * pressable block.
+ */
+export const Contract: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchStack gap={32}>
+        <CatchSurface block="plain" padding="lg">
+          <CatchStack gap={24}>
+            <State label="five-blocks">
+              <CatchStack direction="row" equal gap={16}>
+                {catchSurfaceBlocks.filter((block) => block !== "band").map((block) => (
+                  <CatchSurface block={block} key={block}><Ground title={block} /></CatchSurface>
+                ))}
+              </CatchStack>
+            </State>
+            <State label="tile-in-tile">
+              <CatchSurface><Ground title="Tile" /><CatchSurface><Ground title="Nested tile" /></CatchSurface></CatchSurface>
+            </State>
+            <State label="tile-in-spotlight">
+              <CatchStack direction="row" equal gap={12} wrap>
+                {catchFormats.map((format) => (
+                  <CatchSurface block="spotlight" color={format} key={format}>
+                    <Ground title={format} />
+                    <CatchSurface><CatchText variant="body-small">A tile on the colour</CatchText></CatchSurface>
+                  </CatchSurface>
+                ))}
+                <CatchSurface block="spotlight" color="ink">
+                  <Ground title="ink" />
+                  <CatchSurface><CatchText variant="body-small">A tile on ink</CatchText></CatchSurface>
+                </CatchSurface>
+              </CatchStack>
+            </State>
+            <State label="floating-on-night">
+              <CatchRoot size="expanded" theme="night">
+                <CatchSurface block="plain" padding="lg">
+                  <CatchSurface block="floating"><Ground title="Floating on night" /></CatchSurface>
+                </CatchSurface>
+              </CatchRoot>
+            </State>
+            <State label="pressable"><PressableSurface /></State>
+          </CatchStack>
+        </CatchSurface>
+        <State label="band-colours">
+          <CatchStack gap={0}>
+            {bandColours.map((color) => (
+              <CatchSurface block="band" color={color} key={color ?? "ground"}>
+                <Ground title={`Band ${color ?? "ground"}`} />
+              </CatchSurface>
+            ))}
+          </CatchStack>
+        </State>
+      </CatchStack>
+    </CatchRoot>
+  ),
+};
+
+/** onPress makes the whole block one button; Enter and Space press it. */
+export const Pressable: Story = {
+  render: () => <CatchRoot theme="day"><CatchSurface block="plain" padding="lg"><PressableSurface /></CatchSurface></CatchRoot>,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const control = canvas.getByRole("button", {name: /Open the event/u});
+    await userEvent.click(control);
+    await expect(canvas.getByText("Opened 1 times")).toBeVisible();
+    control.focus();
+    await userEvent.keyboard("{Enter}");
+    await expect(canvas.getByText("Opened 2 times")).toBeVisible();
+  },
+};
+
+/** aspect holds a fixed shape with the content at the bottom. */
+export const Aspect: Story = {
+  render: () => (
+    <CatchRoot theme="day">
+      <CatchSurface block="plain" padding="lg">
+        <CatchStack direction="row" equal gap={12}>
+          <CatchSurface aspect={1} block="spotlight" color="dinner"><CatchText variant="title-row">Square</CatchText></CatchSurface>
+          <CatchSurface aspect={4 / 3}><CatchText variant="title-row">Four by three</CatchText></CatchSurface>
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
+  ),
+};

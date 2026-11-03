@@ -6,7 +6,7 @@ import {
   CatchIndexRow,
   CatchMetaRow,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   type CatchMetaEntry,
 } from "@catch/web-ui";
 import {useState} from "react";
@@ -86,7 +86,7 @@ function whoCanJoin(event: AdminEventDetails): string {
 function EventPageEditorForm({editor}: {editor: EventPageEditorController}) {
   const {event, form, update} = editor;
   if (!event || !form) {
-    return <CatchText as="p" color="ink2" variant="bodyM">Loading the event</CatchText>;
+    return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading the event</CatchLegacyText>;
   }
   const facts: CatchMetaEntry[] = [
     {label: "Starts", value: eventWhenLabel(event.startTime)},

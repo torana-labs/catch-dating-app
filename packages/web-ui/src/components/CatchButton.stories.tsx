@@ -7,7 +7,7 @@ import {CatchBand} from "./CatchBand";
 import {CatchButton, type CatchButtonSize, type CatchButtonVariant} from "./CatchButton";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchButton",
@@ -124,7 +124,7 @@ function Counter() {
     <CatchGap size="related">
       <CatchButton label="Follow" onPressed={() => setCount((value) => value + 1)} />
       <CatchButton label="Following" onPressed={() => setCount((value) => value + 1)} status="loading" />
-      <CatchText as="p" variant="bodyM">{`Pressed ${count} times`}</CatchText>
+      <CatchLegacyText as="p" variant="bodyM">{`Pressed ${count} times`}</CatchLegacyText>
     </CatchGap>
   );
 }

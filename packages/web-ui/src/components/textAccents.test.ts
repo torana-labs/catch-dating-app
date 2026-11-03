@@ -9,10 +9,10 @@ import {contrastRatio, paletteAccents} from "./palette";
 // keeps AA for text.
 const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 const tokens = read("../../../web-config/generated/catch-tokens.css");
-const css = read("./CatchText.module.css");
+const css = read("./CatchLegacyText.module.css");
 const hex = (name: string) => tokens.match(new RegExp(`--catch-palette-${name}: (#[0-9A-Fa-f]{6});`))?.[1] ?? "";
 
-describe("CatchText accent labels", () => {
+describe("CatchLegacyText accent labels", () => {
   it("resolve every palette accent by theme", () => {
     for (const accent of paletteAccents) {
       expect(css).toContain(`.text[data-color="${accent}"] { --catch-text-color: var(--catch-palette-${accent}-deep); }`);

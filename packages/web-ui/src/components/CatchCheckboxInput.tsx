@@ -1,6 +1,6 @@
 "use client";
 import {useId} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchCheckboxInput.module.css";
 
 /** One acknowledgement/checklist value; settings retain CatchToggleInput. */
@@ -18,8 +18,8 @@ export function CatchCheckboxInput({value, onChanged, label, description, semant
       aria-label={semanticLabel} aria-describedby={description === undefined ? undefined : descriptionId}
       onChange={(event) => onChanged?.(event.currentTarget.checked)} />
     <span className={styles.copy}>
-      <CatchText as="span" variant="bodyM">{label}</CatchText>
-      {description === undefined ? null : <CatchText as="span" id={descriptionId} variant="bodyS">{description}</CatchText>}
+      <CatchLegacyText as="span" variant="bodyM">{label}</CatchLegacyText>
+      {description === undefined ? null : <CatchLegacyText as="span" id={descriptionId} variant="bodyS">{description}</CatchLegacyText>}
     </span>
   </label>;
 }

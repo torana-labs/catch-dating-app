@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchGap, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchLoadingIndicator, CatchLegacyText} from "@catch/web-ui";
 import {useEffect, useRef} from "react";
 import {eventOfferCopy as text, offerCodeSent, offerHoldEnds, offerRefundDeadline, offerCancellationRefund} from "../../content/eventOffer";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
@@ -31,9 +31,9 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
     if (cancellationReview) keep.current?.querySelector("button")?.focus();
   }, [cancellationReview]);
   const status = (
-    <CatchText as="p" color={controller.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
+    <CatchLegacyText as="p" color={controller.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
       {controller.status.message}
-    </CatchText>
+    </CatchLegacyText>
   );
 
   if (phase === "loading") {
@@ -94,24 +94,24 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
     <EventBookingFrame body={copy.body} title={copy.title}>
       <CatchGap size="section">
         <CatchGap size="related">
-          <CatchText as="h2" variant="titleS">
+          <CatchLegacyText as="h2" variant="titleS">
             {payment?.status === "refunded" ? text.refund : admission || grant?.freeAdmission ? text.invitationTitle : text.bookingAmount}
-          </CatchText>
-          <CatchText as="p" variant="sectionTitle">
+          </CatchLegacyText>
+          <CatchLegacyText as="p" variant="sectionTitle">
             {admission || grant?.amountPaise === 0 ? text.freeAmount : formatOfferAmount(payment?.amountPaise ?? grant!.amountPaise)}
-          </CatchText>
-          {grant ? <CatchText as="p" variant="bodyM">
+          </CatchLegacyText>
+          {grant ? <CatchLegacyText as="p" variant="bodyM">
             {new Intl.DateTimeFormat("en-IN", {dateStyle: "full", timeStyle: "short"}).format(grant.startTimeMillis)}
-          </CatchText> : null}
-          {payment?.mode === "test" ? <CatchText as="p" role="status" variant="bodyS">{text.testMode}</CatchText> : null}
-          {payment?.checkout ? <CatchText as="p" color="ink2" variant="bodyS">
+          </CatchLegacyText> : null}
+          {payment?.mode === "test" ? <CatchLegacyText as="p" role="status" variant="bodyS">{text.testMode}</CatchLegacyText> : null}
+          {payment?.checkout ? <CatchLegacyText as="p" color="ink2" variant="bodyS">
             {offerHoldEnds(new Intl.DateTimeFormat("en-IN", {timeStyle: "short"}).format(payment.expiresAtMillis))}
-          </CatchText> : null}
+          </CatchLegacyText> : null}
           {policy && !cancellationReview ? <>
-            <CatchText as="p" variant="supportingStrong">{text.cancellationTerms}</CatchText>
-            <CatchText as="p" color="ink2" variant="bodyS">
+            <CatchLegacyText as="p" variant="supportingStrong">{text.cancellationTerms}</CatchLegacyText>
+            <CatchLegacyText as="p" color="ink2" variant="bodyS">
               {offerRefundDeadline(new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(policy.refundDeadlineMillis))}
-            </CatchText>
+            </CatchLegacyText>
           </> : null}
         </CatchGap>
         <CatchGap key={cancellationReview ? "cancel" : "offer"} size="related">

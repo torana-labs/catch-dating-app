@@ -1,0 +1,60 @@
+/*
+ * catch.stack (redesign P2.1), transcribed from the system's .c-stack. Each
+ * gap reads the spacing variable of the same size; `section` reads the size
+ * class's section gap that CatchRoot sets (28 on compact, 40 wider), and is 28
+ * outside a root.
+ */
+.stack {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  gap: var(--catch-space-s3);
+}
+
+.stack[data-direction="row"] { flex-direction: row; }
+
+/* An equal row is a grid, so padding inside a child never widens its share. */
+.stack[data-direction="row"][data-equal]:not([data-wrap]) {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+.stack[data-equal] > * { flex: 1 1 0; min-width: 0; }
+
+.stack[data-gap="0"] { gap: var(--catch-space-s0); }
+.stack[data-gap="2"] { gap: var(--catch-space-micro2); }
+.stack[data-gap="4"] { gap: var(--catch-space-s1); }
+.stack[data-gap="6"] { gap: var(--catch-space-micro6); }
+.stack[data-gap="8"] { gap: var(--catch-space-s2); }
+.stack[data-gap="12"] { gap: var(--catch-space-s3); }
+.stack[data-gap="16"] { gap: var(--catch-space-s4); }
+.stack[data-gap="20"] { gap: var(--catch-space-s5); }
+.stack[data-gap="24"] { gap: var(--catch-space-s6); }
+.stack[data-gap="28"] { gap: var(--catch-space-s7); }
+.stack[data-gap="32"] { gap: var(--catch-space-s8); }
+.stack[data-gap="40"] { gap: var(--catch-space-s10); }
+.stack[data-gap="48"] { gap: var(--catch-space-s12); }
+.stack[data-gap="64"] { gap: var(--catch-space-s16); }
+.stack[data-gap="section"] { gap: var(--catch-section-gap, var(--catch-layout-section-gap-compact)); }
+
+.stack[data-align="start"] { align-items: flex-start; }
+.stack[data-align="center"] { align-items: center; }
+.stack[data-align="end"] { align-items: flex-end; }
+.stack[data-align="stretch"] { align-items: stretch; }
+.stack[data-align="baseline"] { align-items: baseline; }
+
+.stack[data-justify="start"] { justify-content: flex-start; }
+.stack[data-justify="center"] { justify-content: center; }
+.stack[data-justify="end"] { justify-content: flex-end; }
+.stack[data-justify="between"] { justify-content: space-between; }
+
+.stack[data-wrap] { flex-wrap: wrap; }
+
+ul.stack,
+ol.stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

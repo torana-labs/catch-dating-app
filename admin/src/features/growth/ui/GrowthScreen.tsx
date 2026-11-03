@@ -10,7 +10,7 @@ import {
   CatchPaneLayout,
   CatchSection,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchMetricData,
   type CatchTableColumn,
@@ -99,9 +99,9 @@ export function GrowthScreen({
   if (!data) {
     return (
       <CatchPaneLayout
-        main={<>{header}<CatchText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
+        main={<>{header}<CatchLegacyText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
           {controller.loadState === "error" ? controller.loadError ?? "Growth could not load." : "Loading growth"}
-        </CatchText></>}
+        </CatchLegacyText></>}
         pattern="feed"
       />
     );
@@ -478,12 +478,12 @@ function NominatorInspector({controller, nominator, onSelect, onClose}: {
                 subtitle={line.subtitle}
                 title={organizer.name}
                 titleVariant="titleS"
-                trailing={<CatchText as="span" variant="supportingStrong">{line.value}</CatchText>}
+                trailing={<CatchLegacyText as="span" variant="supportingStrong">{line.value}</CatchLegacyText>}
               />
             );
           })}
         </CatchSection>
-        {controller.actionError ? <CatchText as="p" color="danger" variant="bodyS">{controller.actionError}</CatchText> : null}
+        {controller.actionError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{controller.actionError}</CatchLegacyText> : null}
       </CatchGap>
       {dock}
     </>

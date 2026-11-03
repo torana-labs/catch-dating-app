@@ -6,7 +6,7 @@ import {CatchBand} from "./CatchBand";
 import {CatchButton} from "./CatchButton";
 import {CatchGap} from "./CatchGap";
 import {CatchSheet, type CatchSheetProps} from "./CatchSheet";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchSheet",
@@ -24,8 +24,8 @@ const ticket = (
   </svg>
 );
 
-const body = <CatchText as="p" color="ink2" variant="bodyM">Pick 6:00, 6:45 or 7:30 per km when you book. Nobody gets dropped.</CatchText>;
-const long = Array.from({length: 14}, (_, index) => <CatchText as="p" key={index} variant="bodyM">{`Choice ${index + 1}`}</CatchText>);
+const body = <CatchLegacyText as="p" color="ink2" variant="bodyM">Pick 6:00, 6:45 or 7:30 per km when you book. Nobody gets dropped.</CatchLegacyText>;
+const long = Array.from({length: 14}, (_, index) => <CatchLegacyText as="p" key={index} variant="bodyM">{`Choice ${index + 1}`}</CatchLegacyText>);
 
 type WithoutState<T> = T extends unknown ? Omit<T, "onClose" | "open"> : never;
 type Variant = {label: string; props: WithoutState<CatchSheetProps>};

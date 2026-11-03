@@ -9,7 +9,7 @@ import {
   CatchPaneLayout,
   CatchSection,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchMetricData,
   type CatchTableColumn,
@@ -117,9 +117,9 @@ export function MarketplaceScreen({
       <>
         {header}
         <CatchPaneLayout
-          main={<CatchText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
+          main={<CatchLegacyText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
             {controller.loadState === "error" ? controller.loadError ?? "Marketplace could not load." : "Loading the marketplace"}
-          </CatchText>}
+          </CatchLegacyText>}
           pattern="feed"
         />
       </>
@@ -148,7 +148,7 @@ export function MarketplaceScreen({
               <CatchTable<CityRow> columns={cityColumns} density="compact" label="By city" rowKey="key" rows={cityRows(data)} />
             </CatchSection>
             <CatchSection dividers="none" note="share of each month's guests who booked again" title="Do guests come back?">
-              {data.guestCohorts.length === 0 ? <CatchText as="p" color="ink2" variant="bodyS">No guest has booked yet.</CatchText> : (
+              {data.guestCohorts.length === 0 ? <CatchLegacyText as="p" color="ink2" variant="bodyS">No guest has booked yet.</CatchLegacyText> : (
                 <CatchTable<CohortRow> columns={cohortColumns} density="compact" label="Guests, by the month they joined" rowKey="key" rows={cohortRows(data)} />
               )}
             </CatchSection>
@@ -211,7 +211,7 @@ function MarketplaceAside({data, onOpenOrganizer}: {data: Marketplace; onOpenOrg
           recipe="chart"
         />
       </CatchSection>
-      <CatchSection count={data.goingQuiet.length} empty={<CatchText as="p" color="ink2" variant="bodyS">Every organizer is running events as usual.</CatchText>} title="Organizers going quiet">
+      <CatchSection count={data.goingQuiet.length} empty={<CatchLegacyText as="p" color="ink2" variant="bodyS">Every organizer is running events as usual.</CatchLegacyText>} title="Organizers going quiet">
         {data.goingQuiet.map((organizer) => (
           <CatchIndexRow
             key={organizer.organizerId}

@@ -1,7 +1,7 @@
 import {Children, type ReactNode} from "react";
 import {CatchButton} from "./CatchButton";
 import {CatchIconTile} from "./CatchIconTile";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchErrorState.module.css";
 
 export type CatchErrorStateMode = "fullScreen" | "inline" | "compact";
@@ -37,8 +37,8 @@ export function CatchErrorState({title, message, icon, actions, mode = "fullScre
   return (
     <div className={styles.error} data-mode={mode}>
       <span className={styles.medallion}><CatchIconTile icon={icon} recipe="error" /></span>
-      <CatchText as="span" textAlign="center" variant={compact ? "sectionTitle" : "titleL"}>{title}</CatchText>{" "}
-      <CatchText as="p" color="ink2" maxLines={compact ? 4 : 8} textAlign="center" variant="bodyLead">{message}</CatchText>
+      <CatchLegacyText as="span" textAlign="center" variant={compact ? "sectionTitle" : "titleL"}>{title}</CatchLegacyText>{" "}
+      <CatchLegacyText as="p" color="ink2" maxLines={compact ? 4 : 8} textAlign="center" variant="bodyLead">{message}</CatchLegacyText>
       {onRetry || extra.length > 0 ? (
         <div className={styles.actions}>
           {onRetry ? <CatchButton label={retryLabel} leading={retryGlyph} onPressed={onRetry} size={compact ? "md" : "lg"} /> : null}

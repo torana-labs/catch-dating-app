@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchGap, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchLoadingIndicator, CatchLegacyText} from "@catch/web-ui";
 import {useEffect, useRef} from "react";
 import { usePublicCheckoutController } from "./usePublicCheckoutController";
 import {
@@ -93,7 +93,7 @@ export function PublicPaidRegistrationView(
   return (
     <CatchGap size="section">
       {!c.allowNewBookings && (phase === "phone" || phase === "otp") ? (
-        <CatchText as="p" variant="bodyM">{copy.closedRecovery}</CatchText>
+        <CatchLegacyText as="p" variant="bodyM">{copy.closedRecovery}</CatchLegacyText>
       ) : null}
       {phase === "phone" || phase === "otp" ? (
         <Form noValidate onSubmit={phase === "phone" ? c.sendCode : c.verifyCode} pending={pending}>
@@ -112,7 +112,7 @@ export function PublicPaidRegistrationView(
               />
             ) : (
               <>
-                <CatchText as="p" color="ink2" variant="bodyS">{offerCodeSent(c.phone)}</CatchText>
+                <CatchLegacyText as="p" color="ink2" variant="bodyS">{offerCodeSent(c.phone)}</CatchLegacyText>
                 <CatchField
                   recipe="input"
                   id={`${c.recaptchaId}-code`}
@@ -143,28 +143,28 @@ export function PublicPaidRegistrationView(
       ) : (
         <>
           <CatchGap size="related">
-            <CatchText as="h2" variant="titleS">{display.title}</CatchText>
-            <CatchText as="p" variant="bodyM">{display.body}</CatchText>
+            <CatchLegacyText as="h2" variant="titleS">{display.title}</CatchLegacyText>
+            <CatchLegacyText as="p" variant="bodyM">{display.body}</CatchLegacyText>
             {quote || payment ? (
               <>
-                <CatchText as="p" variant="sectionTitle">{money(payment?.amountPaise ?? quote!.amountPaise)}</CatchText>
-                <CatchText as="p" variant="bodyM">{date(payment?.startTimeMillis ?? quote!.startTimeMillis)}</CatchText>
-                {payment?.mode === "test" ? <CatchText as="p" role="status" variant="bodyS">{text.testMode}</CatchText> : null}
+                <CatchLegacyText as="p" variant="sectionTitle">{money(payment?.amountPaise ?? quote!.amountPaise)}</CatchLegacyText>
+                <CatchLegacyText as="p" variant="bodyM">{date(payment?.startTimeMillis ?? quote!.startTimeMillis)}</CatchLegacyText>
+                {payment?.mode === "test" ? <CatchLegacyText as="p" role="status" variant="bodyS">{text.testMode}</CatchLegacyText> : null}
                 {payment?.checkout ? (
-                  <CatchText as="p" color="ink2" variant="bodyS">{offerHoldEnds(date(payment.expiresAtMillis))}</CatchText>
+                  <CatchLegacyText as="p" color="ink2" variant="bodyS">{offerHoldEnds(date(payment.expiresAtMillis))}</CatchLegacyText>
                 ) : null}
               </>
             ) : null}
             {policy && !cancellationReview ? (
               <>
-                <CatchText as="p" variant="supportingStrong">{text.cancellationTerms}</CatchText>
-                <CatchText as="p" color="ink2" variant="bodyS">{offerRefundDeadline(date(policy.refundDeadlineMillis))}</CatchText>
+                <CatchLegacyText as="p" variant="supportingStrong">{text.cancellationTerms}</CatchLegacyText>
+                <CatchLegacyText as="p" color="ink2" variant="bodyS">{offerRefundDeadline(date(policy.refundDeadlineMillis))}</CatchLegacyText>
               </>
             ) : null}
           </CatchGap>
           {c.previousPayment ? (
             <CatchGap size="related">
-              <CatchText as="p" variant="bodyS">{copy.previousCheckout(money(c.previousPayment.amountPaise))}</CatchText>
+              <CatchLegacyText as="p" variant="bodyS">{copy.previousCheckout(money(c.previousPayment.amountPaise))}</CatchLegacyText>
               <CatchButton fullWidth href={`/booking/${encodeURIComponent(c.previousPayment.eventId)}/?payment=${c.previousPayment.paymentId}`}
                 label={copy.previousBookingLink} onPressed={go} variant="quiet" />
             </CatchGap>
@@ -181,7 +181,7 @@ export function PublicPaidRegistrationView(
                 value={c.name}
                 onChanged={(value) => c.setName(value)}
               />
-              <CatchText as="p" color="ink2" variant="bodyS">{copy.signedIn(c.user?.phoneNumber ?? c.phone)}</CatchText>
+              <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.signedIn(c.user?.phoneNumber ?? c.phone)}</CatchLegacyText>
             </CatchGap>
           ) : null}
           <CatchGap key={cancellationReview ? "cancel" : "checkout"} size="related">
@@ -201,7 +201,7 @@ export function PublicPaidRegistrationView(
                     onPressed={() => void c.pay()} status={pending ? "loading" : "idle"} />
                 ) : null}
                 {!admission && (quote || payment?.checkout) ? (
-                  <CatchText as="p" color="ink2" variant="bodyS">{eventPageCopy.booking.securePayment}</CatchText>
+                  <CatchLegacyText as="p" color="ink2" variant="bodyS">{eventPageCopy.booking.securePayment}</CatchLegacyText>
                 ) : null}
                 {c.allowNewBookings && payment && ["expired", "refunded", "cancelled"].includes(payment.status) ? (
                   <CatchButton fullWidth label={copy.startAgain} onPressed={pending ? null : () => void c.startAgain()} />
@@ -235,7 +235,7 @@ export function PublicPaidRegistrationView(
           ) : null}
         </>
       )}
-      <CatchText as="p" color={c.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">{c.status.message}</CatchText>
+      <CatchLegacyText as="p" color={c.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">{c.status.message}</CatchLegacyText>
     </CatchGap>
   );
 }

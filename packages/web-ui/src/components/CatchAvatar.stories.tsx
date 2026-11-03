@@ -6,7 +6,7 @@ import {CatchAvatar, type CatchAvatarColors} from "./CatchAvatar";
 import {CatchAvatarRow} from "./CatchAvatarRow";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchAvatar",
@@ -33,7 +33,7 @@ function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap crossAxisAlignment="center" size="inline">
       {children}
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
     </CatchGap>
   );
 }

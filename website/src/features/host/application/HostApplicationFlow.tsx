@@ -1,4 +1,4 @@
-import {CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {hostApplicationCopy} from "@content/host";
 import {websiteTemplates} from "@content/templates";
@@ -153,7 +153,7 @@ export function HostApplicationFlow() {
         {!submitted && step === "event" ? (
           <HostApplicationStage>
             <CatchGap size="inline">
-              <CatchText as="span" variant="fieldLabel">{websiteCopy["hostapplicationflow_0228"]}</CatchText>
+              <CatchLegacyText as="span" variant="fieldLabel">{websiteCopy["hostapplicationflow_0228"]}</CatchLegacyText>
               <ChoiceChipGrid aria-label={websiteCopy["hostapplicationflow_0228"]}>
                 {hostFormatOptions.map((format) => (
                   <ChoiceChip
@@ -261,7 +261,7 @@ export function HostApplicationFlow() {
         {!submitted && step === "success" ? (
           <HostApplicationStage>
             <CatchGap size="inline">
-              <CatchText as="span" variant="fieldLabel">{websiteCopy["hostapplicationflow_0224"]}</CatchText>
+              <CatchLegacyText as="span" variant="fieldLabel">{websiteCopy["hostapplicationflow_0224"]}</CatchLegacyText>
               <ChoiceChipGrid aria-label={websiteCopy["hostapplicationflow_0224"]}>
                 {hostSuccessModuleOptions.map((module) => (
                   <ChoiceChip

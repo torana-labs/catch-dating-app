@@ -7,7 +7,7 @@ import {
   CatchIndexRow,
   CatchMetaRow,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   type CatchMetaEntry,
 } from "@catch/web-ui";
 import {useState, type ReactNode} from "react";
@@ -177,7 +177,7 @@ function PictureRow({title, value, onChange}: {title: string; value: string; onC
 function OrganizerPageEditorForm({editor}: {editor: OrganizerPageEditorController}): ReactNode {
   const {form, setForm, organizer, publishIssues} = editor;
   if (!form || !organizer) {
-    return <CatchText as="p" color="ink2" variant="bodyM">Loading the organizer</CatchText>;
+    return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading the organizer</CatchLegacyText>;
   }
   const update = <K extends keyof OrganizerPublishingFormState>(key: K, value: OrganizerPublishingFormState[K]) =>
     setForm({...form, [key]: value});
@@ -346,7 +346,7 @@ function OrganizerPageEditorSide({editor}: {editor: OrganizerPageEditorControlle
           {label: "Claim", value: organizerClaimLabel({claimState: organizer.claimState, claimedByName: null}).text},
           {label: "Address", value: form.canonicalPath || "—"},
         ]} />
-        <CatchText as="p" color="ink2" variant="supporting">In search only changes when you publish.</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="supporting">In search only changes when you publish.</CatchLegacyText>
       </CatchSection>
     </CatchGap>
   );
