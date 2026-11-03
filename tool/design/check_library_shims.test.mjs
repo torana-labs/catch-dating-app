@@ -13,6 +13,7 @@ import {
   newRootFindings,
   newRootFiles,
   publicDeclarations,
+  registryLegacyMembers,
   scanLibrary,
   scanRepository,
 } from "./check_library_shims.mjs";
@@ -84,43 +85,43 @@ test("what is not a public, exported, delegating @Deprecated symbol is not count
   assert.deepEqual(scan.deprecated.map((symbol) => symbol.name), ["catchPlainNumber"]);
 });
 
-test("a legacy component counts whatever it names, and only a message that begins with Legacy marks one", () => {
-  const scan = scanLibrary(library({
-    "legacy.dart": [
-      "@Deprecated('Legacy: use CatchNew with a block; deleted in P7')",
-      "class CatchLegacyBox extends StatelessWidget {}",
-      "@Deprecated(",
-      "  'Legacy: use CatchNew with a role; '",
-      "  'deleted in P7',",
-      ")",
-      "enum CatchLegacyRole { body, title }",
-      "/// @Deprecated('Legacy: prose in a doc comment')",
-      "class CatchDocumented {}",
-      "@Deprecated(\"Legacy (double quotes)\")",
-      "const catchLegacyValue = 1;",
-      "@Deprecated('Use CatchNew; not a Legacy message')",
-      "const catchOtherValue = 2;",
-      "@deprecated",
-      "const catchBareValue = 3;",
-      "class CatchHolder {",
-      "  @Deprecated('Legacy: use CatchNew')",
-      "  static const int old = 1;",
-      "}",
-    ].join("\n"),
-    "new.dart": "class CatchNew {}",
-  }));
-  assert.deepEqual(scan.shims.map((symbol) => symbol.name).sort(),
-    ["CatchHolder.old", "CatchLegacyBox", "CatchLegacyRole", "catchLegacyValue"]);
-  assert.deepEqual(scan.deprecated.filter((symbol) => symbol.legacy).map((symbol) => symbol.name).sort(),
-    ["CatchHolder.old", "CatchLegacyBox", "CatchLegacyRole", "catchLegacyValue"]);
-  assert.deepEqual(scan.deprecated.filter((symbol) => !symbol.shim).map((symbol) => symbol.name).sort(),
-    ["catchBareValue", "catchOtherValue"]);
+const legacyRegistry = {components: [
+  {id: "catch.surface", dart: {symbol: "CatchSurface", file: "packages/catch_ui/lib/src/new.dart"},
+    contract: {members: [
+      {id: "catch.surface.legacy", symbol: "CatchLegacySurface", file: "packages/catch_ui/lib/src/legacy.dart",
+        governance: {conceptRole: "member", qualifier: "legacy"}},
+      {id: "catch.surface.card", symbol: "CatchCardSurface", governance: {conceptRole: "member", qualifier: "variant"}},
+    ]}},
+  {id: "catch.count", dart: {symbol: "CatchCountText", file: "packages/catch_ui/lib/src/count.dart"},
+    governance: {conceptRole: "member", qualifier: "legacy"}},
+]};
+
+test("the registry's legacy members are read from records and contract members alike", () => {
+  assert.deepEqual(registryLegacyMembers(legacyRegistry), [
+    {id: "catch.count", name: "CatchCountText", file: "packages/catch_ui/lib/src/count.dart"},
+    {id: "catch.surface.legacy", name: "CatchLegacySurface", file: "packages/catch_ui/lib/src/legacy.dart"},
+  ]);
+  assert.deepEqual(registryLegacyMembers(null), []);
 });
 
-test("a library with no deprecated symbol still counts zero", () => {
-  const scan = scanLibrary(library({"a.dart": "class CatchNew {}\n/// Legacy: prose only.\nclass CatchOther extends CatchNew {}"}));
+test("legacy members count beside the shims, and an unexported one is flagged", () => {
+  const scan = scanLibrary(library({
+    "new.dart": "class CatchSurface {}",
+    "legacy.dart": "class CatchLegacySurface {}",
+  }), registryLegacyMembers(legacyRegistry));
+  assert.deepEqual(scan.shims.map((symbol) => symbol.name), ["CatchCountText", "CatchLegacySurface"]);
+  assert.deepEqual(scan.legacy.filter((member) => !member.exported).map((member) => member.name), ["CatchCountText"]);
   assert.deepEqual(scan.deprecated, []);
-  assert.deepEqual(scan.shims, []);
+});
+
+test("a new-root file may neither name nor import a legacy member", () => {
+  const legacy = registryLegacyMembers(legacyRegistry);
+  const found = (source) => newRootFindings(source, [], legacy).map((finding) => finding.text);
+  assert.deepEqual(found(`${"import 'package:catch_ui/catch_ui.dart';"}\nconst a = CatchLegacySurface();`),
+    ["uses legacy CatchLegacySurface (catch.surface.legacy)"]);
+  assert.deepEqual(found("import 'package:catch_ui/src/legacy.dart';\nconst a = 1;"),
+    ["imports legacy CatchLegacySurface (catch.surface.legacy)"]);
+  assert.deepEqual(found("import 'package:catch_ui/catch_ui.dart';\n// CatchLegacySurface\nconst a = CatchSurface();"), []);
 });
 
 test("the export surface follows the barrel, its show and hide, nested exports and parts", () => {
@@ -225,6 +226,21 @@ function seedRepository(files) {
   for (const [file, text] of Object.entries(files)) write(file, text);
   return root;
 }
+
+test("a legacy member under the new roots fails the scan, and so does an unexported one", (t) => {
+  const root = seedRepository({
+    "design/components/catch.components.json": JSON.stringify(legacyRegistry),
+    "packages/catch_ui/lib/src/legacy.dart": "class CatchLegacySurface {}",
+    "apps/host/lib/today/today_body.dart": `${importing}const a = CatchLegacySurface();`,
+  });
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(root, barrel), "export 'src/a.dart';\nexport 'src/legacy.dart';");
+  const scan = scanRepository(root);
+  assert.deepEqual(scan.violations.map((violation) => violation.text),
+    ["uses legacy CatchLegacySurface (catch.surface.legacy)"]);
+  assert.deepEqual(scan.unexportedLegacy.map((member) => member.id), ["catch.count"]);
+  assert.equal(scan.shims.length, 3);
+});
 
 test("the scan covers both app packages and lib/pages, and no other folder", (t) => {
   const old = `${importing}const a = CatchOld();`;

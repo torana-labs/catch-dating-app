@@ -8,12 +8,15 @@
 // A shim is a public symbol exported by package:catch_ui, marked @Deprecated,
 // whose declaration names another exported catch_ui symbol: a typedef of the new
 // name, a class that extends or builds the new component, a function that
-// forwards, or a constructor that redirects with `this(...)`. A legacy component
-// counts too: one whose @Deprecated message begins with `Legacy` (the
-// pre-redesign CatchLegacySurface, CatchLegacyText and the text atoms the system
-// Text absorbs), whatever its declaration names. Any other @Deprecated symbol
-// that names nothing else is not counted, and is still refused under the new
-// roots.
+// forwards, or a constructor that redirects with `this(...)`. A @Deprecated symbol
+// that names nothing else is not counted, and is still refused under the new roots.
+//
+// A legacy member counts too: a component-registry record or contract member
+// with the `legacy` qualifier, the retiring implementation of its record's
+// responsibility (redesign plan 5.8, D24; the pre-redesign CatchLegacySurface
+// and CatchLegacyText, and the text atoms the system Text absorbs). Legacy
+// status lives in the registry, not in @Deprecated. Each legacy member must be
+// exported by catch_ui, and the new roots may neither name nor import one.
 //
 // The count must match the baseline. It may fall: record that with --update. A
 // rise fails. A library PR that adds a shim raises `shims` by hand, so the rise
@@ -28,6 +31,7 @@ import {appPackageSourceRoots} from "../lib/flutter_source_roots.mjs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 export const baselinePath = "tool/design/library_shims_baseline.json";
+export const registryPath = "design/components/catch.components.json";
 const barrelPath = "packages/catch_ui/lib/catch_ui.dart";
 const libraryRoot = "packages/catch_ui/lib";
 const migrationScopePath = "packages/catch_ui_lints/lib/src/migration_scope.dart";
@@ -112,18 +116,15 @@ function splitDeclarations(masked, offset = 0) {
   return declarations;
 }
 
-// A declaration's leading annotations, with their arguments and their spans.
+// A declaration's leading annotations, with their arguments.
 function annotationsOf(text) {
   const names = [];
-  const spans = [];
   let index = 0;
   for (;;) {
     while (index < text.length && /\s/u.test(text[index])) index += 1;
     const match = /^@([A-Za-z_][\w.]*)/u.exec(text.slice(index));
-    if (!match) return {names, spans, rest: index};
+    if (!match) return {names, rest: index};
     names.push(match[1]);
-    const start = index;
-    spans.push({name: match[1], start, end: start});
     index += match[0].length;
     let cursor = index;
     while (cursor < text.length && /\s/u.test(text[cursor])) cursor += 1;
@@ -136,23 +137,8 @@ function annotationsOf(text) {
       } while (depth > 0 && cursor < text.length);
       index = cursor;
     }
-    spans.at(-1).end = index;
   }
 }
-
-/**
- * The first string of a @Deprecated message, read from the unmasked source
- * at the annotation's span (masking blanks string bodies), or null.
- */
-function deprecationMessage(source, offset, spans) {
-  const span = spans.find((candidate) => candidate.name === "Deprecated");
-  if (!span) return null;
-  const annotation = source.slice(offset + span.start, offset + span.end);
-  return /\(\s*r?('''|"""|'|")([\s\S]*?)\1/u.exec(annotation)?.[2] ?? null;
-}
-
-/** Whether a @Deprecated message marks a legacy component (it begins with `Legacy`). */
-export const isLegacyMessage = (message) => typeof message === "string" && message.startsWith("Legacy");
 
 const typeHeader = /^(?:(?:abstract|sealed|base|final|interface|macro|mixin)\s+)*(?:class|mixin|enum)\s+([A-Za-z_]\w*)/u;
 const extensionTypeHeader = /^extension\s+type\s+(?:const\s+)?([A-Za-z_]\w*)/u;
@@ -189,7 +175,7 @@ function memberDeclarations(declaration) {
 export function publicDeclarations(source) {
   const symbols = [];
   for (const declaration of splitDeclarations(maskDart(source))) {
-    const {names, spans, rest} = annotationsOf(declaration.text);
+    const {names, rest} = annotationsOf(declaration.text);
     const header = declaration.text.slice(rest);
     const declared = declaredName(header);
     if (!declared || declared.name.startsWith("_")) continue;
@@ -198,12 +184,10 @@ export function publicDeclarations(source) {
       name: declared.name,
       owner: null,
       deprecated: isDeprecated(names),
-      legacy: isLegacyMessage(deprecationMessage(source, declaration.start, spans)),
       text: header,
       line: source.slice(0, declaration.start + rest).split("\n").length,
     });
     if (!declared.isType) continue;
-    const bodyOffset = declaration.start + declaration.bodyStart + 1;
     for (const member of memberDeclarations(declaration)) {
       const memberAnnotations = annotationsOf(member.text);
       if (!isDeprecated(memberAnnotations.names)) continue;
@@ -218,7 +202,6 @@ export function publicDeclarations(source) {
         name: bare === declared.name ? declared.name : `${declared.name}.${bare}`,
         owner: declared.name,
         deprecated: true,
-        legacy: isLegacyMessage(deprecationMessage(source, bodyOffset + member.start, memberAnnotations.spans)),
         text: memberHeader,
         // A constructor or static is written by name; an instance member needs types.
         byName: isConstructor || /^static\b/u.test(memberHeader),
@@ -260,8 +243,26 @@ function isVisible(symbol, filter) {
   return true;
 }
 
+/**
+ * The registry's legacy members: every record or contract member whose
+ * governance qualifier is `legacy`, with its Dart symbol and source file.
+ */
+export function registryLegacyMembers(registry) {
+  const members = [];
+  for (const component of registry?.components ?? []) {
+    const own = component.governance?.qualifier === "legacy" ? [{
+      id: component.id, name: component.dart?.symbol, file: component.dart?.file,
+    }] : [];
+    const nested = (component.contract?.members ?? [])
+      .filter((member) => member.governance?.qualifier === "legacy")
+      .map((member) => ({id: member.id, name: member.symbol, file: member.file ?? component.dart?.file}));
+    members.push(...own, ...nested);
+  }
+  return members.sort((left, right) => left.id.localeCompare(right.id));
+}
+
 /** Every exported symbol, then those marked @Deprecated, each flagged when it is a shim. */
-export function scanLibrary(readText) {
+export function scanLibrary(readText, legacyMembers = []) {
   const exported = [];
   for (const [file, filter] of exportedFiles(readText)) {
     for (const symbol of publicDeclarations(readText(file))) {
@@ -274,16 +275,21 @@ export function scanLibrary(readText) {
     const named = [...symbol.text.matchAll(/\b[A-Za-z_]\w*\b/gu)].map((match) => match[0]);
     // A member also delegates by naming its own type again (`= Foo.new`, `=> Foo()`)
     // or redirecting (`: this(...)`).
-    const shim = symbol.legacy || named.some((name) => name !== own && names.has(name)) ||
+    const shim = named.some((name) => name !== own && names.has(name)) ||
       (symbol.owner !== null &&
         (/:\s*this\s*[.(]/u.test(symbol.text) || named.filter((name) => name === own).length > 1));
     return {...symbol, shim};
   });
-  return {deprecated, shims: deprecated.filter((symbol) => symbol.shim)};
+  const legacy = legacyMembers.map((member) => ({...member, exported: names.has(member.name)}));
+  return {
+    deprecated,
+    legacy,
+    shims: [...deprecated.filter((symbol) => symbol.shim), ...legacy],
+  };
 }
 
-/** Uses of a deprecated catch_ui symbol, and silenced checks, in one new-root file. */
-export function newRootFindings(source, deprecated) {
+/** Uses of a deprecated or legacy catch_ui symbol, and silenced checks, in one new-root file. */
+export function newRootFindings(source, deprecated, legacy = []) {
   const findings = [];
   const add = (index, text) => findings.push({
     line: source.slice(0, index).split("\n").length,
@@ -304,6 +310,17 @@ export function newRootFindings(source, deprecated) {
     const pattern = `(?<![\\w$])${symbol.name.replace(".", "\\s*\\.\\s*")}\\b${isUnnamedConstructor ? "(?=\\s*[(<])" : ""}`;
     for (const match of masked.matchAll(new RegExp(pattern, "gu"))) {
       add(match.index, `uses deprecated ${symbol.name} (${symbol.file}:${symbol.line})`);
+    }
+  }
+  for (const member of legacy) {
+    if (!member.name) continue;
+    for (const match of masked.matchAll(new RegExp(`(?<![\\w$])${member.name}\\b`, "gu"))) {
+      add(match.index, `uses legacy ${member.name} (${member.id})`);
+    }
+    const uri = member.file?.startsWith(`${libraryRoot}/`) ?
+      `package:catch_ui/${member.file.slice(libraryRoot.length + 1)}` : null;
+    for (const match of uri ? source.matchAll(new RegExp(`^\\s*(?:import|export)\\s+'${uri.replace(/[.]/gu, "\\.")}'`, "gmu")) : []) {
+      add(match.index, `imports legacy ${member.name} (${member.id})`);
     }
   }
   return findings;
@@ -337,13 +354,16 @@ export function newRootFiles(root, legacy) {
 /** Scans a repository; pure apart from reading its files. */
 export function scanRepository(root) {
   const readText = (file) => fs.readFileSync(path.join(root, file), "utf8");
-  const {deprecated, shims} = scanLibrary(readText);
-  const legacy = legacyFiles(readText(migrationScopePath));
-  const violations = newRootFiles(root, legacy).flatMap((file) =>
-    newRootFindings(readText(file), deprecated).map((finding) => ({file, ...finding})));
+  const registry = fs.existsSync(path.join(root, registryPath)) ?
+    JSON.parse(readText(registryPath)) : null;
+  const {deprecated, legacy, shims} = scanLibrary(readText, registryLegacyMembers(registry));
+  const listed = legacyFiles(readText(migrationScopePath));
+  const violations = newRootFiles(root, listed).flatMap((file) =>
+    newRootFindings(readText(file), deprecated, legacy).map((finding) => ({file, ...finding})));
   // A redraw that deletes a listed screen does not select the Dart test of the list.
-  const staleLegacy = [...legacy].filter((file) => !fs.existsSync(path.join(root, file)));
-  return {deprecated, shims, violations, staleLegacy};
+  const staleLegacy = [...listed].filter((file) => !fs.existsSync(path.join(root, file)));
+  const unexportedLegacy = legacy.filter((member) => !member.exported);
+  return {deprecated, legacy, shims, violations, staleLegacy, unexportedLegacy};
 }
 
 function runCli(argv) {
@@ -353,15 +373,20 @@ function runCli(argv) {
     console.error(`Unknown argument: ${unknown[0]}`);
     process.exit(64);
   }
-  const {deprecated, shims, violations, staleLegacy} = scanRepository(repoRoot);
+  const {deprecated, legacy, shims, violations, staleLegacy, unexportedLegacy} = scanRepository(repoRoot);
   if (argv.includes("--report")) {
     for (const symbol of deprecated) {
-      const kind = symbol.legacy ? " (legacy)" : symbol.shim ? " (shim)" : "";
-      console.log(`${symbol.file}:${symbol.line} ${symbol.name}${kind}`);
+      console.log(`${symbol.file}:${symbol.line} ${symbol.name}${symbol.shim ? " (shim)" : ""}`);
     }
+    for (const member of legacy) console.log(`${member.file} ${member.name} (legacy: ${member.id})`);
+  }
+  if (unexportedLegacy.length) {
+    console.error(`These legacy members in ${registryPath} are not exported by package:catch_ui:`);
+    for (const member of unexportedLegacy) console.error(`- ${member.id}: ${member.name ?? "(no symbol)"}`);
+    process.exit(1);
   }
   if (violations.length) {
-    console.error("Files under apps/*/lib and lib/pages use no deprecated catch_ui symbol and silence no Catch lint:");
+    console.error("Files under apps/*/lib and lib/pages use no deprecated or legacy catch_ui symbol and silence no Catch lint:");
     for (const {file, line, text} of violations) console.error(`- ${file}:${line} ${text}`);
     process.exit(1);
   }
