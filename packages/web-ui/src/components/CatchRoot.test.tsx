@@ -2,7 +2,7 @@ import {act, cleanup, render, screen} from "@testing-library/react";
 import {renderToString} from "react-dom/server";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {useCatch} from "./catchRootContext";
-import {CatchGroundProvider, CatchRoot} from "./CatchRoot";
+import {CatchRoot} from "./CatchRoot";
 
 afterEach(() => {
   cleanup();
@@ -111,22 +111,5 @@ describe("CatchRoot", () => {
   it("gives the defaults outside any root", () => {
     render(<Probe />);
     expect(screen.getByTestId("probe").textContent).toBe("day app compact ground - false");
-  });
-});
-
-describe("CatchGroundProvider", () => {
-  it("re-provides the ground and keeps the parent's theme and format", () => {
-    render(<CatchRoot format="run" size="medium"><CatchGroundProvider ground="tile"><Probe /></CatchGroundProvider></CatchRoot>);
-    const wrapper = screen.getByTestId("probe").parentElement!;
-    expect(screen.getByTestId("probe").textContent).toBe("day app medium tile run false");
-    expect(wrapper.dataset).toMatchObject({ground: "tile", format: "run"});
-    expect(wrapper.hasAttribute("data-catch-theme")).toBe(false);
-  });
-
-  it("flips the theme attribute beneath it when the theme changes", () => {
-    render(<CatchRoot><CatchGroundProvider format="games" ground="night" theme="night"><Probe /></CatchGroundProvider></CatchRoot>);
-    const wrapper = screen.getByTestId("probe").parentElement!;
-    expect(wrapper.dataset).toMatchObject({catchTheme: "dark", ground: "night", format: "games"});
-    expect(screen.getByTestId("probe").textContent).toBe("night app compact night games false");
   });
 });

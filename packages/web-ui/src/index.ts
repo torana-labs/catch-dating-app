@@ -350,9 +350,11 @@ export type {
   CatchTextElement,
 } from "./components/CatchLegacyText";
 // Core library (redesign P2.1): Root, Surface and their shared vocabulary.
-export {CatchGroundProvider, CatchRoot} from "./components/CatchRoot";
-export type {CatchGroundProviderProps, CatchRootProps} from "./components/CatchRoot";
-export {useCatch, useGround} from "./components/catchRootContext";
+export {CatchRoot} from "./components/CatchRoot";
+export type {CatchRootProps} from "./components/CatchRoot";
+export {CatchGroundProvider, useGround} from "./components/CatchGroundProvider";
+export type {CatchGroundProviderProps} from "./components/CatchGroundProvider";
+export {useCatch} from "./components/catchRootContext";
 export type {CatchContextValue} from "./components/catchRootContext";
 export {CatchSurface} from "./components/CatchSurface";
 export type {CatchSurfaceElement, CatchSurfaceProps} from "./components/CatchSurface";

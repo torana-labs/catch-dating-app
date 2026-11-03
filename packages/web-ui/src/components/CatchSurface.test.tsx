@@ -3,7 +3,8 @@ import {renderToString} from "react-dom/server";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {catchFormats, type CatchGround, type CatchSurfaceColor} from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";
-import {CatchGroundProvider, CatchRoot} from "./CatchRoot";
+import {CatchGroundProvider} from "./CatchGroundProvider";
+import {CatchRoot} from "./CatchRoot";
 import {CatchSurface, catchSurfaceChildGround} from "./CatchSurface";
 
 afterEach(cleanup);

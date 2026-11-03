@@ -4,12 +4,11 @@ import {useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode
 import {
   catchSizeClassForWidth,
   type CatchFormat,
-  type CatchGround,
   type CatchRegister,
   type CatchSizeClass,
   type CatchThemeMode,
 } from "./catchCoreVocabulary";
-import {CatchContext, catchThemeAttribute, useCatch, type CatchContextValue} from "./catchRootContext";
+import {CatchContext, catchThemeAttribute, type CatchContextValue} from "./catchRootContext";
 import styles from "./CatchRoot.module.css";
 
 export interface CatchRootProps {
@@ -40,7 +39,8 @@ export interface CatchRootProps {
 /**
  * catch.root: sets the theme, size class, format, register and motion
  * preference for everything inside it. Wrap each screen (or the whole app)
- * once. It paints the theme's ground and ink in the body role.
+ * once. It paints the theme's ground and ink in the body role. A Surface (or
+ * CatchGroundProvider) re-provides the ground beneath it.
  */
 export function CatchRoot({theme: themeProp = "auto", size = "auto", format, register = "app", children, className, style}: CatchRootProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -97,39 +97,4 @@ function followMediaQuery(media: string, onMatch: (matches: boolean) => void): (
   update();
   query.addEventListener?.("change", update);
   return () => query.removeEventListener?.("change", update);
-}
-
-export interface CatchGroundProviderProps {
-  ground: CatchGround;
-  /** Defaults to the parent's format. */
-  format?: CatchFormat;
-  /** A theme change flips the token variables beneath it. Defaults to the parent's theme. */
-  theme?: CatchThemeMode;
-  children?: ReactNode;
-}
-
-/**
- * Re-provides the context with a new ground (and optionally a format or
- * theme), the way a Surface tells its children what they sit on. Its wrapper
- * draws no box (`display: contents`); it carries the theme attribute when the
- * theme changes and resets the text colour to the new ground's ink.
- */
-export function CatchGroundProvider({ground, format, theme, children}: CatchGroundProviderProps) {
-  const parent = useCatch();
-  const value = useMemo<CatchContextValue>(
-    () => ({...parent, ground, format: format ?? parent.format, theme: theme ?? parent.theme}),
-    [parent, ground, format, theme],
-  );
-  return (
-    <CatchContext.Provider value={value}>
-      <div
-        className={styles.ground}
-        data-catch-theme={theme ? catchThemeAttribute(theme) : undefined}
-        data-format={value.format}
-        data-ground={ground}
-      >
-        {children}
-      </div>
-    </CatchContext.Provider>
-  );
 }

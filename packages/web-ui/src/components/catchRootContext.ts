@@ -31,11 +31,6 @@ export function useCatch(): CatchContextValue {
   return useContext(CatchContext);
 }
 
-/** The ground the component sits on. */
-export function useGround(): CatchGround {
-  return useContext(CatchContext).ground;
-}
-
 /** The generated sheet switches theme on this attribute: day is its light theme, night its dark one. */
 export function catchThemeAttribute(theme: CatchThemeMode): "light" | "dark" {
   return theme === "night" ? "dark" : "light";

@@ -9,6 +9,7 @@ import {
   catchSizeClassMinWidths,
   catchStackGaps,
   catchSurfacePaddingPixels,
+  catchTextResponsiveRoles,
   catchTextRoles,
 } from "./catchCoreVocabulary";
 import {catchMirroredIconNames} from "./CatchIcon";
@@ -18,7 +19,7 @@ const read = (path: string) => fs.readFileSync(fileURLToPath(new URL(path, impor
 const sheet = read("../../../web-config/generated/catch-tokens.css");
 const dartTokens = read("../../../catch_tokens/lib/generated/catch_design_tokens.g.dart");
 const value = (name: string) => sheet.match(new RegExp(`${name}: ([^;]+);`))?.[1];
-const cssFiles = ["CatchRoot", "CatchSurface", "CatchText", "CatchIcon", "CatchStack"].map((name) => `./${name}.module.css`);
+const cssFiles = ["CatchRoot", "CatchGroundProvider", "CatchSurface", "CatchText", "CatchIcon", "CatchStack"].map((name) => `./${name}.module.css`);
 /** Custom properties the core components set for each other; every other variable comes from the sheet. */
 const componentProperties = new Set(["--catch-surface-fill", "--catch-accent", "--catch-accent-ink", "--catch-gutter", "--catch-section-gap"]);
 
@@ -44,6 +45,23 @@ describe("core library vocabulary", () => {
         expect(value(`--catch-typography-role-${role}-${metric}`), `${role} ${metric}`).toBeDefined();
       }
     }
+  });
+
+  it("resolves the responsive variants as the sheet's variant blocks do at each size class", () => {
+    const blocks = {
+      compact: sheet.slice(sheet.indexOf("--catch-typography-variant-page-title-family") - 200, sheet.indexOf("@media (min-width: 600px)")),
+      medium: sheet.slice(sheet.indexOf("@media (min-width: 600px)"), sheet.indexOf("@media (min-width: 840px)")),
+      expanded: sheet.slice(sheet.indexOf("@media (min-width: 840px)"), sheet.indexOf('[data-catch-theme="light"]')),
+    };
+    for (const [variant, bySize] of Object.entries(catchTextResponsiveRoles)) {
+      for (const [size, role] of Object.entries(bySize)) {
+        const block = blocks[size as keyof typeof blocks];
+        expect(block, `${variant} ${size}`).toContain(`--catch-typography-variant-${variant}-size: var(--catch-typography-role-${role}-size);`);
+      }
+    }
+    expect(value("--catch-typography-role-display-title-size")).toBe("38px");
+    expect(value("--catch-typography-role-display-lg-size")).toBe("48px");
+    expect(value("--catch-typography-role-display-xl-size")).toBe("64px");
   });
 
   it("starts the size classes at the sheet's window sizes", () => {

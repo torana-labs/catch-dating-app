@@ -11,7 +11,7 @@ import {
   type CatchThemeMode,
 } from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";
-import {CatchGroundProvider} from "./CatchRoot";
+import {CatchGroundProvider} from "./CatchGroundProvider";
 import styles from "./CatchSurface.module.css";
 
 export type CatchSurfaceElement = "div" | "section" | "article" | "aside" | "li";

@@ -1,7 +1,7 @@
 /*
  * catch.root (redesign P2.1). The generated sheet switches theme on
  * data-catch-theme, so the root paints that theme's ground and ink in the body
- * role. It also hands everything inside four custom properties, read by the
+ * role. It also hands everything inside these custom properties, read by the
  * core components and never set by a screen:
  *   --catch-surface-fill  the fill the content sits on (a Surface sets its own);
  *   --catch-accent, --catch-accent-ink  the current format's colour and its ink;
@@ -35,47 +35,27 @@
 }
 
 /* The sheet spells nightsOut `nights-out`. */
-.root[data-format="run"],
-.ground[data-format="run"] {
+.root[data-format="run"] {
   --catch-accent: var(--catch-format-run-accent);
   --catch-accent-ink: var(--catch-format-run-ink);
 }
 
-.root[data-format="dinner"],
-.ground[data-format="dinner"] {
+.root[data-format="dinner"] {
   --catch-accent: var(--catch-format-dinner-accent);
   --catch-accent-ink: var(--catch-format-dinner-ink);
 }
 
-.root[data-format="games"],
-.ground[data-format="games"] {
+.root[data-format="games"] {
   --catch-accent: var(--catch-format-games-accent);
   --catch-accent-ink: var(--catch-format-games-ink);
 }
 
-.root[data-format="courts"],
-.ground[data-format="courts"] {
+.root[data-format="courts"] {
   --catch-accent: var(--catch-format-courts-accent);
   --catch-accent-ink: var(--catch-format-courts-ink);
 }
 
-.root[data-format="nightsOut"],
-.ground[data-format="nightsOut"] {
+.root[data-format="nightsOut"] {
   --catch-accent: var(--catch-format-nights-out-accent);
   --catch-accent-ink: var(--catch-format-nights-out-ink);
-}
-
-/*
- * A ground change draws no box. The text colour resets to the new ground's
- * ink: the theme ink on ground, tile and nested, and on the night grounds
- * (their theme attribute flips the variable beneath them); the format's ink on
- * a colour.
- */
-.ground {
-  display: contents;
-  color: var(--catch-theme-ink);
-}
-
-.ground[data-ground="colour"] {
-  color: var(--catch-accent-ink);
 }

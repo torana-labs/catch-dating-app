@@ -59,7 +59,7 @@ export const handWrittenFiles = new Set([
     "catchCoreVocabulary.ts",
     "catchCoreVocabulary.test.ts",
     "catchRootContext.ts",
-    ...["CatchRoot", "CatchSurface", "CatchText", "CatchIcon", "CatchStack"].flatMap((name) => [
+    ...["CatchRoot", "CatchGroundProvider", "CatchSurface", "CatchText", "CatchIcon", "CatchStack"].flatMap((name) => [
       `${name}.tsx`,
       `${name}.stories.tsx`,
       `${name}.test.tsx`,
