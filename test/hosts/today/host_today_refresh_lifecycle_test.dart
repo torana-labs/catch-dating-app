@@ -56,7 +56,9 @@ void main() {
     fixture.router.pop();
     await pumpFeatureUi(tester);
     fixture.expectRetained(tester, originalState);
-    expect(fixture.attention.organizers.length, greaterThan(1));
+    // Return re-reads the events; the attention listener stays open.
+    expect(fixture.events.active.length, greaterThan(1));
+    expect(fixture.attention.organizers, ['org-a']);
     expect(fixture.taskIds(tester), ['after']);
     expect(task, findsNothing);
   });
@@ -74,7 +76,9 @@ void main() {
     fixture.navigation.goBranch(0);
     await pumpFeatureUi(tester);
     fixture.expectRetained(tester, originalState);
-    expect(fixture.attention.organizers.length, greaterThan(1));
+    // Return re-reads the events; the attention listener stays open.
+    expect(fixture.events.active.length, greaterThan(1));
+    expect(fixture.attention.organizers, ['org-a']);
     expect(fixture.taskIds(tester), ['another-actor-task']);
   });
 
@@ -95,7 +99,9 @@ void main() {
     fixture.router.goNamed(Routes.hostTodayScreen.name);
     await pumpFeatureUi(tester);
     fixture.expectRetained(tester, originalState);
-    expect(fixture.attention.organizers.length, greaterThan(1));
+    // Return re-reads the events; the attention listener stays open.
+    expect(fixture.events.active.length, greaterThan(1));
+    expect(fixture.attention.organizers, ['org-a']);
     expect(fixture.taskIds(tester), ['after-event-work']);
   });
 
@@ -111,7 +117,9 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await pumpFeatureUi(tester);
     fixture.expectRetained(tester, originalState);
-    expect(fixture.attention.organizers.length, greaterThan(1));
+    // Return re-reads the events; the attention listener stays open.
+    expect(fixture.events.active.length, greaterThan(1));
+    expect(fixture.attention.organizers, ['org-a']);
     expect(fixture.taskIds(tester), ['while-backgrounded']);
   });
 
@@ -146,33 +154,47 @@ void main() {
     );
   });
 
-  for (final failure in ['active', 'attention']) {
-    testWidgets('existing $failure retry refreshes the retained feed', (
-      tester,
-    ) async {
+  testWidgets('existing active retry refreshes the retained feed', (
+    tester,
+  ) async {
+    final fixture = _Fixture();
+    fixture.events.failNextActive = true;
+    await fixture.mount(tester);
+    final originalState = fixture.todayState(tester);
+    final body = tester.widget<HostTodayBody>(find.byType(HostTodayBody));
+    expect(body.state.status, HostTodayStatus.error);
+    body.onRetry();
+    await pumpFeatureUi(tester);
+    fixture.expectRetained(tester, originalState);
+    expect(fixture.events.active, hasLength(2));
+    expect(fixture.taskIds(tester), ['before']);
+    expect(fixture.display(tester).attentionIssues, isEmpty);
+    expect(fixture.attention.organizers, ['org-a']);
+  });
+
+  testWidgets(
+    'an attention listener error stays an issue until the listener delivers',
+    (tester) async {
       final fixture = _Fixture();
-      if (failure == 'active') {
-        fixture.events.failNextActive = true;
-      } else {
-        fixture.attention.failNext = true;
-      }
+      fixture.attention.failNext = true;
       await fixture.mount(tester);
       final originalState = fixture.todayState(tester);
       final body = tester.widget<HostTodayBody>(find.byType(HostTodayBody));
-      expect(
-        failure == 'active'
-            ? body.state.status == HostTodayStatus.error
-            : body.state.attentionIssues.isNotEmpty,
-        isTrue,
-      );
+      expect(body.state.attentionIssues, isNotEmpty);
+      expect(body.state.attentionCountIsComplete, isFalse);
       body.onRetry();
       await pumpFeatureUi(tester);
       fixture.expectRetained(tester, originalState);
+      // Retry re-reads the events and never restarts the listener.
       expect(fixture.events.active, hasLength(2));
-      expect(fixture.taskIds(tester), ['before']);
+      expect(fixture.attention.organizers, ['org-a']);
+      expect(fixture.display(tester).attentionIssues, isNotEmpty);
+      fixture.attention.version = 'after-listener-recovers';
+      await pumpFeatureUi(tester);
       expect(fixture.display(tester).attentionIssues, isEmpty);
-    });
-  }
+      expect(fixture.taskIds(tester), ['after-listener-recovers']);
+    },
+  );
 
   testWidgets('existing event entry return refreshes the retained feed', (
     tester,
@@ -283,7 +305,8 @@ void main() {
     void expectBoundedReads(int count) {
       expect(fixture.events.active, hasLength(count));
       expect(fixture.events.history, fixture.events.active);
-      expect(fixture.attention.organizers, List.filled(count, 'org-a'));
+      // One attention listener serves every evaluation of the family.
+      expect(fixture.attention.organizers, ['org-a']);
       expect(fixture.outbox.accounts, List.filled(count, 'actor-a'));
     }
 
@@ -757,24 +780,49 @@ class _Events extends Fake implements EventRepository {
   }
 }
 
+/// A live attention listener. Changing [version] is a server evaluation
+/// that every open listener receives, as Firestore delivers it.
 class _Attention implements HostAttentionRepository {
   final organizers = <String>[];
-  String? version = 'before';
+  final _open = <StreamController<HostAttentionProjection>, String>{};
+  String? _version = 'before';
   bool failNext = false;
 
-  @override
-  Future<HostAttentionProjection> fetch(String organizerId) async {
-    organizers.add(organizerId);
-    if (failNext) {
-      failNext = false;
-      throw StateError('attention unavailable');
+  String? get version => _version;
+  set version(String? value) {
+    _version = value;
+    for (final MapEntry(key: controller, value: organizerId) in _open.entries) {
+      controller.add(_projection(organizerId));
     }
+  }
+
+  @override
+  Stream<HostAttentionProjection> watch(String organizerId) {
+    organizers.add(organizerId);
+    final fail = failNext;
+    failNext = false;
+    late final StreamController<HostAttentionProjection> controller;
+    controller = StreamController<HostAttentionProjection>(
+      onListen: () {
+        _open[controller] = organizerId;
+        if (fail) {
+          controller.addError(StateError('attention unavailable'));
+        } else {
+          controller.add(_projection(organizerId));
+        }
+      },
+      onCancel: () => _open.remove(controller),
+    );
+    return controller.stream;
+  }
+
+  HostAttentionProjection _projection(String organizerId) {
     final now = DateTime.now();
     return HostAttentionProjection(
       organizerId: organizerId,
       policyVersion: 1,
-      generatedAt: now,
-      horizonEndsAt: now.add(const Duration(days: 7)),
+      evaluatedAt: now,
+      sourceCoverage: HostAttentionSourceCoverage.complete,
       coverage: [
         for (final kind in HostAttentionKind.values)
           HostAttentionCoverage(

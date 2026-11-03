@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:meta/meta.dart';
 
 /// Shared decision horizon for Today's operational queue and event preview.
@@ -164,41 +166,51 @@ class HostAttentionItem {
     required this.expiresAt,
   });
 
-  factory HostAttentionItem.fromMap(Map<Object?, Object?> map) =>
-      HostAttentionItem(
-        id: _requiredString(map, 'attentionId'),
-        kind: _requiredEnum(HostAttentionKind.values, map, 'kind'),
-        scope: _requiredEnum(HostAttentionScope.values, map, 'scope'),
-        sourceOwner: _requiredEnum(
-          HostAttentionSourceOwner.values,
-          map,
-          'sourceOwner',
-        ),
-        sourceId: _requiredString(map, 'sourceId'),
-        sourceRevision: _requiredString(map, 'sourceRevision'),
-        eventId: _nullableString(map, 'eventId'),
-        status: _requiredEnum(HostAttentionStatus.values, map, 'status'),
-        consequence: _requiredEnum(
-          HostAttentionConsequence.values,
-          map,
-          'consequence',
-        ),
-        blocking: _requiredBool(map, 'blocking'),
-        urgency: _requiredEnum(HostAttentionUrgency.values, map, 'urgency'),
-        destination: HostAttentionDestination.fromMap(
-          _requiredMap(map['destination'], 'attention destination'),
-        ),
-        context: HostAttentionContext.fromMap(
-          _requiredMap(map['context'], 'attention context'),
-        ),
-        dedupeKey: _requiredString(map, 'dedupeKey'),
-        policyVersion: _requiredInt(map, 'policyVersion'),
-        resolutionVersion: _requiredInt(map, 'resolutionVersion'),
-        assignedHostUid: _nullableString(map, 'assignedHostUid'),
-        openedAt: _requiredDateTime(map, 'openedAtMillis'),
-        dueAt: _requiredDateTime(map, 'dueAtMillis'),
-        expiresAt: _nullableDateTime(map, 'expiresAtMillis'),
-      );
+  /// Parses one `organizerAttentionItems` document. Only open rows belong in
+  /// the queue; the document id is the attention id.
+  factory HostAttentionItem.fromFirestore(
+    String documentId,
+    Map<Object?, Object?> map,
+  ) {
+    final id = _requiredString(map, 'attentionId');
+    if (id != documentId) {
+      throw const FormatException('Attention id does not match its document.');
+    }
+    return HostAttentionItem(
+      id: id,
+      kind: _requiredEnum(HostAttentionKind.values, map, 'kind'),
+      scope: _requiredEnum(HostAttentionScope.values, map, 'scope'),
+      sourceOwner: _requiredEnum(
+        HostAttentionSourceOwner.values,
+        map,
+        'sourceOwner',
+      ),
+      sourceId: _requiredString(map, 'sourceId'),
+      sourceRevision: _requiredString(map, 'sourceRevision'),
+      eventId: _nullableString(map, 'eventId'),
+      status: _requiredEnum(HostAttentionStatus.values, map, 'status'),
+      consequence: _requiredEnum(
+        HostAttentionConsequence.values,
+        map,
+        'consequence',
+      ),
+      blocking: _requiredBool(map, 'blocking'),
+      urgency: _requiredEnum(HostAttentionUrgency.values, map, 'urgency'),
+      destination: HostAttentionDestination.fromMap(
+        _requiredMap(map['destination'], 'attention destination'),
+      ),
+      context: HostAttentionContext.fromMap(
+        _requiredMap(map['context'], 'attention context'),
+      ),
+      dedupeKey: _requiredString(map, 'dedupeKey'),
+      policyVersion: _requiredInt(map, 'policyVersion'),
+      resolutionVersion: _requiredInt(map, 'resolutionVersion'),
+      assignedHostUid: _nullableString(map, 'assignedHostUid'),
+      openedAt: dateTimeFromFirestoreValue(map['openedAt'], field: 'openedAt'),
+      dueAt: dateTimeFromFirestoreValue(map['dueAt'], field: 'dueAt'),
+      expiresAt: nullableDateTimeFromFirestoreValue(map['actionExpiresAt']),
+    );
+  }
 
   final String id;
   final HostAttentionKind kind;
@@ -230,16 +242,49 @@ class HostAttentionCoverage {
     required this.reason,
   });
 
-  factory HostAttentionCoverage.fromMap(Map<Object?, Object?> map) =>
-      HostAttentionCoverage(
-        kind: _requiredEnum(HostAttentionKind.values, map, 'kind'),
-        state: _requiredEnum(HostAttentionCoverageState.values, map, 'state'),
-        reason: _requiredString(map, 'reason'),
-      );
-
   final HostAttentionKind kind;
   final HostAttentionCoverageState state;
   final String reason;
+}
+
+/// One coverage row per catalog kind, from the generated policy catalog.
+final List<HostAttentionCoverage> hostAttentionCatalogCoverage =
+    List<HostAttentionCoverage>.unmodifiable([
+      for (final definition in hostAttentionPolicyDefinitions)
+        HostAttentionCoverage(
+          kind: HostAttentionKind.values.byName(definition.kind),
+          state: hostAttentionCoverageState(definition.deliveryMode),
+          reason: definition.readinessReason,
+        ),
+    ]);
+
+/// How a catalog delivery mode reads as coverage on Today.
+HostAttentionCoverageState hostAttentionCoverageState(
+  HostAttentionDeliveryMode mode,
+) => switch (mode) {
+  HostAttentionDeliveryMode.serverProjected =>
+    HostAttentionCoverageState.complete,
+  HostAttentionDeliveryMode.clientMerged =>
+    HostAttentionCoverageState.clientMergeRequired,
+  HostAttentionDeliveryMode.shortcutOnly =>
+    HostAttentionCoverageState.shortcutOnly,
+  HostAttentionDeliveryMode.blockedMissingTruth =>
+    HostAttentionCoverageState.blockedMissingTruth,
+};
+
+/// Whether the server's last evaluation read every source completely.
+/// [missing] means no evaluation has been recorded for the organizer.
+enum HostAttentionSourceCoverage { complete, overCap, missing }
+
+/// Today order: urgency, then blocking work, then deadline, then stable id.
+int compareHostAttentionItems(HostAttentionItem left, HostAttentionItem right) {
+  final urgency = left.urgency.index.compareTo(right.urgency.index);
+  if (urgency != 0) return urgency;
+  final blocking = (right.blocking ? 1 : 0).compareTo(left.blocking ? 1 : 0);
+  if (blocking != 0) return blocking;
+  final dueAt = left.dueAt.compareTo(right.dueAt);
+  if (dueAt != 0) return dueAt;
+  return left.id.compareTo(right.id);
 }
 
 @immutable
@@ -247,62 +292,62 @@ class HostAttentionProjection {
   const HostAttentionProjection({
     required this.organizerId,
     required this.policyVersion,
-    required this.generatedAt,
-    required this.horizonEndsAt,
     required this.items,
     required this.coverage,
+    required this.evaluatedAt,
+    required this.sourceCoverage,
   });
 
-  factory HostAttentionProjection.fromCallableData(Object? value) {
-    final map = _requiredMap(value, 'organizer attention projection');
-    final items = _requiredList(map, 'items')
-        .map(
-          (item) => HostAttentionItem.fromMap(
-            _requiredMap(item, 'organizer attention item'),
-          ),
-        )
-        .toList(growable: false);
-    final coverage = _requiredList(map, 'coverage')
-        .map(
-          (item) => HostAttentionCoverage.fromMap(
-            _requiredMap(item, 'organizer attention coverage'),
-          ),
-        )
-        .toList(growable: false);
-    final coveredKinds = coverage.map((item) => item.kind).toSet();
-    if (coverage.length != HostAttentionKind.values.length ||
-        coveredKinds.length != HostAttentionKind.values.length) {
+  /// Combines the open rows and the schedule document ([schedule] is null
+  /// when the organizer has not been evaluated yet).
+  factory HostAttentionProjection.fromFirestore({
+    required String organizerId,
+    required Iterable<HostAttentionItem> items,
+    required Map<Object?, Object?>? schedule,
+  }) {
+    if (schedule != null &&
+        _requiredString(schedule, 'organizerId') != organizerId) {
       throw const FormatException(
-        'Organizer attention coverage must contain every kind exactly once.',
+        'Organizer attention schedule has the wrong organizer.',
       );
     }
+    final sorted = [...items]..sort(compareHostAttentionItems);
     return HostAttentionProjection(
-      organizerId: _requiredString(map, 'organizerId'),
-      policyVersion: _requiredInt(map, 'policyVersion'),
-      generatedAt: _requiredDateTime(map, 'generatedAtMillis'),
-      horizonEndsAt: _requiredDateTime(map, 'horizonEndsAtMillis'),
-      items: List<HostAttentionItem>.unmodifiable(items),
-      coverage: List<HostAttentionCoverage>.unmodifiable(coverage),
+      organizerId: organizerId,
+      policyVersion: hostAttentionPolicyVersion,
+      items: List<HostAttentionItem>.unmodifiable(sorted),
+      coverage: hostAttentionCatalogCoverage,
+      evaluatedAt: schedule == null
+          ? null
+          : dateTimeFromFirestoreValue(
+              schedule['evaluatedAt'],
+              field: 'evaluatedAt',
+            ),
+      sourceCoverage: schedule == null
+          ? HostAttentionSourceCoverage.missing
+          : switch (_requiredString(schedule, 'sourceCoverage')) {
+              'complete' => HostAttentionSourceCoverage.complete,
+              'overCap' => HostAttentionSourceCoverage.overCap,
+              _ => throw const FormatException('Invalid sourceCoverage.'),
+            },
     );
   }
 
   final String organizerId;
   final int policyVersion;
-  final DateTime generatedAt;
-  final DateTime horizonEndsAt;
   final List<HostAttentionItem> items;
   final List<HostAttentionCoverage> coverage;
+
+  /// When the server last committed an evaluation; null before the first.
+  final DateTime? evaluatedAt;
+  final HostAttentionSourceCoverage sourceCoverage;
+
+  bool get isComplete => sourceCoverage == HostAttentionSourceCoverage.complete;
 }
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;
   throw FormatException('Invalid $label.');
-}
-
-List<Object?> _requiredList(Map<Object?, Object?> map, String field) {
-  final value = map[field];
-  if (value is List<Object?>) return value;
-  throw FormatException('Invalid $field.');
 }
 
 String _requiredString(Map<Object?, Object?> map, String field) {
@@ -337,14 +382,6 @@ bool _requiredBool(Map<Object?, Object?> map, String field) {
   final value = map[field];
   if (value is bool) return value;
   throw FormatException('Invalid $field.');
-}
-
-DateTime _requiredDateTime(Map<Object?, Object?> map, String field) =>
-    DateTime.fromMillisecondsSinceEpoch(_requiredInt(map, field));
-
-DateTime? _nullableDateTime(Map<Object?, Object?> map, String field) {
-  if (map[field] == null) return null;
-  return _requiredDateTime(map, field);
 }
 
 T _requiredEnum<T extends Enum>(

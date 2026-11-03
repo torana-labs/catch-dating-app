@@ -16,6 +16,7 @@ import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -231,10 +232,7 @@ void main() {
                 final local = items.singleWhere(
                   (item) => item.id.startsWith('local-'),
                 );
-                expect(
-                  local.policyVersion,
-                  completed.contains(_OptionalSource.attention) ? 7 : null,
-                );
+                expect(local.policyVersion, hostAttentionPolicyVersion);
                 expect(local.context.eventName, rig.event.title);
               }
               expect(isHostTodayQuiet(state), isFalse);
@@ -287,7 +285,8 @@ void main() {
           await pumpUntilFound(tester, rig.settledBody);
           await pumpFeatureUi(tester);
           expect(publications.first.activeEvents, [rig.event]);
-          expect(publications.first.attentionPending, isTrue);
+          // A listener value that is already delivered may join the first
+          // publication; one-shot reads always follow it.
           expect(publications.first.attendancePending, isTrue);
           expect(publications.first.historyPending, isTrue);
           final data = rig.container.read(rig.provider).requireValue;
@@ -300,7 +299,7 @@ void main() {
             (item) => item.id == 'local-attendance-local-operation',
           );
           expect(local.context.eventName, rig.event.title);
-          expect(local.policyVersion, 7);
+          expect(local.policyVersion, hostAttentionPolicyVersion);
           expect(data.attentionItems, hasLength(2));
           expect(rig.state(tester).attentionCountIsComplete, isTrue);
           rig.expectOneBoundedReadPerSource();
@@ -313,45 +312,112 @@ void main() {
     );
   }
 
+  for (final failLive in [false, true]) {
+    testWidgets('retry keeps the live attention listener and applies its '
+        '${failLive ? 'error' : 'result'}', (tester) async {
+      final rig = _Rig(withTasks: true);
+      rig.completeActive();
+      rig.completeOptionalExcept(_OptionalSource.attention);
+      await rig.mount(tester);
+      try {
+        await pumpUntilFound(tester, find.text(rig.event.title));
+        final replacement = _Rig();
+        replacement.completeAll();
+        rig.nextRead = replacement;
+        rig.container.read(rig.provider.notifier).retry();
+        await pumpUntilFound(
+          tester,
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is HostTodayBody &&
+                widget.state.hasPastEvents &&
+                widget.state.hasPendingSources,
+          ),
+        );
+        expect(
+          rig.container.read(rig.provider).requireValue.attentionPending,
+          isTrue,
+        );
+        if (failLive) {
+          rig.failOptional(
+            _OptionalSource.attention,
+            StateError('live attention failure'),
+          );
+        } else {
+          rig.completeOptional(_OptionalSource.attention);
+        }
+        await pumpUntilFound(tester, rig.settledBody);
+        final current = rig.container.read(rig.provider).requireValue;
+        if (failLive) {
+          expect(current.attentionItems, isEmpty);
+          expect(
+            current.attentionIssues.single.source,
+            HostTodayAttentionIssueSource.serverProjection,
+          );
+        } else {
+          expect(current.attentionItems.map((item) => item.id), [
+            'server-task',
+          ]);
+          expect(current.attentionIssues, isEmpty);
+        }
+        for (final source in ['active', 'attendance', 'history']) {
+          expect(rig.calls.where((call) => call == source), hasLength(2));
+        }
+        expect(rig.calls.where((call) => call == 'attention'), hasLength(1));
+        expect(tester.takeException(), isNull);
+      } finally {
+        await rig.close(tester);
+      }
+    });
+  }
+
   for (final held in _OptionalSource.values) {
     for (final failOld in [false, true]) {
-      testWidgets('same-family retry ignores old ${held.name} '
-          '${failOld ? 'error' : 'success'}', (tester) async {
-        final rig = _Rig(withTasks: true);
-        rig.completeActive();
-        rig.completeOptionalExcept(held);
-        await rig.mount(tester);
-        try {
-          await pumpUntilFound(tester, find.text(rig.event.title));
-          final replacement = _Rig();
-          replacement.completeAll();
-          rig.nextRead = replacement;
-          rig.container.read(rig.provider.notifier).retry();
-          await pumpUntilFound(tester, rig.settledBody);
-          final current = rig.container.read(rig.provider).requireValue;
-          expect(current.attentionItems, isEmpty);
-          expect(current.attentionIssues, isEmpty);
-          expect(current.historyError, isNull);
-          if (failOld) {
-            rig.failOptional(held, StateError('obsolete optional failure'));
-          } else {
-            rig.completeOptional(held);
+      if (held != _OptionalSource.attention) {
+        testWidgets('same-family retry ignores old ${held.name} '
+            '${failOld ? 'error' : 'success'}', (tester) async {
+          final rig = _Rig(withTasks: true);
+          rig.completeActive();
+          rig.completeOptionalExcept(held);
+          await rig.mount(tester);
+          try {
+            await pumpUntilFound(tester, find.text(rig.event.title));
+            final replacement = _Rig();
+            replacement.completeAll();
+            rig.nextRead = replacement;
+            rig.container.read(rig.provider.notifier).retry();
+            await pumpUntilFound(tester, rig.settledBody);
+            final current = rig.container.read(rig.provider).requireValue;
+            // The live attention listener keeps its evaluation; the
+            // re-read local outbox and history come from the new read.
+            expect(current.attentionItems.map((item) => item.id), [
+              'server-task',
+            ]);
+            expect(current.attentionIssues, isEmpty);
+            expect(current.historyError, isNull);
+            if (failOld) {
+              rig.failOptional(held, StateError('obsolete optional failure'));
+            } else {
+              rig.completeOptional(held);
+            }
+            await pumpFeatureUi(tester);
+            expect(
+              rig.container.read(rig.provider).requireValue,
+              same(current),
+            );
+            for (final source in ['active', 'attendance', 'history']) {
+              expect(rig.calls.where((call) => call == source), hasLength(2));
+            }
+            expect(
+              rig.calls.where((call) => call == 'attention'),
+              hasLength(1),
+            );
+            expect(tester.takeException(), isNull);
+          } finally {
+            await rig.close(tester);
           }
-          await pumpFeatureUi(tester);
-          expect(rig.container.read(rig.provider).requireValue, same(current));
-          for (final source in [
-            'active',
-            'attention',
-            'attendance',
-            'history',
-          ]) {
-            expect(rig.calls.where((call) => call == source), hasLength(2));
-          }
-          expect(tester.takeException(), isNull);
-        } finally {
-          await rig.close(tester);
-        }
-      });
+        });
+      }
 
       testWidgets('disposed feed ignores held ${held.name} '
           '${failOld ? 'error' : 'success'}', (tester) async {
@@ -506,9 +572,11 @@ void main() {
       await pumpUntilFound(tester, find.byType(HostTodayEmptyState));
       expect(rig.state(tester).historyError, isNull);
       expect(rig.state(tester).hasPastEvents, isTrue);
-      for (final source in ['active', 'attention', 'attendance', 'history']) {
+      for (final source in ['active', 'attendance', 'history']) {
         expect(rig.calls.where((call) => call == source), hasLength(2));
       }
+      // The attention listener stays open across the retry.
+      expect(rig.calls.where((call) => call == 'attention'), hasLength(1));
       expect(tester.takeException(), isNull);
     } finally {
       await rig.close(tester);
@@ -651,8 +719,8 @@ class _Rig {
           HostAttentionProjection(
             organizerId: request.organizerId,
             policyVersion: 7,
-            generatedAt: boundary,
-            horizonEndsAt: boundary.add(const Duration(days: 7)),
+            evaluatedAt: boundary,
+            sourceCoverage: HostAttentionSourceCoverage.complete,
             items: withTasks ? [_serverTask(this)] : const [],
             coverage: [
               for (final kind in HostAttentionKind.values)
@@ -752,10 +820,10 @@ class _HeldAttention implements HostAttentionRepository {
   final _Rig rig;
 
   @override
-  Future<HostAttentionProjection> fetch(String organizerId) {
+  Stream<HostAttentionProjection> watch(String organizerId) {
     expectSync(organizerId, rig.request.organizerId);
     rig.calls.add('attention');
-    return rig.readSource.attention.future;
+    return Stream.fromFuture(rig.readSource.attention.future);
   }
 }
 

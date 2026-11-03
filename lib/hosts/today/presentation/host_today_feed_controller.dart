@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
+import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -35,6 +36,18 @@ class HostTodayFeedRequest {
 
 enum HostTodayAttentionIssueSource { serverProjection, attendanceOutbox }
 
+/// The server's attention evaluation is not a complete all-clear: no
+/// evaluation is recorded yet, or a source exceeded the evaluator's cap.
+class HostTodayAttentionIncompleteException implements Exception {
+  const HostTodayAttentionIncompleteException(this.sourceCoverage);
+
+  final HostAttentionSourceCoverage sourceCoverage;
+
+  @override
+  String toString() =>
+      'HostTodayAttentionIncompleteException(${sourceCoverage.name})';
+}
+
 @immutable
 class HostTodayAttentionIssue {
   const HostTodayAttentionIssue({
@@ -56,8 +69,7 @@ class HostTodayFeedData {
     this.attentionItems = const <HostAttentionItem>[],
     this.attentionCoverage = const <HostAttentionCoverage>[],
     this.attentionIssues = const <HostTodayAttentionIssue>[],
-    this.attentionGeneratedAt,
-    this.attentionHorizonEndsAt,
+    this.attentionEvaluatedAt,
     this.localAttendanceMerged = false,
     this.attentionPending = false,
     this.attendancePending = false,
@@ -71,8 +83,9 @@ class HostTodayFeedData {
   final List<HostAttentionItem> attentionItems;
   final List<HostAttentionCoverage> attentionCoverage;
   final List<HostTodayAttentionIssue> attentionIssues;
-  final DateTime? attentionGeneratedAt;
-  final DateTime? attentionHorizonEndsAt;
+
+  /// When the server last evaluated the attention queue.
+  final DateTime? attentionEvaluatedAt;
   final bool localAttendanceMerged;
   final bool attentionPending;
   final bool attendancePending;
@@ -99,17 +112,29 @@ class HostTodayFeedController extends _$HostTodayFeedController {
     bool isCurrentEvaluation() =>
         evaluationRef.mounted && generation == _generation;
 
+    // Listen before any await, so a rebuild (retry, re-entry, resume)
+    // re-subscribes to the same attention listener instead of closing it.
+    // Values that arrive before the first state is published join it.
+    _OptionalLoad<HostAttentionProjection>? attention;
+    Future<void> Function()? republish;
+    evaluationRef.listen<AsyncValue<HostAttentionProjection>>(
+      hostAttentionProjectionProvider(request.organizerId),
+      (_, next) {
+        if (!isCurrentEvaluation()) return;
+        final load = _attentionLoad(next);
+        if (load == null) return;
+        attention = load;
+        if (republish case final publishLatest?) unawaited(publishLatest());
+      },
+      fireImmediately: true,
+    );
+
     final eventRepository = evaluationRef.watch(eventRepositoryProvider);
     final activeFuture = _captureOptional(
       () => eventRepository.fetchActiveEventsPage(
         organizerId: request.organizerId,
         sessionBoundary: request.sessionBoundary,
       ),
-    );
-    final attentionFuture = _captureOptional(
-      () => evaluationRef
-          .read(hostAttentionRepositoryProvider)
-          .fetch(request.organizerId),
     );
     final attendanceFuture = _captureOptional(
       () => evaluationRef
@@ -130,7 +155,6 @@ class HostTodayFeedController extends _$HostTodayFeedController {
       Error.throwWithStackTrace(error, active.stackTrace!);
     }
     final activeEvents = List<Event>.unmodifiable(active.value!.items);
-    _OptionalLoad<HostAttentionProjection>? attention;
     _OptionalLoad<HostAttendanceOutboxSummary>? attendance;
     _OptionalLoad<List<Event>>? history;
 
@@ -142,6 +166,14 @@ class HostTodayFeedController extends _$HostTodayFeedController {
             source: HostTodayAttentionIssueSource.serverProjection,
             error: error,
             stackTrace: attention!.stackTrace!,
+          )
+        else if (projection != null && !projection.isComplete)
+          HostTodayAttentionIssue(
+            source: HostTodayAttentionIssueSource.serverProjection,
+            error: HostTodayAttentionIncompleteException(
+              projection.sourceCoverage,
+            ),
+            stackTrace: StackTrace.empty,
           ),
         if (attendance?.error case final error?)
           HostTodayAttentionIssue(
@@ -151,7 +183,6 @@ class HostTodayFeedController extends _$HostTodayFeedController {
           ),
       ];
       // Rebuild from the original sources, never from an already merged list.
-      // In particular, a later projection supplies the local rows' policy.
       final items = <HostAttentionItem>[
         ...?projection?.items,
         if (attendance?.value case final outbox?)
@@ -160,17 +191,15 @@ class HostTodayFeedController extends _$HostTodayFeedController {
             activeEvents: activeEvents,
             accountId: request.accountId,
             now: request.sessionBoundary,
-            policyVersion: projection?.policyVersion,
           ),
-      ]..sort(_compareAttentionItems);
+      ]..sort(compareHostAttentionItems);
       return HostTodayFeedData(
         activeEvents: activeEvents,
         pastEvents: List<Event>.unmodifiable(history?.value ?? const []),
         attentionItems: List<HostAttentionItem>.unmodifiable(items),
         attentionCoverage: projection?.coverage ?? const [],
         attentionIssues: List<HostTodayAttentionIssue>.unmodifiable(issues),
-        attentionGeneratedAt: projection?.generatedAt,
-        attentionHorizonEndsAt: projection?.horizonEndsAt,
+        attentionEvaluatedAt: projection?.evaluatedAt,
         localAttendanceMerged: attendance?.value != null,
         attentionPending: attention == null,
         attendancePending: attendance == null,
@@ -184,34 +213,54 @@ class HostTodayFeedController extends _$HostTodayFeedController {
     // Even already-completed optional reads must wait for that publication;
     // otherwise build could overwrite their updates with its initial result.
     final initialPublication = future;
-    Future<void> publish<T>(
-      Future<_OptionalLoad<T>> source,
-      void Function(_OptionalLoad<T>) accept,
-    ) async {
+    Future<void> republishAfterInitial() async {
       try {
         await initialPublication;
       } on Object {
         return;
       }
-      final result = await source;
       if (!isCurrentEvaluation()) return;
       if (state.isLoading || state.asData == null) return;
-      // All slots belong to this evaluation. Update and compose synchronously
-      // so sibling completions cannot restore an older source snapshot.
-      accept(result);
+      // All slots belong to this evaluation. Compose synchronously so sibling
+      // completions cannot restore an older source snapshot.
       state = AsyncData(compose());
     }
 
-    unawaited(publish(attentionFuture, (value) => attention = value));
+    republish = republishAfterInitial;
+    Future<void> publish<T>(
+      Future<_OptionalLoad<T>> source,
+      void Function(_OptionalLoad<T>) accept,
+    ) async {
+      final result = await source;
+      if (!isCurrentEvaluation()) return;
+      accept(result);
+      await republishAfterInitial();
+    }
+
     unawaited(publish(attendanceFuture, (value) => attendance = value));
     unawaited(publish(historyFuture, (value) => history = value));
     return compose();
   }
 
+  /// Re-reads the events and the local outbox. The attention listener is
+  /// not invalidated: it is already live and re-subscribed by the rebuild.
   void retry() {
     ref.invalidateSelf();
   }
 }
+
+/// An attention listener value as an optional load; null while it has
+/// produced nothing yet.
+_OptionalLoad<HostAttentionProjection>? _attentionLoad(
+  AsyncValue<HostAttentionProjection> value,
+) => switch (value) {
+  AsyncValue(:final error?, :final stackTrace) => _OptionalLoad.error(
+    error,
+    stackTrace ?? StackTrace.current,
+  ),
+  AsyncValue(hasValue: true, :final value?) => _OptionalLoad.data(value),
+  _ => null,
+};
 
 Future<_OptionalLoad<T>> _captureOptional<T>(Future<T> Function() load) async {
   try {
@@ -240,7 +289,6 @@ Iterable<HostAttentionItem> _attendanceItems(
   required List<Event> activeEvents,
   required String accountId,
   required DateTime now,
-  required int? policyVersion,
 }) sync* {
   final eventsById = <String, Event>{
     for (final event in activeEvents) event.id: event,
@@ -279,7 +327,7 @@ Iterable<HostAttentionItem> _attendanceItems(
         errorCode: entry.lastErrorCode,
       ),
       dedupeKey: 'attendanceSync:${entry.clientOperationId}',
-      policyVersion: policyVersion,
+      policyVersion: hostAttentionPolicyVersion,
       resolutionVersion: 1,
       assignedHostUid: accountId,
       openedAt: entry.createdAt,
@@ -288,14 +336,4 @@ Iterable<HostAttentionItem> _attendanceItems(
       expiresAt: null,
     );
   }
-}
-
-int _compareAttentionItems(HostAttentionItem left, HostAttentionItem right) {
-  final urgency = left.urgency.index.compareTo(right.urgency.index);
-  if (urgency != 0) return urgency;
-  final blocking = (right.blocking ? 1 : 0).compareTo(left.blocking ? 1 : 0);
-  if (blocking != 0) return blocking;
-  final dueAt = left.dueAt.compareTo(right.dueAt);
-  if (dueAt != 0) return dueAt;
-  return left.id.compareTo(right.id);
 }
