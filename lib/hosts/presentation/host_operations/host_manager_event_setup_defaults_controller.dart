@@ -4,6 +4,8 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,23 +13,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'host_manager_event_setup_defaults_controller.freezed.dart';
 part 'host_manager_event_setup_defaults_controller.g.dart';
 
-typedef ReadManagerEventSetupDefaults =
-    Future<ManagerEventSetupDefaults> Function(String organizerId);
 typedef WriteManagerEventSetupDefaults =
     Future<ManagerEventSetupDefaultsUpdateReceipt> Function(
       ManagerEventSetupDefaultsUpdateRequest request,
     );
 
 /// A manager session can have only one unresolved defaults update per club.
-/// An error after send never rotates its request ID or changes its body.
+/// An error after send never rotates its request ID or changes its body. The
+/// defaults are read through `managerEventSetupDefaultsViewProvider`.
 class HostManagerEventSetupDefaultsDependencies {
   const HostManagerEventSetupDefaultsDependencies({
-    required this.read,
     required this.write,
     this.currentUserId,
     this.journal = const ManagerEventSetupDefaultsJournal(),
   });
-  final ReadManagerEventSetupDefaults read;
   final WriteManagerEventSetupDefaults write;
   final String? Function()? currentUserId;
   final ManagerEventSetupDefaultsJournal journal;
@@ -38,7 +37,6 @@ HostManagerEventSetupDefaultsDependencies
 hostManagerEventSetupDefaultsDependencies(Ref ref) {
   final functions = ref.watch(firebaseFunctionsProvider);
   return HostManagerEventSetupDefaultsDependencies(
-    read: ManagerEventSetupDefaultsRepository(functions).get,
     write: ManagerEventSetupDefaultsRepository(functions).update,
     currentUserId: () => ref.read(uidProvider).asData?.value,
   );
@@ -67,11 +65,19 @@ abstract class HostManagerEventSetupDefaultsState
 @riverpod
 class HostManagerEventSetupDefaultsController
     extends _$HostManagerEventSetupDefaultsController {
+  late ReadModelFollower<ManagerEventSetupDefaultsView> _defaultsView;
+  bool _journalLoaded = false;
+
   @override
   HostManagerEventSetupDefaultsState build(
     ({String userId, String organizerId}) scope,
   ) {
     ref.watch(hostManagerEventSetupDefaultsDependenciesProvider);
+    _defaultsView = ReadModelFollower(
+      onValue: _onDefaultsView,
+      onError: _onListenerError,
+    );
+    ref.onDispose(() => _defaultsView.close());
     ref.listen(uidProvider, (_, next) {
       if (next.asData?.value != scope.userId) invalidateActor();
     });
@@ -83,7 +89,6 @@ class HostManagerEventSetupDefaultsController
   String get _userId => scope.userId;
   String get _organizerId => scope.organizerId;
 
-  ReadManagerEventSetupDefaults get _read => _dependencies.read;
   WriteManagerEventSetupDefaults get _write => _dependencies.write;
   ManagerEventSetupDefaultsJournal get _journal => _dependencies.journal;
   bool get _actorAvailable {
@@ -97,6 +102,7 @@ class HostManagerEventSetupDefaultsController
   }
 
   void invalidateActor() {
+    _defaultsView.close();
     if (ref.mounted) {
       state = state.copyWith(actorAvailable: false, current: null);
     }
@@ -123,29 +129,56 @@ class HostManagerEventSetupDefaultsController
   bool get _saving => state.saving;
   set _saving(bool value) => _update((s) => s.copyWith(saving: value));
   bool get _canEdit => _actorAvailable && state.canEdit;
+
+  /// Listens to the organizer defaults (before the journal read) and stays
+  /// loading until they arrive. A missing view keeps loading; an invalid one
+  /// is a typed error, and nothing is editable from it.
   Future<void> load() async {
     if (!_actorAvailable || _loading || _saving) return;
+    _journalLoaded = false;
     _loading = true;
     _error = null;
-    // A failed fresh authority read must not leave the prior snapshot editable.
     _current = null;
+    _defaultsView.follow(
+      ref,
+      managerEventSetupDefaultsViewProvider(_organizerId),
+    );
     try {
       // Restore the frozen command before allowing any fresh edit.
       _pending = await _journal.load(
         userId: _userId,
         organizerId: _organizerId,
       );
-      if (!_actorAvailable) return;
-      _current = await _read(_organizerId);
-      if (!_actorAvailable) return;
-      if (_current!.organizerId != _organizerId) {
-        throw const FormatException('Manager defaults identity changed');
-      }
     } catch (cause) {
       _error = cause;
     } finally {
-      _loading = false;
+      _journalLoaded = true;
+      if (_current != null || state.error != null) _loading = false;
     }
+  }
+
+  void _onDefaultsView(ManagerEventSetupDefaultsView view) {
+    if (!_actorAvailable) return;
+    if (view.sourceCoverage ==
+        ManagerEventSetupDefaultsCoverage.invalidSource) {
+      _onListenerError(
+        ManagerEventSetupDefaultsUnavailable(
+          view.sourceCoverage,
+          source: view.incompleteSource,
+        ),
+      );
+      return;
+    }
+    if (!view.isComplete) return;
+    _current = view.defaults;
+    if (_journalLoaded) _loading = false;
+  }
+
+  void _onListenerError(Object error) {
+    if (!_actorAvailable) return;
+    _current = null;
+    _error = error;
+    if (_journalLoaded) _loading = false;
   }
 
   Future<void> save(ManagerEventSetupPreferences next) async {
@@ -213,8 +246,17 @@ class HostManagerEventSetupDefaultsController
     }
     await _journal.clear(userId: _userId, request: request);
     if (!_actorAvailable) return;
-    _current = receipt.current;
     _pending = null;
+    // No reread: the command settles when the listener delivers its revision.
+    final applied = receipt.appliedRevision;
+    await _defaultsView.until(
+      (view) =>
+          view.sourceCoverage ==
+              ManagerEventSetupDefaultsCoverage.invalidSource ||
+          (view.isComplete && view.defaults!.preferencesRevision >= applied),
+    );
+    if (!_actorAvailable) return;
+    _defaultsView.latest?.requireDefaults();
     _error = null;
   }
 }

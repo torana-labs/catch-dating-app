@@ -1,7 +1,11 @@
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_view.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+
+export 'manager_event_setup_defaults_view.dart';
 
 final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
 final _idPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
@@ -281,34 +285,27 @@ class ManagerEventSetupDefaultsUpdateReceipt {
 }
 
 class ManagerEventSetupDefaultsRepository {
-  const ManagerEventSetupDefaultsRepository(this._functions);
+  const ManagerEventSetupDefaultsRepository(this._functions, {this.views});
 
   final FirebaseFunctions _functions;
 
-  Future<ManagerEventSetupDefaults> get(String organizerId) {
-    if (!_idPattern.hasMatch(organizerId)) {
-      throw ArgumentError.value(organizerId, 'organizerId');
+  /// The manager listener on `hostEventSetupDefaultViews`; reads need it.
+  final HostEventSetupDefaultViewReads? views;
+
+  /// The organizer's defaults as the server last evaluated them, hashes
+  /// included, updated while listened to.
+  Stream<ManagerEventSetupDefaultsView> watch(String organizerId) {
+    final reads = views;
+    if (reads == null) {
+      throw StateError('Organizer defaults reads need the defaults view.');
     }
-    return withBackendErrorContext(
-      () async {
-        final response = await _functions
-            .httpsCallable('getOrganizerEventSetupDefaults')
-            .call<Object?>({'organizerId': organizerId});
-        final projection = ManagerEventSetupDefaults.fromResponse(
-          response.data,
-        );
-        if (projection.organizerId != organizerId) {
-          throw const FormatException('Manager defaults identity changed');
-        }
-        return projection;
-      },
-      context: const BackendErrorContext(
-        service: BackendService.functions,
-        action: 'read organizer event defaults',
-        resource: 'getOrganizerEventSetupDefaults',
-      ),
-    );
+    return reads.watch(organizerId);
   }
+
+  /// The first complete defaults: a missing view is awaited, an invalid one
+  /// is a typed error.
+  Future<ManagerEventSetupDefaults> firstComplete(String organizerId) =>
+      firstCompleteDefaultsView(watch(organizerId));
 
   Future<ManagerEventSetupDefaultsUpdateReceipt> update(
     ManagerEventSetupDefaultsUpdateRequest request,

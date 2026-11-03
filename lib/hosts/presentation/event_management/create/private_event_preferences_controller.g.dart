@@ -59,7 +59,7 @@ final class PrivateEventPreferencesDependenciesProvider
 }
 
 String _$privateEventPreferencesDependenciesHash() =>
-    r'acb3a9c23a467cb7188d8f18c356581ee4f51ad9';
+    r'785f23a05e18283d21955e47bdd9ecf0683d1171';
 
 @ProviderFor(PrivateEventPreferencesController)
 final privateEventPreferencesControllerProvider =
@@ -119,7 +119,7 @@ final class PrivateEventPreferencesControllerProvider
 }
 
 String _$privateEventPreferencesControllerHash() =>
-    r'84f4f1d1d2e474b48c0ce51c5757303fd2658dd5';
+    r'3546dbe7e47e6127dd33fdcd41c6bf5bc5fc413f';
 
 final class PrivateEventPreferencesControllerFamily extends $Family
     with

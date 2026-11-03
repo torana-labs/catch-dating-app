@@ -56,7 +56,7 @@ final class EventPublicationDependenciesProvider
 }
 
 String _$eventPublicationDependenciesHash() =>
-    r'b84509712ffbcaf4605ceb70e2a76c978f1c20b4';
+    r'8fdf38bde83520eabf62509f3ae4ff4ac28444b8';
 
 @ProviderFor(EventPublicationController)
 final eventPublicationControllerProvider = EventPublicationControllerFamily._();
@@ -110,7 +110,7 @@ final class EventPublicationControllerProvider
 }
 
 String _$eventPublicationControllerHash() =>
-    r'50349fc7d960368e66ff9474e3e2ca6f00d6fca6';
+    r'475bd3956b5ad44c437d1bc1a2f993eb0ba4b242';
 
 final class EventPublicationControllerFamily extends $Family
     with

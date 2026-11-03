@@ -5,6 +5,9 @@ import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaul
 import 'package:catch_dating_app/contexts/events/data/private_event_details_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_media_service.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
@@ -61,18 +64,17 @@ abstract class PrivateEventDetailsState with _$PrivateEventDetailsState {
       !const {'apply', 'cleanup'}.contains(reconciliationProgress?.phase);
 }
 
+/// Commands and services. The event and the organizer defaults are read
+/// through their listener read owners, `privateEventSetupViewProvider` and
+/// `managerEventSetupDefaultsViewProvider`.
 class PrivateEventDetailsDependencies {
   const PrivateEventDetailsDependencies({
-    required this.readEvent,
-    required this.readDefaults,
     required this.write,
     this.reconcile,
     this.journal = const PrivateEventDetailsJournal(),
     this.currentUserId,
     this.pickAndUploadPhotos,
   });
-  final ReadPrivateEventForDetails readEvent;
-  final ReadDefaultsForPrivateDetails readDefaults;
   final WritePrivateEventDetails write;
   final Future<PrivateSeatReconciliationResult> Function(
     PrivateEventDetailsUpdateRequest,
@@ -90,8 +92,6 @@ PrivateEventDetailsDependencies privateEventDetailsDependencies(Ref ref) {
   final details = PrivateEventDetailsRepository(functions);
   final media = ref.watch(privateEventMediaServiceProvider);
   return PrivateEventDetailsDependencies(
-    readEvent: PrivateEventSetupRepository(functions).get,
-    readDefaults: ManagerEventSetupDefaultsRepository(functions).get,
     write: details.update,
     reconcile: details.reconcile,
     currentUserId: () => ref.read(uidProvider).asData?.value,
@@ -103,13 +103,6 @@ PrivateEventDetailsDependencies privateEventDetailsDependencies(Ref ref) {
   );
 }
 
-typedef ReadPrivateEventForDetails =
-    Future<PrivateEventBasicSummary> Function({
-      required String organizerId,
-      required String eventId,
-    });
-typedef ReadDefaultsForPrivateDetails =
-    Future<ManagerEventSetupDefaults> Function(String organizerId);
 typedef WritePrivateEventDetails =
     Future<PrivateEventCreateReceipt> Function(
       PrivateEventDetailsUpdateRequest request,
@@ -119,10 +112,27 @@ typedef WritePrivateEventDetails =
 /// app restart or manager access changes, without creating another mutation.
 @riverpod
 class PrivateEventDetailsController extends _$PrivateEventDetailsController {
+  late ReadModelFollower<PrivateEventSetupView> _eventView;
+  late ReadModelFollower<ManagerEventSetupDefaultsView> _defaultsView;
+  bool _journalLoaded = false;
+  Object? _listenerError;
+
   @override
   PrivateEventDetailsState build(PrivateEventDetailsScope scope) {
     // Keep repository/service dependencies alive for this controller scope.
     final dependencies = ref.watch(privateEventDetailsDependenciesProvider);
+    _eventView = ReadModelFollower(
+      onValue: _onEventView,
+      onError: _onListenerError,
+    );
+    _defaultsView = ReadModelFollower(
+      onValue: _onDefaultsView,
+      onError: _onListenerError,
+    );
+    ref.onDispose(() {
+      _eventView.close();
+      _defaultsView.close();
+    });
     ref.listen(uidProvider, (previous, next) {
       if (next.asData?.value != scope.userId) invalidateActor();
     });
@@ -137,8 +147,6 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
   String get _userId => scope.userId;
   String get _organizerId => scope.organizerId;
   String get _eventId => scope.eventId;
-  ReadPrivateEventForDetails get _readEvent => _dependencies.readEvent;
-  ReadDefaultsForPrivateDetails get _readDefaults => _dependencies.readDefaults;
   WritePrivateEventDetails get _write => _dependencies.write;
   PrivateEventDetailsJournal get _journal => _dependencies.journal;
   Future<PrivateSeatReconciliationResult> Function(
@@ -167,14 +175,18 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     if (ref.mounted) state = update(state);
   }
 
-  void invalidateActor() => _update(
-    (s) => s.copyWith(
-      actorAvailable: false,
-      event: null,
-      defaults: null,
-      reconciliationProgress: null,
-    ),
-  );
+  void invalidateActor() {
+    _eventView.close();
+    _defaultsView.close();
+    _update(
+      (s) => s.copyWith(
+        actorAvailable: false,
+        event: null,
+        defaults: null,
+        reconciliationProgress: null,
+      ),
+    );
+  }
 
   // Venue and duration can be completed after guests or offers exist. Only
   // a format change remains subject to the basic-event commitment guard.
@@ -185,13 +197,28 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     _update((s) => s.copyWith(error: cause));
   }
 
+  /// Listens to the event and the organizer defaults (before the journal
+  /// read) and stays loading until both have delivered. A missing view keeps
+  /// the step loading; an invalid one is a typed error.
   Future<void> load() async {
     if (!_actorAvailable || _loading || _saving || _uploading) return;
-    _update((s) => s.copyWith(loading: true));
-    _update((s) => s.copyWith(error: null));
-    _update((s) => s.copyWith(event: null));
-    _update((s) => s.copyWith(defaults: null));
-
+    _journalLoaded = false;
+    _listenerError = null;
+    _update(
+      (s) =>
+          s.copyWith(loading: true, error: null, event: null, defaults: null),
+    );
+    _eventView.follow(
+      ref,
+      privateEventSetupViewProvider(
+        organizerId: _organizerId,
+        eventId: _eventId,
+      ),
+    );
+    _defaultsView.follow(
+      ref,
+      managerEventSetupDefaultsViewProvider(_organizerId),
+    );
     try {
       final savedPending = await _journal.load(
         userId: _userId,
@@ -200,23 +227,80 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
       );
       if (!_actorAvailable) return;
       _update((s) => s.copyWith(pending: savedPending));
-      final results = await Future.wait<Object>([
-        _readEvent(organizerId: _organizerId, eventId: _eventId),
-        _readDefaults(_organizerId),
-      ]);
-      if (!_actorAvailable) return;
-      final nextEvent = results[0] as PrivateEventBasicSummary;
-      final nextDefaults = results[1] as ManagerEventSetupDefaults;
-      if (nextEvent.eventId != _eventId ||
-          nextEvent.organizerId != _organizerId ||
-          nextDefaults.organizerId != _organizerId) {
-        throw const FormatException('Private event details identity changed');
-      }
-      _update((s) => s.copyWith(event: nextEvent));
-      _update((s) => s.copyWith(defaults: nextDefaults));
     } catch (cause) {
       _update((s) => s.copyWith(error: cause));
     } finally {
+      _journalLoaded = true;
+      _settleLoading();
+    }
+  }
+
+  void _onEventView(PrivateEventSetupView view) {
+    if (!_actorAvailable) return;
+    if (view.sourceCoverage == PrivateEventSetupCoverage.invalidSource) {
+      _onListenerError(
+        PrivateEventSetupViewUnavailable(
+          view.sourceCoverage,
+          source: view.incompleteSource,
+        ),
+      );
+      return;
+    }
+    if (view.isComplete) {
+      _update((s) => s.copyWith(event: view.summary));
+      _clearListenerError();
+    }
+    _settleLoading();
+  }
+
+  void _onDefaultsView(ManagerEventSetupDefaultsView view) {
+    if (!_actorAvailable) return;
+    if (view.sourceCoverage ==
+        ManagerEventSetupDefaultsCoverage.invalidSource) {
+      _onListenerError(
+        ManagerEventSetupDefaultsUnavailable(
+          view.sourceCoverage,
+          source: view.incompleteSource,
+        ),
+      );
+      return;
+    }
+    if (view.isComplete) {
+      _update((s) => s.copyWith(defaults: view.defaults));
+      _clearListenerError();
+    }
+    _settleLoading();
+  }
+
+  void _onListenerError(Object error) {
+    if (!_actorAvailable) return;
+    _listenerError = error;
+    final eventFailed = !(_eventView.latest?.isComplete ?? false);
+    final defaultsFailed = !(_defaultsView.latest?.isComplete ?? false);
+    _update(
+      (s) => s.copyWith(
+        error: error,
+        event: eventFailed ? null : s.event,
+        defaults: defaultsFailed ? null : s.defaults,
+      ),
+    );
+    _settleLoading();
+  }
+
+  void _clearListenerError() {
+    if (_listenerError != null && identical(state.error, _listenerError)) {
+      _update((s) => s.copyWith(error: null));
+    }
+    _listenerError = null;
+  }
+
+  /// Loading ends when the journal and both listeners have answered.
+  void _settleLoading() {
+    if (!_loading) return;
+    final answered =
+        _listenerError != null ||
+        (state.event != null && state.defaults != null);
+    if (_journalLoaded && answered) {
       _update((s) => s.copyWith(loading: false));
     }
   }
@@ -331,26 +415,6 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     }
   }
 
-  Future<void> _reloadForReview() async {
-    _update((s) => s.copyWith(event: null));
-    _update((s) => s.copyWith(defaults: null));
-    if (!_actorAvailable) return;
-    final refreshed = await Future.wait<Object>([
-      _readEvent(organizerId: _organizerId, eventId: _eventId),
-      _readDefaults(_organizerId),
-    ]);
-    if (!_actorAvailable) return;
-    final nextEvent = refreshed[0] as PrivateEventBasicSummary;
-    final nextDefaults = refreshed[1] as ManagerEventSetupDefaults;
-    if (nextEvent.eventId != _eventId ||
-        nextEvent.organizerId != _organizerId ||
-        nextDefaults.organizerId != _organizerId) {
-      throw const FormatException('Private details review changed identity');
-    }
-    _update((s) => s.copyWith(event: nextEvent));
-    _update((s) => s.copyWith(defaults: nextDefaults));
-  }
-
   Future<void> _sendPending(PrivateEventDetailsUpdateRequest request) async {
     if (!_actorAvailable) return;
     PrivateEventCreateReceipt? receipt;
@@ -378,7 +442,7 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
             await _journal.clear(userId: _userId, request: request);
             _update((s) => s.copyWith(pending: null));
             _update((s) => s.copyWith(reconciliationProgress: null));
-            await _reloadForReview();
+            // The listeners already hold the current event and defaults.
             return;
           }
           receipt = result.receipt;
@@ -395,7 +459,7 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
         await _journal.clear(userId: _userId, request: request);
         _update((s) => s.copyWith(pending: null));
         _update((s) => s.copyWith(reconciliationProgress: null));
-        await _reloadForReview();
+        // The listeners already hold the current event to review against.
       } else if (_actorAvailable &&
           request.discard &&
           isDiscardUnavailable(cause, request)) {
@@ -419,19 +483,23 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     await _journal.clear(userId: _userId, request: request);
     _update((s) => s.copyWith(pending: null));
     _update((s) => s.copyWith(reconciliationProgress: null));
-    // The acknowledged event revision is unknown until the authorized reread.
-    _update((s) => s.copyWith(event: null));
     if (!_actorAvailable) return;
-    final refreshed = await _readEvent(
-      organizerId: _organizerId,
-      eventId: _eventId,
+    // No reread: saving ends when the listener delivers the committed
+    // revision (an older replay revision is already reflected).
+    final revision = receipt.setupRevision;
+    await _eventView.until(
+      (view) =>
+          view.reflects(revision) ||
+          view.sourceCoverage == PrivateEventSetupCoverage.invalidSource,
     );
     if (!_actorAvailable) return;
-    if (refreshed.eventId != _eventId ||
-        refreshed.organizerId != _organizerId) {
-      throw const FormatException('Private event reread changed identity');
+    final reflected = _eventView.latest;
+    if (reflected != null && !reflected.isComplete) {
+      throw PrivateEventSetupViewUnavailable(
+        reflected.sourceCoverage,
+        source: reflected.incompleteSource,
+      );
     }
-    _update((s) => s.copyWith(event: refreshed));
     _update((s) => s.copyWith(error: null));
   }
 }
