@@ -314,12 +314,13 @@ export function newRootFindings(source, deprecated, legacy = []) {
   }
   for (const member of legacy) {
     if (!member.name) continue;
-    for (const match of masked.matchAll(new RegExp(`(?<![\\w$])${member.name}\\b`, "gu"))) {
+    // Registry names and paths are data: escape them whole (Node 24 is pinned).
+    for (const match of masked.matchAll(new RegExp(`(?<![\\w$])${RegExp.escape(member.name)}\\b`, "gu"))) {
       add(match.index, `uses legacy ${member.name} (${member.id})`);
     }
     const uri = member.file?.startsWith(`${libraryRoot}/`) ?
       `package:catch_ui/${member.file.slice(libraryRoot.length + 1)}` : null;
-    for (const match of uri ? source.matchAll(new RegExp(`^\\s*(?:import|export)\\s+'${uri.replace(/[.]/gu, "\\.")}'`, "gmu")) : []) {
+    for (const match of uri ? source.matchAll(new RegExp(`^\\s*(?:import|export)\\s+'${RegExp.escape(uri)}'`, "gmu")) : []) {
       add(match.index, `imports legacy ${member.name} (${member.id})`);
     }
   }

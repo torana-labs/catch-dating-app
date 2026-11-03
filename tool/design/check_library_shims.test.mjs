@@ -124,6 +124,15 @@ test("a new-root file may neither name nor import a legacy member", () => {
   assert.deepEqual(found("import 'package:catch_ui/catch_ui.dart';\n// CatchLegacySurface\nconst a = CatchSurface();"), []);
 });
 
+test("a legacy member's path is matched literally, metacharacters and all", () => {
+  const legacy = [{id: "catch.odd.legacy", name: "CatchOddSurface", file: "packages/catch_ui/lib/src/legacy+(v1).dart"}];
+  const found = (source) => newRootFindings(source, [], legacy).map((finding) => finding.text);
+  assert.deepEqual(found("import 'package:catch_ui/src/legacy+(v1).dart';\nconst a = 1;"),
+    ["imports legacy CatchOddSurface (catch.odd.legacy)"]);
+  assert.deepEqual(found("import 'package:catch_ui/src/legacyyv1.dart';\nconst a = 1;"), []);
+  assert.deepEqual(found("import 'package:catch_ui/src/legacy+(v1)Xdart';\nconst a = 1;"), []);
+});
+
 test("the export surface follows the barrel, its show and hide, nested exports and parts", () => {
   const files = {
     [barrel]: "export 'src/a.dart' show CatchShown;\nexport 'src/b.dart' hide CatchHiddenB;\nexport 'src/c.dart';\nexport 'package:other/other.dart';",
