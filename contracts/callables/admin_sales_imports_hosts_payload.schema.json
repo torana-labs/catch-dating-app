@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_imports_hosts_payload.schema.json",
+  "title": "Sales imports.hosts callable payload",
+  "description": "Private bounded Sales callable request. Server authorization and transaction policy are enforced separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "importId"
+  ],
+  "properties": {
+    "importId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+}

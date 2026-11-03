@@ -16,7 +16,6 @@ import type {
   SalesAccountDetail, SalesCustomFieldDefinition, SalesOpportunity, SalesResearchStatus,
 } from "../api/salesTypes";
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
-import {renderSalesSettingsWorkspace} from "./SalesSettingsPanel";
 import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
 
 type DetailTab = "overview" | "workflow" | "activity" |
@@ -63,43 +62,33 @@ function ownerLabel(uid: string | null | undefined, currentUserUid: string): str
 }
 
 export function SalesWorkspaceScreen({
-  area,
   currentUserUid,
   isAdminOwner = false,
   assignedStaffOnly = false,
   selectedOrganizerId,
   onBackToHosts,
-  onGoToToday,
   onOpenOrganizer,
 }: {
-  area: "hosts" | "settings";
   currentUserUid: string;
   isAdminOwner?: boolean;
   assignedStaffOnly?: boolean;
   selectedOrganizerId: string | null;
   onBackToHosts: () => void;
-  onGoToToday: () => void;
   onOpenOrganizer: (organizerId: string) => void;
 }) {
   const {setError, setNotice} = useAdminFeedback();
   const controller = useSalesWorkspaceController({
-    area, selectedOrganizerId, assignedStaffOnly,
+    selectedOrganizerId, assignedStaffOnly,
     onError: setError, onNotice: setNotice,
   });
-  const pageTitle = selectedOrganizerId ?
-    controller.detail.data?.organizerSummary.name ?? "Host" :
-    assignedStaffOnly ? "Assigned Sales" : "Settings";
-
   return (
     <AdminDirectoryScreenStack>
-      <PageHeader eyebrow="Sales" title={pageTitle} actions={selectedOrganizerId ? (
+      <PageHeader eyebrow="Sales" title={controller.detail.data?.organizerSummary.name ?? "Host"} actions={
         <AdminButton icon={<ArrowLeft size={16} />} onClick={onBackToHosts}>
           Back to hosts
         </AdminButton>
-      ) : undefined}>
-        {selectedOrganizerId ? "Private host workspace" : assignedStaffOnly ?
-          "Work only on Sales records currently assigned to you." :
-          "Custom fields, reviewed imports and privacy."}
+      }>
+        Private host workspace
         {dataMode() === "sample" ? " Sample data is shown." : ""}
       </PageHeader>
       {selectedOrganizerId ? (
@@ -107,17 +96,7 @@ export function SalesWorkspaceScreen({
           controller={controller} currentUserUid={currentUserUid}
           isAdminOwner={isAdminOwner} assignedStaffOnly={assignedStaffOnly}
           onOpenOrganizer={onOpenOrganizer} />
-      ) : assignedStaffOnly ? (
-        <Panel title="Assigned Sales access" icon={<ClipboardList size={18} />}>
-          <CatchText as="p" variant="supporting">Your role can use Today, Hosts and Deals for records currently
-            assigned to you.</CatchText>
-          <AdminButton onClick={onGoToToday}>Go to Today</AdminButton>
-        </Panel>
-      ) : (
-        <>{renderSalesSettingsWorkspace(controller, isAdminOwner)}
-          {renderSalesPrivacyWorkspace({actorUid: currentUserUid, isAdminOwner})}
-        </>
-      )}
+      ) : null}
     </AdminDirectoryScreenStack>
   );
 }

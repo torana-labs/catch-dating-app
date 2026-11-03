@@ -147,6 +147,9 @@ export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
   "evidenceProposals.list": strict(["organizerId"], {
     organizerId: id, limit: listLimit, cursor,
   }),
+  "imports.list": strict([], {limit: {type: "integer", minimum: 1, maximum: 25},
+    cursor: id}),
+  "imports.hosts": strict(["importId"], {importId: id}),
   "imports.preview": strict(
     ["sourceId", "contentHash", "mappingVersion", "rows"],
     {

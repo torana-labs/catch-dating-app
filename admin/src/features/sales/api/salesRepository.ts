@@ -3,7 +3,7 @@ import {loadAdminCallableValidators} from
 import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {dataMode} from "../../../shared/api/dataMode";
-import {listOrganizerDetails} from "../../../shared/api/adminApi";
+import {listOrganizerDetails, loadOrganizerDetails} from "../../../shared/api/adminApi";
 import type {AdminOrganizerListRow} from "../../../shared/types/adminTypes";
 import type {
   SalesAccount, SalesAccountDetail, SalesAccountSummary, SalesActivity,
@@ -17,7 +17,8 @@ import type {
   SalesUpsertOpportunityInput, SalesUpsertTaskInput,
   SalesContact, SalesContactInput, SalesEvidence, SalesEvidenceInput,
   SalesImportPacket, SalesImportPreview, SalesSetAccountSuppressionInput,
-  SalesImportCompensationInput, SalesImportCompensationPreview,
+  SalesImportBatch, SalesImportCompensationInput, SalesImportCompensationPreview,
+  SalesImportHost,
   SalesImportCompensationResult,
   SalesSetContactabilityInput, SalesEvidenceProposal, SalesReviewEvidenceProposalInput,
 } from "./salesTypes";
@@ -93,7 +94,14 @@ const sampleDetails = new Map<string, SalesAccountDetail>(sampleNames.map(
 ));
 
 const sampleReceipts = new Map<string, unknown>();
-const sampleCustomFields: SalesCustomFieldDefinition[] = [];
+const sampleCustomFields: SalesCustomFieldDefinition[] = [
+  {fieldId: "sales.ticket_platform_today", label: "Ticket platform today", type: "enum", recordType: "account",
+    enumOptions: ["Luma", "BookMyShow", "UPI", "Other"], revision: 1},
+  {fieldId: "sales.events_a_month", label: "Events a month", type: "number", recordType: "account",
+    helpText: "how many they run, roughly", revision: 1},
+  {fieldId: "sales.who_decides", label: "Who decides", type: "string", recordType: "account",
+    helpText: "the person who says yes", revision: 1},
+];
 const sampleHostIds = [...sampleDetails.keys()];
 const sampleContacts = new Map<string, SalesContact[]>(sampleHostIds.slice(0, 3).map((organizerId) => [organizerId, [{
   contactId: `${organizerId}-founder`, displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker",
@@ -169,6 +177,11 @@ export async function listSalesAccounts(
 export async function searchCanonicalOrganizers(query: string): Promise<AdminOrganizerListRow[]> {
   const response = await listOrganizerDetails({query, limit: 25});
   return response.rows;
+}
+
+export async function getCanonicalOrganizerName(organizerId: string): Promise<string | null> {
+  const response = await loadOrganizerDetails({organizerId});
+  return response.organizer.name ?? null;
 }
 
 export async function getSalesAccount(organizerId: string): Promise<SalesAccountDetail> {
@@ -469,10 +482,56 @@ export async function setSalesContactability(
   });
 }
 
+const sampleImports: SalesImportBatch[] = [
+  {importId: "import-sample-october-2", sourceId: "october-outreach-list", rowCount: 20,
+    counts: {created: 17, matched: 1, duplicate: 1, unresolved: 1, rejected: 0},
+    appliedAt: "2026-10-28T11:20:00.000Z", appliedBy: "sample-owner"},
+  {importId: "import-sample-october-1", sourceId: "october-outreach-list", rowCount: 25,
+    counts: {created: 22, matched: 2, duplicate: 0, unresolved: 1, rejected: 0},
+    appliedAt: "2026-10-28T11:10:00.000Z", appliedBy: "sample-owner"},
+  {importId: "import-sample-bandra", sourceId: "bandra-run-clubs", rowCount: 12,
+    counts: {created: 12, matched: 0, duplicate: 0, unresolved: 0, rejected: 0},
+    appliedAt: "2026-10-14T09:00:00.000Z", appliedBy: "sample-teammate"},
+];
+const sampleCorrected = new Set<string>();
+
+export async function listSalesImports(
+  input: {limit?: number; cursor?: string}
+): Promise<SalesPage<SalesImportBatch>> {
+  if (dataMode() !== "sample") return call("adminListSalesImports", input);
+  return pageRows(structuredClone(sampleImports), input.cursor, input.limit ?? 25);
+}
+
+export async function listSalesImportHosts(importId: string): Promise<{rows: SalesImportHost[]}> {
+  if (dataMode() !== "sample") return call("adminListSalesImportHosts", {importId});
+  const rows = sampleHostIds.slice(0, 2).map((organizerId) => ({importId, organizerId,
+    name: sampleDetail(organizerId).organizerSummary.name}));
+  return {rows};
+}
+
+function sampleImportRows(packet: SalesImportPacket): SalesImportPreview["rows"] {
+  return packet.rows.map(({sourceRowId, organizerId}) => {
+    if (!organizerId) {
+      return {sourceRowId, organizerId, disposition: "unresolved", reason: "identity_unresolved", accountRevision: null};
+    }
+    return sampleDetails.has(organizerId) ?
+      {sourceRowId, organizerId, disposition: "matched", reason: "existing_private_account", accountRevision: 1} :
+      {sourceRowId, organizerId, disposition: "created", reason: "new_private_companion", accountRevision: null};
+  });
+}
+
+function sampleImportCounts(rows: SalesImportPreview["rows"]): Record<string, number> {
+  const counts: Record<string, number> = {created: 0, matched: 0, duplicate: 0, unresolved: 0, rejected: 0};
+  for (const row of rows) counts[row.disposition] += 1;
+  return counts;
+}
+
 export async function previewSalesImport(packet: SalesImportPacket):
 Promise<SalesImportPreview> {
   if (dataMode() !== "sample") return call("adminPreviewSalesImport", packet);
-  throw new Error("Reviewed imports require a live employee workspace.");
+  const rows = sampleImportRows(packet);
+  return {previewHash: `sample-${packet.sourceId}-${packet.rows[0]?.sourceRowId ?? ""}`, rows,
+    counts: sampleImportCounts(rows), effectsApplied: false};
 }
 
 export async function applySalesImport(input: SalesImportPacket & {
@@ -480,7 +539,15 @@ export async function applySalesImport(input: SalesImportPacket & {
 }): Promise<{importId: string; rows: SalesImportPreview["rows"];
   counts: Record<string, number>; effectsApplied: true; receipt: MutationReceipt}> {
   if (dataMode() !== "sample") return call("adminApplySalesImport", input);
-  throw new Error("Reviewed imports require a live employee workspace.");
+  return replayOrStore(input.requestId, () => {
+    const rows = sampleImportRows(input);
+    const counts = sampleImportCounts(rows);
+    const importId = `import-sample-${input.requestId}`;
+    sampleImports.unshift({importId, sourceId: input.sourceId, rowCount: input.rows.length, counts,
+      appliedAt: new Date().toISOString(), appliedBy: "sample-owner"});
+    return {importId, rows, counts, effectsApplied: true as const,
+      receipt: {requestId: input.requestId, revision: 1}};
+  });
 }
 
 export async function previewSalesImportCompensation(
@@ -489,7 +556,9 @@ export async function previewSalesImportCompensation(
   if (dataMode() !== "sample") {
     return call("adminPreviewSalesImportCompensation", input);
   }
-  throw new Error("Compensation requires a live Admin Owner workspace.");
+  return {...input, mode: "remove_cohorts", blockers: [], accountRevision: 1,
+    cohortIdsRemoved: ["sample-outreach"], previewHash: `sample-${input.importId}-${input.organizerId}`,
+    alreadyCompensated: sampleCorrected.has(`${input.importId}:${input.organizerId}`)};
 }
 
 export async function applySalesImportCompensation(
@@ -499,7 +568,12 @@ export async function applySalesImportCompensation(
   if (dataMode() !== "sample") {
     return call("adminApplySalesImportCompensation", input);
   }
-  throw new Error("Compensation requires a live Admin Owner workspace.");
+  return replayOrStore(input.requestId, () => {
+    sampleCorrected.add(`${input.importId}:${input.organizerId}`);
+    return {importId: input.importId, organizerId: input.organizerId, status: "compensated" as const,
+      mode: "remove_cohorts" as const, cohortIdsRemoved: ["sample-outreach"], accountRevision: 2,
+      receipt: {requestId: input.requestId, revision: 2}};
+  });
 }
 
 export async function listSalesEvidenceProposals(organizerId: string, cursor?: string):
