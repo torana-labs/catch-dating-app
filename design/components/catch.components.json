@@ -6915,10 +6915,11 @@
           "story": "packages/web-ui/src/components/CatchText.stories.tsx",
           "exportName": "Contract",
           "states": [
-            "variants",
-            "tones",
-            "numeric",
-            "clamp"
+            "roles",
+            "recolored",
+            "aligned",
+            "clamped",
+            "numeric"
           ]
         },
         "notes": "React takes the text as children, variant as the kebab-case role (display-hero … label-code, page-title, section-title, hero), and as, htmlFor, className and style, which are web-only. The responsive roles resolve through the size class. CatchLegacyText (with CatchLegacyTextVariant and the CatchTextColor and CatchTextAccent colours) is the pre-redesign text, kept @deprecated for legacy callers until P7."
@@ -8127,8 +8128,8 @@
           "exportName": "Contract",
           "states": [
             "sizes",
-            "labelled",
-            "inherits-tone"
+            "tones",
+            "labelled"
           ]
         },
         "notes": "React passes the role name as name, a size of 16, 18, 20 or 24 and an optional label; it takes the colour of the text around it, and direction roles mirror in right-to-left layouts. Both frameworks resolve roles through design/tokens/catch.icons.json. CatchLegacyIcon (icon, size step name, tone) is the pre-redesign icon, kept @deprecated for legacy callers until P7."

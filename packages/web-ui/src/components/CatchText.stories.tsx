@@ -27,16 +27,17 @@ function State({label, children}: {label: string; children: ReactNode}) {
 const sentence = "Come on your own. Leave knowing a few more people.";
 
 /**
- * catch.text on the web: the 22 variants (19 roles and the three responsive
- * ones, as h-elements where the role is a heading), every tone, tabular
- * figures and a two-line clamp.
+ * catch.text on the web, in the record's states: roles (the 22 variants: the
+ * 19 roles and the three responsive ones, as headings where the role is one),
+ * recolored (every tone), aligned, clamped (two lines) and numeric (tabular
+ * figures).
  */
 export const Contract: Story = {
   render: () => (
     <CatchRoot size="expanded" theme="day">
       <CatchSurface block="plain" padding="lg">
         <CatchStack gap={32}>
-          <State label="variants">
+          <State label="roles">
             <CatchStack gap={12}>
               {catchTextVariants.map((variant) => (
                 <CatchStack align="baseline" direction="row" gap={16} key={variant}>
@@ -46,10 +47,15 @@ export const Contract: Story = {
               ))}
             </CatchStack>
           </State>
-          <State label="tones">
+          <State label="recolored">
             <CatchStack direction="row" gap={16} wrap>
               {catchTextTones.map((tone) => <CatchText key={tone} tone={tone} variant="title-row">{tone}</CatchText>)}
             </CatchStack>
+          </State>
+          <State label="aligned">
+            <CatchSurface>
+              {(["start", "center", "end"] as const).map((align) => <CatchText align={align} as="p" key={align} variant="body">{`Aligned ${align}`}</CatchText>)}
+            </CatchSurface>
           </State>
           <State label="numeric">
             <CatchStack gap={2}>
@@ -57,7 +63,7 @@ export const Contract: Story = {
               <CatchText numeric variant="display-sm">₹8,888.80</CatchText>
             </CatchStack>
           </State>
-          <State label="clamp">
+          <State label="clamped">
             <CatchSurface>
               <CatchText maxLines={2} variant="body">{sentence.repeat(8)}</CatchText>
             </CatchSurface>

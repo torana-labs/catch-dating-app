@@ -25,7 +25,7 @@ function State({label, children}: {label: string; children: ReactNode}) {
   );
 }
 
-/** catch.icon on the web: the four sizes (stroke 2, and 1.75 at 24), a labelled icon, and an icon taking its text's tone. */
+/** catch.icon on the web: the four sizes (stroke 2, and 1.75 at 24), a labelled icon, and tones: an icon has none of its own and takes its text's. */
 export const Contract: Story = {
   render: () => (
     <CatchRoot theme="day">
@@ -42,7 +42,7 @@ export const Contract: Story = {
               <CatchText variant="body">The icon alone carries the meaning, so it is read aloud.</CatchText>
             </CatchStack>
           </State>
-          <State label="inherits-tone">
+          <State label="tones">
             <CatchText as="div" tone="danger" variant="title-row">
               <CatchStack align="center" direction="row" gap={6}>
                 <CatchIcon name="warning" size={18} />
