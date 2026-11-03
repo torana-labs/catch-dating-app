@@ -3,7 +3,7 @@ import {useState} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {CatchToggleInput} from "./CatchToggleInput";
 import {CatchGap} from "./CatchGap";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {CatchPageBody} from "./CatchPageBody";
 const noop = () => {};
 const meta = {title: "Web UI/CatchToggleInput", component: CatchToggleInput,
@@ -13,7 +13,7 @@ type Story = StoryObj<typeof CatchToggleInput>;
 function States() {
   return <CatchPageBody constrainToContentWidth><CatchGap size="formField">
     {(["toggle", "field"] as const).map((recipe) => <CatchGap key={recipe} size="inline">
-      <CatchText variant="bodyM">{`${recipe} settings controls`}</CatchText>
+      <CatchLegacyText variant="bodyM">{`${recipe} settings controls`}</CatchLegacyText>
       <CatchGap direction="horizontal" size="inline" wrap>
         <CatchToggleInput recipe={recipe} value={false} onChanged={noop} semanticLabel={`${recipe} setting off`} />
         <CatchToggleInput recipe={recipe} value onChanged={noop} semanticLabel={`${recipe} setting on`} />

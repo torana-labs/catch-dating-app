@@ -2,11 +2,11 @@ import {render} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 import {catchIconStrokeWidth} from "../icons/catchIconGlyphs";
 import {activityIconName, catchIconSvgMarkup} from "../icons/catchIcons";
-import {CatchIcon} from "./CatchIcon";
+import {CatchLegacyIcon} from "./CatchLegacyIcon";
 
-describe("CatchIcon", () => {
+describe("CatchLegacyIcon", () => {
   it("draws the role's glyph at the token size and the family stroke", () => {
-    const svg = render(<CatchIcon icon="back" size="lg" />).container.querySelector("svg");
+    const svg = render(<CatchLegacyIcon icon="back" size="lg" />).container.querySelector("svg");
     expect(svg?.getAttribute("width")).toBe("24");
     expect(svg?.getAttribute("height")).toBe("24");
     expect(svg?.getAttribute("stroke-width")).toBe(String(catchIconStrokeWidth));
@@ -14,24 +14,24 @@ describe("CatchIcon", () => {
   });
 
   it("defaults to the md extent and the surrounding color", () => {
-    const svg = render(<CatchIcon icon="search" />).container.querySelector("svg");
+    const svg = render(<CatchLegacyIcon icon="search" />).container.querySelector("svg");
     expect(svg?.getAttribute("width")).toBe("18");
     expect(svg?.getAttribute("data-tone")).toBe("inherit");
   });
 
   it("is decorative without a label and an image with one", () => {
-    const decorative = render(<CatchIcon icon="search" />).container.querySelector("svg");
+    const decorative = render(<CatchLegacyIcon icon="search" />).container.querySelector("svg");
     expect(decorative?.getAttribute("aria-hidden")).toBe("true");
     expect(decorative?.getAttribute("role")).toBeNull();
 
-    const labelled = render(<CatchIcon icon="search" semanticLabel="Search" />).container.querySelector("svg");
+    const labelled = render(<CatchLegacyIcon icon="search" semanticLabel="Search" />).container.querySelector("svg");
     expect(labelled?.getAttribute("aria-hidden")).toBeNull();
     expect(labelled?.getAttribute("role")).toBe("img");
     expect(labelled?.getAttribute("aria-label")).toBe("Search");
   });
 
   it("exposes its tone for the token color", () => {
-    const svg = render(<CatchIcon icon="error" tone="danger" />).container.querySelector("svg");
+    const svg = render(<CatchLegacyIcon icon="error" tone="danger" />).container.querySelector("svg");
     expect(svg?.getAttribute("data-tone")).toBe("danger");
   });
 });

@@ -1,4 +1,4 @@
-import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {useState} from "react";
 import {offerCodeSent} from "../../content/eventOffer";
 import {approvalNotificationCopy as notificationCopy, eventPageCopy, guestEventCopy as copy} from "../../content/events";
@@ -54,7 +54,7 @@ export function GuestEventEntryView({eventId, controller: c, startLabel}: {
   const next = guest && mode ? guestEventAction(guest, eventId) : null;
   return (
     <CatchGap size="section">
-      {!guest ? <CatchText as="p" color="ink2" role="status" variant="bodyM">{copy.unavailable}</CatchText> :
+      {!guest ? <CatchLegacyText as="p" color="ink2" role="status" variant="bodyM">{copy.unavailable}</CatchLegacyText> :
         next && mode ? <Start label={next.label} note={next.status} onStart={() => setFlow({uid, mode})} /> :
           <GuestStatus eventId={eventId} guest={guest} />}
       {notifications}
@@ -70,7 +70,7 @@ function Start({label, note, onStart}: {label: string; note: string; onStart: ()
   return (
     <CatchGap size="related">
       <CatchButton fullWidth label={label} onPressed={onStart} />
-      <CatchText as="p" color="ink2" role="status" variant="bodyS">{note}</CatchText>
+      <CatchLegacyText as="p" color="ink2" role="status" variant="bodyS">{note}</CatchLegacyText>
     </CatchGap>
   );
 }
@@ -111,7 +111,7 @@ function PhoneStep({c}: {c: Controller}) {
           status={c.pending ? "loading" : "idle"} type="submit" />
         {c.codeSent ? <CatchButton fullWidth label={copy.changePhone} onPressed={c.pending ? null : c.changePhone}
           variant="quiet" /> : null}
-        <CatchText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchLegacyText>
       </CatchGap>
     </Form>
   );
@@ -129,7 +129,7 @@ function GuestStatus({guest, eventId}: {guest: GuestEventState; eventId: string}
   const help = ["unsupported", "unavailable", "awaitingOffer", "declined"].includes(guest.action);
   return (
     <CatchGap size="related">
-      <CatchText as="p" role="status" variant="bodyM">{action.status}</CatchText>
+      <CatchLegacyText as="p" role="status" variant="bodyM">{action.status}</CatchLegacyText>
       {action.href ? <CatchButton fullWidth href={action.href} label={action.label} onPressed={go} /> : null}
       {payment ? <CatchButton fullWidth href={payment} label={copy.payment} onPressed={go} variant="secondary" /> : null}
       {help ? <CatchButton fullWidth href="/help/" label={copy.help} onPressed={go} variant="secondary" /> : null}
@@ -139,14 +139,14 @@ function GuestStatus({guest, eventId}: {guest: GuestEventState; eventId: string}
 
 function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
   const c = useApprovalNotificationsController(eventId, user);
-  if (c.loading) return <CatchText as="p" color="ink2" role="status" variant="bodyS">{notificationCopy.loading}</CatchText>;
+  if (c.loading) return <CatchLegacyText as="p" color="ink2" role="status" variant="bodyS">{notificationCopy.loading}</CatchLegacyText>;
   return (
     <Form noValidate onSubmit={c.save} pending={c.pending}>
       <CatchGap size="related">
-        <CatchText as="h2" variant="titleS">{notificationCopy.title}</CatchText>
-        <CatchText as="p" color="ink2" variant="bodyS">{notificationCopy.explanation}</CatchText>
+        <CatchLegacyText as="h2" variant="titleS">{notificationCopy.title}</CatchLegacyText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyS">{notificationCopy.explanation}</CatchLegacyText>
         {c.value && c.choices ? <>
-          {!c.value.available ? <CatchText as="p" variant="bodyS">{notificationCopy.unavailable}</CatchText> : null}
+          {!c.value.available ? <CatchLegacyText as="p" variant="bodyS">{notificationCopy.unavailable}</CatchLegacyText> : null}
           <CatchCheckboxInput label={c.value.terms.phone} value={c.choices.phoneUpdates}
             onChanged={c.pending || !c.value.phoneVerified && !c.choices.phoneUpdates ? null :
               (value) => c.choose("phoneUpdates", value)} />
@@ -154,7 +154,7 @@ function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
             onChanged={c.pending || !c.value.emailVerified && !c.choices.emailUpdates ? null :
               (value) => c.choose("emailUpdates", value)} />
           {!c.value.emailVerified ? <>
-            <CatchText as="p" color="ink2" variant="bodyS">{notificationCopy.verifyFirst}</CatchText>
+            <CatchLegacyText as="p" color="ink2" variant="bodyS">{notificationCopy.verifyFirst}</CatchLegacyText>
             <CatchField autoComplete="email" id={`${c.id}-email`} keyboardType="emailAddress"
               inputMode={c.pending ? "inactive" : user.email ? "readOnly" : "editable"}
               onChanged={(value) => c.setEmail(value)} recipe="input" title={notificationCopy.email} value={c.email} />
@@ -164,7 +164,7 @@ function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
           <CatchButton label={notificationCopy.save} onPressed={noop} status={c.pending ? "loading" : "idle"} type="submit" />
         </> : null}
         <CatchButton label={notificationCopy.refresh} onPressed={c.pending ? null : () => void c.refresh()} variant="quiet" />
-        <CatchText as="p" color="ink2" role="status" variant="bodyS">{c.message || (c.error ? notificationCopy.error : "")}</CatchText>
+        <CatchLegacyText as="p" color="ink2" role="status" variant="bodyS">{c.message || (c.error ? notificationCopy.error : "")}</CatchLegacyText>
       </CatchGap>
     </Form>
   );

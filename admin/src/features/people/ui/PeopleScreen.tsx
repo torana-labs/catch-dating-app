@@ -4,7 +4,7 @@ import {
   CatchIndexRow,
   CatchPaneLayout,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
@@ -39,8 +39,8 @@ function tableRow(row: PersonRow): PersonTableRow {
 function Fact({label, value}: {label: string; value: string}) {
   return (
     <CatchIndexRow title={label} titleVariant="supporting"
-      trailing={<CatchText as="span" variant="supportingStrong">{value}
-      </CatchText>} />
+      trailing={<CatchLegacyText as="span" variant="supportingStrong">{value}
+      </CatchLegacyText>} />
   );
 }
 
@@ -78,9 +78,9 @@ export function PeopleScreen({
               size="sm"
               variant="secondary"
             />
-            <CatchText as="p" color="ink2" variant="bodyS">
+            <CatchLegacyText as="p" color="ink2" variant="bodyS">
               Searches and views are logged.
-            </CatchText>
+            </CatchLegacyText>
           </CatchGap>
         </>
       ) : undefined}
@@ -98,14 +98,14 @@ export function PeopleScreen({
             title="People"
           />
           {search.loadState === "idle" ? (
-            <CatchText as="p" color="ink2" variant="bodyM">
+            <CatchLegacyText as="p" color="ink2" variant="bodyM">
               Search by name, the last digits of a phone number, or a user
               id.
-            </CatchText>
+            </CatchLegacyText>
           ) : rows.length === 0 ? (
-            <CatchText as="p" color="ink2" variant="bodyM">
+            <CatchLegacyText as="p" color="ink2" variant="bodyM">
               {search.loadState === "loading" ? "Searching" : "No one matches."}
-            </CatchText>
+            </CatchLegacyText>
           ) : (
             <CatchTable
               columns={columns}

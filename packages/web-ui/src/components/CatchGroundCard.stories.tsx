@@ -9,7 +9,7 @@ import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchGroundCard} from "./CatchGroundCard";
 import {CatchQrCode} from "./CatchQrCode";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {grounds} from "./palette";
 
 const meta = {
@@ -35,19 +35,19 @@ export const Grounds: Story = {
             {grounds.map((ground) => (
               <CatchGroundCard ground={ground} key={ground}>
                 <CatchGap size="headerTitleToSubtitle">
-                  <CatchText variant="sectionTitle">{`On ${ground}`}</CatchText>
-                  <CatchText color="ink2" variant="bodyM">Library text takes the ground’s inks.</CatchText>
+                  <CatchLegacyText variant="sectionTitle">{`On ${ground}`}</CatchLegacyText>
+                  <CatchLegacyText color="ink2" variant="bodyM">Library text takes the ground’s inks.</CatchLegacyText>
                 </CatchGap>
               </CatchGroundCard>
             ))}
           </CatchGrid>
           <CatchGroundCard ground="white" outlined>
-            <CatchText variant="bodyM">An outlined white card, for a white page.</CatchText>
+            <CatchLegacyText variant="bodyM">An outlined white card, for a white page.</CatchLegacyText>
           </CatchGroundCard>
           <CatchGroundCard ground="indigo" padding="spacious">
             <CatchGrid columns={2} compactColumns={1}>
-              <CatchGroundCard ground="white" padding="compact"><CatchText variant="bodyM">A compact card inside a spacious one.</CatchText></CatchGroundCard>
-              <CatchGroundCard ground="white" padding="compact"><CatchText variant="bodyM">Radius md at the compact padding.</CatchText></CatchGroundCard>
+              <CatchGroundCard ground="white" padding="compact"><CatchLegacyText variant="bodyM">A compact card inside a spacious one.</CatchLegacyText></CatchGroundCard>
+              <CatchGroundCard ground="white" padding="compact"><CatchLegacyText variant="bodyM">Radius md at the compact padding.</CatchLegacyText></CatchGroundCard>
             </CatchGrid>
           </CatchGroundCard>
         </CatchGap>
@@ -100,8 +100,8 @@ export const ShareCard: Story = {
           <CatchGap crossAxisAlignment="center" direction="horizontal" size="formField">
             <CatchQrCode label="QR code for catchdates.com/organizers/lantern-lane-runners" value="https://catchdates.com/organizers/lantern-lane-runners/" />
             <CatchGap size="inline">
-              <CatchText color="ink2" variant="bodyM">Print it on a poster or show it at the start line.</CatchText>
-              <CatchText variant="sectionTitle">catchdates.com/organizers/lantern-lane-runners</CatchText>
+              <CatchLegacyText color="ink2" variant="bodyM">Print it on a poster or show it at the start line.</CatchLegacyText>
+              <CatchLegacyText variant="sectionTitle">catchdates.com/organizers/lantern-lane-runners</CatchLegacyText>
               <CatchGap crossAxisAlignment="start" size="inline">
                 <CatchButton label="Copy link" onPressed={() => undefined} size="md" />
               </CatchGap>
@@ -116,16 +116,16 @@ export const ShareCard: Story = {
 const pitch = () => (
   <CatchGroundCard ground="indigo" padding="spacious">
     <CatchGap size="formField">
-      <CatchText color="inherit" variant="titleS">Is this your club?</CatchText>
-      <CatchText as="h2" variant="displayM">This page is already working for you.</CatchText>
-      <CatchText variant="bodyL">
-        <CatchText as="strong" variant="sectionTitle">38 people</CatchText>{" asked to hear about your next event, and "}
-        <CatchText as="strong" variant="sectionTitle">2 people</CatchText>{" left reviews. We built this page from your public Luma and Instagram pages. Claim it free and make it yours."}
-      </CatchText>
+      <CatchLegacyText color="inherit" variant="titleS">Is this your club?</CatchLegacyText>
+      <CatchLegacyText as="h2" variant="displayM">This page is already working for you.</CatchLegacyText>
+      <CatchLegacyText variant="bodyL">
+        <CatchLegacyText as="strong" variant="sectionTitle">38 people</CatchLegacyText>{" asked to hear about your next event, and "}
+        <CatchLegacyText as="strong" variant="sectionTitle">2 people</CatchLegacyText>{" left reviews. We built this page from your public Luma and Instagram pages. Claim it free and make it yours."}
+      </CatchLegacyText>
       <CatchGrid columns={2} compactColumns={1}>
         {["Your Instagram link.", "Every event in one place.", "Your links.", "Who clicks."].map((title) => (
           <CatchGroundCard ground="white" key={title} padding="compact">
-            <CatchText variant="bodyM"><CatchText as="strong" variant="titleS">{title}</CatchText>{" What claiming adds."}</CatchText>
+            <CatchLegacyText variant="bodyM"><CatchLegacyText as="strong" variant="titleS">{title}</CatchLegacyText>{" What claiming adds."}</CatchLegacyText>
           </CatchGroundCard>
         ))}
       </CatchGrid>

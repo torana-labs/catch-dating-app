@@ -4,7 +4,7 @@ import type {CSSProperties, ReactNode} from "react";
 import {CatchAvatar} from "./CatchAvatar";
 import type {CatchPersonAvatarItem} from "./CatchAvatarRow";
 import {CatchButton} from "./CatchButton";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchNotice.module.css";
 
 export type CatchNoticeTone = "status" | "success" | "warning" | "danger" | "event";
@@ -64,8 +64,8 @@ export function CatchNotice({notice, dismissLabel, onDismiss}: CatchNoticeProps)
         <span aria-hidden="true" className={`${styles.lead} ${styles.icon}`}>{notice.icon ?? infoGlyph}</span>
       )}
       <span className={styles.copy}>
-        <CatchText as="span" variant="titleS">{notice.title}</CatchText>
-        {notice.message ? <>{" "}<CatchText as="span" color="ink2" variant="supporting">{notice.message}</CatchText></> : null}
+        <CatchLegacyText as="span" variant="titleS">{notice.title}</CatchLegacyText>
+        {notice.message ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="supporting">{notice.message}</CatchLegacyText></> : null}
       </span>
     </>
   );

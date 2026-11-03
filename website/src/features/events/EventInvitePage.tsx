@@ -1,4 +1,4 @@
-import {CatchButton, CatchGap, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchGap, CatchLoadingIndicator, CatchLegacyText} from "@catch/web-ui";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {eventInviteCopy as copy} from "../../content/eventInvite";
@@ -54,7 +54,7 @@ export function EventInvitePage({resolve = resolveEventInviteLanding, redirect =
   return failed ? (
     <EventBookingFrame title={copy.unavailableTitle}>
       <CatchGap size="related">
-        <CatchText as="p" color="danger" role="status" variant="bodyM">{copy.unavailableBody}</CatchText>
+        <CatchLegacyText as="p" color="danger" role="status" variant="bodyM">{copy.unavailableBody}</CatchLegacyText>
         <CatchButton fullWidth href="/help/" label={copy.helpAction} onPressed={noop} variant="secondary" />
       </CatchGap>
     </EventBookingFrame>

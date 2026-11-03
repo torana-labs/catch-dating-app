@@ -6,7 +6,7 @@ import {
   CatchPageTabBar,
   CatchPaneLayout,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   CatchTopBar,
   CatchViewport,
   type CatchMetaEntry,
@@ -75,7 +75,7 @@ function SalesRow({overview, onOpenSales}: {overview: OrganizerOverview; onOpenS
       title={owner ? `${owner} owns it` : "No one in Sales owns it"}
       titleMaxLines={2}
       titleVariant="bodyM"
-      trailing={<CatchText as="span" color="primary" variant="supportingStrong">Open in Sales</CatchText>}
+      trailing={<CatchLegacyText as="span" color="primary" variant="supportingStrong">Open in Sales</CatchLegacyText>}
     />
   );
 }
@@ -175,9 +175,9 @@ function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: Orga
           <CatchMetaRow entries={overviewFacts(overview)} />
           {overview.organizer.hasImage ? null : (
             <CatchSection dividers="none" title="No image we have the right to use">
-              <CatchText as="p" color="attentionText" variant="bodyM">
+              <CatchLegacyText as="p" color="attentionText" variant="bodyM">
                 The page uses a lettermark until the organizer claims it and adds photos.
-              </CatchText>
+              </CatchLegacyText>
             </CatchSection>
           )}
           <CatchSection dividers="none" timeline={journeySteps(overview, 6)} title="How it got here" />
@@ -192,7 +192,7 @@ function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: Orga
                 subtitle={overview.pendingClaim.requesterRole ?? undefined}
                 title={`${overview.pendingClaim.requesterName ?? "Someone"} asked to claim it`}
                 titleVariant="bodyM"
-                trailing={<CatchText as="span" color="primary" variant="supportingStrong">Review</CatchText>}
+                trailing={<CatchLegacyText as="span" color="primary" variant="supportingStrong">Review</CatchLegacyText>}
               />
             </CatchSection>
           ) : null}
@@ -251,9 +251,9 @@ export function OrganizerPageScreen({
       <>
         {top}
         <CatchPaneLayout
-          main={<CatchText as="p" color={loadError ? "danger" : "ink2"} variant="bodyM">
+          main={<CatchLegacyText as="p" color={loadError ? "danger" : "ink2"} variant="bodyM">
             {loadError ?? "Loading the organizer"}
-          </CatchText>}
+          </CatchLegacyText>}
           pattern="reading"
         />
       </>

@@ -3,7 +3,7 @@ import {
   CatchCheckboxInput,
   CatchGap,
   CatchIndexRow,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import {useState} from "react";
@@ -16,8 +16,8 @@ function Row({title, value, subtitle}: {title: string; value: string;
   subtitle?: string}) {
   return (
     <CatchIndexRow subtitle={subtitle} title={title} titleVariant="supporting"
-      trailing={<CatchText as="span" variant="supportingStrong">{value}
-      </CatchText>} />
+      trailing={<CatchLegacyText as="span" variant="supportingStrong">{value}
+      </CatchLegacyText>} />
   );
 }
 
@@ -25,7 +25,7 @@ function Section({title, children}: {title: string;
   children: React.ReactNode}) {
   return (
     <CatchGap size="related">
-      <CatchText as="h2" variant="sectionTitle">{title}</CatchText>
+      <CatchLegacyText as="h2" variant="sectionTitle">{title}</CatchLegacyText>
       {children}
     </CatchGap>
   );
@@ -48,10 +48,10 @@ export function SafetySettingsWorkspace({
     return (
       <>
         <CatchWorkspaceHeader kicker="Settings" title="Safety" />
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           {settings.loadState === "error" ? "Safety settings didn't load." :
             "Loading safety settings"}
-        </CatchText>
+        </CatchLegacyText>
       </>
     );
   }
@@ -88,9 +88,9 @@ export function SafetySettingsWorkspace({
               value={stepRoles[step.kind] === "owner" ? "Owner" :
                 "Ops or owner"} />
           ))}
-          <CatchText as="p" color="ink2" variant="bodyS">
+          <CatchLegacyText as="p" color="ink2" variant="bodyS">
             Appeals go to whoever did not decide.
-          </CatchText>
+          </CatchLegacyText>
         </Section>
         <Section title="Rules">
           <CatchCheckboxInput
@@ -149,10 +149,10 @@ export function SafetySettingsWorkspace({
           <Row title="Case records after an account is deleted"
             value={`${snapshot.retentionDaysAfterDeletion} days`} />
         </Section>
-        <CatchText as="p" color="attentionText" variant="bodyS">
+        <CatchLegacyText as="p" color="attentionText" variant="bodyS">
           The deadlines and the grievance wording follow our reading of
           India&apos;s IT Rules; a lawyer confirms them before launch.
-        </CatchText>
+        </CatchLegacyText>
       </CatchGap>
     </>
   );

@@ -8,7 +8,7 @@ import {
   CatchMetricSection,
   CatchPaneLayout,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchMetricData,
 } from "@catch/web-ui";
@@ -78,7 +78,7 @@ function Line({title, subtitle, amount, action}: {title: string; subtitle?: stri
       titleVariant="titleS"
       trailing={(
         <CatchGap crossAxisAlignment="center" direction="horizontal" size="related">
-          <CatchText as="span" variant="supportingStrong">{amount}</CatchText>
+          <CatchLegacyText as="span" variant="supportingStrong">{amount}</CatchLegacyText>
           {action}
         </CatchGap>
       )}
@@ -123,9 +123,9 @@ export function FinanceScreen({
       <>
         {header}
         <CatchPaneLayout
-          main={<CatchText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
+          main={<CatchLegacyText as="p" color={controller.loadState === "error" ? "danger" : "ink2"} variant="bodyM">
             {controller.loadState === "error" ? controller.loadError ?? "Finance could not load." : "Loading the month"}
-          </CatchText>}
+          </CatchLegacyText>}
           pattern="feed"
         />
       </>
@@ -191,7 +191,7 @@ export function FinanceScreen({
           title="GST"
         />
       </CatchSection>
-      {controller.actionError ? <CatchText as="p" color="danger" variant="bodyS">{controller.actionError}</CatchText> : null}
+      {controller.actionError ? <CatchLegacyText as="p" color="danger" variant="bodyS">{controller.actionError}</CatchLegacyText> : null}
     </CatchGap>
   );
   const aside = (

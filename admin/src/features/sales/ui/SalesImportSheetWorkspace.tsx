@@ -1,6 +1,6 @@
 import {
-  CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchFilePickerButton, CatchGap, CatchIcon,
-  CatchIndexRow, CatchMetaRow, CatchSection, CatchSheet, CatchText,
+  CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchFilePickerButton, CatchGap, CatchLegacyIcon,
+  CatchIndexRow, CatchMetaRow, CatchSection, CatchSheet, CatchLegacyText,
 } from "@catch/web-ui";
 import type {SalesImportPacket} from "../api/salesTypes";
 import {salesErrorMessage, selectChoices} from "../controllers/salesLabels";
@@ -40,33 +40,33 @@ export function SalesImportSheetWorkspace({applyImport, isSaving, onClose}: {
           inputMode={c.hasApplied || isSaving ? "inactive" : "editable"}
           helperText="Keeps batches from the same file together, so it can't change once a batch is applied." />
         <CatchGap size="inline" crossAxisAlignment="start">
-          <CatchFilePickerButton accept=".csv,text/csv" label="Choose CSV" leading={<CatchIcon icon="upload" size="sm" />}
+          <CatchFilePickerButton accept=".csv,text/csv" label="Choose CSV" leading={<CatchLegacyIcon icon="upload" size="sm" />}
             onChanged={isSaving ? null : (file) => void c.chooseFile(file)} />
-          {c.fileName ? <CatchText as="p" variant="supporting" role="status">
+          {c.fileName ? <CatchLegacyText as="p" variant="supporting" role="status">
             {c.fileName} · {c.rowCount} rows, in {c.batchCount} batch{c.batchCount === 1 ? "" : "es"} of up to {salesImportBatchSize}.
             Nothing changes until you apply a batch.
-          </CatchText> : null}
-          {c.fileError ? <CatchText as="p" variant="supporting" role="alert">{c.fileError}</CatchText> : null}
+          </CatchLegacyText> : null}
+          {c.fileError ? <CatchLegacyText as="p" variant="supporting" role="alert">{c.fileError}</CatchLegacyText> : null}
         </CatchGap>
         {c.rows.length ? <>
           {column("Host name column", "name")}
           {column("Summary column", "summary")}
           {column("Catch host ID (optional)", "organizerId")}
           {column("Past research (optional)", "researchStatus")}
-          <CatchText as="p" variant="supporting">
+          <CatchLegacyText as="p" variant="supporting">
             Rows without a Catch host ID wait for identity review. New hosts start as Needs research; past research is kept
             as history and doesn't qualify anyone. Every column is kept privately, mapped or not.
-          </CatchText>
+          </CatchLegacyText>
           {c.batchCount > 1 ? <CatchField recipe="select" title="Batch to review" value={String(c.batch)}
             inputMode={isSaving ? "inactive" : "editable"} onChanged={(value) => c.setBatch(Number(value ?? 0))}
             {...selectChoices(Array.from({length: c.batchCount}, (_, index) => ({value: String(index),
               label: `Batch ${index + 1}${c.applied.includes(index) ? ", applied" : ""}`})))} /> : null}
         </> : null}
-        {c.packetError ? <CatchText as="p" variant="supporting" role="alert">{c.packetError}</CatchText> : null}
-        {c.rows.length && c.mapping.name < 0 ? <CatchText as="p" variant="supporting" role="status">
-          Choose the host name column to see this batch.</CatchText> : null}
+        {c.packetError ? <CatchLegacyText as="p" variant="supporting" role="alert">{c.packetError}</CatchLegacyText> : null}
+        {c.rows.length && c.mapping.name < 0 ? <CatchLegacyText as="p" variant="supporting" role="status">
+          Choose the host name column to see this batch.</CatchLegacyText> : null}
         {c.batchApplied ? <CatchEmptyState title={`Batch ${c.batch + 1} is applied`} /> : null}
-        {c.preview.isFetching && !preview ? <CatchText as="p" variant="supporting" role="status">Checking this batch…</CatchText> : null}
+        {c.preview.isFetching && !preview ? <CatchLegacyText as="p" variant="supporting" role="status">Checking this batch…</CatchLegacyText> : null}
         {c.preview.isError ? <CatchEmptyState title="This batch could not be checked" message={salesErrorMessage(c.preview.error)}
           actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={() => void c.preview.refetch()} />} /> : null}
         {preview ? <>

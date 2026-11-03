@@ -4,7 +4,7 @@ import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchAccordion, type CatchAccordionItem} from "./CatchAccordion";
 import {CatchBand} from "./CatchBand";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchAccordion",
@@ -40,7 +40,7 @@ export const States: Story = {
       </CatchBand>
       <CatchBand aria-label="On ink" ground="ink" pb="compact" pt="compact">
         <CatchAccordion
-          items={[{answer: <CatchText as="p" color="ink2" variant="bodyL">Answers can carry links and lists.</CatchText>, id: "rich", question: "Can an answer hold more than text?"}]}
+          items={[{answer: <CatchLegacyText as="p" color="ink2" variant="bodyL">Answers can carry links and lists.</CatchLegacyText>, id: "rich", question: "Can an answer hold more than text?"}]}
           name="faq-ink"
         />
       </CatchBand>

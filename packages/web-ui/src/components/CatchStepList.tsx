@@ -1,5 +1,5 @@
 import type {CSSProperties} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchStepList.module.css";
 
 export interface CatchStepRowData {
@@ -31,9 +31,9 @@ export function CatchStepList({steps, accent}: CatchStepListProps) {
           <span className={styles.index}>{step.marker ?? String(index + 1).padStart(2, "0")}</span>
           <span aria-hidden="true" className={styles.rail} />
           <span className={styles.copy}>
-            <CatchText as="span" color="ink" variant="bodyLead">{step.title}</CatchText>
-            {step.body != null ? <CatchText as="span" variant="supporting">{step.body}</CatchText> : null}
-            {step.tag?.trim() ? <span className={styles.tag}><CatchText as="span" color="inherit" variant="statusLabel">{step.tag}</CatchText></span> : null}
+            <CatchLegacyText as="span" color="ink" variant="bodyLead">{step.title}</CatchLegacyText>
+            {step.body != null ? <CatchLegacyText as="span" variant="supporting">{step.body}</CatchLegacyText> : null}
+            {step.tag?.trim() ? <span className={styles.tag}><CatchLegacyText as="span" color="inherit" variant="statusLabel">{step.tag}</CatchLegacyText></span> : null}
           </span>
         </li>
       ))}

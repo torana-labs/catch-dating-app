@@ -1,4 +1,4 @@
-import {CatchAdminIntakeSourceList, CatchAdminSearchCandidateHeader, CatchBadge, CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchAdminIntakeSourceList, CatchAdminSearchCandidateHeader, CatchBadge, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {useState} from "react";
 import {Clock3, ExternalLink, FileWarning, FolderSearch} from "lucide-react";
 import type {
@@ -45,7 +45,7 @@ function ExternalEventSupplyDetail({
       <CatchAdminSearchCandidateHeader>
         <div>
           <AdminEyebrow>{event.targetPath}</AdminEyebrow>
-          <CatchText as="h3" variant="sectionTitle">{event.title}</CatchText>
+          <CatchLegacyText as="h3" variant="sectionTitle">{event.title}</CatchLegacyText>
         </div>
         <CatchBadge recipe="status" tone={externalEventNeedsReview(event) ? "neutral" : "success"} label={externalEventNeedsReview(event) ? "review open" : "reviewed"} />
       </CatchAdminSearchCandidateHeader>

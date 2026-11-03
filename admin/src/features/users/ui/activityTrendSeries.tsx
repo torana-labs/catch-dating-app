@@ -1,4 +1,4 @@
-import {CatchSection, CatchTable, CatchText} from "@catch/web-ui";
+import {CatchSection, CatchTable, CatchLegacyText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 
 import {AdminWorkbenchStack, EmptyState} from "../../../shared/ui/AdminPrimitives";
@@ -57,10 +57,10 @@ export function renderActivityTrendSeries({
         </svg>
         <figcaption>
           {series.map((definition, index) => (
-            <CatchText as="span" color="ink2" key={definition.id} variant="bodyS">
+            <CatchLegacyText as="span" color="ink2" key={definition.id} variant="bodyS">
               <i className={`admin-trend-swatch admin-trend-swatch-${(index % 4) + 1}`} />
               {definition.label}
-            </CatchText>
+            </CatchLegacyText>
           ))}
         </figcaption>
       </figure>

@@ -4,10 +4,10 @@ import {
   CatchGap,
   CatchGrid,
   CatchGroundCard,
-  CatchIcon,
+  CatchLegacyIcon,
   CatchIndexRow,
   CatchPhotoTile,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
@@ -26,9 +26,9 @@ export function OrganizerEventsSection({controller}: {controller: OrganizerPageC
               <CatchIndexRow
                 footer={(
                   <>
-                    <CatchText as="span" color={row.sourceAccent} variant="statusLabel">{row.sourceLabel}</CatchText>{" "}
-                    <CatchText as="span" variant="titleS">{row.price}</CatchText>
-                    {row.note ? <>{" "}<CatchText as="span" color="ink2" variant="bodyS">{row.note}</CatchText></> : null}
+                    <CatchLegacyText as="span" color={row.sourceAccent} variant="statusLabel">{row.sourceLabel}</CatchLegacyText>{" "}
+                    <CatchLegacyText as="span" variant="titleS">{row.price}</CatchLegacyText>
+                    {row.note ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="bodyS">{row.note}</CatchLegacyText></> : null}
                   </>
                 )}
                 href={row.href}
@@ -44,7 +44,7 @@ export function OrganizerEventsSection({controller}: {controller: OrganizerPageC
                     label={row.action}
                     onPressed={null}
                     size="md"
-                    trailing={row.source === "external" ? <CatchIcon icon="openExternal" size="md" /> : undefined}
+                    trailing={row.source === "external" ? <CatchLegacyIcon icon="openExternal" size="md" /> : undefined}
                     variant={row.actionPrimary ? "primary" : "secondary"}
                   />
                 )}
@@ -55,8 +55,8 @@ export function OrganizerEventsSection({controller}: {controller: OrganizerPageC
       ) : (
         <CatchGroundCard>
           <CatchGap size="headerTitleToSubtitle">
-            <CatchText variant="sectionTitle">{copy.eventsEmptyTitle}</CatchText>
-            <CatchText color="ink2" variant="bodyM">{copy.eventsEmptyBody(name)}</CatchText>
+            <CatchLegacyText variant="sectionTitle">{copy.eventsEmptyTitle}</CatchLegacyText>
+            <CatchLegacyText color="ink2" variant="bodyM">{copy.eventsEmptyBody(name)}</CatchLegacyText>
           </CatchGap>
         </CatchGroundCard>
       )}

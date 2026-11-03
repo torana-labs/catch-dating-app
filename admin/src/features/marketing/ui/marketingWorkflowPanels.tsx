@@ -1,4 +1,4 @@
-import {CatchBadge, CatchField, CatchText, CatchFilePickerButton} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchLegacyText, CatchFilePickerButton} from "@catch/web-ui";
 import {useCallback, useEffect, useState} from "react";
 import {
   CheckCircle2,
@@ -450,7 +450,7 @@ function MarketingDrafts({
             <CardHeader action={<CatchBadge label={draft.aspectRatio} />}>
               <div>
                 <AdminEyebrow>{draft.format} / {draft.tone}</AdminEyebrow>
-                <CatchText as="h3" variant="sectionTitle">{draft.id}</CatchText>
+                <CatchLegacyText as="h3" variant="sectionTitle">{draft.id}</CatchLegacyText>
               </div>
             </CardHeader>
             <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
@@ -715,7 +715,7 @@ function MarketingAudit({
             <AdminMarketingAuditRow key={`${item.targetType}-${item.targetId}`}>
               <strong>{item.targetType}: {item.targetId}</strong>
               <span>{String(item.decision)} by {item.reviewer ?? "unknown"}</span>
-              {item.note ? <CatchText as="p" variant="supporting">{item.note}</CatchText> : null}
+              {item.note ? <CatchLegacyText as="p" variant="supporting">{item.note}</CatchLegacyText> : null}
             </AdminMarketingAuditRow>
           ))}
           {local.map((item) => (

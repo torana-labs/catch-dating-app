@@ -1,5 +1,5 @@
 import {
-  CatchButton, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchSheet, CatchText,
+  CatchButton, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchSheet, CatchLegacyText,
 } from "@catch/web-ui";
 import {useState} from "react";
 import type {SalesAccountDetail, SalesCustomFieldDefinition} from "../api/salesTypes";
@@ -44,11 +44,11 @@ function ChangeValueSheet({field, host, model, onClose}: {
             {...helper} {...selectChoices([{value: "", label: "Unknown"}, {value: "true", label: "Yes"}, {value: "false", label: "No"}])} /> :
             <CatchField recipe="input" title={field.label} value={text} onChanged={setText} {...helper}
               keyboardType={field.type === "number" ? "decimal" : field.type === "date" ? "date" : "text"} />}
-        {!validNumber && text.trim() ? <CatchText as="p" variant="supporting" role="alert">Enter a valid number.</CatchText> : null}
+        {!validNumber && text.trim() ? <CatchLegacyText as="p" variant="supporting" role="alert">Enter a valid number.</CatchLegacyText> : null}
         {changedElsewhere ? <>
-          <CatchText as="p" variant="supporting" role="alert">
+          <CatchLegacyText as="p" variant="supporting" role="alert">
             Someone else changed this. It's now: {valueLabel(current?.value)}.
-          </CatchText>
+          </CatchLegacyText>
           <CatchButton label="Use the latest value" variant="secondary" size="sm" onPressed={() => {
             setText(String(current?.value ?? ""));
             setRevision(current?.revision ?? 0);

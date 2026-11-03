@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CatchIcon} from "./CatchIcon";
+import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTopBar.module.css";
 
@@ -38,7 +38,7 @@ export interface CatchTopBarProps {
 }
 
 function BarIconButton({action, icon}: {action: CatchTopBarAction; icon: "back" | "close"}) {
-  const content = <CatchIcon icon={icon} size="control" />;
+  const content = <CatchLegacyIcon icon={icon} size="control" />;
   return action.href
     ? <a aria-label={action.label} className={styles.iconButton} href={action.href} onClick={action.onPressed}>{content}</a>
     : <button aria-label={action.label} className={styles.iconButton} onClick={action.onPressed} type="button">{content}</button>;

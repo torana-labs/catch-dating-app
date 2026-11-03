@@ -1,4 +1,4 @@
-import {CatchBand, CatchGap, CatchGroundCard, CatchSplit, CatchText} from "@catch/web-ui";
+import {CatchBand, CatchGap, CatchGroundCard, CatchSplit, CatchLegacyText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
 
@@ -25,8 +25,8 @@ export function EventBookingFrame({title, body, children}: {
           ratio="narrowRail"
           start={(
             <CatchGap size="related">
-              <CatchText as="h1" variant="displayM">{title}</CatchText>
-              {body ? <CatchText as="p" color="ink2" variant="bodyL">{body}</CatchText> : null}
+              <CatchLegacyText as="h1" variant="displayM">{title}</CatchLegacyText>
+              {body ? <CatchLegacyText as="p" color="ink2" variant="bodyL">{body}</CatchLegacyText> : null}
             </CatchGap>
           )}
         />

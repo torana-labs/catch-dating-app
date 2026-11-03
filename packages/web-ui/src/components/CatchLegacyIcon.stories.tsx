@@ -3,14 +3,14 @@ import type {ReactNode} from "react";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
-import {CatchIcon, catchIconSizes, type CatchIconTone} from "./CatchIcon";
-import {CatchText} from "./CatchText";
+import {CatchLegacyIcon, catchIconSizes, type CatchIconTone} from "./CatchLegacyIcon";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
-  title: "Web UI/CatchIcon",
-  component: CatchIcon,
+  title: "Web UI/CatchLegacyIcon",
+  component: CatchLegacyIcon,
   args: {icon: "event"},
-} satisfies Meta<typeof CatchIcon>;
+} satisfies Meta<typeof CatchLegacyIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -20,7 +20,7 @@ const tones: CatchIconTone[] = ["inherit", "ink", "muted", "primary", "success",
 function Row({label, children}: {label: string; children: ReactNode}) {
   return (
     <CatchGap size="inline">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       <CatchGap crossAxisAlignment="center" direction="horizontal" size="related" wrap>{children}</CatchGap>
     </CatchGap>
   );
@@ -36,14 +36,14 @@ export const Contract: Story = {
       <CatchGap size="section">
         <Row label="Sizes">
           {Object.keys(catchIconSizes).map((size) => (
-            <CatchIcon icon="event" key={size} size={size as keyof typeof catchIconSizes} />
+            <CatchLegacyIcon icon="event" key={size} size={size as keyof typeof catchIconSizes} />
           ))}
         </Row>
         <Row label="Tones">
-          {tones.map((tone) => <CatchIcon icon="success" key={tone} size="lg" tone={tone} />)}
+          {tones.map((tone) => <CatchLegacyIcon icon="success" key={tone} size="lg" tone={tone} />)}
         </Row>
         <Row label="Labelled">
-          <CatchIcon icon="search" semanticLabel="Search" size="lg" tone="ink" />
+          <CatchLegacyIcon icon="search" semanticLabel="Search" size="lg" tone="ink" />
         </Row>
       </CatchGap>
     );

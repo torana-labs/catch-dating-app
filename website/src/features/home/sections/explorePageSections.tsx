@@ -9,7 +9,7 @@ import {
   CatchPlanCard,
   CatchSearchField,
   CatchSplit,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {explorePageCopy as copy} from "@content/explorePage";
 import {homeFormats, homePageCopy} from "@content/homePage";
@@ -40,11 +40,11 @@ function ExploreHeading({explore}: {explore: Explore}) {
       ratio="sevenFive"
       start={
         <CatchGap size="related">
-          <CatchText as="p" color="coral" variant="supportingStrong">{fill(copy.eyebrow, {city})}</CatchText>
-          <CatchText as="h1" id="explore-title" variant="displayXl">{fill(soon ? copy.soonTitle : copy.title, {city})}</CatchText>
-          <CatchText as="p" color="ink2" variant="bodyLead">
+          <CatchLegacyText as="p" color="coral" variant="supportingStrong">{fill(copy.eyebrow, {city})}</CatchLegacyText>
+          <CatchLegacyText as="h1" id="explore-title" variant="displayXl">{fill(soon ? copy.soonTitle : copy.title, {city})}</CatchLegacyText>
+          <CatchLegacyText as="p" color="ink2" variant="bodyLead">
             {soon ? fill(copy.soonLead, {liveCity: explore.liveCity?.label ?? city}) : copy.lead}
-          </CatchText>
+          </CatchLegacyText>
         </CatchGap>
       }
     />
@@ -141,7 +141,7 @@ export function ExplorePageSections({explore}: {explore: Explore}) {
           <ExploreHeading explore={explore} />
           <ExploreFilterBar explore={explore} />
           <CatchGap size="section">
-            <CatchText aria-live="polite" as="h2" color="ink2" variant="titleS">{explore.summary}</CatchText>
+            <CatchLegacyText aria-live="polite" as="h2" color="ink2" variant="titleS">{explore.summary}</CatchLegacyText>
             <ExploreResults explore={explore} />
           </CatchGap>
         </CatchGap>

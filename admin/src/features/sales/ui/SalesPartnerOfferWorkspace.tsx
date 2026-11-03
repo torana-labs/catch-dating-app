@@ -1,4 +1,4 @@
-import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchIndexRow, CatchSheet, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchIndexRow, CatchSheet, CatchLegacyText} from "@catch/web-ui";
 import {useState} from "react";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useSalesPartnerOfferController} from "../controllers/useSalesPartnerOfferController";
@@ -41,11 +41,11 @@ export function SalesPartnerOfferWorkspace({actorUid, organizerId, organizerName
           footer={c.ticket ? <CatchButton label="Retry the same offer" variant="secondary" onPressed={operationPending ? null : () => void c.retry()} /> :
             <CatchButton label={c.busy ? "Offering" : "Offer"} onPressed={ready ? () => void submit() : null} />}>
           <CatchGap size="related">
-            <CatchText as="p" variant="supporting">
+            <CatchLegacyText as="p" variant="supporting">
               This is the first partner offer for {organizerName}. It needs an active partner and a reviewed, unrestricted Sales account, and it never
               overwrites an existing assignment. The partner sees this organizer and the next action, then accepts or declines.
-            </CatchText>
-            {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
+            </CatchLegacyText>
+            {c.error ? <CatchLegacyText as="p" variant="supporting" role="alert">{c.error}</CatchLegacyText> : null}
             <CatchField recipe="input" title="Partner's account id" value={partnerUid} onChanged={change(setPartnerUid)} inputMode={mode} />
             <CatchField recipe="input" title="What they should do next" maxLines={3} value={nextAction} onChanged={change(setNextAction)} inputMode={mode} />
             <CatchField recipe="input" title="Review on" keyboardType="datetime" value={reviewAt} onChanged={change(setReviewAt)} inputMode={mode}

@@ -6,7 +6,7 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchStepper} from "./CatchStepper";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchStepper",
@@ -22,7 +22,7 @@ function Places({initial = 1, max = 4, min = 1}: {initial?: number; max?: number
   const labelId = useId();
   return (
     <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween" size="related">
-      <CatchText as="span" id={labelId} variant="sectionTitle">Places</CatchText>
+      <CatchLegacyText as="span" id={labelId} variant="sectionTitle">Places</CatchLegacyText>
       <CatchStepper
         decreaseSemanticLabel="One fewer place"
         increaseSemanticLabel="One more place"

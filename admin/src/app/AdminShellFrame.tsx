@@ -2,7 +2,7 @@ import {
   CatchButton,
   CatchGap,
   CatchTabBar,
-  CatchText,
+  CatchLegacyText,
   CatchViewport,
   CatchWorkspaceHeader,
   type CatchTabBarItem,
@@ -128,8 +128,8 @@ function FeedbackBanners({error, notice}: {error: string | null; notice: string 
 function AccountFooter({account}: {account: AdminShellAccount}) {
   return (
     <CatchGap size="inline">
-      <CatchText as="p" variant="supportingStrong">{account.userLabel}</CatchText>
-      <CatchText as="p" color="ink2" variant="supporting">{account.jobLabel} · {account.environment}</CatchText>
+      <CatchLegacyText as="p" variant="supportingStrong">{account.userLabel}</CatchLegacyText>
+      <CatchLegacyText as="p" color="ink2" variant="supporting">{account.jobLabel} · {account.environment}</CatchLegacyText>
       {account.onSignOut ? (
         <CatchButton
           label={account.isSigningOut ? "Signing out" : "Sign out"}

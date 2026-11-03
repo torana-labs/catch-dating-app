@@ -20,7 +20,7 @@ import {
   CatchScrollStory,
   CatchSplit,
   CatchStoreButton,
-  CatchText,
+  CatchLegacyText,
   type CatchHeroShowcaseSticker,
   type CatchTextAccent,
 } from "@catch/web-ui";
@@ -73,11 +73,11 @@ function HomeHero({home}: {home: Home}) {
         }
         start={
           <CatchGap mainAxisAlignment="center" size="section">
-            <CatchText as="p" color="coral" variant="supportingStrong">
+            <CatchLegacyText as="p" color="coral" variant="supportingStrong">
               {fill(home.live ? copy.hero.liveEyebrow : copy.hero.soonEyebrow, {city})}
-            </CatchText>
-            <CatchText as="h1" id="home-title" variant="displayXxl">{copy.hero.title}</CatchText>
-            <CatchText as="p" color="ink2" variant="bodyLead">{copy.hero.body}</CatchText>
+            </CatchLegacyText>
+            <CatchLegacyText as="h1" id="home-title" variant="displayXxl">{copy.hero.title}</CatchLegacyText>
+            <CatchLegacyText as="p" color="ink2" variant="bodyLead">{copy.hero.body}</CatchLegacyText>
             <CatchGap direction="horizontal" size="inline" wrap>
               <CatchButton href="#whats-on" label={fill(home.live ? copy.hero.liveAction : copy.hero.soonAction, {city})} onPressed={follow} />
               <CatchButton href="/host/" label={copy.hero.hostAction} onPressed={follow} variant="secondary" />
@@ -123,7 +123,7 @@ function HomeThisWeek({home}: {home: Home}) {
           id="home-week-title"
           title={fill(copy.week.title, {city})}
         />
-        <CatchText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchLegacyText>
         <CatchChoiceInput
           itemLabelBuilder={(value: HomeFilter) => value === "all" ? copy.week.everything : homeFormats.find((item) => item.format === value)?.name ?? value}
           mode="single"
@@ -139,7 +139,7 @@ function HomeThisWeek({home}: {home: Home}) {
             ))}
           </CatchGrid>
         ) : null}
-        <CatchText aria-live="polite" as="p" color="ink2" variant="bodyM">{home.note}</CatchText>
+        <CatchLegacyText aria-live="polite" as="p" color="ink2" variant="bodyM">{home.note}</CatchLegacyText>
       </CatchGap>
     </CatchBand>
   );
@@ -150,8 +150,8 @@ function HomeLaunchNotice({city}: {city: string}) {
   const notice = useLaunchNoticeController(city);
   return (
     <CatchGap size="related">
-      <CatchText as="h3" variant="titleL">{copy.notice.title}</CatchText>
-      <CatchText as="p" color="ink2" variant="bodyM">{fill(copy.notice.lead, {city})}</CatchText>
+      <CatchLegacyText as="h3" variant="titleL">{copy.notice.title}</CatchLegacyText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyM">{fill(copy.notice.lead, {city})}</CatchLegacyText>
       {notice.joined ? null : (
         <Form noValidate onSubmit={notice.handleSubmit} pending={notice.sending}>
           <CatchGap size="related">
@@ -173,12 +173,12 @@ function HomeLaunchNotice({city}: {city: string}) {
               onChanged={notice.sending ? null : notice.setMarketing} value={notice.marketing} />
             <CatchButton fullWidth label={copy.notice.action} onPressed={follow}
               status={notice.sending ? "loading" : "idle"} type="submit" />
-            <CatchText as="p" color="ink2" variant="bodyS">{copy.notice.consent}</CatchText>
+            <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.notice.consent}</CatchLegacyText>
             <CatchButton href="/privacy/" label={copy.notice.privacy} onPressed={follow} size="sm" variant="quiet" />
           </CatchGap>
         </Form>
       )}
-      <CatchText aria-live="polite" as="p" role="status" variant="bodyM">{notice.status.tone === "is-success" ? notice.status.message : ""}</CatchText>
+      <CatchLegacyText aria-live="polite" as="p" role="status" variant="bodyM">{notice.status.tone === "is-success" ? notice.status.message : ""}</CatchLegacyText>
     </CatchGap>
   );
 }
@@ -191,7 +191,7 @@ function HomeLaunchingSoon({home}: {home: Home}) {
     <CatchBand aria-labelledby="home-soon-title" ground="paper" id="whats-on" pb="spacious" pt="spacious">
       <CatchGap size="section">
         <HomeSectionHeading eyebrow={copy.soon.eyebrow} eyebrowAccent="indigo" id="home-soon-title" title={fill(copy.soon.title, {city})} />
-        <CatchText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.soon.lead, {areas}) : fill(copy.soon.leadNoAreas, {city})}</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.soon.lead, {areas}) : fill(copy.soon.leadNoAreas, {city})}</CatchLegacyText>
         <CatchSplit
           align="stretch"
           end={
@@ -199,11 +199,11 @@ function HomeLaunchingSoon({home}: {home: Home}) {
               <CatchGap size="section">
                 <HomeLaunchNotice city={city} />
                 <CatchGap size="related">
-                  <CatchText as="h3" variant="titleS">{fill(copy.soon.knowHost, {city})}</CatchText>
+                  <CatchLegacyText as="h3" variant="titleS">{fill(copy.soon.knowHost, {city})}</CatchLegacyText>
                   <CatchButton href="/host/" label={copy.soon.knowHostAction} onPressed={follow} recipe="default" variant="quiet" />
                 </CatchGap>
                 <CatchGap size="related">
-                  <CatchText as="h3" variant="titleS">{copy.soon.appTitle}</CatchText>
+                  <CatchLegacyText as="h3" variant="titleS">{copy.soon.appTitle}</CatchLegacyText>
                   <StoreButtons placement="home_launching_soon" size="m" stores={stores} />
                 </CatchGap>
               </CatchGap>
@@ -214,12 +214,12 @@ function HomeLaunchingSoon({home}: {home: Home}) {
             <CatchGroundCard ground="indigo" padding="spacious">
               <CatchGap size="section">
                 <CatchGap size="related">
-                  <CatchText as="p" variant="supportingStrong">{copy.soon.comingLabel}</CatchText>
-                  <CatchText as="p" variant="displayL">{home.coming}</CatchText>
+                  <CatchLegacyText as="p" variant="supportingStrong">{copy.soon.comingLabel}</CatchLegacyText>
+                  <CatchLegacyText as="p" variant="displayL">{home.coming}</CatchLegacyText>
                 </CatchGap>
                 {home.organizers.length ? (
                   <CatchGap size="related">
-                    <CatchText as="h3" variant="supportingStrong">{copy.soon.joiningLabel}</CatchText>
+                    <CatchLegacyText as="h3" variant="supportingStrong">{copy.soon.joiningLabel}</CatchLegacyText>
                     <CatchGap size="inline">
                       {home.organizers.map((organizer) => (
                         <CatchIndexRow
@@ -239,10 +239,10 @@ function HomeLaunchingSoon({home}: {home: Home}) {
         {home.liveCity ? (
           <CatchGroundCard ground="white" padding="compact">
             <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween" size="related" wrap>
-              <CatchText as="p" variant="bodyL">
-                <CatchText as="strong" variant="titleS">{fill(copy.soon.liveCityNote, {city: home.liveCity.label})}</CatchText>{" "}
+              <CatchLegacyText as="p" variant="bodyL">
+                <CatchLegacyText as="strong" variant="titleS">{fill(copy.soon.liveCityNote, {city: home.liveCity.label})}</CatchLegacyText>{" "}
                 {fill(copy.soon.liveCityCount, {count: home.liveCity.weekPlanCount})}
-              </CatchText>
+              </CatchLegacyText>
               <CatchButton href={home.cityHref(home.liveCity.slug)} label={fill(copy.soon.liveCityAction, {city: home.liveCity.label})}
                 onPressed={follow} size="md" variant="secondary" />
             </CatchGap>
@@ -266,8 +266,8 @@ function HomeStory() {
             title: step.title,
             content: (
               <CatchGap size="related">
-                <CatchText as="h3" variant="titleL">{step.title}</CatchText>
-                <CatchText as="p" color="ink2" variant="bodyL">{step.body}</CatchText>
+                <CatchLegacyText as="h3" variant="titleL">{step.title}</CatchLegacyText>
+                <CatchLegacyText as="p" color="ink2" variant="bodyL">{step.body}</CatchLegacyText>
               </CatchGap>
             ),
             media: <CatchDeviceFrame kind="android"><img alt={step.alt} height={1688} loading="lazy" src={step.screen} width={780} /></CatchDeviceFrame>,
@@ -318,8 +318,8 @@ function HomeOrganisers({home}: {home: Home}) {
         <CatchGroundCard ground="mint" padding="regular">
           <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween" size="section" wrap>
             <CatchGap size="headerTitleToSubtitle">
-              <CatchText as="h3" variant="displayS">{fill(copy.organisers.claimBand, {city})}</CatchText>
-              <CatchText as="p" color="ink2" variant="bodyL">{copy.organisers.claimBandBody}</CatchText>
+              <CatchLegacyText as="h3" variant="displayS">{fill(copy.organisers.claimBand, {city})}</CatchLegacyText>
+              <CatchLegacyText as="p" color="ink2" variant="bodyL">{copy.organisers.claimBandBody}</CatchLegacyText>
             </CatchGap>
             <CatchButton href="/claim/" label={copy.organisers.claimBandAction} onPressed={follow} />
           </CatchGap>
@@ -344,13 +344,13 @@ function HomeHostBand() {
         }
         start={
           <CatchGap size="section">
-            <CatchText as="p" variant="supportingStrong">{copy.host.eyebrow}</CatchText>
-            <CatchText as="h2" id="home-host-title" variant="displayXl">{copy.host.title}</CatchText>
-            <CatchText as="p" color="ink2" variant="bodyLead">{copy.host.body}</CatchText>
+            <CatchLegacyText as="p" variant="supportingStrong">{copy.host.eyebrow}</CatchLegacyText>
+            <CatchLegacyText as="h2" id="home-host-title" variant="displayXl">{copy.host.title}</CatchLegacyText>
+            <CatchLegacyText as="p" color="ink2" variant="bodyLead">{copy.host.body}</CatchLegacyText>
             <CatchGroundCard ground="white" padding="compact">
               <CatchGap size="headerTitleToSubtitle">
-                <CatchText as="p" variant="titleS">{copy.host.price}</CatchText>
-                <CatchText as="p" color="ink2" variant="bodyS">{copy.host.priceNote}</CatchText>
+                <CatchLegacyText as="p" variant="titleS">{copy.host.price}</CatchLegacyText>
+                <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.host.priceNote}</CatchLegacyText>
               </CatchGap>
             </CatchGroundCard>
             <CatchGap direction="horizontal" size="inline" wrap>
@@ -375,7 +375,7 @@ function HomeAppBand({downloadUrl}: {downloadUrl?: string}) {
             <CatchGroundCard ground="white" padding="regular">
               <CatchGap crossAxisAlignment="center" size="related">
                 <CatchQrCode label={copy.app.qrLabel} size="l" value={downloadUrl} />
-                <CatchText as="p" variant="supportingStrong">{copy.app.qr}</CatchText>
+                <CatchLegacyText as="p" variant="supportingStrong">{copy.app.qr}</CatchLegacyText>
               </CatchGap>
             </CatchGroundCard>
           ) : null}
@@ -383,9 +383,9 @@ function HomeAppBand({downloadUrl}: {downloadUrl?: string}) {
           railSide="end"
           start={
             <CatchGap size="section">
-              <CatchText as="p" variant="supportingStrong">{copy.app.eyebrow}</CatchText>
-              <CatchText as="h2" id="home-app-title" variant="displayXl">{copy.app.title}</CatchText>
-              <CatchText as="p" color="ink2" variant="bodyLead">{copy.app.body}</CatchText>
+              <CatchLegacyText as="p" variant="supportingStrong">{copy.app.eyebrow}</CatchLegacyText>
+              <CatchLegacyText as="h2" id="home-app-title" variant="displayXl">{copy.app.title}</CatchLegacyText>
+              <CatchLegacyText as="p" color="ink2" variant="bodyLead">{copy.app.body}</CatchLegacyText>
               <StoreButtons placement="home_app_band" />
             </CatchGap>
           }
@@ -402,8 +402,8 @@ function HomeFaq() {
         end={<CatchAccordion items={copy.faq.items.map((item, index) => ({id: `faq-${index}`, question: item.question, answer: item.answer}))} name="home-faq" />}
         start={
           <CatchGap size="related">
-            <CatchText as="p" color="indigo" variant="supportingStrong">{copy.faq.eyebrow}</CatchText>
-            <CatchText as="h2" id="home-faq-title" variant="displayXl">{copy.faq.title}</CatchText>
+            <CatchLegacyText as="p" color="indigo" variant="supportingStrong">{copy.faq.eyebrow}</CatchLegacyText>
+            <CatchLegacyText as="h2" id="home-faq-title" variant="displayXl">{copy.faq.title}</CatchLegacyText>
           </CatchGap>
         }
       />
@@ -427,11 +427,11 @@ function HomeSectionHeading({aside, eyebrow, eyebrowAccent, id, lead, title, tit
 }) {
   const opening = (
     <CatchGap size="related">
-      <CatchText as="p" color={eyebrowAccent} variant="supportingStrong">{eyebrow}</CatchText>
-      <CatchText as="h2" id={id} variant={titleVariant}>{title}</CatchText>
+      <CatchLegacyText as="p" color={eyebrowAccent} variant="supportingStrong">{eyebrow}</CatchLegacyText>
+      <CatchLegacyText as="h2" id={id} variant={titleVariant}>{title}</CatchLegacyText>
     </CatchGap>
   );
-  const side = aside ?? (lead ? <CatchText as="p" color="ink2" variant="bodyLead">{lead}</CatchText> : null);
+  const side = aside ?? (lead ? <CatchLegacyText as="p" color="ink2" variant="bodyLead">{lead}</CatchLegacyText> : null);
   return side ? <CatchSplit align="end" end={side} ratio="sevenFive" start={opening} /> : opening;
 }
 

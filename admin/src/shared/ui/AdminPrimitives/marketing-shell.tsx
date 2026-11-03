@@ -36,7 +36,7 @@ import {
 
 import {SegmentedControl} from "./actions";
 import {AdminEyebrow} from "./shell";
-import {CatchText} from "@catch/web-ui";
+import {CatchLegacyText} from "@catch/web-ui";
 
 export function PageHeader({
   actions,
@@ -49,8 +49,8 @@ export function PageHeader({
     <header className={`marketing-ops-header ${className}`.trim()}>
       <div>
         {eyebrow ? <AdminEyebrow>{eyebrow}</AdminEyebrow> : null}
-        <CatchText as="h2" variant="titleL">{title}</CatchText>
-        {children ? <CatchText as="p" variant="supporting">{children}</CatchText> : null}
+        <CatchLegacyText as="h2" variant="titleL">{title}</CatchLegacyText>
+        {children ? <CatchLegacyText as="p" variant="supporting">{children}</CatchLegacyText> : null}
       </div>
       {actions}
     </header>

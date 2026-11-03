@@ -8,7 +8,7 @@ import {
   CatchReviewItem,
   CatchSplit,
   CatchStarInput,
-  CatchText,
+  CatchLegacyText,
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
@@ -35,12 +35,12 @@ export function OrganizerReviewsSection({controller}: {controller: OrganizerPage
                 <CatchReviewItem
                   avatar={<CatchAvatar ground={item.ground} initials={item.initials} name={item.name} recipe="monogram" size={36} />}
                   badge={(
-                    <CatchText as="span" color={item.verified ? "mint" : "ink2"} variant="statusLabel">
+                    <CatchLegacyText as="span" color={item.verified ? "mint" : "ink2"} variant="statusLabel">
                       {item.verified ? copy.verifiedReview : copy.unverifiedReview}
-                    </CatchText>
+                    </CatchLegacyText>
                   )}
                   body={item.body}
-                  footer={item.note ? <CatchText color="ink2" variant="bodyS">{item.note}</CatchText> : undefined}
+                  footer={item.note ? <CatchLegacyText color="ink2" variant="bodyS">{item.note}</CatchLegacyText> : undefined}
                   key={item.key}
                   meta={item.meta}
                   name={item.name}
@@ -65,8 +65,8 @@ export function OrganizerReviewsSection({controller}: {controller: OrganizerPage
       ) : (
         <CatchGroundCard>
           <CatchGap size="headerTitleToSubtitle">
-            <CatchText variant="sectionTitle">{copy.reviewsEmptyTitle}</CatchText>
-            <CatchText color="ink2" variant="bodyM">{`${copy.reviewsEmptyBody} ${reviews.policy}`}</CatchText>
+            <CatchLegacyText variant="sectionTitle">{copy.reviewsEmptyTitle}</CatchLegacyText>
+            <CatchLegacyText color="ink2" variant="bodyM">{`${copy.reviewsEmptyBody} ${reviews.policy}`}</CatchLegacyText>
           </CatchGap>
         </CatchGroundCard>
       )}
@@ -82,7 +82,7 @@ function OrganizerReviewForm({review}: {review: ReviewForm}) {
   if (review.done) {
     return (
       <CatchGroundCard>
-        <CatchText role="status" variant="bodyL">{form.done(review.name.trim())}</CatchText>
+        <CatchLegacyText role="status" variant="bodyL">{form.done(review.name.trim())}</CatchLegacyText>
       </CatchGroundCard>
     );
   }
@@ -90,14 +90,14 @@ function OrganizerReviewForm({review}: {review: ReviewForm}) {
     <CatchGroundCard>
       <CatchGap size="formField">
         <CatchGap size="inline">
-          <CatchText id="organizer-review-stars" variant="sectionTitle">{form.starsLabel}</CatchText>
+          <CatchLegacyText id="organizer-review-stars" variant="sectionTitle">{form.starsLabel}</CatchLegacyText>
           <CatchStarInput labelledBy="organizer-review-stars" onChanged={review.setStars}
             optionLabel={(stars) => copy.ratingLabel(stars)} value={review.stars} />
         </CatchGap>
         <CatchField inputHint={form.textPlaceholder} maxLines={null} minLines={4} onChanged={review.setText}
           recipe="input" title={form.textLabel} value={review.text} />
         <CatchField autoComplete="given-name" onChanged={review.setName} recipe="input" title={form.nameLabel} value={review.name} />
-        {review.error ? <CatchText color="danger" role="alert" variant="bodyS">{review.error}</CatchText> : null}
+        {review.error ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{review.error}</CatchLegacyText> : null}
         <CatchGap crossAxisAlignment="start" size="inline">
           <CatchButton label={form.submit} onPressed={review.submit} status={review.pending ? "loading" : "idle"} />
         </CatchGap>

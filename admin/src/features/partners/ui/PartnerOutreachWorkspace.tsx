@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchLegacyText, CatchField} from "@catch/web-ui";
 import {AlertCircle, ClipboardList} from "lucide-react";
 import {useEffect, useState} from "react";
 import {
@@ -52,12 +52,12 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
   if (props.parentAccessCurrent === false) return null;
   return <Panel icon={<ClipboardList />} title="Private preparation and manual outreach">
     {c.error && <StatusBanner tone="error" icon={<AlertCircle />}>{c.error}</StatusBanner>}
-    {c.notice && <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText>}
+    {c.notice && <CatchLegacyText as="p" variant="supporting" role="status">{c.notice}</CatchLegacyText>}
     <AdminButton disabled={pending} onClick={() => void c.refresh()}>Refresh preparation and access</AdminButton>
     {c.ticket && <AdminButton disabled={pending || !prepared} onClick={() => void c.retry()}>Retry unchanged outreach action</AdminButton>}
     {!prepared ? <EmptyState>Current preparation is unavailable. Refresh this lead to check access and source freshness.</EmptyState> : <>
       <StateRow label="Research status" value={prepared.researchStatus.replaceAll("_", " ")} />
-      <CatchText as="p" variant="supporting">Choose reviewed wording and confirm its facts before using it. Source details appear only when separately approved for partner sharing.</CatchText>
+      <CatchLegacyText as="p" variant="supporting">Choose reviewed wording and confirm its facts before using it. Source details appear only when separately approved for partner sharing.</CatchLegacyText>
       <AdminForm onSubmit={(event) => {event.preventDefault(); if (!canGenerate) return;
         void c.generate({organizerId: props.organizerId, contactId, opportunityId,
           observationIds: ids("observation"), capabilityIds: ids("capability"),
@@ -87,7 +87,7 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
           {row.evidence.map((source) => <div key={source.evidenceId}>
             <StateRow label="Approved source" value={source.sourceRef} />
             <StateRow label="Observed" value={`${new Date(source.observedAt).toLocaleDateString()} · ${source.confidence} confidence`} />
-            {source.excerpt && <CatchText as="p" variant="supporting">{source.excerpt}</CatchText>}
+            {source.excerpt && <CatchLegacyText as="p" variant="supporting">{source.excerpt}</CatchLegacyText>}
           </div>)}
         </div>)}
         <AdminButton type="submit" variant="primary" disabled={blocked || !canGenerate}>Prepare draft from selected wording</AdminButton>
@@ -108,7 +108,7 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
           maxLines={8}
           inputMode="readOnly"
         />
-        <CatchText as="p" variant="supporting">Select different approved wording to prepare another draft.</CatchText>
+        <CatchLegacyText as="p" variant="supporting">Select different approved wording to prepare another draft.</CatchLegacyText>
         {draft.status === "pending_review" && <>
           <CheckboxField label="I verified these facts, the tone and my established contact channel."
             checked={reviewedHash === reviewKey} disabled={blocked}
@@ -117,7 +117,7 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
         </>}
         {draft.status === "approved" && <>
           <AdminButton disabled={blocked} onClick={() => void c.copy()}>Prepare exact wording for manual copy</AdminButton>
-          <CatchText as="p" variant="supporting">Copy the reviewed text above into your established contact channel and send it yourself.</CatchText>
+          <CatchLegacyText as="p" variant="supporting">Copy the reviewed text above into your established contact channel and send it yourself.</CatchLegacyText>
           <AdminForm onSubmit={(event) => {event.preventDefault();
             if (sentHash !== reviewKey || !/^\d{4}-\d\d-\d\dT\d\d:\d\d$/u.test(occurredAt)) return;
             const date = new Date(`${occurredAt}:00.000Z`);

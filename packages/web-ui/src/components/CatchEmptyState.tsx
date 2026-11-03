@@ -1,6 +1,6 @@
 import {Children, type ReactNode} from "react";
 import {CatchIconTile} from "./CatchIconTile";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchEmptyState.module.css";
 
 export type CatchEmptyStateVariant = "stacked" | "inline";
@@ -63,11 +63,11 @@ export function CatchEmptyState({
       {title ? (
         <span className={styles.title}>
           {!stacked && icon != null ? <span aria-hidden="true" className={styles.inlineIcon}>{icon}</span> : null}
-          <CatchText as="span" textAlign={stacked ? "center" : undefined} variant="sectionTitle">{title}</CatchText>
+          <CatchLegacyText as="span" textAlign={stacked ? "center" : undefined} variant="sectionTitle">{title}</CatchLegacyText>
         </span>
       ) : null}
       {message ? (
-        <CatchText as="p" color="ink2" textAlign={stacked ? "center" : undefined} variant={stacked ? "bodyS" : "supporting"}>{message}</CatchText>
+        <CatchLegacyText as="p" color="ink2" textAlign={stacked ? "center" : undefined} variant={stacked ? "bodyS" : "supporting"}>{message}</CatchLegacyText>
       ) : null}
       {actionList.length > 0 ? <div className={styles.actions}>{actionList}</div> : null}
     </div>

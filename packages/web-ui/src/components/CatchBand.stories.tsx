@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryHeading, StoryPage} from "../stories/websiteV2Story";
 import {CatchBand, type CatchBandSpacing} from "./CatchBand";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {grounds} from "./palette";
 
 const meta = {
@@ -48,7 +48,7 @@ export const Spacing: Story = {
     <StoryPage>
       {spacings.map((spacing, index) => (
         <CatchBand aria-label={`${spacing} spacing`} ground={index % 2 === 0 ? "paper" : "white"} key={spacing} pb={spacing} pt={spacing}>
-          <CatchText as="h2" variant="displayS">{`${spacing[0].toUpperCase()}${spacing.slice(1)} rhythm`}</CatchText>
+          <CatchLegacyText as="h2" variant="displayS">{`${spacing[0].toUpperCase()}${spacing.slice(1)} rhythm`}</CatchLegacyText>
         </CatchBand>
       ))}
     </StoryPage>
@@ -61,7 +61,7 @@ export const FullWidth: Story = {
   render: () => (
     <StoryPage>
       <CatchBand aria-label="Full width" ground="yellow" width="full">
-        <CatchText as="p" variant="bodyL">This copy starts at the band's edge.</CatchText>
+        <CatchLegacyText as="p" variant="bodyL">This copy starts at the band's edge.</CatchLegacyText>
       </CatchBand>
     </StoryPage>
   ),
