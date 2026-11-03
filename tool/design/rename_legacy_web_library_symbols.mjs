@@ -21,6 +21,12 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 // It is idempotent, and --check fails while any caller still uses an old
 // name. A lane whose branch conflicts with the rename takes its own version of
 // each file and runs this again.
+//
+// It is a one-shot transition tool, not a standing gate: once a caller adopts
+// the system CatchSurface, CatchText or CatchIcon, those names are no longer
+// legacy and this would rename that caller too. CI therefore runs only its
+// tests; run --check and the rename by hand, and only on branches cut before
+// the first caller of the system components.
 
 /** Old name to new name. Word boundaries keep CatchTextInput, CatchIconName and CatchGroundCard as they are. */
 export const legacyRenames = new Map([
