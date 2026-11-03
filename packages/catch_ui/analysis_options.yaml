@@ -12,3 +12,9 @@ linter:
 analyzer:
   exclude:
     - build/**
+  errors:
+    # Legacy components stay @Deprecated for their callers until P7 deletes
+    # them, and the library's own legacy parts still build them;
+    # `dart analyze --fatal-infos` would fail every one. The shim ratchet
+    # (tool/design/check_library_shims.mjs) is the guard, not the analyzer hint.
+    deprecated_member_use_from_same_package: ignore

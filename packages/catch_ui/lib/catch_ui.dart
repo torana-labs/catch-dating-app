@@ -169,6 +169,8 @@ export 'src/foundations/catch_adaptive_platform.dart';
 export 'src/foundations/catch_font_licenses.dart';
 export 'src/foundations/catch_fonts.dart';
 export 'src/foundations/catch_icons.dart';
+export 'src/foundations/catch_root.dart'
+    show CatchGroundScope, CatchRoot, CatchScope;
 export 'src/foundations/catch_text_styles.dart' hide catchWelcomeTextStyle;
 export 'src/foundations/catch_theme.dart';
 export 'src/foundations/catch_transitions.dart';
@@ -239,6 +241,10 @@ export 'src/primitives/catch_icon.dart';
 export 'src/primitives/catch_icon_tile.dart';
 export 'src/primitives/catch_image_fallback_surface.dart';
 export 'src/primitives/catch_kicker_text.dart';
+// Legacy: the pre-redesign surface and text, deleted in P7.
+export 'src/primitives/catch_legacy_surface.dart';
+export 'src/primitives/catch_legacy_text.dart';
+export 'src/primitives/catch_legacy_text_variant.dart';
 export 'src/primitives/catch_loading_indicator.dart';
 export 'src/primitives/catch_media_overlay.dart';
 export 'src/primitives/catch_metadata_text.dart';
@@ -248,6 +254,7 @@ export 'src/primitives/catch_pager_focus_viewport.dart';
 export 'src/primitives/catch_reveal_viewport.dart';
 export 'src/primitives/catch_scaled_preferred_size.dart';
 export 'src/primitives/catch_sheet_drag_indicator.dart';
+export 'src/primitives/catch_stack.dart';
 export 'src/primitives/catch_status_indicator.dart';
 export 'src/primitives/catch_surface.dart';
 export 'src/primitives/catch_text.dart';

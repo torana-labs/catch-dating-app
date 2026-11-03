@@ -5,6 +5,7 @@ enum CatchKickerTextVariant { md, lg, fieldSection }
 
 /// Handoff `Kicker`: uppercase mono eyebrow for section starts and editorial
 /// labels.
+@Deprecated('Legacy: use CatchText with a label role; deleted in P7')
 class CatchKickerText extends StatelessWidget {
   const CatchKickerText({
     super.key,

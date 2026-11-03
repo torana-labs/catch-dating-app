@@ -1,169 +1,280 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
+import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
-enum CatchSurfaceTone { surface, raised, primarySoft, transparent }
+/// plain: no box. tile: the grey block. spotlight: one per screen, in an event
+/// colour or ink. floating: white with a shadow. band: an edge-to-edge web
+/// section. `@catch/web-ui` names the same five.
+enum CatchSurfaceBlock { plain, tile, spotlight, floating, band }
 
-/// Shadow prominence; the same four token presets are shared by all recipes.
-enum CatchSurfaceEmphasis { flat, subtle, raised, floating }
+/// A spotlight's colour (a format or [ink]) or a band's (a format, [ink] or
+/// [tile]). `@catch/web-ui` names the same seven.
+enum CatchSurfaceColor {
+  run,
+  dinner,
+  games,
+  courts,
+  nightsOut,
+  ink,
+  tile;
 
-/// Canonical Catch surface primitive for cards, panels, and tappable tiles.
+  /// The format this colour is, or null for [ink] and [tile].
+  CatchFormat? get format => switch (this) {
+    run => CatchFormat.run,
+    dinner => CatchFormat.dinner,
+    games => CatchFormat.games,
+    courts => CatchFormat.courts,
+    nightsOut => CatchFormat.nightsOut,
+    ink || tile => null,
+  };
+}
+
+/// Inner padding: none, 12, 16 or 20.
+enum CatchSurfacePadding {
+  none(CatchSpacing.s0),
+  sm(CatchSpacing.s3),
+  md(CatchSpacing.s4),
+  lg(CatchSpacing.s5);
+
+  const CatchSurfacePadding(this.extent);
+
+  final double extent;
+}
+
+/// The blocks every screen is built from, and the only component that draws a
+/// filled box.
+///
+/// A surface tells everything inside it what it sits on: a tile inside a tile
+/// becomes the nested block (16 corners), inside a coloured spotlight it goes
+/// translucent white, and an ink spotlight turns night. [padding] null takes
+/// the block's default: none for plain, 20 for spotlight, floating and a
+/// band's top and bottom, 12 for a nested tile, otherwise 16. [onPress] makes
+/// the whole block a button with the shared press feedback; [aspect] holds a
+/// width-over-height shape with the content at the bottom.
 class CatchSurface extends StatelessWidget {
   const CatchSurface({
     super.key,
-    required this.child,
-    this.tone = CatchSurfaceTone.surface,
-    this.emphasis = CatchSurfaceEmphasis.flat,
+    this.block = CatchSurfaceBlock.tile,
+    this.color,
     this.padding,
-    this.margin,
-    this.width,
-    this.height,
-    this.radius = CatchRadius.lg,
-    this.borderRadius,
-    this.borderRole,
-    this.borderSpec,
-    this.backgroundColor,
-    this.gradient,
-    this.boxShadow,
-    this.clipBehavior = Clip.none,
-    this.onTap,
-    this.onFocusChange,
-    this.duration = CatchMotion.fast,
-  }) : assert(borderRole == null || borderSpec == null);
-
-  const CatchSurface.card({
-    super.key,
+    this.onPress,
+    this.aspect,
+    this.semanticLabel,
     required this.child,
-    this.padding = CatchInsets.contentRelaxed,
-    this.margin,
-    this.width,
-    this.height,
-    this.borderRole,
-    this.borderSpec,
-    this.boxShadow,
-    this.tone = CatchSurfaceTone.surface,
-    this.onTap,
-    this.onFocusChange,
-    this.duration = CatchMotion.fast,
-  }) : assert(borderRole == null || borderSpec == null),
-       emphasis = CatchSurfaceEmphasis.subtle,
-       radius = CatchRadius.md,
-       borderRadius = null,
-       backgroundColor = null,
-       gradient = null,
-       clipBehavior = Clip.none;
+  }) : assert(aspect == null || aspect > 0);
 
-  const CatchSurface.tinted({
-    super.key,
-    required this.child,
-    this.padding = const EdgeInsets.symmetric(
-      horizontal: CatchSpacing.micro14,
-      vertical: CatchSpacing.s3,
-    ),
-    this.margin,
-    this.radius = CatchRadius.sm,
-    this.borderRadius,
-    this.backgroundColor,
-    this.duration = CatchMotion.fast,
-  }) : tone = CatchSurfaceTone.primarySoft,
-       emphasis = CatchSurfaceEmphasis.flat,
-       width = null,
-       height = null,
-       borderRole = null,
-       borderSpec = null,
-       gradient = null,
-       boxShadow = null,
-       clipBehavior = Clip.none,
-       onTap = null,
-       onFocusChange = null;
+  final CatchSurfaceBlock block;
 
+  /// Spotlight and band only; other blocks ignore it.
+  final CatchSurfaceColor? color;
+  final CatchSurfacePadding? padding;
+  final VoidCallback? onPress;
+
+  /// Width over height.
+  final double? aspect;
+
+  /// The button's label when [onPress] is set.
+  final String? semanticLabel;
   final Widget child;
-  final CatchSurfaceTone tone;
-  final CatchSurfaceEmphasis emphasis;
-  final EdgeInsetsGeometry? padding;
-  final EdgeInsetsGeometry? margin;
-  final double? width;
-  final double? height;
-  final double radius;
-  final BorderRadius? borderRadius;
-
-  /// Semantic border role for standard surface containment.
-  final CatchBorderRole? borderRole;
-
-  /// Resolved semantic border for stateful or custom-pigment containment.
-  final CatchBorderSpec? borderSpec;
-
-  final Color? backgroundColor;
-  final Gradient? gradient;
-  final List<BoxShadow>? boxShadow;
-  final Clip clipBehavior;
-  final VoidCallback? onTap;
-  final ValueChanged<bool>? onFocusChange;
-  final Duration duration;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final effectiveDuration =
-        MediaQuery.maybeOf(context)?.disableAnimations == true
-        ? Duration.zero
-        : duration;
-    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(radius);
-    final border =
-        borderSpec ??
-        (borderRole == null ? null : CatchBorder.resolve(t, borderRole!));
-    final content = Padding(padding: padding ?? EdgeInsets.zero, child: child);
-    final borderDecoration = border == null || border.width <= 0
-        ? null
-        : BoxDecoration(
-            borderRadius: effectiveBorderRadius,
-            border: Border.all(color: border.color, width: border.width),
-          );
-    final decorated = AnimatedContainer(
-      duration: effectiveDuration,
-      curve: CatchMotion.standardCurve,
-      width: width,
-      height: height,
-      margin: margin,
-      clipBehavior: clipBehavior,
-      decoration: BoxDecoration(
-        color: gradient == null ? backgroundColor ?? _color(t) : null,
-        gradient: gradient,
-        borderRadius: effectiveBorderRadius,
-        boxShadow: boxShadow ?? _shadows,
-      ),
-      foregroundDecoration: borderDecoration,
-      child: onTap == null
-          ? content
-          : Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                onFocusChange: onFocusChange,
-                borderRadius: effectiveBorderRadius,
-                child: content,
-              ),
+    final tokens = CatchTokens.of(context);
+    final ground = CatchScope.groundOf(context);
+    final look = _SurfaceLook.resolve(
+      block: block,
+      color: color,
+      ground: ground,
+      tokens: tokens,
+      brightness: Theme.of(context).brightness,
+    );
+
+    final vertical = (padding ?? look.padding).extent;
+    final horizontal = block == CatchSurfaceBlock.band
+        ? _gutter(CatchScope.sizeClassOf(context))
+        : vertical;
+    Widget content = Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
+      child: aspect == null
+          ? child
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [child],
             ),
     );
 
-    if (onTap == null) return decorated;
-    return Semantics(button: true, child: decorated);
+    final press = onPress;
+    if (press != null) {
+      content = Semantics(
+        button: true,
+        label: semanticLabel,
+        child: ClipRRect(
+          borderRadius: look.radius,
+          child: CatchRowPressSurface(
+            onTap: press,
+            semanticButton: false,
+            expandToMaxWidth: false,
+            child: content,
+          ),
+        ),
+      );
+    }
+
+    content = CatchGroundScope(
+      ground: look.childGround,
+      format: look.childFormat,
+      theme: look.childTheme,
+      child: content,
+    );
+
+    final ratio = aspect;
+    if (ratio != null)
+      content = AspectRatio(aspectRatio: ratio, child: content);
+    if (look.fill == null) return content;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: look.fill,
+        borderRadius: look.radius,
+        boxShadow: look.shadow,
+      ),
+      child: content,
+    );
   }
 
-  Color _color(CatchTokens t) {
-    return switch (tone) {
-      CatchSurfaceTone.surface => t.surface,
-      CatchSurfaceTone.raised => t.raised,
-      CatchSurfaceTone.primarySoft => t.primarySoft,
-      CatchSurfaceTone.transparent => Colors.transparent,
-    };
+  static double _gutter(CatchWindowSize sizeClass) => switch (sizeClass) {
+    CatchWindowSize.compact => GeneratedCatchLayoutTokens.gutterCompact,
+    CatchWindowSize.medium => GeneratedCatchLayoutTokens.gutterMedium,
+    CatchWindowSize.expanded => GeneratedCatchLayoutTokens.gutterExpanded,
+  };
+}
+
+/// One block's paint and the ground it gives its children, transcribed from
+/// the system's `Surface.tsx` and `catch.css`.
+@immutable
+class _SurfaceLook {
+  const _SurfaceLook({
+    required this.fill,
+    required this.radius,
+    required this.childGround,
+    required this.padding,
+    this.shadow,
+    this.childFormat,
+    this.childTheme,
+  });
+
+  factory _SurfaceLook.resolve({
+    required CatchSurfaceBlock block,
+    required CatchSurfaceColor? color,
+    required CatchGround ground,
+    required CatchTokens tokens,
+    required Brightness brightness,
+  }) {
+    final xl = BorderRadius.circular(CatchRadius.xl);
+    switch (block) {
+      case CatchSurfaceBlock.plain:
+        return _SurfaceLook(
+          fill: null,
+          radius: BorderRadius.zero,
+          childGround: ground,
+          padding: CatchSurfacePadding.none,
+        );
+      case CatchSurfaceBlock.tile:
+        final nested =
+            ground == CatchGround.tile ||
+            ground == CatchGround.colour ||
+            ground == CatchGround.nightTile;
+        if (nested) {
+          return _SurfaceLook(
+            fill: ground == CatchGround.colour
+                ? CatchTokens.editorialWhite.withValues(
+                    alpha: GeneratedCatchOpacityTokens.onColour,
+                  )
+                : tokens.nested,
+            radius: BorderRadius.circular(CatchRadius.md),
+            childGround: ground.isNight
+                ? CatchGround.night
+                : CatchGround.nested,
+            padding: CatchSurfacePadding.sm,
+          );
+        }
+        return _SurfaceLook(
+          fill: tokens.tile,
+          radius: BorderRadius.circular(CatchRadius.lg),
+          childGround: ground.isNight
+              ? CatchGround.nightTile
+              : CatchGround.tile,
+          padding: CatchSurfacePadding.md,
+        );
+      case CatchSurfaceBlock.spotlight:
+        final format = color?.format;
+        if (format != null) {
+          return _SurfaceLook(
+            fill: format.accent,
+            radius: xl,
+            childGround: CatchGround.colour,
+            childFormat: format,
+            childTheme: CatchThemeMode.day,
+            padding: CatchSurfacePadding.lg,
+          );
+        }
+        return _SurfaceLook(
+          fill: ground.isNight ? tokens.tile : CatchTokens.light.ink,
+          radius: xl,
+          childGround: CatchGround.night,
+          childTheme: CatchThemeMode.night,
+          padding: CatchSurfacePadding.lg,
+        );
+      case CatchSurfaceBlock.floating:
+        return _SurfaceLook(
+          fill: ground.isNight ? tokens.tile : tokens.ground,
+          radius: xl,
+          shadow: CatchElevation.float(brightness),
+          childGround: ground.isNight
+              ? CatchGround.nightTile
+              : CatchGround.ground,
+          padding: CatchSurfacePadding.lg,
+        );
+      case CatchSurfaceBlock.band:
+        final format = color?.format;
+        return switch (color) {
+          null => _SurfaceLook(
+            fill: tokens.ground,
+            radius: BorderRadius.zero,
+            childGround: ground,
+            padding: CatchSurfacePadding.lg,
+          ),
+          CatchSurfaceColor.ink => _SurfaceLook(
+            fill: CatchTokens.dark.ground,
+            radius: BorderRadius.zero,
+            childGround: CatchGround.night,
+            childTheme: CatchThemeMode.night,
+            padding: CatchSurfacePadding.lg,
+          ),
+          CatchSurfaceColor.tile => _SurfaceLook(
+            fill: tokens.tile,
+            radius: BorderRadius.zero,
+            childGround: CatchGround.tile,
+            padding: CatchSurfacePadding.lg,
+          ),
+          _ => _SurfaceLook(
+            fill: format!.accent,
+            radius: BorderRadius.zero,
+            childGround: CatchGround.colour,
+            childFormat: format,
+            childTheme: CatchThemeMode.day,
+            padding: CatchSurfacePadding.lg,
+          ),
+        };
+    }
   }
 
-  List<BoxShadow> get _shadows {
-    return switch (emphasis) {
-      CatchSurfaceEmphasis.flat => CatchElevation.none,
-      CatchSurfaceEmphasis.subtle => CatchElevation.card,
-      CatchSurfaceEmphasis.raised => CatchElevation.raised,
-      CatchSurfaceEmphasis.floating => CatchElevation.overlay,
-    };
-  }
+  final Color? fill;
+  final BorderRadius radius;
+  final List<BoxShadow>? shadow;
+  final CatchGround childGround;
+  final CatchFormat? childFormat;
+  final CatchThemeMode? childTheme;
+  final CatchSurfacePadding padding;
 }
