@@ -13,6 +13,10 @@ mkdir -p "$probe_parent"
 # Dart files inside the tree, so the next `dart analyze` reports this script's
 # own fixtures as findings in your code.
 rm -rf "${probe_parent:?}"/run.*
+# The one fixture that is really under apps/host/lib, not standing for it. Ignored
+# by Git, and swept the same way.
+real_app_probe_root="apps/host/lib/catch_ui_lints_probe"
+rm -rf "$real_app_probe_root"
 probe_root="$(mktemp -d "$probe_parent/run.XXXXXX")"
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 probe_number=0
@@ -61,7 +65,7 @@ if [[ -n "$dead_rule_files" ]]; then
 fi
 
 cleanup() {
-  rm -rf "$probe_root"
+  rm -rf "$probe_root" "$real_app_probe_root"
 }
 trap cleanup EXIT
 trap 'cleanup; exit 130' HUP INT TERM
@@ -1204,6 +1208,13 @@ lib/events/domain/event_model.dart|catch_arch_legacy_context_file|class EventMod
 lib/events/presentation/event_list_state.dart|catch_arch_provider_free_boundary|import 'package:go_router/go_router.dart';
 lib/contexts/events/parts/row_boundary.dart|catch_arch_provider_free_boundary|import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 lib/explore/presentation/widgets/marked_body.dart|catch_arch_provider_free_boundary|// architecture: provider-free\nimport 'package:flutter_riverpod/flutter_riverpod.dart';
+apps/host/lib/today/today_body.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
+apps/host/lib/today/today_state.dart|catch_arch_provider_free_boundary|import 'package:go_router/go_router.dart';
+apps/host/lib/today/no_shifts_empty_state.dart|catch_arch_provider_free_boundary|import 'package:go_router/go_router.dart';
+apps/host/lib/today/widgets/today_row.dart|catch_arch_provider_free_boundary|int read(dynamic ref) => ref\n    .watch(0);
+apps/consumer/lib/explore/widgets/map_row.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
+lib/pages/welcome/welcome_body.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
+lib/pages/welcome/widgets/welcome_row.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
 lib/chats/presentation/chat_route_widget.dart|catch_arch_invalid_ignore|// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- stale exception\nclass ChatRouteWidget {}
 ARCH
 
@@ -1219,6 +1230,168 @@ expect_probe exact catch_arch_manual_provider_declaration 0
 expect_probe exact catch_arch_invalid_ignore 0
 expect_probe exact catch_no_allow_debt 0
 
+# The path makes the promise only for bodies, states and widgets/: a screen in the
+# same folder may watch, and a legacy body with no marker still may.
+probe_path="$probe_root/arch/apps/host/lib/today/today_screen.dart"
+stage_probe "new-root screen may watch providers" <<'DART'
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+DART
+expect_probe exact catch_arch_provider_free_boundary 0
+probe_path="$probe_root/arch/lib/explore/presentation/widgets/legacy_body.dart"
+stage_probe "legacy body is provider-free only when marked" <<'DART'
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+DART
+expect_probe exact catch_arch_provider_free_boundary 0
+
+# D24. Everything under apps/*/lib and lib/pages holds at zero: no reasoned ignore,
+# and every rule a presentation/ folder has. Each entry: repository path, expected
+# code, expected count, source on one line (\n expands). No arch/ folder, so the
+# layer rules leave these fixtures alone.
+new_root_prelude="import 'package:catch_ui/catch_ui.dart';\nimport 'package:flutter/cupertino.dart';\nimport 'package:flutter/material.dart';\n"
+while IFS='|' read -r zero_path zero_code zero_count zero_source; do
+  [[ -z "$zero_path" ]] && continue
+  probe_path="$probe_root/$zero_path"
+  stage_probe "new root $zero_path $zero_code" <<< "$(printf '%b' "$new_root_prelude$zero_source")"
+  expect_probe exact "$zero_code" "$zero_count"
+done <<'ZERO'
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => Theme.of(context);
+apps/consumer/lib/explore/explore_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => Theme.of(context);
+lib/pages/welcome/welcome_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => Theme.of(context);
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|Object read(BuildContext context) => CupertinoTheme.of(context);
+apps/host/lib/today/today_screen.dart|catch_no_raw_text_style|1|const style = TextStyle();
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|const box = BoxDecoration();
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|final box = Container();
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|2|const box = DecoratedBox(decoration: BoxDecoration());
+apps/host/lib/today/today_screen.dart|catch_no_raw_surface_shell|1|const glyph = Icon(IconData(0));
+apps/host/lib/today/today_screen.dart|catch_text_requires_style|1|const label = Text('x');
+apps/host/lib/today/today_screen.dart|catch_text_requires_style|1|const label = Text.rich(TextSpan(text: 'x'));
+apps/host/lib/today/today_screen.dart|catch_text_requires_style|1|const label = RichText(text: TextSpan(text: 'x'));
+apps/host/lib/today/today_screen.dart|catch_text_requires_style|1|const label = SelectableText('x');
+apps/host/lib/today/today_screen.dart|catch_text_requires_style|1|Widget label(BuildContext context) => Text('x', style: CatchTextStyles.bodyM(context));
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|4|const gaps = [SizedBox(height: 8), SizedBox(width: 1), SizedBox(height: 0), SizedBox.square(dimension: 8)];
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|2|SizedBox gap(bool wide) => SizedBox(height: wide ? 8 : 12);
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const pad = Padding(padding: EdgeInsets.all(8));
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|7|const pads = [EdgeInsets.only(top: 8), EdgeInsets.symmetric(horizontal: 1), EdgeInsets.fromLTRB(0, 8, 0, 8), EdgeInsetsDirectional.only(start: 0)];
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const inset = EdgeInsetsGeometry.all(8);
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const column = Column(spacing: 8);
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const row = Row(spacing: 8);
+apps/host/lib/today/today_screen.dart|catch_no_raw_ui_spacing|1|const at = Positioned(top: 8, child: SizedBox.shrink());
+apps/host/lib/today/today_screen.dart|catch_no_raw_color|1|const clear = Colors.transparent;
+apps/host/lib/today/today_screen.dart|catch_no_allow_debt|1|// ignore: catch_ui_lints/catch_no_raw_surface_shell -- a reason\nfinal box = Container();
+apps/host/lib/today/today_screen.dart|catch_no_allow_debt|1|// ignore_for_file: catch_ui_lints/catch_no_raw_surface_shell\nfinal box = Container();
+apps/host/lib/today/today_screen.dart|catch_no_allow_debt|1|// ignore: catch_ui_lints/catch_no_raw_color -- a reason\nconst tone = Colors.red;
+apps/host/lib/today/today_screen.dart|catch_no_allow_debt|1|// spacing:allow: a reason\nconst pad = 1;
+apps/host/lib/today/today_screen.dart|catch_no_shell_local_measurement|1|final builder = LayoutBuilder(builder: (context, constraints) => const SizedBox.shrink());
+lib/pages/welcome/welcome_screen.dart|catch_no_raw_alpha|1|Color fade(Color tone) => tone.withValues(alpha: 0.2);
+apps/host/lib/today/today_screen.dart|catch_no_raw_alpha|1|Color fade(Color tone) => tone.withValues(alpha: 0.2);
+ZERO
+
+probe_path="$probe_root/apps/host/lib/today/today_body.dart"
+stage_probe "new-root arrangement and tokens stay legal" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+
+const namedInset = EdgeInsets.all(CatchSpacing.s4);
+
+class TodayBody extends StatelessWidget {
+  const TodayBody({super.key});
+
+  @override
+  Widget build(BuildContext context) => Column(
+    spacing: CatchSpacing.s2,
+    children: [
+      Expanded(
+        child: Row(
+          children: [
+            Flexible(
+              child: CatchText('x', variant: CatchTextVariant.bodyM),
+            ),
+            CatchIcon(CatchIcons.close),
+          ],
+        ),
+      ),
+      SizedBox(height: CatchSpacing.s4),
+      SizedBox.shrink(),
+      Padding(padding: EdgeInsets.zero),
+      Padding(padding: CatchInsets.pageBody),
+      Padding(padding: namedInset),
+      Stack(
+        children: [
+          Positioned(top: 0, child: SizedBox.shrink()),
+        ],
+      ),
+      Expanded(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: SizedBox.shrink()),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+DART
+expect_probe clean
+
+# None of that reaches a legacy folder: its rules and its reasoned ignore stand.
+probe_path="$probe_root/lib/hosts/presentation/host_lint_control_screen.dart"
+stage_probe "new-root rules stay out of legacy folders" <<'DART'
+import 'package:flutter/material.dart';
+
+Widget control(BuildContext context) {
+  final theme = Theme.of(context);
+  return Column(
+    spacing: 8,
+    children: [
+      const SizedBox(height: 0),
+      const Padding(padding: EdgeInsets.only(top: 0)),
+      // ignore: catch_ui_lints/catch_no_raw_surface_shell -- seeded reason
+      ColoredBox(color: theme.cardColor),
+      const Icon(IconData(0)),
+    ],
+  );
+}
+DART
+expect_probe exact catch_no_raw_ui_spacing 0
+expect_probe exact catch_no_allow_debt 0
+expect_probe exact catch_no_raw_surface_shell 0
+
+# The two files that predate D24 keep what lib/ tolerates until their redraw, and
+# nothing else under lib/pages does. The scan runs on them: of everything it
+# checks, only what it found there when it first ran is held by the list.
+probe_path="$probe_root/lib/pages/startup/splash_screen.dart"
+stage_probe "listed legacy file keeps the reasoned ignore" <<'DART'
+import 'package:flutter/material.dart';
+
+Widget splash(BuildContext context) {
+  final theme = Theme.of(context);
+  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- seeded reason
+  return ColoredBox(color: theme.cardColor);
+}
+DART
+expect_probe exact catch_no_allow_debt 0
+expect_probe exact catch_no_raw_surface_shell 0
+probe_path="$probe_root/lib/pages/celebration/celebration_screen.dart"
+stage_probe "the scan runs on a listed file" <<'DART'
+import 'package:flutter/material.dart';
+
+Color fade(Color tone) => tone.withValues(alpha: 0.2);
+const glyph = IconButton(onPressed: null, iconSize: 30, icon: SizedBox.shrink());
+const label = Text('x');
+DART
+expect_probe exact catch_no_raw_alpha 0
+expect_probe exact catch_no_raw_icon_size 0
+expect_probe exact catch_text_requires_style 1
+probe_path="$probe_root/lib/pages/celebration/celebration_confetti.dart"
+stage_probe "the rest of the celebration folder holds at zero" <<'DART'
+import 'package:flutter/material.dart';
+
+Object read(BuildContext context) => Theme.of(context);
+Color fade(Color tone) => tone.withValues(alpha: 0.2);
+DART
+expect_probe exact catch_no_raw_surface_shell 1
+expect_probe exact catch_no_raw_alpha 1
+
 # Outside lib/ and apps/*/lib/ the rules place nothing.
 probe_path="$probe_root/arch/packages/catch_ui/lib/src/ignored.dart"
 stage_probe "architecture rules skip other packages" <<'DART'
@@ -1227,3 +1400,42 @@ DART
 expect_probe exact catch_arch_unmapped_file 0
 
 node tool/lib/lint_probe_batch.mjs "$probe_root" "$probe_manifest" "$dart_bin"
+
+# A fixture above stands for its path, so it cannot show that the plugin reaches
+# the app packages at all. If apps/* left the root analysis, this one reads clean
+# and fails here. Its own analyzer run: mixing it with the fixtures above in one
+# command can load no plugin and report nothing.
+real_app_probe="$real_app_probe_root/seeded_body.dart"
+real_app_manifest="$probe_root/real_app_expectations.tsv"
+mkdir -p "$real_app_probe_root"
+cat >"$real_app_probe" <<'DART'
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+Widget seeded(BuildContext context) => Column(
+  spacing: 8,
+  children: [
+    const Text('x', style: TextStyle()),
+    const SizedBox(height: 8),
+    const Padding(padding: EdgeInsets.all(8)),
+    ColoredBox(color: Theme.of(context).cardColor),
+    const DecoratedBox(decoration: BoxDecoration()),
+    // ignore: catch_ui_lints/catch_no_raw_surface_shell -- seeded reason
+    Container(),
+  ],
+);
+DART
+{
+  printf '%s\tcase\t%s\t0\n' "$real_app_probe" "real apps/host/lib file"
+  while read -r real_code real_count; do
+    printf '%s\texact\t%s\t%s\n' "$real_app_probe" "$real_code" "$real_count"
+  done <<'REAL'
+catch_no_raw_text_style 1
+catch_text_requires_style 1
+catch_no_raw_surface_shell 4
+catch_no_raw_ui_spacing 3
+catch_no_allow_debt 1
+catch_arch_provider_free_boundary 1
+REAL
+} >"$real_app_manifest"
+node tool/lib/lint_probe_batch.mjs "$real_app_probe_root" "$real_app_manifest" "$dart_bin"

@@ -68,6 +68,13 @@ final activeDrawingKinds = Set<String>.unmodifiable(
   drawingMigrationKinds.difference(unavailableDrawingKinds),
 );
 
+/// `catch_ui` has `CatchIcon`, so the new roots need no raw Icon. It has no
+/// tooltip yet, so Tooltip stays dormant there too.
+final newRootDrawingKinds = Set<String>.unmodifiable({
+  ...activeDrawingKinds,
+  'Icon',
+});
+
 typedef DrawingMigrationSite = ({AstNode node, String kind});
 
 /// Resolved identities exclude similarly named app/third-party constructors.

@@ -6185,6 +6185,7 @@
       "impactPaths": [
         "tool/architecture/provider_graph.dart",
         "test/tool/provider_graph_test.dart",
+        "tool/architecture/provider_graph_baseline.json",
         "lib/**/*.dart",
         "apps/*/lib/**/*.dart"
       ],
@@ -6221,6 +6222,69 @@
             "tool/architecture/provider_graph.dart"
           ],
           "instruction": "Derive and check the complete live Riverpod source graph from Dart ASTs. Keep providers, families, consumers, aliases, overrides, and Mutations resolvable; reject duplicate or dangling providers, provider-internal unresolved refs, reactive cycles, unreviewed architecture candidates, and stale review decisions. Do not commit generated graph views; emit deterministic JSON or summary evidence only on demand. Core-owned providers must not orchestrate feature data, and provider aliases should be removed when the canonical owner can be used directly."
+        },
+        {
+          "id": "CACHE-LIFETIME-001",
+          "title": "A read owner declares one lifetime",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "A provider that reaches .snapshots(), a Firestore .get(), httpsCallable or callHostCrm declares exactly one lifetime in its build, and is keepAlive: true only with an account-free // keepalive: decision. Contract: docs/screen_data_caching.md."
+        },
+        {
+          "id": "CACHE-POLICY-001",
+          "title": "A lifetime takes a CachePolicies member",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "Pass only a CachePolicies member to a lifetime, and never build a CachePolicy outside that table. Contract: docs/screen_data_caching.md."
+        },
+        {
+          "id": "CACHE-ACCOUNT-001",
+          "title": "Cached account data is keyed by session",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "A timed or session read owner of account data holds an AuthenticatedSession in its key. Contract: docs/screen_data_caching.md."
+        },
+        {
+          "id": "CACHE-KEY-001",
+          "title": "No raw DateTime in a cached key",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "Time enters a timed or session read owner's key only as a CacheTimeBucket, never as a raw DateTime. Contract: docs/screen_data_caching.md."
+        },
+        {
+          "id": "CACHE-INVALIDATE-001",
+          "title": "Presentation invalidates read owners only to retry",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "Presentation code invalidates or refreshes a read owner only in a retry or pull-to-refresh, and a retry targets the read owner rather than a composition. Contract: docs/screen_data_caching.md."
+        },
+        {
+          "id": "CACHE-LISTENER-001",
+          "title": "Listeners take no write invalidation or tags",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "A write does not invalidate a Firestore listener provider, and a listener declares no cache tags, because it delivers its own updates. Contract: docs/screen_data_caching.md."
+        },
+        {
+          "id": "KEEPALIVE-MANUAL-001",
+          "title": "A kept-alive handwritten provider says why",
+          "appliesTo": [
+            "lib/**/*.dart",
+            "apps/*/lib/**/*.dart"
+          ],
+          "instruction": "A handwritten provider without .autoDispose carries a // keepalive: marker. Contract: docs/screen_data_caching.md."
         }
       ],
       "alsoEnforces": [
@@ -6824,6 +6888,37 @@
         "ICON-ROLES-001"
       ],
       "baseline": "tool/design/icon_family_usage_baseline.json"
+    },
+    {
+      "id": "design:library-shims",
+      "category": "design",
+      "path": "tool/design/check_library_shims.mjs",
+      "command": "node tool/design/check_library_shims.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Ratchets @Deprecated catch_ui shims left for legacy callers, and rejects any deprecated catch_ui symbol or ignored Catch code under apps/*/lib and lib/pages.",
+      "checks": [
+        "node --check tool/design/check_library_shims.mjs",
+        "node --test tool/design/check_library_shims.test.mjs",
+        "node tool/design/check_library_shims.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/design/check_library_shims.test.mjs",
+        "tool/design/library_shims_baseline.json",
+        "tool/lib/flutter_source_roots.mjs",
+        "packages/catch_ui/lib/**/*.dart",
+        "packages/catch_ui_lints/lib/src/migration_scope.dart",
+        "apps/**/lib/**/*.dart",
+        "lib/pages/**/*.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "ratchet",
+      "baseline": "tool/design/library_shims_baseline.json"
     },
     {
       "id": "cloudflare:edge-policy",

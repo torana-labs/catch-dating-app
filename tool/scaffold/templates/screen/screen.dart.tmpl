@@ -18,6 +18,7 @@ class %%Name%%Screen extends ConsumerWidget {
         body: CatchRouteBody.fullBleed(
           child: CatchAsyncBoundary<%%Name%%ViewModel>(
             value: viewModel,
+            onRetry: () => ref.invalidate(%%camel%%ViewModelProvider),
             builder: (context, state) => %%Name%%Body(title: title),
           ),
         ),

@@ -33,9 +33,16 @@ export function compareGeneratedFiles({expectedDir, actualDir, files = generated
 // formatter falls back to the newest language version, so the disposable
 // project declares the package's version to match `flutter gen-l10n` in the repo.
 export function languageVersion(pubspec) {
-  const match = /^environment:[ \t]*\n(?:[ \t]+.*\n)*?[ \t]+sdk:[ \t]*["']?(?:\^|>=)?[ \t]*(\d+)\.(\d+)\./mu.exec(pubspec);
-  if (!match) throw new Error("pubspec.yaml declares no environment.sdk lower bound.");
-  return `${match[1]}.${match[2]}`;
+  const lines = pubspec.split("\n");
+  const start = lines.findIndex((line) => /^environment:[ \t]*$/u.test(line));
+  if (start >= 0) {
+    for (const line of lines.slice(start + 1)) {
+      if (!/^[ \t]/u.test(line)) break;
+      const match = /^[ \t]+sdk:[ \t]*(?:["'][ \t]*)?(?:(?:\^|>=)[ \t]*)?(\d+)\.(\d+)\./u.exec(line);
+      if (match) return `${match[1]}.${match[2]}`;
+    }
+  }
+  throw new Error("pubspec.yaml declares no environment.sdk lower bound.");
 }
 
 export function checkFlutterL10n({

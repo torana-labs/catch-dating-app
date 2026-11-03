@@ -1,0 +1,7 @@
+{
+  "$comment": "Library shims left for legacy callers (redesign plan 5.8). Reaches 0 in P7. Record a fall with node tool/design/check_library_shims.mjs --update; a library PR that adds a shim raises this by hand, so the rise is in its diff.",
+  "version": 1,
+  "owner": "app_architecture",
+  "targetPhase": "docs/app_architecture.md#phase-library-shims-reach-zero",
+  "shims": 0
+}

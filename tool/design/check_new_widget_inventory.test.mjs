@@ -302,6 +302,58 @@ test("context domain and data layers stay out of the new-widget inventory", (t) 
   );
 });
 
+test("a scaffolded screen under an app package passes with no use case, and a catch_ui widget does not", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-new-widget-roots-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  for (const file of [
+    "tool/lib/repo_paths.mjs",
+    "tool/design/check_new_widget_inventory.mjs",
+    "tool/design/component_concepts.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "design/components/catch.components.schema.json",
+    "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/owned_composition_renderers.mjs",
+    "tool/design/lib/production_widget_roots.mjs",
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
+  }
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+  };
+  git(["init", "--quiet"]);
+  git(["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+    "-c", "commit.gpgsign=false", "commit", "--quiet", "--allow-empty", "-m", "Fixture base"]);
+  const write = (file, text) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), text);
+  };
+  write("widgetbook/lib/main.directories.g.dart", "");
+  write("design/components/catch.components.json", JSON.stringify({components: []}));
+  write("apps/host/lib/today/today_screen.dart",
+    "class TodayScreen extends ConsumerWidget { const TodayScreen({super.key}); Widget build(BuildContext context, WidgetRef ref) => const TodayBody(); }\n");
+  write("apps/host/lib/today/today_body.dart",
+    "class TodayBody extends StatelessWidget { const TodayBody({super.key}); Widget build(BuildContext context) => const CatchEmptyState(); }\n");
+  const run = () => spawnSync(process.execPath,
+    ["tool/design/check_new_widget_inventory.mjs", "--base", "HEAD", "--check", "--json", "--no-write"],
+    {cwd: root, encoding: "utf8"});
+
+  const screen = run();
+  assert.equal(screen.status, 0, screen.stdout);
+  assert.equal(JSON.parse(screen.stdout).summary.coveredNewWidgets, 2);
+
+  const library = "packages/catch_ui/lib/src/components/catch_meter.dart";
+  write(library, "class CatchMeter extends StatelessWidget { const CatchMeter({super.key}); Widget build(BuildContext context) => const SizedBox(); }\n");
+  write("design/components/catch.components.json",
+    JSON.stringify({components: [{id: "catch.meter", dart: {symbol: "CatchMeter", file: library}}]}));
+  const uncovered = run();
+  assert.equal(uncovered.status, 1);
+  const report = JSON.parse(uncovered.stdout);
+  assert.deepEqual(report.addedWidgets.find(({name}) => name === "CatchMeter").issues, ["missing-widgetbook"]);
+  assert.equal(report.summary.unresolved, 1);
+});
+
 test("discovers direct and transitive widget subclasses without matching prose", () => {
   const source = `
 // class CommentedOutWidget extends StatelessWidget {}

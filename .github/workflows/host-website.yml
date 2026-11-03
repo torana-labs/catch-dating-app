@@ -15,6 +15,13 @@ on:
       - "firebase.json"
       - "firebase/prod/host/**"
       - "lib/**"
+      # The packages the Host build depends on. Other packages stay out, so a web or
+      # lint change doesn't deploy Host to production.
+      - "packages/catch_tokens/**"
+      - "packages/catch_ui/**"
+      - "packages/kernel/**"
+      - "packages/l10n/**"
+      - "packages/platform/**"
       - "pubspec.lock"
       - "pubspec.yaml"
       - "tool/app_targets.json"
