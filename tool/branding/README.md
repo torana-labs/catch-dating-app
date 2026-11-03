@@ -72,7 +72,9 @@ visually distinct without covering the consumer or host wordmarks.
 base launch-screen assets (Android drawables, iOS launch images, web splash)
 and may replace the storyboard. Run `generate_native_brand_assets.dart` after it so the
 Consumer responsive launch geometry and the Host-specific centered
-storyboard/assets are reapplied from source.
+storyboard/assets are reapplied from source. After a token change, also run the
+generator before it: `flutter_native_splash:create` reads its colors from the
+pubspec, and the generator is what writes them there.
 
 Launcher icons have no third-party generator: this generator owns every native
 launcher catalog. Do not reintroduce `flutter_launcher_icons`; it rewrites the
