@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const routerPath = fromRepo("lib/routing/go_router.dart");
-const routeContractPath = fromRepo("lib/routing/route_contract.dart");
+const routeContractPath = fromRepo("lib/platform/routing/route_contract.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const productionDartRoots = ["lib", "apps/consumer/lib", "apps/host/lib"];
 const args = process.argv.slice(2);
@@ -73,7 +73,7 @@ function listInventory() {
 
 export function buildInventory({
   repoRoot = fromRepo("."),
-  routeContractSource = fs.readFileSync(path.join(repoRoot, "lib/routing/route_contract.dart"), "utf8"),
+  routeContractSource = fs.readFileSync(path.join(repoRoot, "lib/platform/routing/route_contract.dart"), "utf8"),
   routerSource = fs.readFileSync(path.join(repoRoot, "lib/routing/go_router.dart"), "utf8"),
   imperativePageRoutes = extractImperativePageRouteInventory(repoRoot),
 } = {}) {
@@ -105,7 +105,7 @@ export function buildInventory({
     version: 5,
     generatedBy: "tool/ui_capture/check_route_inventory.mjs",
     source: {
-      path: "lib/routing/route_contract.dart",
+      path: "lib/platform/routing/route_contract.dart",
       runtimePath: "lib/routing/go_router.dart",
       routeContractSha256: sha256(routeContract),
       goRouteCount: countMatches(routeGraph.text, /\b(?:GoRoute|HostWorkspaceDestination)\s*\(/g),

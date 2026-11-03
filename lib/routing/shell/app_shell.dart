@@ -10,7 +10,7 @@ import 'package:catch_dating_app/notifications/notifications.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/push/fcm_service.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/platform/routing/route_contract.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';

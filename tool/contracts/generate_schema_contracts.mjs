@@ -522,7 +522,7 @@ export function publishSchemaOutputs({root, files, checkOnly, retiredFiles = []}
     "functions/src/shared/generated/schemas",
     "functions/src/shared/generated/validators",
     "functions/src/shared/generated/catalogs",
-    ...(checkOnly ? [DART_SCHEMA_OUTPUT_DIR, DART_CALLABLE_REQUEST_OUTPUT_DIR] : []),
+    ...(checkOnly ? [DART_SCHEMA_OUTPUT_DIR, DART_CALLABLE_REQUEST_OUTPUT_DIR, ...DART_CONTEXT_OWNED_CALLABLE_REQUESTS.values()] : []),
   ];
   for (const relativeDirectory of ownedDirectories) {
     const absoluteDirectory = path.join(root, relativeDirectory);
@@ -544,6 +544,9 @@ export function publishSchemaOutputs({root, files, checkOnly, retiredFiles = []}
       path.join(root, "lib/platform/schema_contracts/generated/schemas"),
       {recursive: true, force: true}
     );
+    for (const directory of DART_CONTEXT_OWNED_CALLABLE_REQUESTS.values()) {
+      fs.rmSync(path.join(root, directory), {recursive: true, force: true});
+    }
   }
   for (const file of files) {
     const absolutePath = path.join(root, file.path);
@@ -2745,6 +2748,7 @@ ${ungenerableRows}
 | \`lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
 | \`lib/platform/schema_contracts/generated/field_constraints.g.dart\` | UI constraints for the schema fields declared in \`contracts/forms/field_constraint_bindings.json\`. |
 | \`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
+| \`lib/contexts/*/data/generated/*.g.dart\` | Generated Dart callable requests that carry a context's domain types. |
 | \`lib/platform/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
 `;
 }
@@ -2779,6 +2783,13 @@ const DART_CALLABLE_REQUEST_SKIP = new Set([
 
 const DART_CALLABLE_REQUEST_OUTPUT_DIR =
   "lib/platform/schema_contracts/generated/callables";
+
+// These DTOs carry a context's domain types, so they live with that context: the
+// platform layer imports nothing above it, and its barrel does not re-export them.
+const DART_CONTEXT_OWNED_CALLABLE_REQUESTS = new Map([
+  ["CreateEventCallableRequest", "lib/contexts/events/data/generated"],
+  ["UpdateUserProfilePatch", "lib/contexts/profiles/data/generated"],
+]);
 
 const DART_CALLABLE_FIELD_OVERRIDES = new Map([
   [
@@ -2889,12 +2900,15 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}
           files.push({
             path: output,
             content: renderDartCallableRequestClassFile({
+              className: patchResult.className,
               imports: patchResult.imports,
               schemaSource: spec.source,
               body: patchResult.text,
             }),
           });
-          barrelExports.push(dartGeneratedExportPath(output));
+          if (!DART_CONTEXT_OWNED_CALLABLE_REQUESTS.has(patchResult.className)) {
+            barrelExports.push(dartGeneratedExportPath(output));
+          }
           generatedClasses.push({
             className: patchResult.className,
             schemaName: spec.name,
@@ -2918,12 +2932,15 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}
       files.push({
         path: output,
         content: renderDartCallableRequestClassFile({
+          className: result.className,
           imports: result.imports,
           schemaSource: spec.source,
           body: result.text,
         }),
       });
-      barrelExports.push(dartGeneratedExportPath(output));
+      if (!DART_CONTEXT_OWNED_CALLABLE_REQUESTS.has(result.className)) {
+        barrelExports.push(dartGeneratedExportPath(output));
+      }
       for (const className of result.classNames) {
         generatedClasses.push({
           className,
@@ -2949,7 +2966,8 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
 // Patch helper classes are emitted for schemas with x-callable-shape: patch.
 // This file is a stable barrel; individual generated classes live under
-// lib/platform/schema_contracts/generated/callables/.
+// lib/platform/schema_contracts/generated/callables/. DTOs that carry a context's
+// domain types live in that context's data/generated/ folder instead.
 //
 // Hand-written callable request/response helpers may still exist for schemas
 // that need custom normalization or response parsing beyond generated request
@@ -2962,19 +2980,22 @@ ${body}
 }
 
 function dartCallableRequestOutputPath(className) {
-  return `${DART_CALLABLE_REQUEST_OUTPUT_DIR}/${snakeCase(className)}.g.dart`;
+  const directory = DART_CONTEXT_OWNED_CALLABLE_REQUESTS.get(className) ?? DART_CALLABLE_REQUEST_OUTPUT_DIR;
+  return `${directory}/${snakeCase(className)}.g.dart`;
 }
 
 function dartGeneratedExportPath(outputPath) {
   return outputPath.replace("lib/platform/schema_contracts/generated/", "");
 }
 
-function renderDartCallableRequestClassFile({imports, schemaSource, body}) {
+function renderDartCallableRequestClassFile({className, imports, schemaSource, body}) {
   const importBlock = [...(imports ?? [])].sort().join("\n");
   const normalizedBody = body.trimEnd();
   return `${dartGeneratedHeader()}${importBlock ? `${importBlock}\n\n` : ""}
 // Typed callable request DTO emitted from ${schemaSource}.
-// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart.
+${DART_CONTEXT_OWNED_CALLABLE_REQUESTS.has(className) ?
+    "// Owned by its context, so the platform barrel does not re-export it." :
+    "// Re-exported by lib/platform/schema_contracts/generated/callable_request_dtos.g.dart."}
 
 ${normalizedBody}
 `;

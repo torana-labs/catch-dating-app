@@ -54,7 +54,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     ["lib/contexts/organizers/data/organizer_membership_repository.dart", ["organizerFollows"]],
     ["lib/contexts/organizers/data/organizer_posts_repository.dart", ["createOrganizerPost"]],
     ["lib/contexts/profiles/data/image_upload_repository.dart", ["organizers/"]],
-    ["lib/routing/route_contract.dart", ["/host/organizer"]],
+    ["lib/platform/routing/route_contract.dart", ["/host/organizer"]],
     ["website/src/firebase.ts", [
       "requestOrganizerClaim", "createPublicOrganizerReview",
     ]],

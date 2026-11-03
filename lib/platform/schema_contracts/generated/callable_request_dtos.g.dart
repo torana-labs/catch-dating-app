@@ -7,7 +7,8 @@
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
 // Patch helper classes are emitted for schemas with x-callable-shape: patch.
 // This file is a stable barrel; individual generated classes live under
-// lib/platform/schema_contracts/generated/callables/.
+// lib/platform/schema_contracts/generated/callables/. DTOs that carry a context's
+// domain types live in that context's data/generated/ folder instead.
 //
 // Hand-written callable request/response helpers may still exist for schemas
 // that need custom normalization or response parsing beyond generated request
@@ -155,7 +156,6 @@ export 'callables/control_event_rehearsal_callable_request.g.dart';
 export 'callables/control_event_rehearsal_spatial_callable_request.g.dart';
 export 'callables/convert_organizer_form_response_callable_request.g.dart';
 export 'callables/copy_sales_partner_outreach_draft_callable_request.g.dart';
-export 'callables/create_event_callable_request.g.dart';
 export 'callables/create_event_invite_link_callable_request.g.dart';
 export 'callables/create_event_rehearsal_callable_request.g.dart';
 export 'callables/create_event_review_callable_request.g.dart';
@@ -451,7 +451,6 @@ export 'callables/update_private_event_basics_callable_request.g.dart';
 export 'callables/update_private_event_details_callable_request.g.dart';
 export 'callables/update_private_event_preferences_callable_request.g.dart';
 export 'callables/update_sales_partner_assignment_callable_request.g.dart';
-export 'callables/update_user_profile_patch.g.dart';
 export 'callables/upsert_event_success_layout_callable_request.g.dart';
 export 'callables/upsert_organizer_campaign_callable_request.g.dart';
 export 'callables/upsert_organizer_event_venue_callable_request.g.dart';

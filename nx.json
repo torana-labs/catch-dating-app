@@ -403,6 +403,7 @@
                   "{workspaceRoot}/design/visual_baselines/**/*",
                   "{workspaceRoot}/design/public_surface_behavior.json",
                   "!{workspaceRoot}/lib/platform/schema_contracts/generated/**/*",
+                  "!{workspaceRoot}/lib/contexts/*/data/generated/**/*",
                   "!{workspaceRoot}/**/*.md"
                 ]
               }
