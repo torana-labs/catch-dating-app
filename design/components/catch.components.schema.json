@@ -207,10 +207,22 @@
         }
       },
       "if": {"properties": {"useCase": {"minLength": 1}}},
-      "then": {"required": ["comparedWith", "reason"]}
+      "then": {"required": ["reason"]}
+    },
+    "namingComparison": {
+      "description": "A qualified use case records naming.comparedWith, except a legacy member (the retiring implementation of its record's responsibility), whose naming.reason names the PR that retired it instead.",
+      "if": {
+        "required": ["naming"],
+        "properties": {
+          "naming": {"required": ["useCase"], "properties": {"useCase": {"minLength": 1}}},
+          "governance": {"not": {"required": ["qualifier"], "properties": {"qualifier": {"const": "legacy"}}}}
+        }
+      },
+      "then": {"properties": {"naming": {"required": ["comparedWith"]}}}
     },
     "component": {
       "type": "object",
+      "allOf": [{"$ref": "#/$defs/namingComparison"}],
       "oneOf": [
         {
           "required": ["enforcement"],
@@ -832,6 +844,7 @@
     },
     "contractMember": {
       "type": "object",
+      "allOf": [{"$ref": "#/$defs/namingComparison"}],
       "required": ["id", "symbol", "summary", "states", "governance"],
       "additionalProperties": false,
       "properties": {

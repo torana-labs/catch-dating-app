@@ -152,6 +152,16 @@ test("schema rejects invented roles, levels, and unreviewed qualified names", ()
   assert.equal(naming({...reviewed, comparedWith: []}), false);
   assert.equal(naming({...reviewed, comparedWith: ["catch.menu", "catch.menu"]}), false);
   assert.equal(naming({...reviewed, uncheckedName: "CatchAnything"}), false);
+  // A qualified use case is compared, except on a legacy member, which names its PR.
+  const compared = ajv.getSchema(`${schema.$id}#/$defs/namingComparison`);
+  const member = (qualifier, extra = {}) => ({
+    naming: {useCase: "Legacy", reason: "Retired by P2.1.", ...extra},
+    governance: {conceptRole: "member", qualifier},
+  });
+  assert.equal(compared(member("legacy")), true);
+  assert.equal(compared(member("variant")), false);
+  assert.equal(compared(member("variant", {comparedWith: ["catch.surface"]})), true);
+  assert.equal(compared({naming: {useCase: ""}}), true);
 });
 
 test("role and use case derive the name independently of a contract id", () => {
