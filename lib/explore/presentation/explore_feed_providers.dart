@@ -36,7 +36,9 @@ part 'explore_feed_providers.g.dart';
 ///
 /// Keeping the query window and date-strip labels on the same provider avoids
 /// midnight drift and gives capture/tests one explicit deterministic seam.
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
+///
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
 DateTime exploreDiscoveryReferenceNow(Ref ref) =>
     CacheTimeBucket.minute(ref.watch(appClockProvider).now()).start;

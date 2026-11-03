@@ -8,7 +8,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_projection_lifetime.g.dart';
 
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
 DateTime Function() programProjectionClock(Ref ref) =>
     ref.watch(appClockProvider).now;

@@ -8,12 +8,15 @@ part of 'program_projection_lifetime.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 
 @ProviderFor(programProjectionClock)
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final programProjectionClockProvider = ProgramProjectionClockProvider._();
 
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
+
 final class ProgramProjectionClockProvider
     extends
         $FunctionalProvider<
@@ -22,6 +25,8 @@ final class ProgramProjectionClockProvider
           DateTime Function()
         >
     with $Provider<DateTime Function()> {
+  /// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+  /// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
   ProgramProjectionClockProvider._()
     : super(
         from: null,
@@ -57,7 +62,7 @@ final class ProgramProjectionClockProvider
 }
 
 String _$programProjectionClockHash() =>
-    r'4b98a379d4ae0653cf14585ba8e1450413b855c6';
+    r'bb51ed5f6a6ea48cfc877c531c7063395ab072f8';
 
 @ProviderFor(programProjectionActive)
 final programProjectionActiveProvider = ProgramProjectionActiveFamily._();

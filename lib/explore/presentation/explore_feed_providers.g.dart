@@ -12,9 +12,11 @@ part of 'explore_feed_providers.dart';
 ///
 /// Keeping the query window and date-strip labels on the same provider avoids
 /// midnight drift and gives capture/tests one explicit deterministic seam.
+///
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 
 @ProviderFor(exploreDiscoveryReferenceNow)
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final exploreDiscoveryReferenceNowProvider =
     ExploreDiscoveryReferenceNowProvider._();
 
@@ -22,8 +24,10 @@ final exploreDiscoveryReferenceNowProvider =
 ///
 /// Keeping the query window and date-strip labels on the same provider avoids
 /// midnight drift and gives capture/tests one explicit deterministic seam.
+///
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final class ExploreDiscoveryReferenceNowProvider
     extends $FunctionalProvider<DateTime, DateTime, DateTime>
     with $Provider<DateTime> {
@@ -31,6 +35,9 @@ final class ExploreDiscoveryReferenceNowProvider
   ///
   /// Keeping the query window and date-strip labels on the same provider avoids
   /// midnight drift and gives capture/tests one explicit deterministic seam.
+  ///
+  /// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+  /// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
   ExploreDiscoveryReferenceNowProvider._()
     : super(
         from: null,
@@ -65,7 +72,7 @@ final class ExploreDiscoveryReferenceNowProvider
 }
 
 String _$exploreDiscoveryReferenceNowHash() =>
-    r'c209e6502186c178f7199b1a4a7fbea9e93ce147';
+    r'468ed73ce0457934a1dd1a9294eefbc1b371b82e';
 
 @ProviderFor(exploreViewerCohortId)
 final exploreViewerCohortIdProvider = ExploreViewerCohortIdProvider._();

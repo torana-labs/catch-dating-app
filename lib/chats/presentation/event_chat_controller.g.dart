@@ -8,12 +8,15 @@ part of 'event_chat_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 
 @ProviderFor(eventChatNow)
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final eventChatNowProvider = EventChatNowProvider._();
 
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
+
 final class EventChatNowProvider
     extends
         $FunctionalProvider<
@@ -22,6 +25,8 @@ final class EventChatNowProvider
           DateTime Function()
         >
     with $Provider<DateTime Function()> {
+  /// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+  /// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
   EventChatNowProvider._()
     : super(
         from: null,
@@ -56,7 +61,7 @@ final class EventChatNowProvider
   }
 }
 
-String _$eventChatNowHash() => r'2462d8010f10887254b164e1e3e90365c4b91565';
+String _$eventChatNowHash() => r'd7abf2578bd7150a2dfee443b6a50d81f6286c30';
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.

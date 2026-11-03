@@ -12,7 +12,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_chat_controller.g.dart';
 
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
 DateTime Function() eventChatNow(Ref ref) => ref.watch(appClockProvider).now;
 

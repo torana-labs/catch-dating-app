@@ -18,7 +18,8 @@ part 'dashboard_full_view_model.g.dart';
 
 const dashboardHomeClockTick = swipeWindowClockTick;
 
-@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
 DateTime dashboardNow(Ref ref) => ref.watch(appClockProvider).now();
 
