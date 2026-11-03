@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/organizer_provider_setup_response.schema.json",
   "title": "OrganizerProviderSetupCallableResponse",
-  "description": "Safe provider capability catalog, organizer connections and event mapping projection.",
+  "description": "Safe provider capability catalog, organizer connections and event mapping projection, returned by the Luma connect and disconnect commands. The Host app reads the same facts through its generated provider catalog, the hostProviderConnectionViews listener and the externalEventMappings listener.",
   "type": "object",
   "additionalProperties": false,
   "required": ["organizerId", "eventId", "providers", "connections", "mapping"],
@@ -13,73 +13,12 @@
       "type": "array",
       "minItems": 9,
       "maxItems": 9,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["provider", "displayName", "adapterClass", "availability", "importSupport", "connectionMethod", "capabilities", "requirement"],
-        "properties": {
-          "provider": {"type": "string", "enum": ["generic", "luma", "eventbrite", "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb"]},
-          "displayName": {"type": "string", "minLength": 1, "maxLength": 80},
-          "adapterClass": {"type": "string", "enum": ["A", "C", "D", "E", "unclassified"]},
-          "availability": {"type": "string", "enum": ["available", "exportOnly", "configurationRequired", "partnerAccessRequired", "sampleRequired", "manualOnly"]},
-          "importSupport": {"type": "string", "enum": ["verified", "generic", "sampleRequired"]},
-          "connectionMethod": {"type": "string", "enum": ["apiKey", "oauth", "partner", "none"]},
-          "capabilities": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["fileImport", "eventList", "rosterIdentity", "registrationStatus", "providerCheckIn", "orderAmount", "refundStatus", "referralCode", "webhooks", "writeBookings"],
-            "properties": {
-              "fileImport": {"type": "boolean"},
-              "eventList": {"type": "boolean"},
-              "rosterIdentity": {"type": "boolean"},
-              "registrationStatus": {"type": "boolean"},
-              "providerCheckIn": {"type": "boolean"},
-              "orderAmount": {"type": "boolean"},
-              "refundStatus": {"type": "boolean"},
-              "referralCode": {"type": "boolean"},
-              "webhooks": {"type": "boolean"},
-              "writeBookings": {"type": "boolean"}
-            }
-          },
-          "requirement": {"type": "string", "minLength": 1, "maxLength": 240}
-        }
-      }
+      "items": {"$ref": "../shared/host_provider_setup_common.schema.json#/definitions/catalogEntry"}
     },
     "connections": {
       "type": "array",
       "maxItems": 20,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["connectionId", "provider", "status", "externalAccountId", "externalAccountName", "syncMode", "capabilities", "revision", "lastHealthSyncAtMillis", "lastSuccessfulSyncAtMillis"],
-        "properties": {
-          "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-          "provider": {"const": "luma"},
-          "status": {"type": "string", "enum": ["active", "degraded", "credentialRevoked", "disconnected"]},
-          "externalAccountId": {"type": "string"},
-          "externalAccountName": {"type": "string"},
-          "syncMode": {"const": "manualPoll"},
-          "capabilities": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["eventList", "rosterIdentity", "registrationStatus", "providerCheckIn", "orderAmount", "refundStatus", "referralCode", "webhooks", "writeBookings"],
-            "properties": {
-              "eventList": {"type": "boolean"},
-              "rosterIdentity": {"type": "boolean"},
-              "registrationStatus": {"type": "boolean"},
-              "providerCheckIn": {"type": "boolean"},
-              "orderAmount": {"type": "boolean"},
-              "refundStatus": {"type": "boolean"},
-              "referralCode": {"type": "boolean"},
-              "webhooks": {"type": "boolean"},
-              "writeBookings": {"type": "boolean"}
-            }
-          },
-          "revision": {"type": "integer", "minimum": 1},
-          "lastHealthSyncAtMillis": {"type": ["integer", "null"]},
-          "lastSuccessfulSyncAtMillis": {"type": ["integer", "null"]}
-        }
-      }
+      "items": {"$ref": "../shared/host_provider_setup_common.schema.json#/definitions/connectionRow"}
     },
     "mapping": {
       "type": ["object", "null"],

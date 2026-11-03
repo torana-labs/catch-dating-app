@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "kind": "organizerProviders",
+  "description": "Honest, field-scoped booking-provider availability, in display order. Never infer sync from a name: a capability is true only where Catch has verified it for that provider. Functions returns these rows in the provider setup command responses; the Host app reads the same rows from its generated catalog.",
+  "providers": [
+    {
+      "provider": "generic",
+      "displayName": "Spreadsheet or another platform",
+      "adapterClass": "C",
+      "availability": "manualOnly",
+      "importSupport": "generic",
+      "connectionMethod": "none",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Import CSV/XLSX or add guests manually."
+    },
+    {
+      "provider": "luma",
+      "displayName": "Luma",
+      "adapterClass": "A",
+      "availability": "available",
+      "importSupport": "verified",
+      "connectionMethod": "apiKey",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": true,
+        "rosterIdentity": true,
+        "registrationStatus": true,
+        "providerCheckIn": true,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "A calendar-scoped Luma API key and Luma Plus."
+    },
+    {
+      "provider": "eventbrite",
+      "displayName": "Eventbrite",
+      "adapterClass": "A",
+      "availability": "configurationRequired",
+      "importSupport": "verified",
+      "connectionMethod": "oauth",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Catch must complete Eventbrite application and OAuth setup."
+    },
+    {
+      "provider": "partiful",
+      "displayName": "Partiful",
+      "adapterClass": "C",
+      "availability": "exportOnly",
+      "importSupport": "verified",
+      "connectionMethod": "none",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Export the guest list from Partiful and import it here."
+    },
+    {
+      "provider": "posh",
+      "displayName": "POSH",
+      "adapterClass": "unclassified",
+      "availability": "exportOnly",
+      "importSupport": "verified",
+      "connectionMethod": "none",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Use a current POSH export; direct access is not claimed."
+    },
+    {
+      "provider": "bookmyshow",
+      "displayName": "BookMyShow",
+      "adapterClass": "D",
+      "availability": "sampleRequired",
+      "importSupport": "sampleRequired",
+      "connectionMethod": "partner",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Provide a current organizer export; direct access needs written approval."
+    },
+    {
+      "provider": "district",
+      "displayName": "District",
+      "adapterClass": "D",
+      "availability": "sampleRequired",
+      "importSupport": "sampleRequired",
+      "connectionMethod": "partner",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Provide a current organizer export; direct access needs written approval."
+    },
+    {
+      "provider": "sortmyscene",
+      "displayName": "SortMyScene",
+      "adapterClass": "E",
+      "availability": "sampleRequired",
+      "importSupport": "sampleRequired",
+      "connectionMethod": "none",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Provide a current organizer export before Catch claims a preset."
+    },
+    {
+      "provider": "airbnb",
+      "displayName": "Airbnb Experiences",
+      "adapterClass": "D",
+      "availability": "partnerAccessRequired",
+      "importSupport": "sampleRequired",
+      "connectionMethod": "partner",
+      "capabilities": {
+        "fileImport": true,
+        "eventList": false,
+        "rosterIdentity": false,
+        "registrationStatus": false,
+        "providerCheckIn": false,
+        "orderAmount": false,
+        "refundStatus": false,
+        "referralCode": false,
+        "webhooks": false,
+        "writeBookings": false
+      },
+      "requirement": "Direct sync requires Airbnb program approval and permitted scopes."
+    }
+  ]
+}
