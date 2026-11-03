@@ -7,9 +7,9 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

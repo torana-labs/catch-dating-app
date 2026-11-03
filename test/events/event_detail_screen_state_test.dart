@@ -8,9 +8,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../organizers/organizers_test_helpers.dart' as organizers;

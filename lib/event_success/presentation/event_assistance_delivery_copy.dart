@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 String deliveryStatusLabel(

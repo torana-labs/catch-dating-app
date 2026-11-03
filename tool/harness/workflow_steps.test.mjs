@@ -373,7 +373,7 @@ test("structural preflight runs from the declared sparse closure and fails close
     assert.equal(git(["diff", "--name-only", "--", ...ios.outputs, ...notification.outputs])
       .stdout.trim(), "", "freshness checks must not write generated outputs");
 
-    const arb = "lib/l10n/app_en.arb";
+    const arb = "packages/l10n/lib/app_en.arb";
     materialize([arb]);
     fs.appendFileSync(path.join(root, arb), "\n");
     const unavailable = run();
@@ -531,8 +531,8 @@ test("freshness selection uses explicit graph requirements and never loses unava
   assert.deepEqual(noPackages.filter((check) => !check.runnable).map((check) => check.codegenId),
     ["contracts.schema-projections", "copy.structured-domain"]);
   const sparse = planCodegenFreshness({...options,
-    sparsePaths: repositoryPaths.filter((file) => file.startsWith("lib/l10n/generated/")),
-    fileAvailable: (file) => !file.startsWith("lib/l10n/generated/")});
+    sparsePaths: repositoryPaths.filter((file) => file.startsWith("packages/l10n/lib/generated/")),
+    fileAvailable: (file) => !file.startsWith("packages/l10n/lib/generated/")});
   assert.match(sparse.find((entry) => entry.codegenId === "flutter.l10n").reasons.join("; "),
     /unmaterialized output/u);
   const missingOutput = planCodegenFreshness({...options,

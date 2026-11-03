@@ -23,7 +23,7 @@ import {rewriteDartDirectives, rewritePathMentions} from "./move_to_contexts.mjs
 // --verify proves a commit is this codemod's output for its parent, up to
 // the order of directives, which `dart fix` re-sorts after --apply.
 
-const arbPath = "lib/l10n/app_en.arb";
+const arbPath = "packages/l10n/lib/app_en.arb";
 const contextMapPath = "tool/architecture/context_map.json";
 // Route names are Routes constant names (Routes.x.name); the capture
 // catalog, registries and docs quote them, so quoted route names follow.

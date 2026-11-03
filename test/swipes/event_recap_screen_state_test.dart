@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';

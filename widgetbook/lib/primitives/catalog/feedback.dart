@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
@@ -9,6 +8,7 @@ import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_bann
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

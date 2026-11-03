@@ -32,7 +32,7 @@ test("an empty scan cannot pass", () => {
 });
 
 test("generated exclusions follow known producer identities, not arbitrary generated directories or comments", () => {
-  for (const file of ["lib/data/value.g.dart", "lib/data/value.freezed.dart", "lib/l10n/generated/app_localizations_en.dart"]) {
+  for (const file of ["lib/data/value.g.dart", "lib/data/value.freezed.dart", "packages/l10n/lib/generated/app_localizations_en.dart"]) {
     assert.equal(isHandwrittenSource(file), false);
   }
   for (const file of ["lib/generated/handwritten.dart", "lib/example.dart", "apps/consumer/lib/explore/explore_screen.dart", "packages/catch_ui/lib/src/handwritten.dart"]) {

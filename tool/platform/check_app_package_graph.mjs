@@ -17,6 +17,15 @@ export const packageGraphPolicy = Object.freeze({
     forbiddenPlugins: [],
     boundary: "pure Dart kernel",
   },
+  catch_l10n: {
+    projectRoot: "packages/l10n",
+    requiredPackages: ["flutter", "flutter_localizations", "intl"],
+    allowedPackages: ["flutter", "flutter_localizations", "intl"],
+    forbiddenPackages: [],
+    requiredPlugins: [],
+    forbiddenPlugins: [],
+    boundary: "localization catalog",
+  },
   catch_tokens: {
     projectRoot: "packages/catch_tokens",
     requiredPackages: ["flutter"],

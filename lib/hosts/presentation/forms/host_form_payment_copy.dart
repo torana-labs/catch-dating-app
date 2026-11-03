@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 
 String hostFormPaymentStatusLabel(
   AppLocalizations l10n,

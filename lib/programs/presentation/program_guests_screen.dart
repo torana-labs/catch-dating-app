@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reade
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -17,6 +16,7 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/field_const
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

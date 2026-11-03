@@ -182,6 +182,26 @@ class Sample {}
       );
     });
 
+    test('domain files may read only the pure Dart file in catch_l10n', () {
+      expect(
+        _rules(
+          'lib/contexts/events/domain/event.dart',
+          "import 'package:catch_l10n/generated/structured_domain_copy.g.dart';\n",
+        ),
+        isEmpty,
+      );
+      for (final uri in const [
+        'package:catch_l10n/l10n.dart',
+        'package:catch_l10n/generated/app_localizations.dart',
+      ]) {
+        expect(
+          _rules('lib/contexts/events/domain/event.dart', "import '$uri';\n"),
+          [ArchitectureCodes.domainFrameworkImport],
+          reason: uri,
+        );
+      }
+    });
+
     test(
       'the kernel pubspec holds its imports, so the import rules stand down',
       () {

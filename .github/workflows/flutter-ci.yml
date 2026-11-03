@@ -80,10 +80,10 @@ jobs:
 
           output = pathlib.Path('build/ci/generated-english-l10n')
           output.mkdir(parents=True, exist_ok=True)
-          sources = [pathlib.Path('lib/l10n/app_en.arb'), pathlib.Path('l10n.yaml')]
+          sources = [pathlib.Path('packages/l10n/lib/app_en.arb'), pathlib.Path('packages/l10n/l10n.yaml')]
           generated = [
-              pathlib.Path('lib/l10n/generated/app_localizations.dart'),
-              pathlib.Path('lib/l10n/generated/app_localizations_en.dart'),
+              pathlib.Path('packages/l10n/lib/generated/app_localizations.dart'),
+              pathlib.Path('packages/l10n/lib/generated/app_localizations_en.dart'),
           ]
           digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
           for path in generated:

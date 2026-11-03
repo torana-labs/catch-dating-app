@@ -199,7 +199,7 @@ test("a localization message that is a wire name renames; copy and keys stay", (
   const {plan} = fixture();
   const arb = "{\n  \"organizersDetailOrganizerid\": \"clubId\",\n  \"hostsOrganizerTypeClub\": \"Club\",\n" +
     "  \"clubsTitle\": \"Run clubs near you\",\n  \"@clubsTitle\": {\"description\": \"clubId\"}\n}\n";
-  assert.equal(transformFile({file: "lib/l10n/app_en.arb", source: arb, plan}),
+  assert.equal(transformFile({file: "packages/l10n/lib/app_en.arb", source: arb, plan}),
     "{\n  \"organizersDetailOrganizerid\": \"organizerId\",\n  \"hostsOrganizerTypeClub\": \"Club\",\n" +
     "  \"clubsTitle\": \"Run clubs near you\",\n  \"@clubsTitle\": {\"description\": \"clubId\"}\n}\n");
 });

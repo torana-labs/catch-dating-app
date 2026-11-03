@@ -1151,7 +1151,7 @@ or muscle memory already depend on them:
 
 ## Product Copy
 
-Short Flutter UI copy is owned by `lib/l10n/app_en.arb`. Structured content
+Short Flutter UI copy is owned by `packages/l10n/lib/app_en.arb`. Structured content
 that must remain usable by synchronous domain models is owned by locale JSON
 under `copy/` and generates deterministic Dart. For Event Success
 questionnaires:

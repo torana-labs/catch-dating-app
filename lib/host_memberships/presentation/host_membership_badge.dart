@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 

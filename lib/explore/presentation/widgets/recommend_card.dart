@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_capacity_labels.da
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_card.dart';
 import 'package:catch_dating_app/events/shared/event_price_copy.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

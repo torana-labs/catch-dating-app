@@ -248,6 +248,8 @@ The repo is the source of the design system and the canvas is downstream:
 Publishing is a release step, run after a library PR merges: the system first, then
 the canvas. Until the first publish from `packages/web-ui`, the canvas keeps mounting
 the frozen system v15 bundle, and `import_ds_props.mjs` reads from that source.
+[`docs/design_system_publishing.md`](../../docs/design_system_publishing.md) owns how
+a library change reaches both.
 
 ## Aliases And Redirects
 

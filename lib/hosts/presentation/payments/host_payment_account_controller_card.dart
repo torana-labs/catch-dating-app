@@ -4,12 +4,12 @@ import 'package:catch_dating_app/contexts/payments/data/host_payment_account_rep
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/mutation_error_util.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

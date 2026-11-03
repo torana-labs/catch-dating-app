@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsSection;
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 

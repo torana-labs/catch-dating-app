@@ -24,7 +24,7 @@ const TEST_DIRECTORIES = ["test", "integration_test"];
 // other project claims (docs, tool, .github, ...). Its inputs name the Dart
 // files explicitly; other Dart projects own only their own directory.
 const ROOT_DART_FILES = [
-  "pubspec.yaml", "analysis_options.yaml", "build.yaml", "l10n.yaml", "dart_test.yaml",
+  "pubspec.yaml", "analysis_options.yaml", "build.yaml", "dart_test.yaml",
   "lib/**/*", "bin/**/*", "assets/**/*", "test/**/*", "integration_test/**/*",
 ];
 const PLATFORM_DIRECTORIES = ["android", "ios", "macos", "web", "linux", "windows", "build"];

@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
 
 String assistanceGroupDutyLabel(
   AppLocalizations l10n,

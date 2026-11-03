@@ -15,7 +15,7 @@ export function isHandwrittenSource(file) {
   if (!sourceRoots.test(file) || !file.endsWith(".dart")) return false;
   if (/\.(?:g|freezed|mocks|gr)\.dart$/u.test(file)) return false;
   // gen_l10n emits no generated-file header. This is its configured output home.
-  if (/^lib\/l10n\/generated\/app_localizations(?:_[a-zA-Z_]+)?\.dart$/u.test(file)) return false;
+  if (/^packages\/l10n\/lib\/generated\/app_localizations(?:_[a-zA-Z_]+)?\.dart$/u.test(file)) return false;
   return true;
 }
 

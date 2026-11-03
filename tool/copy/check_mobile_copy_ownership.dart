@@ -564,7 +564,7 @@ bool _isCandidate(String path, String root) {
       relative == 'lib/contexts/events/domain/event_policy/settlement.dart') {
     return false;
   }
-  if (relative.startsWith('lib/l10n/') ||
+  if (relative.startsWith('packages/l10n/lib/') ||
       relative.startsWith('lib/platform/schema_contracts/generated/')) {
     return false;
   }

@@ -1,0 +1,21 @@
+name: catch_l10n
+description: The Flutter message catalogue, its generated localizations and the structured copy the domain reads.
+version: 0.1.0
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true

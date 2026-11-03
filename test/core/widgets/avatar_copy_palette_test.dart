@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

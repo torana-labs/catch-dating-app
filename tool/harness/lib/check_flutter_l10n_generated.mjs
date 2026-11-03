@@ -31,7 +31,7 @@ export function compareGeneratedFiles({expectedDir, actualDir, files = generated
 // gen-l10n formats its output for the package's language version, which pub
 // takes from the SDK constraint's lower bound. Without a package config the
 // formatter falls back to the newest language version, so the disposable
-// project declares the app's version to match `flutter gen-l10n` in the repo.
+// project declares the package's version to match `flutter gen-l10n` in the repo.
 export function languageVersion(pubspec) {
   const match = /^environment:[ \t]*\n(?:[ \t]+.*\n)*?[ \t]+sdk:[ \t]*["']?(?:\^|>=)?[ \t]*(\d+)\.(\d+)\./mu.exec(pubspec);
   if (!match) throw new Error("pubspec.yaml declares no environment.sdk lower bound.");
@@ -42,17 +42,18 @@ export function checkFlutterL10n({
   repositoryRoot,
   runGenerator = defaultRunGenerator,
 }) {
-  const language = languageVersion(fs.readFileSync(path.join(repositoryRoot, "pubspec.yaml"), "utf8"));
+  const packageRoot = path.join(repositoryRoot, "packages", "l10n");
+  const language = languageVersion(fs.readFileSync(path.join(packageRoot, "pubspec.yaml"), "utf8"));
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-l10n-check-"));
   try {
-    const arbDir = path.join(temporaryRoot, "lib", "l10n");
+    const arbDir = path.join(temporaryRoot, "lib");
     fs.mkdirSync(arbDir, {recursive: true});
     fs.copyFileSync(
-      path.join(repositoryRoot, "lib", "l10n", "app_en.arb"),
+      path.join(packageRoot, "lib", "app_en.arb"),
       path.join(arbDir, "app_en.arb"),
     );
     fs.copyFileSync(
-      path.join(repositoryRoot, "l10n.yaml"),
+      path.join(packageRoot, "l10n.yaml"),
       path.join(temporaryRoot, "l10n.yaml"),
     );
     fs.writeFileSync(
@@ -81,7 +82,7 @@ export function checkFlutterL10n({
     }
     return {
       errors: compareGeneratedFiles({
-        expectedDir: path.join(repositoryRoot, "lib", "l10n", "generated"),
+        expectedDir: path.join(packageRoot, "lib", "generated"),
         actualDir: path.join(arbDir, "generated"),
       }),
       stdout: generation.stdout ?? "",

@@ -21,6 +21,8 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.11.1
+  catch_l10n:
+    path: ../../packages/l10n
   cloud_firestore: ^6.10.2
   cloud_functions: ^6.5.1
   firebase_core: ^4.15.2

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

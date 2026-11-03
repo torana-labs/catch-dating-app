@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

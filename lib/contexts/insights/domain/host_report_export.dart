@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
 
 class HostReportExport {
   const HostReportExport({

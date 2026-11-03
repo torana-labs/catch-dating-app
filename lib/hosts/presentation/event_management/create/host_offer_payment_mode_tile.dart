@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -15,31 +15,27 @@ enum HostOfferPaymentMode {
 String hostOfferPaymentModeTitle(
   AppLocalizations l10n,
   HostOfferPaymentMode mode,
-) =>
-    switch (mode) {
-      HostOfferPaymentMode.free => l10n.hostEventOfferFree,
-      HostOfferPaymentMode.catchCheckout => l10n.hostsEventDefaultsCatchCheckout,
-      HostOfferPaymentMode.reusablePage => l10n.hostOfferPaymentModePage,
-      HostOfferPaymentMode.personalRequest =>
-        l10n.hostsEventDefaultsPersonalRequest,
-      HostOfferPaymentMode.manualInstructions =>
-        l10n.hostsEventDefaultsManualInstructions,
-    };
+) => switch (mode) {
+  HostOfferPaymentMode.free => l10n.hostEventOfferFree,
+  HostOfferPaymentMode.catchCheckout => l10n.hostsEventDefaultsCatchCheckout,
+  HostOfferPaymentMode.reusablePage => l10n.hostOfferPaymentModePage,
+  HostOfferPaymentMode.personalRequest =>
+    l10n.hostsEventDefaultsPersonalRequest,
+  HostOfferPaymentMode.manualInstructions =>
+    l10n.hostsEventDefaultsManualInstructions,
+};
 
 String hostOfferPaymentModeBody(
   AppLocalizations l10n,
   HostOfferPaymentMode mode,
-) =>
-    switch (mode) {
-      HostOfferPaymentMode.free => l10n.hostOfferPaymentModeFreeBody,
-      HostOfferPaymentMode.catchCheckout =>
-        l10n.hostOfferPaymentModeCheckoutBody,
-      HostOfferPaymentMode.reusablePage => l10n.hostOfferPaymentModePageBody,
-      HostOfferPaymentMode.personalRequest =>
-        l10n.hostOfferPaymentModeRequestBody,
-      HostOfferPaymentMode.manualInstructions =>
-        l10n.hostOfferPaymentModeManualBody,
-    };
+) => switch (mode) {
+  HostOfferPaymentMode.free => l10n.hostOfferPaymentModeFreeBody,
+  HostOfferPaymentMode.catchCheckout => l10n.hostOfferPaymentModeCheckoutBody,
+  HostOfferPaymentMode.reusablePage => l10n.hostOfferPaymentModePageBody,
+  HostOfferPaymentMode.personalRequest => l10n.hostOfferPaymentModeRequestBody,
+  HostOfferPaymentMode.manualInstructions =>
+    l10n.hostOfferPaymentModeManualBody,
+};
 
 /// One collection-mode option. Catch checkout stays visible but disabled until
 /// verified provider activation lands; the rest stage on tap.
@@ -76,14 +72,12 @@ class HostOfferPaymentModeTile extends StatelessWidget {
         key: ValueKey('offer-payment-mode-${mode.name}'),
         title: gated
             ? '${hostOfferPaymentModeTitle(l10n, mode)} · '
-                '${l10n.hostOfferPaymentComingSoon}'
+                  '${l10n.hostOfferPaymentComingSoon}'
             : hostOfferPaymentModeTitle(l10n, mode),
         subtitle: hostOfferPaymentModeBody(l10n, mode),
         selected: selected,
         contractExemption: 'Offer collection mode, staged locally.',
-        onTap: editable && (summary || !gated)
-            ? () => onSelected(mode)
-            : null,
+        onTap: editable && (summary || !gated) ? () => onSelected(mode) : null,
       ),
     );
   }
