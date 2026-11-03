@@ -38,7 +38,6 @@ import {
   AdminSignInScreen,
   AdminStateRow,
   AdminStatGrid,
-  AdminStatusGrid,
   AdminWorkbenchStack,
   AdminWorkspace,
   AlertRow,
@@ -567,27 +566,6 @@ export const AdminWorkbenchStackStory: Story = {
       <AdminWorkbenchStack compact>
         <CatchText as="p" color="ink2" variant="bodyM">Compact stack item.</CatchText>
       </AdminWorkbenchStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminStatusGridStory: Story = {
-  name: "Status grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_status_grid",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminStatusGrid>
-        <AdminStateRow label="Route" value="Ready" />
-        <AdminStateRow label="Claim CTA" value="Enabled" />
-      </AdminStatusGrid>
-      <AdminStatusGrid compact>
-        <AdminStateRow label="Public API" value="Verified" />
-      </AdminStatusGrid>
     </AdminWorkspace>
   ),
 };

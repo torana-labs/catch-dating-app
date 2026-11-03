@@ -97,20 +97,6 @@ export function AdminForm({
   );
 }
 
-export function AdminEditorSection({
-  children,
-  className = "",
-  ...props
-}: FieldsetHTMLAttributes<HTMLFieldSetElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <fieldset {...props} className={classNames("editor-section", className)}>
-      {children}
-    </fieldset>
-  );
-}
-
 export function AdminFieldGrid({
   children,
   className = "",
