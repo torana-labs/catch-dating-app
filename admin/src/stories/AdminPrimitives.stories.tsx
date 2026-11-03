@@ -22,7 +22,6 @@ import {
   AdminCardList,
   AdminDecisionFooterShell,
   AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
   AdminEyebrow,
   AdminFieldGrid,
   AdminForm,
@@ -627,24 +626,6 @@ export const AdminSecondaryDisclosureStory: Story = {
       <AdminSecondaryDisclosure open summary="Expanded diagnostics">
         <AdminWorkbenchNote>Source generated at 14 Jul 2026, 15:10.</AdminWorkbenchNote>
       </AdminSecondaryDisclosure>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDirectoryScreenStackStory: Story = {
-  name: "Directory screen stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_directory_screen_stack",
-      states: ["directory"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDirectoryScreenStack>
-        <PageHeader eyebrow="Directory" title="Organizer queue" />
-        <AdminCard>Directory list content</AdminCard>
-      </AdminDirectoryScreenStack>
     </AdminWorkspace>
   ),
 };

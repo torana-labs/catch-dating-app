@@ -22,7 +22,7 @@ beforeEach(() => { vi.clearAllMocks(); mocks.hostName.mockReturnValue({name: "Ha
 
 const noop = vi.fn();
 const draw = (hostPage: "fit" | "privacy" | "demo" | "add" | "fit-queue", isAdminOwner = true, ownWorkOnly = false) => render(<SalesRouteScreen area="hosts" hostPage={hostPage} isAdminOwner={isAdminOwner} ownWorkOnly={ownWorkOnly}
-  uid="owner" selectedId="harbor" onSelect={noop} onOpenHost={noop} onOpenHostTools={noop} onOpenHostPage={noop} onOpenFitQueue={noop} onOpenOrganizer={noop} onAddHost={noop} onError={noop} onNotice={noop} />);
+  uid="owner" selectedId="harbor" onSelect={noop} onOpenHost={noop} onOpenHostPage={noop} onOpenFitQueue={noop} onOpenOrganizer={noop} onAddHost={noop} onError={noop} onNotice={noop} />);
 
 it("gives privacy the host's name, because the owner has to type it to confirm", () => {
   draw("privacy");
@@ -72,14 +72,14 @@ it("gives the reviewed fit queue to the team but not to a sales associate", () =
 });
 
 it("opens adding a host, limited to nominating for a sales associate", () => {
-  render(<SalesRouteScreen area="hosts" hostPage="add" isAdminOwner={false} ownWorkOnly uid="staff" selectedId={null} onSelect={noop} onOpenHost={noop} onOpenHostTools={noop}
+  render(<SalesRouteScreen area="hosts" hostPage="add" isAdminOwner={false} ownWorkOnly uid="staff" selectedId={null} onSelect={noop} onOpenHost={noop}
     onOpenHostPage={noop} onOpenFitQueue={noop} onOpenOrganizer={noop} onAddHost={noop} onError={noop} onNotice={noop} />);
   expect(mocks.addHost).toHaveBeenCalledWith(expect.objectContaining({canAddExisting: false}), undefined);
 });
 
 it("shows company totals on Deals to the team, not to a sales associate", () => {
   const deals = (ownWorkOnly: boolean) => render(<SalesRouteScreen area="deals" hostPage="main" isAdminOwner={false} ownWorkOnly={ownWorkOnly} uid="staff" selectedId={null} onSelect={noop}
-    onOpenHost={noop} onOpenHostTools={noop} onOpenHostPage={noop} onOpenFitQueue={noop} onOpenOrganizer={noop} onAddHost={noop} onError={noop} onNotice={noop} />);
+    onOpenHost={noop} onOpenHostPage={noop} onOpenFitQueue={noop} onOpenOrganizer={noop} onAddHost={noop} onError={noop} onNotice={noop} />);
   deals(true);
   expect(mocks.funnel).not.toHaveBeenCalled();
   cleanup();

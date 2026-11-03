@@ -3,7 +3,7 @@ import {AlertCircle, CheckCircle2, Handshake} from "lucide-react";
 import {useCallback, useState} from "react";
 import {
   AdminButton,
-  AdminDirectoryScreenStack,
+  AdminWorkbenchStack,
   AdminForm,
   EmptyState,
   PageHeader,
@@ -35,7 +35,7 @@ export function PartnerWorkspaceScreen({actorUid, isCurrentSession, onSignOut}: 
   const retained = c.workspace.data?.membership.uid === actorUid && isCurrentSession() ? c.workspace.data : undefined;
   const membershipRequired = !data && c.workspace.error &&
     "code" in c.workspace.error && c.workspace.error.code === "functions/permission-denied";
-  return <AdminDirectoryScreenStack>
+  return <AdminWorkbenchStack>
     <PageHeader title="Catch referral partners">Introduce an organizer, review the preparation, and keep the next action clear.</PageHeader>
     <AdminButton disabled={operationPending} onClick={onSignOut}>Sign out</AdminButton>
     <AdminButton disabled={operationPending || c.workspace.isFetching} onClick={() => void c.workspace.refetch()}>Refresh partner access</AdminButton>
@@ -109,7 +109,7 @@ export function PartnerWorkspaceScreen({actorUid, isCurrentSession, onSignOut}: 
         {data?.nextCursor && <AdminButton disabled={pending} onClick={() => c.setCursor(data.nextCursor)}>More leads</AdminButton>}
         {c.cursor && <AdminButton disabled={pending} onClick={() => c.setCursor(null)}>First page</AdminButton>}
       </Panel>}
-  </AdminDirectoryScreenStack>;
+  </AdminWorkbenchStack>;
 }
 function renderLead(lead: PartnerLead, pending: boolean,
   save: ReturnType<typeof usePartnerWorkspaceController>["save"], actorUid: string,

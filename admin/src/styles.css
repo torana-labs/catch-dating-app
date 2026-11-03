@@ -519,7 +519,6 @@ select {
   border-radius: var(--catch-radius-pill);
 }
 
-.admin-directory-screen .marketing-ops-header,
 .admin-detail-screen .marketing-ops-header {
   margin-bottom: 0;
 }

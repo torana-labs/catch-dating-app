@@ -163,17 +163,6 @@ export function AdminChecklistCopy({
   );
 }
 
-export function AdminDirectoryScreenStack({
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <AdminWorkbenchStack {...props} className={classNames("admin-directory-screen", className)} />
-  );
-}
-
 export function AdminDetailScreenStack({
   className = "",
   ...props

@@ -3,7 +3,8 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import {useSalesHostsController} from "./useSalesHostsController";
 
-const repository = vi.hoisted(() => ({addSalesEvidence: vi.fn(), listSalesEvidence: vi.fn(), listSalesEvidenceProposals: vi.fn(),
+const repository = vi.hoisted(() => ({
+  listSalesCustomFields: vi.fn(), setSalesCustomFieldValue: vi.fn(), addSalesEvidence: vi.fn(), listSalesEvidence: vi.fn(), listSalesEvidenceProposals: vi.fn(),
   reviewSalesEvidenceProposal: vi.fn(), setSalesAccountSuppression: vi.fn(), setSalesContactability: vi.fn(), listSalesAccounts: vi.fn(), getSalesAccount: vi.fn(), listSalesContacts: vi.fn(),
   recordSalesActivity: vi.fn(), upsertSalesTask: vi.fn(), upsertSalesOpportunity: vi.fn(), updateSalesAccount: vi.fn(), upsertSalesContact: vi.fn()}));
 vi.mock("../api/salesRepository", () => repository);
@@ -12,6 +13,7 @@ describe("useSalesHostsController", () => {
   afterEach(cleanup);
   beforeEach(() => {
     Object.values(repository).forEach((mock) => mock.mockReset());
+    repository.listSalesCustomFields.mockResolvedValue({rows: []});
     repository.listSalesAccounts.mockImplementation(async ({cursor}: {cursor?: string}) => ({
       rows: [{organizerId: cursor ? "older" : "harbor", name: cursor ? "Older" : "Harbor", researchStatus: "qualified"}],
       nextCursor: cursor ? null : "page-2"}));
@@ -58,10 +60,10 @@ describe("useSalesHostsController", () => {
       task: {ownerUid: "dev", status: "completed"}});
 
     const deal = {opportunityId: "o1", organizerId: "harbor", motion: "expansion", stage: "contacted", ownerUid: "dev", nextStep: "Call", nextStepAt: null, revision: 2};
-    await act(async () => { await result.current.saveDeal(deal, {stage: "closed_lost", nextStep: "Stop", nextStepAt: "2026-11-05T13:30:00.000Z", transitionReason: "No budget"}); });
+    await act(async () => { await result.current.saveDeal(deal, {motion: "expansion", ownerUid: "dev", stage: "closed_lost", nextStep: "Stop", nextStepAt: "2026-11-05T13:30:00.000Z", transitionReason: "No budget"}); });
     expect(repository.upsertSalesOpportunity.mock.calls[0][0]).toMatchObject({opportunityId: "o1", expectedRevision: 2,
       transitionReason: "No budget", fields: {motion: "expansion", ownerUid: "dev", stage: "closed_lost"}});
-    await act(async () => { await result.current.saveDeal(null, {stage: "new_enquiry", nextStep: "Call", nextStepAt: "2026-11-05T13:30:00.000Z"}); });
+    await act(async () => { await result.current.saveDeal(null, {motion: "first_workflow_pilot", ownerUid: "riya", stage: "new_enquiry", nextStep: "Call", nextStepAt: "2026-11-05T13:30:00.000Z"}); });
     expect(repository.upsertSalesOpportunity.mock.calls[1][0]).toMatchObject({expectedRevision: 0,
       fields: {motion: "first_workflow_pilot", ownerUid: "riya"}});
     await waitFor(() => expect(repository.getSalesAccount.mock.calls.length).toBeGreaterThan(reads));
@@ -113,7 +115,7 @@ describe("useSalesHostsController", () => {
     repository.upsertSalesOpportunity.mockRejectedValue(new Error("Someone updated this opportunity. Reload before saving."));
     const {result} = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "riya", onError, onNotice: vi.fn()}), {wrapper});
     let done = true;
-    await act(async () => { done = await result.current.saveDeal(null, {stage: "new_enquiry", nextStep: "Call", nextStepAt: null}); });
+    await act(async () => { done = await result.current.saveDeal(null, {motion: "first_workflow_pilot", ownerUid: "dev", stage: "new_enquiry", nextStep: "Call", nextStepAt: null}); });
     expect(done).toBe(false);
     expect(onError).toHaveBeenLastCalledWith("Someone updated this opportunity. Reload before saving.");
   });
@@ -153,5 +155,28 @@ describe("useSalesHostsController", () => {
     await act(async () => { saved = await result.current.setHold(1, "clear", "x"); });
     expect(saved).toBe(false);
     expect(onError).toHaveBeenCalledWith("Account changed since review.");
+  });
+
+  it("reads and saves private fields for the team, and doesn't ask for them for a sales associate", async () => {
+    repository.setSalesCustomFieldValue.mockResolvedValue({});
+    const {wrapper} = createQueryHarness();
+    const team = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "riya", onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+    await waitFor(() => expect(repository.listSalesCustomFields).toHaveBeenCalledOnce());
+    await act(async () => { await team.result.current.saveCustomValue("sales.events", 3, 6); });
+    expect(repository.setSalesCustomFieldValue.mock.calls[0]?.[0]).toMatchObject({organizerId: "harbor", fieldId: "sales.events",
+      expectedRevision: 3, value: 6});
+    repository.listSalesCustomFields.mockClear();
+    const associate = createQueryHarness();
+    renderHook(() => useSalesHostsController({ownerUid: "riya", selectedOrganizerId: "harbor", uid: "riya", onError: vi.fn(), onNotice: vi.fn()}), {wrapper: associate.wrapper});
+    await waitFor(() => expect(repository.getSalesAccount).toHaveBeenCalled());
+    expect(repository.listSalesCustomFields).not.toHaveBeenCalled();
+  });
+
+  it("logs an activity at the time given, or now", async () => {
+    repository.recordSalesActivity.mockResolvedValue({});
+    const {wrapper} = createQueryHarness();
+    const {result} = renderHook(() => useSalesHostsController({ownerUid: null, selectedOrganizerId: "harbor", uid: "riya", onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+    await act(async () => { await result.current.logActivity({type: "call", note: "Earlier", occurredAt: "2026-10-01T10:00:00.000Z"}); });
+    expect(repository.recordSalesActivity.mock.calls[0]?.[0]).toMatchObject({occurredAt: "2026-10-01T10:00:00.000Z"});
   });
 });

@@ -997,14 +997,14 @@ const componentFamilies = [
     sourcePatterns: [
       {
         pattern:
-          /["'`][^"'`]*(?<![-\w])(?:admin-directory-screen|admin-detail-screen)(?![-\w])[^"'`]*["'`]/gu,
+          /["'`][^"'`]*(?<![-\w])(?:admin-detail-screen)(?![-\w])[^"'`]*["'`]/gu,
         description: "raw admin directory/detail screen class string",
       },
     ],
     jsxPatterns: [
       {
         pattern:
-          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:admin-directory-screen|admin-detail-screen)(?![-\w])[^"'`]*["'`]\}?/gu,
+          /\bclassName=\{?["'`][^"'`]*(?<![-\w])(?:admin-detail-screen)(?![-\w])[^"'`]*["'`]\}?/gu,
         description: "raw admin directory/detail screen class",
       },
       {
@@ -1024,7 +1024,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AdminDirectoryScreenStack, AdminDetailScreenStack, AdminWorkbenchStack, AdminEditorGrid, and AdminEditorPanel instead of rendering or class-configuring admin workbench/editor layout shells directly.",
+    guidance: "Use AdminDetailScreenStack, AdminWorkbenchStack, AdminEditorGrid, and AdminEditorPanel instead of rendering or class-configuring admin workbench/editor layout shells directly.",
   },
   {
     family: "admin-utility-shell",

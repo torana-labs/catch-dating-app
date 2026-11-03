@@ -32,10 +32,10 @@ const model = (overrides: Partial<SalesHostsModel> = {}): SalesHostsModel => ({q
   contacts: [], contactsFailed: false, retryContacts: vi.fn(), hasMoreContacts: false, moreContacts: vi.fn(),
   reviewContact: vi.fn().mockResolvedValue(true), evidence: [], evidenceFailed: false,
   retryEvidence: vi.fn(), hasMoreEvidence: false, moreEvidence: vi.fn(), addEvidence: vi.fn().mockResolvedValue(true), suggestions: [proposal()], suggestionsFailed: false, retrySuggestions: vi.fn(),
+  privateFields: [], privateFieldsLoading: false, privateFieldsFailed: false, retryPrivateFields: vi.fn(), saveCustomValue: vi.fn().mockResolvedValue(true),
   hasMoreSuggestions: false, moreSuggestions: vi.fn(), reviewSuggestion: vi.fn().mockResolvedValue(true), canEditResearch: true, isAdminOwner: true, commercial: null, renderPartnerOffer: null, isSaving: false, ...overrides});
 
-const screenFor = (current: SalesHostsModel) => <SalesHostsScreen model={current} selectedOrganizerId="harbor" onSelect={noop}
-  onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
+const screenFor = (current: SalesHostsModel) => <SalesHostsScreen model={current} selectedOrganizerId="harbor" onSelect={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
 
 it("reviews the version the person read, and a refreshed version clears the reason", async () => {
   const current = model();
@@ -119,8 +119,7 @@ const person = (revision = 1, contactabilityStatus: SalesContact["relationship"]
 const aboutKavya = {evidenceId: "e1", organizerId: "harbor", contactId: "kavya", claimKey: "identity", sourceType: "public_web",
   sourceRef: "https://example.test/about", observedAt: "2026-10-29T09:00:00.000Z", confidence: "high", normalizedValue: "Founder"} as SalesEvidence;
 const peopleModel = (overrides: Partial<SalesHostsModel> = {}) => model({suggestions: [], contacts: [person()], evidence: [aboutKavya], ...overrides});
-const peopleScreen = (current: SalesHostsModel, revision = 1) => <SalesHostsScreen model={{...current, host: host(revision)}} selectedOrganizerId="harbor" onSelect={noop}
-  onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
+const peopleScreen = (current: SalesHostsModel, revision = 1) => <SalesHostsScreen model={{...current, host: host(revision)}} selectedOrganizerId="harbor" onSelect={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />;
 const save = () => screen.getByRole<HTMLButtonElement>("button", {name: "Save"});
 
 it("a review for drafts needs evidence about that person and a reason", async () => {
@@ -189,7 +188,7 @@ it("a follow-up names someone reviewed for drafts; other kinds of step don't nee
 
 it("filters the list by research and whose hosts, and says when a search can't run", () => {
   const current = model({suggestions: [], validSearch: false});
-  render(<SalesHostsScreen model={{...current, host: null}} selectedOrganizerId={null} onSelect={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop}
+  render(<SalesHostsScreen model={{...current, host: null}} selectedOrganizerId={null} onSelect={noop} onOpenFit={noop} onOpenFitQueue={noop}
     onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />);
   fireEvent.click(screen.getByRole("button", {name: /^Needs research/u}));
   expect(current.setResearchStatus).toHaveBeenCalledWith("needs_research");
@@ -200,9 +199,39 @@ it("filters the list by research and whose hosts, and says when a search can't r
 
 it("a sales associate has no Mine filter or reviewed fit queue", () => {
   const current = model({suggestions: [], canEditResearch: false});
-  render(<SalesHostsScreen model={{...current, host: null}} selectedOrganizerId={null} onSelect={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={null}
+  render(<SalesHostsScreen model={{...current, host: null}} selectedOrganizerId={null} onSelect={noop} onOpenFit={noop} onOpenFitQueue={null}
     onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} onOpenOrganizer={noop} />);
   expect(screen.queryByRole("button", {name: /^Mine/u})).toBeNull();
   expect(screen.queryByRole("button", {name: "Reviewed fit"})).toBeNull();
   expect(screen.getByRole("button", {name: "Add or nominate"})).toBeTruthy();
+});
+
+it("starts another deal when one exists, keeping its kind and owner choices", async () => {
+  const saveDeal = vi.fn().mockResolvedValue(true);
+  const withDeal = {...host(1), opportunities: [{opportunityId: "o1", organizerId: "harbor", motion: "expansion", stage: "contacted",
+    ownerUid: "someone", nextStep: "Call", nextStepAt: "2026-11-05T13:30:00.000Z", revision: 2}]} as unknown as SalesAccountDetail;
+  render(<SalesHostsScreen model={model({host: withDeal, tab: "deals", saveDeal})} selectedOrganizerId="harbor" onSelect={noop}
+    onOpenOrganizer={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} />);
+  fireEvent.click(screen.getByRole("button", {name: "Move"}));
+  fireEvent.click(screen.getByRole("button", {name: "Assign to me"}));
+  fireEvent.click(screen.getByRole("button", {name: "Save"}));
+  await waitFor(() => expect(saveDeal).toHaveBeenCalledWith(expect.objectContaining({opportunityId: "o1"}),
+    expect.objectContaining({motion: "expansion", ownerUid: "dev"})));
+  cleanup();
+  render(<SalesHostsScreen model={model({host: withDeal, tab: "deals", saveDeal})} selectedOrganizerId="harbor" onSelect={noop}
+    onOpenOrganizer={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} />);
+  expect(screen.getByRole("button", {name: "Start a deal"})).toBeTruthy();
+});
+
+it("shows Private details on the Overview for the team, and finished steps under History", () => {
+  const field = {fieldId: "sales.who", label: "Who decides", type: "string" as const, recordType: "account" as const, revision: 1};
+  const drawn = render(<SalesHostsScreen model={model({host: host(1), privateFields: [field]})} selectedOrganizerId="harbor" onSelect={noop}
+    onOpenOrganizer={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} />);
+  expect(screen.getByText("Private details")).toBeTruthy();
+  expect(screen.queryByText("All tools")).toBeNull();
+  drawn.unmount();
+  render(<SalesHostsScreen model={model({host: host(1), canEditResearch: false, privateFields: [field]})} selectedOrganizerId="harbor" onSelect={noop}
+    onOpenOrganizer={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onAddHost={noop} />);
+  expect(screen.queryByText("Private details")).toBeNull();
+  expect(screen.getByRole("tab", {name: /History/u})).toBeTruthy();
 });

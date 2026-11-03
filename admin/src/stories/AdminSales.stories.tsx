@@ -61,6 +61,8 @@ export const SalesTodayStory: Story = {
 
 const hostsModel = {query: "", setQuery: noop, validSearch: true, researchStatus: null, setResearchStatus: noop, mineOnly: false, setMineOnly: noop, hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
   tab: "overview" as const, setTab: noop,
+  privateFields: [{fieldId: "sales.who_decides", label: "Who decides", type: "string" as const, recordType: "account" as const, helpText: "the person who says yes", revision: 1}],
+  privateFieldsLoading: false, privateFieldsFailed: false, retryPrivateFields: noop, saveCustomValue: async () => true,
   contacts: [{contactId: "c1", displayName: "Kavya Rao", relationship: {revision: 1, role: "Founder", decisionInfluence: "decision_maker" as const,
     primary: true, contactabilityStatus: "unknown" as const, sendAuthority: false as const}}],
   logActivity: async () => true, addNextStep: async () => true, completeNextStep: async () => true, saveDeal: async () => true, saveHost: async () => true, addPerson: async () => true,
@@ -82,13 +84,13 @@ export const SalesHostsStory: Story = {
   name: "Hosts",
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_hosts", states: ["directory", "host-overview"]}},
-  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: null}} onAddHost={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId={null} />,
 };
 
 export const SalesHostStory: Story = {
   name: "Hosts · a host page",
   beforeEach: pinClock,
-  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenHostTools={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
+  render: () => <SalesHostsScreen model={{...hostsModel, host: harbor}} onAddHost={noop} onOpenFit={noop} onOpenFitQueue={noop} onOpenPrivacy={noop} onOpenDemo={noop} onOpenOrganizer={noop} onSelect={noop} selectedOrganizerId="harbor" />,
 };
 
 const quoteTerms = {currency: "INR", amountMinor: 500_000, billingCadence: "monthly" as const, scope: "Booking pages and guest messages for one host",

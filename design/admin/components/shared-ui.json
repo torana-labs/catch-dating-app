@@ -120,30 +120,6 @@
       "comparisonReason": "Before/after comparison of one field for review; not passive metadata and not directory navigation."
     },
     {
-      "id": "shared_admin_directory_screen_stack",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
-      "exportName": "AdminDirectoryScreenStack",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminDirectoryScreenStackStory",
-        "states": [
-          "directory"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "comparedWith": [
-        "catch.section_stack",
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Retires with the PR 4 shell, which replaces it with CatchPaneLayout."
-    },
-    {
       "id": "shared_admin_editor_grid",
       "kind": "shared-primitive",
       "owner": "shared/ui",

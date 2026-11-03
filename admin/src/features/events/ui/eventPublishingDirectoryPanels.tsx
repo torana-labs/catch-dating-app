@@ -2,7 +2,6 @@ import {ArrowLeft, CalendarDays, ExternalLink, FileWarning, RefreshCw, Search} f
 import {
   AdminButton,
   AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
   AdminEventSupplyReviewGrid,
   AdminMetricCard,
   AdminMetricGrid,

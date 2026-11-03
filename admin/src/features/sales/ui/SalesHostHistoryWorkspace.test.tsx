@@ -2,7 +2,7 @@ import {act, cleanup, fireEvent, render, screen, waitFor} from
   "@testing-library/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {afterEach, expect, it, vi} from "vitest";
-import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
+import {SalesHostHistoryWorkspace} from "./SalesHostHistoryWorkspace";
 
 const {api, mode} = vi.hoisted(() => ({
   mode: {value: "live"},
@@ -15,10 +15,10 @@ afterEach(() => {
   mode.value = "live";
 });
 
-function mount(organizerId = "org-1") {
+function mount(organizerId = "org-1", finished: Array<{taskId: string; title: string; subtitle: string}> = []) {
   const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
   const view = (id: string) => <QueryClientProvider client={client}>
-    {renderSalesImportedHistory(id, "actor-1")}
+    <SalesHostHistoryWorkspace actorUid="actor-1" canSeeImported finished={finished} organizerId={id} />
   </QueryClientProvider>;
   const rendered = render(view(organizerId));
   return {rerender: (id: string) => rendered.rerender(view(id))};
@@ -56,11 +56,11 @@ it("labels unknown historical dates and page-only dispositions", async () => {
   mount();
   await screen.findByText(/Historical org-1/u);
   expect(screen.getByText(/Source date unknown/u)).toBeTruthy();
-  expect(screen.getByText(/This row page: 1 promoted, 0 skipped, 1 need review/u))
+  expect(screen.getByText(/This page: 1 promoted, 0 skipped, 1 need review/u))
     .toBeTruthy();
-  expect(screen.getByText(/page counts, not source-wide totals/u))
+  expect(screen.getByText(/These count this page, not the whole source/u))
     .toBeTruthy();
-  expect(screen.getByText(/provider delivery is unconfirmed/u)).toBeTruthy();
+  expect(screen.getByText(/provider delivery unconfirmed/u)).toBeTruthy();
 });
 
 it("host change discards a late old-host page", async () => {
@@ -99,4 +99,14 @@ it("paginates only the selected host and sample mode makes no read", async () =>
     .toBeTruthy();
   expect(api.listRecords).not.toHaveBeenCalled();
   expect(api.listRows).not.toHaveBeenCalled();
+});
+
+it("shows finished next steps, and no imported history to someone who can't see it", () => {
+  render(<QueryClientProvider client={new QueryClient()}>
+    <SalesHostHistoryWorkspace actorUid="actor-1" canSeeImported={false} organizerId="org-1"
+      finished={[{taskId: "t1", title: "Call Kavya", subtitle: "Follow up · completed · 2 Nov"}]} />
+  </QueryClientProvider>);
+  expect(screen.getByText("Call Kavya")).toBeTruthy();
+  expect(screen.queryByText("Imported source history")).toBeNull();
+  expect(api.listRecords).not.toHaveBeenCalled();
 });
