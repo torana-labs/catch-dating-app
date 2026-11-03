@@ -502,6 +502,12 @@ export function buildDocumentRetirementReport({paths, readSource}) {
   };
 }
 
+// A generated document isn't retired when it leaves git: its generator still writes it.
+export function retiredDocumentPaths(basePaths, targetPaths) {
+  return [...basePaths].filter((entry) => entry.endsWith(".md") && !targetPaths.has(entry) &&
+    !/(?:^|\/)generated\//u.test(entry));
+}
+
 export function retiredDocumentReferences({paths, readSource, retiredPaths}) {
   const retired = new Set(retiredPaths);
   paths = new Set(paths);
@@ -829,7 +835,7 @@ function main() {
         }),
         currentDocuments,
       });
-      const retiredPaths = [...base.paths].filter((entry) => entry.endsWith(".md") && !target.paths.has(entry));
+      const retiredPaths = retiredDocumentPaths(base.paths, target.paths);
       comparison.findings.push(...retiredDocumentReferences({...target, retiredPaths}));
       const changedPaths = [...target.paths].filter((entry) => entry.endsWith(".md") &&
         base.paths.has(entry) && target.readSource(entry) !== base.readSource(entry));

@@ -276,10 +276,10 @@
     },
     "contracts-source": {
       "direct": {
-        "pr": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
-        "merge_group": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
-        "main": {"ciTargets": ["contracts"]},
-        "nightly": {"ciTargets": ["contracts"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]}
+        "pr": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "flutter", "functions", "marketing", "tools"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
+        "merge_group": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "flutter", "functions", "marketing", "tools"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]},
+        "main": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "flutter", "functions", "marketing", "tools"]},
+        "nightly": {"ciTargets": ["admin", "capture_freshness", "contracts", "firestore_rules", "flutter", "functions", "marketing", "tools"], "checkIds": ["contracts:generate-schemas", "contracts:validate-schemas"]}
       },
       "affected": {}
     },
@@ -823,6 +823,12 @@
       "terminal": true
     },
     {
+      "id": "contract-generator-binding",
+      "paths": {"include": ["tool/contracts/generate_schema_contracts.mjs", "tool/contracts/lib/schema_specs.mjs", "tool/contracts/schema_spec_exceptions.json", "tool/contracts/schema_spec_order.json"]},
+      "components": ["contracts.generator"],
+      "terminal": true
+    },
+    {
       "id": "generated-functions-contract-binding",
       "paths": {"include": ["functions/src/shared/generated/**"]},
       "components": ["contracts.generated.functions"],
@@ -999,6 +1005,7 @@
     {"id": "policy.agent", "owner": "agent_operating_model", "risk": "high", "operationProfile": "policy", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Agent instructions and workflow policy."},
     {"id": "repo.harness", "owner": "repository_tooling", "risk": "high", "operationProfile": "harness-full", "pathType": "component", "ownedPaths": {"include": [".github/**", "tool/ci/**", "tool/harness/**", "tool/harness.mjs", "tool/repository_root_manifest.json", "tool/tools_manifest.json", "tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs", "tool/lib/repository_snapshot.mjs", "tool/run.mjs"]}, "dependsOn": [], "alsoAffects": [], "description": "Authoritative Harness control plane; changes validate every declared CI target."},
     {"id": "contracts.source", "owner": "backend_platform", "risk": "high", "operationProfile": "contracts-source", "pathType": "component", "ownedPaths": {"include": ["contracts/**"], "exclude": ["contracts/README.md", "contracts/*/README.md"]}, "dependsOn": [], "alsoAffects": [], "description": "Authored cross-stack contracts."},
+    {"id": "contracts.generator", "owner": "backend_platform", "risk": "high", "operationProfile": "contracts-source", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "The schema generator's own files. Its outputs aren't tracked, so a change here selects every consumer."},
     {"id": "contracts.doc", "owner": "backend_platform", "risk": "standard", "operationProfile": "contracts-doc", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Contract inventory and operational documentation."},
     {"id": "contracts.generated.flutter", "owner": "backend_platform", "risk": "standard", "operationProfile": "contracts-generated-flutter", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated Flutter schema bindings validate their consumer but never authorize release."},
     {"id": "contracts.generated.functions", "owner": "backend_platform", "risk": "standard", "operationProfile": "contracts-generated-functions", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Tracked generated Functions bindings validate Functions without upstream deploy authority."},
@@ -1098,6 +1105,7 @@
     {
       "id": "contracts.schema-projections",
       "owner": "backend_platform",
+      "tracked": false,
       "inputs": ["contracts/**/*.json", "tool/contracts/generate_schema_contracts.mjs", "tool/contracts/lib/schema_specs.mjs", "tool/contracts/schema_spec_exceptions.json", "tool/contracts/schema_spec_order.json", "functions/package.json", "functions/package-lock.json"],
       "outputs": ["packages/platform/lib/schema_contracts/generated/**", "lib/contexts/*/data/generated/**", "functions/src/shared/generated/**", "admin/src/generated/contracts/**", "tool/contracts/generated/**", "website/src/shared/contracts/generated/**"],
       "checkCommand": "node tool/contracts/generate_schema_contracts.mjs --check",

@@ -116,11 +116,11 @@ test("plan output derives roles from bounded build operations", () => {
   assert.equal(output.build_targets, '["host-ios"]');
 });
 
-test("generator-only changes install their declared preflight dependencies without selecting contracts", () => {
+test("generator-only changes select contracts and install their declared preflight dependencies", () => {
   const plan = planAffected({graph, mode: "pr",
     changedPaths: ["tool/contracts/generate_schema_contracts.mjs"]});
   const output = projectPlanOutputs({plan, graph});
-  assert.equal(output.contracts, false);
+  assert.equal(output.contracts, true);
   assert.equal(output.preflight_functions_dependencies, true);
 
   for (const changedPath of ["README.md", "tool/architecture/check_mutation_error_surfaces.mjs"]) {

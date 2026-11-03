@@ -1876,7 +1876,7 @@ and reseeded, so its one-off backfill is retired.
 
 ```bash
 node tool/contracts/generate_schema_contracts.mjs
-node tool/contracts/generate_schema_contracts.mjs --check
+node tool/contracts/generate_schema_contracts.mjs
 node tool/contracts/validate_schema_contracts.mjs
 ./tool/check_data_contract.sh
 ```

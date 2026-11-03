@@ -11,6 +11,8 @@ const SOURCE_ROOT = "functions/src/";
 const SOURCE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
 // Built from contracts by the Functions build, so no index or commit holds it.
 const BUILT_MODULES = new Set([functionsCatalogModule]);
+// The schema generator writes these; they aren't tracked either.
+const GENERATED_ROOT = "functions/src/shared/generated/";
 
 export class FunctionsSourceClosureError extends Error {}
 
@@ -105,7 +107,7 @@ export function checkFunctionsSourceClosure(tree) {
       relativeImports += 1;
       const resolution = candidates(name, specifier);
       if (resolution.escaped || !resolution.paths.some((candidate) =>
-        tree.has(candidate) || BUILT_MODULES.has(candidate))) {
+        tree.has(candidate) || BUILT_MODULES.has(candidate) || candidate.startsWith(GENERATED_ROOT))) {
         unresolved.push(`${name}: ${specifier}`);
       }
     }

@@ -15,6 +15,10 @@ on:
       - functions/**
       - operations/**
       - contracts/**
+      - tool/contracts/generate_schema_contracts.mjs
+      - tool/contracts/lib/schema_specs.mjs
+      - tool/contracts/schema_spec_exceptions.json
+      - tool/contracts/schema_spec_order.json
       - firestore.rules
       - firestore.indexes.json
       - storage.rules

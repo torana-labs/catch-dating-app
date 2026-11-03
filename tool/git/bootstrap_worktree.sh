@@ -50,20 +50,45 @@ for required_path in "${required_paths[@]}"; do
   fi
 done
 
+# The schema contract outputs aren't tracked, and every family reads them.
+functions_installed=false
+contracts_generated=false
+generate_contracts() {
+  $contracts_generated && return 0
+  (
+    cd "$repo_root"
+    $functions_installed || npm --prefix functions ci
+    npm run generate:contracts
+  )
+  functions_installed=true
+  contracts_generated=true
+}
+
 if [[ $target == all || $target == root ]]; then
   echo "==> Installing root npm workspace dependencies"
   (
     cd "$repo_root"
     npm ci
+  )
+  generate_contracts
+  (
+    cd "$repo_root"
     npm --workspace catch-admin run generate
   )
 fi
 
 if [[ $target == all || $target == functions ]]; then
   echo "==> Installing Firebase Functions dependencies"
+  if ! $functions_installed; then
+    (
+      cd "$repo_root/functions"
+      npm ci
+    )
+    functions_installed=true
+  fi
+  generate_contracts
   (
     cd "$repo_root/functions"
-    npm ci
     npm run generate
   )
 fi
@@ -74,6 +99,7 @@ if [[ $target == all || $target == flutter ]]; then
     cd "$repo_root"
     flutter pub get
   )
+  generate_contracts
 fi
 
 echo "Worktree bootstrap complete."

@@ -81,6 +81,25 @@ test("untracked production source cannot silently enter an exact-source inventor
   assert.equal(f.read(routePath), "stale route inventory\n");
 });
 
+test("the schema generator's ignored Dart stays out of the inventories, and nothing else may hide with it", t => {
+  const f = fixture(t);
+  const generated = "packages/platform/lib/schema_contracts/generated";
+  f.write(".gitignore", `${generated}\n`);
+  f.write("tool/harness/component_graph.json", JSON.stringify({compileCodegen: [
+    {id: "contracts.schema-projections", tracked: false, outputs: [`${generated}/**`]},
+    {id: "tracked.generator", outputs: ["lib/tracked_output/**"]},
+  ]}));
+  const sourceSha = f.commit();
+  const without = materializeInventories({repoRoot: f.root, sourceSha});
+  f.write(`${generated}/paths.g.dart`, "class GeneratedScreen extends StatelessWidget {}\n");
+  const present = materializeInventories({repoRoot: f.root, sourceSha});
+  assert.deepEqual(present.files.map(file => file.sha256), without.files.map(file => file.sha256));
+  assert.equal(present.widgets, without.widgets);
+  // Handwritten-looking Dart in that folder could reach the catalog, so it's still refused.
+  f.write(`${generated}/hidden.dart`, "class HiddenScreen extends StatelessWidget {}\n");
+  assert.throws(() => materializeInventories({repoRoot: f.root, sourceSha}), /Ignored untracked Dart/);
+});
+
 test("ignored untracked Dart and index flags cannot hide inputs from the exact source binding", t => {
   const f = fixture(t);
   f.write(".gitignore", "lib/ignored.dart\n");
@@ -338,7 +357,7 @@ test("committed semantic route errors prevent a fresh CI receipt, while coverage
 
 test("actual CLI persists proof only in bound CI and preserves standalone generation", t => {
   const f = ciFixture(t);
-  const files = ["tool/ci/generated_inventories.mjs", "tool/lib/repo_paths.mjs",
+  const files = ["tool/ci/generated_inventories.mjs", "tool/lib/path_glob.mjs", "tool/lib/repo_paths.mjs",
     "tool/ui_capture/check_route_inventory.mjs", "tool/marketing/export_hosted_captures.mjs",
     "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
     "tool/design/component_concepts.mjs", "tool/design/lib/component_naming.mjs",

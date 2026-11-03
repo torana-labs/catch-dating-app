@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {matchesGlobPath} from "../lib/path_glob.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {buildInventory} from "../ui_capture/check_route_inventory.mjs";
 import {buildWidgetCatalog, renderCatalogInventory, replaceCatalogInventory,
@@ -21,6 +22,18 @@ function git(root, ...args) {
   const result = spawnSync("git", args, {cwd: root, encoding: "utf8", maxBuffer: 16 * 1024 * 1024});
   assert.equal(result.status, 0, result.stderr || "Cannot verify inventory source.");
   return result.stdout.trim();
+}
+
+// The schema generator's Dart is ignored and regenerated from committed contracts.
+// Both inventories skip .g.dart files, so it can't reach either of them. Any other
+// ignored Dart could, so it stays refused.
+function unprovenIgnoredDart(root) {
+  const catalog = spawnSync("git", ["show", "HEAD:tool/harness/component_graph.json"], {cwd: root, encoding: "utf8"});
+  const untracked = catalog.status === 0 ? JSON.parse(catalog.stdout).compileCodegen
+    .filter(entry => entry.tracked === false).flatMap(entry => entry.outputs) : [];
+  return git(root, "ls-files", "--others", "-z", "--", ...productionWidgetRoots)
+    .split("\0").filter(file => file.endsWith(".dart") &&
+      !(file.endsWith(".g.dart") && untracked.some(pattern => matchesGlobPath(file, pattern))));
 }
 
 function regularDestination(root, relative, {allowMissing = false, directory = false} = {}) {
@@ -52,9 +65,7 @@ export function materializeInventories({sourceSha, repoRoot = fromRepo(".")}) {
   const dirty = git(root, "diff", "HEAD", "--name-only", "-z").split("\0").filter(Boolean);
   assert.deepEqual(dirty.filter(file => !outputs.includes(file)), [], "Authored inventory inputs must match the selected commit.");
   assert.equal(git(root, "ls-files", "--others", "--exclude-standard"), "", "Untracked source cannot enter generated inventories.");
-  const ignoredDart = git(root, "ls-files", "--others", "-z", "--", ...productionWidgetRoots)
-    .split("\0").filter(file => file.endsWith(".dart"));
-  assert.deepEqual(ignoredDart, [], "Ignored untracked Dart cannot enter exact-source inventories.");
+  assert.deepEqual(unprovenIgnoredDart(root), [], "Ignored untracked Dart cannot enter exact-source inventories.");
   const destinations = outputs.map(file => regularDestination(root, file));
   const before = destinations.map(file => fs.readFileSync(file, "utf8"));
   const committedCatalog = spawnSync("git", ["show", `HEAD:${catalogPath}`], {cwd: root, encoding: "utf8"});
@@ -173,9 +184,7 @@ export function verifyMaterializedInventories({env = process.env, repoRoot = fro
   assert.deepEqual(dirty.filter(file => !allowed.has(file)), [], "Authored inventory inputs differ from the commit.");
   for (const file of dirty.filter(file => importedMedia.includes(file))) regularDestination(root, file);
   assert.equal(git(root, "ls-files", "--others", "--exclude-standard"), "", "Untracked source cannot enter inventory proof.");
-  const ignoredDart = git(root, "ls-files", "--others", "-z", "--", ...productionWidgetRoots)
-    .split("\0").filter(file => file.endsWith(".dart"));
-  assert.deepEqual(ignoredDart, [], "Ignored untracked Dart cannot enter inventory proof.");
+  assert.deepEqual(unprovenIgnoredDart(root), [], "Ignored untracked Dart cannot enter inventory proof.");
   const catalog = fs.readFileSync(regularDestination(root, catalogPath), "utf8");
   const committedCatalog = spawnSync("git", ["show", `HEAD:${catalogPath}`], {cwd: root, encoding: "utf8"});
   assert.equal(committedCatalog.status, 0, "Cannot read authored catalog source.");
