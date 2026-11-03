@@ -10,8 +10,10 @@ part of 'dashboard_full_view_model.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(dashboardNow)
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final dashboardNowProvider = DashboardNowProvider._();
 
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final class DashboardNowProvider
     extends $FunctionalProvider<DateTime, DateTime, DateTime>
     with $Provider<DateTime> {
@@ -48,7 +50,7 @@ final class DashboardNowProvider
   }
 }
 
-String _$dashboardNowHash() => r'91e11349a0f778936d9df6327401917812107880';
+String _$dashboardNowHash() => r'06500cb206dd19201ffed360bb78d81ebd10cff3';
 
 /// Combines signed-up and attended events into the live-layer home model.
 

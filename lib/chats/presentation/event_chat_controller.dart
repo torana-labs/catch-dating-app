@@ -6,13 +6,15 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
+import 'package:catch_dating_app/platform/cache/app_clock.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_chat_controller.g.dart';
 
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 @riverpod
-DateTime Function() eventChatNow(Ref ref) => DateTime.now;
+DateTime Function() eventChatNow(Ref ref) => ref.watch(appClockProvider).now;
 
 class EventChatState {
   EventChatState({

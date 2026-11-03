@@ -10,8 +10,10 @@ part of 'event_chat_controller.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(eventChatNow)
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final eventChatNowProvider = EventChatNowProvider._();
 
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final class EventChatNowProvider
     extends
         $FunctionalProvider<
@@ -54,7 +56,7 @@ final class EventChatNowProvider
   }
 }
 
-String _$eventChatNowHash() => r'85d9ebf44f54eeaa3b0cbdfb04e377439316e9d0';
+String _$eventChatNowHash() => r'2462d8010f10887254b164e1e3e90365c4b91565';
 
 /// All visible history is revalidated, including reply quotes. Failed reads,
 /// backgrounding and identity changes never retain an old readable snapshot.

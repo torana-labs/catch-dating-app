@@ -12,7 +12,8 @@ part of 'auth_session_controller.dart';
 ///
 /// Owns session-level auth side effects such as sign-out. This keeps widgets
 /// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
-/// flow controllers that should not survive a completed sign-out.
+/// flow controllers that should not survive a completed sign-out, and the
+/// wipe of the on-device Firestore cache both apps make at sign-out.
 
 @ProviderFor(AuthSessionController)
 final authSessionControllerProvider = AuthSessionControllerProvider._();
@@ -21,14 +22,16 @@ final authSessionControllerProvider = AuthSessionControllerProvider._();
 ///
 /// Owns session-level auth side effects such as sign-out. This keeps widgets
 /// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
-/// flow controllers that should not survive a completed sign-out.
+/// flow controllers that should not survive a completed sign-out, and the
+/// wipe of the on-device Firestore cache both apps make at sign-out.
 final class AuthSessionControllerProvider
     extends $NotifierProvider<AuthSessionController, void> {
   /// **Pattern A: Action controller + static Mutations**
   ///
   /// Owns session-level auth side effects such as sign-out. This keeps widgets
   /// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
-  /// flow controllers that should not survive a completed sign-out.
+  /// flow controllers that should not survive a completed sign-out, and the
+  /// wipe of the on-device Firestore cache both apps make at sign-out.
   AuthSessionControllerProvider._()
     : super(
         from: null,
@@ -57,13 +60,14 @@ final class AuthSessionControllerProvider
 }
 
 String _$authSessionControllerHash() =>
-    r'ad1c0b4c2f82779ac82f1bb383bf02b3eee86d4f';
+    r'ff5beb11d125bd3553703d2a69cfd95e896dcd29';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns session-level auth side effects such as sign-out. This keeps widgets
 /// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
-/// flow controllers that should not survive a completed sign-out.
+/// flow controllers that should not survive a completed sign-out, and the
+/// wipe of the on-device Firestore cache both apps make at sign-out.
 
 abstract class _$AuthSessionController extends $Notifier<void> {
   void build();

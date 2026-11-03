@@ -14,6 +14,7 @@ part of 'explore_feed_providers.dart';
 /// midnight drift and gives capture/tests one explicit deterministic seam.
 
 @ProviderFor(exploreDiscoveryReferenceNow)
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final exploreDiscoveryReferenceNowProvider =
     ExploreDiscoveryReferenceNowProvider._();
 
@@ -22,6 +23,7 @@ final exploreDiscoveryReferenceNowProvider =
 /// Keeping the query window and date-strip labels on the same provider avoids
 /// midnight drift and gives capture/tests one explicit deterministic seam.
 
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final class ExploreDiscoveryReferenceNowProvider
     extends $FunctionalProvider<DateTime, DateTime, DateTime>
     with $Provider<DateTime> {
@@ -63,7 +65,7 @@ final class ExploreDiscoveryReferenceNowProvider
 }
 
 String _$exploreDiscoveryReferenceNowHash() =>
-    r'a1729036b2bf1839fc9346fabae727c629c54e4f';
+    r'c209e6502186c178f7199b1a4a7fbea9e93ce147';
 
 @ProviderFor(exploreViewerCohortId)
 final exploreViewerCohortIdProvider = ExploreViewerCohortIdProvider._();

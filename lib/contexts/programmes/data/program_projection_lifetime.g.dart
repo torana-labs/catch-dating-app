@@ -10,8 +10,10 @@ part of 'program_projection_lifetime.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(programProjectionClock)
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final programProjectionClockProvider = ProgramProjectionClockProvider._();
 
+@Deprecated('Read appClockProvider; 1.3b moves the callers and deletes this.')
 final class ProgramProjectionClockProvider
     extends
         $FunctionalProvider<
@@ -55,7 +57,7 @@ final class ProgramProjectionClockProvider
 }
 
 String _$programProjectionClockHash() =>
-    r'cc1b7e179d1cc54d25bd884bb5cfba8bd61e3d59';
+    r'4b98a379d4ae0653cf14585ba8e1450413b855c6';
 
 @ProviderFor(programProjectionActive)
 final programProjectionActiveProvider = ProgramProjectionActiveFamily._();
