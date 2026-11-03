@@ -1,14 +1,14 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 enum CatchStackDirection { column, row }
 
 /// Cross-axis placement. A column with none set gives every child its full
-/// width when it has one (as the web's flex box stretches its blocks; a child's
-/// own width does not survive it, so a column that keeps widths sets [start]);
-/// a row with none set top-aligns its children.
+/// width when it has one, as the web's flex box stretches its blocks (a
+/// child's own width does not survive it, so a column that keeps widths sets
+/// [start]; and under an intrinsic-sizing parent, which cannot measure it, set
+/// one); a row with none set top-aligns its children.
 enum CatchStackAlign { start, center, end, stretch, baseline }
 
 /// Main-axis placement. A row fills its width, so it can spread its children;
@@ -119,17 +119,38 @@ class CatchStack extends StatelessWidget {
       );
     }
 
-    final stretchToWidth = !isRow && crossAlign == null;
+    final mainAlign = switch (justify) {
+      null || CatchStackJustify.start => MainAxisAlignment.start,
+      CatchStackJustify.center => MainAxisAlignment.center,
+      CatchStackJustify.end => MainAxisAlignment.end,
+      CatchStackJustify.between => MainAxisAlignment.spaceBetween,
+    };
+    final items = [
+      for (final child in children) isEqual ? Expanded(child: child) : child,
+    ];
+
+    if (!isRow && crossAlign == null) {
+      // An unset column stretches its children when it has a width to give,
+      // and starts them when it does not (inside a row or a horizontal list).
+      return LayoutBuilder(
+        builder: (context, constraints) => Flex(
+          direction: axis,
+          spacing: spacing,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: mainAlign,
+          crossAxisAlignment: constraints.hasBoundedWidth
+              ? CrossAxisAlignment.stretch
+              : CrossAxisAlignment.start,
+          children: items,
+        ),
+      );
+    }
+    final baseline = crossAlign == CatchStackAlign.baseline && isRow;
     return Flex(
       direction: axis,
       spacing: spacing,
       mainAxisSize: isRow ? MainAxisSize.max : MainAxisSize.min,
-      mainAxisAlignment: switch (justify) {
-        null || CatchStackJustify.start => MainAxisAlignment.start,
-        CatchStackJustify.center => MainAxisAlignment.center,
-        CatchStackJustify.end => MainAxisAlignment.end,
-        CatchStackJustify.between => MainAxisAlignment.spaceBetween,
-      },
+      mainAxisAlignment: mainAlign,
       crossAxisAlignment: switch (crossAlign) {
         null || CatchStackAlign.start => CrossAxisAlignment.start,
         CatchStackAlign.center => CrossAxisAlignment.center,
@@ -137,57 +158,10 @@ class CatchStack extends StatelessWidget {
         CatchStackAlign.stretch => CrossAxisAlignment.stretch,
         // A column has no baseline to share; its children start-align.
         CatchStackAlign.baseline =>
-          isRow ? CrossAxisAlignment.baseline : CrossAxisAlignment.start,
+          baseline ? CrossAxisAlignment.baseline : CrossAxisAlignment.start,
       },
-      textBaseline: crossAlign == CatchStackAlign.baseline && isRow
-          ? TextBaseline.alphabetic
-          : null,
-      children: [
-        for (final child in children)
-          if (isEqual)
-            Expanded(child: child)
-          else if (stretchToWidth)
-            _FillBoundedWidth(child: child)
-          else
-            child,
-      ],
+      textBaseline: baseline ? TextBaseline.alphabetic : null,
+      children: items,
     );
-  }
-}
-
-/// A column child that takes the column's width when the column has one, and
-/// its own width when it does not (inside a row or a horizontal scroll), so an
-/// unset alignment stretches like the web's flex box without failing on an
-/// unbounded width.
-class _FillBoundedWidth extends SingleChildRenderObjectWidget {
-  const _FillBoundedWidth({required super.child});
-
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-      _RenderFillBoundedWidth();
-}
-
-class _RenderFillBoundedWidth extends RenderProxyBox {
-  BoxConstraints _filled(BoxConstraints constraints) =>
-      constraints.hasBoundedWidth
-      ? constraints.copyWith(minWidth: constraints.maxWidth)
-      : constraints;
-
-  @override
-  Size computeDryLayout(covariant BoxConstraints constraints) {
-    final child = this.child;
-    if (child == null) return constraints.smallest;
-    return constraints.constrain(child.getDryLayout(_filled(constraints)));
-  }
-
-  @override
-  void performLayout() {
-    final child = this.child;
-    if (child == null) {
-      size = constraints.smallest;
-      return;
-    }
-    child.layout(_filled(constraints), parentUsesSize: true);
-    size = constraints.constrain(child.size);
   }
 }

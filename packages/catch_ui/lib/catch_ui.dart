@@ -170,7 +170,7 @@ export 'src/foundations/catch_font_licenses.dart';
 export 'src/foundations/catch_fonts.dart';
 export 'src/foundations/catch_icons.dart';
 export 'src/foundations/catch_root.dart'
-    show CatchGroundScope, CatchRoot, CatchScope;
+    show CatchGroundScope, CatchRoot, CatchScope, CatchScopeData;
 export 'src/foundations/catch_text_styles.dart' hide catchWelcomeTextStyle;
 export 'src/foundations/catch_theme.dart';
 export 'src/foundations/catch_transitions.dart';

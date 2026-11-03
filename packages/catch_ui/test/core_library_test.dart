@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _Probe extends StatelessWidget {
   const _Probe(this.seen);
 
-  final List<({CatchScope scope, Color? ink, Color? icon, TextStyle text})>
+  final List<({CatchScopeData scope, Color? ink, Color? icon, TextStyle text})>
   seen;
 
   @override
@@ -44,7 +44,7 @@ void main() {
   group('CatchRoot', () {
     testWidgets('follows the phone when no theme is given', (tester) async {
       final seen =
-          <({CatchScope scope, Color? ink, Color? icon, TextStyle text})>[];
+          <({CatchScopeData scope, Color? ink, Color? icon, TextStyle text})>[];
       tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
       addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
       await _pump(tester, CatchRoot(child: _Probe(seen)));
@@ -74,7 +74,7 @@ void main() {
       tester,
     ) async {
       final seen =
-          <({CatchScope scope, Color? ink, Color? icon, TextStyle text})>[];
+          <({CatchScopeData scope, Color? ink, Color? icon, TextStyle text})>[];
       for (final (width, expected) in [
         (599.0, CatchWindowSize.compact),
         (600.0, CatchWindowSize.medium),
@@ -95,7 +95,7 @@ void main() {
       tester,
     ) async {
       final seen =
-          <({CatchScope scope, Color? ink, Color? icon, TextStyle text})>[];
+          <({CatchScopeData scope, Color? ink, Color? icon, TextStyle text})>[];
       await tester.pumpWidget(
         MaterialApp(
           home: MediaQuery(
@@ -118,7 +118,7 @@ void main() {
     });
 
     testWidgets('CatchScope.maybeOf is null outside a root', (tester) async {
-      CatchScope? found;
+      CatchScopeData? found;
       var built = false;
       await tester.pumpWidget(
         Builder(
@@ -135,13 +135,13 @@ void main() {
   });
 
   group('CatchSurface', () {
-    Future<List<CatchScope>> grounds(
+    Future<List<CatchScopeData>> grounds(
       WidgetTester tester,
       Widget Function(Widget probe) build, {
       CatchThemeMode theme = CatchThemeMode.day,
     }) async {
       final seen =
-          <({CatchScope scope, Color? ink, Color? icon, TextStyle text})>[];
+          <({CatchScopeData scope, Color? ink, Color? icon, TextStyle text})>[];
       await _pump(tester, CatchRoot(theme: theme, child: build(_Probe(seen))));
       return [for (final entry in seen) entry.scope];
     }
@@ -149,7 +149,7 @@ void main() {
     testWidgets('hands its children the ground the system gives them', (
       tester,
     ) async {
-      Future<CatchScope> under(
+      Future<CatchScopeData> under(
         Widget Function(Widget) build, {
         CatchThemeMode theme = CatchThemeMode.day,
       }) async => (await grounds(tester, build, theme: theme)).last;
