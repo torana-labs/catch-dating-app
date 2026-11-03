@@ -437,9 +437,17 @@ class _HostOperationalRosterSectionState
                   message: context.l10n.hostsOperationalRosterEmptyMessage,
                 );
               }
-              final insights = insightsAsync == null
+              final insights = switch (insightsAsync == null
                   ? null
-                  : catchAsyncStateFromAsyncValue(insightsAsync).value;
+                  : catchAsyncStateFromAsyncValue(insightsAsync).value) {
+                final HostEventRosterInsights value
+                    when value.sourceCoverage !=
+                            HostRosterInsightCoverage.missing &&
+                        value.sourceCoverage !=
+                            HostRosterInsightCoverage.invalidSource =>
+                  value,
+                _ => null,
+              };
               final insightByAttendeeId = insights?.byAttendeeId ?? const {};
               final effectiveFilter = insights == null
                   ? HostRosterInsightFilter.all
@@ -554,24 +562,14 @@ class HostRosterInsightRail extends StatelessWidget {
       context.l10n.hostsOperationalRosterInsightsLoading,
       variant: CatchLegacyTextVariant.supporting,
     ),
-    error: (_, _) => Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchLegacyText(
-          context.l10n.hostsOperationalRosterInsightsUnavailable,
-          variant: CatchLegacyTextVariant.supporting,
-        ),
-        CatchButton(
-          label: context.l10n.hostsOperationalRosterInsightsRetry,
-          onPressed: onRetry,
-          size: CatchButtonSize.md,
-          variant: CatchButtonVariant.quiet,
-        ),
-      ],
-    ),
+    error: (_, _) => _HostRosterInsightsUnavailable(onRetry: onRetry),
     data: (insights) {
+      // A view the server has not written, or one it could not evaluate,
+      // shows the unavailable state; check-in never depends on it.
+      if (insights.sourceCoverage == HostRosterInsightCoverage.missing ||
+          insights.sourceCoverage == HostRosterInsightCoverage.invalidSource) {
+        return _HostRosterInsightsUnavailable(onRetry: onRetry);
+      }
       final filters = <HostRosterInsightFilter>[
         HostRosterInsightFilter.all,
         for (final filter in HostRosterInsightFilter.values.skip(1))
@@ -639,6 +637,31 @@ class HostRosterInsightRail extends StatelessWidget {
         ],
       );
     },
+  );
+}
+
+class _HostRosterInsightsUnavailable extends StatelessWidget {
+  const _HostRosterInsightsUnavailable({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    spacing: CatchSpacing.s2,
+    runSpacing: CatchSpacing.s2,
+    children: [
+      CatchLegacyText(
+        context.l10n.hostsOperationalRosterInsightsUnavailable,
+        variant: CatchLegacyTextVariant.supporting,
+      ),
+      CatchButton(
+        label: context.l10n.hostsOperationalRosterInsightsRetry,
+        onPressed: onRetry,
+        size: CatchButtonSize.md,
+        variant: CatchButtonVariant.quiet,
+      ),
+    ],
   );
 }
 

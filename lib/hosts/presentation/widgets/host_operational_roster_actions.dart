@@ -53,15 +53,11 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     };
   }
 
-  /// Restarts the provider setup listener only when it ended in an error;
-  /// a healthy listener already delivers every change.
-  void _retryProviderSetup() {
-    final provider = hostProviderSetupProvider(
-      widget.organizerId,
-      widget.eventId,
-    );
-    if (ref.read(provider).hasError) ref.invalidate(provider);
-  }
+  /// Restarts the provider setup listener from the error state, which shows
+  /// for a failed listener and for a connection view that is not complete.
+  void _retryProviderSetup() => ref.invalidate(
+    hostProviderSetupProvider(widget.organizerId, widget.eventId),
+  );
 
   Future<void> _connectLuma() async {
     final input = await showCatchBottomSheet<HostLumaConnectionInput>(
@@ -321,7 +317,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     required HostRosterIntakeReview applied,
   }) async {
     ref.invalidate(watchEventAttendeesProvider(eventId));
-    ref.invalidate(hostEventRosterInsightsProvider(eventId));
     await _showAppliedRosterReceipt(eventId: eventId, review: applied);
     await _rosterIntakeJournal.clear(
       userId: accountId,
@@ -461,7 +456,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             attendeeId: attendeeId,
           );
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
       showCatchNotice(
         context,
@@ -507,7 +501,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
           );
       if (!sameScope() || !mounted) return;
       ref.invalidate(watchEventAttendeesProvider(eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(eventId));
       if (result.errors.isEmpty) {
         showCatchNotice(
           context,
@@ -571,7 +564,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
           );
       if (mounted) _setLocalState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
@@ -598,7 +590,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       if (!mounted) return;
       _setLocalState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     }

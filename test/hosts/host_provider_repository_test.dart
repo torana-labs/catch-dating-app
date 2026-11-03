@@ -120,14 +120,8 @@ void main() {
       setup(mappingRevision: 3, connectionRevision: 4).reflects(receipt),
       isTrue,
     );
-    expect(
-      setup(mappingRevision: 1, connectionRevision: 3).reflects(receipt),
-      isFalse,
-    );
-    expect(
-      setup(mappingRevision: 2, connectionRevision: 2).reflects(receipt),
-      isFalse,
-    );
+    expect(setup(connectionRevision: 3).reflects(receipt), isFalse);
+    expect(setup(mappingRevision: 2).reflects(receipt), isFalse);
     expect(setup(mapped: false).reflects(receipt), isFalse);
     expect(
       setup(
