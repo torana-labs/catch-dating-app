@@ -12,6 +12,8 @@ import {reconcileCheckpointView} from "./checkpointViewStore";
 import {
   checkpointViewFreezeMillis,
   checkpointViewsCollection,
+  defaultMovementViewDeps,
+  MovementViewDeps,
 } from "./movementViewSupport";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
@@ -177,21 +179,24 @@ async function openRostersWhere(db: FirebaseFirestore.Firestore,
 
 /** Re-evaluates every movement view the targets name, events first. */
 export async function reconcileMovementTargets(
-  db: FirebaseFirestore.Firestore, targets: MovementTargets
+  db: FirebaseFirestore.Firestore, targets: MovementTargets,
+  deps: MovementViewDeps = defaultMovementViewDeps
 ): Promise<void> {
   const rosters = new Set(targets.rosters);
   for (const eventId of targets.events) {
-    await reconcileGroupProgressViews(db, eventId);
+    await reconcileGroupProgressViews(db, eventId, deps);
     for await (const rosterId of rosterIdsForEvent(db, eventId)) {
       rosters.add(rosterId);
     }
   }
   for (const rosterId of rosters) {
-    await reconcileDepartureView(db, rosterId);
-    await reconcileCheckpointView(db, rosterId);
+    await reconcileDepartureView(db, rosterId, deps);
+    await reconcileCheckpointView(db, rosterId, deps);
   }
   for (const rosterId of new Set(targets.checkpointRosters)) {
-    if (!rosters.has(rosterId)) await reconcileCheckpointView(db, rosterId);
+    if (!rosters.has(rosterId)) {
+      await reconcileCheckpointView(db, rosterId, deps);
+    }
   }
 }
 

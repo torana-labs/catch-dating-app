@@ -117,9 +117,11 @@ export async function reconcileDepartureView(
     let view: NonNullable<ViewDocument["view"]>;
     try {
       const event = eventSnap.data();
-      const {event: parsed, plan} = await parsing(validateEventDocument(event) &&
-        event.organizerId === context.organizerId ? "eventSuccessPlans" :
-        "events", () => parseGroupProgressEvent(context, eventSnap, planSnap));
+      const eventValid = validateEventDocument(event) &&
+        event.organizerId === context.organizerId;
+      const {event: parsed, plan} = await parsing(eventValid ?
+        "eventSuccessPlans" : "events", () =>
+        parseGroupProgressEvent(context, eventSnap, planSnap));
       const source = await parsing("events", () => groupProgressSource({
         context, groupId: raw.groupId, event: parsed, plan,
         eventGeneration: eventSnap.createTime,
