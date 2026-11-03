@@ -217,8 +217,16 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest "$provenance"
 
-      - name: Verify production Admin callable dependencies
+      # While production's platform is not serving (a closed billing account
+      # answers every callable with an HTML 5xx), the callable check cannot
+      # tell a missing callable from a dead platform; it is skipped with a
+      # warning and the verified bytes still promote.
+      - id: platform
+        name: Check production is serving before verifying callables
         if: ${{ inputs.surface == 'admin' && steps.authorize.outputs.superseded != 'true' }}
+        run: node tool/firebase/check_platform_availability.mjs --project catch-dating-app-64e51 --callable adminListEventDirectory
+      - name: Verify production Admin callable dependencies
+        if: ${{ inputs.surface == 'admin' && steps.authorize.outputs.superseded != 'true' && steps.platform.outputs.available != 'false' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --wait-for-backend-deploy --environment prod --summary
