@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 ///
 /// Each value names the [CatchTextStyles] role it renders. The web
 /// `CatchLegacyText` offers the same vocabulary.
-@Deprecated('Legacy: use CatchText with a CatchTextVariant role; deleted in P7')
 enum CatchLegacyTextVariant {
   displayXs,
   displayS,

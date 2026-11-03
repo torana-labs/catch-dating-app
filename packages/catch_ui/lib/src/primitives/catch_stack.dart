@@ -50,7 +50,7 @@ enum CatchStackGap {
 ///
 /// [equal] (rows only) gives the children equal shares of the width.
 /// [collapseBelow] (rows only, medium or expanded) stacks the row into a
-/// column below that size class, read from the nearest [CatchScope] (compact
+/// column below that size class, read from the nearest [CatchRootScope] (compact
 /// outside a root); a collapsed row drops [equal] and keeps [align] only when
 /// it is center or end. [wrap] flows the children onto new runs with the gap
 /// between runs too. Framework `Column` and `Row` stay legal for arrangement;
@@ -82,7 +82,7 @@ class CatchStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sizeClass = CatchScope.sizeClassOf(context);
+    final sizeClass = CatchRootScope.sizeClassOf(context);
     var isRow = direction == CatchStackDirection.row;
     var isEqual = equal && isRow;
     var crossAlign = align;

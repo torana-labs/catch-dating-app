@@ -8,10 +8,10 @@ enum CatchSurfaceEmphasis { flat, subtle, raised, floating }
 
 /// The pre-redesign surface: tones, emphasis and free geometry for cards,
 /// panels and tappable tiles.
-@Deprecated(
-  'Legacy: use CatchSurface with a block (tile, spotlight, floating); '
-  'deleted in P7',
-)
+///
+/// Legacy: the registry records it as the `legacy` member of `catch.surface`,
+/// kept for legacy callers until P7 deletes it. New screens use
+/// `CatchSurface` with a block.
 class CatchLegacySurface extends StatelessWidget {
   const CatchLegacySurface({
     super.key,

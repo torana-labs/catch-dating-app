@@ -51,12 +51,12 @@ Widget catchRootContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchScope,
+  type: CatchRootScope,
   path: '[Core primitives]/Foundations',
 )
-Widget catchScopeContractStates(BuildContext context) {
+Widget catchRootScopeContractStates(BuildContext context) {
   return const WidgetbookContractFrame(
-    title: 'CatchScope',
+    title: 'CatchRootScope',
     contractId: 'catch.root.scope',
     states: ['read'],
     children: [
@@ -77,48 +77,13 @@ Widget catchScopeContractStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchGroundScope,
-  path: '[Core primitives]/Foundations',
-)
-Widget catchGroundScopeContractStates(BuildContext context) {
-  return WidgetbookContractFrame(
-    title: 'CatchGroundScope',
-    contractId: 'catch.root.ground_scope',
-    states: const ['grounds'],
-    children: [
-      WidgetbookContractStateCard(
-        label: 'grounds',
-        description: 'Each ground resets the text and icon ink beneath it.',
-        child: CatchRoot(
-          theme: CatchThemeMode.day,
-          child: CatchStack(
-            gap: CatchStackGap.g4,
-            children: [
-              for (final ground in CatchGround.values)
-                CatchGroundScope(
-                  ground: ground,
-                  format: ground == CatchGround.colour
-                      ? CatchFormat.courts
-                      : null,
-                  child: const _RootReadout(),
-                ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 /// What the root publishes, in its own ground, ink and type.
 class _RootReadout extends StatelessWidget {
   const _RootReadout();
 
   @override
   Widget build(BuildContext context) {
-    final scope = CatchScope.of(context);
+    final scope = CatchRootScope.of(context);
     return CatchSurface(
       block: CatchSurfaceBlock.plain,
       padding: CatchSurfacePadding.md,

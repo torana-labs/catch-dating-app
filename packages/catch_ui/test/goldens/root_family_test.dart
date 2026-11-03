@@ -19,7 +19,7 @@ class _ScopeReadout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scope = CatchScope.of(context);
+    final scope = CatchRootScope.of(context);
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(

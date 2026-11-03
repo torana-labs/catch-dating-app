@@ -3,9 +3,12 @@ import 'package:flutter/widgets.dart';
 
 /// The pre-redesign text: one [CatchLegacyTextVariant] role.
 ///
+/// Legacy: the registry records it as the `legacy` member of `catch.text`,
+/// kept for legacy callers until P7 deletes it. New screens use `CatchText`
+/// with a role and a tone.
+///
 /// The web `CatchLegacyText` takes the same variant, color, line-limit and
 /// alignment props. A line limit ends in an ellipsis.
-@Deprecated('Legacy: use CatchText with a role and a tone; deleted in P7')
 class CatchLegacyText extends StatelessWidget {
   const CatchLegacyText(
     this.data, {

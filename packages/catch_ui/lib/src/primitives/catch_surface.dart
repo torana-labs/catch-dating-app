@@ -45,7 +45,8 @@ enum CatchSurfacePadding {
 /// The blocks every screen is built from, and the only component that draws a
 /// filled box.
 ///
-/// A surface tells everything inside it what it sits on: a tile inside a tile
+/// A surface tells everything inside it what it sits on, through a
+/// [CatchRootScope] with its children's ground: a tile inside a tile
 /// becomes the nested block (16 corners), inside a coloured spotlight it goes
 /// translucent white, and an ink spotlight turns night. [padding] null takes
 /// the block's default: none for plain, 20 for spotlight, floating and a
@@ -81,7 +82,7 @@ class CatchSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = CatchTokens.of(context);
-    final ground = CatchScope.groundOf(context);
+    final ground = CatchRootScope.groundOf(context);
     final look = _SurfaceLook.resolve(
       block: block,
       color: color,
@@ -92,7 +93,7 @@ class CatchSurface extends StatelessWidget {
 
     final vertical = (padding ?? look.padding).extent;
     final horizontal = block == CatchSurfaceBlock.band
-        ? _gutter(CatchScope.sizeClassOf(context))
+        ? _gutter(CatchRootScope.sizeClassOf(context))
         : vertical;
     Widget content = Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
@@ -122,12 +123,45 @@ class CatchSurface extends StatelessWidget {
       );
     }
 
-    content = CatchGroundScope(
-      ground: look.childGround,
-      format: look.childFormat,
-      theme: look.childTheme,
-      child: content,
+    // The children's ground: a scope with the new ground (and format or
+    // theme), the ground's ink for text and icons, and the theme it implies.
+    final parent = CatchRootScope.maybeOf(context);
+    final parentTheme = catchThemeOf(context);
+    final childTheme = look.childTheme ?? parentTheme;
+    final childFormat = look.childFormat ?? parent?.format;
+    final inked = content;
+    content = CatchRootScope(
+      data: CatchRootScopeData(
+        theme: childTheme,
+        sizeClass: parent?.sizeClass ?? CatchWindowSize.compact,
+        format: childFormat,
+        register: parent?.register ?? CatchRegister.app,
+        ground: look.childGround,
+        reducedMotion:
+            parent?.reducedMotion ??
+            MediaQuery.maybeDisableAnimationsOf(context) ??
+            false,
+      ),
+      child: Builder(
+        builder: (context) {
+          final ink = catchGroundInk(
+            CatchTokens.of(context),
+            look.childGround,
+            childFormat,
+          );
+          return DefaultTextStyle.merge(
+            style: TextStyle(color: ink),
+            child: IconTheme.merge(
+              data: IconThemeData(color: ink),
+              child: inked,
+            ),
+          );
+        },
+      ),
     );
+    if (childTheme != parentTheme) {
+      content = Theme(data: catchThemeData(childTheme), child: content);
+    }
 
     final ratio = aspect;
     if (ratio != null) {

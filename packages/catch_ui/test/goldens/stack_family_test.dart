@@ -39,7 +39,7 @@ class _Collapsing extends StatelessWidget {
           gap: CatchStackGap.g8,
           children: [
             CatchText(
-              '${width.toInt()} px · ${CatchScope.of(context).sizeClass.name}',
+              '${width.toInt()} px · ${CatchRootScope.of(context).sizeClass.name}',
               variant: CatchTextVariant.bodyMeta,
             ),
             const CatchStack(

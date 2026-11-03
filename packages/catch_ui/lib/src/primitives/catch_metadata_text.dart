@@ -2,7 +2,6 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Single-line mono label for compact metadata in cards and rails.
-@Deprecated('Legacy: use CatchText with a label role; deleted in P7')
 class CatchMetadataText extends StatelessWidget {
   const CatchMetadataText(
     this.label, {

@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 /// Pick a role, never a size. Colour comes from the ground behind the text
 /// (ink on day, the night ink on night, the format's ink on a colour) unless a
 /// [tone] is set. The responsive roles read the size class from the nearest
-/// [CatchScope] (compact outside a root). The web `CatchText` takes the same
+/// [CatchRootScope] (compact outside a root). The web `CatchText` takes the same
 /// variant, tone, align, maxLines and numeric props.
 class CatchText extends StatelessWidget {
   const CatchText(
@@ -37,7 +37,7 @@ class CatchText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var style = variant
-        .style(CatchScope.sizeClassOf(context))
+        .style(CatchRootScope.sizeClassOf(context))
         .copyWith(color: tone.color(CatchTokens.of(context)));
     if (numeric) {
       style = style.copyWith(

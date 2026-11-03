@@ -3,7 +3,6 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Animated, uncapped numeric text for count-bearing headers.
-@Deprecated('Legacy: use CatchText with a label role; deleted in P7')
 class CatchCountText extends StatelessWidget {
   const CatchCountText({super.key, required this.count, this.color});
 
