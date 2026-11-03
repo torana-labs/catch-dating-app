@@ -9,6 +9,7 @@ import '../../tool/architecture/provider_graph.dart';
 
 void main() {
   _appPackageProviderGraphTests();
+  _cacheRuleTests();
   test(
     'provider graph resolves providers, consumers, aliases, and mutations',
     () async {
@@ -800,6 +801,200 @@ int generatedOnly(Ref ref) => 1;
       );
     },
   );
+}
+
+void _cacheRuleTests() {
+  const repository = r'''
+class EventsRepository {
+  Stream<int> watchEvent() => _db.doc('e').snapshots().map((s) => 1);
+  Future<int> fetchEvent() => _db.doc('e').get().then((s) => 1);
+  Future<int> getInsights() => _call('getInsights');
+  Future<int> _call(String name) => _functions.httpsCallable(name).call();
+}
+abstract interface class ChatRepository { Stream<int> watchMessages(); }
+class FirestoreChatRepository implements ChatRepository {
+  @override
+  Stream<int> watchMessages() => _db.collection('m').snapshots().map((_) => 1);
+}
+@riverpod
+EventsRepository eventsRepository(Ref ref) => EventsRepository();
+@riverpod
+ChatRepository chatRepository(Ref ref) => FirestoreChatRepository();
+''';
+
+  test(
+    'the read-owner pass follows repositories, helpers and interfaces',
+    () async {
+      final root = await _fixtureRoot('''
+$repository
+@riverpod
+Stream<int> watchEvent(Ref ref) => ref.watch(eventsRepositoryProvider).watchEvent();
+@riverpod
+Future<int> insights(Ref ref) {
+  final repository = ref.watch(eventsRepositoryProvider);
+  return repository.getInsights();
+}
+@riverpod
+Stream<int> messages(Ref ref) => ref.watch(chatRepositoryProvider).watchMessages();
+@riverpod
+class Event extends _\$Event {
+  Future<int> build() => ref.read(eventsRepositoryProvider).fetchEvent();
+  Future<void> save(MutationTransaction tx) async => tx.get(otherProvider);
+}
+@riverpod
+int otherProvider(Ref ref) => 1;
+''');
+      addTearDown(() => root.delete(recursive: true));
+      final graph = await buildProviderGraph(root);
+      final byName = {for (final p in graph.providers) p.name: p};
+
+      expect(byName['watchEventProvider']!.readKinds, ['listener']);
+      expect(byName['insightsProvider']!.readKinds, ['callable']);
+      expect(byName['messagesProvider']!.readKinds, ['listener']);
+      expect(byName['eventProvider']!.readKinds, ['get']);
+      expect(byName['eventsRepositoryProvider']!.isReadOwner, isFalse);
+      final json = byName['insightsProvider']!.toJson();
+      expect(json['readOwner'], isTrue);
+      expect(json['lifetime'], 'route');
+      expect(graph.summary['readOwners'], 4);
+    },
+  );
+
+  test('each caching rule reports its violation', () async {
+    final root = await _fixtureRoot('''
+$repository
+// keepalive: shared for every screen.
+@Riverpod(keepAlive: true)
+Stream<int> keptEvent(Ref ref) => ref.watch(eventsRepositoryProvider).watchEvent();
+// keepalive: account-free reference data every account shares.
+@Riverpod(keepAlive: true)
+Future<int> cities(Ref ref) => ref.watch(eventsRepositoryProvider).fetchEvent();
+@riverpod
+Future<int> inline(Ref ref) {
+  ref.retain(CachePolicy(retain: Duration.zero, staleAfter: null));
+  return ref.watch(eventsRepositoryProvider).getInsights();
+}
+@riverpod
+Future<int> unkeyed(Ref ref, String organizerId) {
+  ref.retain(CachePolicies.hostReports);
+  return ref.watch(eventsRepositoryProvider).getInsights();
+}
+@riverpod
+Future<int> keyed(Ref ref, AuthenticatedSession session, ReportQuery query) {
+  ref.retain(CachePolicies.hostReports);
+  return ref.watch(eventsRepositoryProvider).getInsights();
+}
+class ReportQuery { final DateTime day; }
+@riverpod
+Stream<int> tagged(Ref ref) {
+  ref.providesTags({const EventTag('e')});
+  return ref.watch(eventsRepositoryProvider).watchEvent();
+}
+final journalProvider = Provider<int>((ref) => 1);
+// keepalive: one connection per process.
+final storageProvider = Provider<int>((ref) => 1);
+''');
+    addTearDown(() => root.delete(recursive: true));
+    await _writeFixture(root, 'lib/sample/presentation/screen.dart', r'''
+class Screen {
+  void build(WidgetRef ref, bool ready) {
+    ref.invalidate(watchEventProvider);
+    CatchAsyncBoundary(onRetry: () => ref.invalidate(watchEventProvider));
+    CatchAsyncBoundary(
+      onRetry: ready ? null : () { ref.invalidate(watchEventProvider); },
+    );
+    CatchAsyncBoundary(onRetry: () => ref.invalidate(eventViewModelProvider));
+  }
+  Future<void> save(WidgetRef ref) async {
+    await saveMutation.run(ref, (tx) async {
+      ref.invalidate(watchEventProvider);
+    });
+  }
+}
+@riverpod
+Stream<int> watchEvent(Ref ref) => ref.watch(eventsRepositoryProvider).watchEvent();
+@riverpod
+int eventViewModel(Ref ref) => ref.watch(watchEventProvider).value ?? 0;
+''');
+    final graph = await buildProviderGraph(root);
+    final found = {
+      for (final f in graph.cacheFindings) '${f.rule} ${f.symbol} ${f.detail}',
+    };
+
+    expect(found, {
+      'CACHE-LIFETIME-001 keptEventProvider keepAlive',
+      'CACHE-POLICY-001 inlineProvider policy:CachePolicy(retain: Duration.zero, staleAfter: null)',
+      'CACHE-POLICY-001 inline inline-policy',
+      'CACHE-ACCOUNT-001 unkeyedProvider no-session-key',
+      'CACHE-KEY-001 keyedProvider raw-datetime-key',
+      'CACHE-LISTENER-001 taggedProvider tags-on-listener',
+      'KEEPALIVE-MANUAL-001 journalProvider no-keepalive-marker',
+      'CACHE-INVALIDATE-001 Screen.build invalidate:watchEventProvider',
+      'CACHE-INVALIDATE-001 Screen.build retry-composition:eventViewModelProvider',
+      'CACHE-INVALIDATE-001 Screen.save invalidate:watchEventProvider',
+      'CACHE-LISTENER-001 Screen.save invalidate:watchEventProvider',
+    });
+    expect(
+      graph.providers.singleWhere((p) => p.name == 'unkeyedProvider').lifetimes,
+      ['timed'],
+    );
+  });
+
+  test('the cache baseline only shrinks', () async {
+    final root = await _fixtureRoot('''
+final journalProvider = Provider<int>((ref) => 1);
+''');
+    addTearDown(() => root.delete(recursive: true));
+    final unlisted = await buildProviderGraph(root);
+    expect(
+      providerGraphCheckFailures(
+        unlisted,
+      ).where((failure) => failure.startsWith('unlisted')).single,
+      startsWith(
+        'unlisted cache finding KEEPALIVE-MANUAL-001 '
+        'lib/sample/data/fixture.dart#journalProvider no-keepalive-marker',
+      ),
+    );
+
+    await File(
+      '${root.path}/$cacheBaselinePath',
+    ).parent.create(recursive: true);
+    await writeCacheBaseline(root, unlisted.cacheFindings);
+    final listed = await buildProviderGraph(root);
+    expect(listed.unlistedCacheFindings, isEmpty);
+    expect(
+      providerGraphCheckFailures(listed),
+      isNot(contains(startsWith('unlisted'))),
+    );
+
+    await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
+final journalProvider = Provider<int>((ref) => 1);
+final anotherProvider = Provider<int>((ref) => 1);
+''');
+    final grown = await buildProviderGraph(root);
+    expect(grown.unlistedCacheFindings.single.symbol, 'anotherProvider');
+
+    await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
+// keepalive: one journal per process.
+final journalProvider = Provider<int>((ref) => 1);
+''');
+    final fixed = await buildProviderGraph(root);
+    expect(fixed.unlistedCacheFindings, isEmpty);
+    expect(fixed.staleCacheBaselineEntries.single.symbol, 'journalProvider');
+    expect(fixed.health['unlistedCacheFindings'], isEmpty);
+  });
+
+  test('the CLI writes a reviewed cache baseline on request', () {
+    final options = parseProviderGraphCliOptions(['--write-cache-baseline']);
+    expect(options.writeCacheBaseline, isTrue);
+    expect(options.check, isFalse);
+  });
+}
+
+Future<void> _writeFixture(Directory root, String path, String source) async {
+  final file = File('${root.path}/$path');
+  await file.parent.create(recursive: true);
+  await file.writeAsString(source);
 }
 
 Future<Directory> _fixtureRoot(

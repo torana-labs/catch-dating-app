@@ -1,0 +1,762 @@
+{
+  "owner": "app_architecture",
+  "version": 1,
+  "doc": "docs/screen_data_caching.md",
+  "mode": "report-only",
+  "description": "Screen-data caching findings that existed when the rules landed, by exact rule, path, symbol and detail. The provider graph check fails only when a finding is not listed here (or occurs more often than its count). A context migration PR deletes the entries it fixes, so the list only shrinks; never add an entry to admit new code.",
+  "countsByRule": {
+    "CACHE-LIFETIME-001": 3,
+    "CACHE-POLICY-001": 0,
+    "CACHE-ACCOUNT-001": 0,
+    "CACHE-KEY-001": 0,
+    "CACHE-INVALIDATE-001": 120,
+    "CACHE-LISTENER-001": 9,
+    "KEEPALIVE-MANUAL-001": 5
+  },
+  "findings": [
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/chats/presentation/chat_retry_controller.dart",
+      "symbol": "ChatRetryController.run",
+      "detail": "invalidate:matchStreamProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/chats/presentation/chat_retry_controller.dart",
+      "symbol": "ChatRetryController.run",
+      "detail": "invalidate:suvbotActionsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/chats/presentation/chat_retry_controller.dart",
+      "symbol": "ChatRetryController.run",
+      "detail": "invalidate:watchConversationMessagesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_rehearsal/presentation/event_rehearsal_controller.dart",
+      "symbol": "eventRehearsalControllerProvider",
+      "detail": "invalidate:eventRehearsalProvider",
+      "count": 9
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+      "symbol": "_HostEventRehearsalStartScreenState._chooseSource",
+      "detail": "refresh:eventRehearsalSourcePlanProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_assistance_delivery_controller.dart",
+      "symbol": "eventAssistanceDeliveryControllerProvider",
+      "detail": "invalidate:eventAssistanceDeliveriesForAccountProvider",
+      "count": 2
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_assistance_departure_controller.dart",
+      "symbol": "eventAssistanceDepartureControllerProvider",
+      "detail": "invalidate:eventAssistanceDepartureForAccountProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_assistance_departure_controller.dart",
+      "symbol": "eventAssistanceDepartureControllerProvider",
+      "detail": "invalidate:eventAssistanceHostGuestsForAccountProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_attendance_disposition_editor.dart",
+      "symbol": "eventAttendanceDispositionEditorProvider",
+      "detail": "invalidate:eventAttendanceDispositionForAccountProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_attendance_disposition_editor.dart",
+      "symbol": "eventAttendanceDispositionEditorProvider",
+      "detail": "invalidate:eventAttendanceReportForAccountProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_success_host_screen.dart",
+      "symbol": "_EventSuccessHostSectionState.build",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/event_success/presentation/event_success_host_screen.dart",
+      "symbol": "_EventSuccessHostSectionState.build",
+      "detail": "invalidate:watchEventSuccessPresenceSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/events/presentation/widgets/event_detail_dock.dart",
+      "symbol": "EventDetailDock.build",
+      "detail": "invalidate:eventViewerStateProvider",
+      "count": 2
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState._refreshExploreData",
+      "detail": "retry-composition:exploreFeedViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState._refreshExploreData",
+      "detail": "retry-composition:exploreOrganizersViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState._refreshExploreData",
+      "detail": "retry-composition:exploreRecommendationsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState._refreshExploreData",
+      "detail": "retry-composition:exploreSourceOrganizersProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState.build",
+      "detail": "retry-composition:exploreFeedViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState.build",
+      "detail": "retry-composition:exploreOrganizersViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "symbol": "_ExploreScreenState.build",
+      "detail": "retry-composition:exploreSourceOrganizersProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._editTags",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._reviewDuplicates",
+      "detail": "invalidate:hostCrmSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._reviewDuplicates",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._saveCustomerDetails",
+      "detail": "invalidate:hostCrmSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._saveCustomerDetails",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._setMessagingEnabled",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._undoMerge",
+      "detail": "invalidate:hostCrmSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "symbol": "_HostCustomerDetailScreenState._undoMerge",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_email_sheet.dart",
+      "symbol": "_HostCustomerEmailHandoffSheetState._open",
+      "detail": "invalidate:hostAudienceContactDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customer_whatsapp_sheet.dart",
+      "symbol": "_HostWhatsappHandoffSheetState._open",
+      "detail": "invalidate:hostManualSendTasksProvider",
+      "count": 2
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostCustomersDirectoryActions._openAudienceEditor",
+      "detail": "invalidate:hostAllSavedAudienceSummariesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostCustomersDirectoryActions._openAudienceEditor",
+      "detail": "invalidate:hostAllSavedAudiencesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostCustomersDirectoryActions._openAudienceEditor",
+      "detail": "invalidate:hostGroupDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostCustomersDirectoryActions._openAudienceEditor",
+      "detail": "invalidate:hostSavedAudiencesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostCustomersDirectoryActions._reviewDuplicates",
+      "detail": "invalidate:hostCrmSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostCustomersDirectoryActions._reviewDuplicates",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostSavedAudienceEditorActions._invalidateAudienceDirectories",
+      "detail": "invalidate:hostAllSavedAudienceSummariesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostSavedAudienceEditorActions._invalidateAudienceDirectories",
+      "detail": "invalidate:hostAllSavedAudiencesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostSavedAudienceEditorActions._invalidateAudienceDirectories",
+      "detail": "invalidate:hostGroupDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_directory_actions.dart",
+      "symbol": "_HostSavedAudienceEditorActions._invalidateAudienceDirectories",
+      "detail": "invalidate:hostSavedAudiencesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
+      "symbol": "_HostCustomersScreenState._addCustomer",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/customers/host_save_audience_sheet.dart",
+      "symbol": "_HostSaveAudienceSheetState._save",
+      "detail": "invalidate:hostSavedAudiencesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
+      "symbol": "_EditHostedEventActions._saveChanges",
+      "detail": "invalidate:watchEventParticipationRosterProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
+      "symbol": "_EditHostedEventActions._saveChanges",
+      "detail": "invalidate:watchEventProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
+      "symbol": "_HostFormAutomationsScreenState.build",
+      "detail": "invalidate:hostFormAutomationsControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+      "symbol": "_HostFormResponseDetailScreenState._reload",
+      "detail": "retry-composition:hostResponseReviewDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+      "symbol": "_HostFormResponseDetailScreenState.build",
+      "detail": "invalidate:hostFormResponsesControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_form_templates_screen.dart",
+      "symbol": "_HostFormTemplatesScreenState._create",
+      "detail": "invalidate:hostFormsDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_forms_account_binding.dart",
+      "symbol": "_HostFormsAccountBinding._handleRowAction",
+      "detail": "invalidate:hostFormsDirectoryControllerProvider",
+      "count": 3
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_forms_controller.dart",
+      "symbol": "hostFormsAccountDirectoryProvider",
+      "detail": "refresh:hostFormsDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
+      "symbol": "_HostFormsScreenState.build",
+      "detail": "retry-composition:hostFormsAccountDirectoryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_response_detail_section.dart",
+      "symbol": "HostResponseDetailSection.build",
+      "detail": "invalidate:hostSavedAudienceFilterOptionsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_response_import.dart",
+      "symbol": "_HostResponseImport._pickApplicationImport",
+      "detail": "invalidate:hostApplicationsDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_response_import.dart",
+      "symbol": "_HostResponseImport._pickApplicationImport",
+      "detail": "invalidate:hostFormResponsesControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+      "symbol": "_HostResponseOfferScreenState.build",
+      "detail": "refresh:hostApplicationDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
+      "symbol": "_HostResponseOfferScreenState.build",
+      "detail": "refresh:hostFormResponseDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+      "symbol": "_HostWhatsappSetupSectionState._connectWhatsapp",
+      "detail": "invalidate:hostMessagingSetupProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+      "symbol": "_HostWhatsappSetupSectionState._disconnectWhatsapp",
+      "detail": "invalidate:hostMessagingSetupProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+      "symbol": "_HostWhatsappSetupSectionState._sendTest",
+      "detail": "invalidate:hostMessagingSetupProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+      "symbol": "_HostWhatsappSetupSectionState._syncTemplates",
+      "detail": "invalidate:hostMessagingSetupProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/host_tracking_settings_section.dart",
+      "symbol": "HostTrackingSettingsSection.build",
+      "detail": "invalidate:hostTrackingSettingsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "symbol": "_HostInboxScreenState._retry",
+      "detail": "retry-composition:chatsListViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_inbox_workspace_section.dart",
+      "symbol": "HostInboxWorkspaceSection.build",
+      "detail": "invalidate:hostWhatsappThreadsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_new_message_screen.dart",
+      "symbol": "_HostNewMessageScreenState._addPerson",
+      "detail": "invalidate:hostCustomersDirectoryControllerProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
+      "symbol": "HostPersonConversationController.reply",
+      "detail": "invalidate:hostPersonWhatsappDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
+      "symbol": "HostPersonConversationController.reply",
+      "detail": "invalidate:hostWhatsappThreadsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "symbol": "_HostSendsPageBodySliverState._composeEventAnnouncement",
+      "detail": "invalidate:hostSendsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
+      "detail": "invalidate:hostSendsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
+      "detail": "invalidate:watchOrganizerPostRemainingWeeklyQuotaProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "symbol": "_HostSendsPageBodySliverState._runCampaignAction",
+      "detail": "invalidate:hostSendsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "symbol": "_HostSendsPageBodySliverState._showHistory",
+      "detail": "invalidate:hostSendsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart",
+      "symbol": "_HostWhatsappThreadSheetState._send",
+      "detail": "invalidate:hostWhatsappThreadsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
+      "symbol": "_HostEventParticipantsSectionState.build",
+      "detail": "retry-composition:attendanceSheetViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._completeRosterIntake",
+      "detail": "invalidate:hostEventRosterInsightsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._completeRosterIntake",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._flushAttendanceOutbox",
+      "detail": "invalidate:hostEventRosterInsightsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._flushAttendanceOutbox",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._importRows",
+      "detail": "invalidate:hostEventRosterInsightsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._importRows",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._reviewClaim",
+      "detail": "invalidate:hostEventRosterInsightsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._reviewClaim",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._syncProvider",
+      "detail": "invalidate:hostEventRosterInsightsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._syncProvider",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._toggleAttendance",
+      "detail": "invalidate:hostEventRosterInsightsProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._toggleAttendance",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
+      "symbol": "_HostTodayPersonalizedLayoutState._onRouteChanged",
+      "detail": "invalidate:hostCrmSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
+      "symbol": "_HostTodayPersonalizedLayoutState._onRouteChanged",
+      "detail": "invalidate:hostTodayRehearsalCompletionProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
+      "symbol": "_HostTodayPersonalizedLayoutState._openAction",
+      "detail": "invalidate:hostCrmSummaryProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
+      "symbol": "_HostTodayPersonalizedLayoutState._openAction",
+      "detail": "invalidate:hostTodayRehearsalCompletionProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart",
+      "symbol": "OrganizerDetailReadOnlyPreview.build",
+      "detail": "retry-composition:organizerDetailViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_events_controller.dart",
+      "symbol": "programEventsControllerProvider",
+      "detail": "invalidate:organizerProgramDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_events_controller.dart",
+      "symbol": "programEventsControllerProvider",
+      "detail": "invalidate:organizerProgramListProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_hotel_rooms_screen.dart",
+      "symbol": "ProgramHotelRoomsScreen.build",
+      "detail": "invalidate:programHotelRoomsProvider",
+      "count": 2
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_import_screen.dart",
+      "symbol": "_ProgramImportScreenState._run",
+      "detail": "invalidate:organizerProgramDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_import_screen.dart",
+      "symbol": "_ProgramImportScreenState._run",
+      "detail": "invalidate:programGuestListProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_team_screen.dart",
+      "symbol": "_ProgramTeamPageBodyState._run",
+      "detail": "invalidate:programStaffListProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_trips_screen.dart",
+      "symbol": "_ProgramTripsScreenState._latest",
+      "detail": "invalidate:programTripListProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_workspace_screen.dart",
+      "symbol": "_ProgramWorkspacePageBodyState._editFunction",
+      "detail": "invalidate:organizerProgramDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_workspace_screen.dart",
+      "symbol": "_ProgramWorkspacePageBodyState._editHotel",
+      "detail": "invalidate:organizerProgramDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_workspace_screen.dart",
+      "symbol": "_ProgramWorkspacePageBodyState._editInvitations",
+      "detail": "invalidate:organizerProgramDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/programs/presentation/program_workspace_screen.dart",
+      "symbol": "_ProgramWorkspacePageBodyState._editPickupPoint",
+      "detail": "invalidate:organizerProgramDetailProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/reviews/presentation/reviews_history_screen.dart",
+      "symbol": "ReviewsHistoryScreen.build",
+      "detail": "invalidate:watchReviewsByUserProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/swipes/presentation/event_recap_screen.dart",
+      "symbol": "_EventRecapScreenState._retry",
+      "detail": "retry-composition:eventRecapViewModelProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/swipes/presentation/filters_screen.dart",
+      "symbol": "_FiltersScreenState.build",
+      "detail": "invalidate:watchUserProfileProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/user_profile/presentation/form_profiles_controller.dart",
+      "symbol": "formProfileClaimControllerProvider",
+      "detail": "invalidate:formProfileReviewProvider"
+    },
+    {
+      "rule": "CACHE-INVALIDATE-001",
+      "path": "lib/user_profile/presentation/form_profiles_controller.dart",
+      "symbol": "formProfileClaimControllerProvider",
+      "detail": "invalidate:formProfilesControllerProvider"
+    },
+    {
+      "rule": "CACHE-LIFETIME-001",
+      "path": "lib/contexts/profiles/data/profile_location_initializer.dart",
+      "symbol": "profileLocationInitializerProvider",
+      "detail": "keepAlive"
+    },
+    {
+      "rule": "CACHE-LIFETIME-001",
+      "path": "lib/contexts/profiles/data/user_profile_repository.dart",
+      "symbol": "watchUserProfileProvider",
+      "detail": "keepAlive"
+    },
+    {
+      "rule": "CACHE-LIFETIME-001",
+      "path": "lib/platform/cities/city_repository.dart",
+      "symbol": "cityListProvider",
+      "detail": "keepAlive"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/event_success/presentation/event_success_host_screen.dart",
+      "symbol": "_EventSuccessHostSectionState.build",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
+      "symbol": "_EditHostedEventActions._saveChanges",
+      "detail": "invalidate:watchEventParticipationRosterProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
+      "symbol": "_EditHostedEventActions._saveChanges",
+      "detail": "invalidate:watchEventProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
+      "detail": "invalidate:watchOrganizerPostRemainingWeeklyQuotaProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._flushAttendanceOutbox",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._importRows",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._reviewClaim",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._syncProvider",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "CACHE-LISTENER-001",
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
+      "symbol": "_HostOperationalRosterActions._toggleAttendance",
+      "detail": "invalidate:watchEventAttendeesProvider"
+    },
+    {
+      "rule": "KEEPALIVE-MANUAL-001",
+      "path": "lib/platform/device/clipboard.dart",
+      "symbol": "clipboardControllerProvider",
+      "detail": "no-keepalive-marker"
+    },
+    {
+      "rule": "KEEPALIVE-MANUAL-001",
+      "path": "lib/platform/device/clipboard.dart",
+      "symbol": "clipboardSetterProvider",
+      "detail": "no-keepalive-marker"
+    },
+    {
+      "rule": "KEEPALIVE-MANUAL-001",
+      "path": "lib/platform/device/device_location.dart",
+      "symbol": "deviceLocationGatewayProvider",
+      "detail": "no-keepalive-marker"
+    },
+    {
+      "rule": "KEEPALIVE-MANUAL-001",
+      "path": "lib/platform/persistence/command_journal_provider.dart",
+      "symbol": "commandJournalStorageProvider",
+      "detail": "no-keepalive-marker"
+    },
+    {
+      "rule": "KEEPALIVE-MANUAL-001",
+      "path": "lib/programs/presentation/program_events_controller.dart",
+      "symbol": "programCreateJournalProvider",
+      "detail": "no-keepalive-marker"
+    }
+  ]
+}

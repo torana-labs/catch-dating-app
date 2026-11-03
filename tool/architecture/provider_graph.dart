@@ -5,7 +5,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
-const providerGraphSchemaVersion = 2;
+const providerGraphSchemaVersion = 3;
 
 const _providerConstructors = <String>{
   'Provider',
@@ -47,6 +47,8 @@ final class ProviderGraphNode {
     required this.returnType,
     required this.start,
     required this.end,
+    this.readKinds = const [],
+    this.lifetimes = const ['route'],
   });
 
   final String name;
@@ -61,7 +63,37 @@ final class ProviderGraphNode {
   final int start;
   final int end;
 
+  /// What this provider reads itself, directly or through the repository
+  /// methods it calls: `listener` (`.snapshots()`), `get` (a one-shot
+  /// Firestore `.get()`) and `callable` (`httpsCallable`, `callHostCrm`).
+  final List<String> readKinds;
+
+  /// The lifetimes it declares: `route`, `timed`, `session`, `keepAlive` or
+  /// `manual-keepalive`.
+  final List<String> lifetimes;
+
   String get id => 'provider:$name';
+
+  bool get isReadOwner => readKinds.isNotEmpty;
+
+  ProviderGraphNode withCacheFacts({
+    required List<String> readKinds,
+    required List<String> lifetimes,
+  }) => ProviderGraphNode(
+    name: name,
+    kind: kind,
+    path: path,
+    line: line,
+    feature: feature,
+    layer: layer,
+    keepAlive: keepAlive,
+    isFamily: isFamily,
+    returnType: returnType,
+    start: start,
+    end: end,
+    readKinds: readKinds,
+    lifetimes: lifetimes,
+  );
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -74,6 +106,9 @@ final class ProviderGraphNode {
     'keepAlive': keepAlive,
     'family': isFamily,
     if (returnType != null) 'returnType': returnType,
+    'readOwner': isReadOwner,
+    'readKinds': readKinds,
+    'lifetime': lifetimes.join('+'),
   };
 }
 
@@ -229,6 +264,9 @@ final class ProviderGraph {
     required this.reviewDecisions,
     required this.unreviewedCandidateIds,
     required this.staleReviewIds,
+    this.cacheFindings = const [],
+    this.unlistedCacheFindings = const [],
+    this.staleCacheBaselineEntries = const [],
   });
 
   final int sourceFiles;
@@ -245,6 +283,15 @@ final class ProviderGraph {
   final Map<String, Map<String, Object?>> reviewDecisions;
   final List<String> unreviewedCandidateIds;
   final List<String> staleReviewIds;
+
+  /// Every screen-data caching finding, report-only (see [cacheRuleIds]).
+  final List<CacheFinding> cacheFindings;
+
+  /// Findings the committed baseline does not list: the list grew.
+  final List<CacheFinding> unlistedCacheFindings;
+
+  /// Baseline entries that no longer occur and can be deleted.
+  final List<CacheFinding> staleCacheBaselineEntries;
 
   Iterable<ProviderGraphEdge> get providerEdges =>
       edges.where((edge) => edge.isProviderEdge);
@@ -317,6 +364,18 @@ final class ProviderGraph {
                   reviewDecisions[c.id]?['status'] as String? ?? 'unreviewed',
             ),
       ),
+      'readOwners': providers.where((provider) => provider.isReadOwner).length,
+      'readOwnersByKind': _countsBy(
+        providers.expand((provider) => provider.readKinds),
+      ),
+      'cacheFindingsByRule': {
+        for (final rule in cacheRuleIds)
+          rule: cacheFindings
+              .where((finding) => finding.rule == rule)
+              .fold<int>(0, (sum, finding) => sum + finding.count),
+      },
+      'unlistedCacheFindings': unlistedCacheFindings.length,
+      'staleCacheBaselineEntries': staleCacheBaselineEntries.length,
     };
   }
 
@@ -326,7 +385,8 @@ final class ProviderGraph {
       unresolvedInsideProviders.isEmpty &&
       reactiveCycles.isEmpty &&
       unreviewedCandidateIds.isEmpty &&
-      staleReviewIds.isEmpty;
+      staleReviewIds.isEmpty &&
+      unlistedCacheFindings.isEmpty;
 
   Map<String, Object?> get health => {
     'healthy': isHealthy,
@@ -337,6 +397,9 @@ final class ProviderGraph {
     'allOperationCycles': allOperationCycles,
     'unreviewedArchitectureCandidateIds': unreviewedCandidateIds,
     'staleArchitectureReviewIds': staleReviewIds,
+    'unlistedCacheFindings': [
+      for (final finding in unlistedCacheFindings) finding.toJson(),
+    ],
   };
 
   Map<String, Object?> toJson() {
@@ -387,6 +450,14 @@ final class ProviderGraph {
         'candidates': [
           for (final candidate in candidates)
             candidate.toJson(reviewDecisions[candidate.id]),
+        ],
+      },
+      'cacheReview': {
+        'mode': 'report-only',
+        'baseline': cacheBaselinePath,
+        'findings': [for (final finding in cacheFindings) finding.toJson()],
+        'staleBaselineEntries': [
+          for (final finding in staleCacheBaselineEntries) finding.toJson(),
         ],
       },
       'providers': providers.map((provider) => provider.toJson()).toList(),
@@ -457,12 +528,14 @@ final class _ScannedFile {
     required this.unit,
     required this.lineFor,
     required this.providers,
+    required this.lines,
   });
 
   final String path;
   final CompilationUnit unit;
   final int Function(int offset) lineFor;
   final List<ProviderGraphNode> providers;
+  final List<String> lines;
 }
 
 Future<ProviderGraph> buildProviderGraph(Directory root) async {
@@ -652,6 +725,7 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
         unit: parseResult.unit,
         lineFor: lineFor,
         providers: fileProviders,
+        lines: content.split('\n'),
       ),
     );
   }
@@ -728,9 +802,21 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
         ..sort();
   final stale =
       decisions.keys.where((id) => !candidateIds.contains(id)).toList()..sort();
+  final cache = _analyseCache(scannedFiles, providers, edges);
+  final baseline = await readCacheBaseline(absoluteRoot);
+  final cacheProviders = [
+    for (final provider in providers)
+      if (cache.facts[provider.name] case final facts?)
+        provider.withCacheFacts(
+          readKinds: facts.readKinds,
+          lifetimes: facts.lifetimes,
+        )
+      else
+        provider,
+  ];
   return ProviderGraph(
     sourceFiles: files.length,
-    providers: providers,
+    providers: cacheProviders,
     mutations: mutations,
     consumers: consumerList,
     edges: edges,
@@ -743,6 +829,12 @@ Future<ProviderGraph> buildProviderGraph(Directory root) async {
     reviewDecisions: decisions,
     unreviewedCandidateIds: unreviewed,
     staleReviewIds: stale,
+    cacheFindings: cache.findings,
+    unlistedCacheFindings: unlistedCacheFindings(cache.findings, baseline),
+    staleCacheBaselineEntries: staleCacheBaselineEntries(
+      cache.findings,
+      baseline,
+    ),
   );
 }
 
@@ -1744,11 +1836,18 @@ List<String> providerGraphCheckFailures(ProviderGraph graph) => [
     (id) => 'unreviewed architecture candidate $id',
   ),
   ...graph.staleReviewIds.map((id) => 'stale architecture review $id'),
+  ...graph.unlistedCacheFindings.map(
+    (finding) =>
+        'unlisted cache finding ${finding.rule} ${finding.path}#'
+        '${finding.symbol} ${finding.detail}'
+        '${finding.count > 1 ? ' x${finding.count}' : ''} '
+        '(fix it, or review it into $cacheBaselinePath)',
+  ),
 ];
 
 const providerGraphUsage =
     'Usage: dart run tool/architecture/provider_graph.dart '
-    '[--check] [--json|--summary] [--root PATH]';
+    '[--check] [--json|--summary] [--write-cache-baseline] [--root PATH]';
 
 final class ProviderGraphCliOptions {
   const ProviderGraphCliOptions({
@@ -1756,12 +1855,17 @@ final class ProviderGraphCliOptions {
     required this.check,
     required this.json,
     required this.summary,
+    this.writeCacheBaseline = false,
   });
 
   final Directory root;
   final bool check;
   final bool json;
   final bool summary;
+
+  /// Rewrites the cache baseline from today's findings. Only for a reviewed
+  /// reset; a migration PR deletes its own entries instead.
+  final bool writeCacheBaseline;
 }
 
 ProviderGraphCliOptions parseProviderGraphCliOptions(
@@ -1773,11 +1877,14 @@ ProviderGraphCliOptions parseProviderGraphCliOptions(
   var check = false;
   var json = false;
   var summary = false;
+  var writeCacheBaseline = false;
 
   for (var index = 0; index < args.length; index++) {
     switch (args[index]) {
       case '--check':
         check = true;
+      case '--write-cache-baseline':
+        writeCacheBaseline = true;
       case '--json':
         json = true;
       case '--summary':
@@ -1799,9 +1906,10 @@ ProviderGraphCliOptions parseProviderGraphCliOptions(
   if (json && summary) {
     throw const FormatException('Choose either --json or --summary.');
   }
-  if (!check && !json && !summary) {
+  if (!check && !json && !summary && !writeCacheBaseline) {
     throw const FormatException(
-      'Choose --check, --json, --summary, or a compatible combination.',
+      'Choose --check, --json, --summary, --write-cache-baseline, or a '
+      'compatible combination.',
     );
   }
 
@@ -1810,6 +1918,7 @@ ProviderGraphCliOptions parseProviderGraphCliOptions(
     check: check,
     json: json,
     summary: summary,
+    writeCacheBaseline: writeCacheBaseline,
   );
 }
 
@@ -1825,6 +1934,14 @@ Future<void> main(List<String> args) async {
   }
 
   final graph = await buildProviderGraph(options.root);
+  if (options.writeCacheBaseline) {
+    await writeCacheBaseline(options.root, graph.cacheFindings);
+    stdout.writeln(
+      'Wrote ${graph.cacheFindings.length} cache findings to '
+      '$cacheBaselinePath.',
+    );
+    if (!options.check && !options.json && !options.summary) return;
+  }
   if (options.json) {
     stdout.write(renderProviderGraphJson(graph.toJson()));
   } else if (options.summary) {
@@ -1850,6 +1967,23 @@ Future<void> main(List<String> args) async {
       '${graph.providerEdges.length} provider callsites, '
       'no reactive cycles).',
     );
+    stdout.writeln(
+      'Screen-data caching rules (report-only): '
+      '${graph.cacheFindings.fold<int>(0, (sum, f) => sum + f.count)} '
+      'findings, all listed in $cacheBaselinePath.',
+    );
+    final stale = graph.staleCacheBaselineEntries;
+    if (stale.isNotEmpty) {
+      stdout.writeln(
+        '${stale.length} cache baseline entries no longer occur; delete them:',
+      );
+      for (final finding in stale) {
+        stdout.writeln(
+          '- ${finding.rule} ${finding.path}#${finding.symbol} '
+          '${finding.detail}',
+        );
+      }
+    }
   }
 }
 
@@ -2064,4 +2198,1041 @@ int _compareEdges(ProviderGraphEdge a, ProviderGraphEdge b) {
     if (comparison != 0) return comparison;
   }
   return 0;
+}
+
+// ── Screen-data caching rules (docs/screen_data_caching.md) ──────────────────
+//
+// A read owner is a provider whose own body, or a repository method it calls,
+// reaches `.snapshots()`, a Firestore `.get()`, `httpsCallable` or
+// `callHostCrm`. The seven rules run in report-only mode: today's findings
+// are listed by exact path, symbol and detail in [cacheBaselinePath], and the
+// check fails only when a finding is not listed there. Each migration PR
+// deletes its entries, so the list only shrinks. Like the rest of the graph,
+// this reads parsed source, not resolved types: it follows a repository call
+// through the provider's declared return type, typed locals, fields and
+// same-class helpers, and misses dynamic dispatch and untyped hand-offs.
+
+const cacheBaselinePath = 'tool/architecture/provider_graph_baseline.json';
+
+const cacheRuleIds = [
+  'CACHE-LIFETIME-001',
+  'CACHE-POLICY-001',
+  'CACHE-ACCOUNT-001',
+  'CACHE-KEY-001',
+  'CACHE-INVALIDATE-001',
+  'CACHE-LISTENER-001',
+  'KEEPALIVE-MANUAL-001',
+];
+
+const _readKindListener = 'listener';
+const _readKindGet = 'get';
+const _readKindCallable = 'callable';
+
+/// One report-only caching finding, keyed by rule, path, symbol and detail.
+final class CacheFinding {
+  const CacheFinding({
+    required this.rule,
+    required this.path,
+    required this.symbol,
+    required this.detail,
+    this.count = 1,
+  });
+
+  factory CacheFinding.fromJson(Map<String, Object?> json) => CacheFinding(
+    rule: json['rule']! as String,
+    path: json['path']! as String,
+    symbol: json['symbol']! as String,
+    detail: json['detail']! as String,
+    count: json['count'] as int? ?? 1,
+  );
+
+  final String rule;
+  final String path;
+  final String symbol;
+  final String detail;
+
+  /// How many call sites share this key.
+  final int count;
+
+  String get key => '$rule\u0000$path\u0000$symbol\u0000$detail';
+
+  CacheFinding withCount(int value) => CacheFinding(
+    rule: rule,
+    path: path,
+    symbol: symbol,
+    detail: detail,
+    count: value,
+  );
+
+  Map<String, Object?> toJson() => {
+    'rule': rule,
+    'path': path,
+    'symbol': symbol,
+    'detail': detail,
+    if (count > 1) 'count': count,
+  };
+}
+
+int _compareCacheFindings(CacheFinding a, CacheFinding b) {
+  for (final comparison in [
+    a.rule.compareTo(b.rule),
+    a.path.compareTo(b.path),
+    a.symbol.compareTo(b.symbol),
+    a.detail.compareTo(b.detail),
+  ]) {
+    if (comparison != 0) return comparison;
+  }
+  return 0;
+}
+
+/// The reviewed findings in [cacheBaselinePath]; empty when the file is
+/// missing, so an unlisted finding fails closed.
+Future<List<CacheFinding>> readCacheBaseline(Directory root) async {
+  final file = File('${root.path}/$cacheBaselinePath');
+  if (!file.existsSync()) return const [];
+  final json = jsonDecode(await file.readAsString()) as Map<String, Object?>;
+  return [
+    for (final entry in json['findings']! as List<Object?>)
+      CacheFinding.fromJson(entry! as Map<String, Object?>),
+  ];
+}
+
+Future<void> writeCacheBaseline(
+  Directory root,
+  List<CacheFinding> findings,
+) async {
+  final file = File('${root.path}/$cacheBaselinePath');
+  await file.writeAsString(renderCacheBaseline(findings));
+}
+
+String renderCacheBaseline(List<CacheFinding> findings) {
+  final sorted = [...findings]..sort(_compareCacheFindings);
+  return renderProviderGraphJson({
+    'owner': 'app_architecture',
+    'version': 1,
+    'doc': 'docs/screen_data_caching.md',
+    'mode': 'report-only',
+    'description':
+        'Screen-data caching findings that existed when the rules landed, by '
+        'exact rule, path, symbol and detail. The provider graph check fails '
+        'only when a finding is not listed here (or occurs more often than '
+        'its count). A context migration PR deletes the entries it fixes, so '
+        'the list only shrinks; never add an entry to admit new code.',
+    'countsByRule': {
+      for (final rule in cacheRuleIds)
+        rule: sorted
+            .where((finding) => finding.rule == rule)
+            .fold<int>(0, (sum, finding) => sum + finding.count),
+    },
+    'findings': [for (final finding in sorted) finding.toJson()],
+  });
+}
+
+List<CacheFinding> unlistedCacheFindings(
+  List<CacheFinding> findings,
+  List<CacheFinding> baseline,
+) {
+  final allowed = {for (final entry in baseline) entry.key: entry.count};
+  return [
+    for (final finding in findings)
+      if ((allowed[finding.key] ?? 0) < finding.count) finding,
+  ];
+}
+
+List<CacheFinding> staleCacheBaselineEntries(
+  List<CacheFinding> findings,
+  List<CacheFinding> baseline,
+) {
+  final current = {for (final finding in findings) finding.key: finding.count};
+  return [
+    for (final entry in baseline)
+      if ((current[entry.key] ?? 0) < entry.count) entry,
+  ]..sort(_compareCacheFindings);
+}
+
+final class _ReadFacts {
+  const _ReadFacts(this.readKinds, this.lifetimes);
+  final List<String> readKinds;
+  final List<String> lifetimes;
+}
+
+({Map<String, _ReadFacts> facts, List<CacheFinding> findings}) _analyseCache(
+  List<_ScannedFile> files,
+  List<ProviderGraphNode> providers,
+  List<ProviderGraphEdge> edges,
+) {
+  final index = _ReadSiteIndex(files, providers);
+  final providerNodes = <String, _ReadNode>{};
+  final providerFiles = <String, _ScannedFile>{};
+  for (final file in files) {
+    for (final provider in file.providers) {
+      providerFiles[provider.name] = file;
+      final node = index.providerNode(file, provider);
+      if (node != null) providerNodes[provider.name] = node;
+    }
+  }
+  index.resolve();
+
+  final byName = {for (final provider in providers) provider.name: provider};
+  final facts = <String, _ReadFacts>{};
+  final raw = <CacheFinding>[];
+  void add(String rule, String path, String symbol, String detail) => raw.add(
+    CacheFinding(rule: rule, path: path, symbol: symbol, detail: detail),
+  );
+
+  for (final provider in providers) {
+    final node = providerNodes[provider.name];
+    final file = providerFiles[provider.name];
+    if (file == null) continue;
+    final kinds = (node?.kinds.toList() ?? <String>[])..sort();
+    final lifetimes = <String>{
+      if (provider.keepAlive) 'keepAlive',
+      ...?node?.lifetimes,
+    };
+    final declared = lifetimes.isEmpty
+        ? ['route']
+        : (lifetimes.toList()..sort());
+    facts[provider.name] = _ReadFacts(kinds, declared);
+    final readOwner = kinds.isNotEmpty;
+
+    // CACHE-POLICY-001: only a CachePolicies member reaches a lifetime.
+    for (final policy in node?.policyArguments ?? const <String>[]) {
+      if (!RegExp(r'^CachePolicies\.[A-Za-z]\w*$').hasMatch(policy)) {
+        add('CACHE-POLICY-001', provider.path, provider.name, 'policy:$policy');
+      }
+    }
+
+    // KEEPALIVE-MANUAL-001: a kept-alive handwritten provider says why.
+    if (provider.kind == 'manual' &&
+        provider.keepAlive &&
+        !_hasMarkerAbove(file, provider.start, _keepAliveMarker)) {
+      add(
+        'KEEPALIVE-MANUAL-001',
+        provider.path,
+        provider.name,
+        'no-keepalive-marker',
+      );
+    }
+
+    if (!readOwner) continue;
+
+    // CACHE-LIFETIME-001: one lifetime; keepAlive only when account-free.
+    if (declared.length > 1) {
+      add(
+        'CACHE-LIFETIME-001',
+        provider.path,
+        provider.name,
+        'lifetimes:${declared.join('+')}',
+      );
+    }
+    if (provider.keepAlive &&
+        !_hasMarkerAbove(file, provider.start, _accountFreeMarker)) {
+      add('CACHE-LIFETIME-001', provider.path, provider.name, 'keepAlive');
+    }
+
+    final cached = declared.contains('timed') || declared.contains('session');
+    if (cached) {
+      final key = index.familyKeyTypes(file, provider);
+      // CACHE-ACCOUNT-001: a cached read of account data is keyed by session.
+      if (node!.readsAccount && !key.contains('AuthenticatedSession')) {
+        add(
+          'CACHE-ACCOUNT-001',
+          provider.path,
+          provider.name,
+          'no-session-key',
+        );
+      }
+      // CACHE-KEY-001: time enters a key only as a CacheTimeBucket.
+      if (key.contains('DateTime')) {
+        add('CACHE-KEY-001', provider.path, provider.name, 'raw-datetime-key');
+      }
+    }
+
+    // CACHE-LISTENER-001: a listener declares no tags for its documents.
+    if (kinds.length == 1 &&
+        kinds.single == _readKindListener &&
+        node!.providesTags) {
+      add(
+        'CACHE-LISTENER-001',
+        provider.path,
+        provider.name,
+        'tags-on-listener',
+      );
+    }
+  }
+
+  final readOwners = {
+    for (final entry in facts.entries)
+      if (entry.value.readKinds.isNotEmpty) entry.key,
+  };
+  final listenerOwners = {
+    for (final entry in facts.entries)
+      if (entry.value.readKinds.length == 1 &&
+          entry.value.readKinds.single == _readKindListener)
+        entry.key,
+  };
+  final composesReadOwner = _composesReadOwner(edges, readOwners);
+
+  for (final file in files) {
+    final layer = _layerFor(file.path);
+    final presentation = layer == 'presentation';
+    final sites = _InvalidationSites(file);
+    file.unit.accept(sites);
+    for (final site in sites.sites) {
+      final target = site.target;
+      if (!byName.containsKey(target)) continue;
+      final detail = '${site.operation}:$target';
+      // CACHE-INVALIDATE-001: presentation invalidates a read owner only in
+      // a retry or pull-to-refresh, and a retry targets the read owner.
+      if (presentation) {
+        if (!site.inRetryOrRefresh && readOwners.contains(target)) {
+          add('CACHE-INVALIDATE-001', file.path, site.symbol, detail);
+        } else if (site.inRetryOrRefresh &&
+            !readOwners.contains(target) &&
+            composesReadOwner.contains(target)) {
+          add(
+            'CACHE-INVALIDATE-001',
+            file.path,
+            site.symbol,
+            'retry-composition:$target',
+          );
+        }
+      }
+      // CACHE-LISTENER-001: a write never tears down a listener that would
+      // deliver the write anyway.
+      if (site.inWrite && listenerOwners.contains(target)) {
+        add('CACHE-LISTENER-001', file.path, site.symbol, detail);
+      }
+    }
+    // CACHE-POLICY-001: no policy is built outside the freshness table.
+    if (file.path != 'lib/platform/cache/cache_policies.dart' &&
+        file.path != 'lib/platform/cache/cache_policy.dart') {
+      final constructions = _PolicyConstructions(file);
+      file.unit.accept(constructions);
+      for (final symbol in constructions.symbols) {
+        add('CACHE-POLICY-001', file.path, symbol, 'inline-policy');
+      }
+    }
+  }
+
+  final merged = <String, CacheFinding>{};
+  for (final finding in raw) {
+    final existing = merged[finding.key];
+    merged[finding.key] = existing == null
+        ? finding
+        : existing.withCount(existing.count + 1);
+  }
+  final findings = merged.values.toList()..sort(_compareCacheFindings);
+  return (facts: facts, findings: findings);
+}
+
+/// Providers that are not read owners but reach one through reactive edges.
+Set<String> _composesReadOwner(
+  List<ProviderGraphEdge> edges,
+  Set<String> readOwners,
+) {
+  final watches = <String, Set<String>>{};
+  for (final edge in edges) {
+    if (!edge.isProviderEdge || !_reactiveOperations.contains(edge.operation)) {
+      continue;
+    }
+    watches.putIfAbsent(edge.source, () => <String>{}).add(edge.target);
+  }
+  final result = <String>{};
+  for (final source in watches.keys) {
+    final seen = <String>{source};
+    final queue = [...watches[source]!];
+    while (queue.isNotEmpty) {
+      final next = queue.removeLast();
+      if (!seen.add(next)) continue;
+      if (readOwners.contains(next)) {
+        result.add(source);
+        break;
+      }
+      queue.addAll(watches[next] ?? const <String>{});
+    }
+  }
+  return result;
+}
+
+final _keepAliveMarker = RegExp(r'//\s*keepalive:\s*\S');
+final _accountFreeMarker = RegExp(
+  r'//\s*keepalive:.*account-free',
+  caseSensitive: false,
+);
+
+/// Whether one of the three lines above the declaration at [offset] (or
+/// above its doc comment and annotations) matches [marker].
+bool _hasMarkerAbove(_ScannedFile file, int offset, RegExp marker) {
+  final declaration = file.unit.declarations
+      .where((d) => d.offset == offset)
+      .firstOrNull;
+  final starts = <int>{
+    file.lineFor(offset),
+    if (declaration != null)
+      file.lineFor(declaration.firstTokenAfterCommentAndMetadata.offset),
+    if (declaration != null)
+      for (final annotation in declaration.metadata)
+        file.lineFor(annotation.offset),
+  };
+  for (final start in starts) {
+    for (var line = start - 1; line >= start - 3 && line >= 1; line--) {
+      if (marker.hasMatch(file.lines[line - 1])) return true;
+    }
+  }
+  return false;
+}
+
+sealed class _CallRef {
+  const _CallRef(this.method);
+  final String method;
+}
+
+/// An implicit-`this` call inside a class, falling back to a top-level
+/// function of the same name.
+final class _SelfCall extends _CallRef {
+  const _SelfCall(this.type, super.method);
+  final String type;
+}
+
+final class _TypedCall extends _CallRef {
+  const _TypedCall(this.type, super.method);
+  final String type;
+}
+
+final class _ProviderCall extends _CallRef {
+  const _ProviderCall(this.provider, super.method);
+  final String provider;
+}
+
+final class _TopLevelCall extends _CallRef {
+  const _TopLevelCall(super.method);
+}
+
+final class _ReadNode {
+  final kinds = <String>{};
+  final refs = <_CallRef>[];
+  final lifetimes = <String>{};
+  final policyArguments = <String>[];
+  bool readsAccount = false;
+  bool providesTags = false;
+}
+
+/// Read sites per method and top-level function, resolved to a fixpoint.
+final class _ReadSiteIndex {
+  _ReadSiteIndex(this.files, List<ProviderGraphNode> providers)
+    : _returnTypes = {
+        for (final provider in providers)
+          provider.name: ?_coreType(provider.returnType),
+      } {
+    for (final file in files) {
+      for (final declaration in file.unit.declarations) {
+        switch (declaration) {
+          case ClassDeclaration():
+            final type = _typeKey(file, declaration.namePart.typeName.lexeme);
+            _addSupertypes(file, type, [
+              ?declaration.extendsClause?.superclass,
+              ...?declaration.withClause?.mixinTypes,
+              ...?declaration.implementsClause?.interfaces,
+            ]);
+            _indexMembers(file, type, declaration.body.members);
+          case MixinDeclaration():
+            final type = _typeKey(file, declaration.name.lexeme);
+            _addSupertypes(file, type, [
+              ...?declaration.onClause?.superclassConstraints,
+              ...?declaration.implementsClause?.interfaces,
+            ]);
+            _indexMembers(file, type, declaration.body.members);
+          case ExtensionDeclaration():
+            final target = declaration.onClause?.extendedType;
+            if (target is NamedType) {
+              _indexMembers(
+                file,
+                _typeKey(file, target.name.lexeme),
+                declaration.body.members,
+              );
+            }
+          case FunctionDeclaration()
+              when !_hasRiverpodAnnotation(declaration.metadata):
+            final node = _ReadNode();
+            _nodes.add(node);
+            _topLevel.putIfAbsent(declaration.name.lexeme, () => []).add(node);
+            declaration.accept(_ReadSiteVisitor(file, null, node, this));
+          default:
+        }
+      }
+    }
+  }
+
+  final List<_ScannedFile> files;
+  final Map<String, String> _returnTypes;
+  final _nodes = <_ReadNode>[];
+  final _methods = <String, Map<String, List<_ReadNode>>>{};
+  final _fields = <String, Map<String, String>>{};
+  final _supertypes = <String, List<String>>{};
+  final _subtypes = <String, List<String>>{};
+  final _topLevel = <String, List<_ReadNode>>{};
+
+  /// Private types are library-local; public ones are keyed by name.
+  static String _typeKey(_ScannedFile file, String name) =>
+      name.startsWith('_') ? '${_libraryPath(file)}#$name' : name;
+
+  /// A part file belongs to the library that names it.
+  static String _libraryPath(_ScannedFile file) {
+    for (final directive in file.unit.directives.whereType<PartOfDirective>()) {
+      final uri = directive.uri?.stringValue;
+      if (uri != null) return Uri.parse(file.path).resolve(uri).path;
+    }
+    return file.path;
+  }
+
+  void _addSupertypes(_ScannedFile file, String type, List<NamedType> parents) {
+    for (final parent in parents) {
+      final key = _typeKey(file, parent.name.lexeme);
+      _supertypes.putIfAbsent(type, () => []).add(key);
+      _subtypes.putIfAbsent(key, () => []).add(type);
+    }
+  }
+
+  void _indexMembers(
+    _ScannedFile file,
+    String type,
+    Iterable<ClassMember> members,
+  ) {
+    final methods = _methods.putIfAbsent(type, () => {});
+    final fields = _fields.putIfAbsent(type, () => {});
+    for (final member in members) {
+      if (member is FieldDeclaration) {
+        final declared = member.fields.type;
+        if (declared is! NamedType) continue;
+        for (final variable in member.fields.variables) {
+          fields[variable.name.lexeme] = _typeKey(file, declared.name.lexeme);
+        }
+      } else if (member is MethodDeclaration) {
+        final node = _ReadNode();
+        _nodes.add(node);
+        methods.putIfAbsent(member.name.lexeme, () => []).add(node);
+        member.accept(_ReadSiteVisitor(file, type, node, this));
+      }
+    }
+  }
+
+  String? fieldType(String type, String field) {
+    final seen = <String>{};
+    final queue = [type];
+    while (queue.isNotEmpty) {
+      final next = queue.removeLast();
+      if (!seen.add(next)) continue;
+      final found = _fields[next]?[field];
+      if (found != null) return found;
+      queue.addAll(_supertypes[next] ?? const []);
+    }
+    return null;
+  }
+
+  String? returnTypeOf(String provider) => _returnTypes[provider];
+
+  String typeKeyIn(_ScannedFile file, String name) => _typeKey(file, name);
+
+  /// The read node of a provider's own body; for a generated class, its
+  /// `build`, which reaches same-class helpers through self calls.
+  _ReadNode? providerNode(_ScannedFile file, ProviderGraphNode provider) {
+    final declaration = file.unit.declarations
+        .where((d) => d.offset == provider.start)
+        .firstOrNull;
+    if (declaration == null || provider.kind == 'alias') return null;
+    final node = _ReadNode();
+    _nodes.add(node);
+    if (declaration is ClassDeclaration) {
+      final type = _typeKey(file, declaration.namePart.typeName.lexeme);
+      final build = declaration.body.members
+          .whereType<MethodDeclaration>()
+          .where((m) => m.name.lexeme == 'build')
+          .firstOrNull;
+      build?.accept(_ReadSiteVisitor(file, type, node, this));
+    } else {
+      declaration.accept(_ReadSiteVisitor(file, null, node, this));
+    }
+    return node;
+  }
+
+  /// The type names in a provider's family key, including the field types
+  /// of a query object declared in the scanned sources.
+  Set<String> familyKeyTypes(_ScannedFile file, ProviderGraphNode provider) {
+    final declaration = file.unit.declarations
+        .where((d) => d.offset == provider.start)
+        .firstOrNull;
+    final names = <String>[];
+    switch (declaration) {
+      case FunctionDeclaration():
+        final parameters =
+            declaration.functionExpression.parameters?.parameters ??
+            const <FormalParameter>[];
+        names.addAll(parameters.skip(1).map(_parameterTypeName).nonNulls);
+      case ClassDeclaration():
+        final build = declaration.body.members
+            .whereType<MethodDeclaration>()
+            .where((m) => m.name.lexeme == 'build')
+            .firstOrNull;
+        names.addAll(
+          (build?.parameters?.parameters ?? const <FormalParameter>[])
+              .map(_parameterTypeName)
+              .nonNulls,
+        );
+      default:
+    }
+    final result = <String>{};
+    for (final name in names) {
+      result.add(name);
+      final fields = _fields[_typeKey(file, name)] ?? const {};
+      result.addAll(fields.values.map((type) => type.split('#').last));
+    }
+    return result;
+  }
+
+  static String? _parameterTypeName(FormalParameter parameter) {
+    final normal = switch (parameter) {
+      DefaultFormalParameter(:final parameter) => parameter,
+      _ => parameter,
+    };
+    if (normal is! SimpleFormalParameter) return null;
+    final type = normal.type;
+    return type is NamedType ? type.name.lexeme : null;
+  }
+
+  List<_ReadNode> _resolve(_CallRef ref) => switch (ref) {
+    _SelfCall(:final type, :final method) =>
+      _methodsOf(type, method).isNotEmpty
+          ? _methodsOf(type, method)
+          : _topLevel[method] ?? const [],
+    _TypedCall(:final type, :final method) => _methodsOf(type, method),
+    _ProviderCall(:final provider, :final method) =>
+      switch (_returnTypes[provider]) {
+        final type? => _methodsOf(type, method),
+        null => const [],
+      },
+    _TopLevelCall(:final method) => _topLevel[method] ?? const [],
+  };
+
+  /// The methods a call on [type] may run: inherited ones, and the
+  /// implementations an interface or base type dispatches to.
+  List<_ReadNode> _methodsOf(String type, String method) {
+    final result = <_ReadNode>[];
+    for (final related in [_supertypes, _subtypes]) {
+      final seen = <String>{};
+      final queue = [type];
+      while (queue.isNotEmpty) {
+        final next = queue.removeLast();
+        if (!seen.add(next)) continue;
+        result.addAll(_methods[next]?[method] ?? const []);
+        queue.addAll(related[next] ?? const []);
+      }
+    }
+    return result;
+  }
+
+  void resolve() {
+    var changed = true;
+    while (changed) {
+      changed = false;
+      for (final node in _nodes) {
+        for (final ref in node.refs) {
+          for (final target in _resolve(ref)) {
+            if (identical(target, node)) continue;
+            final before = node.kinds.length;
+            node.kinds.addAll(target.kinds);
+            if (node.kinds.length != before) changed = true;
+          }
+        }
+      }
+    }
+  }
+}
+
+/// The type a provider hands out, unwrapping Future, Stream and AsyncValue.
+String? _coreType(String? source) {
+  if (source == null) return null;
+  var type = source.replaceAll(' ', '');
+  while (true) {
+    final match = RegExp(
+      r'^(?:Future|FutureOr|Stream|AsyncValue|Raw)<(.+)>\??$',
+    ).firstMatch(type);
+    if (match == null) break;
+    type = match[1]!;
+  }
+  final name = RegExp(r'^[A-Za-z_]\w*').firstMatch(type)?[0];
+  return name;
+}
+
+final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
+  _ReadSiteVisitor(this.file, this.type, this.node, this.index);
+
+  final _ScannedFile file;
+  final String? type;
+  final _ReadNode node;
+  final _ReadSiteIndex index;
+  final _locals = <String, _CallRef Function(String method)>{};
+
+  static const _accountMarkers = {
+    'uidProvider',
+    'authenticatedSessionProvider',
+    'requireSignedInUid',
+    'currentUser',
+  };
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier identifier) {
+    if (_accountMarkers.contains(identifier.name)) node.readsAccount = true;
+    super.visitSimpleIdentifier(identifier);
+  }
+
+  @override
+  void visitSimpleFormalParameter(SimpleFormalParameter parameter) {
+    final declared = parameter.type;
+    final name = parameter.name?.lexeme;
+    if (name != null && declared is NamedType) {
+      final typeKey = index.typeKeyIn(file, declared.name.lexeme);
+      _locals[name] = (method) => _TypedCall(typeKey, method);
+      if (const {'uid', 'userId', 'organizerId', 'session'}.contains(name)) {
+        node.readsAccount = true;
+      }
+    }
+    super.visitSimpleFormalParameter(parameter);
+  }
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration variable) {
+    final name = variable.name.lexeme;
+    final declared = (variable.parent as VariableDeclarationList?)?.type;
+    final initializer = variable.initializer;
+    if (declared is NamedType) {
+      final typeKey = index.typeKeyIn(file, declared.name.lexeme);
+      _locals[name] = (method) => _TypedCall(typeKey, method);
+    } else if (_providerRead(initializer) case final provider?) {
+      _locals[name] = (method) => _ProviderCall(provider, method);
+    } else if (initializer is InstanceCreationExpression) {
+      final typeKey = index.typeKeyIn(
+        file,
+        initializer.constructorName.type.name.lexeme,
+      );
+      _locals[name] = (method) => _TypedCall(typeKey, method);
+    }
+    super.visitVariableDeclaration(variable);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation invocation) {
+    final name = invocation.methodName.name;
+    final target = invocation.realTarget;
+    final arguments = invocation.argumentList.arguments;
+    if (name == 'snapshots' && target != null) {
+      node.kinds.add(_readKindListener);
+    } else if (name == 'get' && target != null && _isFirestoreGet(arguments)) {
+      node.kinds.add(_readKindGet);
+    } else if (name.startsWith('httpsCallable') || name == 'callHostCrm') {
+      node.kinds.add(_readKindCallable);
+    } else if (target != null && target.toSource() == 'ref') {
+      _recordRefCall(name, arguments);
+    } else {
+      final ref = _callRef(name, target);
+      if (ref != null) node.refs.add(ref);
+    }
+    super.visitMethodInvocation(invocation);
+  }
+
+  void _recordRefCall(String name, NodeList<Expression> arguments) {
+    switch (name) {
+      case 'retain':
+        node.lifetimes.add('timed');
+        if (arguments.isNotEmpty) {
+          node.policyArguments.add(arguments.first.toSource());
+        }
+      case 'retainForSession':
+        node.lifetimes.add('session');
+        if (arguments.length > 1) {
+          node.policyArguments.add(arguments[1].toSource());
+        }
+      case 'callableRead':
+        final named = {
+          for (final argument in arguments.whereType<NamedExpression>())
+            argument.name.label.name: argument.expression.toSource(),
+        };
+        node.lifetimes.add(named.containsKey('session') ? 'session' : 'timed');
+        if (named['policy'] case final policy?) {
+          node.policyArguments.add(policy);
+        }
+      case 'keepAlive':
+        node.lifetimes.add('manual-keepalive');
+      case 'providesTags':
+        node.providesTags = true;
+      default:
+    }
+  }
+
+  _CallRef? _callRef(String method, Expression? target) {
+    if (target == null || target is ThisExpression) {
+      final type = this.type;
+      return type == null ? _TopLevelCall(method) : _SelfCall(type, method);
+    }
+    if (_providerRead(target) case final provider?) {
+      return _ProviderCall(provider, method);
+    }
+    if (target is SimpleIdentifier) {
+      final local = _locals[target.name];
+      if (local != null) return local(method);
+      final type = this.type;
+      if (type != null) {
+        final field = index.fieldType(type, target.name);
+        if (field != null) return _TypedCall(field, method);
+      }
+      if (RegExp(r'^_?[A-Z]').hasMatch(target.name)) {
+        return _TypedCall(index.typeKeyIn(file, target.name), method);
+      }
+    }
+    if (target is PropertyAccess && target.target is ThisExpression) {
+      final type = this.type;
+      final field = type == null
+          ? null
+          : index.fieldType(type, target.propertyName.name);
+      if (field != null) return _TypedCall(field, method);
+    }
+    return null;
+  }
+
+  /// The provider named by `ref.watch(x)` or `ref.read(x)`.
+  static String? _providerRead(Expression? expression) {
+    if (expression is! MethodInvocation) return null;
+    if (expression.realTarget?.toSource() != 'ref') return null;
+    if (!const {'watch', 'read'}.contains(expression.methodName.name)) {
+      return null;
+    }
+    final argument = expression.argumentList.arguments.firstOrNull?.toSource();
+    if (argument == null || argument.contains('.notifier')) return null;
+    return _providerReferencePattern.firstMatch(argument)?.group(1);
+  }
+
+  /// Firestore's document and query `get` take no argument or `GetOptions`;
+  /// `MutationTransaction.get`, `Transaction.get` and map-like getters take
+  /// one value and are not screen reads.
+  static bool _isFirestoreGet(NodeList<Expression> arguments) {
+    if (arguments.isEmpty) return true;
+    if (arguments.length != 1) return false;
+    final argument = arguments.single;
+    final source = argument is NamedExpression
+        ? argument.expression.toSource()
+        : argument.toSource();
+    return RegExp(r'^(?:const\s+)?GetOptions\(').hasMatch(source);
+  }
+}
+
+final class _InvalidationSite {
+  const _InvalidationSite({
+    required this.symbol,
+    required this.operation,
+    required this.target,
+    required this.inRetryOrRefresh,
+    required this.inWrite,
+  });
+
+  final String symbol;
+  final String operation;
+  final String target;
+  final bool inRetryOrRefresh;
+  final bool inWrite;
+}
+
+/// `ref.invalidate` and `ref.refresh` call sites with the context that
+/// decides whether they are a retry, a pull-to-refresh or a write.
+final class _InvalidationSites extends RecursiveAstVisitor<void> {
+  _InvalidationSites(this.file);
+
+  final _ScannedFile file;
+  final sites = <_InvalidationSite>[];
+
+  static final _retryName = RegExp(
+    r'retry|refresh|reload',
+    caseSensitive: false,
+  );
+
+  @override
+  void visitMethodInvocation(MethodInvocation invocation) {
+    final operation = invocation.methodName.name;
+    if ((operation == 'invalidate' || operation == 'refresh') &&
+        invocation.realTarget?.toSource() == 'ref') {
+      final argument =
+          invocation.argumentList.arguments.firstOrNull?.toSource() ?? '';
+      final target = _providerReferencePattern.firstMatch(argument)?.group(1);
+      if (target != null) {
+        final retry = _inRetryOrRefresh(invocation);
+        sites.add(
+          _InvalidationSite(
+            symbol: _ownerSymbol(invocation),
+            operation: operation,
+            target: target,
+            inRetryOrRefresh: retry,
+            inWrite: !retry && _inWrite(invocation),
+          ),
+        );
+      }
+    }
+    super.visitMethodInvocation(invocation);
+  }
+
+  bool _inRetryOrRefresh(AstNode node) {
+    for (
+      AstNode? cursor = node.parent;
+      cursor != null;
+      cursor = cursor.parent
+    ) {
+      if (cursor is FunctionExpression &&
+          _retryName.hasMatch(_namedArgumentOf(cursor) ?? '')) {
+        return true;
+      }
+      if (cursor is MethodDeclaration) {
+        return _retryName.hasMatch(cursor.name.lexeme);
+      }
+      if (cursor is FunctionDeclaration) {
+        return _retryName.hasMatch(cursor.name.lexeme);
+      }
+    }
+    return false;
+  }
+
+  bool _inWrite(AstNode node) {
+    FunctionBody? body;
+    for (
+      AstNode? cursor = node.parent;
+      cursor != null;
+      cursor = cursor.parent
+    ) {
+      if (cursor is FunctionExpression) {
+        final invocation = cursor.parent?.parent;
+        if (invocation is MethodInvocation &&
+            invocation.methodName.name == 'run') {
+          return true;
+        }
+      }
+      if (cursor is FunctionBody) body ??= cursor;
+      if (cursor is MethodDeclaration) {
+        final owner = cursor.parent?.parent;
+        if (owner is ClassDeclaration &&
+            _hasRiverpodAnnotation(owner.metadata) &&
+            cursor.name.lexeme != 'build') {
+          return true;
+        }
+        break;
+      }
+      if (cursor is FunctionDeclaration) break;
+    }
+    if (body == null) return false;
+    final awaits = _AwaitsBefore(node.offset);
+    body.accept(awaits);
+    return awaits.found;
+  }
+
+  String _ownerSymbol(AstNode node) {
+    ProviderGraphNode? provider;
+    for (final candidate in file.providers) {
+      if (candidate.start > node.offset || node.end > candidate.end) continue;
+      if (provider == null ||
+          candidate.end - candidate.start < provider.end - provider.start) {
+        provider = candidate;
+      }
+    }
+    if (provider != null) return provider.name;
+    for (AstNode? cursor = node; cursor != null; cursor = cursor.parent) {
+      if (cursor is MethodDeclaration) {
+        return '${_enclosingTypeName(cursor)}.${cursor.name.lexeme}';
+      }
+      if (cursor is ConstructorDeclaration) {
+        return '${_enclosingTypeName(cursor)}.'
+            '${cursor.name?.lexeme ?? 'new'}';
+      }
+      if (cursor is FunctionDeclaration && cursor.parent is CompilationUnit) {
+        return cursor.name.lexeme;
+      }
+    }
+    return '<top-level>';
+  }
+}
+
+/// The named argument a closure is passed as, through `cond ? a : b`,
+/// `a ?? b` and parentheses.
+String? _namedArgumentOf(FunctionExpression closure) {
+  AstNode? cursor = closure.parent;
+  while (cursor is ConditionalExpression ||
+      cursor is ParenthesizedExpression ||
+      cursor is BinaryExpression) {
+    cursor = cursor!.parent;
+  }
+  return cursor is NamedExpression ? cursor.name.label.name : null;
+}
+
+/// The class, mixin or extension that declares [node].
+String _enclosingTypeName(AstNode node) {
+  for (AstNode? cursor = node.parent; cursor != null; cursor = cursor.parent) {
+    switch (cursor) {
+      case ClassDeclaration():
+        return cursor.namePart.typeName.lexeme;
+      case MixinDeclaration():
+        return cursor.name.lexeme;
+      case ExtensionDeclaration():
+        return cursor.name?.lexeme ?? '<extension>';
+      case EnumDeclaration():
+        return cursor.namePart.typeName.lexeme;
+      default:
+    }
+  }
+  return '<top-level>';
+}
+
+final class _AwaitsBefore extends RecursiveAstVisitor<void> {
+  _AwaitsBefore(this.offset);
+
+  final int offset;
+  bool found = false;
+
+  @override
+  void visitAwaitExpression(AwaitExpression node) {
+    if (node.offset < offset) found = true;
+    super.visitAwaitExpression(node);
+  }
+}
+
+/// `CachePolicy(...)` constructions, which belong only in the table.
+final class _PolicyConstructions extends RecursiveAstVisitor<void> {
+  _PolicyConstructions(this.file);
+
+  final _ScannedFile file;
+  final symbols = <String>[];
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    if (node.constructorName.type.name.lexeme == 'CachePolicy') {
+      symbols.add(_enclosing(node));
+    }
+    super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if (node.realTarget == null && node.methodName.name == 'CachePolicy') {
+      symbols.add(_enclosing(node));
+    }
+    super.visitMethodInvocation(node);
+  }
+
+  String _enclosing(AstNode node) {
+    for (AstNode? cursor = node; cursor != null; cursor = cursor.parent) {
+      if (cursor is MethodDeclaration) {
+        return '${_enclosingTypeName(cursor)}.${cursor.name.lexeme}';
+      }
+      if (cursor is FunctionDeclaration) return cursor.name.lexeme;
+      if (cursor is VariableDeclaration &&
+          cursor.parent?.parent is TopLevelVariableDeclaration) {
+        return cursor.name.lexeme;
+      }
+    }
+    return '<top-level>';
+  }
 }
