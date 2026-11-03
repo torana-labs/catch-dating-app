@@ -3039,15 +3039,18 @@ legacy screens still call it, raising `shims` in
 Each redrawn screen removes the shims whose last caller it was and records the
 fall with `--update`. The count reaches 0 in P7.
 
-A legacy component counts too: one whose `@Deprecated` message begins with
-`Legacy`. P2.1 gave the system names to `CatchSurface`, `CatchText` and
-`CatchTextVariant`, so the pre-redesign classes became `CatchLegacySurface`,
-`CatchLegacyText` and `CatchLegacyTextVariant`, and they and the absorbed
-`CatchKickerText`, `CatchMetadataText` and `CatchCountText` are the six legacy
-symbols the baseline records. `tool/design/rename_legacy_library_symbols.mjs`
-renamed their callers and gave each legacy file outside `catch_ui` a file-wide
-`deprecated_member_use` ignore (the ratchet is the guard, not the analyzer hint);
-a branch cut before that rename re-runs it to resolve its conflicts.
+A legacy member counts too: a component-registry record or contract member
+with the `legacy` qualifier, the retiring implementation of its record's
+responsibility (see the Naming Grammar). Legacy status lives in the registry,
+not in `@Deprecated`; each legacy member must be exported by `catch_ui`, and the
+new roots may neither name nor import one. P2.1 gave the system names to
+`CatchSurface`, `CatchText` and `CatchTextVariant`, so the pre-redesign classes
+became `CatchLegacySurface`, `CatchLegacyText` and `CatchLegacyTextVariant`;
+the first two are the legacy members of `catch.surface` and `catch.text`, and
+`CatchMetadataText` and `CatchCountText`, which the system Text absorbs, carry
+the qualifier where they are recorded. `tool/design/rename_legacy_library_symbols.mjs`
+renamed the callers; a branch cut before that rename re-runs it to resolve its
+conflicts.
 
 ### Contexts as packages
 

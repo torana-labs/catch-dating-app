@@ -16,6 +16,7 @@ import {
   catchSurfaceColors,
   catchSurfacePaddingPixels,
   catchSurfacePaddings,
+  catchTextResponsiveRoles,
   catchTextResponsiveVariants,
   catchTextRoles,
   catchTextTones,
@@ -99,6 +100,24 @@ describe("core library vocabulary parity", () => {
       .match(/abstract final class GeneratedCatchTypeRoleTokens \{([\s\S]*?)\n\}/u)?.[1] ?? "";
     expect([...roles.matchAll(/static const TextStyle (\w+) =/gu)].map((match) => match[1]))
       .toEqual(catchTextRoles.map(camel));
+  });
+
+  it("resolves the responsive roles alike at each size class (a page title is 38, 48 and 64)", () => {
+    // Decision O (3 Nov): the generated variant tokens are the source; the web table follows them.
+    const expected = {
+      "page-title": {compact: "display-title", medium: "display-lg", expanded: "display-xl"},
+      "section-title": {compact: "display-sm", medium: "display-sm", expanded: "display-section"},
+      hero: {compact: "display-lg", medium: "display-xl", expanded: "display-hero"},
+    } as const;
+    const generated = read("../../../catch_tokens/lib/generated/catch_design_tokens.g.dart");
+    for (const [variant, sizes] of Object.entries(expected)) {
+      for (const [sizeClass, role] of Object.entries(sizes)) {
+        const token = `${camel(variant)}${sizeClass[0].toUpperCase()}${sizeClass.slice(1)}`;
+        const dartRole = generated.match(new RegExp(`static const TextStyle ${token} =\\s*GeneratedCatchTypeRoleTokens\\.(\\w+);`, "u"))?.[1];
+        expect(dartRole, token).toBe(camel(role));
+      }
+    }
+    expect(catchTextResponsiveRoles).toEqual(expected);
   });
 
   it("takes the same four icon sizes, 20 by default", () => {
