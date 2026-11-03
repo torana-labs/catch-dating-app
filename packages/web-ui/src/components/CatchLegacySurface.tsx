@@ -1,20 +1,26 @@
 "use client";
 
 import type {ReactNode} from "react";
-import styles from "./CatchSurface.module.css";
+import styles from "./CatchLegacySurface.module.css";
 
 export type CatchSurfaceTone = "surface" | "raised" | "primarySoft" | "transparent";
 export type CatchSurfaceEmphasis = "flat" | "subtle" | "raised" | "floating";
 interface SurfaceContent {child: ReactNode}
 interface SurfaceAction {onTap?: () => void; onFocusChange?: (value: boolean) => void}
-/** Native geometry overrides stay native-only; compose web padding with CatchInset. */
-export type CatchSurfaceProps =
+/**
+ * Native geometry overrides stay native-only; compose web padding with CatchInset.
+ * @deprecated Legacy: use CatchSurface (block, color, padding, onPress); deleted in P7.
+ */
+export type CatchLegacySurfaceProps =
   | (SurfaceContent & SurfaceAction & {recipe?: "surface"; tone?: CatchSurfaceTone; emphasis?: CatchSurfaceEmphasis})
   | (SurfaceContent & SurfaceAction & {recipe: "card"; tone?: CatchSurfaceTone})
   | (SurfaceContent & {recipe: "tinted"});
 
-/** Flutter's surface/card/tinted recipes. A callback gives the surface native button semantics. */
-export function CatchSurface(props: CatchSurfaceProps) {
+/**
+ * Flutter's surface/card/tinted recipes. A callback gives the surface native button semantics.
+ * @deprecated Legacy: use CatchSurface; deleted in P7.
+ */
+export function CatchLegacySurface(props: CatchLegacySurfaceProps) {
   const recipe = props.recipe ?? "surface";
   const tone = props.recipe === "tinted" ? "primarySoft" : props.tone ?? "surface";
   const emphasis = props.recipe === "card" ? "subtle" : props.recipe === "tinted" ? "flat" : props.emphasis ?? "flat";

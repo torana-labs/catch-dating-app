@@ -1,12 +1,13 @@
 import type {CSSProperties, HTMLAttributes, ReactNode} from "react";
-import styles from "./CatchText.module.css";
+import styles from "./CatchLegacyText.module.css";
 
 /**
  * Text roles, named after the matching `CatchTextStyles` roles in Flutter.
  * The six display steps set Archivo (blueprint D19); every other role binds
  * the platform typography profile the Flutter role reads.
+ * @deprecated Legacy: use CatchText's CatchTextVariant (the 19 type roles); deleted in P7.
  */
-export type CatchTextVariant =
+export type CatchLegacyTextVariant =
   | "displayXs"
   | "displayS"
   | "displayM"
@@ -27,7 +28,10 @@ export type CatchTextVariant =
   | "statusLabel"
   | "metric";
 
-/** Theme color roles, named after the Flutter `CatchTokens` fields. */
+/**
+ * Theme color roles, named after the Flutter `CatchTokens` fields.
+ * @deprecated Legacy: use CatchText's tone; deleted in P7.
+ */
 export type CatchTextColor =
   | "ink"
   | "ink2"
@@ -42,11 +46,14 @@ export type CatchTextColor =
  * Website v2 palette accents for coloured sentence-case labels: each draws its
  * deep shade under a light theme and the accent itself under a dark one, so a
  * label clears AA on white, paper and ink.
+ * @deprecated Legacy: use CatchText's tone; deleted in P7.
  */
 export type CatchTextAccent = "coral" | "pink" | "yellow" | "mint" | "indigo" | "magenta";
 
+/** @deprecated Legacy: use CatchText's align; deleted in P7. */
 export type CatchTextAlign = "start" | "center" | "end";
 
+/** @deprecated Legacy: use CatchText's as; deleted in P7. */
 export type CatchTextElement =
   | "p"
   | "span"
@@ -65,7 +72,8 @@ export type CatchTextElement =
   | "legend"
   | "time";
 
-export interface CatchTextProps
+/** @deprecated Legacy: use CatchText (variant, tone, as, align, maxLines, numeric); deleted in P7. */
+export interface CatchLegacyTextProps
   extends Omit<HTMLAttributes<HTMLElement>, "className" | "color" | "style"> {
   /** The semantic element. Choose headings by document outline, not size. */
   as?: CatchTextElement;
@@ -75,10 +83,14 @@ export interface CatchTextProps
   /** Clamps the text to this many lines with an ellipsis. */
   maxLines?: number;
   textAlign?: CatchTextAlign;
-  variant: CatchTextVariant;
+  variant: CatchLegacyTextVariant;
 }
 
-export function CatchText({
+/**
+ * The pre-redesign text component, in the CatchTextStyles roles.
+ * @deprecated Legacy: use CatchText; deleted in P7.
+ */
+export function CatchLegacyText({
   as: Element = "p",
   children,
   color,
@@ -86,7 +98,7 @@ export function CatchText({
   textAlign,
   variant,
   ...props
-}: CatchTextProps) {
+}: CatchLegacyTextProps) {
   const clamp = maxLines !== undefined && maxLines > 0 ? maxLines : undefined;
   return (
     <Element

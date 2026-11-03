@@ -1,4 +1,4 @@
-/* Tones, radius and elevation follow CatchSurface; padding is caller-composed. */
+/* Tones, radius and elevation follow CatchLegacySurface; padding is caller-composed. */
 .surface[data-recipe] {
   position: relative;
   box-sizing: border-box;

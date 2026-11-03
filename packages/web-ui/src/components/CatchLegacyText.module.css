@@ -6,7 +6,7 @@
  * descendant rule (".panel p") cannot restyle library text.
  */
 .text[data-variant] {
-  /* Reset so a nested CatchText never inherits its parent's override. */
+  /* Reset so a nested CatchLegacyText never inherits its parent's override. */
   --catch-text-color: initial;
   margin: 0;
   color: var(--catch-text-color, var(--catch-text-role-color));
