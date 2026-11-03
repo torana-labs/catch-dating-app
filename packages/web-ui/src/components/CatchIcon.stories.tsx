@@ -1,57 +1,72 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
-import {StoryPage} from "../stories/websiteV2Story";
-import {CatchBand} from "./CatchBand";
-import {CatchGap} from "./CatchGap";
-import {CatchIcon, catchIconSizes, type CatchIconTone} from "./CatchIcon";
+import {catchIconSizeSteps} from "./catchCoreVocabulary";
+import {CatchIcon} from "./CatchIcon";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
 
 const meta = {
   title: "Web UI/CatchIcon",
   component: CatchIcon,
-  args: {icon: "event"},
+  args: {name: "ticket"},
 } satisfies Meta<typeof CatchIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tones: CatchIconTone[] = ["inherit", "ink", "muted", "primary", "success", "warning", "danger"];
-
-function Row({label, children}: {label: string; children: ReactNode}) {
+function State({label, children}: {label: string; children: ReactNode}) {
   return (
-    <CatchGap size="inline">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
-      <CatchGap crossAxisAlignment="center" direction="horizontal" size="related" wrap>{children}</CatchGap>
-    </CatchGap>
+    <CatchStack gap={8}>
+      <CatchText tone="secondary" variant="label-kicker">{label}</CatchText>
+      {children}
+    </CatchStack>
   );
 }
 
-/**
- * catch.icon on the web: every CatchIconSize step, every tone, and a labelled
- * icon, on light and dark.
- */
+/** catch.icon on the web: the four sizes (stroke 2, and 1.75 at 24), a labelled icon, and tones: an icon has none of its own and takes its text's. */
 export const Contract: Story = {
-  render: () => {
-    const states = (
-      <CatchGap size="section">
-        <Row label="Sizes">
-          {Object.keys(catchIconSizes).map((size) => (
-            <CatchIcon icon="event" key={size} size={size as keyof typeof catchIconSizes} />
-          ))}
-        </Row>
-        <Row label="Tones">
-          {tones.map((tone) => <CatchIcon icon="success" key={tone} size="lg" tone={tone} />)}
-        </Row>
-        <Row label="Labelled">
-          <CatchIcon icon="search" semanticLabel="Search" size="lg" tone="ink" />
-        </Row>
-      </CatchGap>
-    );
-    return (
-      <StoryPage>
-        <CatchBand aria-label="Light" pb="compact" pt="compact">{states}</CatchBand>
-        <CatchBand aria-label="Dark" ground="ink" pb="compact" pt="compact">{states}</CatchBand>
-      </StoryPage>
-    );
-  },
+  render: () => (
+    <CatchRoot theme="day">
+      <CatchSurface block="plain" padding="lg">
+        <CatchStack gap={24}>
+          <State label="sizes">
+            <CatchStack align="center" direction="row" gap={16}>
+              {catchIconSizeSteps.map((size) => <CatchIcon key={size} name="ticket" size={size} />)}
+            </CatchStack>
+          </State>
+          <State label="labelled">
+            <CatchStack align="center" direction="row" gap={8}>
+              <CatchIcon label="Checked in" name="checkIn" />
+              <CatchText variant="body">The icon alone carries the meaning, so it is read aloud.</CatchText>
+            </CatchStack>
+          </State>
+          <State label="tones">
+            <CatchText as="div" tone="danger" variant="title-row">
+              <CatchStack align="center" direction="row" gap={6}>
+                <CatchIcon name="warning" size={18} />
+                Payment failed
+              </CatchStack>
+            </CatchText>
+          </State>
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
+  ),
+};
+
+/** Direction roles mirror in right-to-left layouts. */
+export const RightToLeft: Story = {
+  render: () => (
+    <CatchRoot theme="day">
+      <CatchSurface block="plain" dir="rtl" padding="lg">
+        <CatchStack direction="row" gap={16}>
+          <CatchIcon name="back" />
+          <CatchIcon name="forward" />
+          <CatchIcon name="disclosure" />
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
+  ),
 };

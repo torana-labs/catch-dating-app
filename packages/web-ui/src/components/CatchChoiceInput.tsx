@@ -3,7 +3,7 @@
 import {type CSSProperties, type KeyboardEvent, type ReactNode, useEffect, useId, useRef, useState} from "react";
 import {CatchChip, type CatchChipData, type CatchChipMode} from "./CatchChip";
 import {CatchChoiceTile} from "./CatchChoiceTile";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchChoiceInput.module.css";
 
 export type CatchChoiceInputVariant = "label" | "mono" | "operational" | "summary";
@@ -143,11 +143,11 @@ export function CatchChoiceInput<T>(props: CatchChoiceInputProps<T>) {
   </div>;
   return <div ref={root} className={styles.field}>
     {/* D21: normalize the native ink3 caption to the adjacent readable ink2 role. */}
-    {label ? <CatchText as="span" id={`${id}-label`} variant="fieldLabel" color={error ? "danger" : "ink2"}
+    {label ? <CatchLegacyText as="span" id={`${id}-label`} variant="fieldLabel" color={error ? "danger" : "ink2"}
       aria-label={optional && props.recipe === "form" ? props.copy.optionalSemantics(label) : undefined}>
       {label}{optional && props.recipe === "form" ? <span aria-hidden="true">{props.copy.optionalSuffix}</span> : null}
-    </CatchText> : null}
+    </CatchLegacyText> : null}
     {group}
-    {error ? <CatchText as="span" id={`${id}-error`} variant="supporting" color="danger" role="alert">{error}</CatchText> : null}
+    {error ? <CatchLegacyText as="span" id={`${id}-error`} variant="supporting" color="danger" role="alert">{error}</CatchLegacyText> : null}
   </div>;
 }

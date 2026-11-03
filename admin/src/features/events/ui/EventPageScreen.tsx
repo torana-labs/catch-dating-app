@@ -7,7 +7,7 @@ import {
   CatchPageTabBar,
   CatchPaneLayout,
   CatchSection,
-  CatchText,
+  CatchLegacyText,
   CatchTopBar,
   CatchViewport,
   type CatchMetaEntry,
@@ -37,7 +37,7 @@ function organizerRow(name: string, onOpen: () => void) {
         onTap={onOpen}
         title={name}
         titleVariant="bodyM"
-        trailing={<CatchText as="span" color="primary" variant="supportingStrong">Open</CatchText>}
+        trailing={<CatchLegacyText as="span" color="primary" variant="supportingStrong">Open</CatchLegacyText>}
       />
     </CatchSection>
   );
@@ -60,16 +60,16 @@ function catchOverview(record: Extract<EventPageRecord, {source: "catch"}>, onOp
   ];
   const bookings = (
     <CatchSection title="Bookings">
-      <CatchIndexRow title="Booked" titleVariant="bodyM" trailing={<CatchText as="span" variant="supportingStrong">{eventBookedLabel(event)}</CatchText>} />
-      <CatchIndexRow title="Waitlist" titleVariant="bodyM" trailing={<CatchText as="span" variant="supportingStrong">{String(event.waitlistedCount)}</CatchText>} />
-      <CatchIndexRow title="Checked in" titleVariant="bodyM" trailing={<CatchText as="span" variant="supportingStrong">{String(event.checkedInCount)}</CatchText>} />
+      <CatchIndexRow title="Booked" titleVariant="bodyM" trailing={<CatchLegacyText as="span" variant="supportingStrong">{eventBookedLabel(event)}</CatchLegacyText>} />
+      <CatchIndexRow title="Waitlist" titleVariant="bodyM" trailing={<CatchLegacyText as="span" variant="supportingStrong">{String(event.waitlistedCount)}</CatchLegacyText>} />
+      <CatchIndexRow title="Checked in" titleVariant="bodyM" trailing={<CatchLegacyText as="span" variant="supportingStrong">{String(event.checkedInCount)}</CatchLegacyText>} />
     </CatchSection>
   );
   return {main: <CatchGap size="majorSection"><CatchMetaRow entries={facts} />{bookings}</CatchGap>,
     organizer: organizerRow(event.organizerName ?? event.organizerId, () => onOpenOrganizer(event.organizerId)),
     aside: event.cancellationReason ? (
       <CatchSection dividers="none" title="Cancelled">
-        <CatchText as="p" variant="bodyM">{event.cancellationReason}</CatchText>
+        <CatchLegacyText as="p" variant="bodyM">{event.cancellationReason}</CatchLegacyText>
       </CatchSection>
     ) : null};
 }
@@ -158,9 +158,9 @@ export function EventPageScreen({
       <>
         {top}
         <CatchPaneLayout
-          main={<CatchText as="p" color={loadError ? "danger" : "ink2"} variant="bodyM">
+          main={<CatchLegacyText as="p" color={loadError ? "danger" : "ink2"} variant="bodyM">
             {loadError ?? "Loading the event"}
-          </CatchText>}
+          </CatchLegacyText>}
           pattern="reading"
         />
       </>

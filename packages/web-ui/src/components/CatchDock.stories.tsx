@@ -7,7 +7,7 @@ import {CatchButton} from "./CatchButton";
 import {CatchDock} from "./CatchDock";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchDock",
@@ -23,7 +23,7 @@ const noop = () => undefined;
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       <div style={{border: "var(--catch-stroke-hairline) dashed var(--catch-theme-line2)"}}>{children}</div>
     </CatchGap>
   );
@@ -65,12 +65,12 @@ function States() {
       <State label="custom">
         <CatchDock>
           <div style={{alignItems: "center", display: "flex", justifyContent: "space-between"}}>
-            <CatchText as="span" variant="sectionTitle">₹299</CatchText>
+            <CatchLegacyText as="span" variant="sectionTitle">₹299</CatchLegacyText>
             <CatchButton label="Book" onPressed={noop} size="md" />
           </div>
         </CatchDock>
       </State>
-      <State label="custom-no-safe-area"><CatchDock includeSafeArea={false}><CatchText as="span" variant="bodyM">Tools</CatchText></CatchDock></State>
+      <State label="custom-no-safe-area"><CatchDock includeSafeArea={false}><CatchLegacyText as="span" variant="bodyM">Tools</CatchLegacyText></CatchDock></State>
       <State label="embedded (primaryContent)"><CatchDock label="Continue" onPressed={noop} recipe="primaryContent" /></State>
       <State label="page action"><CatchDock label="Save changes" onPressed={noop} recipe="pageAction" /></State>
     </CatchGrid>

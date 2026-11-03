@@ -38,7 +38,7 @@ import {AdminLinkButton} from "./actions";
 import {SelectableCardButton} from "./cards";
 import {AdminPanel} from "./data";
 import {AdminEyebrow} from "./shell";
-import {CatchText} from "@catch/web-ui";
+import {CatchLegacyText} from "@catch/web-ui";
 
 export function AdminMarketingHelpText({
   children,
@@ -101,9 +101,9 @@ export function AdminMarketingLibraryCard({
     <article {...props} className={classNames("marketing-library-card", className)}>
       <header>
         <AdminEyebrow as="span">{eyebrow}</AdminEyebrow>
-        <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
+        <CatchLegacyText as="h3" variant="sectionTitle">{title}</CatchLegacyText>
       </header>
-      <CatchText as="p" variant="supporting">{description}</CatchText>
+      <CatchLegacyText as="p" variant="supporting">{description}</CatchLegacyText>
       {children}
       {action}
     </article>
@@ -164,8 +164,8 @@ export function AdminMarketingMediaCard({
       )}
       <div>
         <AdminEyebrow as="span">{eyebrow}</AdminEyebrow>
-        <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
-        <CatchText as="p" variant="supporting">{description}</CatchText>
+        <CatchLegacyText as="h3" variant="sectionTitle">{title}</CatchLegacyText>
+        <CatchLegacyText as="p" variant="supporting">{description}</CatchLegacyText>
       </div>
       {children}
     </article>
@@ -208,7 +208,7 @@ export function AdminMarketingNewPostCard({
     >
       <span>{meta}</span>
       <strong>{label}</strong>
-      <CatchText as="p" variant="supporting">{description}</CatchText>
+      <CatchLegacyText as="p" variant="supporting">{description}</CatchLegacyText>
       <small>{actionLabel}</small>
     </SelectableCardButton>
   );

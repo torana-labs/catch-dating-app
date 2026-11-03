@@ -3,7 +3,7 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchStarRating} from "./CatchStarRating";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchStarRating",
@@ -29,7 +29,7 @@ export const Ratings: Story = {
               <CatchGap crossAxisAlignment="center" direction="horizontal" key={value} size="related">
                 <CatchStarRating label={`${value} out of 5`} value={value} />
                 <CatchStarRating label={`${value} out of 5`} size="m" value={value} />
-                <CatchText as="span" color="ink2" variant="bodyS">{`${value} out of 5`}</CatchText>
+                <CatchLegacyText as="span" color="ink2" variant="bodyS">{`${value} out of 5`}</CatchLegacyText>
               </CatchGap>
             ))}
           </CatchGap>
@@ -49,7 +49,7 @@ export const Rounding: Story = {
           {[4.4, 4.5, 6, -1].map((value) => (
             <CatchGap crossAxisAlignment="center" direction="horizontal" key={value} size="related">
               <CatchStarRating label={`Rated ${value}`} value={value} />
-              <CatchText as="span" color="ink2" variant="bodyS">{`value ${value}`}</CatchText>
+              <CatchLegacyText as="span" color="ink2" variant="bodyS">{`value ${value}`}</CatchLegacyText>
             </CatchGap>
           ))}
         </CatchGap>

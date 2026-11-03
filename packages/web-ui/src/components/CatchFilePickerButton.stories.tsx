@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchFilePickerButton} from "./CatchFilePickerButton";
 import {CatchGap} from "./CatchGap";
-import {CatchIcon} from "./CatchIcon";
+import {CatchLegacyIcon} from "./CatchLegacyIcon";
 
 const meta = {
   title: "Web UI/CatchFilePickerButton",
@@ -16,7 +16,7 @@ export const Contract: Story = {
   render: (args) => (
     <CatchGap direction="horizontal" size="related" wrap>
       <CatchFilePickerButton {...args} />
-      <CatchFilePickerButton {...args} label="With an icon" leading={<CatchIcon icon="upload" size="sm" />} />
+      <CatchFilePickerButton {...args} label="With an icon" leading={<CatchLegacyIcon icon="upload" size="sm" />} />
       <CatchFilePickerButton {...args} label="Disabled" onChanged={null} />
     </CatchGap>
   ),

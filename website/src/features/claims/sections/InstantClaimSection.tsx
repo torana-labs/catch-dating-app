@@ -1,4 +1,4 @@
-import {CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {claimVerificationCopy as copy} from "@content/claimVerification";
 import {
   ActionGroup,
@@ -32,9 +32,9 @@ export function InstantClaimPanel({controller, listing, pendingReview = false}: 
       <CatchGap size="section">
         <HostPreviewSectionHead titleId="instant-claim-title" title={copy.title} body={copy.body} />
         {pendingReview && controller.phase !== "done" ?
-          <CatchText as="p" role="status" variant="supportingStrong">{copy.pendingReview}</CatchText> : null}
+          <CatchLegacyText as="p" role="status" variant="supportingStrong">{copy.pendingReview}</CatchLegacyText> : null}
         {renderPhase(controller, listing)}
-        {controller.error ? <CatchText as="p" role="alert" variant="bodyS">{controller.error}</CatchText> : null}
+        {controller.error ? <CatchLegacyText as="p" role="alert" variant="bodyS">{controller.error}</CatchLegacyText> : null}
       </CatchGap>
     </HostPreviewSection>
   );
@@ -44,11 +44,11 @@ function renderPhase(controller: InstantClaimController, listing: HostListing) {
   switch (controller.phase) {
   case "account":
     return <CatchGap size="related">
-      <CatchText as="p" variant="bodyM">{copy.accountIntro}</CatchText>
+      <CatchLegacyText as="p" variant="bodyM">{copy.accountIntro}</CatchLegacyText>
       {renderAccountForm(controller.account, {askBirthDate: false})}
     </CatchGap>;
   case "loading":
-    return <CatchText as="p" role="status" variant="bodyS">{copy.loadingOptions}</CatchText>;
+    return <CatchLegacyText as="p" role="status" variant="bodyS">{copy.loadingOptions}</CatchLegacyText>;
   case "choose":
     return renderMethods(controller);
   case "code":
@@ -57,14 +57,14 @@ function renderPhase(controller: InstantClaimController, listing: HostListing) {
     return renderReview(controller);
   case "requested":
     return <CatchGap size="related" role="status">
-      <CatchText as="h3" variant="displayS">{copy.requestedTitle}</CatchText>
-      <CatchText as="p" variant="bodyM">{copy.requestedBody}</CatchText>
+      <CatchLegacyText as="h3" variant="displayS">{copy.requestedTitle}</CatchLegacyText>
+      <CatchLegacyText as="p" variant="bodyM">{copy.requestedBody}</CatchLegacyText>
       <ActionGroup variant="marketing"><ButtonLink href={listing.path} variant="ghost">{copy.backToPage}</ButtonLink></ActionGroup>
     </CatchGap>;
   case "done":
     return <CatchGap size="related" role="status">
-      <CatchText as="h3" variant="displayS">{copy.doneTitle}</CatchText>
-      <CatchText as="p" variant="bodyM">{copy.doneBody}</CatchText>
+      <CatchLegacyText as="h3" variant="displayS">{copy.doneTitle}</CatchLegacyText>
+      <CatchLegacyText as="p" variant="bodyM">{copy.doneBody}</CatchLegacyText>
       <ActionGroup variant="marketing"><ButtonLink href={listing.path}>{copy.openPage}</ButtonLink></ActionGroup>
     </CatchGap>;
   default:
@@ -76,7 +76,7 @@ function renderMethods(controller: InstantClaimController) {
   const {methods, chosen, catchInstagramHandle} = controller;
   if (!chosen) return null;
   return <CatchGap size="related">
-    <CatchText as="p" variant="supportingStrong">{copy.methodsLabel}</CatchText>
+    <CatchLegacyText as="p" variant="supportingStrong">{copy.methodsLabel}</CatchLegacyText>
     <VerificationMethodGrid aria-label={copy.methodsLabel}>
       {methods.map((item) => (
         <ChoiceCard
@@ -102,7 +102,7 @@ function renderReview(controller: InstantClaimController) {
   const canGoBack = controller.methods.length > 0;
   return <Form noValidate onSubmit={controller.requestReview} pending={controller.requesting}>
     <CatchGap size="related">
-      <CatchText as="p" variant="bodyM">{canGoBack ? copy.reviewIntro : copy.noMethods}</CatchText>
+      <CatchLegacyText as="p" variant="bodyM">{canGoBack ? copy.reviewIntro : copy.noMethods}</CatchLegacyText>
       <CatchField
         recipe="input"
         id="claim-proof-links"
@@ -136,7 +136,7 @@ function renderCode(controller: InstantClaimController) {
   if (!attempt) return null;
   if (controller.expired) {
     return <CatchGap size="related">
-      <CatchText as="p" role="status" variant="bodyM">{copy.expired}</CatchText>
+      <CatchLegacyText as="p" role="status" variant="bodyM">{copy.expired}</CatchLegacyText>
       <ActionGroup variant="marketing">
         <Button type="button" onClick={() => void controller.showCode()} loading={controller.starting}
           loadingLabel={copy.showingCode}>{copy.newCode}</Button>
@@ -151,8 +151,8 @@ function renderCode(controller: InstantClaimController) {
     const catchHandle = attempt.catchInstagramHandle ?? controller.catchInstagramHandle ?? "";
     const spaced = `${attempt.code.slice(0, 3)} ${attempt.code.slice(3)}`;
     return <CatchGap size="related">
-      <CatchText as="h3" variant="titleS">{copy.instagramHeading(catchHandle)}</CatchText>
-      <CatchText as="p" variant="displayM" aria-label={copy.codeLabel(attempt.code)}>{spaced}</CatchText>
+      <CatchLegacyText as="h3" variant="titleS">{copy.instagramHeading(catchHandle)}</CatchLegacyText>
+      <CatchLegacyText as="p" variant="displayM" aria-label={copy.codeLabel(attempt.code)}>{spaced}</CatchLegacyText>
       {renderSteps(copy.instagramSteps(attempt.proofTarget, catchHandle))}
       <ActionGroup variant="marketing">
         <ButtonLink href={`https://ig.me/m/${encodeURIComponent(catchHandle)}`} target="_blank" rel="noreferrer">
@@ -160,15 +160,15 @@ function renderCode(controller: InstantClaimController) {
         {copyButton}
         {otherButton}
       </ActionGroup>
-      <CatchText as="p" role="status" aria-live="polite" variant="bodyS">
+      <CatchLegacyText as="p" role="status" aria-live="polite" variant="bodyS">
         {controller.rejection === "wrongSender" ? copy.wrongSender(attempt.proofTarget) :
           controller.rejection === "codeNotFound" ? copy.codeNotFound : copy.waiting(attempt.proofTarget)}
-      </CatchText>
+      </CatchLegacyText>
     </CatchGap>;
   }
   return <CatchGap size="related">
-    <CatchText as="h3" variant="titleS">{copy.lumaHeading}</CatchText>
-    <CatchText as="p" variant="displayM">{attempt.proofText}</CatchText>
+    <CatchLegacyText as="h3" variant="titleS">{copy.lumaHeading}</CatchLegacyText>
+    <CatchLegacyText as="p" variant="displayM">{attempt.proofText}</CatchLegacyText>
     {renderSteps(copy.lumaSteps)}
     <ActionGroup variant="marketing">
       <Button type="button" onClick={() => void controller.checkLuma()} loading={controller.checking}
@@ -176,14 +176,14 @@ function renderCode(controller: InstantClaimController) {
       {copyButton}
       {otherButton}
     </ActionGroup>
-    <CatchText as="p" role="status" aria-live="polite" variant="bodyS">
+    <CatchLegacyText as="p" role="status" aria-live="polite" variant="bodyS">
       {controller.lumaMissing ? copy.lumaNotFound : copy.lumaWaiting(attempt.proofTarget)}
-    </CatchText>
+    </CatchLegacyText>
   </CatchGap>;
 }
 
 function renderSteps(steps: readonly string[]) {
   return <CatchGap size="inline">
-    {steps.map((step, index) => <CatchText as="p" key={step} variant="bodyM">{`${index + 1}. ${step}`}</CatchText>)}
+    {steps.map((step, index) => <CatchLegacyText as="p" key={step} variant="bodyM">{`${index + 1}. ${step}`}</CatchLegacyText>)}
   </CatchGap>;
 }

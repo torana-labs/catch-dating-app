@@ -6,7 +6,7 @@ import {CatchButton} from "./CatchButton";
 import {CatchErrorState} from "./CatchErrorState";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchErrorState",
@@ -22,7 +22,7 @@ const noop = () => undefined;
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       {children}
     </CatchGap>
   );

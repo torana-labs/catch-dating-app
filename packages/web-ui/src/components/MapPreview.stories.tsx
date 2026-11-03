@@ -5,7 +5,7 @@ import {StoryPage, storyMapImage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {MapPreview} from "./MapPreview";
 
 const meta = {
@@ -24,7 +24,7 @@ function State({children, title}: {children: ReactNode; title: string}) {
   return (
     <CatchGap size="related">
       <span style={{display: "block", height: 160}}>{children}</span>
-      <CatchText as="span" color="ink2" variant="bodyS">{title}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{title}</CatchLegacyText>
     </CatchGap>
   );
 }

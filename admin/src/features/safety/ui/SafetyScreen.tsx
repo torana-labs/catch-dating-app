@@ -5,7 +5,7 @@ import {
   CatchIndexRow,
   CatchPaneLayout,
   CatchTable,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
   type CatchTableColumn,
 } from "@catch/web-ui";
@@ -75,8 +75,8 @@ function Fact({label, value, tone}: {label: string; value: string;
     <CatchIndexRow
       title={label}
       titleVariant="supporting"
-      trailing={<CatchText as="span" color={tone ? toneColor[tone] : "ink"}
-        variant="supportingStrong">{value}</CatchText>}
+      trailing={<CatchLegacyText as="span" color={tone ? toneColor[tone] : "ink"}
+        variant="supportingStrong">{value}</CatchLegacyText>}
     />
   );
 }
@@ -84,7 +84,7 @@ function Fact({label, value, tone}: {label: string; value: string;
 function Block({title, children}: {title: string; children: ReactNode}) {
   return (
     <CatchGap size="related">
-      <CatchText as="h2" variant="sectionTitle">{title}</CatchText>
+      <CatchLegacyText as="h2" variant="sectionTitle">{title}</CatchLegacyText>
       {children}
     </CatchGap>
   );
@@ -157,10 +157,10 @@ export function SafetyScreen({
         views={views}
       />
       {shown.length === 0 ? (
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           {triage.isLoading || access.isLoading ? "Loading cases" :
             "Nothing is waiting."}
-        </CatchText>
+        </CatchLegacyText>
       ) : (
         <CatchTable
           columns={caseColumns}
@@ -187,11 +187,11 @@ export function SafetyScreen({
         views={views}
       />
       {actionRows.length === 0 ? (
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           {actions.loadState === "loading" ? "Loading account actions" :
             view === "appeals" ? "No appeals are waiting." :
               "No account actions are in force."}
-        </CatchText>
+        </CatchLegacyText>
       ) : (
         <CatchTable
           columns={actionColumns}
@@ -250,10 +250,10 @@ function CaseDetail({
     return (
       <>
         <CatchWorkspaceHeader kicker="Safety" title="Case" />
-        <CatchText as="p" color="ink2" variant="bodyM">
+        <CatchLegacyText as="p" color="ink2" variant="bodyM">
           {triage.isDetailLoading ? "Loading the case" :
             "This case is no longer available."}
-        </CatchText>
+        </CatchLegacyText>
       </>
     );
   }
@@ -295,8 +295,8 @@ function CaseDetail({
                 title={entry.sensitive ? `${entry.label} (sensitive)` :
                   entry.label}
                 titleVariant="supporting"
-                trailing={<CatchText as="span" variant="supporting">
-                  {entry.value}</CatchText>}
+                trailing={<CatchLegacyText as="span" variant="supporting">
+                  {entry.value}</CatchLegacyText>}
               />
             ))}
           </Block>
@@ -338,15 +338,15 @@ function CaseDetail({
             ) : null}
           </CatchGap>
           {triage.decisionValidationIssue && triage.decisionForm.note ? (
-            <CatchText as="p" color="danger" variant="bodyS">
+            <CatchLegacyText as="p" color="danger" variant="bodyS">
               {triage.decisionValidationIssue}
-            </CatchText>
+            </CatchLegacyText>
           ) : null}
           {job === "ops" ? (
-            <CatchText as="p" color="ink2" variant="bodyS">
+            <CatchLegacyText as="p" color="ink2" variant="bodyS">
               You can warn or restrict. Suspending or banning is the
               owner&apos;s call.
-            </CatchText>
+            </CatchLegacyText>
           ) : null}
         </Block>
       </CatchGap>
@@ -377,14 +377,14 @@ function AccessDetail({access}: {access: AccessReviewController}) {
                 <Fact label="Instagram" value={`@${details.instagramHandle.replace(/^@+/u, "")}`} />
               ) : null}
               {details.whyCatch ? (
-                <CatchText as="p" variant="bodyM">{details.whyCatch}</CatchText>
+                <CatchLegacyText as="p" variant="bodyM">{details.whyCatch}</CatchLegacyText>
               ) : null}
             </>
           ) : (
-            <CatchText as="p" color="ink2" variant="bodyM">
+            <CatchLegacyText as="p" color="ink2" variant="bodyM">
               {access.isDetailLoading ? "Loading the application" :
                 access.detailError ?? row.detail}
-            </CatchText>
+            </CatchLegacyText>
           )}
         </Block>
         <Block title="Decide">
@@ -420,9 +420,9 @@ function AccessDetail({access}: {access: AccessReviewController}) {
             />
           </CatchGap>
           {access.validationIssue && access.form.note ? (
-            <CatchText as="p" color="danger" variant="bodyS">
+            <CatchLegacyText as="p" color="danger" variant="bodyS">
               {access.validationIssue}
-            </CatchText>
+            </CatchLegacyText>
           ) : null}
         </Block>
       </CatchGap>
@@ -470,11 +470,11 @@ function ActionDetail({
           ))}
         </Block>
         <Block title="What they were told">
-          <CatchText as="p" variant="bodyM">{action.messageToUser}</CatchText>
+          <CatchLegacyText as="p" variant="bodyM">{action.messageToUser}</CatchLegacyText>
         </Block>
         {action.appeal ? (
           <Block title="Their appeal">
-            <CatchText as="p" variant="bodyM">{action.appeal.text}</CatchText>
+            <CatchLegacyText as="p" variant="bodyM">{action.appeal.text}</CatchLegacyText>
           </Block>
         ) : null}
         {appealOpen && action.canReviewAppeal ? (
@@ -499,14 +499,14 @@ function ActionDetail({
                 onPressed={ready && !busy ? () => decide("lift") : null}
                 size="sm" variant="danger" />
             </CatchGap>
-            <CatchText as="p" color="ink2" variant="bodyS">
+            <CatchLegacyText as="p" color="ink2" variant="bodyS">
               {name} hears the outcome. The reporters are not told.
-            </CatchText>
+            </CatchLegacyText>
           </Block>
         ) : appealOpen ? (
-          <CatchText as="p" color="ink2" variant="bodyS">
+          <CatchLegacyText as="p" color="ink2" variant="bodyS">
             You decided this, so someone else reviews the appeal.
-          </CatchText>
+          </CatchLegacyText>
         ) : action.status === "active" && canTakeStep(job, action.kind) ? (
           <Block title="Lift early">
             <CatchField maxLength={1000} maxLines={2}

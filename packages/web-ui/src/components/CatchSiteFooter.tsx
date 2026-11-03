@@ -1,5 +1,5 @@
 import {CatchBand} from "./CatchBand";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchSiteFooter.module.css";
 
 export interface CatchSiteFooterLink {
@@ -33,13 +33,13 @@ export function CatchSiteFooter({brandHref, brandLabel, groups, navLabel, taglin
       <nav aria-label={navLabel} className={styles.groups}>
         {groups.map((group) => (
           <div className={styles.group} key={group.title}>
-            <CatchText as="h2" color="ink2" variant="supportingStrong">{group.title}</CatchText>
+            <CatchLegacyText as="h2" color="ink2" variant="supportingStrong">{group.title}</CatchLegacyText>
             <ul className={styles.links}>
               {group.links.map((link) => (
                 <li key={`${link.href}-${link.label}`}>
                   <a className={styles.link} href={link.href}>
-                    <CatchText as="span" color="inherit" variant="bodyM">{link.label}</CatchText>
-                    {link.note ? <>{" "}<CatchText as="span" color="ink2" variant="supporting">{`· ${link.note}`}</CatchText></> : null}
+                    <CatchLegacyText as="span" color="inherit" variant="bodyM">{link.label}</CatchLegacyText>
+                    {link.note ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="supporting">{`· ${link.note}`}</CatchLegacyText></> : null}
                   </a>
                 </li>
               ))}
@@ -49,9 +49,9 @@ export function CatchSiteFooter({brandHref, brandLabel, groups, navLabel, taglin
       </nav>
       <div className={styles.base}>
         <a className={styles.brand} href={brandHref}>
-          <CatchText as="span" color="inherit" variant="displayL">{brandLabel}</CatchText>
+          <CatchLegacyText as="span" color="inherit" variant="displayL">{brandLabel}</CatchLegacyText>
         </a>
-        <CatchText as="p" color="ink2" variant="supporting">{tagline}</CatchText>
+        <CatchLegacyText as="p" color="ink2" variant="supporting">{tagline}</CatchLegacyText>
       </div>
     </CatchBand>
   );

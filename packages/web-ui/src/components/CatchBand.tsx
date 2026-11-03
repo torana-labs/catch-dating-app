@@ -35,6 +35,7 @@ export interface CatchBandProps
  * through the dark theme. The band declares the `catch-page` container, so
  * every Website v2 layout inside it switches to its phone arrangement when the
  * page is narrower than 840px.
+ * @deprecated Legacy: use CatchSurface block="band" with a color; deleted in P7.
  */
 export function CatchBand({
   as: Element = "section",

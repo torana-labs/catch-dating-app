@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {PaletteAccent} from "./palette";
 import styles from "./CatchLinkTile.module.css";
 
@@ -56,8 +56,8 @@ export function CatchLinkTile({
       {icon ? <span aria-hidden="true" className={styles.icon}>{icon}</span> : null}
       {/* The spaces between lines keep the link's accessible name readable. */}
       <span className={styles.copy}>
-        <CatchText as="span" variant="sectionTitle">{title}</CatchText>
-        {subtitle ? <>{" "}<CatchText as="span" variant="bodyS">{subtitle}</CatchText></> : null}
+        <CatchLegacyText as="span" variant="sectionTitle">{title}</CatchLegacyText>
+        {subtitle ? <>{" "}<CatchLegacyText as="span" variant="bodyS">{subtitle}</CatchLegacyText></> : null}
         {stats ? <>{" "}<span className={styles.stats}>{stats}</span></> : null}
         {newTab && newTabLabel ? <>{" "}<span className={styles.visuallyHidden}>{`(${newTabLabel})`}</span></> : null}
       </span>

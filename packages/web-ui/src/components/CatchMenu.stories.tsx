@@ -7,7 +7,7 @@ import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchMenu, type CatchMenuItem} from "./CatchMenu";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchMenu",
@@ -31,7 +31,7 @@ const chevron = glyph("m6 9 6 6 6-6");
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       {children}
     </CatchGap>
   );
@@ -127,7 +127,7 @@ function FormatPicker() {
       recipe="anchored"
       builder={({triggerProps}) => (
         <button style={{...pillStyle, background: "var(--catch-theme-raised)", borderRadius: "var(--catch-radius-md)", height: 60}} type="button" {...triggerProps}>
-          <CatchText as="span" variant="displayXs">{formats.find((item) => item.value === format)?.label}</CatchText>
+          <CatchLegacyText as="span" variant="displayXs">{formats.find((item) => item.value === format)?.label}</CatchLegacyText>
           <span aria-hidden="true" style={iconStyle}>{chevron}</span>
         </button>
       )}

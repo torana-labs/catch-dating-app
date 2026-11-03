@@ -4,20 +4,20 @@ import {CatchGap, type CatchGapSize} from "./CatchGap";
 import {CatchInset, type CatchInsetPadding} from "./CatchInset";
 import {CatchPageBody} from "./CatchPageBody";
 import {CatchSectionList} from "./CatchSectionList";
-import {CatchText, type CatchTextVariant} from "./CatchText";
+import {CatchLegacyText, type CatchLegacyTextVariant} from "./CatchLegacyText";
 
-type FoundationStoryArgs = ComponentProps<typeof CatchText>;
+type FoundationStoryArgs = ComponentProps<typeof CatchLegacyText>;
 
 const meta = {
   title: "Web UI/Foundations",
-  component: CatchText,
+  component: CatchLegacyText,
   args: {children: "Catch", variant: "bodyM"},
 } satisfies Meta<FoundationStoryArgs>;
 
 export default meta;
 type Story = StoryObj<FoundationStoryArgs>;
 
-const textVariants: readonly CatchTextVariant[] = [
+const textVariants: readonly CatchLegacyTextVariant[] = [
   "displayXs",
   "displayS",
   "displayM",
@@ -68,9 +68,9 @@ function TextRoles() {
   return (
     <CatchGap size="related">
       {variants.map((variant) => (
-        <CatchText key={variant} variant={variant}>
+        <CatchLegacyText key={variant} variant={variant}>
           {variant === "metric" ? "1,280" : `${variant}: Thursday supper club, 8 PM`}
-        </CatchText>
+        </CatchLegacyText>
       ))}
     </CatchGap>
   );
@@ -82,7 +82,7 @@ function AccentLabels() {
   return (
     <CatchGap direction="horizontal" size="section" wrap>
       {(["coral", "pink", "yellow", "mint", "indigo", "magenta"] as const).map((accent) => (
-        <CatchText as="span" color={accent} key={accent} variant="supportingStrong">{`Coming on your own? (${accent})`}</CatchText>
+        <CatchLegacyText as="span" color={accent} key={accent} variant="supportingStrong">{`Coming on your own? (${accent})`}</CatchLegacyText>
       ))}
     </CatchGap>
   );
@@ -95,17 +95,17 @@ export const Text: Story = {
         <CatchGap size="majorSection">
           <TextRoles />
           <CatchGap size="related">
-            <CatchText as="h2" variant="titleL">Heading element</CatchText>
-            <CatchText color="danger" variant="supporting">Danger color</CatchText>
-            <CatchText color="positiveText" variant="supporting">Positive color</CatchText>
-            <CatchText color="attentionText" variant="supporting">Attention color</CatchText>
+            <CatchLegacyText as="h2" variant="titleL">Heading element</CatchLegacyText>
+            <CatchLegacyText color="danger" variant="supporting">Danger color</CatchLegacyText>
+            <CatchLegacyText color="positiveText" variant="supporting">Positive color</CatchLegacyText>
+            <CatchLegacyText color="attentionText" variant="supporting">Attention color</CatchLegacyText>
             <AccentLabels />
-            <CatchText textAlign="center" variant="bodyM">Centred text</CatchText>
-            <CatchText maxLines={2} variant="bodyL">
+            <CatchLegacyText textAlign="center" variant="bodyM">Centred text</CatchLegacyText>
+            <CatchLegacyText maxLines={2} variant="bodyL">
               Two-line clamp. A long description of the evening wraps onto more lines than
               the role allows, so the second line ends with an ellipsis instead of growing
               the card past its bounds on narrow screens.
-            </CatchText>
+            </CatchLegacyText>
           </CatchGap>
         </CatchGap>
       </CatchPageBody>
@@ -125,7 +125,7 @@ function Swatch({label}: {label: string}) {
   return (
     <div style={{background: "var(--catch-theme-raised)", outline: "1px solid var(--catch-theme-line2)"}}>
       <CatchInset padding="contentDense">
-        <CatchText variant="statusLabel">{label}</CatchText>
+        <CatchLegacyText variant="statusLabel">{label}</CatchLegacyText>
       </CatchInset>
     </div>
   );
@@ -136,7 +136,7 @@ function GapRoles() {
     <CatchSectionList emptyStateOmitted gap="formField">
       {gapSizes.map((size) => (
         <CatchGap key={size} size="inline">
-          <CatchText variant="fieldLabel">{size}</CatchText>
+          <CatchLegacyText variant="fieldLabel">{size}</CatchLegacyText>
           <CatchGap direction="horizontal" size={size} wrap>
             <Swatch label="One" />
             <Swatch label="Two" />
@@ -195,7 +195,7 @@ export const SectionList: Story = {
           <Swatch label="Third section" />
         </CatchSectionList>
         <CatchSectionList
-          emptyBuilder={() => <CatchText variant="supporting">No sections yet</CatchText>}
+          emptyBuilder={() => <CatchLegacyText variant="supporting">No sections yet</CatchLegacyText>}
           emptyStateOmitted={false}
         >
           {[]}

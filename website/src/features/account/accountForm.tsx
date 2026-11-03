@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {optionalAccountFields} from "../../shared/contracts/generated/profileRequirements";
 import {accountCopy} from "../../content/account";
 import {Form} from "../../shared/ui/primitives";
@@ -11,8 +11,8 @@ const noop = () => undefined;
  * no age rule, so it leaves the optional birth date out.
  */
 export function renderAccountForm(account: WebsiteAccountController, {askBirthDate = true} = {}) {
-  if (account.loading) return <CatchText as="p" color="ink2" role="status" variant="bodyS">{accountCopy.loading}</CatchText>;
-  if (account.ageIneligible) return <CatchText as="p" role="status" variant="bodyM">{accountCopy.ageIneligible}</CatchText>;
+  if (account.loading) return <CatchLegacyText as="p" color="ink2" role="status" variant="bodyS">{accountCopy.loading}</CatchLegacyText>;
+  if (account.ageIneligible) return <CatchLegacyText as="p" role="status" variant="bodyM">{accountCopy.ageIneligible}</CatchLegacyText>;
   return <Form noValidate onSubmit={account.handleSubmit} pending={account.pending}>
     <CatchGap size="related">
       <CatchField
@@ -61,10 +61,10 @@ export function renderAccountForm(account: WebsiteAccountController, {askBirthDa
         label={account.stage === "code" ? accountCopy.verify : account.verified ? accountCopy.continue : accountCopy.sendCode} />
       {account.stage === "code" ? <CatchButton fullWidth label={accountCopy.restartVerification}
         onPressed={account.pending ? null : account.restartVerification} variant="quiet" /> : null}
-      <CatchText as="p" color={account.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
+      <CatchLegacyText as="p" color={account.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">
         {account.status.message}
-      </CatchText>
-      <CatchText as="p" color="ink2" variant="bodyS">{accountCopy.privacy}</CatchText>
+      </CatchLegacyText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">{accountCopy.privacy}</CatchLegacyText>
     </CatchGap>
   </Form>;
 }

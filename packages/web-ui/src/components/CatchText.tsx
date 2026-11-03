@@ -1,104 +1,65 @@
-import type {CSSProperties, HTMLAttributes, ReactNode} from "react";
+"use client";
+
+import type {HTMLAttributes} from "react";
+import {catchTextRoleFor, type CatchTextTone, type CatchTextVariant} from "./catchCoreVocabulary";
+import {useCatch} from "./catchRootContext";
 import styles from "./CatchText.module.css";
 
-/**
- * Text roles, named after the matching `CatchTextStyles` roles in Flutter.
- * The six display steps set Archivo (blueprint D19); every other role binds
- * the platform typography profile the Flutter role reads.
- */
-export type CatchTextVariant =
-  | "displayXs"
-  | "displayS"
-  | "displayM"
-  | "displayL"
-  | "displayXl"
-  | "displayXxl"
-  | "headline"
-  | "titleL"
-  | "sectionTitle"
-  | "titleS"
-  | "bodyLead"
-  | "bodyL"
-  | "bodyM"
-  | "bodyS"
-  | "supporting"
-  | "supportingStrong"
-  | "fieldLabel"
-  | "statusLabel"
-  | "metric";
+export type CatchTextAs = "h1" | "h2" | "h3" | "p" | "span" | "label" | "div" | "strong";
 
-/** Theme color roles, named after the Flutter `CatchTokens` fields. */
-export type CatchTextColor =
-  | "ink"
-  | "ink2"
-  | "ink3"
-  | "primary"
-  | "danger"
-  | "positiveText"
-  | "attentionText"
-  | "inherit";
-
-/**
- * Website v2 palette accents for coloured sentence-case labels: each draws its
- * deep shade under a light theme and the accent itself under a dark one, so a
- * label clears AA on white, paper and ink.
- */
-export type CatchTextAccent = "coral" | "pink" | "yellow" | "mint" | "indigo" | "magenta";
-
-export type CatchTextAlign = "start" | "center" | "end";
-
-export type CatchTextElement =
-  | "p"
-  | "span"
-  | "div"
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "strong"
-  | "em"
-  | "small"
-  | "dt"
-  | "dd"
-  | "li"
-  | "figcaption"
-  | "legend"
-  | "time";
-
-export interface CatchTextProps
-  extends Omit<HTMLAttributes<HTMLElement>, "className" | "color" | "style"> {
-  /** The semantic element. Choose headings by document outline, not size. */
-  as?: CatchTextElement;
-  children: ReactNode;
-  /** Overrides the role's default color with another theme role, or a palette accent. */
-  color?: CatchTextColor | CatchTextAccent;
-  /** Clamps the text to this many lines with an ellipsis. */
+export interface CatchTextProps extends HTMLAttributes<HTMLElement> {
+  /** The role (one of the 19 type roles, or page-title, section-title, hero). Pick a role, never a size. Defaults to body. */
+  variant?: CatchTextVariant;
+  /** Defaults to inherit: the ink of the surface behind it. */
+  tone?: CatchTextTone;
+  /** The element. Defaults by role: page-title and hero are h1, section-title h2, the rest spans. */
+  as?: CatchTextAs;
+  align?: "start" | "center" | "end";
+  /** Clamp to this many lines with an ellipsis. */
   maxLines?: number;
-  textAlign?: CatchTextAlign;
-  variant: CatchTextVariant;
+  /** Tabular figures, for scores, prices and times that change. */
+  numeric?: boolean;
+  htmlFor?: string;
 }
 
+function defaultElement(variant: CatchTextVariant): CatchTextAs {
+  if (variant === "page-title" || variant === "hero") return "h1";
+  if (variant === "section-title") return "h2";
+  return "span";
+}
+
+/**
+ * catch.text: every piece of text, in a role. The role carries size, line
+ * height, weight, tracking and family; the responsive roles resolve through
+ * the size class. Colour comes from what the text sits on unless a tone is
+ * given.
+ */
 export function CatchText({
-  as: Element = "p",
-  children,
-  color,
+  variant = "body",
+  tone = "inherit",
+  as,
+  align,
   maxLines,
-  textAlign,
-  variant,
-  ...props
+  numeric,
+  className,
+  style,
+  children,
+  ...rest
 }: CatchTextProps) {
+  const {sizeClass} = useCatch();
+  const role = catchTextRoleFor(variant, sizeClass);
   const clamp = maxLines !== undefined && maxLines > 0 ? maxLines : undefined;
+  const Element = as ?? defaultElement(variant);
   return (
     <Element
-      {...props}
-      className={styles.text}
-      data-align={textAlign}
-      data-color={color}
-      data-max-lines={clamp === undefined ? undefined : ""}
-      data-variant={variant}
-      style={clamp === undefined
-        ? undefined
-        : ({"--catch-text-max-lines": clamp} as CSSProperties)}
+      {...rest}
+      className={className ? `${styles.text} ${className}` : styles.text}
+      data-align={align}
+      data-clamp={clamp === undefined ? undefined : ""}
+      data-numeric={numeric ? "" : undefined}
+      data-tone={tone}
+      data-variant={role}
+      style={clamp === undefined ? style : {...style, WebkitLineClamp: clamp}}
     >
       {children}
     </Element>

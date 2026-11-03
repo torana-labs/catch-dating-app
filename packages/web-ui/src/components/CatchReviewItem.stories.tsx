@@ -5,7 +5,7 @@ import {CatchBand} from "./CatchBand";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchReviewItem, type CatchReviewItemProps} from "./CatchReviewItem";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Ground} from "./palette";
 
 const meta = {
@@ -74,7 +74,7 @@ const neha: CatchReviewItemProps = {
 };
 
 const unclaimedNote = (
-  <CatchText as="p" color="ink2" variant="bodyS">Carter Road Runners hasn't claimed this page, so they can't reply yet.</CatchText>
+  <CatchLegacyText as="p" color="ink2" variant="bodyS">Carter Road Runners hasn't claimed this page, so they can't reply yet.</CatchLegacyText>
 );
 
 /** The organiser page's list: verified with a reply, unverified, and the owner's Reply action. */

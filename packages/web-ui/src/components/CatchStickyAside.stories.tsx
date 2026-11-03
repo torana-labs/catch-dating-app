@@ -9,7 +9,7 @@ import {CatchGap} from "./CatchGap";
 import {CatchSplit} from "./CatchSplit";
 import {CatchStepper} from "./CatchStepper";
 import {CatchStickyAside} from "./CatchStickyAside";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchStickyAside",
@@ -28,13 +28,13 @@ function BookingCard() {
   const [places, setPlaces] = useState(1);
   return (
     <CatchGap size="related">
-      <CatchText as="p" variant="displayS">₹299</CatchText>
-      <CatchText as="p" variant="supportingStrong">Sun 23 Nov · 5:45 to 8:30 AM</CatchText>
-      <CatchText as="p" color="ink2" variant="bodyS">13 of 40 spots left</CatchText>
+      <CatchLegacyText as="p" variant="displayS">₹299</CatchLegacyText>
+      <CatchLegacyText as="p" variant="supportingStrong">Sun 23 Nov · 5:45 to 8:30 AM</CatchLegacyText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">13 of 40 spots left</CatchLegacyText>
       <CatchStepper decreaseSemanticLabel="One fewer place" increaseSemanticLabel="One more place" max={4} min={1}
         onChanged={setPlaces} value={places} />
       <CatchButton fullWidth label={`Book ${places} ${places === 1 ? "place" : "places"} · ₹${299 * places}`} onPressed={noop} />
-      <CatchText as="p" color="ink2" variant="bodyS">Free cancellation up to 24 hours before.</CatchText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyS">Free cancellation up to 24 hours before.</CatchLegacyText>
     </CatchGap>
   );
 }
@@ -42,8 +42,8 @@ function BookingCard() {
 function Summary() {
   return (
     <CatchGap size="related">
-      <CatchText as="span" variant="sectionTitle">₹299</CatchText>
-      <CatchText as="span" color="ink2" variant="bodyS">13 spots left</CatchText>
+      <CatchLegacyText as="span" variant="sectionTitle">₹299</CatchLegacyText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">13 spots left</CatchLegacyText>
     </CatchGap>
   );
 }

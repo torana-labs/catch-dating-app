@@ -1,4 +1,4 @@
-import {CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {CatchLoadingIndicator, CatchLegacyText} from "@catch/web-ui";
 import {useEffect, useState} from "react";
 import {useParams, useSearchParams} from "react-router";
 import {publicCheckoutCopy as copy} from "../../content/events";
@@ -55,7 +55,7 @@ export function PublicBookingPage({pageExists = eventPageExists, redirect = repl
 
   return (
     <EventBookingFrame body={copy.bookingBody} title={copy.bookingTitle}>
-      {!valid ? <CatchText as="p" role="status" variant="bodyM">{copy.unavailable}</CatchText> :
+      {!valid ? <CatchLegacyText as="p" role="status" variant="bodyM">{copy.unavailable}</CatchLegacyText> :
         paymentId !== null ? (
           <PublicPaidEventRegistration allowNewBookings={false} eventId={eventId} initialPaymentId={paymentId}
             inviteToken={null} key={`${eventId}:${paymentId}`} />

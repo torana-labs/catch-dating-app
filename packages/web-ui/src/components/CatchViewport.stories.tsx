@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchPaneLayout} from "./CatchPaneLayout";
 import {CatchTabBar, type CatchTabBarItem} from "./CatchTabBar";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {CatchViewport} from "./CatchViewport";
 import {CatchWorkspaceHeader} from "./CatchWorkspaceHeader";
 
@@ -44,7 +44,7 @@ function Shell({register, size}: {register: "app" | "quiet"; size: "compact" | "
                 title="Inbox"
                 views={{items: [{value: "waiting", label: "Waiting", count: 23}, {value: "done", label: "Done"}], value: "waiting"}}
               />
-              <CatchText as="p" color="ink2" variant="bodyS">The queue's table goes here.</CatchText>
+              <CatchLegacyText as="p" color="ink2" variant="bodyS">The queue's table goes here.</CatchLegacyText>
             </>
           )}
           pattern="queue"

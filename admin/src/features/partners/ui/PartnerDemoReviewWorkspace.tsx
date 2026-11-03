@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchLegacyText, CatchField} from "@catch/web-ui";
 import {ClipboardList} from "lucide-react";
 import {useEffect, useState} from "react";
 import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, StateRow} from "../../../shared/ui/AdminPrimitives";
@@ -20,8 +20,8 @@ function ReviewBody(props: Parameters<typeof PartnerDemoReviewWorkspace>[0]) {
   const retained = props.isCurrentSession() && c.query.data?.organizerId === props.organizerId &&
     c.query.data.assignmentRevision === props.assignmentRevision ? c.query.data : null;
   return <>{visible && <Panel title="Private synthetic preview" icon={<ClipboardList />}>
-    <CatchText as="p" variant="supporting">Review the sample and propose wording for Owner review. This review creates no invitation or organizer control.</CatchText>
-    {c.error && <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText>}{c.notice && <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText>}
+    <CatchLegacyText as="p" variant="supporting">Review the sample and propose wording for Owner review. This review creates no invitation or organizer control.</CatchLegacyText>
+    {c.error && <CatchLegacyText as="p" variant="supporting" role="alert">{c.error}</CatchLegacyText>}{c.notice && <CatchLegacyText as="p" variant="supporting" role="status">{c.notice}</CatchLegacyText>}
     <AdminButton disabled={operationPending || c.busy} onClick={() => void c.refresh()}>Refresh private previews</AdminButton>
     {c.ticket && <AdminButton disabled={operationPending || c.busy || !c.data} onClick={() => void c.retry()}>Retry unchanged preview proposal</AdminButton>}
     {!c.data || !c.data.rows.length ? <EmptyState>No current preview has been separately shared with you.</EmptyState> : null}
@@ -39,12 +39,12 @@ function PreviewEditor({row, visible, disabled, propose}: {row: PartnerDemoRevie
   if (!visible) return null;
   return <Panel title="Review shared composition" icon={<ClipboardList />}><AdminForm onSubmit={(e) => {e.preventDefault(); if (reviewed && valid && !disabled) void propose(row, {
     headline: wording.headline.trim(), scenario: wording.scenario.trim(), cta: wording.cta.trim()});}}>
-    <CatchText as="h3" variant="sectionTitle">{row.preview.brandName}</CatchText><StateRow label="Approved headline" value={row.preview.headline} />
-    <CatchText as="p" variant="supporting">{row.preview.scenario}</CatchText><ol>{row.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
-    {row.preview.retainedTools.map((tool, i) => <CatchText as="p" variant="supporting" key={i}>Keep: {tool}</CatchText>)}
-    {row.preview.limitations.map((limit, i) => <CatchText as="p" variant="supporting" key={i}>{limit}</CatchText>)}
-    <CatchText as="p" variant="supporting">Approved call to action: {row.preview.cta}</CatchText><CatchText as="p" variant="supporting">Sample only. No guests, messages or admissions are real.</CatchText>
-    {row.proposedWording && <CatchText as="p" variant="supporting" role="status">Your wording is awaiting Owner review. The approved preview remains above.</CatchText>}
+    <CatchLegacyText as="h3" variant="sectionTitle">{row.preview.brandName}</CatchLegacyText><StateRow label="Approved headline" value={row.preview.headline} />
+    <CatchLegacyText as="p" variant="supporting">{row.preview.scenario}</CatchLegacyText><ol>{row.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
+    {row.preview.retainedTools.map((tool, i) => <CatchLegacyText as="p" variant="supporting" key={i}>Keep: {tool}</CatchLegacyText>)}
+    {row.preview.limitations.map((limit, i) => <CatchLegacyText as="p" variant="supporting" key={i}>{limit}</CatchLegacyText>)}
+    <CatchLegacyText as="p" variant="supporting">Approved call to action: {row.preview.cta}</CatchLegacyText><CatchLegacyText as="p" variant="supporting">Sample only. No guests, messages or admissions are real.</CatchLegacyText>
+    {row.proposedWording && <CatchLegacyText as="p" variant="supporting" role="status">Your wording is awaiting Owner review. The approved preview remains above.</CatchLegacyText>}
     <CatchField
       recipe="input"
       title="Proposed headline"

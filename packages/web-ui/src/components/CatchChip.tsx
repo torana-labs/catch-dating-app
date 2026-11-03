@@ -1,7 +1,7 @@
 "use client";
 
 import type {CSSProperties, ReactNode} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchChip.module.css";
 
 const activities = ["social-run", "running", "walking", "pickleball", "padel", "tennis",
@@ -71,7 +71,7 @@ export function CatchChip(props: CatchChipProps) {
   };
   const contents = <span className={styles.surface}>
     {leading ? <span className={styles.icon} data-check={checkedChoice || undefined} aria-hidden="true">{leading}</span> : null}
-    <CatchText as="span" variant={activity ? "bodyLead" : "titleS"} color="inherit">{label}</CatchText>
+    <CatchLegacyText as="span" variant={activity ? "bodyLead" : "titleS"} color="inherit">{label}</CatchLegacyText>
     {props.recipe === "removable" ? <span className={styles.icon} aria-hidden="true">{close}</span> : null}
   </span>;
   const semanticLabel = props.semanticsLabel ?? (props.recipe === "removable" ? `Delete: ${label}` : label);

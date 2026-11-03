@@ -5,7 +5,7 @@ import {
   CatchGap,
   CatchIndexRow,
   CatchSheet,
-  CatchText,
+  CatchLegacyText,
   CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import {useState} from "react";
@@ -35,13 +35,13 @@ export function TeamSettingsWorkspace({
       <CatchWorkspaceHeader kicker="Settings" title="Team and roles" />
       <CatchGap size="section">
         <CatchGap size="related">
-          <CatchText as="h2" variant="sectionTitle">
+          <CatchLegacyText as="h2" variant="sectionTitle">
             {`People · ${team.members.length}`}
-          </CatchText>
+          </CatchLegacyText>
           {team.loadState === "loading" ? (
-            <CatchText as="p" color="ink2" variant="bodyM">
+            <CatchLegacyText as="p" color="ink2" variant="bodyM">
               Loading the team
-            </CatchText>
+            </CatchLegacyText>
           ) : team.members.map((member) => (
             <CatchIndexRow
               key={member.targetUid}
@@ -49,13 +49,13 @@ export function TeamSettingsWorkspace({
               subtitle={[jobTitle(jobOf(member.roles)), member.email]
                 .filter(Boolean).join(" · ")}
               title={member.displayName ?? member.email ?? member.targetUid}
-              trailing={<CatchText as="span" color="ink2"
-                variant="supporting">Change</CatchText>}
+              trailing={<CatchLegacyText as="span" color="ink2"
+                variant="supporting">Change</CatchLegacyText>}
             />
           ))}
         </CatchGap>
         <CatchGap size="related">
-          <CatchText as="h2" variant="sectionTitle">Invite someone</CatchText>
+          <CatchLegacyText as="h2" variant="sectionTitle">Invite someone</CatchLegacyText>
           <CatchField
             helperText="Their Catch user id. They sign in with their own phone."
             onChanged={setInviteUid}
@@ -72,9 +72,9 @@ export function TeamSettingsWorkspace({
           />
         </CatchGap>
         <CatchGap size="related">
-          <CatchText as="h2" variant="sectionTitle">
+          <CatchLegacyText as="h2" variant="sectionTitle">
             What each role can do
-          </CatchText>
+          </CatchLegacyText>
           {TEAM_JOBS.filter((job) => job.job !== "none").map((job) => (
             <CatchIndexRow key={job.job} subtitle={job.subtitle}
               title={job.title} />
@@ -116,9 +116,9 @@ export function TeamSettingsWorkspace({
             value={team.note}
           />
           {team.validationIssue && team.note ? (
-            <CatchText as="p" color="danger" variant="bodyS">
+            <CatchLegacyText as="p" color="danger" variant="bodyS">
               {team.validationIssue}
-            </CatchText>
+            </CatchLegacyText>
           ) : null}
         </CatchGap>
       </CatchSheet>

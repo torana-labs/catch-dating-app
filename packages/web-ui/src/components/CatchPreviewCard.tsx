@@ -1,5 +1,5 @@
 import {CatchButton} from "./CatchButton";
-import {CatchText, type CatchTextAccent} from "./CatchText";
+import {CatchLegacyText, type CatchTextAccent} from "./CatchLegacyText";
 import type {Ground, PaletteAccent} from "./palette";
 import styles from "./CatchPreviewCard.module.css";
 
@@ -48,7 +48,7 @@ export function CatchPreviewCard({
   onClick,
 }: CatchPreviewCardProps) {
   const feature = size === "feature";
-  const labelText = <CatchText as="span" color={labelAccent} variant="statusLabel">{label}</CatchText>;
+  const labelText = <CatchLegacyText as="span" color={labelAccent} variant="statusLabel">{label}</CatchLegacyText>;
   return (
     <a
       className={styles.card}
@@ -61,16 +61,16 @@ export function CatchPreviewCard({
       {tag ? (
         <span className={styles.top}>
           {labelText}{" "}
-          <span className={styles.tag}><CatchText as="span" color="inherit" variant="statusLabel">{tag}</CatchText></span>
+          <span className={styles.tag}><CatchLegacyText as="span" color="inherit" variant="statusLabel">{tag}</CatchLegacyText></span>
         </span>
       ) : labelText}{" "}
-      <CatchText as="span" maxLines={3} variant={feature ? "displayM" : "displayXs"}>{title}</CatchText>
-      {detail ? <>{" "}<CatchText as="span" color="ink2" variant={feature ? "bodyL" : "bodyM"}>{detail}</CatchText></> : null}
+      <CatchLegacyText as="span" maxLines={3} variant={feature ? "displayM" : "displayXs"}>{title}</CatchLegacyText>
+      {detail ? <>{" "}<CatchLegacyText as="span" color="ink2" variant={feature ? "bodyL" : "bodyM"}>{detail}</CatchLegacyText></> : null}
       {meta || action ? (
         <>
           {" "}
           <span className={styles.meta}>
-            {meta ? <CatchText as="span" variant="supportingStrong">{meta}</CatchText> : null}
+            {meta ? <CatchLegacyText as="span" variant="supportingStrong">{meta}</CatchLegacyText> : null}
             {action ? (
               <>
                 {" "}

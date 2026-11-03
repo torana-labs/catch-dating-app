@@ -7,7 +7,7 @@ import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchIndexRow} from "./CatchIndexRow";
 import {CatchSkeleton} from "./CatchSkeleton";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 
 const meta = {
   title: "Web UI/CatchSkeleton",
@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 function State({children, label}: {children: ReactNode; label: string}) {
   return (
     <CatchGap size="related">
-      <CatchText as="span" color="ink2" variant="bodyS">{label}</CatchText>
+      <CatchLegacyText as="span" color="ink2" variant="bodyS">{label}</CatchLegacyText>
       {children}
     </CatchGap>
   );

@@ -1,59 +1,44 @@
-import {
-  catchIconGlyphs,
-  catchIconStrokeWidth,
-  type CatchIconName,
-} from "../icons/catchIconGlyphs";
+import type {SVGAttributes} from "react";
+import {catchIconGlyphs, catchIconStrokeWidth, type CatchIconName} from "../icons/catchIconGlyphs";
+import type {CatchIconSizeStep} from "./catchCoreVocabulary";
 import styles from "./CatchIcon.module.css";
 
-/**
- * Icon extents, named after the Flutter `CatchIconSize` constants. Each name
- * resolves to the same pixel extent as its Flutter constant.
- */
-export const catchIconSizes = {
-  micro: 11,
-  sm: 14,
-  xs: 16,
-  md: 18,
-  control: 20,
-  row: 22,
-  lg: 24,
-  tile: 28,
-  emptyState: 34,
-  hero: 36,
-} as const;
-
-export type CatchIconSizeName = keyof typeof catchIconSizes;
-
-/** Semantic ink the glyph draws in; `inherit` uses the surrounding text color. */
-export type CatchIconTone = "inherit" | "ink" | "muted" | "primary" | "success" | "warning" | "danger";
-
-export interface CatchIconProps {
-  /** A role from design/tokens/catch.icons.json. */
-  icon: CatchIconName;
-  size?: CatchIconSizeName;
-  tone?: CatchIconTone;
-  /**
-   * Accessible name. Without one the icon is decorative and hidden from
-   * assistive technology, as Flutter's `Icon` is without a semantic label.
-   */
-  semanticLabel?: string;
+export interface CatchIconProps extends Omit<SVGAttributes<SVGSVGElement>, "name"> {
+  /** A role from design/tokens/catch.icons.json (back, close, ticket…), never a raw glyph name. */
+  name: CatchIconName;
+  /** 16, 18, 20 or 24 pixels. Defaults to 20. */
+  size?: CatchIconSizeStep;
+  /** Read aloud. Without it the icon is decorative and hidden from screen readers. */
+  label?: string;
 }
 
-/** Draws one icon role at a token size and tone. */
-export function CatchIcon({icon, size = "md", tone = "inherit", semanticLabel}: CatchIconProps) {
-  const Glyph = catchIconGlyphs[icon];
-  const extent = catchIconSizes[size];
+/**
+ * The roles that point a direction and mirror in right-to-left layouts: the
+ * mirrorInRtl roles of design/tokens/catch.icons.json (the icon test pins the
+ * two).
+ */
+export const catchMirroredIconNames: ReadonlySet<CatchIconName> = new Set<CatchIconName>(["back", "forward", "disclosure"]);
+
+/** The stroke thins as the icon grows, so lines look the same weight at every size. */
+export function catchIconStrokeFor(size: CatchIconSizeStep): number {
+  return size <= 20 ? catchIconStrokeWidth : 1.75;
+}
+
+/** catch.icon: a Lucide icon chosen by role. It takes the colour of the text around it. */
+export function CatchIcon({name, size = 20, label, className, ...rest}: CatchIconProps) {
+  const Glyph = catchIconGlyphs[name];
   return (
     <Glyph
-      aria-hidden={semanticLabel ? undefined : true}
-      aria-label={semanticLabel}
-      className={styles.icon}
-      data-tone={tone}
+      aria-hidden={label ? undefined : true}
+      aria-label={label}
+      className={className ? `${styles.icon} ${className}` : styles.icon}
+      data-mirror={catchMirroredIconNames.has(name) ? "" : undefined}
       focusable="false"
-      height={extent}
-      role={semanticLabel ? "img" : undefined}
-      strokeWidth={catchIconStrokeWidth}
-      width={extent}
+      role={label ? "img" : undefined}
+      {...rest}
+      height={size}
+      strokeWidth={catchIconStrokeFor(size)}
+      width={size}
     />
   );
 }

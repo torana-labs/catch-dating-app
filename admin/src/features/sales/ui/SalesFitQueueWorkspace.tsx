@@ -3,7 +3,7 @@ import {useSalesFitQueueController} from
   "../controllers/useSalesFitQueueController";
 import type {FitQueueEntry, FitQueueView} from
   "../api/salesFitQueueTypes";
-import {CatchButton, CatchEmptyState, CatchGap, CatchIndexRow, CatchPageTabBar, CatchSection, CatchTable, CatchText, type CatchTableColumn} from "@catch/web-ui";
+import {CatchButton, CatchEmptyState, CatchGap, CatchIndexRow, CatchPageTabBar, CatchSection, CatchTable, CatchLegacyText, type CatchTableColumn} from "@catch/web-ui";
 
 const views: Array<{id: FitQueueView; label: string}> = [
   {id: "ranked", label: "Reviewed fit"},
@@ -71,26 +71,26 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
   }));
   return <CatchSection title="Reviewed fit queue" dividers="none">
     <CatchGap size="related">
-      <CatchText as="p" variant="supporting">Scores use current reviewed factor evidence. Missing or disputed factors
+      <CatchLegacyText as="p" variant="supporting">Scores use current reviewed factor evidence. Missing or disputed factors
         stay unknown. This queue helps choose research and review; it does not
-        authorize contacting anyone.</CatchText>
+        authorize contacting anyone.</CatchLegacyText>
       <CatchPageTabBar label="Fit queue view" selected={c.view} size="sm" fill={false}
         options={views.map((view) => ({value: view.id, label: view.label}))}
         onChanged={(value) => c.changeView(value as FitQueueView)} />
-      {c.view === "outreach_review_candidate" ? <CatchText as="p" variant="supporting">
+      {c.view === "outreach_review_candidate" ? <CatchLegacyText as="p" variant="supporting">
         Candidates have a current reviewed score, a matching qualification policy,
         and no account hold or duplicate review. Review the contact and all current
-        source details before any outreach activity.</CatchText> : null}
-      {c.page.isPending ? <CatchText as="p" variant="supporting">Loading reviewed fit…</CatchText> : null}
+        source details before any outreach activity.</CatchLegacyText> : null}
+      {c.page.isPending ? <CatchLegacyText as="p" variant="supporting">Loading reviewed fit…</CatchLegacyText> : null}
       {c.page.isError ? <CatchEmptyState title={c.view === "outreach_review_candidate" ?
         "The current qualification policy or fit queue could not be checked." : "Current fit could not be loaded."}
         actions={<CatchButton {...small} label="Try again" onPressed={() => void c.page.refetch()} />} /> : null}
-      {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
-      {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
-      {c.page.data?.omittedExpiredInPage ? <CatchText as="p" variant="supporting" role="status">
+      {c.error ? <CatchLegacyText as="p" variant="supporting" role="alert">{c.error}</CatchLegacyText> : null}
+      {c.notice ? <CatchLegacyText as="p" variant="supporting" role="status">{c.notice}</CatchLegacyText> : null}
+      {c.page.data?.omittedExpiredInPage ? <CatchLegacyText as="p" variant="supporting" role="status">
         {c.page.data.omittedExpiredInPage} expired ranking(s) were omitted from
         this page. Refresh a bounded batch to review them again.
-      </CatchText> : null}
+      </CatchLegacyText> : null}
       {c.page.isSuccess && !rows.length ? <CatchEmptyState title={c.page.data.nextCursor ?
         "No current results in this scanned page. Continue for more hosts." :
         "No current results in this view. Refresh a bounded batch or review host evidence."} /> : null}
@@ -102,11 +102,11 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
         {c.nextBatchCursor ? <CatchButton {...small} label="Continue refresh" onPressed={locked ? null : () => void c.continueBatch()} /> : null}
         {c.pending ? <CatchButton {...small} label="Retry unchanged refresh" onPressed={c.busy ? null : () => void c.retryPending()} /> : null}
       </CatchGap>
-      {c.lastBatch ? <CatchText as="p" variant="supporting" role="status">
+      {c.lastBatch ? <CatchLegacyText as="p" variant="supporting" role="status">
         This batch refreshed {c.lastBatch.rows.filter((row) => row.result === "refreshed").length} host(s);{" "}
         {c.lastBatch.rows.filter((row) => row.result === "needs_review").length}
         {" "}need source review. The batch covers only these ten or fewer hosts.
-      </CatchText> : null}
+      </CatchLegacyText> : null}
       {c.lastBatch?.rows.filter((row) => row.result === "needs_review").map((row) => <CatchIndexRow key={row.organizerId} titleVariant="bodyM"
         title={row.reason || "Reviewed source needs attention."}
         trailing={<CatchButton {...small} label="Open host" onPressed={() => onOpenHost(row.organizerId)} />} />)}

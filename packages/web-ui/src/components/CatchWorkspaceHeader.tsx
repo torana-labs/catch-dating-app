@@ -1,5 +1,5 @@
 import type {ChangeEvent, ReactNode} from "react";
-import {CatchIcon} from "./CatchIcon";
+import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {CatchRail} from "./CatchRail";
 import {useCatchPane} from "./catchPaneLayoutContext";
 import styles from "./CatchWorkspaceHeader.module.css";
@@ -67,7 +67,7 @@ export interface CatchWorkspaceHeaderProps {
 }
 
 function IconAction({action, icon}: {action: CatchWorkspaceHeaderAction; icon: "back" | "close" | "moveUp" | "moveDown"}) {
-  const content = <CatchIcon icon={icon} size="control" />;
+  const content = <CatchLegacyIcon icon={icon} size="control" />;
   return action.href
     ? <a aria-label={action.label} className={styles.iconButton} href={action.href} onClick={action.onPressed}>{content}</a>
     : (
@@ -138,7 +138,7 @@ export function CatchWorkspaceHeader({title, kicker, count, note, back, position
           ) : null}
           {filters.search ? (
             <label className={styles.search}>
-              <CatchIcon icon="search" size="xs" tone="muted" />
+              <CatchLegacyIcon icon="search" size="xs" tone="muted" />
               <input
                 aria-label={filters.search.placeholder}
                 placeholder={filters.search.placeholder}

@@ -1,0 +1,41 @@
+/*
+ * CatchGroundProvider (redesign P2.1): a ground change draws no box. It sets
+ * the format's colour and ink for what is beneath it (--catch-accent,
+ * --catch-accent-ink, as CatchRoot does), and resets the text colour to the
+ * new ground's ink: the theme ink on ground, tile and nested, and on the night
+ * grounds (their theme attribute flips the variable beneath them); the
+ * format's ink on a colour. The sheet spells nightsOut `nights-out`.
+ */
+.ground {
+  display: contents;
+  color: var(--catch-theme-ink);
+}
+
+.ground[data-format="run"] {
+  --catch-accent: var(--catch-format-run-accent);
+  --catch-accent-ink: var(--catch-format-run-ink);
+}
+
+.ground[data-format="dinner"] {
+  --catch-accent: var(--catch-format-dinner-accent);
+  --catch-accent-ink: var(--catch-format-dinner-ink);
+}
+
+.ground[data-format="games"] {
+  --catch-accent: var(--catch-format-games-accent);
+  --catch-accent-ink: var(--catch-format-games-ink);
+}
+
+.ground[data-format="courts"] {
+  --catch-accent: var(--catch-format-courts-accent);
+  --catch-accent-ink: var(--catch-format-courts-ink);
+}
+
+.ground[data-format="nightsOut"] {
+  --catch-accent: var(--catch-format-nights-out-accent);
+  --catch-accent-ink: var(--catch-format-nights-out-ink);
+}
+
+.ground[data-ground="colour"] {
+  color: var(--catch-accent-ink);
+}

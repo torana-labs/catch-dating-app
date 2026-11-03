@@ -1,4 +1,4 @@
-import {CatchButton, CatchEmptyState, CatchGap, CatchIndexRow, CatchSection, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchEmptyState, CatchGap, CatchIndexRow, CatchSection, CatchLegacyText} from "@catch/web-ui";
 import {dataMode} from "../../../shared/api/dataMode";
 import type {SalesImportedHistoryRecord} from "../api/salesHistoryTypes";
 import {useSalesHistoryController} from "../controllers/useSalesHistoryController";
@@ -32,10 +32,10 @@ function ImportedHistory({actorUid, organizerId}: {actorUid: string; organizerId
   }
   return (
     <CatchGap size="section">
-      <CatchText as="p" variant="supporting">
+      <CatchLegacyText as="p" variant="supporting">
         Historical spreadsheet material only. It doesn't establish a current fit score, contact permission, message delivery
         or a current next step. Unknown source dates stay unknown.
-      </CatchText>
+      </CatchLegacyText>
       <CatchSection title="Imported source history" dividers="none"
         empty={<CatchEmptyState title={c.records.isPending ? "Loading imported history…" : "No promoted records on this page"} />}>
         {records.map((record) => <CatchIndexRow key={record.recordId} title={record.sourceValue} titleVariant="bodyM"
@@ -49,10 +49,10 @@ function ImportedHistory({actorUid, organizerId}: {actorUid: string; organizerId
         {rows.map((row) => <CatchIndexRow key={row.rowId} title={row.disposition.replaceAll("_", " ")} titleVariant="bodyM"
           subtitle={[row.reason, `source row ${row.sourceRowId}`, `import ${row.importId}`, `review ${row.promotionVersion}`].join(" · ")} />)}
       </CatchSection>
-      {c.rows.isSuccess ? <CatchText as="p" variant="supporting" role="status">
+      {c.rows.isSuccess ? <CatchLegacyText as="p" variant="supporting" role="status">
         This page: {count("promoted")} promoted, {count("skipped")} skipped, {count("review_needed")} need review. These count this
         page, not the whole source. Rows without a reviewed Catch host stay in the private migration plan.
-      </CatchText> : null}
+      </CatchLegacyText> : null}
       <Paging back={c.rowBack.length > 0} next={Boolean(c.rows.data?.nextCursor)} onBack={c.previousRows} onNext={c.nextRows} what="rows" />
     </CatchGap>
   );

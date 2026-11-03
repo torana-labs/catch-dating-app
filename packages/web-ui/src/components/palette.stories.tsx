@@ -3,7 +3,7 @@ import type {CSSProperties} from "react";
 import {CatchGap} from "./CatchGap";
 import {CatchInset} from "./CatchInset";
 import {CatchPageBody} from "./CatchPageBody";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import {
   contrastRatio,
   type Format,
@@ -71,9 +71,9 @@ const gridStyle: CSSProperties = {
 function TextSample({color, ground}: {color: PaletteColor; ground: string}) {
   return (
     <div style={{color: `var(${paletteVar(color)})`}}>
-      <CatchText color="inherit" variant="bodyM">
+      <CatchLegacyText color="inherit" variant="bodyM">
         {`${color} · ${measure(paletteVar(color), ground)}`}
-      </CatchText>
+      </CatchLegacyText>
     </div>
   );
 }
@@ -83,9 +83,9 @@ function Swatch({color, ground}: {color: PaletteColor; ground: string}) {
   return (
     <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline">
       <span aria-hidden="true" style={{...swatchStyle, background: `var(${paletteVar(color)})`}} />
-      <CatchText color="inherit" variant="supporting">
+      <CatchLegacyText color="inherit" variant="supporting">
         {`${color} ${measure(paletteVar(color), ground)}`}
-      </CatchText>
+      </CatchLegacyText>
     </CatchGap>
   );
 }
@@ -97,7 +97,7 @@ function GroundPanel({ground}: {ground: Ground}) {
       <CatchPageBody pb="s8" pt="s8">
         <CatchGap size="section">
           <CatchGap size="related">
-            <CatchText as="h2" color="inherit" variant="sectionTitle">{`${title(ground)} ground`}</CatchText>
+            <CatchLegacyText as="h2" color="inherit" variant="sectionTitle">{`${title(ground)} ground`}</CatchLegacyText>
             {groundTextColors(ground).map((color) => <TextSample color={color} ground={fill} key={color} />)}
           </CatchGap>
           <div style={gridStyle}>
@@ -117,7 +117,7 @@ function NightSurface() {
     <div style={{...fillStyle(fill, paletteVar("nightInk")), borderRadius: "var(--catch-radius-md)"}}>
       <CatchInset padding="content">
         <CatchGap size="related">
-          <CatchText as="h3" color="inherit" variant="titleS">Night surface</CatchText>
+          <CatchLegacyText as="h3" color="inherit" variant="titleS">Night surface</CatchLegacyText>
           {nightSurfaceTextColors.map((color) => <TextSample color={color} ground={fill} key={color} />)}
         </CatchGap>
       </CatchInset>
@@ -140,19 +140,19 @@ function FormatTile({format}: {format: Format}) {
       <div style={{...fillStyle(formatVar(format, "accent"), formatVar(format, "ink")), borderRadius: "var(--catch-radius-md)"}}>
         <CatchInset padding="content">
           <CatchGap size="headerTitleToSubtitle">
-            <CatchText as="h2" color="inherit" variant="titleL">{title(format)}</CatchText>
+            <CatchLegacyText as="h2" color="inherit" variant="titleL">{title(format)}</CatchLegacyText>
             <div style={{color: `var(${formatVar(format, "inkSecondary")})`}}>
-              <CatchText color="inherit" variant="supporting">
+              <CatchLegacyText color="inherit" variant="supporting">
                 {`${title(formatAccents[format])} · ${formatActivityKinds[format].join(", ")}`}
-              </CatchText>
+              </CatchLegacyText>
             </div>
           </CatchGap>
         </CatchInset>
       </div>
       <div style={{color: `var(${formatVar(format, "deep")})`}}>
-        <CatchText color="inherit" variant="statusLabel">
+        <CatchLegacyText color="inherit" variant="statusLabel">
           {`${title(format)} label · ${measure(formatVar(format, "deep"), groundVar("paper", "fill"))} on paper`}
-        </CatchText>
+        </CatchLegacyText>
       </div>
     </CatchGap>
   );

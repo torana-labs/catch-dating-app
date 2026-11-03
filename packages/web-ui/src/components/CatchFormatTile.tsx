@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import type {Format} from "./palette";
 import styles from "./CatchFormatTile.module.css";
 
@@ -46,9 +46,9 @@ export function CatchFormatTile(props: CatchFormatTileProps) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const content = (
     <>
-      <CatchText as="span" color="inherit" variant="supportingStrong">{kicker}</CatchText>
-      <CatchText as="span" color="inherit" variant="displayS">{title}</CatchText>
-      <CatchText as="span" color="inherit" variant="bodyM">{body}</CatchText>
+      <CatchLegacyText as="span" color="inherit" variant="supportingStrong">{kicker}</CatchLegacyText>
+      <CatchLegacyText as="span" color="inherit" variant="displayS">{title}</CatchLegacyText>
+      <CatchLegacyText as="span" color="inherit" variant="bodyM">{body}</CatchLegacyText>
       {photoUrl && failedUrl !== photoUrl ? (
         <img alt="" className={styles.photo} decoding="async" loading="lazy" onError={() => setFailedUrl(photoUrl)} src={photoUrl} />
       ) : null}

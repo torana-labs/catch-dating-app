@@ -1,4 +1,4 @@
-import {catchFormatAccentOf, type CatchGround, type CatchTextAccent} from "@catch/web-ui";
+import {catchFormatAccentOf, type CatchBandGround, type CatchTextAccent} from "@catch/web-ui";
 import {eventPageCopy as copy} from "../../content/events";
 import {activityForKind} from "../organizers/publicDiscovery";
 import type {EventPublicPageDocument} from "../organizers/types";
@@ -49,7 +49,7 @@ export interface EventPageMoreCard {
   label: string;
   title: string;
   meta: string;
-  ground: CatchGround;
+  ground: CatchBandGround;
 }
 
 export type EventPageBooking =
@@ -86,7 +86,7 @@ export interface EventPageView {
   priceLabel: string;
 }
 
-const moreGrounds: readonly CatchGround[] = ["paper", "indigo", "mint"];
+const moreGrounds: readonly CatchBandGround[] = ["paper", "indigo", "mint"];
 
 export function buildEventPageView(page: EventPageData, now: number = Date.now()): EventPageView {
   const {item, organizer} = page;

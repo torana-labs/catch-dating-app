@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CatchText} from "./CatchText";
+import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchAccordion.module.css";
 
 export interface CatchAccordionItem {
@@ -30,11 +30,11 @@ export function CatchAccordion({items, exclusive = true, defaultOpen = [], name 
       {items.map((item) => (
         <details className={styles.item} key={item.id} name={exclusive ? name : undefined} open={defaultOpen.includes(item.id) || undefined}>
           <summary className={styles.question}>
-            <CatchText as="span" variant="titleL">{item.question}</CatchText>
+            <CatchLegacyText as="span" variant="titleL">{item.question}</CatchLegacyText>
             <span aria-hidden="true" className={styles.sign} />
           </summary>
           <div className={styles.answer}>
-            {typeof item.answer === "string" ? <CatchText as="p" color="ink2" variant="bodyL">{item.answer}</CatchText> : item.answer}
+            {typeof item.answer === "string" ? <CatchLegacyText as="p" color="ink2" variant="bodyL">{item.answer}</CatchLegacyText> : item.answer}
           </div>
         </details>
       ))}
