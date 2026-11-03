@@ -191,7 +191,16 @@ jobs:
             --iam-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
             --project catch-dating-app-64e51 --managed-by=user --format=json > /tmp/runtime-keys.json
           jq -e 'length == 0' /tmp/runtime-keys.json
+      # A closed billing account refuses the image push and the Cloud Run
+      # deploy. The run then defers with a warning, writes a marker the
+      # release train reads, deploys nothing and promotes nothing.
+      - id: platform
+        name: Check the project can deploy before pushing anything
+        run: >-
+          node tool/firebase/check_platform_availability.mjs --project catch-dating-app-64e51
+          --callable adminListEventDirectory --gcloud-probe --deferred-marker build/next-preview/deferred.json
       - name: Push the tested image and deploy a bounded preview runtime
+        if: ${{ steps.platform.outputs.available != 'false' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -230,6 +239,7 @@ jobs:
             --format=json > build/next-preview/service.json
           printf '%s\n' "$pinned" > build/next-preview/image-digest.txt
       - name: Publish only the expiring Hosting preview channel
+        if: ${{ steps.platform.outputs.available != 'false' }}
         working-directory: build/next-preview/verified
         env:
           GH_TOKEN: ${{ github.token }}
@@ -239,6 +249,7 @@ jobs:
           firebase hosting:channel:deploy next-candidate --expires 3d --project catch-dating-app-64e51 \
             --only marketing --config firebase.json --non-interactive --json > ../hosting-preview.json
       - name: Verify the actual Hosting channel and public request path
+        if: ${{ steps.platform.outputs.available != 'false' }}
         run: |
           set -euo pipefail
           node website/scripts/next/channelState.mjs record next-candidate catch-website-next-preview build/next-preview/channel.json
@@ -258,5 +269,6 @@ jobs:
             build/next-preview/channel.json
             build/next-preview/pinned-revision.json
             build/next-preview/deployed-checks.json
+            build/next-preview/deferred.json
           if-no-files-found: warn
           retention-days: 30
