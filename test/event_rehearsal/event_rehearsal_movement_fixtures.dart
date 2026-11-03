@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_observati
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
+import 'package:catch_kernel/brand.dart';
 
 // Produced and checked by the actual Functions movement projector, including
 // departure visit hashes, group source identities and subsequent observations.

@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 
 const widgetbookOrganizerViewerUid = 'widgetbook-club-viewer';
 

@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_host_identity_row.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

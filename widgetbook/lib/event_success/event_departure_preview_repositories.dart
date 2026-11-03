@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter/services.dart';
 
 import 'event_assistance_preview_repositories.dart' show previewUnconfirmed;

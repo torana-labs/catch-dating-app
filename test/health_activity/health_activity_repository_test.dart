@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/bookings/data/health_activity_client.d
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

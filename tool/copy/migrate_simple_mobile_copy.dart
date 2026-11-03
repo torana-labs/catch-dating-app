@@ -771,7 +771,7 @@ String _audience(String path) {
   if (path.startsWith('lib/hosts/') || path.contains('/host_')) return 'host';
   const sharedRoots = [
     'lib/contexts/',
-    'lib/kernel/',
+    'packages/kernel/lib/',
     'lib/pages/',
     'lib/platform/',
   ];

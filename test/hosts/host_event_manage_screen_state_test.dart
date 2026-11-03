@@ -6,9 +6,9 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_row_state.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';

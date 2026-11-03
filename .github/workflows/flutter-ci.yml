@@ -492,6 +492,10 @@ jobs:
         working-directory: packages/catch_ui
         run: flutter test --concurrency=1
 
+      - name: Kernel package tests
+        working-directory: packages/kernel
+        run: dart test --concurrency=1
+
       - name: Consumer package tests
         working-directory: apps/consumer
         run: flutter test --concurrency=1

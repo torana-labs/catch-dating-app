@@ -1,7 +1,7 @@
 // copy:allow-file(Canonical geographic proper-noun market catalog)
-import 'package:catch_dating_app/kernel/city_data.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
-import 'package:catch_dating_app/kernel/labelled.dart';
+import 'package:catch_kernel/city_data.dart';
+import 'package:catch_kernel/country_markets.dart';
+import 'package:catch_kernel/labelled.dart';
 
 class CityOption implements Labelled {
   const CityOption({

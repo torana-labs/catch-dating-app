@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -3,9 +3,9 @@
 // `contracts/patches/update_user_profile.schema.json`.
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_requ
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 
 /// Shared deterministic fixtures for Event Success attendee companion review.
 ///

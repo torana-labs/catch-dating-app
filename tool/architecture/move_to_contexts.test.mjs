@@ -16,7 +16,7 @@ const map = loadContextMap(JSON.stringify({
   roots: {
     contexts: "lib/contexts/",
     pages: "lib/pages/",
-    kernel: "lib/kernel/",
+    kernel: "packages/kernel/lib/",
     platform: "lib/platform/",
   },
   contexts: [
@@ -257,7 +257,7 @@ const sortMap = loadContextMap(JSON.stringify({
   roots: {
     contexts: "lib/contexts/",
     pages: "lib/pages/",
-    kernel: "lib/kernel/",
+    kernel: "packages/kernel/lib/",
     platform: "lib/platform/",
   },
   contexts: [{id: "events", owns: "Events."}],

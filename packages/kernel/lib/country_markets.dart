@@ -1,5 +1,5 @@
 // copy:allow-file(Canonical geographic proper-noun country catalog)
-import 'package:catch_dating_app/kernel/labelled.dart';
+import 'package:catch_kernel/labelled.dart';
 
 const defaultCountryIsoCode = 'IN';
 const defaultCountryDialCode = '+91';

@@ -10,8 +10,8 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/kernel/city_data.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_kernel/city_data.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

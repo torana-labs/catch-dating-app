@@ -15,7 +15,7 @@ This is an orientation map, not a detailed contract. Follow [AGENTS.md](AGENTS.m
 Catch combines social events and dating. Consumers discover clubs and events, book or join a waitlist, attend, review event experiences, browse eligible profiles, match, and chat. Hosts create and operate clubs/events. Internal operators use a separate admin console for intake, moderation, finance, and operational workflows.
 
 The product is India-first. Canonical market identity and fallback labels are
-owned in `lib/kernel/city_catalog.dart`, while Firestore-backed launch metadata is
+owned in `packages/kernel/lib/city_catalog.dart`, while Firestore-backed launch metadata is
 exposed through `CityRepository`; do not add free-form city identity logic in
 features.
 

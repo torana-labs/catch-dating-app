@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_kernel/country_markets.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'city_data.freezed.dart';

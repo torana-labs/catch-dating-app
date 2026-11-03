@@ -1109,6 +1109,18 @@ test("post-deploy callable IAM helper is deployment control, without runtime mut
 });
 
 
+test("Kernel package selects what lib/ selected before it moved", () => {
+  const kernel = plan("packages/kernel/lib/labelled.dart");
+  assert.deepEqual(kernel.directComponents, ["app.kernel"]);
+  for (const owner of ["app.shared", "app.consumer", "app.host"]) {
+    assert.ok(kernel.affectedComponents.includes(owner), owner);
+  }
+  for (const target of ["flutter", "visual_integration"]) {
+    assert.ok(kernel.operations.ciTargets.includes(target), target);
+  }
+  assert.deepEqual(kernel.operations.ciTargets, plan("lib/example_shared_file.dart").operations.ciTargets);
+});
+
 test("Flutter token package preserves app and visual checks and selects no captures", () => {
   const result = plan("packages/catch_tokens/lib/src/primitives/catch_spacing.dart");
   assert.deepEqual(result.directComponents, ["app.tokens"]);

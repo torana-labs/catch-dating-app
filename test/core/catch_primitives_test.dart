@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/activity_map_pin.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_thumbnail.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
@@ -16,6 +14,8 @@ import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

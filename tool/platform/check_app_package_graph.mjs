@@ -8,6 +8,15 @@ const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRoot = path.resolve(moduleDir, "../..");
 
 export const packageGraphPolicy = Object.freeze({
+  catch_kernel: {
+    projectRoot: "packages/kernel",
+    requiredPackages: [],
+    allowedPackages: ["collection", "freezed_annotation", "json_annotation"],
+    forbiddenPackages: [],
+    requiredPlugins: [],
+    forbiddenPlugins: [],
+    boundary: "pure Dart kernel",
+  },
   catch_tokens: {
     projectRoot: "packages/catch_tokens",
     requiredPackages: ["flutter"],
@@ -15,6 +24,7 @@ export const packageGraphPolicy = Object.freeze({
     forbiddenPackages: [],
     requiredPlugins: [],
     forbiddenPlugins: [],
+    boundary: "Flutter-only token",
   },
   catch_ui: {
     projectRoot: "packages/catch_ui",
@@ -24,6 +34,7 @@ export const packageGraphPolicy = Object.freeze({
     forbiddenPackages: [],
     requiredPlugins: [],
     forbiddenPlugins: [],
+    boundary: "presentation-only UI",
   },
   consumer: {
     projectRoot: "apps/consumer",
@@ -99,7 +110,7 @@ export function validateRoleGraph({
   }
   for (const packageName of declaredPackages) {
     if (contract.allowedPackages && !contract.allowedPackages.includes(packageName)) {
-      findings.push(`${role}: dependency '${packageName}' is outside the ${role === "catch_tokens" ? "Flutter-only token" : "presentation-only UI"} boundary.`);
+      findings.push(`${role}: dependency '${packageName}' is outside the ${contract.boundary} boundary.`);
     }
   }
   for (const [packageName, version] of Object.entries(contract.requiredVersions ?? {})) {

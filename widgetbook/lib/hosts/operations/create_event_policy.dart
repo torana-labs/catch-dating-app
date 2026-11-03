@@ -4,9 +4,9 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

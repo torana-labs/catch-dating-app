@@ -9,8 +9,8 @@ import 'package:catch_dating_app/contexts/events/data/private_event_setup_reposi
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

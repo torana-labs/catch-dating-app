@@ -71,6 +71,10 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     fs.mkdirSync(uiRoot, {recursive: true});
     fs.writeFileSync(path.join(uiRoot, "pubspec.yaml"),
       "name: catch_ui\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  skeletonizer: 2.1.3\n");
+    const kernelRoot = path.join(root, "packages/kernel");
+    fs.mkdirSync(kernelRoot, {recursive: true});
+    fs.writeFileSync(path.join(kernelRoot, "pubspec.yaml"),
+      "name: catch_kernel\nresolution: workspace\ndependencies:\n  collection: any\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -101,6 +105,16 @@ test("token package rejects every dependency outside Flutter", () => {
   }
   assert.deepEqual(validateRoleGraph({role: "catch_tokens", declaredPackages: new Set(), pluginPackages: new Set()}),
     ["catch_tokens: required package 'flutter' is absent."]);
+});
+
+// Every package may read the kernel, so it must stay free of Flutter and of us.
+test("kernel package rejects Flutter, the root package and anything it does not use", () => {
+  const allowed = ["collection", "freezed_annotation", "json_annotation"];
+  assert.deepEqual(validateRoleGraph({role: "catch_kernel", declaredPackages: new Set(allowed), pluginPackages: new Set()}), []);
+  for (const dependency of ["flutter", "catch_dating_app", "catch_ui", "cloud_firestore", "flutter_riverpod"]) {
+    assert.deepEqual(validateRoleGraph({role: "catch_kernel", declaredPackages: new Set([...allowed, dependency]), pluginPackages: new Set()}),
+      [`catch_kernel: dependency '${dependency}' is outside the pure Dart kernel boundary.`]);
+  }
 });
 
 test("UI package rejects app, state, backend and unrelated dependencies", () => {

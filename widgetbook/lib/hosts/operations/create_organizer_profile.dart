@@ -3,8 +3,8 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/create/
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/create_organizer_photos_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_details_step.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/platform/media/ordered_photo_picker.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
