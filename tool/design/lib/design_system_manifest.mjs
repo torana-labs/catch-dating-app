@@ -32,6 +32,10 @@ export const inputPaths = Object.freeze([
   "packages/web-config/styles/catch-web.css",
   "packages/catch_ui/assets/fonts/OFL-Archivo.txt",
   "packages/catch_ui/assets/fonts/OFL-IBMPlexMono.txt",
+  "packages/catch_ui/assets/fonts/Archivo-Roman-VF.ttf",
+  "design/tokens/catch.tokens.json",
+  "tool/design_tokens.mjs",
+  "tool/design_tokens",
   registryPath,
   guidelinesPath,
   systemTypesPath,
@@ -40,11 +44,20 @@ export const inputPaths = Object.freeze([
   "tool/design/publish_design_system.mjs",
 ]);
 
-/** The fonts web-ui's token CSS declares, and the licences that travel with them. */
+/**
+ * The fonts web-ui's token CSS declares, the folders the artifact's tokens.css
+ * fonts come from, and the licences that travel with them.
+ */
 export const fontSources = Object.freeze({
   dir: "packages/web-config/generated/assets/fonts",
+  tokenFontDirs: ["packages/web-config/generated/assets/fonts", "packages/catch_ui/assets/fonts"],
   licences: ["packages/catch_ui/assets/fonts/OFL-Archivo.txt", "packages/catch_ui/assets/fonts/OFL-IBMPlexMono.txt"],
 });
+
+/** The files under fonts/ an artifact tokens.css loads. */
+export function tokenFontFiles(tokensCss) {
+  return [...new Set([...tokensCss.matchAll(/url\("fonts\/([^"/]+)"\)/gu)].map((match) => match[1]))];
+}
 
 /** The artifact's files the repo has no source for; the live artifact keeps its own. */
 export const notBuilt = Object.freeze([

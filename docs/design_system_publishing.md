@@ -34,8 +34,8 @@ the system first, then the canvas, as the design source's README prescribes.
 
 ```sh
 bash tool/git/bootstrap_worktree.sh --target root     # installs React 18 beside React 19 too
-node tool/design/publish_design_system.mjs --build [--tokens-from <dir>]
-node tool/design/publish_design_system.mjs --check [--tokens-from <dir>]
+node tool/design/publish_design_system.mjs --build
+node tool/design/publish_design_system.mjs --check
 node tool/design/publish_design_system.mjs --compare ~/Development/catch-dating-app/catch-design-source/ds/catch/project
 npm --workspace @catch/web-ui run build                # bundle.js, bundle.css and index.d.ts into build/web-ui
 npm --workspace @catch/web-ui run build:storybook      # web-ui's own static Storybook
@@ -44,7 +44,8 @@ npm run web:ui:test                                    # every unit test on Reac
 
 `--build` writes `build/design-system`, which Git ignores: the folder is a
 build output with a manifest, not a tracked snapshot. `--out <dir>` builds
-elsewhere.
+elsewhere, and `--tokens-from <dir>` takes `tokens.json` and `tokens.css` from
+another folder instead of the tokens pipeline.
 
 `--check` rebuilds into a temporary folder and fails when the build breaks, a
 card's guideline is missing, a present component is not exported under both
@@ -69,8 +70,8 @@ copy read back from the artifact.
 | `components/<Card>/README.md` | The card owner's guideline from `design/components/guidelines`. |
 | `components/<Card>/preview.html` | Each member's `Contract` story, framed from the Storybook build and sized to it. |
 | `storybook/` | web-ui's static Storybook (`packages/web-ui/.storybook`). |
-| `fonts/` | The font files web-config's token CSS declares, with their OFL licences. |
-| `tokens.json`, `tokens.css` | The artifact token format from the tokens pipeline, copied from `build/design-system` or from `--tokens-from <dir>`. |
+| `fonts/` | The font files web-config's token CSS declares and the ones `tokens.css` loads, with their OFL licences. |
+| `tokens.json`, `tokens.css` | The tokens pipeline's artifact outputs (`generateTokenOutputs` in `tool/design_tokens.mjs`) from `design/tokens/catch.tokens.json`, or the files in `--tokens-from <dir>`. |
 | `design-system.json` | The artifact's metadata in the design source's shape: namespace `Catch`, React 18, and the commit the folder came from. |
 | `manifest.json` | See below. |
 
@@ -97,8 +98,9 @@ sources and its `Cover` card until an upload removes them by passing `null`.
 - `builtFrom`: the git sha, whether any input was uncommitted, web-ui's version,
   the registry's sha256, and the sha256 of every input file (web-ui's source,
   Storybook config, artifact build and package files, web-config's generated
-  CSS and fonts, the font licences, the registry, the guidelines, the system
-  types, this tool and the lockfile).
+  CSS and fonts, the artifact font and licences, the token source and its
+  pipeline, the registry, the guidelines, the system types, this tool and the
+  lockfile).
 - `tokens`: where `tokens.json` and `tokens.css` came from, if anywhere.
 - `components`: the system components present (with their card), the missing
   ones (with any `registryTwin`), the missing parts, the present components
@@ -110,9 +112,7 @@ sources and its `Cover` card until an upload removes them by passing `null`.
 
 ## Uploading
 
-1. On fresh `main`, run `--build` and then `--check`. Until the tokens pipeline
-   writes `build/design-system/tokens.json` and `tokens.css`, pass
-   `--tokens-from <design source>/ds/catch/project`.
+1. On fresh `main`, run `--build` and then `--check`.
 2. Run `--compare` against the live files and read the differences.
 3. Read the live design-system artifact
    (https://claude.ai/artifact/BFDy9JwngvATkrJ2fEiZno) and its files listing.

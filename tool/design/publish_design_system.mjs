@@ -4,7 +4,8 @@
 // Artifact tool after a library PR merges; docs/design_system_publishing.md
 // describes the loop.
 //
-//   --build   [--out <dir>] [--tokens-from <dir>]  build the folder (default build/design-system)
+//   --build   [--out <dir>] [--tokens-from <dir>]  build the folder (default build/design-system);
+//             tokens.json and tokens.css come from design/tokens unless --tokens-from names a folder
 //   --check   [--out <dir>] [--tokens-from <dir>]  rebuild into a temporary folder and fail on a
 //             broken build, a missing guideline, a twin the bundle does not export under both
 //             names, a preview whose story the Storybook build lacks, a manifest hash that is not
@@ -18,6 +19,8 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 import {barrelExports, buildComponents, buildStorybook, bundleProblems, packageDir} from "../../packages/web-ui/artifact/build.mjs";
+import {generateTokenOutputs} from "../design_tokens.mjs";
+import {tokenPath} from "../design_tokens/lib/style_dictionary.config.mjs";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {
   artifactPlan,
@@ -39,6 +42,7 @@ import {
   sha256,
   staleInputs,
   storybookDir,
+  tokenFontFiles,
 } from "./lib/design_system_manifest.mjs";
 import {guidelinesPath, systemTypesPath} from "./lib/system_components.mjs";
 
@@ -65,12 +69,24 @@ function builtFrom() {
   };
 }
 
-/** Where tokens.json and tokens.css come from: --tokens-from, else P1.1's output in <out>. */
-function tokenSource(tokensFrom, outDir) {
-  for (const dir of [tokensFrom, outDir].filter(Boolean)) {
-    if (tokenFiles.some((file) => fs.existsSync(path.join(dir, file)))) return dir;
+/**
+ * Writes tokens.json and tokens.css: the artifact outputs of the tokens
+ * pipeline, or the files in `tokensFrom` when given. Returns their source, or
+ * a problem.
+ */
+async function writeTokens(dir, tokensFrom) {
+  if (tokensFrom) {
+    const present = tokenFiles.filter((file) => fs.existsSync(path.join(tokensFrom, file)));
+    if (present.length === 0) return {problem: `--tokens-from ${tokensFrom} has no ${tokenFiles.join(" or ")}`};
+    for (const file of present) copyInto(path.join(tokensFrom, file), path.join(dir, file));
+    return {source: path.relative(repoRoot, tokensFrom) || "."};
   }
-  return null;
+  const {artifacts} = await generateTokenOutputs({root: repoRoot});
+  for (const {destination, output} of artifacts) {
+    if (!tokenFiles.includes(path.basename(destination))) continue;
+    fs.writeFileSync(path.join(dir, path.basename(destination)), output);
+  }
+  return {source: tokenPath};
 }
 
 function copyInto(from, to) {
@@ -79,7 +95,7 @@ function copyInto(from, to) {
 }
 
 /** Builds the whole folder into `dir` and returns its manifest and problems. */
-export async function buildFolder({dir, tokensFrom = null, existingOut = null}) {
+export async function buildFolder({dir, tokensFrom = null}) {
   const problems = [];
   const exports = await barrelExports();
   const plan = artifactPlan({exports, root: repoRoot});
@@ -106,14 +122,17 @@ export async function buildFolder({dir, tokensFrom = null, existingOut = null}) 
     if (card.stories.length > 0) fs.writeFileSync(path.join(components, card.name, "preview.html"), previewHtml(card, card.stories));
   }
 
-  const tokensDir = tokenSource(tokensFrom, existingOut);
-  if (tokensFrom && tokensDir !== tokensFrom) problems.push(`--tokens-from ${tokensFrom} has no ${tokenFiles.join(" or ")}`);
-  for (const file of tokenFiles) {
-    if (tokensDir && fs.existsSync(path.join(tokensDir, file))) copyInto(path.join(tokensDir, file), path.join(dir, file));
-  }
+  const tokens = await writeTokens(dir, tokensFrom);
+  if (tokens.problem) problems.push(tokens.problem);
   const fontsDir = path.join(repoRoot, fontSources.dir);
   for (const file of fs.readdirSync(fontsDir).sort()) copyInto(path.join(fontsDir, file), path.join(dir, "fonts", file));
   for (const licence of fontSources.licences) copyInto(path.join(repoRoot, licence), path.join(dir, "fonts", path.basename(licence)));
+  const tokensCss = path.join(dir, "tokens.css");
+  for (const font of fs.existsSync(tokensCss) ? tokenFontFiles(fs.readFileSync(tokensCss, "utf8")) : []) {
+    const from = fontSources.tokenFontDirs.map((fontDir) => path.join(repoRoot, fontDir, font)).find((file) => fs.existsSync(file));
+    if (from) copyInto(from, path.join(dir, "fonts", font));
+    else problems.push(`fonts/${font}: tokens.css loads it, and no font folder has it`);
+  }
 
   const from = builtFrom();
   const head = git(["log", "-1", "--format=%an%n%cI"]).trim().split("\n");
@@ -128,7 +147,7 @@ export async function buildFolder({dir, tokensFrom = null, existingOut = null}) 
     files: hashFolder(dir, {skip: new Set([manifestName])}),
     helpers,
     tokens: {
-      source: tokensDir ? path.relative(repoRoot, tokensDir) || "." : null,
+      source: tokens.source ?? null,
       files: tokenFiles.filter((file) => fs.existsSync(path.join(dir, file))),
     },
     twins: plan.twins,
@@ -146,7 +165,7 @@ function summary(manifest) {
     `${Object.keys(manifest.files).length} files from ${manifest.builtFrom.gitSha.slice(0, 12)}${manifest.builtFrom.dirty ? " (uncommitted inputs)" : ""}`,
     `${components.present.length} system components present, ${components.missing.length} missing, ${components.missingParts.length} parts missing`,
     `${manifest.cards.filter((card) => card.previews.length > 0).length} previews from Contract stories; ${components.withoutContractStory.length} present components have none`,
-    manifest.tokens.source ? `tokens from ${manifest.tokens.source}` : "no tokens.json or tokens.css (pass --tokens-from <dir> until P1.1 writes them)",
+    manifest.tokens.source ? `tokens from ${manifest.tokens.source}` : "no tokens.json or tokens.css",
   ];
 }
 
@@ -155,7 +174,7 @@ async function runBuild({outDir, tokensFrom}) {
   fs.rmSync(work, {force: true, recursive: true});
   fs.mkdirSync(work, {recursive: true});
   try {
-    const {manifest, problems} = await buildFolder({dir: work, existingOut: outDir, tokensFrom});
+    const {manifest, problems} = await buildFolder({dir: work, tokensFrom});
     if (problems.length > 0) {
       console.error(`The design-system folder has problems:\n- ${problems.join("\n- ")}`);
       return 1;
@@ -174,7 +193,7 @@ async function runCheck({outDir, tokensFrom}) {
   try {
     const dir = path.join(temp, "design-system");
     fs.mkdirSync(dir);
-    const {manifest, problems} = await buildFolder({dir, existingOut: outDir, tokensFrom});
+    const {manifest, problems} = await buildFolder({dir, tokensFrom});
     const existing = path.join(outDir, manifestName);
     const label = path.relative(repoRoot, outDir);
     if (fs.existsSync(existing)) {

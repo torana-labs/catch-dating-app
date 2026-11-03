@@ -4744,13 +4744,17 @@
         "packages/web-config/generated/**",
         "packages/web-config/styles/catch-web.css",
         "packages/catch_ui/assets/fonts/OFL-*.txt",
+        "packages/catch_ui/assets/fonts/Archivo-Roman-VF.ttf",
+        "design/tokens/catch.tokens.json",
+        "tool/design_tokens.mjs",
+        "tool/design_tokens/**",
         "package-lock.json"
       ],
       "command": "node tool/design/publish_design_system.mjs --build",
       "safety": "local-writes-build-artifacts",
       "status": "active",
       "role": "generator",
-      "description": "Builds the design-system artifact folder (build/design-system, ignored) from @catch/web-ui: the bundle the canvas mounts with React 18, web-ui's static Storybook, each card's guideline and Contract-story preview, fonts, tokens when present and a manifest of every file's and input's hash. --check rebuilds into a temporary folder and fails on a broken build, a missing guideline or system-name alias, a preview whose story is missing, a hash mismatch, or a stale build/design-system; --compare lists differences from another artifact folder. docs/design_system_publishing.md owns the loop.",
+      "description": "Builds the design-system artifact folder (build/design-system, ignored) from @catch/web-ui: the bundle the canvas mounts with React 18, web-ui's static Storybook, each card's guideline and Contract-story preview, fonts, the tokens pipeline's artifact tokens and a manifest of every file's and input's hash. --check rebuilds into a temporary folder and fails on a broken build, a missing guideline or system-name alias, a preview whose story is missing, a hash mismatch, or a stale build/design-system; --compare lists differences from another artifact folder. docs/design_system_publishing.md owns the loop.",
       "checks": [
         "node --check tool/design/publish_design_system.mjs",
         "node --test tool/design/publish_design_system.test.mjs",

@@ -19,6 +19,7 @@ import {
   previewHtml,
   staleInputs,
   systemTwins,
+  tokenFontFiles,
 } from "./lib/design_system_manifest.mjs";
 import {systemComponents} from "./lib/system_components.mjs";
 
@@ -122,6 +123,11 @@ test("the bundle header names the gallery cards as ds/build.mjs writes it", () =
 test("canvas helpers are the declared exports that are not components", () => {
   const source = "export declare function useCatch(): void;\nexport declare const tokens: {};\nexport declare function Button(): void;\nexport declare function GroundProvider(): void;\n";
   assert.deepEqual(canvasHelperNames(source), ["useCatch", "tokens", "GroundProvider"]);
+});
+
+test("the artifact's tokens.css names the fonts it loads from fonts/", () => {
+  const css = "@font-face { src: url(\"fonts/Archivo-Roman-VF.ttf\") format(\"truetype\"); }\n@font-face { src: url(\"fonts/Archivo-Roman-VF.ttf\"); }\n";
+  assert.deepEqual(tokenFontFiles(css), ["Archivo-Roman-VF.ttf"]);
 });
 
 test("token CSS points its fonts at the artifact's fonts folder", () => {
