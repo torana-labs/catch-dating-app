@@ -546,6 +546,8 @@ void main() {
       '.github/workflows/ci.yml',
       'test/goldens/home.png',
       'test/goldens/home_golden_test.dart',
+      'packages/catch_ui/test/goldens/baseline/root_family.light.png',
+      'packages/catch_ui/test/goldens/root_family_test.dart',
       'widgetbook/lib/main.dart',
       'apps/host/ios/Runner/Info.plist',
       'firestore.rules',
@@ -611,6 +613,8 @@ void main() {
     ]);
     // Package sources are not probe-only: unimported ones need proof.
     expect(run({'packages/ui/lib/unused.dart'})['mode'], 'full');
+    // A library's other tests are not probe-only; only its goldens are.
+    expect(run({'packages/ui/test/widget_test.dart'})['mode'], 'full');
   });
   test('test configs wrap every test beneath them', () {
     final files = {

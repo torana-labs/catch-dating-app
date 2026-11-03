@@ -34,9 +34,9 @@ class OrganizerPaymentMethodSheet extends StatelessWidget {
           // copy:allow-inline(Joins two governed payment-page sentences)
           : '${l10n.paymentMethodSheetSeller} '
                 '${l10n.paymentMethodSheetRefundBy(deadline: AppTimeFormatters.dateTime(deadline))}',
-      footer: CatchText(
+      footer: CatchLegacyText(
         l10n.paymentMethodSheetSecureNote,
-        variant: CatchTextVariant.supporting,
+        variant: CatchLegacyTextVariant.supporting,
       ),
       child: CatchSection.containedFieldGroups(
         groups: [

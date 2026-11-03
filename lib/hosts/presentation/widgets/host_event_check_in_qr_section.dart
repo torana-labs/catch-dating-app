@@ -61,7 +61,7 @@ class _HostEventCheckInQrSectionState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           venueSessionAsync.when(
-            data: (session) => CatchSurface(
+            data: (session) => CatchLegacySurface(
               radius: CatchRadius.sm,
               backgroundColor: CatchTokens.editorialWhite,
               padding: CatchInsets.iconChipContent,

@@ -63,11 +63,11 @@ class EventDetailOverviewSection extends StatelessWidget {
                 dividerColor: style?.dividerColor,
               ),
               gapH12,
-              CatchText(
+              CatchLegacyText(
                 context
                     .l10n
                     .eventsEventDetailOverviewSectionTextBasedOnEventFormat,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: style?.bodyColor,
               ),
             ],
@@ -103,9 +103,9 @@ class EventDetailOverviewSection extends StatelessWidget {
             children: [
               if (event.effectiveMeetingLocation?.address?.trim()
                   case final address? when address.isNotEmpty) ...[
-                CatchText(
+                CatchLegacyText(
                   address,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: style?.bodyColor,
                 ),
                 gapH8,
@@ -167,15 +167,15 @@ class EventDescriptionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           context.l10n.eventsEventDetailOverviewSectionTextAboutThisEvent,
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: surfaceStyle?.headingColor,
         ),
         const SizedBox(height: CatchLayout.detailScreenSupportingGap),
-        CatchText(
+        CatchLegacyText(
           description,
-          variant: CatchTextVariant.bodyLead,
+          variant: CatchLegacyTextVariant.bodyLead,
           color: surfaceStyle?.bodyColor ?? t.ink2,
         ),
       ],

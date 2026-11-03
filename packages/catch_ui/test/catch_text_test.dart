@@ -11,11 +11,11 @@ void main() {
   testWidgets('renders every variant in its CatchTextStyles role', (
     tester,
   ) async {
-    for (final variant in CatchTextVariant.values) {
+    for (final variant in CatchLegacyTextVariant.values) {
       await tester.pumpWidget(
-        _host(CatchText('Supper club', variant: variant)),
+        _host(CatchLegacyText('Supper club', variant: variant)),
       );
-      final context = tester.element(find.byType(CatchText));
+      final context = tester.element(find.byType(CatchLegacyText));
       final text = tester.widget<Text>(find.text('Supper club'));
       expect(text.style, variant.style(context), reason: variant.name);
       expect(text.maxLines, isNull, reason: variant.name);
@@ -26,9 +26,9 @@ void main() {
     const color = Color(0xFF2F7D55);
     await tester.pumpWidget(
       _host(
-        const CatchText(
+        const CatchLegacyText(
           'A long description of the evening that wraps',
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: color,
           maxLines: 1,
           textAlign: TextAlign.center,

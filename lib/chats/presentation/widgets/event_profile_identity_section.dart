@@ -76,23 +76,23 @@ class _EventProfileIdentitySectionState
               gapW16,
             ],
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 profile.displayName,
-                variant: CatchTextVariant.displayXs,
+                variant: CatchLegacyTextVariant.displayXs,
               ),
             ),
           ],
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l.eventProfileSharedHere,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (profile.introduction case final introduction?) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             introduction,
-            variant: CatchTextVariant.bodyL,
+            variant: CatchLegacyTextVariant.bodyL,
             color: CatchTokens.of(context).ink,
           ),
         ],

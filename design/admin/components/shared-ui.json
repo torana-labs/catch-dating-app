@@ -166,10 +166,9 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.section_stack",
-        "catch.pane_layout"
+        "catch.stack"
       ],
-      "comparisonReason": "Screen layout stack of mixed content (toolbars, panels, alert rows), not of complete sections. Not a pane layout: one stacked column inside a pane; it retires with AdminPrimitives."
+      "comparisonReason": "Admin workbench column, not the system Stack: a one-column CSS grid at the admin micro14 gap, which is off CatchStack's gap scale. It pulls AdminPanel span-2 and span-3 children back to one column and can align itself to the start of its parent grid; its compact flag adds a class with no style. It belongs to AdminPrimitives and is redrawn with them in P4/P5. The system Stack is a one-axis token-gap flow with direction, align, justify and collapse."
     },
     {
       "id": "shared_alert_row",

@@ -369,7 +369,7 @@ class FiltersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.tileVerticalCompact,
       borderRole: CatchBorderRole.separator,
       child: CatchSection.plain(
@@ -389,6 +389,6 @@ class FiltersValueText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchText(value, variant: CatchTextVariant.titleL);
+    return CatchLegacyText(value, variant: CatchLegacyTextVariant.titleL);
   }
 }

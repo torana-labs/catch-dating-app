@@ -100,7 +100,7 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
     final secondaryAction = widget.secondaryAction;
     final showCloseButton = widget.showCloseButton ?? widget.onClose != null;
 
-    final body = CatchSurface(
+    final body = CatchLegacySurface(
       tone: CatchSurfaceTone.transparent,
       gradient: t.heroGrad,
       radius: CatchRadius.none,
@@ -149,22 +149,22 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                       ),
                       gapH24,
                       if (widget.eyebrow != null) ...[
-                        CatchText(
+                        CatchLegacyText(
                           widget.eyebrow!.toUpperCase(),
-                          variant: CatchTextVariant.statusLabel,
+                          variant: CatchLegacyTextVariant.statusLabel,
                           color: _celebrationCream.withValues(alpha: 0.9),
                         ),
                         gapH8,
                       ],
-                      CatchText(
+                      CatchLegacyText(
                         widget.title,
-                        variant: CatchTextVariant.displayL,
+                        variant: CatchLegacyTextVariant.displayL,
                         color: _celebrationCream,
                       ),
                       gapH14,
-                      CatchText(
+                      CatchLegacyText(
                         widget.message,
-                        variant: CatchTextVariant.bodyL,
+                        variant: CatchLegacyTextVariant.bodyL,
                         color: _celebrationCream.withValues(alpha: 0.92),
                       ),
                       if (details.isNotEmpty) ...[
@@ -300,17 +300,17 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ),
                   if (eyebrow != null) ...[
                     gapH16,
-                    CatchText(
+                    CatchLegacyText(
                       eyebrow!.toUpperCase(),
-                      variant: CatchTextVariant.statusLabel,
+                      variant: CatchLegacyTextVariant.statusLabel,
                       color: t.primary,
                       textAlign: TextAlign.center,
                     ),
                   ],
                   gapH8,
-                  CatchText(
+                  CatchLegacyText(
                     title,
-                    variant: CatchTextVariant.displayL,
+                    variant: CatchLegacyTextVariant.displayL,
                     color: t.ink,
                     textAlign: TextAlign.center,
                   ),
@@ -318,10 +318,10 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   Align(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 340),
-                      child: CatchText(
+                      child: CatchLegacyText(
                         message,
                         textAlign: TextAlign.center,
-                        variant: CatchTextVariant.bodyM,
+                        variant: CatchLegacyTextVariant.bodyM,
                         color: t.ink2,
                       ),
                     ),
@@ -332,10 +332,10 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ],
                   if (note != null) ...[
                     gapH12,
-                    CatchText(
+                    CatchLegacyText(
                       note!,
                       textAlign: TextAlign.center,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: t.ink3,
                     ),
                   ],
@@ -411,7 +411,7 @@ class PaperCelebrationDetailsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: t.surface,
       // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: BorderRadius.circular(CatchRadius.md),
@@ -456,17 +456,17 @@ class PaperCelebrationDetailRow extends StatelessWidget {
           if (icon != null) ...[Icon(icon, size: 18, color: t.ink3), gapW12],
           SizedBox(
             width: CatchLayout.celebrationDetailLabelWidth,
-            child: CatchText(
+            child: CatchLegacyText(
               detail.label.toUpperCase(),
-              variant: CatchTextVariant.statusLabel,
+              variant: CatchLegacyTextVariant.statusLabel,
               color: t.ink2,
             ),
           ),
           gapW12,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               detail.value,
-              variant: CatchTextVariant.titleS,
+              variant: CatchLegacyTextVariant.titleS,
               color: t.ink,
               textAlign: TextAlign.right,
             ),
@@ -503,7 +503,7 @@ class CelebrationDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: _celebrationCream.withValues(alpha: 0.28),
       // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: BorderRadius.circular(CatchRadius.lg),
@@ -557,15 +557,15 @@ class CelebrationDetailRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(
+              CatchLegacyText(
                 detail.label,
-                variant: CatchTextVariant.statusLabel,
+                variant: CatchLegacyTextVariant.statusLabel,
                 color: _celebrationInk.withValues(alpha: 0.74),
               ),
               gapH3,
-              CatchText(
+              CatchLegacyText(
                 detail.value,
-                variant: CatchTextVariant.bodyLead,
+                variant: CatchLegacyTextVariant.bodyLead,
                 color: _celebrationInk,
               ),
             ],
@@ -583,7 +583,7 @@ class CelebrationNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: _celebrationCream.withValues(alpha: 0.20),
       // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       borderRadius: BorderRadius.circular(CatchRadius.lg),
@@ -600,9 +600,9 @@ class CelebrationNotice extends StatelessWidget {
             Icon(CatchIcons.instant, color: _celebrationInk, size: 18),
             gapW10,
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 note,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: _celebrationInk,
               ),
             ),

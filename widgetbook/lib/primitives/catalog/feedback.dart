@@ -252,7 +252,7 @@ Widget catchNoticeOverlayCatalogStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
           child: CatchNoticeOverlay(
-            child: CatchSurface.card(
+            child: CatchLegacySurface.card(
               height: WidgetbookPreviewLayout.mediaPanelHeight,
               child: Center(
                 child: Text(

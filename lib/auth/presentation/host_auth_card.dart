@@ -10,7 +10,7 @@ class HostAuthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       borderRole: CatchBorderRole.boundary,
       boxShadow: CatchElevation.none,
       padding: CatchInsets.content,
@@ -36,11 +36,11 @@ class HostAuthHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(title, variant: CatchTextVariant.sectionTitle),
+        CatchLegacyText(title, variant: CatchLegacyTextVariant.sectionTitle),
         gapH4,
-        CatchText(
+        CatchLegacyText(
           subtitle,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
       ],

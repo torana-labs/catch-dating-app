@@ -40,7 +40,7 @@ class EventSuccessCountdownStepper extends StatelessWidget {
         children: [
           for (final entry in resolvedItems.indexed) ...[
             Expanded(
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 radius: CatchRadius.pill,
                 backgroundColor: switch (entry.$2.state) {
                   EventSuccessProgressStatus.current => t.gold.withValues(
@@ -85,12 +85,12 @@ class EventSuccessCountdownStepper extends StatelessWidget {
                     ),
                     gapW4,
                     Flexible(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         entry.$2.item.label,
                         maxLines: 2,
 
                         textAlign: TextAlign.center,
-                        variant: CatchTextVariant.statusLabel,
+                        variant: CatchLegacyTextVariant.statusLabel,
                         color: switch (entry.$2.state) {
                           EventSuccessProgressStatus.current => t.gold,
                           EventSuccessProgressStatus.complete => t.success,

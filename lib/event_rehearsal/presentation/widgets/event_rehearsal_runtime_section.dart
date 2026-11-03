@@ -102,7 +102,7 @@ class _EventRehearsalRuntimeSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(
+        CatchLegacyText(
           widget.phase == RehearsalSettingsPhase.retryRequired
               ? l.eventAssistanceRuntimePending
               : busy
@@ -114,18 +114,18 @@ class _EventRehearsalRuntimeSectionState
               : view.runtime!.status == RehearsalAutomationStatus.paused
               ? l.eventAssistanceRuntimePaused
               : l.eventAssistanceRuntimeConfigured,
-          variant: CatchTextVariant.titleL,
+          variant: CatchLegacyTextVariant.titleL,
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l.hostEventRehearsalUpdatesBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (saved) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.hostEventRehearsalUpdatesSaved,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH16,
@@ -137,15 +137,15 @@ class _EventRehearsalRuntimeSectionState
           showOutcomes: false,
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           '${l.hostEventRehearsalUpdatesScript}: ${value.outcomes.map((o) => rehearsalOutcomeLabel(l, o)).join(' → ')}',
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (value.laterChoices?.isNotEmpty ?? false) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeRetainedChoices,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         CatchButton(
@@ -180,9 +180,9 @@ class _EventRehearsalRuntimeSectionState
         ],
         if (!valid && _editable) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.hostEventRehearsalUpdatesIssue,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (widget.error != null) ...[
@@ -191,9 +191,9 @@ class _EventRehearsalRuntimeSectionState
         ],
         if (widget.phase == RehearsalSettingsPhase.retryRequired) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeRetryBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchButton(
             key: const ValueKey('practice.retry'),
@@ -203,9 +203,9 @@ class _EventRehearsalRuntimeSectionState
         ],
         if (widget.phase == RehearsalSettingsPhase.refreshRequired) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeReloadBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchButton(
             label: l.eventAssistanceLateJoinReload,

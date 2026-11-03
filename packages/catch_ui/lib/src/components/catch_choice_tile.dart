@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// One mutually exclusive choice with optional explanatory copy.
@@ -54,7 +54,7 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
     );
     final t = CatchTokens.of(context);
 
-    final surface = CatchSurface(
+    final surface = CatchLegacySurface(
       onTap: widget.onTap,
       onFocusChange: (focused) {
         if (_focused != focused) setState(() => _focused = focused);

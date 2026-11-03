@@ -528,7 +528,7 @@ void main() {
     expect(placeholderRule.right, loadedRule.right);
     expect(placeholderHeaderRule.left, loadedHeaderRule.left);
     expect(placeholderHeaderRule.right, loadedHeaderRule.right);
-    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchLegacySurface), findsNothing);
     expect(find.byType(CatchSkeleton), findsNWidgets(2));
     expect(find.bySemanticsLabel('Loading person'), findsNothing);
     expect(tester.takeException(), isNull);

@@ -71,9 +71,9 @@ class FormProfilesSectionList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l10n.formProfilesDescription,
-          variant: CatchTextVariant.bodyM,
+          variant: CatchLegacyTextVariant.bodyM,
           color: CatchTokens.of(context).ink,
         ),
         gapH24,

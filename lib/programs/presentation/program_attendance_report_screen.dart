@@ -225,9 +225,9 @@ class ProgramFunctionAttendanceRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             functionName ?? attendance.functionId,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           CatchMetaRow(
             icon: CatchIcons.people,

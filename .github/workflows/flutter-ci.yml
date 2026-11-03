@@ -491,9 +491,12 @@ jobs:
 
       - run: flutter pub get
 
+      # The library's PNG goldens are macOS-rendered; the macOS goldens lane in
+      # visual-integration-ci.yml runs them (packages/catch_ui/dart_test.yaml
+      # declares the tag).
       - name: Catch UI package tests
         working-directory: packages/catch_ui
-        run: flutter test --concurrency=1
+        run: flutter test --concurrency=1 --exclude-tags=golden
 
       - name: Kernel package tests
         working-directory: packages/kernel

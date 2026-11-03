@@ -2,8 +2,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_choice_input_variant.dart';
 import 'package:catch_ui/src/components/catch_option.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class CatchChoiceButton<T> extends StatelessWidget {
@@ -58,7 +58,7 @@ class CatchChoiceButton<T> extends StatelessWidget {
                               CatchRecordTokens.selectionVerticalPadding * 2)) /
                       2,
                 ),
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   tone: CatchSurfaceTone.transparent,
                   backgroundColor: selected ? t.primary : Colors.transparent,
                   radius: CatchRadius.sm,

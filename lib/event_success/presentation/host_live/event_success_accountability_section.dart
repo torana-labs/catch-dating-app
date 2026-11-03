@@ -37,7 +37,7 @@ class EventSuccessAccountabilitySection extends StatelessWidget {
     final resolvedCount = attendees
         .where((attendee) => attendee.currentAccountabilityResolution != null)
         .length;
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -47,12 +47,12 @@ class EventSuccessAccountabilitySection extends StatelessWidget {
             subtitle: context.l10n.eventSuccessAccountabilitySubtitle,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             context.l10n.eventSuccessAccountabilityProgress(
               resolved: resolvedCount,
               total: attendees.length,
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           if (error != null) ...[
             gapH10,
@@ -63,9 +63,9 @@ class EventSuccessAccountabilitySection extends StatelessWidget {
             CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
           ] else if (attendees.isEmpty) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n.eventSuccessAccountabilityEmpty,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ] else ...[
             gapH8,

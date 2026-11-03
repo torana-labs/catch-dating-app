@@ -20,7 +20,7 @@ class EmptyHeroCard extends StatelessWidget {
     );
 
     if (fullBleed) {
-      return CatchSurface(
+      return CatchLegacySurface(
         width: double.infinity,
         height: CatchLayout.dashboardEmptyHeroHeight,
         radius: 0,
@@ -42,7 +42,7 @@ class EmptyHeroCard extends StatelessWidget {
       );
     }
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentRelaxed,
       radius: CatchRadius.heroCard,
       gradient: t.heroGrad,
@@ -81,15 +81,15 @@ class EmptyHeroBody extends StatelessWidget {
           maxLines: null,
         ),
         gapH10,
-        CatchText(
+        CatchLegacyText(
           context.l10n.dashboardEmptyHeroCardTextYourCatchesUnlockAfter,
-          variant: CatchTextVariant.headline,
+          variant: CatchLegacyTextVariant.headline,
           color: CatchTokens.editorialWhite,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           context.l10n.dashboardEmptyHeroCardTextTheDatingAppWhere,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: CatchTokens.editorialWhite,
         ),
         gapH16,

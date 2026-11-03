@@ -78,8 +78,10 @@ void main() {
       );
       final button = find.byKey(const ValueKey('host-today-suggested-action'));
       expect(tester.widget<CatchButton>(button).fullWidth, isTrue);
-      final surface = tester.widget<CatchSurface>(
-        find.ancestor(of: button, matching: find.byType(CatchSurface)).first,
+      final surface = tester.widget<CatchLegacySurface>(
+        find
+            .ancestor(of: button, matching: find.byType(CatchLegacySurface))
+            .first,
       );
       expect(surface.emphasis, CatchSurfaceEmphasis.flat);
       expect(surface.tone, CatchSurfaceTone.primarySoft);
@@ -105,8 +107,10 @@ void main() {
       ),
     );
     final button = find.widgetWithText(CatchButton, 'Make organizer public');
-    final surface = tester.widget<CatchSurface>(
-      find.ancestor(of: button, matching: find.byType(CatchSurface)).first,
+    final surface = tester.widget<CatchLegacySurface>(
+      find
+          .ancestor(of: button, matching: find.byType(CatchLegacySurface))
+          .first,
     );
     expect(surface.tone, CatchSurfaceTone.primarySoft);
     expect(surface.emphasis, CatchSurfaceEmphasis.flat);
@@ -135,7 +139,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(HostEventReviewsPanel),
-          matching: find.byType(CatchSurface),
+          matching: find.byType(CatchLegacySurface),
         ),
         findsOneWidget,
       );
@@ -162,7 +166,7 @@ void main() {
               : Stream.value([]);
         },
       );
-      expect(find.byType(CatchSurface), findsOneWidget);
+      expect(find.byType(CatchLegacySurface), findsOneWidget);
       expect(find.byType(CatchEmptyState), findsNothing);
       final retry = find.widgetWithText(CatchButton, 'Try again');
       expect(retry, findsOneWidget);
@@ -183,7 +187,7 @@ void main() {
         const HostEventReviewsPanel(eventId: 'event'),
         reviews: () => controller.stream,
       );
-      expect(find.byType(CatchSurface), findsOneWidget);
+      expect(find.byType(CatchLegacySurface), findsOneWidget);
       expect(find.byType(CatchLoadingIndicator), findsOneWidget);
       expect(find.byType(CatchEmptyState), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -234,7 +238,7 @@ void main() {
         expect(
           find.descendant(
             of: find.byKey(const ValueKey('event-success-report-status')),
-            matching: find.byType(CatchSurface),
+            matching: find.byType(CatchLegacySurface),
           ),
           findsOneWidget,
         );

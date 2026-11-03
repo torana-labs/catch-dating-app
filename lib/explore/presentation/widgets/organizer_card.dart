@@ -107,7 +107,7 @@ class ExploreFeedOrganizerRow extends StatelessWidget {
     final onTap = onOrganizerSelected == null
         ? null
         : () => onOrganizerSelected!(organizer);
-    final card = CatchSurface.card(
+    final card = CatchLegacySurface.card(
       key: ValueKey<String>('explore-club-row-${organizer.id}'),
       onTap: onTap,
       borderRole: CatchBorderRole.boundary,
@@ -119,7 +119,7 @@ class ExploreFeedOrganizerRow extends StatelessWidget {
             // gives the cover determinate constraints — an AspectRatio here gets
             // unbounded width (Row) and height (SliverList) and cannot lay out.
             dimension: CatchLayout.organizerCoverThumbnailExtent,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               tone: CatchSurfaceTone.transparent,
               radius: CatchLayout.organizerCoverCompactMediaRadius,
@@ -135,9 +135,9 @@ class ExploreFeedOrganizerRow extends StatelessWidget {
               children: [
                 CatchMetadataText(state.rowKicker, color: palette.accent),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   state.title,
-                  variant: CatchTextVariant.displayXs,
+                  variant: CatchLegacyTextVariant.displayXs,
                   maxLines: 2,
                 ),
                 gapH4,
@@ -145,11 +145,11 @@ class ExploreFeedOrganizerRow extends StatelessWidget {
                   state: organizer.organizerAuthority.trustState,
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   state.supportingLabel,
                   maxLines: 1,
 
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
                 gapH4,

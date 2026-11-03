@@ -68,7 +68,7 @@ class FeaturedEventPoster extends StatelessWidget {
         (location != null && location!.isNotEmpty) ||
         showSearch;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: d.bg,
       radius: radius,
       padding: EdgeInsets.zero,
@@ -76,7 +76,7 @@ class FeaturedEventPoster extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               tone: CatchSurfaceTone.transparent,
               radius: 0,
               padding: EdgeInsets.zero,
@@ -95,7 +95,7 @@ class FeaturedEventPoster extends StatelessWidget {
             ),
           ),
           Positioned.fill(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               tone: CatchSurfaceTone.transparent,
               radius: 0,
               padding: EdgeInsets.zero,
@@ -225,7 +225,7 @@ class FeaturedEventTopBar extends StatelessWidget {
                           location: location,
                         ),
                     child: ExcludeSemantics(
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         height: CatchIconAction.defaultSize,
                         radius: CatchRadius.sm,
                         backgroundColor: Colors.transparent,
@@ -292,9 +292,9 @@ class FeaturedEventBody extends StatelessWidget {
           ),
           const SizedBox(height: CatchSpacing.s3),
         ],
-        CatchText(
+        CatchLegacyText(
           story.title,
-          variant: CatchTextVariant.displayM,
+          variant: CatchLegacyTextVariant.displayM,
           color: paper,
         ),
         if (story.body != null && story.body!.isNotEmpty) ...[
@@ -303,9 +303,9 @@ class FeaturedEventBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: CatchLayout.coverStoryContentMaxWidth,
             ),
-            child: CatchText(
+            child: CatchLegacyText(
               story.body!,
-              variant: CatchTextVariant.bodyM,
+              variant: CatchLegacyTextVariant.bodyM,
               color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
             ),
           ),

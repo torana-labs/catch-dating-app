@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.103.0
+version: 1.104.0
 updated: 2026-11-03
 owner: app_architecture
 status: active
@@ -114,8 +114,8 @@ Under `apps/*/lib` and `lib/pages`, [App Roots](#app-roots) adds file kinds and 
   record its concrete distinction from the nearest existing contract in the
   registry; a new ID or implementation technique does not establish one.
 - Variant axes are enums `<Component><Axis>` with axis vocabulary
-  `Variant|Size|Tone|Emphasis|Status|Placement|Mode`; a third boolean
-  constructor parameter forces an enum.
+  `Variant|Size|Tone|Emphasis|Status|Placement|Mode|Block|Color|Padding|Gap|Direction|Align|Justify`;
+  a third boolean constructor parameter forces an enum.
 - Files: snake case of the primary class, suffix vocabulary
   `_screen|_controller|_view_model|_state|_repository|_service|_providers`
   or a role-noun widget suffix; one primary public widget per shared-library
@@ -3039,6 +3039,19 @@ legacy screens still call it, raising `shims` in
 Each redrawn screen removes the shims whose last caller it was and records the
 fall with `--update`. The count reaches 0 in P7.
 
+A legacy member counts too: a component-registry record or contract member
+with the `legacy` qualifier, the retiring implementation of its record's
+responsibility (see the Naming Grammar). Legacy status lives in the registry,
+not in `@Deprecated`; each legacy member must be exported by `catch_ui`, and the
+new roots may neither name nor import one. P2.1 gave the system names to
+`CatchSurface`, `CatchText` and `CatchTextVariant`, so the pre-redesign classes
+became `CatchLegacySurface`, `CatchLegacyText` and `CatchLegacyTextVariant`;
+the first two are the legacy members of `catch.surface` and `catch.text`, and
+`CatchMetadataText` and `CatchCountText`, which the system Text absorbs, carry
+the qualifier where they are recorded. `tool/design/rename_legacy_library_symbols.mjs`
+renamed the callers; a branch cut before that rename re-runs it to resolve its
+conflicts.
+
 ### Contexts as packages
 
 | Today | Package |
@@ -3117,6 +3130,13 @@ or use case requires the same source comparison, recorded in the registry and
 reviewed with the code. `Custom`, `New`, `Modern`, `Legacy`, `Old`, and version
 qualifiers such as `V2` do not describe a new responsibility. A feature prefix
 or implementation technique cannot justify a second shared implementation.
+One exception keeps a retiring implementation callable while its callers are
+redrawn (redesign plan 5.8, D24): a member with the `legacy` qualifier is the
+retiring implementation of its record's responsibility, and it may lead its use
+case with `Legacy` when its parent record holds the canonical Dart symbol in the
+same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
+`naming.comparedWith`, its `naming.reason` names the PR that retired it, and
+`tool/design/check_library_shims.mjs` counts it until P7 deletes it.
 
 - **Prefixes.** `Catch` is reserved for design-system symbols (L0–L4a).
   Public feature widgets are `<Feature><RoleNoun>`. Private widget classes
@@ -3134,7 +3154,8 @@ or implementation technique cannot justify a second shared implementation.
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
-  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition.
+  Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition, Root,
+  Stack.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a
@@ -3168,6 +3189,12 @@ or implementation technique cannot justify a second shared implementation.
   descendants. Transition: animates its child in or out (opacity, offset, scale)
   and owns motion only, after Flutter's `FadeTransition` and
   `SlideTransition`; layout and paint stay with the child.
+- **Nouns added 2026-11-03 (redesign P2.1, decision O).** Root: the context
+  root of a screen or app subtree; it sets the theme, size class, format and
+  register, installs the token theme and paints the ground (`CatchRoot`).
+  Stack: a one-axis arrangement of children with a token gap that collapses to
+  a column below a size class (`CatchStack`). Gap and Inset are spacers,
+  Layout arranges regions, and Grid is two-dimensional.
 - **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
   containment); Page is Step (a flow stage) or Body (a tab or pager page);
   Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
@@ -3176,7 +3203,7 @@ or implementation technique cannot justify a second shared implementation.
   Tile or Card; Container, Box, Wrapper, Shell and Frame are Surface, Scaffold
   or Layout; Modal and Popup are Dialog or Sheet; Toast and Snackbar are
   Notice; Spinner and Loader are Indicator; Tag and Pill are Chip; Label,
-  Eyebrow and Caption are Text; Stack is Layout or SectionList; Selector is
+  Eyebrow and Caption are Text; Selector is
   Picker; Scrim is Overlay; Block is Card or Section; Controls is Action or
   Dock; Loading is Skeleton or Indicator; Wrap, Group and Groups are List or
   Section; Stat is Tile or Text; Value is Text; Artwork is Cover or Image;
@@ -3250,8 +3277,14 @@ or implementation technique cannot justify a second shared implementation.
   be registered members of its primary Widget's concept; private Widget classes
   remain confined to L5. Non-Widget implementation helpers may be private.
 - **Variants.** Axes are enums named `<Component><Axis>` with axis vocabulary
-  `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`. At
+  `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`,
+  `Block`, `Color`, `Padding`, `Gap`, `Direction`, `Align`, `Justify`. At
   most two booleans per public component constructor; a third forces an enum.
+  Block, Color and Padding are Surface's axes (`CatchSurfaceBlock`,
+  `CatchSurfaceColor`, `CatchSurfacePadding`). Gap, Direction, Align and
+  Justify are Stack's axes (`CatchStackGap`, `CatchStackDirection`,
+  `CatchStackAlign`, `CatchStackJustify`). Color names a palette choice,
+  such as a format, ink or tile, never a raw colour.
   Field context options name their actual scope owner:
   `CatchDividedFieldInteractionScopeMode` selects section interaction policy;
   `CatchFieldGeometryScopeMode` assigns the content gutter; and
@@ -3310,7 +3343,8 @@ by the component registry (`design/components/README.md`).
   through the package index. `*Control` exports are package internals, retired
   as styled `Catch*` components replace them.
 - **Banned qualifiers** (`Custom`, `New`, `Modern`, `Legacy`, `Old`, version
-  qualifiers such as `V2`) apply in both frameworks.
+  qualifiers such as `V2`) apply in both frameworks, with the one `legacy`
+  member exception of the Naming Grammar.
 
 React exports that predate this subsection migrate under blueprint Phase 7.
 The React component inventory (`web:shared-ui-adoption`, Phase 7d) already

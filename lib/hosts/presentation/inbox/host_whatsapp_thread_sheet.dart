@@ -147,9 +147,9 @@ class _HostWhatsappThreadBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (thread.messagesTruncated) ...[
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostInboxWhatsappHistoryTruncated,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH12,
           ],
@@ -159,12 +159,12 @@ class _HostWhatsappThreadBody extends StatelessWidget {
                   message.direction == HostWhatsappMessageDirection.outbound
                   ? Alignment.centerRight
                   : Alignment.centerLeft,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 width: MediaQuery.sizeOf(context).width * 0.72,
                 padding: CatchInsets.cardContent,
-                child: CatchText(
+                child: CatchLegacyText(
                   message.body,
-                  variant: CatchTextVariant.bodyM,
+                  variant: CatchLegacyTextVariant.bodyM,
                   color: CatchTokens.of(context).ink,
                 ),
               ),
@@ -173,13 +173,13 @@ class _HostWhatsappThreadBody extends StatelessWidget {
           ],
         ],
       ),
-      CatchText(
+      CatchLegacyText(
         thread.serviceWindowOpen
             ? context.l10n.hostInboxWhatsappWindowOpen(
                 time: DateFormat.jm().format(thread.serviceWindowExpiresAt),
               )
             : context.l10n.hostInboxWhatsappWindowClosed,
-        variant: CatchTextVariant.supporting,
+        variant: CatchLegacyTextVariant.supporting,
       ),
       gapH8,
       CatchFieldLanes.single(

@@ -201,7 +201,7 @@ class CityOptionTile extends StatelessWidget {
       label: context.l10n.exploreExploreCityPickerLabelSelectLabel(
         label: city.label,
       ),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: selected ? t.primarySoft : Colors.transparent,
         radius: CatchRadius.none,
         // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -214,9 +214,9 @@ class CityOptionTile extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   city.label,
-                  variant: CatchTextVariant.bodyL,
+                  variant: CatchLegacyTextVariant.bodyL,
                   color: selected ? t.primary : t.ink,
                 ),
               ),

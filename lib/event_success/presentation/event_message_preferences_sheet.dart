@@ -83,9 +83,9 @@ class _EventMessagePreferencesSheetState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l.eventMessagesUnlinked,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 gapH12,
                 CatchButton(
@@ -99,9 +99,9 @@ class _EventMessagePreferencesSheetState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l.eventMessagesAmbiguous,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 gapH12,
                 CatchButton(
@@ -115,9 +115,9 @@ class _EventMessagePreferencesSheetState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l.eventMessagesIntro,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 gapH16,
                 CatchSection.fieldRows(

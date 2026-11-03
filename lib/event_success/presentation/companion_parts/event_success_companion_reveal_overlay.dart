@@ -250,7 +250,7 @@ class EventSuccessMarqueeImage extends StatelessWidget {
                     child: Transform.rotate(
                       alignment: Alignment.bottomCenter,
                       angle: angle,
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         duration: Duration.zero,
                         tone: CatchSurfaceTone.transparent,
                         radius: CatchRadius.pill,

@@ -72,7 +72,7 @@ void main() {
           expect(body.left, bounds.left);
           expect(body.width, bounds.width);
           expect(body.top, greaterThan(title.bottom));
-          expect(find.byType(CatchSurface), findsNothing);
+          expect(find.byType(CatchLegacySurface), findsNothing);
           readable(tester);
         },
       );
@@ -103,15 +103,15 @@ void main() {
             firstSize ??= size;
             expect(size, firstSize);
             final body = tester.getRect(find.textContaining('Long feedback'));
-            final surface = tester.getRect(find.byType(CatchSurface));
+            final surface = tester.getRect(find.byType(CatchLegacySurface));
             expect(body.left - surface.left, CatchSpacing.s4);
             expect(surface.right - body.right, CatchSpacing.s4);
             expect(
               tester.getRect(find.byType(CatchButton)).top,
               greaterThan(body.bottom),
             );
-            final primitive = tester.widget<CatchSurface>(
-              find.byType(CatchSurface),
+            final primitive = tester.widget<CatchLegacySurface>(
+              find.byType(CatchLegacySurface),
             );
             expect(primitive.emphasis, CatchSurfaceEmphasis.flat);
             expect(primitive.borderRole, isNull);
@@ -142,7 +142,7 @@ void main() {
               dark: dark,
               scale: scale,
             );
-            final size = tester.getSize(find.byType(CatchSurface));
+            final size = tester.getSize(find.byType(CatchLegacySurface));
             firstSize ??= size;
             expect(size, firstSize);
             final facts = tester.getRect(find.text('Catch app: hidden'));
@@ -156,8 +156,8 @@ void main() {
             expect(button.top, greaterThan(body.bottom));
             expect(body.left, facts.left);
             expect(button.width, body.width);
-            final surface = tester.widget<CatchSurface>(
-              find.byType(CatchSurface),
+            final surface = tester.widget<CatchLegacySurface>(
+              find.byType(CatchLegacySurface),
             );
             expect(surface.tone, CatchSurfaceTone.primarySoft);
             expect(surface.emphasis, CatchSurfaceEmphasis.flat);
@@ -226,8 +226,10 @@ void main() {
           child: const Text('Related controls'),
         ),
       );
-      final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-      final context = tester.element(find.byType(CatchSurface));
+      final surface = tester.widget<CatchLegacySurface>(
+        find.byType(CatchLegacySurface),
+      );
+      final context = tester.element(find.byType(CatchLegacySurface));
       final role = states.contains(WidgetState.error)
           ? CatchBorderRole.danger
           : states.contains(WidgetState.focused)

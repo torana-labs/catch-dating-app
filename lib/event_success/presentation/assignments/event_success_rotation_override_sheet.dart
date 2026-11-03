@@ -66,9 +66,9 @@ class _EventSuccessRotationOverrideSheetState
             gapH8,
           ],
           if (validationError != null) ...[
-            CatchText(
+            CatchLegacyText(
               validationError,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).danger,
             ),
             gapH8,

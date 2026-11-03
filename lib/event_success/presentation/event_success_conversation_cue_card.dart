@@ -151,7 +151,7 @@ class EventSuccessConversationCueCard extends StatelessWidget {
       EventSuccessConversationCueMoment.postEvent => CatchIcons.chat,
     };
 
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.sm,
       borderRole: CatchBorderRole.separator,
@@ -173,9 +173,9 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           title,
-                          variant: CatchTextVariant.sectionTitle,
+                          variant: CatchLegacyTextVariant.sectionTitle,
                         ),
                         CatchBadge(
                           label: moment.label(context.l10n),
@@ -187,9 +187,9 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: CatchSpacing.s1),
-                      CatchText(
+                      CatchLegacyText(
                         subtitle!,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: t.ink2,
                       ),
                     ],

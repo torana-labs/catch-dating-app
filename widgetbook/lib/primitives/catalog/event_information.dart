@@ -293,7 +293,7 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 backgroundColor: t.primary,
                 child: CatchField.navigate(
                   onActivate: widgetbookNoop,

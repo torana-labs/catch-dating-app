@@ -31,9 +31,9 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (!showOutcomes) ...[
-          CatchText(
+          CatchLegacyText(
             l.hostEventRehearsalUpdatesChannels,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchSection.fieldRows(
             children: [
@@ -98,14 +98,14 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
           ),
         ],
         if (showOutcomes) ...[
-          CatchText(
+          CatchLegacyText(
             l.hostEventRehearsalUpdatesScript,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l.hostEventRehearsalUpdatesScriptBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchSection.fieldRows(
             children: [

@@ -84,9 +84,9 @@ class EventAssistanceLateJoinDestinationField extends StatelessWidget {
           ),
         ),
         if (value is LateJoinConfirmedProgress)
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceLateJoinConfirmedBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         if (points.isNotEmpty)
           CatchFieldLanes.single(

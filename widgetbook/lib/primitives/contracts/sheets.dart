@@ -54,7 +54,9 @@ Widget catchSheetContractStates(BuildContext context) {
         child: CatchSheet(
           title: 'Invite guests',
           subtitle: 'Share this event with people who fit the format.',
-          child: CatchSurface.tinted(child: Text('Invites close at 6 PM.')),
+          child: CatchLegacySurface.tinted(
+            child: Text('Invites close at 6 PM.'),
+          ),
         ),
       ),
       WidgetbookContractStateCard(

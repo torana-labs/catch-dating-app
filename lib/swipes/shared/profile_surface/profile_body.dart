@@ -55,7 +55,7 @@ class ProfileBody extends StatelessWidget {
         ? null
         : ActivityPalette.resolve(context, data.kickerActivity!);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.bg,
@@ -321,7 +321,7 @@ class ProfileCompatibilitySection extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: CatchSpacing.s1),
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     backgroundColor: markColor,
                     // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                     borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -333,9 +333,9 @@ class ProfileCompatibilitySection extends StatelessWidget {
                 ),
                 gapW12,
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     reason,
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                     color: t.ink,
                   ),
                 ),
@@ -374,9 +374,9 @@ class ProfilePromptSection extends StatelessWidget {
       children: [
         ProfileKickerText(section.question),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           section.answer,
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: t.ink,
         ),
       ],
@@ -421,9 +421,9 @@ class ProfileRunningSection extends StatelessWidget {
         ),
         if (section.reasons.isNotEmpty || section.times.isNotEmpty) ...[
           gapH10,
-          CatchText(
+          CatchLegacyText(
             [...section.reasons, ...section.times].join('  ·  '),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
         ],
@@ -478,9 +478,9 @@ class ProfileFactsSection extends StatelessWidget {
                 ),
                 gapW12,
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     fact.text,
-                    variant: CatchTextVariant.bodyL,
+                    variant: CatchLegacyTextVariant.bodyL,
                     color: t.ink,
                   ),
                 ),
@@ -511,7 +511,7 @@ class ProfilePhotoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reaction = section.reaction;
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       tone: CatchSurfaceTone.transparent,
       clipBehavior: Clip.antiAlias,
@@ -555,11 +555,15 @@ class ProfileCaptionText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = CatchTokens.editorialDark;
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,
       backgroundColor: dark.darkScrimFill,
-      child: CatchText(text, variant: CatchTextVariant.bodyM, color: dark.ink),
+      child: CatchLegacyText(
+        text,
+        variant: CatchLegacyTextVariant.bodyM,
+        color: dark.ink,
+      ),
     );
   }
 }
@@ -575,7 +579,7 @@ class ProfileDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: CatchStroke.hairline,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         duration: Duration.zero,
         radius: CatchRadius.none,
         backgroundColor: color,

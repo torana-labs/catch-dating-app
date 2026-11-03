@@ -578,7 +578,7 @@ class CalendarStatsHeaderSkeleton extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: const CatchSurface(
+          child: const CatchLegacySurface(
             padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
             borderRole: CatchBorderRole.separator,
@@ -694,10 +694,10 @@ class CalendarMonthGrid extends StatelessWidget {
               context.l10n.eventsCalendarScreenVisiblecopyS,
             ])
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   day,
                   textAlign: TextAlign.center,
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: CatchTokens.of(context).ink2,
                 ),
               ),
@@ -758,7 +758,7 @@ class CalendarStatDivider extends StatelessWidget {
       child: SizedBox(
         width: CatchStroke.hairline,
         height: CatchLayout.calendarStatDividerHeight,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           duration: Duration.zero,
           radius: CatchRadius.none,
           backgroundColor: t.line,

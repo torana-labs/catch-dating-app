@@ -101,15 +101,15 @@ class HostResponseDetailSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           formTitle,
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: CatchTokens.of(context).ink,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           AppTimeFormatters.dateTime(submitted),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH8,
         Align(
@@ -194,15 +194,15 @@ class HostResponseDetailSection extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (value.revoked)
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostFormResponseOriginRevoked,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 )
               else if (response != null) ...[
                 if (origins.length == 1)
-                  CatchText(
+                  CatchLegacyText(
                     _originLabel(context, origins.single),
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                 for (final answer in response.answers) ...[
                   HostResponseAnswerRow(
@@ -293,9 +293,9 @@ class HostResponseDetailSection extends ConsumerWidget {
           gapH24,
           CatchSection.divided(
             title: context.l10n.hostApplicationReviewNote,
-            child: CatchText(
+            child: CatchLegacyText(
               note,
-              variant: CatchTextVariant.bodyL,
+              variant: CatchLegacyTextVariant.bodyL,
               color: CatchTokens.of(context).ink,
             ),
           ),
@@ -349,13 +349,13 @@ class HostResponseDetailSection extends ConsumerWidget {
           ),
         if (value.canReview) ...[
           gapH16,
-          CatchText(
+          CatchLegacyText(
             application!.reviewStatus == HostApplicationReviewStatus.approved
                 ? value.contactId != null
                       ? context.l10n.hostAudienceApplicationAccepted
                       : context.l10n.hostAudienceApplicationApprovedUnlinked
                 : context.l10n.hostAudienceApplicationAdmission,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH32,

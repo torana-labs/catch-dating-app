@@ -40,7 +40,7 @@ class CatchAvatar extends StatelessWidget {
   const CatchAvatar.monogram({
     super.key,
     required this.size,
-    required CatchGround this.ground,
+    required CatchBandGround this.ground,
     this.name = '',
     this.initials,
     this.borderWidth = 0,
@@ -108,7 +108,7 @@ class CatchAvatar extends StatelessWidget {
   final String Function(int)? countLabelBuilder;
 
   /// The palette ground of a [CatchAvatar.monogram].
-  final CatchGround? ground;
+  final CatchBandGround? ground;
   final int? _count;
   final bool _veiled;
 

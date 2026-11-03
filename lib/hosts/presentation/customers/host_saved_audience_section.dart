@@ -103,17 +103,17 @@ class HostSavedAudienceSection extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchText(
+            CatchLegacyText(
               displayedAudience.name,
-              variant: CatchTextVariant.headline,
+              variant: CatchLegacyTextVariant.headline,
             ),
             gapH8,
-            CatchText(
+            CatchLegacyText(
               _savedAudienceDirectoryBody(
                 context,
                 current?.preview.audience ?? audience,
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH24,
             CatchSection.divided(
@@ -124,21 +124,21 @@ class HostSavedAudienceSection extends ConsumerWidget {
                 children: [
                   if (!displayedAudience.definition.isStatic &&
                       displayedAudience.definition.predicates.length > 1)
-                    CatchText(
+                    CatchLegacyText(
                       displayedAudience.definition.join ==
                               HostSavedAudienceJoin.all
                           ? context.l10n.hostSavedAudienceMatchAll
                           : context.l10n.hostSavedAudienceMatchAny,
-                      variant: CatchTextVariant.bodyS,
+                      variant: CatchLegacyTextVariant.bodyS,
                       color: CatchTokens.of(context).ink2,
                     ),
                   for (final predicate
                       in displayedAudience.definition.predicates)
                     Padding(
                       padding: CatchInsets.contentVerticalCompact,
-                      child: CatchText(
+                      child: CatchLegacyText(
                         _savedAudienceRuleSummary(context, predicate, options),
-                        variant: CatchTextVariant.bodyL,
+                        variant: CatchLegacyTextVariant.bodyL,
                         color: CatchTokens.of(context).ink,
                       ),
                     ),
@@ -236,27 +236,27 @@ class HostSavedAudienceSection extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           _savedAudienceReachBody(
                             context,
                             state.preview.reachSummary,
                           ),
-                          variant: CatchTextVariant.bodyL,
+                          variant: CatchLegacyTextVariant.bodyL,
                           color: CatchTokens.of(context).ink,
                         ),
                         gapH8,
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.hostAudienceGroupInboxHelp,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                         ),
                         gapH8,
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.hostAudienceGroupChecked(
                             date: DateFormat.yMMMd().add_jm().format(
                               state.preview.evaluatedAt,
                             ),
                           ),
-                          variant: CatchTextVariant.bodyS,
+                          variant: CatchLegacyTextVariant.bodyS,
                           color: CatchTokens.of(context).ink2,
                         ),
                       ],

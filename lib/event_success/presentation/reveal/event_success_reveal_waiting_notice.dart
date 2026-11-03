@@ -12,7 +12,7 @@ class EventSuccessRevealWaitingNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.sm,
       backgroundColor: t.primarySoft,
       borderSpec: CatchBorder.resolve(
@@ -29,19 +29,19 @@ class EventSuccessRevealWaitingNotice extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context
                       .l10n
                       .eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
                 gapH2,
-                CatchText(
+                CatchLegacyText(
                   context.l10n
                       .eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe(
                         assignmentNoun: kind.assignmentNoun,
                       ),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],

@@ -127,7 +127,7 @@ class _EventSuccessAttendeeRevealSurfaceState
       for (final profile in widget.peerProfiles) profile.uid: profile,
     };
     final revealColor = showAssignment ? t.success : t.primary;
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: t.surface.withValues(
         alpha: CatchOpacity.revealAttendeePanelFill,
       ),
@@ -169,16 +169,16 @@ class _EventSuccessAttendeeRevealSurfaceState
             ],
           ),
           gapH12,
-          CatchText(title, variant: CatchTextVariant.titleL),
+          CatchLegacyText(title, variant: CatchLegacyTextVariant.titleL),
           gapH6,
-          CatchText(
+          CatchLegacyText(
             _attendeeSubtitle(
               assigned: assigned,
               standings: widget.standings,
               showAssignment: showAssignment,
               isCountingDown: isCountingDown,
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           if (hasPayload && !widget.optedOut) ...[
@@ -229,7 +229,7 @@ class _EventSuccessAttendeeRevealSurfaceState
           ],
           if (!isStandings) ...[
             gapH14,
-            CatchSurface(
+            CatchLegacySurface(
               duration: Duration.zero,
               radius: CatchRadius.none,
               backgroundColor: t.ink.withValues(

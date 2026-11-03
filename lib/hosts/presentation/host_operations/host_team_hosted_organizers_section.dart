@@ -40,9 +40,9 @@ class HostTeamHostedOrganizersSection extends StatelessWidget {
         ),
       ],
       HostTeamHostedOrganizersEmpty() => <Widget>[
-        CatchText(
+        CatchLegacyText(
           context.l10n.hostsHostOrganizerTeamScreenTextNoHostOrganizersYet,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
       ],

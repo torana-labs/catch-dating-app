@@ -74,16 +74,16 @@ class UpdateRequiredBody extends StatelessWidget {
               color: t.primary,
             ),
             gapH32,
-            CatchText(
+            CatchLegacyText(
               context.l10n.forceUpdateUpdateRequiredScreenTextUpdateRequired,
-              variant: CatchTextVariant.headline,
+              variant: CatchLegacyTextVariant.headline,
               color: CatchTokens.of(context).ink,
               textAlign: TextAlign.center,
             ),
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n.forceUpdateUpdateRequiredScreenTextANewVersionOf,
-              variant: CatchTextVariant.bodyLead,
+              variant: CatchLegacyTextVariant.bodyLead,
               color: t.ink2,
               textAlign: TextAlign.center,
             ),

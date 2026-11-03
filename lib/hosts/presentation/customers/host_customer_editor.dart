@@ -71,9 +71,9 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                   footer: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.hostAudienceAddedContactPermission,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                       ),
                       if (_contactMethodError != null) ...[
                         gapH12,
@@ -95,9 +95,9 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.hostCustomersInitialNoteHelp,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                         ),
                         gapH12,
                         Form(
@@ -335,9 +335,9 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostAudienceContactRequirement,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 gapH16,
                 CatchSection.fieldRows(children: fields.skip(1).toList()),

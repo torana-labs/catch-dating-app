@@ -121,15 +121,15 @@ class _EventAssistanceDepartureSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceDepartureBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             widget.contextMessage!,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH12,
@@ -143,9 +143,9 @@ class _EventAssistanceDepartureSectionState
           ),
         ),
         if (widget.sourceChanged)
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDepartureSourceChanged,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         gapH12,
         if (ready) ...[
@@ -171,7 +171,10 @@ class _EventAssistanceDepartureSectionState
           if (target != null) ...[
             if (target.detail.isNotEmpty) ...[
               gapH8,
-              CatchText(target.detail, variant: CatchTextVariant.supporting),
+              CatchLegacyText(
+                target.detail,
+                variant: CatchLegacyTextVariant.supporting,
+              ),
             ],
             CatchFieldLanes.single(
               child: CatchField.toggle(
@@ -207,9 +210,9 @@ class _EventAssistanceDepartureSectionState
                 ),
               gapH8,
               if (_selected.isEmpty)
-                CatchText(
+                CatchLegacyText(
                   l10n.eventAssistanceDepartureNobody,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               if (canRequest)
                 CatchFieldLanes.single(
@@ -265,7 +268,7 @@ class _EventAssistanceDepartureSectionState
                   ),
           ),
         ] else ...[
-          CatchText(switch (widget.phase) {
+          CatchLegacyText(switch (widget.phase) {
             EventAssistanceDeparturePhase.ready ||
             EventAssistanceDeparturePhase.unavailable =>
               l10n.eventAssistanceDepartureUnavailable,
@@ -279,32 +282,32 @@ class _EventAssistanceDepartureSectionState
               l10n.eventAssistanceDepartureChanged,
             EventAssistanceDeparturePhase.saved =>
               l10n.eventAssistanceDepartureSaved,
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
           if (submitted != null &&
               widget.phase != EventAssistanceDeparturePhase.saved) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               widget.destinations
                       .where((d) => d.target == submitted.destination)
                       .firstOrNull
                       ?.label ??
                   l10n.eventAssistanceDepartureDestination,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
-            CatchText(
+            CatchLegacyText(
               submitted.roster == null
                   ? l10n.eventAssistanceDepartureRosterSkipped
                   : l10n.eventAssistanceDepartureSelected(
                       count: submitted.roster!.attendeeIds.length,
                     ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             if (submitted.checkpoint != null)
-              CatchText(
+              CatchLegacyText(
                 l10n.eventAssistanceDepartureReportAt(
                   time: time(submitted.checkpoint!.dueAt),
                 ),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
           ],
         ],

@@ -96,9 +96,9 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                   final settings = snapshot.settingsReview;
                   if (settings == null ||
                       target != null && !settings.groups.containsKey(target)) {
-                    return CatchText(
+                    return CatchLegacyText(
                       context.l10n.hostEventRehearsalStaffReadOnly,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     );
                   }
                   final phase =

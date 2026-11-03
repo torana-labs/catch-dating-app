@@ -95,21 +95,21 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l.eventProfileDisclosure,
-          variant: CatchTextVariant.bodyL,
+          variant: CatchLegacyTextVariant.bodyL,
           color: CatchTokens.of(context).ink,
         ),
         gapH16,
-        CatchText(
+        CatchLegacyText(
           l.eventProfileReviewAgain,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (!current.settings.canShare) ...[
           gapH24,
-          CatchText(
+          CatchLegacyText(
             l.eventProfileCannotShare,
-            variant: CatchTextVariant.bodyL,
+            variant: CatchLegacyTextVariant.bodyL,
             color: CatchTokens.of(context).ink,
           ),
         ] else ...[
@@ -179,9 +179,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
             title: l.eventProfilePhoto,
             children: [
               if (current.settings.photoIds.isEmpty)
-                CatchText(
+                CatchLegacyText(
                   l.eventProfileNoPhoto,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               for (final (index, id) in current.settings.photoIds.indexed)
                 if (widget.photos[id] case final image?)
@@ -197,9 +197,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                           ),
                   )
                 else
-                  CatchText(
+                  CatchLegacyText(
                     l.eventProfilePhotoUnavailable,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
             ],
           ),
@@ -207,9 +207,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
           CatchSection.fieldRows(
             title: l.eventProfileCard,
             children: [
-              CatchText(
+              CatchLegacyText(
                 l.eventProfileCardDisclosure,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               if (choices.isNotEmpty)
                 CatchField<String>.select(
@@ -228,9 +228,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
               if (choices.isEmpty &&
                   current.nextCursor == null &&
                   current.cardError == null)
-                CatchText(
+                CatchLegacyText(
                   l.eventProfileNoCards,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               for (final field in fields)
                 Column(
@@ -255,9 +255,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                               }
                             }),
                     ),
-                    CatchText(
+                    CatchLegacyText(
                       l.eventProfileQuestionAudience,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                   ],
                 ),
@@ -285,9 +285,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 : () => widget.onSave(_draft.selection()),
           ),
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventProfileEditAgain,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (current.settings.selection != null) ...[

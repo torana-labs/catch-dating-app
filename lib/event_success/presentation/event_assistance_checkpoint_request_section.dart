@@ -116,34 +116,37 @@ class _EventAssistanceCheckpointRequestSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(widget.contextMessage, variant: CatchTextVariant.supporting),
+        CatchLegacyText(
+          widget.contextMessage,
+          variant: CatchLegacyTextVariant.supporting,
+        ),
         if (widget.checkpointLabel case final label?) ...[
           gapH8,
-          CatchText(label, variant: CatchTextVariant.titleL),
+          CatchLegacyText(label, variant: CatchLegacyTextVariant.titleL),
         ],
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceCheckpointRequestBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (assistanceCheckpointRequestCopy(context, widget.request)
             case final status?) ...[
           gapH12,
-          CatchText(status, variant: CatchTextVariant.supporting),
+          CatchLegacyText(status, variant: CatchLegacyTextVariant.supporting),
         ],
         if (due != null) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceCheckpointDue(
               deadline:
                   '${local.formatMediumDate(due)} · ${local.formatTimeOfDay(TimeOfDay.fromDateTime(due))}',
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (widget.request case final request?) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceCheckpointReporterCurrent(
               name: checkpointReporterName(
                 context,
@@ -151,14 +154,14 @@ class _EventAssistanceCheckpointRequestSectionState
                 request.responsibleOperatorId,
               ),
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (widget.observationSummary case final summary?) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             summary,
-            variant: CatchTextVariant.titleS,
+            variant: CatchLegacyTextVariant.titleS,
             color: CatchTokens.of(context).ink,
           ),
         ],
@@ -173,7 +176,7 @@ class _EventAssistanceCheckpointRequestSectionState
             ),
           ],
           gapH12,
-          CatchText(
+          CatchLegacyText(
             widget.request == null
                 ? l10n.eventAssistanceCheckpointRequestMissing
                 : eligibility == null
@@ -200,7 +203,7 @@ class _EventAssistanceCheckpointRequestSectionState
                           l10n.eventAssistanceCheckpointClosedOut,
                       },
                   },
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           if (widget.canReassign && widget.reporterOptions != null) ...[
             gapH8,
@@ -220,9 +223,9 @@ class _EventAssistanceCheckpointRequestSectionState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     l10n.eventAssistanceCheckpointReporterBody,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                   gapH8,
                   if (namedReporters?.isNotEmpty == true)
@@ -249,14 +252,14 @@ class _EventAssistanceCheckpointRequestSectionState
                       ),
                     )
                   else
-                    CatchText(
+                    CatchLegacyText(
                       l10n.eventAssistanceCheckpointReporterEmpty,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                   if (alternativeReporters?.length != namedReporters?.length)
-                    CatchText(
+                    CatchLegacyText(
                       l10n.eventAssistanceCheckpointReporterUnnamed,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                 ],
               ),
@@ -314,14 +317,14 @@ class _EventAssistanceCheckpointRequestSectionState
             ],
           ] else if (widget.request != null) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceCheckpointRequestAuthority,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
         ] else ...[
           gapH12,
-          CatchText(switch (widget.phase) {
+          CatchLegacyText(switch (widget.phase) {
             EventAssistanceCheckpointPhase.submitting =>
               l10n.eventAssistanceCheckpointRequestSaving,
             EventAssistanceCheckpointPhase.retryRequired =>
@@ -333,13 +336,13 @@ class _EventAssistanceCheckpointRequestSectionState
             EventAssistanceCheckpointPhase.unavailable =>
               l10n.eventAssistanceCheckpointRequestAuthority,
             EventAssistanceCheckpointPhase.ready => '',
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
           if ((busy ||
                   widget.phase ==
                       EventAssistanceCheckpointPhase.retryRequired) &&
               decision != null) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               switch (decision) {
                 CloseCheckpointRequest() =>
                   l10n.eventAssistanceCheckpointRequestClose,
@@ -348,24 +351,27 @@ class _EventAssistanceCheckpointRequestSectionState
                 ReassignCheckpointReporter() =>
                   l10n.eventAssistanceCheckpointRequestReassign,
               },
-              variant: CatchTextVariant.titleS,
+              variant: CatchLegacyTextVariant.titleS,
               color: CatchTokens.of(context).ink,
             ),
             gapH8,
             if (decision case ReassignCheckpointReporter(
               :final reporterId,
             )) ...[
-              CatchText(
+              CatchLegacyText(
                 checkpointReporterName(
                   context,
                   widget.reporterOptions,
                   reporterId,
                 ),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               gapH8,
             ],
-            CatchText(decision.reason, variant: CatchTextVariant.supporting),
+            CatchLegacyText(
+              decision.reason,
+              variant: CatchLegacyTextVariant.supporting,
+            ),
           ],
         ],
         if (widget.error != null) ...[

@@ -54,7 +54,7 @@ class OrganizerShareCard extends StatelessWidget {
 
     return AspectRatio(
       aspectRatio: CatchLayout.richShareCardAspectRatio,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.bg,
         borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.content,
@@ -63,7 +63,7 @@ class OrganizerShareCard extends StatelessWidget {
           children: [
             Expanded(
               flex: 4,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 duration: Duration.zero,
                 tone: CatchSurfaceTone.transparent,
                 radius: CatchRadius.md,
@@ -84,9 +84,9 @@ class OrganizerShareCard extends StatelessWidget {
                     color: t.primary,
                   ),
                   gapH6,
-                  CatchText(
+                  CatchLegacyText(
                     organizer.name,
-                    variant: CatchTextVariant.displayS,
+                    variant: CatchLegacyTextVariant.displayS,
                     color: t.ink,
                     maxLines: 2,
                   ),

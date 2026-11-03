@@ -80,9 +80,9 @@ class _HostStaticAudienceMembersEditorState
               title: context.l10n.hostAudienceSelectedCount(
                 count: selected.length,
               ),
-              footer: CatchText(
+              footer: CatchLegacyText(
                 context.l10n.hostAudienceStaticHelp,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               children: [
                 if (selected.isEmpty)

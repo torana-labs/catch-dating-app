@@ -595,9 +595,9 @@ class PrivateEventPreferencesScreen extends ConsumerWidget {
                       ],
                     ),
                     gapH4,
-                    CatchText(
+                    CatchLegacyText(
                       l10n.hostsEventPreferenceProviderHint,
-                      variant: CatchTextVariant.bodyM,
+                      variant: CatchLegacyTextVariant.bodyM,
                       color: tokens.ink2,
                     ),
                   ],

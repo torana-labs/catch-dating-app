@@ -53,17 +53,17 @@ class EventSuccessRoomSummarySection extends StatelessWidget {
         highlight: attentionCount > 0,
       ),
     ];
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.eventSuccessRoomWorkspaceCapacitySummary(
               units: _eventSuccessRoomUnitCountLabel(context, layout),
               seats: seatCount,
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           gapH16,

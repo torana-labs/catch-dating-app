@@ -392,7 +392,7 @@ class CatchesTopOverlay extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Center(
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     radius: CatchRadius.pill,
                     backgroundColor: t.surface.withValues(
                       alpha: CatchOpacity.floatingChromeFill,
@@ -406,12 +406,12 @@ class CatchesTopOverlay extends StatelessWidget {
                     ),
                     boxShadow: CatchElevation.card,
                     padding: CatchInsets.swipeRemainingCount,
-                    child: CatchText(
+                    child: CatchLegacyText(
                       context.l10n
                           .swipesSwipeScreenTextCatchesRemainingcountLeft(
                             remainingCount: remainingCount,
                           ),
-                      variant: CatchTextVariant.statusLabel,
+                      variant: CatchLegacyTextVariant.statusLabel,
                       color: t.ink,
                       maxLines: 1,
                     ),
@@ -449,7 +449,7 @@ class CatchesScrimOverlay extends StatelessWidget {
       bottom: 0,
       height: CatchLayout.bottomActionScrimHeight,
       child: IgnorePointer(
-        child: CatchSurface(
+        child: CatchLegacySurface(
           tone: CatchSurfaceTone.transparent,
           radius: 0,
           padding: EdgeInsets.zero,

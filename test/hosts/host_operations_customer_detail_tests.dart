@@ -252,8 +252,11 @@ void _registerHostOperationsCustomerDetailTests() {
       reason: 'The tab body owns the standard top rhythm.',
     );
     final metricSurfaces = tester
-        .widgetList<CatchSurface>(
-          find.descendant(of: summary, matching: find.byType(CatchSurface)),
+        .widgetList<CatchLegacySurface>(
+          find.descendant(
+            of: summary,
+            matching: find.byType(CatchLegacySurface),
+          ),
         )
         .toList();
     expect(metricSurfaces, hasLength(3));

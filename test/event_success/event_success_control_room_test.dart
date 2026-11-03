@@ -54,8 +54,8 @@ void main() {
       expect(waiting, findsOneWidget);
       final section = find.byKey(const ValueKey('event-success-report-status'));
       expect(section, findsOneWidget);
-      final surface = tester.widget<CatchSurface>(
-        find.descendant(of: section, matching: find.byType(CatchSurface)),
+      final surface = tester.widget<CatchLegacySurface>(
+        find.descendant(of: section, matching: find.byType(CatchLegacySurface)),
       );
       expect(surface.tone, CatchSurfaceTone.primarySoft);
       expect(

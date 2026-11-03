@@ -115,7 +115,7 @@ class UserAnalyticsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.content,
       borderRole: CatchBorderRole.separator,
       child: Row(
@@ -127,15 +127,15 @@ class UserAnalyticsEmptyState extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   UserAnalyticsCopy.emptyTitle(context.l10n),
-                  variant: CatchTextVariant.titleS,
+                  variant: CatchLegacyTextVariant.titleS,
                   color: t.ink,
                 ),
                 gapH6,
-                CatchText(
+                CatchLegacyText(
                   UserAnalyticsCopy.emptyBody(context.l10n),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],
@@ -168,7 +168,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
                   for (var index = 0; index < 4; index++)
                     SizedBox(
                       width: itemWidth,
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         padding: CatchInsets.content,
                         borderRole: CatchBorderRole.separator,
                         child: Column(
@@ -211,7 +211,7 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
         ),
         CatchSection.divided(
           title: UserAnalyticsCopy.trendTitle(context.l10n),
-          child: CatchSurface(
+          child: CatchLegacySurface(
             padding: CatchInsets.content,
             borderRole: CatchBorderRole.separator,
             child: Column(
@@ -323,7 +323,7 @@ class UserAnalyticsTrendSection extends StatelessWidget {
 
     return CatchSection.divided(
       title: UserAnalyticsCopy.trendTitle(context.l10n),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         padding: CatchInsets.content,
         borderRole: CatchBorderRole.separator,
         child: Column(

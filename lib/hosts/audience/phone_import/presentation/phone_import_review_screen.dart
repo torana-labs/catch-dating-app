@@ -129,9 +129,9 @@ class PhoneImportReviewScreen extends StatelessWidget {
               CatchSection.contained(
                 title: weddingName,
                 subtitle: context.l10n.phoneImportProgramCollaborators,
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.phoneImportChooseMessage,
-                  variant: CatchTextVariant.bodyM,
+                  variant: CatchLegacyTextVariant.bodyM,
                   color: CatchTokens.of(context).ink,
                 ),
               ),
@@ -156,9 +156,9 @@ class PhoneImportReviewScreen extends StatelessWidget {
                         fullWidth: true,
                       ),
                       gapH12,
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.phoneImportPickerHelp,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: tokens.ink2,
                       ),
                       if (controller.notice case final notice?) ...[
@@ -202,9 +202,9 @@ class PhoneImportReviewScreen extends StatelessWidget {
               else ...[
                 Semantics(
                   liveRegion: true,
-                  child: CatchText(
+                  child: CatchLegacyText(
                     context.l10n.phoneImportReviewCount(count: entries.length),
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                   ),
                 ),
                 if (sharedPhones.isNotEmpty) ...[
@@ -275,19 +275,19 @@ class PhoneImportReviewScreen extends StatelessWidget {
                               ? null
                               : (value) =>
                                     controller.confirmSharing(value ?? false),
-                          title: CatchText(
+                          title: CatchLegacyText(
                             context.l10n.phoneImportConsent(
                               wedding: weddingName,
                             ),
-                            variant: CatchTextVariant.bodyM,
+                            variant: CatchLegacyTextVariant.bodyM,
                             color: CatchTokens.of(context).ink,
                           ),
                         ),
                       ),
                       gapH12,
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.phoneImportNoOwnership,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: tokens.ink2,
                       ),
                       if (entries.isNotEmpty &&
@@ -324,9 +324,9 @@ class PhoneImportReviewScreen extends StatelessWidget {
                       ),
                       if (live == null) ...[
                         gapH8,
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.phoneImportUnavailable,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                           color: tokens.ink2,
                         ),
                       ],

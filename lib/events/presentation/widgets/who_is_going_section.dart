@@ -112,18 +112,18 @@ class WhoIsGoingBody extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.eventsWhoIsGoingTextWhoSGoing,
-                  variant: CatchTextVariant.titleL,
+                  variant: CatchLegacyTextVariant.titleL,
                   color: surfaceStyle?.headingColor,
                 ),
               ),
-              CatchText(
+              CatchLegacyText(
                 context.l10n.eventsWhoIsGoingTextTotalCapacitylimit(
                   total: total,
                   capacityLimit: event.capacityLimit,
                 ),
-                variant: CatchTextVariant.titleS,
+                variant: CatchLegacyTextVariant.titleS,
                 color: surfaceStyle?.bodyColor ?? t.ink2,
               ),
             ],
@@ -194,7 +194,7 @@ class WhoIsGoingEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.content,
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
@@ -215,15 +215,15 @@ class WhoIsGoingEmptyState extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   title,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                   color: surfaceStyle?.headingColor,
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   message,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: surfaceStyle?.bodyColor ?? t.ink2,
                 ),
               ],
@@ -251,7 +251,7 @@ class SwipeWindowBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentDense,
       tone: surfaceStyle == null
           ? CatchSurfaceTone.primarySoft
@@ -267,9 +267,9 @@ class SwipeWindowBanner extends StatelessWidget {
           ),
           gapW8,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               message,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: surfaceStyle?.primaryColor ?? t.primary,
             ),
           ),

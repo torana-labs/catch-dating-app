@@ -200,9 +200,9 @@ class HostRazorpayConnectionSection extends StatelessWidget {
             onPressed: () => Navigator.of(dialogContext).pop(true),
           ),
         ],
-        child: CatchText(
+        child: CatchLegacyText(
           context.l10n.hostPayoutsRazorpayDisconnectHelp,
-          variant: CatchTextVariant.bodyM,
+          variant: CatchLegacyTextVariant.bodyM,
           color: CatchTokens.of(context).ink,
         ),
       ),

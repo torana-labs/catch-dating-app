@@ -70,7 +70,7 @@ class EventSuccessRotationRow extends StatelessWidget {
         );
     return Padding(
       padding: eventSuccessRevealAssignmentRowGap,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         tone: CatchSurfaceTone.raised,
         borderRole: CatchBorderRole.separator,
         padding: CatchInsets.contentDense,
@@ -90,20 +90,20 @@ class EventSuccessRotationRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n
                         .eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername(
                           timeRange: timeRange,
                           peerName: peerName,
                         ),
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                   ),
                   gapH2,
-                  CatchText(
+                  CatchLegacyText(
                     eventSuccessRevealCompatibilityExplanation(
                       slot.compatibility,
                     ),
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                   ),
                 ],

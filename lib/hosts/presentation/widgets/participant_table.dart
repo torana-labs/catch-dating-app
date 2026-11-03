@@ -114,10 +114,10 @@ class ParticipantRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     person,
                     maxLines: 1,
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                     color: CatchTokens.of(context).ink,
                   ),
                   if (meta != null && meta!.isNotEmpty) ...[
@@ -360,16 +360,16 @@ class ParticipantTable extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           emptyTitle ?? '',
-                          variant: CatchTextVariant.sectionTitle,
+                          variant: CatchLegacyTextVariant.sectionTitle,
                           color: CatchTokens.of(context).ink,
                         ),
                         if (emptyMessage != null) ...[
                           const SizedBox(height: CatchSpacing.s1),
-                          CatchText(
+                          CatchLegacyText(
                             emptyMessage!,
-                            variant: CatchTextVariant.supporting,
+                            variant: CatchLegacyTextVariant.supporting,
                           ),
                         ],
                       ],

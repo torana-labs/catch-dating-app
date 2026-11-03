@@ -198,7 +198,7 @@ class _HostRequestsWorkspaceState extends State<HostRequestsWorkspace> {
         ),
         const SizedBox(height: CatchSpacing.s3),
         for (final (rowIndex, row) in rows.indexed)
-          CatchSurface(
+          CatchLegacySurface(
             radius: CatchRadius.none,
             backgroundColor: rowIndex == index
                 ? t.ink.withValues(alpha: CatchOpacity.tabBarPillFill)
@@ -212,9 +212,9 @@ class _HostRequestsWorkspaceState extends State<HostRequestsWorkspace> {
               ),
               subtitle: _subtitleOf(l10n, row),
               selected: rowIndex == index,
-              trailing: CatchText(
+              trailing: CatchLegacyText(
                 row.eventName,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
               onTap: () => setState(() {
@@ -226,9 +226,9 @@ class _HostRequestsWorkspaceState extends State<HostRequestsWorkspace> {
           ),
         if (!widget.requests.complete) ...[
           const SizedBox(height: CatchSpacing.s3),
-          CatchText(
+          CatchLegacyText(
             l10n.hostRequestsPartial,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
         ],
@@ -318,7 +318,7 @@ class HostRequestBody extends StatelessWidget {
                   ),
                 ),
               if (back != null) const SizedBox(height: CatchSpacing.s3),
-              CatchText(name, variant: CatchTextVariant.titleL),
+              CatchLegacyText(name, variant: CatchLegacyTextVariant.titleL),
               const SizedBox(height: CatchSpacing.s3),
               CatchSection.fieldRows(
                 first: true,
@@ -388,11 +388,11 @@ class HostRequestBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchText(
+              CatchLegacyText(
                 next == null
                     ? l10n.hostRequestsHears(name: name)
                     : l10n.hostRequestsHearsThen(name: name, next: next),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
               const SizedBox(height: CatchSpacing.s2),

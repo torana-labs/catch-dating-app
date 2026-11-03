@@ -69,7 +69,7 @@ class ChatShareCard extends StatelessWidget {
 
     return AspectRatio(
       aspectRatio: CatchLayout.chatShareCardAspectRatio,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.bg,
         borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.contentRelaxed,
@@ -143,18 +143,18 @@ class ShareCardHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(
+              CatchLegacyText(
                 chatContextStampFor(event),
-                variant: CatchTextVariant.statusLabel,
+                variant: CatchLegacyTextVariant.statusLabel,
                 color: accent,
                 maxLines: 1,
               ),
               gapH3,
-              CatchText(
+              CatchLegacyText(
                 chatShareCardTitleFor(event),
                 maxLines: 1,
 
-                variant: CatchTextVariant.titleL,
+                variant: CatchLegacyTextVariant.titleL,
                 color: t.ink,
               ),
             ],
@@ -197,7 +197,7 @@ class ShareCardBubble extends StatelessWidget {
           alignment: isMe
               ? AlignmentDirectional.centerEnd
               : AlignmentDirectional.centerStart,
-          child: CatchSurface(
+          child: CatchLegacySurface(
             backgroundColor: isMe ? t.primary : t.surface,
             borderRole: isMe ? null : CatchBorderRole.separator,
             // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -220,9 +220,9 @@ class ShareCardBubble extends StatelessWidget {
               ),
             ),
             padding: CatchInsets.chatBubbleContent,
-            child: CatchText(
+            child: CatchLegacyText(
               text,
-              variant: CatchTextVariant.bodyL,
+              variant: CatchLegacyTextVariant.bodyL,
               color: isMe ? t.primaryInk : t.ink,
               maxLines: 3,
             ),

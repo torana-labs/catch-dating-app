@@ -219,9 +219,9 @@ class ReviewsPreviewSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.reviewsReviewsSectionTextReviews,
-                  variant: CatchTextVariant.titleL,
+                  variant: CatchLegacyTextVariant.titleL,
                 ),
               ),
               if (avgRating != null) ...[
@@ -230,12 +230,12 @@ class ReviewsPreviewSection extends StatelessWidget {
                   size: CatchIconSize.rating,
                 ),
                 gapW4,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.reviewsReviewsSectionTextTostringasfixedLength(
                     toStringAsFixed: avgRating.toStringAsFixed(1),
                     length: reviews.length,
                   ),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],
@@ -329,7 +329,7 @@ class ReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.tileContentCompact,
       child: Column(
@@ -343,11 +343,11 @@ class ReviewCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       isOwn
                           ? context.l10n.reviewsReviewsSectionTextYou
                           : review.reviewerName,
-                      variant: CatchTextVariant.titleS,
+                      variant: CatchLegacyTextVariant.titleS,
                       color: CatchTokens.of(context).ink,
                     ),
                     StarRatingRow(
@@ -391,9 +391,9 @@ class ReviewCard extends StatelessWidget {
           ),
           if (review.comment.isNotEmpty) ...[
             gapH6,
-            CatchText(
+            CatchLegacyText(
               review.comment,
-              variant: CatchTextVariant.bodyLead,
+              variant: CatchLegacyTextVariant.bodyLead,
               color: t.ink2,
             ),
           ],
@@ -416,7 +416,7 @@ class ReviewOwnerResponseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       width: double.infinity,
       padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
@@ -440,20 +440,20 @@ class ReviewOwnerResponseCard extends StatelessWidget {
               ),
               gapW8,
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.reviewsReviewsSectionTextHostResponseHostname(
                     hostName: response.hostName,
                   ),
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: t.ink,
                 ),
               ),
             ],
           ),
           gapH6,
-          CatchText(
+          CatchLegacyText(
             response.message,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
         ],

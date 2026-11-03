@@ -141,9 +141,9 @@ class _HostFollowerUpdateComposerSheetState
           ),
           if (_error != null) ...[
             gapH10,
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostOrganizerToolsTextCouldNotPostThis,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).danger,
             ),
           ],

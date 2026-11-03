@@ -235,9 +235,9 @@ class _ProgramLodgingLayoutState extends State<ProgramLodgingLayout> {
             ],
           ),
         if (selectedTarget != null) ...[
-          CatchText(
+          CatchLegacyText(
             selectedTarget.explanation,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchButton(
             key: const ValueKey('lodging-move'),
@@ -276,7 +276,7 @@ class ProgramLodgingFloorLayout extends StatelessWidget {
     );
     final columns = units.map((u) => u.layoutUnit.gridX).reduce(math.max) + 1;
     final rows = units.map((u) => u.layoutUnit.gridY).reduce(math.max) + 1;
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: CatchTokens.of(context).raised,
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,

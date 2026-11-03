@@ -172,9 +172,9 @@ class ReviewHistoryRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           row.contextLabel,
-          variant: CatchTextVariant.statusLabel,
+          variant: CatchLegacyTextVariant.statusLabel,
           color: t.ink2,
         ),
         gapH8,
@@ -217,7 +217,7 @@ class ReviewHistoryRowSkeleton extends StatelessWidget {
       children: [
         CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
         gapH8,
-        CatchSurface(
+        CatchLegacySurface(
           borderRole: CatchBorderRole.separator,
           padding: CatchInsets.tileContentCompact,
           child: Column(

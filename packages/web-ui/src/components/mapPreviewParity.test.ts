@@ -24,7 +24,7 @@ describe("MapPreview parity", () => {
     expect(css).toContain("gap: var(--catch-space-micro6);");
     expect(insets).toContain("static const EdgeInsets content = EdgeInsets.all(CatchSpacing.s4);");
     expect(css).toContain("padding: var(--catch-space-s4);");
-    expect(preview).toMatch(/maxLines: 2,\s*textAlign: TextAlign\.center,\s*variant: CatchTextVariant\.supporting,\s*color: t\.ink3,/);
+    expect(preview).toMatch(/maxLines: 2,\s*textAlign: TextAlign\.center,\s*variant: CatchLegacyTextVariant\.supporting,\s*color: t\.ink3,/);
     // The web label is ink2: Flutter's ink3 is under 4.5:1 on bg (a Flutter gap).
     expect(ts).toContain('color="ink2" maxLines={2} textAlign="center" variant="supporting"');
   });

@@ -26,11 +26,11 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
           children: [
             Icon(CatchIcons.info, size: CatchIconSize.xs, color: t.ink2),
             gapW6,
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesTextAssignmentNotes,
-              variant: CatchTextVariant.statusLabel,
+              variant: CatchLegacyTextVariant.statusLabel,
               color: t.ink2,
             ),
           ],
@@ -39,9 +39,9 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
         for (final reason in reasons)
           Padding(
             padding: _hostLaunchIssueGap,
-            child: CatchText(
+            child: CatchLegacyText(
               reason,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ),

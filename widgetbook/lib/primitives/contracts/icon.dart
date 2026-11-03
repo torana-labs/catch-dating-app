@@ -17,40 +17,63 @@ Widget catchIconContractStates(BuildContext context) {
     children: [
       WidgetbookContractStateCard(
         label: 'sizes',
-        child: WidgetbookContractWrap(
-          children: [
-            for (final size in const [
-              CatchIconSize.micro,
-              CatchIconSize.sm,
-              CatchIconSize.xs,
-              CatchIconSize.md,
-              CatchIconSize.control,
-              CatchIconSize.row,
-              CatchIconSize.lg,
-              CatchIconSize.tile,
-              CatchIconSize.emptyState,
-              CatchIconSize.hero,
-            ])
-              CatchIcon(CatchIcons.event, size: size),
-          ],
+        child: CatchRoot(
+          theme: CatchThemeMode.day,
+          child: WidgetbookContractWrap(
+            children: [
+              for (final size in const [
+                CatchIconSize.xs,
+                CatchIconSize.md,
+                CatchIconSize.control,
+                CatchIconSize.lg,
+              ])
+                CatchIcon(CatchIcons.event, size: size),
+            ],
+          ),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'tones',
-        child: WidgetbookContractWrap(
-          children: [
-            for (final tone in CatchIconTone.values)
-              CatchIcon(CatchIcons.success, size: CatchIconSize.lg, tone: tone),
-          ],
+        description:
+            'No tone of its own: the colour of the ground (tile, a format '
+            'colour, night).',
+        child: CatchRoot(
+          theme: CatchThemeMode.day,
+          child: CatchStack(
+            gap: CatchStackGap.g8,
+            children: [
+              for (final (block, color) in const [
+                (CatchSurfaceBlock.tile, null),
+                (CatchSurfaceBlock.spotlight, CatchSurfaceColor.run),
+                (CatchSurfaceBlock.spotlight, CatchSurfaceColor.ink),
+              ])
+                CatchSurface(
+                  block: block,
+                  color: color,
+                  padding: CatchSurfacePadding.sm,
+                  child: CatchStack(
+                    direction: CatchStackDirection.row,
+                    gap: CatchStackGap.g12,
+                    children: [
+                      CatchIcon(CatchIcons.success),
+                      CatchIcon(CatchIcons.event),
+                      CatchIcon(CatchIcons.search),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'labelled',
-        child: CatchIcon(
-          CatchIcons.search,
-          size: CatchIconSize.lg,
-          tone: CatchIconTone.ink,
-          semanticLabel: 'Search',
+        child: CatchRoot(
+          theme: CatchThemeMode.day,
+          child: CatchIcon(
+            CatchIcons.search,
+            size: CatchIconSize.lg,
+            label: 'Search',
+          ),
         ),
       ),
     ],

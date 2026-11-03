@@ -701,6 +701,32 @@ test("preserves content-header classification for the equivalent CatchText role"
   assert.deepEqual(checkScreenTopBarContracts({root}).findings, []);
 });
 
+test("the legacy CatchLegacyText keeps its content-header classification", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    contract: compactContract(), includeRootContracts: false,
+    manualSource: `class FeatureHeader extends StatelessWidget {
+      Widget build(BuildContext context) => ui.CatchLegacyText(
+        'Module', variant: ui.CatchLegacyTextVariant.titleL,
+      );
+    }`,
+    manualHeaders: [{path: "lib/manual/header.dart", symbol: "FeatureHeader", role: "content",
+      owner: "CatchTextStyles.titleL", reason: "This exact header labels content inside the route body."}],
+  });
+  assert.deepEqual(checkScreenTopBarContracts({root}).findings, []);
+});
+
+for (const role of ["headline", "titleL"]) test(`discovers unregistered CatchLegacyText ${role} headers`, () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    contract: compactContract(), includeRootContracts: false,
+    manualSource: `class FeatureHeader extends StatelessWidget {
+      Widget build(BuildContext context) => CatchLegacyText('Feature', variant: CatchLegacyTextVariant.${role});
+    }`,
+  });
+  assert.ok(hasFinding(checkScreenTopBarContracts({root}), "unregistered-manual-header"));
+});
+
 for (const role of ["headline", "titleL"]) test(`discovers unregistered CatchText ${role} headers`, () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",

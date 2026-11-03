@@ -11,6 +11,7 @@ flutter test
 (cd apps/host && flutter test --concurrency=1)
 bash tool/test_app_shell_integration.sh
 flutter test --concurrency=1 test/goldens
+(cd packages/catch_ui && flutter test --concurrency=1)
 node tool/run.mjs check test:flutter-test-size
 (cd widgetbook && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter build web --release)
 npm --prefix functions test
@@ -42,7 +43,19 @@ for relevant changes, in the daily scheduled run, and on manual dispatch. CI set
 pixel changes and missing baselines are listed in the job summary with their
 images retained as CI artifacts instead of failing; render errors and
 non-golden expectations still fail. Local `flutter test test/goldens` without
-that variable stays strict. The macOS runner lives in `apps/consumer`, so run native passes
+that variable stays strict.
+
+The library's own goldens live with the library: every golden family that
+renders only `package:catch_ui` and `package:catch_tokens` is in
+`packages/catch_ui/test/goldens`, with its baselines, its own
+`flutter_test_config.dart` and font loader, and the `golden` tag declared in
+`packages/catch_ui/dart_test.yaml`. The Linux "Catch UI package tests" job runs
+`flutter test --concurrency=1 --exclude-tags=golden` there; the macOS goldens
+job runs `(cd packages/catch_ui && flutter test --concurrency=1 --tags=golden)`
+after `test/goldens`, with the same `CATCH_GOLDEN_REPORT`, and keeps both
+failure folders. `test/goldens` holds only the goldens that import the app or
+the platform. Locally, `(cd packages/catch_ui && flutter test --concurrency=1)`
+runs the package's tests and goldens together. The macOS runner lives in `apps/consumer`, so run native passes
 from there with a device id and scope—for example,
 `(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)`
 or `... macos all`. Each native suite has a thin entrypoint in

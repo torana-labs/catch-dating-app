@@ -29,7 +29,7 @@ class EventBackdropImage extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        CatchSurface(
+        CatchLegacySurface(
           duration: Duration.zero,
           radius: CatchRadius.none,
           // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)

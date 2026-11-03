@@ -62,9 +62,9 @@ class HostCustomerApplicationsSection extends ConsumerWidget {
             CatchSection.content(
               key: const ValueKey('host-customer-applications'),
               title: context.l10n.hostApplicationsTitle,
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.hostCustomersNoApplications,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             )
           else
@@ -169,11 +169,11 @@ class HostCustomerApplicationCard extends ConsumerWidget {
       loadingBuilder: (_) => CatchSkeleton.content(
         child: CatchSection.fieldRows(
           title: context.l10n.hostCustomersLatestSubmittedDetails,
-          footer: CatchText(
+          footer: CatchLegacyText(
             context.l10n.hostCustomersSubmittedOn(
               date: CatchSkeleton.sampleDateText,
             ),
-            variant: CatchTextVariant.bodyS,
+            variant: CatchLegacyTextVariant.bodyS,
             color: CatchTokens.of(context).ink2,
           ),
           children: [
@@ -199,11 +199,11 @@ class HostCustomerApplicationCard extends ConsumerWidget {
       builder: (context, detail) => CatchSection.fieldRows(
         key: const ValueKey('host-customer-submitted-fields'),
         title: context.l10n.hostCustomersLatestSubmittedDetails,
-        footer: CatchText(
+        footer: CatchLegacyText(
           context.l10n.hostCustomersSubmittedOn(
             date: AppTimeFormatters.shortDate(detail.submittedAt),
           ),
-          variant: CatchTextVariant.bodyS,
+          variant: CatchLegacyTextVariant.bodyS,
           color: CatchTokens.of(context).ink2,
         ),
         children: [

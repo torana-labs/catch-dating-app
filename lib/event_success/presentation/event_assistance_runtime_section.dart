@@ -125,26 +125,26 @@ class _EventAssistanceRuntimeSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(
+        CatchLegacyText(
           widget.phase == EventAssistanceRuntimePhase.retryRequired
               ? l.eventAssistanceRuntimePending
               : busy
               ? l.eventAssistanceRuntimeSaving
               : runtimeStatusLabel(l, widget.view.status),
-          variant: CatchTextVariant.titleL,
+          variant: CatchLegacyTextVariant.titleL,
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l.eventAssistanceRuntimeBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (saved) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             widget.view.runtime?.status == AssistanceRuntimeRecordStatus.paused
                 ? l.eventAssistanceRuntimePauseSaved
                 : l.eventAssistanceRuntimeSaved,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH16,
@@ -160,36 +160,36 @@ class _EventAssistanceRuntimeSectionState
           ),
         if (!_editable)
           for (final entry in value.routes.indexed) ...[
-            CatchText(
+            CatchLegacyText(
               [
                 l.eventAssistanceRuntimeFirst,
                 l.eventAssistanceRuntimeSecond,
                 l.eventAssistanceRuntimeThird,
               ][entry.$1],
-              variant: CatchTextVariant.sectionTitle,
+              variant: CatchLegacyTextVariant.sectionTitle,
             ),
-            CatchText(
+            CatchLegacyText(
               _senderSummary(entry.$2),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH12,
           ],
         gapH12,
-        CatchText(
+        CatchLegacyText(
           '${l.eventAssistanceRuntimeUntil}: ${lateJoinTimeLabel(context, value.expiresAt)}',
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
-        CatchText(
+        CatchLegacyText(
           value.responseDeadline == null
               ? l.eventAssistanceRuntimeNoDeadline
               : '${l.eventAssistanceRuntimeDeadline}: ${lateJoinTimeLabel(context, value.responseDeadline!)}',
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (value.laterChoices?.isNotEmpty ?? false) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeRetainedChoices,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (_canConfigure) ...[
@@ -212,9 +212,9 @@ class _EventAssistanceRuntimeSectionState
         ],
         if (issue != null && _canConfigure) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             runtimeIssueLabel(l, issue),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (widget.error != null) ...[
@@ -223,9 +223,9 @@ class _EventAssistanceRuntimeSectionState
         ],
         if (widget.phase == EventAssistanceRuntimePhase.retryRequired) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeRetryBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchButton(
             key: const ValueKey('runtime.retry'),
@@ -238,9 +238,9 @@ class _EventAssistanceRuntimeSectionState
                 !widget.canChooseSenders &&
                 widget.loadingRoute == null) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeReloadBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchButton(
             label: l.eventAssistanceLateJoinReload,

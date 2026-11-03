@@ -145,14 +145,14 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context.l10n.eventSuccessRoomMapTitle,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.eventSuccessRoomMapSubtitle,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: CatchTokens.of(context).ink2,
                 ),
               ],
@@ -186,7 +186,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
                     key: 'release:${_selected!.uid}',
                   ),
           ),
-        CatchSurface(
+        CatchLegacySurface(
           backgroundColor: CatchTokens.of(context).raised,
           borderRole: CatchBorderRole.separator,
           padding: CatchInsets.content,
@@ -236,9 +236,9 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
             ],
           ),
           if (canDrag)
-            CatchText(
+            CatchLegacyText(
               context.l10n.eventSuccessRoomMapDragHint,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).ink2,
             ),
         ],
@@ -500,9 +500,9 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(
+              CatchLegacyText(
                 profile?.name ?? assignment.displayTitle,
-                variant: CatchTextVariant.titleL,
+                variant: CatchLegacyTextVariant.titleL,
                 color: t.ink,
               ),
               gapH4,
@@ -519,11 +519,11 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
                     : CatchBadgeTone.brand,
               ),
               gapH4,
-              CatchText(
+              CatchLegacyText(
                 context.l10n.eventSuccessRoomMapCurrentPosition(
                   unitLabel: currentLabel,
                 ),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
             ],
@@ -545,7 +545,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [identity, gapH12, move],
     );
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentDense,
       borderSpec: CatchBorder.resolve(
         t,
@@ -667,7 +667,7 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchSurface(
+        CatchLegacySurface(
           width: CatchIconSize.md,
           height: CatchIconSize.md,
           radius: CatchRadius.pill,
@@ -682,7 +682,11 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
               : Icon(icon, size: CatchIconSize.micro, color: color),
         ),
         gapW4,
-        CatchText(label, variant: CatchTextVariant.statusLabel, color: t.ink2),
+        CatchLegacyText(
+          label,
+          variant: CatchLegacyTextVariant.statusLabel,
+          color: t.ink2,
+        ),
       ],
     );
   }
@@ -743,7 +747,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
         capacity: unit.capacity,
         status: statusLabel,
       ),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         key: ValueKey<String>('event_success.room.unit.${unit.id}'),
         radius: CatchRadius.md,
         borderSpec: isTable && !selectedDestination && !alert && !invalid
@@ -773,12 +777,12 @@ class _EventSuccessMapUnit extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: CatchText(
+                    child: CatchLegacyText(
                       unit.label,
                       maxLines: 1,
 
                       textAlign: TextAlign.center,
-                      variant: CatchTextVariant.statusLabel,
+                      variant: CatchLegacyTextVariant.statusLabel,
                       color: selectedDestination ? t.success : t.ink,
                     ),
                   ),
@@ -867,7 +871,7 @@ class _EventSuccessUnitShape extends StatelessWidget {
       EventSuccessLayoutShape.court => CatchRadius.md,
       EventSuccessLayoutShape.zone => CatchRadius.lg,
     };
-    final surface = CatchSurface(
+    final surface = CatchLegacySurface(
       radius: radius,
       backgroundColor: invalid
           ? t.raised.withValues(alpha: CatchOpacity.disabledControl)
@@ -910,7 +914,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
     final t = CatchTokens.of(context);
     final assignment = this.assignment;
     if (assignment == null) {
-      return CatchSurface(
+      return CatchLegacySurface(
         width: extent,
         height: extent,
         radius: CatchRadius.pill,

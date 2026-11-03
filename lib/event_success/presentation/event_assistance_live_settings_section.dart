@@ -107,9 +107,9 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l10n.eventAssistanceLateJoinChooseScope,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 for (final group in groups)
                   CatchField.nav(

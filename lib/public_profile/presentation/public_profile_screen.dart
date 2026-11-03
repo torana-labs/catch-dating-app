@@ -255,7 +255,7 @@ class PublicProfileBody extends StatelessWidget {
         ),
         if (submitting)
           Positioned.fill(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               radius: CatchRadius.none,
               backgroundColor: t.overlay,

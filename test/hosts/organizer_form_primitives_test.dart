@@ -73,7 +73,7 @@ void main() {
       ),
       findsWidgets,
     );
-    expect(find.byType(CatchSurface, skipOffstage: false), findsWidgets);
+    expect(find.byType(CatchLegacySurface, skipOffstage: false), findsWidgets);
     final activityField = tester.widget<CatchField>(
       find.byWidgetPredicate(
         (widget) => widget is CatchField && widget.title == 'Default activity',

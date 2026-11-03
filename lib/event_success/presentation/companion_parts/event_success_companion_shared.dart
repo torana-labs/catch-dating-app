@@ -235,7 +235,7 @@ class _CompanionStageImageState extends State<CompanionStageImage>
         final glowAlpha = 0.20 + (breath * 0.12);
         return Transform.scale(
           scale: scale,
-          child: CatchSurface(
+          child: CatchLegacySurface(
             width: CatchLayout.eventSuccessStageGlyphExtent,
             height: CatchLayout.eventSuccessStageGlyphExtent,
             // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -292,7 +292,7 @@ class _CompanionStageSurfaceState extends State<CompanionStageSurface>
       animation: _breath,
       builder: (context, child) {
         final breath = 0.5 - 0.5 * math.cos(_breath.value * math.pi);
-        return CatchSurface(
+        return CatchLegacySurface(
           radius: CatchRadius.sm,
           backgroundColor: t.surface.withValues(
             alpha: CatchOpacity.eventSuccessPanelFill,
@@ -559,7 +559,7 @@ class _CompanionBouncySurfaceState extends State<CompanionBouncySurface>
             final flare = _down ? 0.0 : (_press.value * (1 - _press.value) * 4);
             return Transform.scale(
               scale: scale,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 tone: CatchSurfaceTone.transparent,
                 borderRadius: widget.borderRadius,
                 boxShadow: flare > CatchOpacity.controlOverlayHover
@@ -697,7 +697,7 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
         final glowAlpha =
             CatchOpacity.eventSuccessRoomGlowBase +
             pulse * CatchOpacity.eventSuccessRoomGlowPulse;
-        return CatchSurface(
+        return CatchLegacySurface(
           radius: CatchRadius.pill,
           backgroundColor: t.primarySoft,
           borderSpec: CatchBorder.resolve(
@@ -717,7 +717,7 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
                 ),
                 gapW6,
                 Flexible(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     count == 1
                         ? context
                               .l10n
@@ -726,7 +726,7 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
                               .eventSuccessEventSuccessCompanionSharedTextCountPeopleInThe(
                                 count: count,
                               ),
-                    variant: CatchTextVariant.titleS,
+                    variant: CatchLegacyTextVariant.titleS,
                     color: t.ink,
                     maxLines: 2,
                   ),

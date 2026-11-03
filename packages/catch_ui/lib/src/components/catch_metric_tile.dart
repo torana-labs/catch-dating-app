@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_metric_value.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchMetricTileVariant { display, mono }
@@ -149,7 +149,7 @@ class CatchMetricTile extends StatelessWidget {
       ],
     );
     final tile = mode == CatchMetricTileMode.surface
-        ? CatchSurface(
+        ? CatchLegacySurface(
             padding: padding ?? CatchInsets.contentDense,
             borderRole: borderColor == null ? CatchBorderRole.boundary : null,
             borderSpec: borderColor == null

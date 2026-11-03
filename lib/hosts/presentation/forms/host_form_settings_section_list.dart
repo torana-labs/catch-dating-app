@@ -113,14 +113,14 @@ class HostFormSettingsSectionList extends StatelessWidget {
       gapH20,
       CatchSection.fieldRows(
         title: context.l10n.hostFormMessagingTitle,
-        footer: CatchText(
+        footer: CatchLegacyText(
           definition.usesPurposeMessaging
               ? context.l10n.hostFormMessagingPurposeHelp
               : definition.identityPolicy ==
                     HostFormIdentityPolicy.phoneVerified
               ? context.l10n.hostFormMessagingHelp
               : context.l10n.hostFormMessagingPhoneRequired,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         children: [
           if (!definition.usesPurposeMessaging) ...[
@@ -408,9 +408,9 @@ class HostFormSettingsSectionList extends StatelessWidget {
       gapH20,
       CatchSection.fieldRows(
         title: context.l10n.hostFormLogic,
-        footer: CatchText(
+        footer: CatchLegacyText(
           context.l10n.hostFormLogicHelp,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         children: [
           for (final ruleEntry in definition.logicRules.indexed)

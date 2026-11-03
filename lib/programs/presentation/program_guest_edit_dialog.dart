@@ -103,13 +103,16 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
         ),
         if (widget.households.isNotEmpty) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             context.l10n.programsGuestsHouseholdLabel,
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
           ),
           for (final household in widget.households)
             CatchFieldRow.standard(
-              body: CatchText(household.label, variant: CatchTextVariant.bodyM),
+              body: CatchLegacyText(
+                household.label,
+                variant: CatchLegacyTextVariant.bodyM,
+              ),
               trailing: _householdId == household.householdId
                   ? Icon(CatchIcons.check, size: CatchIconSize.md)
                   : null,
@@ -122,15 +125,15 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
         ],
         if (widget.groups.isNotEmpty) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             context.l10n.programsGuestsGroupsTitle,
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
           ),
           for (final group in widget.groups)
             CatchFieldRow.standard(
-              body: CatchText(
+              body: CatchLegacyText(
                 '${group.label} · ${group.dimension}',
-                variant: CatchTextVariant.bodyM,
+                variant: CatchLegacyTextVariant.bodyM,
               ),
               trailing: _groupIds.contains(group.groupId)
                   ? Icon(CatchIcons.check, size: CatchIconSize.md)

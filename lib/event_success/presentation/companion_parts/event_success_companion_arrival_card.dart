@@ -94,18 +94,18 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               ],
             ),
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionArrivalMissionTextStartYourFirstHello,
-              variant: CatchTextVariant.titleL,
+              variant: CatchLegacyTextVariant.titleL,
             ),
             gapH6,
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionArrivalMissionTextWeWillConfirmYou,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
             gapH14,
@@ -120,11 +120,11 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                   ),
                   gapW8,
                   Expanded(
-                    child: CatchText(
+                    child: CatchLegacyText(
                       context
                           .l10n
                           .eventSuccessEventSuccessCompanionArrivalMissionTextThisIsAPrivate,
-                      variant: CatchTextVariant.sectionTitle,
+                      variant: CatchLegacyTextVariant.sectionTitle,
                     ),
                   ),
                 ],
@@ -197,7 +197,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                           ? v * 2
                           : (1 - v) * 2) *
                       CatchOpacity.arrivalCelebrationPeak;
-                  return CatchSurface(
+                  return CatchLegacySurface(
                     tone: CatchSurfaceTone.transparent,
                     radius: CatchRadius.sm,
                     padding: EdgeInsets.zero,
@@ -321,17 +321,17 @@ class FirstHelloMissionEditor extends StatelessWidget {
           ],
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           context.l10n
               .eventSuccessEventSuccessCompanionArrivalMissionTextFindTargetdisplayname(
                 targetDisplayName: mission.targetDisplayName,
               ),
-          variant: CatchTextVariant.titleL,
+          variant: CatchLegacyTextVariant.titleL,
         ),
         gapH6,
-        CatchText(
+        CatchLegacyText(
           mission.targetContext,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
         gapH14,
@@ -346,9 +346,9 @@ class FirstHelloMissionEditor extends StatelessWidget {
               ),
               gapW8,
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   mission.question,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
               ),
             ],
@@ -368,11 +368,11 @@ class FirstHelloMissionEditor extends StatelessWidget {
           ],
         ),
         gapH14,
-        CatchText(
+        CatchLegacyText(
           context
               .l10n
               .eventSuccessEventSuccessCompanionArrivalMissionTextCompleteThisTinyMission,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
         gapH14,

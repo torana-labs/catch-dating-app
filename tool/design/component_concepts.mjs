@@ -12,6 +12,9 @@ export const conceptQualifiers = new Set([
   "adapter",
   "recipe",
   "layout",
+  // The retiring implementation of the record's responsibility, kept for
+  // legacy callers until their redraw (redesign plan 5.8, D24).
+  "legacy",
 ]);
 
 /**

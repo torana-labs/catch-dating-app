@@ -139,19 +139,19 @@ class _HostResponseExportActionState
             ],
           ),
           if (view.status == HostResponseExportStatus.stale)
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostAudienceRefresh,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           if (view.status == HostResponseExportStatus.pending)
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostFormExportStillPreparing,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           if (view.status == HostResponseExportStatus.failure)
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostFormExportFailed,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
         ],
       ),

@@ -58,11 +58,11 @@ class CreateOrganizerPhotosPicker extends StatelessWidget {
                   mode: CatchFieldLabelTextMode.optional,
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   context
                       .l10n
                       .hostsCreateOrganizerPhotosPickerTextDragToReorderThe,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: CatchTokens.of(context).ink3,
                 ),
               ],
@@ -89,9 +89,9 @@ class CreateOrganizerPhotosPicker extends StatelessWidget {
       children: [
         picker,
         gapH12,
-        CatchText(
+        CatchLegacyText(
           context.l10n.hostsCreateOrganizerPhotosPickerTextDragToReorderThe,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: CatchTokens.of(context).ink3,
         ),
       ],
@@ -139,11 +139,11 @@ class CreateOrganizerProfileImagePicker extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(
+              CatchLegacyText(
                 context
                     .l10n
                     .hostsCreateOrganizerPhotosPickerTextASquareLogoShown,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
               gapH8,
@@ -226,7 +226,7 @@ class OrganizerProfileImageTile extends StatelessWidget {
     } else if (existingImageUrl case final imageUrl?) {
       content = CatchNetworkImage(
         imageUrl,
-        errorBuilder: (_, _, _) => CatchSurface(
+        errorBuilder: (_, _, _) => CatchLegacySurface(
           backgroundColor: t.raised,
           radius: CatchRadius.none,
           duration: Duration.zero,
@@ -238,7 +238,7 @@ class OrganizerProfileImageTile extends StatelessWidget {
         ),
       );
     } else {
-      content = CatchSurface(
+      content = CatchLegacySurface(
         duration: Duration.zero,
         radius: CatchRadius.none,
         backgroundColor: t.raised,
@@ -257,9 +257,9 @@ class OrganizerProfileImageTile extends StatelessWidget {
               gapH8,
               Padding(
                 padding: CatchInsets.inlineHorizontal,
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.hostsCreateOrganizerPhotosPickerTextAddImage,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                   textAlign: TextAlign.center,
                 ),
@@ -272,7 +272,7 @@ class OrganizerProfileImageTile extends StatelessWidget {
 
     final tile = SizedBox.square(
       dimension: size,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         onTap: onTap,
         tone: CatchSurfaceTone.raised,
         radius: CatchRadius.md,

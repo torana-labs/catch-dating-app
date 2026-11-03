@@ -87,7 +87,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             CatchAsyncBoundary<String>(
               value: const AsyncValue.data('3 events ready'),
               builder: (context, value) =>
-                  CatchSurface.card(child: Text(value)),
+                  CatchLegacySurface.card(child: Text(value)),
             ),
             gapH12,
             SizedBox(
@@ -139,7 +139,7 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
                 builder: (context, value) => SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(CatchSpacing.s4),
-                    child: CatchSurface.card(child: Text(value)),
+                    child: CatchLegacySurface.card(child: Text(value)),
                   ),
                 ),
               ),

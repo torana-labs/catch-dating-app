@@ -59,16 +59,16 @@ class EventRehearsalEntryScaffold extends StatelessWidget {
               ),
             ],
           ),
-          meta: CatchSurface(
+          meta: CatchLegacySurface(
             duration: Duration.zero,
             radius: CatchRadius.none,
             backgroundColor: CatchTokens.of(context).bg,
             child: Padding(
               padding: CatchInsets.content,
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.hostRehearsalSafety,
                 textAlign: TextAlign.center,
-                variant: CatchTextVariant.bodyS,
+                variant: CatchLegacyTextVariant.bodyS,
                 color: CatchTokens.of(context).ink2,
               ),
             ),

@@ -32,7 +32,7 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.raised,
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.contentDense,
@@ -42,12 +42,12 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n
                       .eventSuccessEventSuccessHostOverridesTextRoundValue1(
                         value1: round.roundIndex + 1,
                       ),
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
               ),
               CatchButton(
@@ -63,11 +63,11 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
           ),
           gapH10,
           if (round.groups.isEmpty)
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesTextNoGroupsInThis,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink3,
             )
           else

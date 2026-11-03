@@ -25,7 +25,7 @@ class OrganizerIndexRow extends StatelessWidget {
       label: context.l10n.organizersDirectoryCardLabelOpenNameOrganizer(
         name: organizer.name,
       ),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         onTap: onTap,
         borderRole: CatchBorderRole.separator,
         emphasis: CatchSurfaceEmphasis.subtle,
@@ -35,7 +35,7 @@ class OrganizerIndexRow extends StatelessWidget {
           children: [
             Padding(
               padding: CatchInsets.mediaFrameContent,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 duration: Duration.zero,
                 tone: CatchSurfaceTone.transparent,
                 radius: CatchLayout.posterMediaRadius,
@@ -52,9 +52,9 @@ class OrganizerIndexRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     organizer.name,
-                    variant: CatchTextVariant.bodyLead,
+                    variant: CatchLegacyTextVariant.bodyLead,
                     color: t.ink,
                     maxLines: 1,
                   ),

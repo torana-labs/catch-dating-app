@@ -276,23 +276,23 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
                         context: AppErrorContext.event,
                       ),
                     if (proposal.unplacedPartyIds.isNotEmpty)
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.programsLodgingUnplaced(
                           count: proposal.unplacedPartyIds.length,
                         ),
-                        variant: CatchTextVariant.bodyL,
+                        variant: CatchLegacyTextVariant.bodyL,
                         color: CatchTokens.of(context).ink,
                       ),
                     if (!proposal.searchComplete)
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.programsLodgingBoundedSearch,
-                        variant: CatchTextVariant.bodyL,
+                        variant: CatchLegacyTextVariant.bodyL,
                         color: CatchTokens.of(context).ink,
                       ),
                     for (final explanation in proposal.explanations)
-                      CatchText(
+                      CatchLegacyText(
                         explanation,
-                        variant: CatchTextVariant.bodyL,
+                        variant: CatchLegacyTextVariant.bodyL,
                         color: CatchTokens.of(context).ink,
                       ),
                     CatchButton(
@@ -456,9 +456,9 @@ class ProgramLodgingExpiredPageBody extends StatelessWidget {
     body: CatchRouteBody.standardViewport(
       child: Column(
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.programsLodgingMembershipExpired,
-            variant: CatchTextVariant.bodyL,
+            variant: CatchLegacyTextVariant.bodyL,
             color: CatchTokens.of(context).ink,
           ),
           CatchButton(
@@ -537,9 +537,9 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
             CatchSection.containedFieldRows(
               title: l10n.programsLodgingMembershipTitle,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l10n.programsLodgingMembershipHint,
-                  variant: CatchTextVariant.bodyL,
+                  variant: CatchLegacyTextVariant.bodyL,
                   color: CatchTokens.of(context).ink,
                 ),
                 CatchField<String>.choices(
@@ -565,9 +565,9 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
                         },
                 ),
                 if (membership != null && active) ...[
-                  CatchText(
+                  CatchLegacyText(
                     membership.label,
-                    variant: CatchTextVariant.bodyL,
+                    variant: CatchLegacyTextVariant.bodyL,
                     color: CatchTokens.of(context).ink,
                   ),
                   CatchField<String>.choices(
@@ -584,7 +584,7 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
                     onSelectionChanged: view.busy ? null : onGroupsChanged,
                   ),
                   for (final row in membership.evidence)
-                    CatchText(
+                    CatchLegacyText(
                       l10n.programsLodgingMembershipEvidence(
                         group: groups[requiredString(row, 'groupId')]!,
                         source: requiredString(row, 'sourceLabel'),
@@ -594,20 +594,20 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
                                   : l10n.programsLodgingMembershipExcluded)
                             : l10n.programsLodgingMembershipSuggested,
                       ),
-                      variant: CatchTextVariant.bodyL,
+                      variant: CatchLegacyTextVariant.bodyL,
                       color: CatchTokens.of(context).ink,
                     ),
                   for (final groupId in membership.groupIds)
                     if (!membership.evidence.any(
                       (e) => e['selected'] == true && e['groupId'] == groupId,
                     ))
-                      CatchText(
+                      CatchLegacyText(
                         l10n.programsLodgingMembershipEvidence(
                           group: groups[groupId]!,
                           source: l10n.programsLodgingMembershipCanonical,
                           status: l10n.programsLodgingMembershipIncluded,
                         ),
-                        variant: CatchTextVariant.bodyL,
+                        variant: CatchLegacyTextVariant.bodyL,
                         color: CatchTokens.of(context).ink,
                       ),
                   CatchButton(

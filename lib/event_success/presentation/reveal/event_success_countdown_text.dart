@@ -17,7 +17,7 @@ class EventSuccessCountdownText extends StatelessWidget {
     final t = CatchTokens.of(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 112),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.surface.withValues(
           alpha: CatchOpacity.revealSurfaceFill,
         ),
@@ -36,17 +36,17 @@ class EventSuccessCountdownText extends StatelessWidget {
                 scale: Tween<double>(begin: 0.88, end: 1).animate(animation),
                 child: FadeTransition(opacity: animation, child: child),
               ),
-              child: CatchText(
+              child: CatchLegacyText(
                 value,
                 key: ValueKey(value),
-                variant: CatchTextVariant.displayL,
+                variant: CatchLegacyTextVariant.displayL,
                 color: t.surface,
               ),
             ),
             gapH4,
-            CatchText(
+            CatchLegacyText(
               caption,
-              variant: CatchTextVariant.statusLabel,
+              variant: CatchLegacyTextVariant.statusLabel,
               color: t.surface.withValues(
                 alpha: CatchOpacity.revealMutedForeground,
               ),

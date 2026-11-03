@@ -489,16 +489,16 @@ class _HostFormResponseDetailScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostFormConversionReviewBody,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: CatchTokens.of(context).ink2,
                   ),
                   if (preview.existingResultId != null) ...[
                     gapH12,
-                    CatchText(
+                    CatchLegacyText(
                       context.l10n.hostFormConversionExisting,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: CatchTokens.of(context).warning,
                     ),
                   ],
@@ -507,9 +507,9 @@ class _HostFormResponseDetailScreenState
                     for (final warning in preview.warnings)
                       Padding(
                         padding: CatchInsets.detailInlineRowBottomGap,
-                        child: CatchText(
+                        child: CatchLegacyText(
                           warning,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                           color: CatchTokens.of(context).warning,
                         ),
                       ),

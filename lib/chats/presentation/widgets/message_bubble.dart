@@ -59,7 +59,7 @@ class MessageBubble extends StatelessWidget {
               alignment: isMe
                   ? AlignmentDirectional.centerEnd
                   : AlignmentDirectional.centerStart,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 padding: CatchInsets.chatBubbleContent,
                 backgroundColor: isMe ? t.primary : t.surface,
                 borderRole: isMe ? null : CatchBorderRole.separator,
@@ -130,7 +130,7 @@ class MediaMessageBody extends StatelessWidget {
         if (imageUrl != null)
           Padding(
             padding: CatchInsets.chatMediaAttachmentBottom,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               tone: CatchSurfaceTone.transparent,
               radius: CatchRadius.md,

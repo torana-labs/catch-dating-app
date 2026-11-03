@@ -15,7 +15,7 @@ class EventSuccessAssignmentSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
       backgroundColor: t.success.withValues(

@@ -152,7 +152,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
       date: EventFormatters.shortDate(event.startTime),
       time: EventFormatters.time(event.startTime),
     );
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       borderRole: CatchBorderRole.boundary,
       padding: compact ? CatchInsets.tileContentCompact : CatchInsets.content,
       child: Column(
@@ -173,14 +173,14 @@ class CrossPathsEventContextCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       context.l10n
                           .crossPathsExploreCardContextPersonGoingToEvent(
                             firstName: firstName,
                             eventTitle: event.title,
                           ),
                       maxLines: compact ? 1 : 2,
-                      variant: CatchTextVariant.sectionTitle,
+                      variant: CatchLegacyTextVariant.sectionTitle,
                       color: t.ink,
                     ),
                     gapH4,
@@ -268,7 +268,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
     final pairInvitationEnabled = suggestion.event.pairHoldAvailable;
     return FractionallySizedBox(
       heightFactor: 0.94,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.bg,
         // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: const BorderRadius.vertical(
@@ -290,9 +290,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: CatchText(
+                        child: CatchLegacyText(
                           context.l10n.crossPathsProfilePreviewTitle,
-                          variant: CatchTextVariant.titleL,
+                          variant: CatchLegacyTextVariant.titleL,
                         ),
                       ),
                       CatchIconAction.icon(
@@ -322,9 +322,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                   children: [
                     if (invitation?.status ==
                         CrossPathsInvitationStatus.pending) ...[
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.crossPathsInvitationStatusPending,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: t.ink2,
                         textAlign: TextAlign.center,
                       ),

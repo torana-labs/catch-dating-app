@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/primitives/catch_text.dart';
-import 'package:catch_ui/src/primitives/catch_text_variant.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_text.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_text_variant.dart';
 import 'package:flutter/material.dart';
 
 /// One acknowledgement or checklist value, with checked semantics.
@@ -40,11 +40,17 @@ class CatchCheckboxInput extends StatelessWidget {
           checkboxSemanticLabel: semanticLabel,
           title: ExcludeSemantics(
             excluding: semanticLabel != null,
-            child: CatchText(label, variant: CatchTextVariant.bodyM),
+            child: CatchLegacyText(
+              label,
+              variant: CatchLegacyTextVariant.bodyM,
+            ),
           ),
           subtitle: description == null
               ? null
-              : CatchText(description!, variant: CatchTextVariant.bodyS),
+              : CatchLegacyText(
+                  description!,
+                  variant: CatchLegacyTextVariant.bodyS,
+                ),
         ),
       ),
     );

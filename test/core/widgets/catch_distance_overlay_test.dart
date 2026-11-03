@@ -47,7 +47,7 @@ void main() {
         );
         if (labelled) {
           expect(find.text('2 km'), findsOneWidget);
-          final label = find.byType(CatchSurface);
+          final label = find.byType(CatchLegacySurface);
           expect(tester.getCenter(label).dx, tester.getCenter(_circle).dx);
           expect(tester.getTopLeft(label).dy, tester.getTopLeft(overlay).dy);
         }
@@ -62,7 +62,7 @@ void main() {
     ) async {
       await tester.pumpWidget(_frame(CatchDistanceOverlay(label: label)));
       expect(_circle, findsOneWidget);
-      expect(find.byType(CatchSurface), findsNothing);
+      expect(find.byType(CatchLegacySurface), findsNothing);
     });
   }
 
@@ -75,7 +75,7 @@ void main() {
         _frame(const CatchDistanceOverlay(label: label), scale: scale),
       );
       final circle = tester.getRect(_circle);
-      final surface = tester.getRect(find.byType(CatchSurface));
+      final surface = tester.getRect(find.byType(CatchLegacySurface));
       expect(surface.left, greaterThanOrEqualTo(circle.left));
       expect(surface.right, lessThanOrEqualTo(circle.right));
       final paragraph = tester.renderObject<RenderParagraph>(find.text(label));
@@ -111,7 +111,7 @@ void main() {
           ),
         );
         expect(_circle, findsNothing);
-        final surface = find.byType(CatchSurface);
+        final surface = find.byType(CatchLegacySurface);
         final size = tester.getSize(surface);
         expect(size.width, 150);
         expect(size.height, greaterThanOrEqualTo(48));

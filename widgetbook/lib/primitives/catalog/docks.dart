@@ -230,7 +230,7 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
           onShare: (_) {},
           buttonLabel: 'Share card',
           footnote: 'Preview rendered through RepaintBoundary.',
-          media: CatchSurface.card(
+          media: CatchLegacySurface.card(
             width: WidgetbookPreviewLayout.compactComponentWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,7 +268,7 @@ Widget catchShareCardSheetSharingState(BuildContext context) =>
           footnote: 'Preparing the card for the system share sheet.',
           isSharing: true,
           onShare: (_) {},
-          media: CatchSurface.card(
+          media: CatchLegacySurface.card(
             child: Text('Card preview', style: CatchTextStyles.bodyM(context)),
           ),
         ),

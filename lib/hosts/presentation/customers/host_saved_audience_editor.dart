@@ -316,40 +316,40 @@ class _HostSavedAudienceEditorFormState
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (_static)
-                              CatchText(
+                              CatchLegacyText(
                                 context.l10n.hostAudienceSelectedCount(
                                   count: _selectedIds.length,
                                 ),
-                                variant: CatchTextVariant.bodyL,
+                                variant: CatchLegacyTextVariant.bodyL,
                                 color: CatchTokens.of(context).ink,
                               )
                             else ...[
-                              CatchText(
+                              CatchLegacyText(
                                 _join == HostSavedAudienceJoin.all
                                     ? context.l10n.hostSavedAudienceMatchAll
                                     : context.l10n.hostSavedAudienceMatchAny,
-                                variant: CatchTextVariant.bodyS,
+                                variant: CatchLegacyTextVariant.bodyS,
                                 color: CatchTokens.of(context).ink2,
                               ),
                               for (final rule in _rules)
                                 if (rule.toPredicate()
                                     case final predicate?) ...[
                                   gapH8,
-                                  CatchText(
+                                  CatchLegacyText(
                                     _savedAudienceRuleSummary(
                                       context,
                                       predicate,
                                       filterOptions,
                                     ),
-                                    variant: CatchTextVariant.bodyL,
+                                    variant: CatchLegacyTextVariant.bodyL,
                                     color: CatchTokens.of(context).ink,
                                   ),
                                 ],
                             ],
                             gapH12,
-                            CatchText(
+                            CatchLegacyText(
                               context.l10n.hostAudienceMembershipCheckOnSave,
-                              variant: CatchTextVariant.supporting,
+                              variant: CatchLegacyTextVariant.supporting,
                             ),
                           ],
                         ),
@@ -361,9 +361,9 @@ class _HostSavedAudienceEditorFormState
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (_previewFailedAfterSave) ...[
-                              CatchText(
+                              CatchLegacyText(
                                 context.l10n.hostAudienceSavedPreviewFailed,
-                                variant: CatchTextVariant.sectionTitle,
+                                variant: CatchLegacyTextVariant.sectionTitle,
                                 color: CatchTokens.of(context).ink,
                               ),
                               gapH8,
@@ -380,9 +380,9 @@ class _HostSavedAudienceEditorFormState
                       CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           title: context.l10n.hostSavedAudienceCurrentPreview,
-                          footer: CatchText(
+                          footer: CatchLegacyText(
                             context.l10n.hostAudienceSavedGroupPreviewHelp,
-                            variant: CatchTextVariant.supporting,
+                            variant: CatchLegacyTextVariant.supporting,
                           ),
                           children: [
                             CatchField.read(

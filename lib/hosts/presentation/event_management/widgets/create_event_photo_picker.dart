@@ -62,9 +62,9 @@ class CreateEventPhotoPicker extends StatelessWidget {
               organizerLogoUrl: organizerLogoUrl,
             ),
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsCreateEventPhotoPickerBodyUnlimitedGallery,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).ink3,
             ),
             gapH16,
@@ -103,7 +103,7 @@ class _InheritedOrganizerLogo extends StatelessWidget {
       children: [
         SizedBox.square(
           dimension: CatchLayout.hostMediaInheritedLogoExtent,
-          child: CatchSurface(
+          child: CatchLegacySurface(
             tone: CatchSurfaceTone.raised,
             radius: CatchRadius.md,
             borderRole: CatchBorderRole.boundary,
@@ -122,16 +122,16 @@ class _InheritedOrganizerLogo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(
+              CatchLegacyText(
                 organizerName,
-                variant: CatchTextVariant.titleS,
+                variant: CatchLegacyTextVariant.titleS,
                 color: t.ink,
                 maxLines: 1,
               ),
               gapH2,
-              CatchText(
+              CatchLegacyText(
                 context.l10n.hostsCreateEventPhotoPickerBodyInheritedLogo,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink3,
               ),
             ],

@@ -37,9 +37,9 @@ class HostBookingProviderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final setupValue = value;
     if (setupValue == null) {
-      return CatchText(
+      return CatchLegacyText(
         context.l10n.hostsOperationalRosterProviderOpenToLoad,
-        variant: CatchTextVariant.supporting,
+        variant: CatchLegacyTextVariant.supporting,
       );
     }
     return CatchAsyncBoundary<HostProviderSetup>(
@@ -162,7 +162,10 @@ class HostBookingProviderSection extends StatelessWidget {
               ),
             ),
             gapH8,
-            CatchText(entry.requirement, variant: CatchTextVariant.supporting),
+            CatchLegacyText(
+              entry.requirement,
+              variant: CatchLegacyTextVariant.supporting,
+            ),
             if (entry.importSupport ==
                 HostProviderImportSupport.sampleRequired) ...[
               gapH8,

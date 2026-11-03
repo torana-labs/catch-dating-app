@@ -549,22 +549,22 @@ class EventChatPageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             gapH24,
-            CatchText(
+            CatchLegacyText(
               access.membershipUnavailable
                   ? l.eventChatMembershipRemoved
                   : !access.isRoomOpen
                   ? l.eventChatNotOpen
                   : l.eventChatJoinTitle,
-              variant: CatchTextVariant.displayXs,
+              variant: CatchLegacyTextVariant.displayXs,
             ),
             gapH16,
-            CatchText(
+            CatchLegacyText(
               !access.isRoomOpen
                   ? access.canManage
                         ? l.eventChatHostSetup
                         : l.eventChatGuestWaiting
                   : l.eventChatJoinDisclosure,
-              variant: CatchTextVariant.bodyL,
+              variant: CatchLegacyTextVariant.bodyL,
             ),
             gapH24,
             if (access.canManage &&
@@ -582,16 +582,16 @@ class EventChatPageBody extends StatelessWidget {
               ),
             if (access.profileClaimRequired) ...[
               gapH24,
-              CatchText(
+              CatchLegacyText(
                 l.eventChatProfileRequired,
-                variant: CatchTextVariant.sectionTitle,
+                variant: CatchLegacyTextVariant.sectionTitle,
               ),
               gapH8,
-              CatchText(
+              CatchLegacyText(
                 onReviewProfile == null
                     ? l.eventChatProfileHostHelp
                     : l.eventChatProfileHelp,
-                variant: CatchTextVariant.bodyL,
+                variant: CatchLegacyTextVariant.bodyL,
               ),
               if (onReviewProfile != null) ...[
                 gapH16,
@@ -628,15 +628,15 @@ class EventChatPageBody extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           l.eventChatEmptyTitle,
-                          variant: CatchTextVariant.displayXs,
+                          variant: CatchLegacyTextVariant.displayXs,
                         ),
                         gapH12,
-                        CatchText(
+                        CatchLegacyText(
                           l.eventChatEmptyBody,
                           textAlign: TextAlign.center,
-                          variant: CatchTextVariant.bodyL,
+                          variant: CatchLegacyTextVariant.bodyL,
                         ),
                       ],
                     ),
@@ -709,9 +709,9 @@ class EventChatPageBody extends StatelessWidget {
         if (typing.isNotEmpty)
           Padding(
             padding: CatchInsets.contentHorizontal,
-            child: CatchText(
+            child: CatchLegacyText(
               l.eventChatTyping(names: typing),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ),
         if (reacting != null && state.canSend)
@@ -729,19 +729,19 @@ class EventChatPageBody extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchText(
+                      CatchLegacyText(
                         reply == null
                             ? l.eventChatUnavailable
                             : l.eventChatReplyingTo(
                                 name: reply.senderName ?? '',
                               ),
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                       ),
                       if (reply != null)
-                        CatchText(
+                        CatchLegacyText(
                           reply.text ?? '',
                           maxLines: 2,
-                          variant: CatchTextVariant.bodyM,
+                          variant: CatchLegacyTextVariant.bodyM,
                         ),
                     ],
                   ),
@@ -757,11 +757,11 @@ class EventChatPageBody extends StatelessWidget {
         if (!access.canPostMessages)
           Padding(
             padding: CatchInsets.contentHorizontal,
-            child: CatchText(
+            child: CatchLegacyText(
               access.announcementsOnly
                   ? l.eventChatAnnouncementsReadOnly
                   : l.eventChatReadOnly,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ),
         if (reacting == null &&

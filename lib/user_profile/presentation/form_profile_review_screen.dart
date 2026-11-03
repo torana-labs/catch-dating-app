@@ -150,20 +150,20 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             widget.review.organizerName ?? l10n.formProfilesOrganizerFallback,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             widget.review.formTitle,
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
             color: CatchTokens.of(context).ink,
           ),
           gapH16,
-          CatchText(
+          CatchLegacyText(
             l10n.formProfileReviewDescription,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           if (core.isNotEmpty) ...[
             gapH24,
@@ -211,11 +211,11 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
                           onChanged: (value) => _edit(key, value),
                         ),
                   ] else
-                    CatchText(
+                    CatchLegacyText(
                       field.isVerifiedPhone
                           ? l10n.formProfilePhoneAuthority
                           : l10n.formProfileUnsupported,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                 ],
               ],
@@ -225,9 +225,9 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
           CatchSection.fieldRows(
             title: l10n.formProfileBasicsTitle,
             children: [
-              CatchText(
+              CatchLegacyText(
                 l10n.formProfileBasicsDescription,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               for (final entry in {
                 'displayName': l10n.formProfileDisplayName,
@@ -248,9 +248,9 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
             CatchSection.fieldRows(
               title: l10n.formProfileCardTitle,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l10n.formProfileCardDescription,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 for (final field in card) ...[
                   CatchField.toggle(
@@ -273,9 +273,9 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
             ),
           ],
           gapH24,
-          CatchText(
+          CatchLegacyText(
             l10n.formProfileConfirmationBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           CatchFieldLanes.single(
@@ -295,9 +295,9 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
           ),
           if (_showErrors) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               l10n.formProfileInvalid,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).danger,
             ),
           ],

@@ -76,9 +76,9 @@ class EventRehearsalMembershipSheet extends ConsumerWidget {
                         .where((r) => r.scope == scope)
                         .firstOrNull;
                 if (row == null) {
-                  return CatchText(
+                  return CatchLegacyText(
                     context.l10n.eventAssistanceGroupChanged,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   );
                 }
                 final facts =

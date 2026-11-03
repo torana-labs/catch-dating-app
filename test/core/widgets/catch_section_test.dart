@@ -488,11 +488,13 @@ void main() {
     expect(
       find.ancestor(
         of: find.text('Profile strength'),
-        matching: find.byType(CatchSurface),
+        matching: find.byType(CatchLegacySurface),
       ),
       findsOneWidget,
     );
-    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    final surface = tester.widget<CatchLegacySurface>(
+      find.byType(CatchLegacySurface),
+    );
     expect(surface.emphasis, CatchSurfaceEmphasis.flat);
   });
 
@@ -839,7 +841,9 @@ void main() {
     focusNode.requestFocus();
     await tester.pump();
 
-    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    final surface = tester.widget<CatchLegacySurface>(
+      find.byType(CatchLegacySurface),
+    );
     expect(
       surface.borderSpec?.side,
       CatchBorder.resolve(
@@ -1149,7 +1153,7 @@ void main() {
         ),
       );
 
-      final surfaceRect = tester.getRect(find.byType(CatchSurface));
+      final surfaceRect = tester.getRect(find.byType(CatchLegacySurface));
       final iconRect = tester.getRect(find.byIcon(CatchIcons.help));
       final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
       final valueRight = tester.getTopRight(find.text('On')).dx;

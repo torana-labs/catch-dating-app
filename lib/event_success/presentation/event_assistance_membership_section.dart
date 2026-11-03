@@ -141,15 +141,15 @@ class _EventAssistanceMembershipSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceGroupBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             widget.contextMessage!,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH12,
@@ -166,21 +166,21 @@ class _EventAssistanceMembershipSectionState
         ),
         if (facts.membership is AssistanceChangedMembership) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceGroupPrevious,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (transfer != null) ...[
           gapH8,
-          CatchText(transfer, variant: CatchTextVariant.supporting),
+          CatchLegacyText(transfer, variant: CatchLegacyTextVariant.supporting),
         ],
         gapH12,
         if (ready && action == null) ...[
           if (facts.actions.isEmpty)
-            CatchText(
+            CatchLegacyText(
               widget.unavailableMessage ?? l10n.eventAssistanceGroupNoActions,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           for (final choice in facts.actions) ...[
             CatchButton(
@@ -198,14 +198,14 @@ class _EventAssistanceMembershipSectionState
           ],
           if (facts.actions.contains(AssistanceMembershipAction.propose) &&
               widget.handoverReview == null)
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceGroupNoReceivers,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
         ] else if (ready && action != null) ...[
-          CatchText(
+          CatchLegacyText(
             assistanceMembershipActionBody(l10n, action),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           if (placement || proposal)
@@ -250,14 +250,14 @@ class _EventAssistanceMembershipSectionState
                       }),
                     ),
                   if (unnamedReceivers)
-                    CatchText(
+                    CatchLegacyText(
                       l10n.eventAssistanceGroupMissingName,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                   if (receivers.isEmpty && !unnamedReceivers)
-                    CatchText(
+                    CatchLegacyText(
                       l10n.eventAssistanceGroupNoReceivers,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                   if (expiry != null)
                     CatchField<int>.select(
@@ -289,7 +289,7 @@ class _EventAssistanceMembershipSectionState
             onPressed: () => setState(_clear),
           ),
         ] else ...[
-          CatchText(switch (widget.phase) {
+          CatchLegacyText(switch (widget.phase) {
             EventAssistanceMembershipPhase.submitting =>
               l10n.eventAssistanceGroupSaving,
             EventAssistanceMembershipPhase.retryRequired =>
@@ -301,38 +301,38 @@ class _EventAssistanceMembershipSectionState
             EventAssistanceMembershipPhase.unavailable =>
               widget.unavailableMessage ?? l10n.eventAssistanceGroupNoActions,
             EventAssistanceMembershipPhase.ready => '',
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
           if ((busy ||
                   widget.phase ==
                       EventAssistanceMembershipPhase.retryRequired) &&
               widget.submittedDecision != null) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceGroupSelected(
                 action: assistanceMembershipActionLabel(
                   l10n,
                   widget.submittedDecision!.action,
                 ),
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             if (widget.submittedDecision case AssistancePlaceGroup(
               :final groupId,
             ))
-              CatchText(
+              CatchLegacyText(
                 assistanceMembershipGroupLabel(l10n, facts, groupId),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             if (widget.submittedDecision case AssistanceProposeGroup(
               :final groupId,
               :final receivingOperatorId,
               :final expiresAt,
             )) ...[
-              CatchText(
+              CatchLegacyText(
                 assistanceMembershipGroupLabel(l10n, facts, groupId),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
-              CatchText(
+              CatchLegacyText(
                 l10n.eventAssistanceGroupReceiverValue(
                   name: receivingOperatorId == widget.actorUid
                       ? l10n.eventAssistanceGroupYou
@@ -344,11 +344,11 @@ class _EventAssistanceMembershipSectionState
                                 ?.displayName ??
                             l10n.eventAssistanceGroupUnnamedHost,
                 ),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
-              CatchText(
+              CatchLegacyText(
                 '${l10n.eventAssistanceGroupDeadline} ${DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(expiresAt))}',
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             ],
           ],

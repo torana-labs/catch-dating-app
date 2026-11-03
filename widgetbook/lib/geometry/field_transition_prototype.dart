@@ -157,7 +157,11 @@ Widget _labelledSection(
   return Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      CatchText(title, variant: CatchTextVariant.titleS, color: t.ink),
+      CatchLegacyText(
+        title,
+        variant: CatchLegacyTextVariant.titleS,
+        color: t.ink,
+      ),
       const SizedBox(height: CatchSpacing.s1),
       Text(
         description,

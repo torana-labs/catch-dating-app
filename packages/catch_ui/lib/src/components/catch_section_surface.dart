@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/widgets.dart';
 
 /// Contained section perimeter, including explicit error/focus chrome.
@@ -131,7 +131,7 @@ class _CatchSectionSurfaceState extends State<CatchSectionSurface> {
       canRequestFocus: false,
       skipTraversal: true,
       onFocusChange: _handleFocusChange,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         padding: widget.padding,
         radius: CatchRadius.md,
         borderSpec: border,

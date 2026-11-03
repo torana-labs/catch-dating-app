@@ -182,10 +182,10 @@ void _registerHostOperationsCustomerCompositionTests() {
         expect(rect.right, closeTo(lane.right, 0.5));
         await tester.tap(field);
       }
-      final surfaces = tester.widgetList<CatchSurface>(
+      final surfaces = tester.widgetList<CatchLegacySurface>(
         find.descendant(
           of: find.byType(HostCustomerDetailsSection),
-          matching: find.byType(CatchSurface),
+          matching: find.byType(CatchLegacySurface),
         ),
       );
       expect(

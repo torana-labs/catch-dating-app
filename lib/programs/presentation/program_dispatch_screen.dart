@@ -235,7 +235,7 @@ class ProgramDispatchGroupTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,10 +243,10 @@ class ProgramDispatchGroupTile extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   '${AppTimeFormatters.time(group.earliestCurbAt)}'
                   ' – ${AppTimeFormatters.time(group.latestCurbAt)}',
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -534,16 +534,16 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
           ),
           if (widget.holdCandidates.isNotEmpty) ...[
             gapH16,
-            CatchText(
+            CatchLegacyText(
               context.l10n.programsDispatchHoldTitle,
-              variant: CatchTextVariant.supportingStrong,
+              variant: CatchLegacyTextVariant.supportingStrong,
             ),
             gapH4,
-            CatchText(
+            CatchLegacyText(
               context.l10n.programsDispatchHoldSubtitle(
                 destination: widget.group.destinationLabel,
               ),
-              variant: CatchTextVariant.bodyS,
+              variant: CatchLegacyTextVariant.bodyS,
             ),
             gapH8,
             CatchChoiceInput<int>(
@@ -689,9 +689,9 @@ List<CatchSectionListItem> _planSections(
               for (final item in plan.unassigned)
                 CatchFieldRow.standard(
                   leading: Icon(CatchIcons.warning),
-                  body: CatchText(
+                  body: CatchLegacyText(
                     _unassignedReasonText(context, item.reason),
-                    variant: CatchTextVariant.bodyM,
+                    variant: CatchLegacyTextVariant.bodyM,
                   ),
                 ),
             ],

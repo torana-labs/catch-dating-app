@@ -3,7 +3,7 @@ import 'package:catch_ui/src/components/catch_empty_state_variant.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical successful-empty content with bounded and inline layout.
@@ -142,7 +142,7 @@ class CatchEmptyState extends StatelessWidget {
       return Padding(padding: padding, child: content);
     }
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: padding,
       borderRole: CatchBorderRole.separator,
       child: content,

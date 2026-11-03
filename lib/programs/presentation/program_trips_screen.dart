@@ -310,7 +310,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
   @override
   Widget build(BuildContext context) {
     final trip = widget.trip;
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,9 +318,9 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   trip.plateDisplay,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -339,9 +339,9 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
             ),
           ),
           if (trip.manifestSource == TransportManifestSource.currentRecords)
-            CatchText(
+            CatchLegacyText(
               context.l10n.programsTripCurrentNames,
-              variant: CatchTextVariant.bodyS,
+              variant: CatchLegacyTextVariant.bodyS,
             ),
           CatchMetaRow(
             icon: CatchIcons.time,

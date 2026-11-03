@@ -682,11 +682,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               gapH20,
               Center(
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.safetySettingsScreenTextVersionMade(
                     version: version,
                   ),
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: t.ink3,
                 ),
               ),

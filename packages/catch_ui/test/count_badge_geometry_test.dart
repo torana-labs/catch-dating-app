@@ -38,7 +38,7 @@ void main() {
           final childRect = tester.getRect(find.byKey(childKey));
           final marker = find.ancestor(
             of: find.text(catchCountLabel(count)),
-            matching: find.byType(CatchSurface),
+            matching: find.byType(CatchLegacySurface),
           );
           expect(
             tester.getRect(marker).right,

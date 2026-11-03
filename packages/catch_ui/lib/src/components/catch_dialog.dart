@@ -5,7 +5,7 @@ import 'package:catch_ui/src/components/catch_dialog_copy.dart';
 import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -122,7 +122,7 @@ class CatchDialog<T> extends StatelessWidget {
       elevation: 0,
       insetPadding: const EdgeInsets.all(CatchLayout.confirmDialogInset),
       backgroundColor: Colors.transparent,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         emphasis: CatchSurfaceEmphasis.floating,
         padding: CatchInsets.confirmDialogCard,
         width: CatchLayout.confirmDialogMaxWidth,

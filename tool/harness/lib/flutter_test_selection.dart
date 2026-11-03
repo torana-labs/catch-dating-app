@@ -218,6 +218,9 @@ const _probeOnlyDirectories = [
   'integration_test/',
   'operations/',
   'packages/brand/',
+  // The library's own goldens (P2.1): the package job and the macOS goldens
+  // lane own them, as they do test/goldens.
+  'packages/catch_ui/test/goldens/',
   'packages/web-config/',
   'packages/web-ui/',
   'test/goldens/',

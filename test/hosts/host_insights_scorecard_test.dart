@@ -127,7 +127,7 @@ void main() {
     );
     expect(detail, findsOneWidget);
     expect(
-      tester.widget<CatchText>(detail).data,
+      tester.widget<CatchLegacyText>(detail).data,
       'Tue, 2 Jun: 18 demand · 12 bookings',
     );
   });

@@ -17,7 +17,7 @@ class EventActivityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       width: size,
       height: size,
       radius: CatchRadius.pill,
