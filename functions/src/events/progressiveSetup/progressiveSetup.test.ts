@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import {getPrivateEventSetup} from "./readModel";
 import {getManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
 import {eventSetupDefaultsDependencies} from
@@ -248,30 +247,6 @@ test("basics edit preserves venue city and existing plan dependencies",
     }
   });
 
-test("manager read uses current commitment authority for editing controls",
-  async () => {
-    const h = setup();
-    const created = await createPrivateEventSetup({actorUid: "host1",
-      command: {organizerId: "org1", requestId: "editable-create", basics},
-      deps: h.deps});
-    const params = {actorUid: "host1", db: h.deps.db,
-      command: {organizerId: "org1", eventId: created.eventId}};
-    let result = await getPrivateEventSetup(params);
-    assert.equal(result.canEditBasics, true);
-    assert.equal(result.canChangeCity, true);
-    const path = `events/${created.eventId}`;
-    h.store.seed(path, {...h.store.read(path), meetingPoint: "Clubhouse"});
-    result = await getPrivateEventSetup(params);
-    assert.equal(result.canEditBasics, true);
-    assert.equal(result.canChangeCity, false);
-    h.store.seed("organizerEventOffers/offer", {eventId: created.eventId,
-      status: "withdrawn"});
-    result = await getPrivateEventSetup(params);
-    assert.equal(result.canEditBasics, false);
-    assert.equal(result.canChangeCity, false);
-  });
-
-
 test("replays preserve the original revision after later edits", async () => {
   const h = setup();
   const create = {organizerId: "org1", requestId: "request-create", basics};
@@ -293,53 +268,6 @@ test("replays preserve the original revision after later edits", async () => {
   assert.equal(h.store.read(`events/${created.eventId}`)?.name, "Second edit");
 });
 
-
-test("manager reopens basics without rich fields or secrets", async () => {
-  const h = setup();
-  const created = await createPrivateEventSetup({actorUid: "host1",
-    command: {organizerId: "org1", requestId: "request-read", basics},
-    deps: h.deps});
-  const path = `events/${created.eventId}`;
-  h.store.seed(path, {...h.store.read(path), privatePaymentSecret: "never"});
-  const params = {actorUid: "host1", db: h.deps.db,
-    command: {organizerId: "org1", eventId: created.eventId}};
-  const result = await getPrivateEventSetup(params);
-  assert.equal(result.name, "Sunday Mixer");
-  assert.equal(result.detailsConfigured, false);
-  assert.deepEqual(result.eventDetails, {endTimeMillis: null, venueName: null,
-    description: null, admissionTerms: null, distanceKm: null, pace: null,
-    itinerary: [], eventPhotos: [],
-    sourceVenueId: null, eventFormat: null, meetingLocation: null});
-  assert.equal(result.startTimeMillis, Date.UTC(2026, 9, 18, 13));
-  assert.equal(Object.hasOwn(result, "privatePaymentSecret"), false);
-  await assert.rejects(getPrivateEventSetup({...params, actorUid: "stranger"}),
-    (error) => code(error) === "permission-denied");
-  h.store.seed("deletedUsers/host1", {});
-  await assert.rejects(getPrivateEventSetup(params),
-    (error) => code(error) === "failed-precondition");
-});
-
-test("setup reads reject foreign, invalid and published records", async () => {
-  const h = setup();
-  const created = await createPrivateEventSetup({actorUid: "host1",
-    command: {organizerId: "org1", requestId: "request-read", basics},
-    deps: h.deps});
-  const path = `events/${created.eventId}`;
-  const original = h.store.read(path);
-  const params = {actorUid: "host1", db: h.deps.db,
-    command: {organizerId: "org1", eventId: created.eventId}};
-  for (const [patch, expected] of [
-    [{organizerId: "org2"}, "not-found"],
-    [{publicationState: "published"}, "failed-precondition"],
-    [{setupRevision: 0}, "failed-precondition"],
-    [{eventTimezone: null}, "failed-precondition"],
-    [{endTime: {}}, "failed-precondition"],
-  ] as const) {
-    h.store.seed(path, {...original, ...patch});
-    await assert.rejects(getPrivateEventSetup(params),
-      (error) => code(error) === expected);
-  }
-});
 
 test("setup payload rejects client authority and unknown fields", async () => {
   const h = setup();

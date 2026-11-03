@@ -27,7 +27,7 @@ import {updatePrivateEventPreferences as updatePreferences} from
   "./preferences";
 import {validateUpdatePrivateEventPreferencesCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventPreferencesInput";
-import {getPrivateEventSetup as readSetup} from "./readModel";
+import {getPrivateEventSetup as readSetup} from "./legacyRead";
 
 import {assertPrivateEventBasicsEditable} from "./commitments";
 import {listPrivateEventSetups as listSetups} from "./listPrivateEventSetups";
