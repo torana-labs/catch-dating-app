@@ -37,8 +37,6 @@ export type {
   CatchBandSpacing,
   CatchBandWidth,
 } from "./components/CatchBand";
-/** A Website v2 ground (CAT-245); Flutter's `CatchGround` names the same nine. */
-export type {Ground as CatchGround} from "./components/palette";
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
@@ -179,8 +177,11 @@ export {CatchGroundCard} from "./components/CatchGroundCard";
 export type {CatchGroundCardElement, CatchGroundCardPadding, CatchGroundCardProps} from "./components/CatchGroundCard";
 export {CatchHeroImage} from "./components/CatchHeroImage";
 export type {CatchHeroImageProps} from "./components/CatchHeroImage";
-export {CatchIcon, catchIconSizes} from "./components/CatchIcon";
-export type {CatchIconProps, CatchIconSizeName, CatchIconTone} from "./components/CatchIcon";
+export {CatchIcon, catchIconStrokeFor, catchMirroredIconNames} from "./components/CatchIcon";
+export type {CatchIconProps} from "./components/CatchIcon";
+/** Legacy: the pre-redesign icon, deleted in P7. */
+export {CatchLegacyIcon, catchIconSizes} from "./components/CatchLegacyIcon";
+export type {CatchIconSizeName, CatchIconTone, CatchLegacyIconProps} from "./components/CatchLegacyIcon";
 export {catchIconGlyphs, catchIconStrokeWidth} from "./icons/catchIconGlyphs";
 export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs";
 export {catchIconNodes} from "./icons/catchIconNodes";
@@ -260,6 +261,8 @@ export type {
   CatchSplitRailSide,
   CatchSplitRatio,
 } from "./components/CatchSplit";
+export {CatchStack} from "./components/CatchStack";
+export type {CatchStackElement, CatchStackProps} from "./components/CatchStack";
 export {CatchStarInput} from "./components/CatchStarInput";
 export type {CatchStarInputProps} from "./components/CatchStarInput";
 export {CatchStarRating} from "./components/CatchStarRating";
@@ -335,14 +338,68 @@ export type {
   CatchTableProps,
 } from "./components/CatchTable";
 export {CatchText} from "./components/CatchText";
+export type {CatchTextAs, CatchTextProps} from "./components/CatchText";
+/** Legacy: the pre-redesign text, deleted in P7. */
+export {CatchLegacyText} from "./components/CatchLegacyText";
 export type {
+  CatchLegacyTextProps,
+  CatchLegacyTextVariant,
   CatchTextAccent,
   CatchTextAlign,
   CatchTextColor,
   CatchTextElement,
-  CatchTextProps,
+} from "./components/CatchLegacyText";
+// Core library (redesign P2.1): Root, Surface and their shared vocabulary.
+export {CatchGroundProvider, CatchRoot} from "./components/CatchRoot";
+export type {CatchGroundProviderProps, CatchRootProps} from "./components/CatchRoot";
+export {useCatch, useGround} from "./components/catchRootContext";
+export type {CatchContextValue} from "./components/catchRootContext";
+export {CatchSurface} from "./components/CatchSurface";
+export type {CatchSurfaceElement, CatchSurfaceProps} from "./components/CatchSurface";
+export {
+  catchFormatTokenName,
+  catchFormats,
+  catchGroundIsNight,
+  catchGrounds,
+  catchIconSizeSteps,
+  catchRegisters,
+  catchSizeClassForWidth,
+  catchSizeClassMinWidths,
+  catchSizeClasses,
+  catchStackAligns,
+  catchStackDirections,
+  catchStackGaps,
+  catchStackJustifies,
+  catchSurfaceBlocks,
+  catchSurfaceColors,
+  catchSurfacePaddingPixels,
+  catchSurfacePaddings,
+  catchTextResponsiveRoles,
+  catchTextResponsiveVariants,
+  catchTextRoleFor,
+  catchTextRoles,
+  catchTextTones,
+  catchTextVariants,
+  catchThemeModes,
+} from "./components/catchCoreVocabulary";
+export type {
+  CatchGround,
+  CatchIconSizeStep,
+  CatchRegister,
+  CatchSizeClass,
+  CatchStackAlign,
+  CatchStackDirection,
+  CatchStackGap,
+  CatchStackJustify,
+  CatchSurfaceBlock,
+  CatchSurfaceColor,
+  CatchSurfacePadding,
+  CatchTextResponsiveVariant,
+  CatchTextRole,
+  CatchTextTone,
   CatchTextVariant,
-} from "./components/CatchText";
+  CatchThemeMode,
+} from "./components/catchCoreVocabulary";
 export {
   CheckboxControl,
   SelectControl,

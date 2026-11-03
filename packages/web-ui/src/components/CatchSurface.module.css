@@ -1,0 +1,169 @@
+/*
+ * catch.surface (redesign P2.1), transcribed from the system's .c-surface and
+ * .c-pressable. data-on names the ground the block sits on; the block paints
+ * in that ground's theme, and its CatchGroundProvider wrapper carries the
+ * children's theme, so an ink spotlight's own fill stays the day ink while
+ * everything inside reads the night tokens. Each block sets
+ * --catch-surface-fill to its own fill, for parts that sit on it. Values come
+ * from the generated token sheet only.
+ */
+.surface {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  color: var(--catch-theme-ink);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+}
+
+.surface[data-pad="none"] { padding: 0; }
+.surface[data-pad="sm"] { padding: var(--catch-space-s3); }
+.surface[data-pad="md"] { padding: var(--catch-space-s4); }
+.surface[data-pad="lg"] { padding: var(--catch-space-s5); }
+
+/* aspect: a fixed shape, content at the bottom. */
+.surface[data-aspect] { justify-content: flex-end; }
+
+/* The sheet spells nightsOut `nights-out`. */
+.surface[data-format="run"] { --catch-accent: var(--catch-format-run-accent); --catch-accent-ink: var(--catch-format-run-ink); }
+.surface[data-format="dinner"] { --catch-accent: var(--catch-format-dinner-accent); --catch-accent-ink: var(--catch-format-dinner-ink); }
+.surface[data-format="games"] { --catch-accent: var(--catch-format-games-accent); --catch-accent-ink: var(--catch-format-games-ink); }
+.surface[data-format="courts"] { --catch-accent: var(--catch-format-courts-accent); --catch-accent-ink: var(--catch-format-courts-ink); }
+.surface[data-format="nightsOut"] { --catch-accent: var(--catch-format-nights-out-accent); --catch-accent-ink: var(--catch-format-nights-out-ink); }
+
+.surface[data-block="plain"] {
+  background: transparent;
+}
+
+.surface[data-block="tile"] {
+  --catch-surface-fill: var(--catch-theme-tile);
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-theme-tile);
+}
+
+.surface[data-block="tile"][data-nested] {
+  --catch-surface-fill: var(--catch-theme-nested);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-theme-nested);
+}
+
+/* On a format colour a nested tile is white at the on-colour opacity. */
+.surface[data-block="tile"][data-nested][data-on="colour"] {
+  --catch-surface-fill: var(--catch-accent);
+  background: color-mix(in srgb, var(--catch-palette-white) calc(var(--catch-opacity-on-colour) * 100%), transparent);
+  color: var(--catch-accent-ink);
+}
+
+.surface[data-block="spotlight"] {
+  --catch-surface-fill: var(--catch-theme-ink);
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-theme-ink);
+  color: var(--catch-color-dark-ink);
+}
+
+/* On a night ground the ink spotlight is the raised night tile. */
+.surface[data-block="spotlight"]:not([data-format])[data-on^="night"] {
+  --catch-surface-fill: var(--catch-theme-tile);
+  background: var(--catch-theme-tile);
+  color: var(--catch-theme-ink);
+}
+
+.surface[data-block="spotlight"][data-format] {
+  --catch-surface-fill: var(--catch-accent);
+  background: var(--catch-accent);
+  color: var(--catch-theme-on-format);
+}
+
+.surface[data-block="floating"] {
+  --catch-surface-fill: var(--catch-theme-ground);
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-theme-ground);
+  box-shadow: var(--catch-elevation-float);
+}
+
+.surface[data-block="floating"][data-on^="night"] {
+  --catch-surface-fill: var(--catch-theme-tile);
+  background: var(--catch-theme-tile);
+}
+
+/*
+ * band: edge to edge, no radius. Its padding prop is vertical; horizontally it
+ * keeps the size class's gutter and holds its content to the website's page
+ * width (--catch-website-content-max, the width CatchBand uses).
+ */
+.surface[data-block="band"] {
+  --catch-surface-fill: var(--catch-theme-ground);
+  gap: var(--catch-space-s7);
+  width: 100%;
+  border-radius: var(--catch-radius-none);
+  background: var(--catch-theme-ground);
+  padding-inline: max(
+    var(--catch-gutter, var(--catch-layout-gutter-compact)),
+    calc((100% - var(--catch-website-content-max)) / 2)
+  );
+}
+
+.surface[data-block="band"][data-pad="none"] { padding-block: 0; }
+.surface[data-block="band"][data-pad="sm"] { padding-block: var(--catch-space-s3); }
+.surface[data-block="band"][data-pad="md"] { padding-block: var(--catch-space-s4); }
+.surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s5); }
+
+.surface[data-block="band"][data-band="tile"] {
+  --catch-surface-fill: var(--catch-theme-tile);
+  background: var(--catch-theme-tile);
+}
+
+.surface[data-block="band"][data-band="ink"] {
+  --catch-surface-fill: var(--catch-color-dark-ground);
+  background: var(--catch-color-dark-ground);
+  color: var(--catch-color-dark-ink);
+}
+
+.surface[data-block="band"][data-format] {
+  --catch-surface-fill: var(--catch-accent);
+  background: var(--catch-accent);
+  color: var(--catch-theme-on-format);
+}
+
+/* onPress or href: the whole block presses, as the system's .c-pressable. */
+.pressable {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  transition: transform var(--catch-duration-instant) var(--catch-motion-standard-curve);
+}
+
+.pressable::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--catch-duration-quick) var(--catch-motion-standard-curve);
+}
+
+.pressable:hover::before { opacity: var(--catch-opacity-hover); }
+.pressable:active { transform: scale(0.99); }
+.pressable:active::before { opacity: var(--catch-opacity-pressed); }
+
+.pressable:focus-visible {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
+  outline-offset: var(--catch-space-micro2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressable,
+  .pressable::before {
+    transition: none;
+  }
+
+  .pressable:active { transform: none; }
+}

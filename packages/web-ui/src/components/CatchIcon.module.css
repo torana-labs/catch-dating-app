@@ -1,0 +1,15 @@
+/*
+ * catch.icon (redesign P2.1): the glyph takes the colour of the text around it
+ * (Lucide strokes in currentColor). Direction roles mirror in right-to-left
+ * layouts.
+ */
+.icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  color: currentColor;
+}
+
+[dir="rtl"] .icon[data-mirror] {
+  transform: scaleX(-1);
+}
