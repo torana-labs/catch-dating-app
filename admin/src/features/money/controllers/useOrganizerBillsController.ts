@@ -15,7 +15,9 @@ export interface OrganizerMonthBreakdown {
   salesMinor: number;
   refundedMinor: number;
   providerFeeMinor: number;
+  /** What the organizer pays Catch for the month; nothing once written off. */
   billMinor: number;
+  writtenOff: boolean;
   keptMinor: number;
 }
 
@@ -28,23 +30,43 @@ export interface OrganizerBillsController {
   loadError: string | null;
 }
 
+/** Ticket sales after refunds. Commission may be charged on another base. */
+export function organizerSalesMinor(bill: Bill): number {
+  return bill.sales.grossMinor - bill.sales.refundedMinor;
+}
+
+function organizerBillMinor(bill: Bill): number {
+  switch (bill.status) {
+  case "paid": return bill.paidMinor ?? bill.totalMinor;
+  case "writtenOff":
+  case "free": return 0;
+  default: return bill.totalMinor;
+  }
+}
+
 export function organizerMoneySummary(bills: readonly Bill[]): OrganizerMoneySummary {
   return bills.reduce<OrganizerMoneySummary>((total, bill) => ({
-    salesMinor: total.salesMinor + bill.sales.baseMinor,
+    salesMinor: total.salesMinor + organizerSalesMinor(bill),
     paymentCount: total.paymentCount + bill.sales.paymentCount,
     earnedMinor: total.earnedMinor + (bill.status === "paid" ? bill.totalMinor : 0),
   }), {salesMinor: 0, paymentCount: 0, earnedMinor: 0});
 }
 
-/** The provider's fee already includes its tax. A written-off bill still shows what was billed. */
+/**
+ * The same figures the organizer reads in the host app. The provider's fee already includes its
+ * tax. test/contexts/payments/fixtures/organizer_kept_months.json holds the two to one answer.
+ */
 export function organizerMonthBreakdown(bill: Bill): OrganizerMonthBreakdown {
+  const salesMinor = organizerSalesMinor(bill);
+  const billMinor = organizerBillMinor(bill);
   return {
     month: bill.month,
-    salesMinor: bill.sales.baseMinor,
+    salesMinor,
     refundedMinor: bill.sales.refundedMinor,
     providerFeeMinor: bill.sales.providerFeeMinor,
-    billMinor: bill.totalMinor,
-    keptMinor: bill.sales.baseMinor - bill.sales.providerFeeMinor - bill.totalMinor,
+    billMinor,
+    writtenOff: bill.status === "writtenOff",
+    keptMinor: salesMinor - bill.sales.providerFeeMinor - billMinor,
   };
 }
 

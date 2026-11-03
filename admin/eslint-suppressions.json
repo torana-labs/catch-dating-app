@@ -44,19 +44,9 @@
       "count": 2
     }
   },
-  "src/features/sales/ui/SalesImportedHistoryPanel.tsx": {
-    "react/forbid-elements": {
-      "count": 4
-    }
-  },
   "src/features/sales/ui/SalesPrivacyWorkspace.tsx": {
     "react/forbid-elements": {
       "count": 2
-    }
-  },
-  "src/features/sales/ui/SalesWorkspaceScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 1
     }
   },
   "src/shared/ui/AdminPrimitives/actions.tsx": {
@@ -175,13 +165,13 @@
   },
   "src/shared/ui/AdminPrimitives/workbench.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 6
+      "count": 5
     },
     "react/forbid-elements": {
-      "count": 10
+      "count": 9
     }
   }
 }

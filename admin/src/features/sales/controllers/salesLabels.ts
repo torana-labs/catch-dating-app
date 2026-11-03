@@ -96,6 +96,14 @@ export const hostActivityTypes: Array<{value: "note" | "reply" | "call" | "demo"
   {value: "outreach_sent_manual", label: "I messaged them elsewhere"},
 ];
 
+export const dealMotions: Array<{value: string; label: string}> = [
+  {value: "first_workflow_pilot", label: "First workflow pilot"},
+  {value: "listing_claim_assistance", label: "Listing claim assistance"},
+  {value: "inbound_stack_review", label: "Inbound stack review"},
+  {value: "expansion", label: "Expansion"},
+  {value: "renewal", label: "Renewal"},
+];
+
 export const decisionInfluences = [
   {value: "unknown", label: "Not sure"}, {value: "decision_maker", label: "Decides"},
   {value: "influencer", label: "Influences"}, {value: "operator", label: "Runs things day to day"},
