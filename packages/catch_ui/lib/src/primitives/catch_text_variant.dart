@@ -142,9 +142,11 @@ enum CatchTextTone {
     primary => tokens.ink,
     secondary => tokens.ink2,
     tertiary => tokens.ink3,
-    success => tokens.success,
-    warning => tokens.warning,
-    danger => tokens.danger,
+    // The status tones read the system roles, not the older success,
+    // warning and danger aliases P7 deletes (the same colours).
+    success => tokens.deepMint,
+    warning => tokens.deepYellow,
+    danger => tokens.deepCoral,
     info => tokens.deepIndigo,
   };
 }
