@@ -27,6 +27,18 @@
 
 .bar[data-filtered] { margin-bottom: var(--catch-space-s4); }
 
+/* On a phone a view picker plus actions leave the title no room: they take a row of their own. */
+:global([data-size="compact"]) .bar:has(.views) {
+  flex-wrap: wrap;
+  height: auto;
+  min-height: var(--catch-viewport-bar-height, 56px);
+  padding-block: var(--catch-space-s3);
+}
+
+:global([data-size="compact"]) .bar:has(.views) .title { flex-basis: 100%; }
+:global([data-size="compact"]) .bar:has(.views) .actions { flex: 1 1 100%; min-width: 0; }
+:global([data-size="compact"]) .bar:has(.views) .views { flex: 0 1 auto; min-width: 0; }
+
 .title {
   display: flex;
   flex: 1 1 auto;

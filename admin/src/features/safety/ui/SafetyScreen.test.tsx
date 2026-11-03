@@ -46,6 +46,19 @@ describe("SafetyScreen", () => {
     queryClient.clear();
   });
 
+
+  it("opening a report by its link shows the case beside the whole queue", async () => {
+    mount({selectedTargetPath: "reports/report-2"});
+    expect(await screen.findByRole("heading", {name: /Possible fake profile/}, {timeout: 4000})).toBeTruthy();
+    await waitFor(() => expect(screen.getByRole("heading", {name: /Safety\s*7/})).toBeTruthy(), {timeout: 4000});
+  });
+
+  it("says so when a linked case has left the queue", async () => {
+    queryClient.setDefaultOptions({queries: {retry: false}});
+    mount({selectedTargetPath: "reports/no-such-report"});
+    expect(await screen.findByText("This case is no longer available.", {}, {timeout: 4000})).toBeTruthy();
+  });
+
   it("lists open cases with launch access and opens one in the URL",
     async () => {
       const onNavigate = mount({});

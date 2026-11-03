@@ -1,4 +1,5 @@
 import type {AdminQueueItem} from "../../../shared/types/adminTypes";
+import {displayAdminQueueTitle} from "../../../shared/ui/adminPresentation";
 import type {AccountAction} from "../api/accountSafetyRepository";
 import type {SafetyTriageRow} from "./useSafetyTriageController";
 
@@ -76,7 +77,7 @@ export function safetyCaseRows(
     const dueAtMs = createdMs + FIRST_LOOK_MS;
     return {
       key: row.targetPath, kind, targetPath: row.targetPath,
-      case: {title: row.title, subtitle: row.detail},
+      case: {title: displayAdminQueueTitle(row.title), subtitle: row.detail},
       kindLabel: {label: kindLabels[kind], tone: "neutral"},
       due: dueLabel(dueAtMs, nowMs), dueAtMs,
     };
