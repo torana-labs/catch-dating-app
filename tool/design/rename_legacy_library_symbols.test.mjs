@@ -14,6 +14,7 @@ import {
   migrate,
   plan,
   renameSource,
+  sortImportRuns,
   usesLegacy,
   withLegacyIgnore,
 } from "./rename_legacy_library_symbols.mjs";
@@ -56,14 +57,36 @@ test("the paths of the moved files follow them, in imports and fixtures alike", 
       "const fixture = 'packages/catch_ui/lib/src/primitives/catch_text_variant.dart';",
     ].join("\n")),
     [
+      "import 'package:catch_ui/src/components/catch_section_surface.dart';",
       "import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';",
       "import 'package:catch_ui/src/primitives/catch_legacy_text.dart';",
       "import 'package:catch_ui/src/primitives/catch_legacy_text_variant.dart';",
       "import 'package:catch_ui/src/primitives/catch_text_input.dart';",
-      "import 'package:catch_ui/src/components/catch_section_surface.dart';",
       "const fixture = 'packages/catch_ui/lib/src/primitives/catch_legacy_text_variant.dart';",
     ].join("\n"),
   );
+});
+
+test("a moved path re-sorts the imports it displaces, and nothing else", () => {
+  assert.equal(renameSource([
+    "import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';",
+    "import 'package:catch_ui/src/primitives/catch_surface.dart';",
+    "import 'package:catch_ui/src/primitives/catch_icon.dart';",
+    "import 'package:flutter/material.dart';",
+    "",
+    "final a = CatchSurface();",
+  ].join("\n")), [
+    "import 'package:catch_ui/src/primitives/catch_icon.dart';",
+    "import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';",
+    "import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';",
+    "import 'package:flutter/material.dart';",
+    "",
+    "final a = CatchLegacySurface();",
+  ].join("\n"));
+  const unsorted = "import 'package:b/b.dart';\nimport 'package:a/a.dart';\nfinal a = CatchSurface();";
+  assert.equal(renameSource(unsorted), unsorted.replace("CatchSurface", "CatchLegacySurface"));
+  assert.equal(sortImportRuns("import 'package:b/b.dart';\nimport 'dart:io';\nimport 'a.dart';\nimport 'package:a/a.dart' as a;"),
+    "import 'dart:io';\nimport 'package:a/a.dart' as a;\nimport 'package:b/b.dart';\nimport 'a.dart';");
 });
 
 test("a second run changes nothing", () => {

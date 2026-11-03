@@ -10,7 +10,7 @@
 //   CatchTextStyles keep their names);
 // - the paths that name the moved files (`src/primitives/catch_surface.dart`
 //   becomes `src/primitives/catch_legacy_surface.dart`), in imports and in
-//   test fixtures alike;
+//   test fixtures alike, re-sorting the imports a moved path displaces;
 // - and, outside package:catch_ui, a file that then uses a legacy component
 //   (any catch_ui symbol whose @Deprecated message begins with `Legacy`, as
 //   check_library_shims.mjs reads them) carries
@@ -103,11 +103,34 @@ export function isRenamed(relative) {
   return true;
 }
 
+const singleLineImport = /^import '([^']+)'[^;\n]*;$/u;
+
+/**
+ * Re-sorts each run of consecutive single-line imports by URI, as the
+ * analyzer's directives_ordering expects once a moved file's path changes
+ * its place (`catch_surface.dart` becomes `catch_legacy_surface.dart`).
+ */
+export function sortImportRuns(source) {
+  const lines = source.split("\n");
+  for (let start = 0; start < lines.length; start += 1) {
+    if (!singleLineImport.test(lines[start])) continue;
+    let end = start;
+    while (end + 1 < lines.length && singleLineImport.test(lines[end + 1])) end += 1;
+    const run = lines.slice(start, end + 1);
+    const uri = (line) => singleLineImport.exec(line)[1];
+    const kind = (line) => (uri(line).startsWith("dart:") ? 0 : uri(line).startsWith("package:") ? 1 : 2);
+    run.sort((left, right) => kind(left) - kind(right) || (uri(left) < uri(right) ? -1 : uri(left) > uri(right) ? 1 : 0));
+    lines.splice(start, run.length, ...run);
+    start = end;
+  }
+  return lines.join("\n");
+}
+
 /** Renames the legacy identifiers and file paths in one source. */
 export function renameSource(source) {
-  return source
-    .replace(oldNamePattern, (name) => legacyRenames.get(name))
-    .replace(oldPathPattern, (_, stem) => `catch_legacy_${stem}.dart`);
+  const renamed = source.replace(oldNamePattern, (name) => legacyRenames.get(name));
+  const moved = renamed.replace(oldPathPattern, (_, stem) => `catch_legacy_${stem}.dart`);
+  return moved === renamed ? moved : sortImportRuns(moved);
 }
 
 /** Whether a source uses any of the legacy symbols in code (not in a comment or a string). */
