@@ -4,8 +4,8 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -91,6 +91,7 @@ const _appPackage = 'package:catch_dating_app/';
 const _allowedDomainPackages = <String>{
   'catch_dating_app',
   'catch_kernel',
+  'catch_platform',
   'collection',
   'freezed_annotation',
   'json_annotation',
@@ -148,7 +149,8 @@ const _routeScreenBases = <String>{
 final _probePrefix = RegExp(r'^tool/catch_ui_lints_probe/[^/]+/\d+/arch/');
 
 /// The repository-relative path these rules place, or null when the file is
-/// outside lib/, apps/*/lib/ and packages/kernel/lib/ or is generated.
+/// outside lib/, apps/*/lib/, packages/kernel/lib/ and packages/platform/lib/ or
+/// is generated.
 String? architectureRelativePath(String absolutePath) {
   final normalized = absolutePath.replaceAll(r'\', '/');
   if (normalized.endsWith('.g.dart') || normalized.endsWith('.freezed.dart')) {
@@ -161,6 +163,7 @@ String? architectureRelativePath(String absolutePath) {
       .replaceFirst(_probePrefix, '');
   return relative.startsWith('lib/') ||
           relative.startsWith('packages/kernel/lib/') ||
+          relative.startsWith('packages/platform/lib/') ||
           RegExp(r'^apps/[^/]+/lib/').hasMatch(relative)
       ? relative
       : null;
@@ -168,7 +171,7 @@ String? architectureRelativePath(String absolutePath) {
 
 // Places a file for the dependency-direction rules: legacy features use
 // lib/<feature>/<layer>/; bounded-context roots use lib/contexts/<context>/,
-// lib/platform/, lib/pages/<page>/ and apps/<app>/lib/<destination>/ (held to
+// packages/platform/lib/, lib/pages/<page>/ and apps/<app>/lib/<destination>/ (held to
 // screen rules). packages/kernel/lib/ is its own layer: its pubspec holds its
 // imports, and the clock rule, which no dependency can hold, still reads it.
 ({String root, String owner, String layer})? placeSource(String relativePath) {
@@ -181,12 +184,7 @@ String? architectureRelativePath(String absolutePath) {
   if (RegExp(r'^packages/kernel/lib/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'kernel', owner: 'kernel', layer: 'kernel');
   }
-  // Temporary: the lib/kernel/ids.dart probe in tool/check_catch_ui_lints.sh expects
-  // this placement until that file can take its package probe.
-  if (RegExp(r'^lib/kernel/.+\.dart$').hasMatch(relativePath)) {
-    return (root: 'kernel', owner: 'kernel', layer: 'domain');
-  }
-  if (RegExp(r'^lib/platform/.+\.dart$').hasMatch(relativePath)) {
+  if (RegExp(r'^packages/platform/lib/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'platform', owner: 'platform', layer: 'platform');
   }
   match = RegExp(r'^lib/pages/([^/]+)/.+\.dart$').firstMatch(relativePath);
@@ -397,7 +395,7 @@ List<ArchitectureFinding> dependencyDirectionFindings({
         directive.prefix!.name,
   };
   final isHandwrittenApp = !RegExp(
-    r'^lib/(?:core|platform)/',
+    r'^(?:lib/core|packages/platform/lib)/',
   ).hasMatch(relativePath);
   final keepAliveMarker = RegExp(r'//\s*keepalive:\s*\S');
   final streamTimeoutOverride = RegExp(

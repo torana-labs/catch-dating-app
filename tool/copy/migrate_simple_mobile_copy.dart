@@ -115,8 +115,13 @@ void main(List<String> arguments) {
         entry.key: entry.value! as String,
   };
   final files =
-      Directory('$root/lib')
-          .listSync(recursive: true, followLinks: false)
+      [
+            for (final source in const ['lib', 'packages/platform/lib'])
+              if (Directory('$root/$source').existsSync())
+                ...Directory(
+                  '$root/$source',
+                ).listSync(recursive: true, followLinks: false),
+          ]
           .whereType<File>()
           .where(
             (file) => _isCandidate(
@@ -758,7 +763,9 @@ bool _isCandidate(
     return false;
   }
   if (relative.startsWith('packages/l10n/lib/') ||
-      relative.startsWith('lib/platform/schema_contracts/generated/')) {
+      relative.startsWith(
+        'packages/platform/lib/schema_contracts/generated/',
+      )) {
     return false;
   }
   return true;
@@ -773,7 +780,7 @@ String _audience(String path) {
     'lib/contexts/',
     'packages/kernel/lib/',
     'lib/pages/',
-    'lib/platform/',
+    'packages/platform/lib/',
   ];
   if (sharedRoots.any(path.startsWith)) return 'shared';
   return 'consumer';

@@ -41,7 +41,7 @@ void main() {
     }
     for (final file in const [
       'lib/hosts/presentation/host_screen.dart',
-      'lib/platform/pages/a.dart',
+      'packages/platform/lib/pages/a.dart',
       'apps/host/test/a.dart',
       'apps/lib/a.dart',
       'packages/catch_ui/lib/pages/a.dart',

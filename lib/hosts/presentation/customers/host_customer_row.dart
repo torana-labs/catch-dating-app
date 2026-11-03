@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

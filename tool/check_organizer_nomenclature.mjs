@@ -23,7 +23,7 @@ const requiredMarkers = [
   ["lib/contexts/organizers/data/organizer_posts_repository.dart", "createOrganizerPost"],
   ["lib/contexts/organizers/data/organizers_repository.dart", "startOrganizerConversation"],
   ["lib/contexts/profiles/data/image_upload_repository.dart", "organizers/"],
-  ["lib/platform/routing/route_contract.dart", "/host/organizer"],
+  ["packages/platform/lib/routing/route_contract.dart", "/host/organizer"],
   ["website/src/firebase.ts", "requestOrganizerClaim"],
   ["website/src/firebase.ts", "createPublicOrganizerReview"],
   ["admin/src/shared/api/adminApi.ts", "adminGetOrganizerDetails"],
@@ -35,7 +35,7 @@ const requiredMarkers = [
   ["functions/src/index.ts", "adminGetOrganizerDetails"],
   ["functions/src/index.ts", "adminGetOrganizerClaimRequestDetails"],
   ["functions/src/index.ts", "adminSetOrganizerIndexStatus"],
-  ["lib/platform/analytics/app_analytics.dart", "static const organizerId = 'organizer_id';"],
+  ["packages/platform/lib/analytics/app_analytics.dart", "static const organizerId = 'organizer_id';"],
   ["docs/migrations/clubs_to_organizers.md", "organizerType"],
 ];
 
@@ -68,12 +68,12 @@ const forbiddenSourceMarkers = [
 
 const forbiddenClientAuthorityPatterns = [
   {
-    roots: ["lib", "website/src", "admin/src"],
+    roots: ["lib", "packages/platform/lib", "website/src", "admin/src"],
     pattern: /collection\s*\(\s*["']clubs["']\s*\)/gu,
     detail: "Production clients must not read or write the legacy clubs collection.",
   },
   {
-    roots: ["lib"],
+    roots: ["lib", "packages/platform/lib"],
     pattern: /httpsCallable\s*\(\s*["'](?:createClub|updateClub|archiveClub|deleteClub|createClubPost|joinClub|leaveClub|setClubNotificationPreference|requestClubClaim|startClubHostConversation|adminGetClubDetails|adminListClubDetails|adminUpdateClubDetails)["']\s*\)/gu,
     detail: "Flutter production code must call the organizer-named callable.",
   },

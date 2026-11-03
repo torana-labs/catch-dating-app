@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/platform/l10n/count_copy.dart';
-import 'package:catch_dating_app/platform/l10n/distance_formatter.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_platform/l10n/count_copy.dart';
+import 'package:catch_platform/l10n/distance_formatter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

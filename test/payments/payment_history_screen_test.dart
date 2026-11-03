@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/payments/data/payment_history_reposito
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

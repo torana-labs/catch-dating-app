@@ -14,7 +14,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -706,7 +706,7 @@ test("ordinary and root documentation use the single docs lane", () => {
 });
 
 test("terminal generated Markdown does not collide with ordinary docs", () => {
-  const result = plan("lib/platform/schema_contracts/generated/INDEX.md");
+  const result = plan("packages/platform/lib/schema_contracts/generated/INDEX.md");
   assert.equal(result.complete, true);
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
 });
@@ -912,7 +912,7 @@ test("callable contracts select both schema and admin validator codegen", () => 
 });
 
 test("generated Flutter bindings validate Flutter without expanding upstream", () => {
-  const result = plan("lib/platform/schema_contracts/generated/schema_paths.dart");
+  const result = plan("packages/platform/lib/schema_contracts/generated/schema_paths.dart");
   assert.deepEqual(result.directComponents, ["contracts.generated.flutter"]);
   assert.deepEqual(result.affectedComponents, []);
   assert.deepEqual(result.operations.ciTargets, ["contracts", "flutter"]);
@@ -1121,6 +1121,16 @@ test("Kernel package selects what lib/ selected before it moved", () => {
   assert.deepEqual(kernel.operations.ciTargets, plan("lib/example_shared_file.dart").operations.ciTargets);
 });
 
+test("Platform package selects what lib/ selected before it moved", () => {
+  const seam = plan("packages/platform/lib/errors/app_exception.dart");
+  assert.deepEqual(seam.directComponents, ["app.platform"]);
+  for (const owner of ["app.shared", "app.consumer", "app.host"]) {
+    assert.ok(seam.affectedComponents.includes(owner), owner);
+  }
+  assert.deepEqual(seam.operations.ciTargets, plan("lib/example_shared_file.dart").operations.ciTargets);
+  assert.notDeepEqual(plan("packages/platform/lib/schema_contracts/generated/field_constraints.g.dart").directComponents, ["app.platform"]);
+});
+
 test("L10n package selects what lib/l10n selected before it moved", () => {
   const seam = plan("packages/l10n/lib/l10n.dart");
   assert.deepEqual(seam.directComponents, ["app.l10n"]);
@@ -1244,7 +1254,7 @@ test("only capture tooling and images select capture production; app inputs leav
     "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
     "lib/main_consumer.dart", "packages/l10n/lib/app_en.arb",
     "packages/l10n/lib/generated/app_localizations.dart",
-    "lib/platform/schema_contracts/generated/schema_paths.dart",
+    "packages/platform/lib/schema_contracts/generated/schema_paths.dart",
     "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart",
     "test/ui_captures/catalog/screen_capture_catalog.dart", "test/example_test.dart",
     "assets/images/sample.png", "assets/fonts/sample.ttf", "pubspec.yaml", "pubspec.lock",
@@ -1318,7 +1328,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
     {paths: ["lib/routing/go_router.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/events/presentation/event_detail_cta.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/core/theme/app_theme.dart"], required: ["flutter", "visual_integration"]},
-    {paths: ["lib/platform/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
+    {paths: ["packages/platform/lib/schema_contracts/generated/field_constraints.g.dart"], required: ["contracts", "flutter"]},
     {paths: ["functions/src/shared/generated/schemaRegistry.ts"], required: ["contracts", "functions", "firestore_rules"]},
     {paths: ["website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"], required: ["contracts", "marketing"]},
     // Renames retain both sides; additions/deletions use the same path obligation.

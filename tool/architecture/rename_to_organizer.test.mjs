@@ -35,7 +35,7 @@ function fixture(extra = {}) {
       "",
     ].join("\n"),
     "lib/contexts/organizers/domain/club.dart": "class Club { final String clubId = ''; String get _clubId => clubId; }\n",
-    "lib/platform/schema_contracts/generated/schemas/create_club_request.dart":
+    "packages/platform/lib/schema_contracts/generated/schemas/create_club_request.dart":
       "class CreateClubRequest { final String clubId = ''; final ClubHostDefaults? hostDefaults = null; }\n",
     "lib/contexts/organizers/domain/club_host_defaults.dart": "class ClubHostDefaults {}\n",
     "lib/routing/providers.dart": "final clubsProvider = 1; void createClub() {}\n",
@@ -44,7 +44,7 @@ function fixture(extra = {}) {
       "{\"symbol\": \"ClubCard\", \"provider\": \"clubsProvider\", \"callable\": \"createClub\", \"file\": \"lib/clubs/club_card.dart\"}\n",
     "test/ui_captures/fixtures/club_fixtures.dart": "final captureClub = Club();\n",
     "tool/copy/fixtures/club_sample.dart": "final captureClub = Club();\n",
-    "lib/platform/routing/route_contract.dart": "enum Routes {\n  hostClubsScreen('/host/organizers'),\n  homeScreen('/');\n  const Routes(this.path);\n  final String path;\n}\n",
+    "packages/platform/lib/routing/route_contract.dart": "enum Routes {\n  hostClubsScreen('/host/organizers'),\n  homeScreen('/');\n  const Routes(this.path);\n  final String path;\n}\n",
     "test/ui_captures/catalog/routes.dart": "final ids = ['hostClubsScreen', 'clubId', 'homeScreen'];\n",
     "design/screens/screens.json": "{\"route\": \"hostClubsScreen\", \"param\": \"clubId\"}\n",
     "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",
@@ -69,7 +69,7 @@ test("planPathMoves renames Dart files and folders, not assets or generated cont
   const {moves, collisions} = planPathMoves([
     "lib/clubs/club_card.dart",
     "lib/clubs/club_card.g.dart",
-    "lib/platform/schema_contracts/generated/schemas/create_club_request.dart",
+    "packages/platform/lib/schema_contracts/generated/schemas/create_club_request.dart",
     "widgetbook/assets/fixtures/club_hero_portrait.jpg",
     "tool/design/club_names.dart",
   ]);

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.d
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

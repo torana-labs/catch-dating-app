@@ -24,7 +24,7 @@ const screenishContextPattern =
 const screenFilePattern = /(?:^|\/)[^/]*screen[^/]*\.dart$/u;
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const excludedPrefixes = [
-  "lib/platform/theme/",
+  "packages/platform/lib/theme/",
 ];
 
 const isCliEntrypoint =

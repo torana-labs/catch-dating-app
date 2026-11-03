@@ -16,9 +16,9 @@ import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.da
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

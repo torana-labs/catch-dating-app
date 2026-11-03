@@ -27,6 +27,7 @@ List<String> defaultRoots([String base = '']) {
   final apps = Directory('${base}apps');
   return [
     '${base}lib',
+    '${base}packages/platform/lib',
     if (apps.existsSync())
       for (final app in apps.listSync().whereType<Directory>())
         '${app.path}/lib',
@@ -1280,11 +1281,11 @@ bool _isTestPath(String path) {
 }
 
 bool _isCoreErrorInfraFile(String path) {
-  return path == 'lib/platform/errors/app_error_context.dart' ||
-      path == 'lib/platform/errors/backend_error_util.dart' ||
-      path == 'lib/platform/errors/app_error_message.dart' ||
-      path == 'lib/platform/errors/error_logger.dart' ||
-      path == 'lib/platform/errors/console_crash_reporter.dart';
+  return path == 'packages/platform/lib/errors/app_error_context.dart' ||
+      path == 'packages/platform/lib/errors/backend_error_util.dart' ||
+      path == 'packages/platform/lib/errors/app_error_message.dart' ||
+      path == 'packages/platform/lib/errors/error_logger.dart' ||
+      path == 'packages/platform/lib/errors/console_crash_reporter.dart';
 }
 
 bool _near(

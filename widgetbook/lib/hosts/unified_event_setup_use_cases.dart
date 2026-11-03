@@ -23,7 +23,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_privat
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

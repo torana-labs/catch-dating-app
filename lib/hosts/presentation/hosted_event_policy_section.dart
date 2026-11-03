@@ -9,11 +9,11 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

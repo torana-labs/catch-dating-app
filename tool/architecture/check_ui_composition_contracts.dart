@@ -3106,6 +3106,7 @@ final class _ProductionAnalysis {
       'apps/host/lib',
       'apps/consumer/lib',
       'packages/catch_ui/lib',
+      'packages/platform/lib',
     ]) {
       final directory = Directory(_fromRoot(root, sourceRoot));
       if (!directory.existsSync()) continue;
@@ -3657,6 +3658,7 @@ bool _isHandAuthoredPresentationSource(String relativePath) =>
     !relativePath.endsWith('.freezed.dart') &&
     (relativePath.startsWith('lib/') ||
         relativePath.startsWith('packages/catch_ui/lib/') ||
+        relativePath.startsWith('packages/platform/lib/') ||
         relativePath.startsWith('apps/host/lib/') ||
         relativePath.startsWith('apps/consumer/lib/'));
 

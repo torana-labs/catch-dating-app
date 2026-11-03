@@ -54,7 +54,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     ["lib/contexts/organizers/data/organizer_membership_repository.dart", ["organizerFollows"]],
     ["lib/contexts/organizers/data/organizer_posts_repository.dart", ["createOrganizerPost"]],
     ["lib/contexts/profiles/data/image_upload_repository.dart", ["organizers/"]],
-    ["lib/platform/routing/route_contract.dart", ["/host/organizer"]],
+    ["packages/platform/lib/routing/route_contract.dart", ["/host/organizer"]],
     ["website/src/firebase.ts", [
       "requestOrganizerClaim", "createPublicOrganizerReview",
     ]],
@@ -67,7 +67,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
       "adminGetOrganizerDetails", "adminGetOrganizerClaimRequestDetails",
       "adminSetOrganizerIndexStatus",
     ]],
-    ["lib/platform/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
+    ["packages/platform/lib/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],
   ])) write(root, file, markers.join("\n"));
   write(root, "packages/l10n/lib/app_en.arb", JSON.stringify({
@@ -91,7 +91,7 @@ test("organizer nomenclature gate rejects club in Flutter names but keeps the su
     "  String get id => request.clubId;",
     "}",
   ].join("\n"));
-  write(root, "lib/platform/schema_contracts/generated/schemas/request.g.dart",
+  write(root, "packages/platform/lib/schema_contracts/generated/schemas/request.g.dart",
     "final class CreateClubRequest { final String clubId = ''; }");
   write(root, "packages/l10n/lib/app_en.arb", JSON.stringify({clubsTitle: "Organizers", hostsOrganizerTypeClub: "Club"}));
 

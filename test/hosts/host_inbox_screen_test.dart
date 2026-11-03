@@ -34,10 +34,10 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

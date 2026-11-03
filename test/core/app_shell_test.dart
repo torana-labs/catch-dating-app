@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';

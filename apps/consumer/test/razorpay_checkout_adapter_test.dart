@@ -8,8 +8,8 @@ import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart'
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart'
     as catch_payment;
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';

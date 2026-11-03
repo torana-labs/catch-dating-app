@@ -39,7 +39,7 @@ Read this before changing:
 | Storage path contracts (upload paths, content-type, size limits, owner) | `contracts/storage/` |
 | Generated TypeScript interfaces, Ajv validators, and Admin SDK Timestamp types | `functions/src/shared/generated/` |
 | Generated website and Admin browser contract types | `website/src/shared/contracts/generated/` and `admin/src/generated/contracts/` |
-| Generated Dart callable DTOs, field constraints, and catalogs | `lib/platform/schema_contracts/generated/` |
+| Generated Dart callable DTOs, field constraints, and catalogs | `packages/platform/lib/schema_contracts/generated/` |
 | Dart test access to full schemas (read from `contracts/`, never generated) | `test/support/contract_schemas.dart` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
@@ -733,7 +733,7 @@ merged from the local Host outbox. Flutter listens through
 limited to the 400-row cap) with a listener on the schedule document. It parses
 the closed item vocabularies into typed domain values and computes one coverage
 row per catalog kind from the generated catalog
-(`lib/platform/schema_contracts/generated/host_attention_policies.g.dart`). A
+(`packages/platform/lib/schema_contracts/generated/host_attention_policies.g.dart`). A
 missing, over-cap or invalid-source schedule makes the projection incomplete,
 so Today shows a source-specific issue instead of an all-clear. Today's retry
 re-reads the events and keeps a healthy listener; it restarts only a listener
@@ -1499,7 +1499,7 @@ moments and fails closed when the live-reveal ceremony loses its countdown
 clock, positive phase durations, or particle field.
 
 The generator emits typed Dart into
-`lib/platform/schema_contracts/generated/event_success_moment_presentations.g.dart`
+`packages/platform/lib/schema_contracts/generated/event_success_moment_presentations.g.dart`
 and TypeScript into
 `functions/src/shared/generated/eventSuccessMomentPresentations.ts`. Both
 outputs implement `fnv1a32-utf8-fields-v1` over event id, moment kind, reveal
@@ -2406,7 +2406,7 @@ venue inputs produce clear commands rather than invalid set values.
 
 `tool/contracts/generate_schema_contracts.mjs` emits typed Dart classes for
 every callable payload schema (and the `update_user_profile` patch) into
-`lib/platform/schema_contracts/generated/callable_request_dtos.g.dart`. Each class
+`packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart`. Each class
 has a named-parameter constructor, typed fields, and a `toJson()` that the
 existing `test/core/callable_dto_contracts_test.dart` validates against the
 source schema. Generated patch helpers expose `toFieldsJson()` for repository
@@ -2440,7 +2440,7 @@ decoders).
 ### Field Constraint Projection
 
 The schema generator also emits
-`lib/platform/schema_contracts/generated/field_constraints.g.dart`. It projects
+`packages/platform/lib/schema_contracts/generated/field_constraints.g.dart`. It projects
 UI-relevant requiredness, value and item types, string length, format, pattern,
 enum values, collection bounds, uniqueness, numeric bounds, and `multipleOf`
 steps into typed `CatchContractFieldConstraints` constants. The projection
@@ -4833,8 +4833,8 @@ station filter require an adjacent contract and review alongside the base query.
 
 ### Canonical read limits and cursors
 
-`lib/platform/firebase/read_limit_policy.dart` owns the numeric policy and
-`lib/platform/firebase/cursor_page.dart` owns the shared `limit + 1`,
+`packages/platform/lib/firebase/read_limit_policy.dart` owns the numeric policy and
+`packages/platform/lib/firebase/cursor_page.dart` owns the shared `limit + 1`,
 `startAfterDocument`, honest-`hasMore` contract. Repository call sites must not
 introduce numeric limits directly. `node tool/run.mjs check
 contracts:firestore-read-limits` enforces that boundary and runs in Tools CI

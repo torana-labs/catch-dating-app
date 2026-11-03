@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
+import 'package:catch_platform/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

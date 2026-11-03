@@ -6,7 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switc
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

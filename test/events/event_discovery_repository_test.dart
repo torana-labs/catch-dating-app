@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -204,7 +204,7 @@ test("rejects unclassified or multiply owned consumer routes", () => {
 
 test("extracts app route id path and audience for ownership checks", () => {
   const routes = extractAppRoutes(
-    fs.readFileSync(`${repoRoot}/lib/platform/routing/route_contract.dart`, "utf8"),
+    fs.readFileSync(`${repoRoot}/packages/platform/lib/routing/route_contract.dart`, "utf8"),
   );
   expectRoute(routes, "exploreScreen", "/organizers", "consumer");
   expectRoute(routes, "hostOrganizerDetailScreen", "/host/organizers/:organizerId", "host");

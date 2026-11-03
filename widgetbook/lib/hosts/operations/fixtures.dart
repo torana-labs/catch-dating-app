@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/platform/media/ordered_photo_picker.dart';
+import 'package:catch_platform/media/ordered_photo_picker.dart';
 
 final widgetbookHostUid = HostOperationsFixtures.hostUid;
 

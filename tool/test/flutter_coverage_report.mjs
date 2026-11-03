@@ -65,7 +65,8 @@ function parseLineHits(source) {
   }
 
   return new Map([...byPath.entries()]
-    .filter(([filePath]) => filePath === "lib" || filePath.startsWith("lib/")));
+    .filter(([filePath]) => filePath === "lib" || filePath.startsWith("lib/") ||
+      filePath.startsWith("packages/platform/lib/")));
 }
 
 // The report measures whether a line was hit, not invocation counts. Max keeps
@@ -163,6 +164,8 @@ function summarize(files) {
 }
 
 function normalizeSourcePath(sourcePath) {
+  const platform = sourcePath.replaceAll("\\", "/").match(/(?:^|\/)(packages\/platform\/lib\/.+)$/u);
+  if (platform) return platform[1];
   const normalized = sourcePath.replaceAll("\\", "/");
   const libIndex = normalized.lastIndexOf("/lib/");
   if (libIndex >= 0) return normalized.slice(libIndex + 1);
@@ -170,6 +173,7 @@ function normalizeSourcePath(sourcePath) {
 }
 
 function featureForPath(filePath) {
+  if (filePath.startsWith("packages/platform/lib/")) return "platform";
   const relative = filePath.replace(/^lib\/?/u, "");
   if (!relative.includes("/")) return "(app root)";
   return relative.split("/", 1)[0];

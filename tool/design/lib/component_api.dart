@@ -19,7 +19,7 @@ Map<String, Object?> collectComponentApi({
       [
         for (final root in [
           'packages/catch_ui/lib',
-          'lib/platform/riverpod_ui',
+          'packages/platform/lib/riverpod_ui',
         ])
           if (Directory.fromUri(rootUri.resolve(root)).existsSync())
             for (final file in Directory(

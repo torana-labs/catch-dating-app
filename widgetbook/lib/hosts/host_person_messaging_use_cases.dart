@@ -20,8 +20,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversati
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

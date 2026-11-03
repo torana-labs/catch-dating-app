@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/platform/cities/city_repository.dart';
-import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_platform/device/device_location.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

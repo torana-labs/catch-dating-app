@@ -2,7 +2,7 @@
   "version": 5,
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
-    "path": "lib/platform/routing/route_contract.dart",
+    "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
     "routeContractSha256": "ddf4efcec8d72a7ff55c9645f5697d4cb17161e449fc8fb2ff7712e310f5b9d8",
     "goRouteCount": 129,
@@ -2001,9 +2001,9 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/platform/media/ordered_photo_picker_actions.dart:98a67b416df73d67de94ec3a777cbd810fcd04baba950ee741a172767a41b673:1",
+      "siteId": "material-page:packages/platform/lib/media/ordered_photo_picker_actions.dart:98a67b416df73d67de94ec3a777cbd810fcd04baba950ee741a172767a41b673:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!))",
-      "sourcePath": "lib/platform/media/ordered_photo_picker_actions.dart",
+      "sourcePath": "packages/platform/lib/media/ordered_photo_picker_actions.dart",
       "ordinal": 1,
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
       "presentationTarget": "OrderedPhotoManagerScreen",

@@ -12,7 +12,7 @@ const fixtureMapSource = JSON.stringify({
     contexts: "lib/contexts/",
     pages: "lib/pages/",
     kernel: "packages/kernel/lib/",
-    platform: "lib/platform/",
+    platform: "packages/platform/lib/",
   },
   contexts: [
     {id: "events", owns: "Events."},

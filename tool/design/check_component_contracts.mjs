@@ -245,7 +245,7 @@ function validateContractMembers(members, component, label, {memberIds, memberSy
       failures.push(`${memberLabel}: member id must be nested under ${label}`);
     }
     if (sourcePath && !isComponentSourcePath(sourcePath)) {
-      failures.push(`${memberLabel}: member file must be under lib/**.dart or packages/catch_ui/lib/**.dart`);
+      failures.push(`${memberLabel}: member file must be under lib/**.dart, packages/catch_ui/lib/**.dart or packages/platform/lib/**.dart`);
     }
     if (sourcePath && !fs.existsSync(fromRepo(sourcePath))) {
       failures.push(`${memberLabel}: member file does not exist: ${sourcePath}`);

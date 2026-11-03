@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/payments/data/organizer_event_checkout.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

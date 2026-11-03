@@ -57,7 +57,7 @@ const checkOnly = process.argv.includes("--check");
 const IMPORT_FREEZED =
   "import 'package:freezed_annotation/freezed_annotation.dart';";
 const IMPORT_CONVERTERS =
-  "import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';";
+  "import 'package:catch_platform/firebase/firestore_converters.dart';";
 const IMPORT_CURRENCY =
   "import 'package:catch_kernel/country_markets.dart';";
 const IMPORT_LABELLED =
@@ -193,8 +193,8 @@ const SPECS = [
   "imports": [
     "import 'package:catch_kernel/activity_taxonomy.dart';",
     "import 'package:catch_kernel/country_markets.dart';",
-    "import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';",
-    "import 'package:catch_dating_app/platform/media/uploaded_photo.dart';",
+    "import 'package:catch_platform/firebase/firestore_converters.dart';",
+    "import 'package:catch_platform/media/uploaded_photo.dart';",
     "import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';",
     "import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';",
     "import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';",

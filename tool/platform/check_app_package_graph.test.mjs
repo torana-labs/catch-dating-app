@@ -79,6 +79,10 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     fs.mkdirSync(l10nRoot, {recursive: true});
     fs.writeFileSync(path.join(l10nRoot, "pubspec.yaml"),
       "name: catch_l10n\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  flutter_localizations:\n    sdk: flutter\n  intl: any\n");
+    const platformRoot = path.join(root, "packages/platform");
+    fs.mkdirSync(platformRoot, {recursive: true});
+    fs.writeFileSync(path.join(platformRoot, "pubspec.yaml"),
+      "name: catch_platform\nresolution: workspace\ndependencies:\n  catch_kernel: any\n  catch_l10n: any\n  flutter:\n    sdk: flutter\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -111,7 +115,17 @@ test("token package rejects every dependency outside Flutter", () => {
     ["catch_tokens: required package 'flutter' is absent."]);
 });
 
-// The platform package will read l10n, so it may not reach back into any of ours.
+// Every feature reads the platform package, so it may never reach back into the root.
+test("platform package rejects the root package and anything it does not import", () => {
+  const required = ["catch_kernel", "catch_l10n", "flutter"];
+  assert.deepEqual(validateRoleGraph({role: "catch_platform", declaredPackages: new Set(required), pluginPackages: new Set()}), []);
+  for (const dependency of ["catch_dating_app", "catch_consumer_app", "health"]) {
+    assert.deepEqual(validateRoleGraph({role: "catch_platform", declaredPackages: new Set([...required, dependency]), pluginPackages: new Set()}),
+      [`catch_platform: dependency '${dependency}' is outside the platform seam boundary.`]);
+  }
+});
+
+// The platform package reads l10n, so l10n may not reach back into any of ours.
 test("l10n package rejects the root package and anything beyond the localization stack", () => {
   const allowed = ["flutter", "flutter_localizations", "intl"];
   assert.deepEqual(validateRoleGraph({role: "catch_l10n", declaredPackages: new Set(allowed), pluginPackages: new Set()}), []);

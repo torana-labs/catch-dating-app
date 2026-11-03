@@ -115,7 +115,7 @@ function sumOver(root, files, count) {
 
 const reactSkip = (file) => /\.(?:test|stories)\.tsx$/u.test(file) || file.includes("/generated/");
 const flutterSkip = (file) => /\.(?:g|freezed|mocks)\.dart$/u.test(file) ||
-  ["lib/platform/theme/", "lib/design_fixtures/"].some((prefix) => file.startsWith(prefix)) ||
+  ["packages/platform/lib/theme/", "lib/design_fixtures/"].some((prefix) => file.startsWith(prefix)) ||
   /^lib\/firebase_options/u.test(file);
 const sharedStylesheets = new Set(["website/src/styles/base.css", "website/src/styles/catch-language.css"]);
 
@@ -186,7 +186,7 @@ export function measureAll({root = repoRoot, priorityIds = [], similarity = fals
     admin: inventory.admin?.[kind] ?? 0,
     "web-ui": inventory["web-ui"]?.[kind] ?? 0,
   });
-  const flutterFiles = listFiles(root, "lib", ".dart", flutterSkip);
+  const flutterFiles = ["lib", "packages/platform/lib"].flatMap((directory) => listFiles(root, directory, ".dart", flutterSkip));
   const hostFiles = flutterFiles.filter((file) => file.startsWith("lib/hosts/"));
   const otherFiles = flutterFiles.filter((file) => !file.startsWith("lib/hosts/"));
   const cssLines = (files) => sumOver(root, files, (source) => source.split("\n").length - 1);

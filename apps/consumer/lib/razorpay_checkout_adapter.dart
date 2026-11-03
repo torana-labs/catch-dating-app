@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter/services.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 

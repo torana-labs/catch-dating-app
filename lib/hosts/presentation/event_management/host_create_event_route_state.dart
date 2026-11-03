@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_platform/catch_async_state.dart';
 
 enum HostCreateEventRouteStatus { loading, error, notFound, forbidden, ready }
 

@@ -5,11 +5,11 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/platform/cities/city_repository.dart';
-import 'package:catch_dating_app/platform/device/device_location.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_platform/device/device_location.dart';
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

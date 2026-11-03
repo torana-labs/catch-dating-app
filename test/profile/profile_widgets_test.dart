@@ -13,12 +13,6 @@ import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
@@ -34,6 +28,12 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_previ
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
+import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
 import 'package:catch_ui/catch_ui.dart';

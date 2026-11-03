@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_screen.dart';
-import 'package:catch_dating_app/platform/media/ordered_photo_picker.dart';
+import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 

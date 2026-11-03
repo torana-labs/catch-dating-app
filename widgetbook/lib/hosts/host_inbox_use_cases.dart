@@ -21,8 +21,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -10,7 +10,7 @@ import 'package:catch_dating_app/events/presentation/attendee_event_share_contro
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

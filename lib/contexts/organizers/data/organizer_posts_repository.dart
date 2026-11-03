@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show CreateOrganizerPostCallableRequest;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';

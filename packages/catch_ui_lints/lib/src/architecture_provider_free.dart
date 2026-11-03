@@ -27,6 +27,7 @@ final _riverpodImport = RegExp(
 final _forbiddenImport = RegExp(
   r'^package:go_router(?:/|$)'
   r'|^package:catch_dating_app/routing/'
+  r'|^package:catch_platform/routing/'
   r'|^package:catch_dating_app/(?:contexts/[^/]+|[^/]+)/data/'
   r'|^package:catch_dating_app/.*repository',
 );

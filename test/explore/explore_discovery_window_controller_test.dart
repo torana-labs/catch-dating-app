@@ -5,9 +5,9 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
-import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

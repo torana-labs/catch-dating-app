@@ -191,7 +191,7 @@ test("rejects undeclared properties and invalid enum values", () => {
   const invalidPath = clone(classification);
   invalidPath.widgets[0].file = "widgetbook/lib/not_a_production_widget.dart";
   assert.ok(validate(invalidPath).some((failure) =>
-    failure.includes("file must be a Dart source under lib/**, packages/catch_ui/lib/**, apps/consumer/lib/**, apps/host/lib/**"),
+    failure.includes("file must be a Dart source under lib/**, packages/catch_ui/lib/**, packages/platform/lib/**, apps/consumer/lib/**, apps/host/lib/**"),
   ));
 
   const incompleteScope = clone(classification);

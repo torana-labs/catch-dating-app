@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_exclusion_le
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

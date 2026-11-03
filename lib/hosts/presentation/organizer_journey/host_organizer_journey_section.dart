@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_journey_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_journey.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -20,11 +20,11 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_contro
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

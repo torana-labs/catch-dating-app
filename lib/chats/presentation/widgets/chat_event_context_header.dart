@@ -2,8 +2,8 @@ import 'package:catch_dating_app/chats/presentation/chat_conversation_context.da
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
-import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

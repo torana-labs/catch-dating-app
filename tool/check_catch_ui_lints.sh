@@ -91,15 +91,15 @@ expect_probe() {
 }
 
 stage_probe "seeded violation corpus" <<'DART'
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_scaffold.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_scaffold.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -531,7 +531,7 @@ probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
 stage_probe "canonical error recovery rejects empty actions" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as ui;
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:flutter/material.dart';
 
 final missingRecovery = CatchErrorState(title: 'Error', message: 'Try again');
@@ -897,7 +897,7 @@ DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
   expect_probe exact catch_status_strip_is_layout_owned 3
   stage_probe "arrival placement $feedback_scope" <<'DART'
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart' as ui;
+import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart' as ui;
 import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
 import 'package:flutter/widgets.dart';
 typedef NoticeOverlayAlias = ui.CatchNoticeOverlay;
@@ -914,13 +914,13 @@ done
 
 probe_path="$probe_root/lib/app.dart"
 stage_probe "global arrival host owner" <<'DART'
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/widgets.dart';
 final host = CatchNoticeOverlay(child: const SizedBox());
 DART
 expect_probe exact catch_notice_host_is_app_owned 0
 
-probe_path="$probe_root/lib/platform/push/fcm_service.dart"
+probe_path="$probe_root/packages/platform/lib/push/fcm_service.dart"
 stage_probe "foreground transport owner" <<'DART'
 import 'package:firebase_messaging/firebase_messaging.dart';
 final foreground = FirebaseMessaging.onMessage;
@@ -1181,7 +1181,7 @@ while IFS='|' read -r arch_path arch_code arch_source; do
 done <<'ARCH'
 lib/events/domain/event.dart|catch_arch_domain_framework_import|import 'package:cloud_firestore/cloud_firestore.dart';
 lib/contexts/events/domain/event.dart|catch_arch_domain_framework_import|import 'package:flutter/widgets.dart';
-lib/kernel/ids.dart|catch_arch_domain_framework_import|import 'package:flutter/widgets.dart';
+packages/kernel/lib/clock.dart|catch_arch_domain_clock_access|bool past(DateTime at) => at.isBefore(DateTime.now());
 lib/contexts/events/domain/event_time.dart|catch_arch_domain_clock_access|bool past(DateTime at) => at.isBefore(DateTime.now());
 lib/events/data/event_repository.dart|catch_arch_data_domain_presentation_import|import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 lib/contexts/events/data/event_repository.dart|catch_arch_data_stream_timeout|Stream<int> watch(Stream<int> s) => s.timeout(const Duration(seconds: 5));
@@ -1199,7 +1199,8 @@ lib/hosts/presentation/host_operations_screen.dart|catch_arch_multi_route_screen
 lib/chats/presentation/inbox/chats_list_view_model.dart|catch_arch_undocumented_keep_alive|const value = {'keepAlive': true};\nconst other = Object();\nvoid set({bool keepAlive = false}) {}\nvoid call() => set(keepAlive: true);
 lib/chats/presentation/chat_route_view_model.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nfinal stateProvider = Provider<int>((ref) => 1);
 apps/consumer/lib/some_entrypoint.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nfinal stateProvider = Provider<int>((ref) => 1);
-lib/platform/firebase.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/contexts/events/events.dart';
+lib/contexts/events/parts/route_boundary.dart|catch_arch_provider_free_boundary|import 'package:catch_platform/routing/route_contract.dart';
+lib/contexts/events/data/event_store.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/routing/go_router.dart';
 lib/contexts/account/data/session.dart|catch_arch_context_order_import|import 'package:catch_dating_app/contexts/events/events.dart';
 lib/contexts/bookings/domain/booking.dart|catch_arch_context_barrel_bypass|import 'package:catch_dating_app/contexts/events/domain/event.dart';
 lib/weddings/domain/wedding.dart|catch_arch_unmapped_file|class Wedding {}

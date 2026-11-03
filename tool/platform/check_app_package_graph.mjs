@@ -26,6 +26,15 @@ export const packageGraphPolicy = Object.freeze({
     forbiddenPlugins: [],
     boundary: "localization catalog",
   },
+  catch_platform: {
+    projectRoot: "packages/platform",
+    requiredPackages: ["catch_kernel", "catch_l10n", "flutter"],
+    allowedPackages: ["catch_kernel", "catch_l10n", "catch_tokens", "catch_ui", "cloud_firestore", "cloud_functions", "collection", "connectivity_plus", "crypto", "firebase_analytics", "firebase_auth", "firebase_core", "firebase_crashlytics", "firebase_messaging", "firebase_remote_config", "firebase_storage", "flutter", "flutter_native_splash", "flutter_reorderable_grid_view", "flutter_riverpod", "freezed_annotation", "geolocator", "go_router", "idb_shim", "intl", "package_info_plus", "path_provider", "riverpod_annotation", "share_plus", "shared_preferences", "sqlite3", "timezone", "url_launcher"],
+    forbiddenPackages: [],
+    requiredPlugins: [],
+    forbiddenPlugins: [],
+    boundary: "platform seam",
+  },
   catch_tokens: {
     projectRoot: "packages/catch_tokens",
     requiredPackages: ["flutter"],

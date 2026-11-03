@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

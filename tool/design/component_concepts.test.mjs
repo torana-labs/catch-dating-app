@@ -88,7 +88,7 @@ test("new private widgets remain a blocking destination", () => {
 test("new shared package widgets and Riverpod adapters require registry identity", () => {
   for (const file of [
     "packages/catch_ui/lib/src/components/catch_button.dart",
-    "lib/platform/riverpod_ui/catch_async_boundary.dart",
+    "packages/platform/lib/riverpod_ui/catch_async_boundary.dart",
   ]) {
     const entry = {name: "CatchButton", file, visibility: "public"};
     assert.deepEqual(newWidgetPolicyIssues(entry, {

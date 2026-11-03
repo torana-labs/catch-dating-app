@@ -4,9 +4,9 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_sheet.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

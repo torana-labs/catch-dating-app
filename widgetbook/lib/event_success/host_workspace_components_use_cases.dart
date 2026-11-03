@@ -10,7 +10,7 @@ import 'package:catch_dating_app/event_success/presentation/host_report/event_su
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
