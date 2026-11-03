@@ -961,6 +961,14 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
         ),
         [contains('carries no architecture exceptions')],
       );
+      expect(
+        _ignoreProblems(
+          'packages/kernel/lib/clock.dart',
+          '// ignore: catch_ui_lints/catch_arch_domain_clock_access -- reason\n'
+              'bool past(DateTime at) => at.isBefore(DateTime.now());\n',
+        ),
+        [contains('carries no architecture exceptions')],
+      );
     });
 
     test('other diagnostics in ignore comments are left alone', () {

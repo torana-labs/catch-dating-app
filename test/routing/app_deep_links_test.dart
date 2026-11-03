@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/kernel/brand.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter_test/flutter_test.dart';

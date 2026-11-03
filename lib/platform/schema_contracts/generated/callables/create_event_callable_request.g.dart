@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 
 
 // Typed callable request DTO emitted from callables/create_event_payload.schema.json.
