@@ -10,14 +10,14 @@ import '../../preview_layout_contracts.dart';
 @widgetbook.UseCase(
   name: 'Contract states',
   type: CatchSurface,
-  path: '[Core primitives]/Surfaces',
+  path: '[Core primitives]/Legacy',
 )
-Widget catchSurfaceContractStates(BuildContext context) {
+Widget catchLegacySurfaceContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookContractFrame(
     title: 'CatchSurface',
-    contractId: 'catch.surface',
+    contractId: 'catch.surface.legacy',
     states: const [
       'surface',
       'raised',
