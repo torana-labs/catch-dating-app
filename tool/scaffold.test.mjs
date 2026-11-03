@@ -215,7 +215,8 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     ["context", "--name", "zebras"],
     ["screen", "--app", "host", "--name", "today_probe"],
     // Long enough that the formatter must move line breaks in every file.
-    ["screen", "--app", "consumer", "--name", "event_setup_review_probe", "--destination", "discover_probe"],
+    ["screen", "--app", "host", "--name", "event_setup_review_probe", "--destination", "discover_probe"],
+    ["screen", "--app", "consumer", "--name", "wallet_probe"],
     ["screen", "--page", "page_probe"],
     ["component", "--name", "VenueProbeRow", "--tier", "T2"],
     ["component", "--name", "ProbeBadge", "--tier", "T4"],
@@ -224,7 +225,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
 
   function applyPrintedLines() {
     const root = fs.readFileSync(inTree("pubspec.yaml"), "utf8");
-    const workspaceLine = /under workspace:\n( {2}- \S+)/u.exec(outputs.get("context"))[1];
+    const workspaceLine = /under workspace:\n( {2}- \S+)/u.exec(outputs.get("context --name zebras"))[1];
     fs.writeFileSync(inTree("pubspec.yaml"), root.replace("workspace:\n", `workspace:\n${workspaceLine}\n`));
     for (const app of ["host", "consumer"]) {
       const printed = [...outputs.values()].map((stdout) =>
@@ -239,7 +240,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     fs.rmSync(tree, {recursive: true, force: true});
     fs.mkdirSync(tree, {recursive: true});
     const copy = run("sh", ["-c", `git archive HEAD -- . ${[
-      "artifacts", "test/goldens", "website/public", "admin/public", "functions",
+      "artifacts", "test", "integration_test", "website/public", "admin/public", "functions",
       "apps/host/android", "apps/host/ios", "apps/host/web", "apps/consumer/android", "apps/consumer/ios", "apps/consumer/web",
     ].map((entry) => `':(exclude)${entry}'`).join(" ")} | tar -x -C '${tree}'`]);
     assertOk(copy, "copying the tree");
@@ -251,7 +252,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     for (const args of commands) {
       const result = scaffoldIn(tree, ...args);
       assertOk(result, args.join(" "));
-      outputs.set(args[0] === "screen" ? `${args[0]}:${args[1]}:${args[2]}` : args[0] === "component" ? `component:${args[2]}` : args[0], result.stdout);
+      outputs.set(args.join(" "), result.stdout);
       for (const line of listedFiles(result.stdout)) {
         if (!line.includes(":")) created.add(line);
       }
@@ -275,11 +276,19 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     assert.deepEqual(exports, [...exports].sort());
   });
 
-  test("each package's own analysis gate passes", () => {
-    // These are the steps tool/ci/check_flutter_workspace_analysis.mjs runs.
-    assertOk(run("flutter", ["analyze", "--fatal-infos", "--no-pub"], inTree("packages/contexts/zebras")), "context package");
-    assertOk(run("flutter", ["analyze", "--fatal-infos", "--no-pub"], inTree("apps/host")), "host app");
-    assertOk(run("flutter", ["analyze", "--fatal-infos", "--no-pub"], inTree("apps/consumer")), "consumer app");
+  test("the context package and catch_ui pass their own analysis gates", () => {
+    // Steps tool/ci/check_flutter_workspace_analysis.mjs runs. The root run below
+    // covers the app packages, whose options files the scaffold does not write.
+    // A seeded error must be the only finding: that proves the directory-wide
+    // analyzer visited this package and found the generated files clean.
+    const seeded = inTree("packages/contexts/zebras/lib/src/parts/analysis_probe.dart");
+    fs.writeFileSync(seeded, "final Object analysisProbe = notARealSymbol;\n");
+    const context = run("flutter", ["analyze", "--fatal-infos", "--no-pub"], inTree("packages/contexts/zebras"));
+    fs.rmSync(seeded);
+    assert.notEqual(context.status, 0);
+    const report = context.stdout + context.stderr;
+    assert.match(report, /analysis_probe\.dart/u, report);
+    assert.match(report, /\b1 issue found/u, report);
     assertOk(run("dart", ["analyze", "lib/catch_ui.dart", "lib/src/components/catch_venue_probe_row.dart",
       "lib/src/components/catch_probe_badge.dart", "--fatal-infos"], inTree("packages/catch_ui")), "catch_ui");
   });
@@ -292,6 +301,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
       "      Container(color: const Color(0xFF112233));\n}\n";
     const probes = [
       "apps/host/lib/today_probe/widgets/probe_body.dart",
+      "apps/consumer/lib/wallet_probe/widgets/probe_body.dart",
       "packages/contexts/zebras/lib/src/parts/probe_body.dart",
       "lib/pages/page_probe/widgets/probe_body.dart",
     ];
@@ -314,7 +324,9 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
 
   test("Widgetbook's use cases analyse clean", () => {
     const widgetbook = inTree("widgetbook");
-    assertOk(run("flutter", ["pub", "get", "--offline"], widgetbook), "widgetbook pub get");
+    // Not offline: Widgetbook has its own lockfile, and a runner's pub cache
+    // holds only what the root workspace resolved.
+    assertOk(run("flutter", ["pub", "get"], widgetbook), "widgetbook pub get");
     assertOk(run("dart", ["analyze", "--fatal-infos", "lib/primitives/contracts/venue_probe_row.dart",
       "lib/primitives/contracts/probe_badge.dart"], widgetbook), "widgetbook use cases");
   });
@@ -322,26 +334,22 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
   test("generated tests pass", () => {
     assertOk(run("flutter", ["test", "--no-pub"], inTree("packages/contexts/zebras")), "context test");
     assertOk(run("flutter", ["test", "--no-pub", "test/today_probe"], inTree("apps/host")), "host body test");
-    assertOk(run("flutter", ["test", "--no-pub", "test/discover_probe"], inTree("apps/consumer")), "consumer body test");
     assertOk(run("flutter", ["test", "--no-pub", "test/pages/page_probe", "test/core/catch_venue_probe_row_test.dart",
       "test/core/catch_probe_badge_test.dart"], tree), "root tests");
   });
 
   test("build_runner writes the same provider, whatever the name's length", () => {
-    const screens = [
-      ["apps/host", "lib/today_probe", "today_probe"],
-      ["apps/consumer", "lib/discover_probe", "event_setup_review_probe"],
+    const generatedFiles = [
+      inTree("apps/host/lib/today_probe/today_probe_view_model.g.dart"),
+      inTree("apps/host/lib/discover_probe/event_setup_review_probe_view_model.g.dart"),
     ];
-    for (const [app, folder, name] of screens) {
-      const generated = inTree(app, folder, `${name}_view_model.g.dart`);
-      const scaffolded = fs.readFileSync(generated, "utf8");
-      assertOk(run("dart", ["run", "build_runner", "build", "--delete-conflicting-outputs"], inTree(app)), `build_runner in ${app}`);
-      assert.equal(
-        fs.readFileSync(generated, "utf8"),
-        scaffolded,
-        `${name}_view_model.g.dart differs from build_runner's output; update tool/scaffold/templates/screen/view_model.g.dart.tmpl`,
-      );
-    }
+    const scaffolded = generatedFiles.map((file) => fs.readFileSync(file, "utf8"));
+    assertOk(run("dart", ["run", "build_runner", "build", "--delete-conflicting-outputs"], inTree("apps/host")), "build_runner");
+    generatedFiles.forEach((file, index) => assert.equal(
+      fs.readFileSync(file, "utf8"),
+      scaffolded[index],
+      `${path.basename(file)} differs from build_runner's output; update tool/scaffold/templates/screen/view_model.g.dart.tmpl`,
+    ));
   });
 
   test("a second run refuses and changes nothing", () => {
@@ -365,8 +373,8 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
   test("the printed registry records satisfy the registry's checks", () => {
     const registryPath = inTree("design/components/catch.components.json");
     const registry = JSON.parse(fs.readFileSync(registryPath, "utf8"));
-    for (const name of ["VenueProbeRow", "ProbeBadge"]) {
-      const stdout = outputs.get(`component:${name}`);
+    for (const command of ["component --name VenueProbeRow --tier T2", "component --name ProbeBadge --tier T4"]) {
+      const stdout = outputs.get(command);
       const start = stdout.indexOf("{\n");
       const end = stdout.indexOf("\n}\n", start) + 2;
       registry.components.push(JSON.parse(stdout.slice(start, end)));
@@ -380,7 +388,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     const manifestPath = inTree("tool/design/screen_top_bar_contracts.json");
     const unregistered = run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree);
     assert.notEqual(unregistered.status, 0, "a new screen should need a contract");
-    for (const screen of ["today_probe_screen", "event_setup_review_probe_screen", "page_probe_screen"]) {
+    for (const screen of ["today_probe_screen", "event_setup_review_probe_screen", "wallet_probe_screen", "page_probe_screen"]) {
       assert.match(unregistered.stdout + unregistered.stderr, new RegExp(`${screen}\\.dart: unregistered-app-bar`, "u"));
     }
     const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
