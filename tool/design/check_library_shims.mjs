@@ -8,8 +8,12 @@
 // A shim is a public symbol exported by package:catch_ui, marked @Deprecated,
 // whose declaration names another exported catch_ui symbol: a typedef of the new
 // name, a class that extends or builds the new component, a function that
-// forwards, or a constructor that redirects with `this(...)`. A @Deprecated symbol
-// that names nothing else is not counted, and is still refused under the new roots.
+// forwards, or a constructor that redirects with `this(...)`. A legacy component
+// counts too: one whose @Deprecated message begins with `Legacy` (the
+// pre-redesign CatchLegacySurface, CatchLegacyText and the text atoms the system
+// Text absorbs), whatever its declaration names. Any other @Deprecated symbol
+// that names nothing else is not counted, and is still refused under the new
+// roots.
 //
 // The count must match the baseline. It may fall: record that with --update. A
 // rise fails. A library PR that adds a shim raises `shims` by hand, so the rise
@@ -108,15 +112,18 @@ function splitDeclarations(masked, offset = 0) {
   return declarations;
 }
 
-// A declaration's leading annotations, with their arguments.
+// A declaration's leading annotations, with their arguments and their spans.
 function annotationsOf(text) {
   const names = [];
+  const spans = [];
   let index = 0;
   for (;;) {
     while (index < text.length && /\s/u.test(text[index])) index += 1;
     const match = /^@([A-Za-z_][\w.]*)/u.exec(text.slice(index));
-    if (!match) return {names, rest: index};
+    if (!match) return {names, spans, rest: index};
     names.push(match[1]);
+    const start = index;
+    spans.push({name: match[1], start, end: start});
     index += match[0].length;
     let cursor = index;
     while (cursor < text.length && /\s/u.test(text[cursor])) cursor += 1;
@@ -129,8 +136,23 @@ function annotationsOf(text) {
       } while (depth > 0 && cursor < text.length);
       index = cursor;
     }
+    spans.at(-1).end = index;
   }
 }
+
+/**
+ * The first string of a @Deprecated message, read from the unmasked source
+ * at the annotation's span (masking blanks string bodies), or null.
+ */
+function deprecationMessage(source, offset, spans) {
+  const span = spans.find((candidate) => candidate.name === "Deprecated");
+  if (!span) return null;
+  const annotation = source.slice(offset + span.start, offset + span.end);
+  return /\(\s*r?('''|"""|'|")([\s\S]*?)\1/u.exec(annotation)?.[2] ?? null;
+}
+
+/** Whether a @Deprecated message marks a legacy component (it begins with `Legacy`). */
+export const isLegacyMessage = (message) => typeof message === "string" && message.startsWith("Legacy");
 
 const typeHeader = /^(?:(?:abstract|sealed|base|final|interface|macro|mixin)\s+)*(?:class|mixin|enum)\s+([A-Za-z_]\w*)/u;
 const extensionTypeHeader = /^extension\s+type\s+(?:const\s+)?([A-Za-z_]\w*)/u;
@@ -167,7 +189,7 @@ function memberDeclarations(declaration) {
 export function publicDeclarations(source) {
   const symbols = [];
   for (const declaration of splitDeclarations(maskDart(source))) {
-    const {names, rest} = annotationsOf(declaration.text);
+    const {names, spans, rest} = annotationsOf(declaration.text);
     const header = declaration.text.slice(rest);
     const declared = declaredName(header);
     if (!declared || declared.name.startsWith("_")) continue;
@@ -176,10 +198,12 @@ export function publicDeclarations(source) {
       name: declared.name,
       owner: null,
       deprecated: isDeprecated(names),
+      legacy: isLegacyMessage(deprecationMessage(source, declaration.start, spans)),
       text: header,
       line: source.slice(0, declaration.start + rest).split("\n").length,
     });
     if (!declared.isType) continue;
+    const bodyOffset = declaration.start + declaration.bodyStart + 1;
     for (const member of memberDeclarations(declaration)) {
       const memberAnnotations = annotationsOf(member.text);
       if (!isDeprecated(memberAnnotations.names)) continue;
@@ -194,6 +218,7 @@ export function publicDeclarations(source) {
         name: bare === declared.name ? declared.name : `${declared.name}.${bare}`,
         owner: declared.name,
         deprecated: true,
+        legacy: isLegacyMessage(deprecationMessage(source, bodyOffset + member.start, memberAnnotations.spans)),
         text: memberHeader,
         // A constructor or static is written by name; an instance member needs types.
         byName: isConstructor || /^static\b/u.test(memberHeader),
@@ -249,7 +274,7 @@ export function scanLibrary(readText) {
     const named = [...symbol.text.matchAll(/\b[A-Za-z_]\w*\b/gu)].map((match) => match[0]);
     // A member also delegates by naming its own type again (`= Foo.new`, `=> Foo()`)
     // or redirecting (`: this(...)`).
-    const shim = named.some((name) => name !== own && names.has(name)) ||
+    const shim = symbol.legacy || named.some((name) => name !== own && names.has(name)) ||
       (symbol.owner !== null &&
         (/:\s*this\s*[.(]/u.test(symbol.text) || named.filter((name) => name === own).length > 1));
     return {...symbol, shim};
@@ -331,7 +356,8 @@ function runCli(argv) {
   const {deprecated, shims, violations, staleLegacy} = scanRepository(repoRoot);
   if (argv.includes("--report")) {
     for (const symbol of deprecated) {
-      console.log(`${symbol.file}:${symbol.line} ${symbol.name}${symbol.shim ? " (shim)" : ""}`);
+      const kind = symbol.legacy ? " (legacy)" : symbol.shim ? " (shim)" : "";
+      console.log(`${symbol.file}:${symbol.line} ${symbol.name}${kind}`);
     }
   }
   if (violations.length) {
