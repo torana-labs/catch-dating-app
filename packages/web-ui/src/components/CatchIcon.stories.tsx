@@ -28,7 +28,7 @@ function State({label, children}: {label: string; children: ReactNode}) {
 /** catch.icon on the web: the four sizes (stroke 2, and 1.75 at 24), a labelled icon, and an icon taking its text's tone. */
 export const Contract: Story = {
   render: () => (
-    <CatchRoot>
+    <CatchRoot theme="day">
       <CatchSurface block="plain" padding="lg">
         <CatchStack gap={24}>
           <State label="sizes">
@@ -59,7 +59,7 @@ export const Contract: Story = {
 /** Direction roles mirror in right-to-left layouts. */
 export const RightToLeft: Story = {
   render: () => (
-    <CatchRoot>
+    <CatchRoot theme="day">
       <CatchSurface block="plain" dir="rtl" padding="lg">
         <CatchStack direction="row" gap={16}>
           <CatchIcon name="back" />

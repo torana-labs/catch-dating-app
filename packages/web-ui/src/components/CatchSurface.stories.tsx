@@ -61,7 +61,7 @@ function PressableSurface() {
  */
 export const Contract: Story = {
   render: () => (
-    <CatchRoot size="expanded">
+    <CatchRoot size="expanded" theme="day">
       <CatchStack gap={32}>
         <CatchSurface block="plain" padding="lg">
           <CatchStack gap={24}>
@@ -115,7 +115,7 @@ export const Contract: Story = {
 
 /** onPress makes the whole block one button; Enter and Space press it. */
 export const Pressable: Story = {
-  render: () => <CatchRoot><CatchSurface block="plain" padding="lg"><PressableSurface /></CatchSurface></CatchRoot>,
+  render: () => <CatchRoot theme="day"><CatchSurface block="plain" padding="lg"><PressableSurface /></CatchSurface></CatchRoot>,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     const control = canvas.getByRole("button", {name: /Open the event/u});
@@ -130,7 +130,7 @@ export const Pressable: Story = {
 /** aspect holds a fixed shape with the content at the bottom. */
 export const Aspect: Story = {
   render: () => (
-    <CatchRoot>
+    <CatchRoot theme="day">
       <CatchSurface block="plain" padding="lg">
         <CatchStack direction="row" equal gap={12}>
           <CatchSurface aspect={1} block="spotlight" color="dinner"><CatchText variant="title-row">Square</CatchText></CatchSurface>

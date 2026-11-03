@@ -41,7 +41,7 @@ function Collapsing() {
 /** catch.stack on the web: every gap, an equal row, a wrapping row, and a row collapsing on compact. */
 export const Contract: Story = {
   render: () => (
-    <CatchRoot size="expanded">
+    <CatchRoot size="expanded" theme="day">
       <CatchSurface block="plain" padding="lg">
         <CatchStack gap={32}>
           <State label="gaps">
@@ -65,7 +65,7 @@ export const Contract: Story = {
           <State label="collapse">
             <CatchStack gap={16}>
               <Collapsing />
-              <CatchRoot size="compact"><Collapsing /></CatchRoot>
+              <CatchRoot size="compact" theme="day"><Collapsing /></CatchRoot>
             </CatchStack>
           </State>
         </CatchStack>
@@ -79,7 +79,7 @@ export const SectionGap: Story = {
   render: () => (
     <CatchStack gap={0}>
       {(["compact", "expanded"] as const).map((size) => (
-        <CatchRoot key={size} size={size}>
+        <CatchRoot key={size} size={size} theme="day">
           <CatchSurface block="plain" padding="lg">
             <CatchStack gap="section"><Tile>{`Section, ${size}`}</Tile><Tile>Next section</Tile></CatchStack>
           </CatchSurface>

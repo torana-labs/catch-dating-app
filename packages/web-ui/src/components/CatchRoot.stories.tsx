@@ -38,8 +38,9 @@ function Readout() {
 }
 
 /**
- * catch.root on the web: day and night at each size class, and a format.
- * Each root is given its size, so the page-title role resizes with it.
+ * catch.root on the web: day and night at each size class, the default auto
+ * theme (it follows the colour scheme), and a format. Each root is given its
+ * size, so the page-title role resizes with it.
  */
 export const Contract: Story = {
   render: () => (
@@ -51,7 +52,13 @@ export const Contract: Story = {
           </CatchRoot>
         )),
       )}
-      <CatchRoot format="courts" size="medium">
+      <CatchRoot size="medium">
+        <Padded>
+          <CatchText tone="secondary" variant="label-kicker">auto</CatchText>
+          <Readout />
+        </Padded>
+      </CatchRoot>
+      <CatchRoot format="courts" size="medium" theme="day">
         <Padded>
           <Readout />
           <CatchSurface block="spotlight" color="courts">
@@ -75,7 +82,7 @@ export const Auto: Story = {
 /** Admin's quiet register. */
 export const Quiet: Story = {
   render: () => (
-    <CatchRoot register="quiet" size="expanded">
+    <CatchRoot register="quiet" size="expanded" theme="day">
       <Padded><Readout /></Padded>
     </CatchRoot>
   ),

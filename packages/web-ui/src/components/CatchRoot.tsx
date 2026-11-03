@@ -13,8 +13,15 @@ import {CatchContext, catchThemeAttribute, useCatch, type CatchContextValue} fro
 import styles from "./CatchRoot.module.css";
 
 export interface CatchRootProps {
-  /** Day screens are white; night is for the door, the live console and staff screens. Defaults to day. */
-  theme?: CatchThemeMode;
+  /**
+   * Day screens are white; night is for the door, the live console and staff
+   * screens. `auto` (the default) follows the person's colour scheme
+   * (prefers-color-scheme) and its changes; the server render and the first
+   * client render are day, so hydration never mismatches. A page that must
+   * not flash sets data-catch-theme before hydration. day and night force a
+   * theme.
+   */
+  theme?: CatchThemeMode | "auto";
   /**
    * The size class. `auto` (the default) measures the root's own width; the
    * server render and the first client render are compact, so hydration never
@@ -35,9 +42,10 @@ export interface CatchRootProps {
  * preference for everything inside it. Wrap each screen (or the whole app)
  * once. It paints the theme's ground and ink in the body role.
  */
-export function CatchRoot({theme = "day", size = "auto", format, register = "app", children, className, style}: CatchRootProps) {
+export function CatchRoot({theme: themeProp = "auto", size = "auto", format, register = "app", children, className, style}: CatchRootProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [measured, setMeasured] = useState<CatchSizeClass>("compact");
+  const [preferred, setPreferred] = useState<CatchThemeMode>("day");
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -52,14 +60,13 @@ export function CatchRoot({theme = "day", size = "auto", format, register = "app
   }, [size]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(query.matches);
-    update();
-    query.addEventListener?.("change", update);
-    return () => query.removeEventListener?.("change", update);
-  }, []);
+    if (themeProp !== "auto") return;
+    return followMediaQuery("(prefers-color-scheme: dark)", (dark) => setPreferred(dark ? "night" : "day"));
+  }, [themeProp]);
 
+  useEffect(() => followMediaQuery("(prefers-reduced-motion: reduce)", setReducedMotion), []);
+
+  const theme = themeProp === "auto" ? preferred : themeProp;
   const sizeClass = size === "auto" ? measured : size;
   const value = useMemo<CatchContextValue>(
     () => ({theme, register, sizeClass, ground: theme === "night" ? "night" : "ground", format, reducedMotion}),
@@ -80,6 +87,16 @@ export function CatchRoot({theme = "day", size = "auto", format, register = "app
       </div>
     </CatchContext.Provider>
   );
+}
+
+/** Calls back with a media query's match now and on every change; returns the cleanup. */
+function followMediaQuery(media: string, onMatch: (matches: boolean) => void): (() => void) | undefined {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return undefined;
+  const query = window.matchMedia(media);
+  const update = () => onMatch(query.matches);
+  update();
+  query.addEventListener?.("change", update);
+  return () => query.removeEventListener?.("change", update);
 }
 
 export interface CatchGroundProviderProps {

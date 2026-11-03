@@ -33,7 +33,7 @@ const sentence = "Come on your own. Leave knowing a few more people.";
  */
 export const Contract: Story = {
   render: () => (
-    <CatchRoot size="expanded">
+    <CatchRoot size="expanded" theme="day">
       <CatchSurface block="plain" padding="lg">
         <CatchStack gap={32}>
           <State label="variants">
@@ -73,7 +73,7 @@ export const Responsive: Story = {
   render: () => (
     <CatchStack gap={0}>
       {(["compact", "medium", "expanded"] as const).map((size) => (
-        <CatchRoot key={size} size={size}>
+        <CatchRoot key={size} size={size} theme="day">
           <CatchSurface block="plain" padding="lg">
             <CatchText variant="hero">{`Hero, ${size}`}</CatchText>
             <CatchText variant="page-title">{`Page title, ${size}`}</CatchText>
