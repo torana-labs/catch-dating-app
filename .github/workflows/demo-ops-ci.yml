@@ -38,6 +38,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: functions/package-lock.json
       - run: npm ci --prefix functions
+      - uses: ./.github/actions/generate-contracts
       - run: node --check tool/demo/demo_ops.mjs
       - run: node --check tool/demo/demo_ops_core.mjs
       - run: node --check tool/demo/demo_ops_core.test.mjs

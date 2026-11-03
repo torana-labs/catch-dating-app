@@ -1,0 +1,31 @@
+name: Generate Contracts
+description: Generate the schema contract outputs, which are not tracked in git.
+
+inputs:
+  root:
+    description: The checkout to generate into.
+    default: .
+
+runs:
+  using: composite
+  steps:
+    - id: toolchain
+      uses: ./.github/actions/load-toolchain
+    - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      with:
+        node-version: ${{ steps.toolchain.outputs.node-version }}
+        cache: npm
+        cache-dependency-path: functions/package-lock.json
+    - name: Install the generator's dependencies
+      shell: bash
+      env:
+        ROOT: ${{ inputs.root }}
+      run: |
+        if [[ ! -d "$ROOT/functions/node_modules" ]]; then
+          npm --prefix "$ROOT/functions" ci --ignore-scripts --no-audit --no-fund
+        fi
+    - name: Generate the schema contract outputs
+      shell: bash
+      env:
+        ROOT: ${{ inputs.root }}
+      run: node "$ROOT/tool/contracts/generate_schema_contracts.mjs"

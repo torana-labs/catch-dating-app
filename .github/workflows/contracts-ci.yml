@@ -30,12 +30,12 @@ jobs:
       # ajv / ajv-formats resolve from functions/node_modules via createRequire.
       - run: npm --prefix functions ci
 
+      - uses: ./.github/actions/generate-contracts
       - name: Validate contract sources
         run: node tool/contracts/validate_schema_contracts.mjs
 
-      - name: Verify generated schema contract outputs are current
+      - name: Generated schema contract tests
         run: |
-          node tool/contracts/generate_schema_contracts.mjs --check
           node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs
           node tool/contracts/generate_flutter_form_contract_inventory.mjs --check
           node --check tool/contracts/generated/schema_contract_validators.mjs

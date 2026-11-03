@@ -78,6 +78,7 @@ jobs:
 
       - run: npm --prefix functions ci
 
+      - uses: ./.github/actions/generate-contracts
       - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
       - name: Verify Firestore contracts against rules

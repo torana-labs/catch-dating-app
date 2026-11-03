@@ -57,6 +57,7 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: ./.github/actions/generate-contracts
       - name: Bind the snapshot to the canonical marketing main push
         env:
           GH_TOKEN: ${{ github.token }}
@@ -187,6 +188,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - uses: ./.github/actions/generate-contracts
       - id: binding
         name: Bind the package to the current canonical workflow attempt
         env:

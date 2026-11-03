@@ -236,7 +236,9 @@ export function planCodegenFreshness({graph, codegenIds, repositoryPaths, sparse
     // Generators use ordinary filesystem reads, unlike index-safe structural
     // checks. Only index-marked sparse omissions defer a check. A missing file
     // in a full checkout must run the generator and fail its freshness check.
-    for (const pattern of [...entry.inputs, ...entry.outputs]) {
+    // Untracked outputs are never in the index, so only their inputs can be omitted.
+    const untracked = entry.tracked === false;
+    for (const pattern of [...entry.inputs, ...(untracked ? [] : entry.outputs)]) {
       const output = entry.outputs.includes(pattern);
       const paths = /[*?]/u.test(pattern) ? repositoryPaths.filter((candidate) =>
         matchesGlob(candidate, pattern) && (output || matchesCodegenInput(candidate, entry))) :
@@ -245,7 +247,7 @@ export function planCodegenFreshness({graph, codegenIds, repositoryPaths, sparse
         reasons.push(`unmaterialized ${output ? "output" : "input"} ${pattern}`);
       }
     }
-    checks.push({codegenId: id, command: entry.checkCommand,
+    checks.push({codegenId: id, command: untracked ? entry.writeCommand : entry.checkCommand,
       writeCommand: entry.writeCommand, timeoutSeconds: entry.timeoutSeconds,
       runnable: reasons.length === 0, reasons});
   }

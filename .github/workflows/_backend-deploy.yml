@@ -78,6 +78,8 @@ jobs:
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
+      - if: ${{ steps.guard.outputs.skip != 'true' }}
+        uses: ./.github/actions/generate-contracts
       - name: Install and build Functions
         if: ${{ steps.guard.outputs.skip != 'true' }}
         run: |

@@ -139,3 +139,13 @@ apps/host/lib/catch_ui_lints_probe
 
 # Nx local cache and workspace data
 .nx
+
+# Schema contract outputs: generated, not tracked. npm run generate:contracts.
+/packages/platform/lib/schema_contracts/generated
+/lib/contexts/*/data/generated
+/tool/contracts/generated
+/admin/src/generated/contracts
+/website/src/shared/contracts/generated
+/functions/src/shared/generated/*
+!/functions/src/shared/generated/brand.ts
+!/functions/src/shared/generated/notificationCopyEn.ts

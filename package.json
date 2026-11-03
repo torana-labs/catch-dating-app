@@ -11,6 +11,7 @@
     "packages/brand"
   ],
   "scripts": {
+    "generate:contracts": "node tool/contracts/generate_schema_contracts.mjs",
     "agent:context": "node tool/agent/context_pack.mjs",
     "nx:projects": "nx show projects",
     "nx:graph": "nx graph",

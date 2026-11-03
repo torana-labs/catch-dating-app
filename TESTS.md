@@ -157,3 +157,7 @@ node tool/harness/verify_local.mjs --base origin/main --list
 
 Drop `--list` to execute them. The gates are read out of `.github/workflows/`,
 so this cannot drift from CI.
+
+## Generated Contract Outputs
+
+The schema contract outputs are generated, not tracked: `packages/platform/lib/schema_contracts/generated`, `lib/contexts/*/data/generated`, `functions/src/shared/generated` (except `brand.ts` and `notificationCopyEn.ts`), `admin/src/generated/contracts`, `tool/contracts/generated` and `website/src/shared/contracts/generated`. Bootstrapping a worktree generates them. Run `npm run generate:contracts` after a pull that touches `contracts/**` or the generator, and the IDE analyzer needs the Dart tree present. The pre-commit hook regenerates them when you stage an input.

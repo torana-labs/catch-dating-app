@@ -200,8 +200,8 @@ test("caller triggers cover the exact build dependency closure", () => {
   for (const dependency of [
     "functions/package.json",
     "functions/package-lock.json",
-    "tool/contracts/generated/schema_contract_validators.mjs",
-    "tool/contracts/generated/schema_contract_registry.mjs",
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs",
     "tool/demo/demo_seed/scenarios/**",
     "packages/web-config/**",
     "website/**",

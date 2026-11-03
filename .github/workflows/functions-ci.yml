@@ -29,6 +29,7 @@ jobs:
 
       - run: npm --prefix functions ci
 
+      - uses: ./.github/actions/generate-contracts
       - name: Firestore contract check
         run: node tool/contracts/check_firestore_contract.mjs
 

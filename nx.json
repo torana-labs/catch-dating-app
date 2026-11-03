@@ -68,7 +68,7 @@
             "root": "contracts",
             "targets": {
               "check": {
-                "command": "node tool/contracts/generate_schema_contracts.mjs --check",
+                "command": "node tool/contracts/generate_schema_contracts.mjs",
                 "cache": false,
                 "inputs": [
                   "{projectRoot}/**/*",
@@ -77,8 +77,7 @@
                   "{workspaceRoot}/lib/**/*",
                   "{workspaceRoot}/packages/kernel/lib/**/*",
                   "{workspaceRoot}/packages/platform/lib/**/*",
-                  "{workspaceRoot}/admin/src/generated/**/*",
-                  "{workspaceRoot}/website/src/shared/contracts/generated/**/*"
+                  "{workspaceRoot}/contracts/**/*"
                 ]
               },
               "conformance": {
@@ -404,8 +403,6 @@
                   "{workspaceRoot}/design/components/**/*",
                   "{workspaceRoot}/design/visual_baselines/**/*",
                   "{workspaceRoot}/design/public_surface_behavior.json",
-                  "!{workspaceRoot}/packages/platform/lib/schema_contracts/generated/**/*",
-                  "!{workspaceRoot}/lib/contexts/*/data/generated/**/*",
                   "!{workspaceRoot}/**/*.md"
                 ]
               }
