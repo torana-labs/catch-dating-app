@@ -34,16 +34,14 @@ export function renderSales(context: AdminAreaContext, area: keyof typeof salesA
   );
 }
 
-/** The older Sales pages: settings (custom fields, imports, history) and one host's remaining tools. Each goes when its replacement lands. */
+/** The older Sales page: one host's remaining tools. It goes when its replacement lands. */
 export function renderOlderSales({adminRoles, mode, navigate, route, userUid}: AdminAreaContext) {
   return (
     <SalesWorkspaceScreen
-      area={route.salesArea === "settings" ? "settings" : "hosts"}
       assignedStaffOnly={adminRoles.includes("salesStaff") && !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
       currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : "")}
       isAdminOwner={adminRoles.includes("adminOwner")}
       onBackToHosts={() => navigate("/sales/hosts")}
-      onGoToToday={() => navigate("/sales/today")}
       onOpenOrganizer={(organizerId) => navigate(`/organizers/${encodeURIComponent(organizerId)}`)}
       selectedOrganizerId={route.params.salesOrganizerId ?? null}
     />

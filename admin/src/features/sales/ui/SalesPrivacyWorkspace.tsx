@@ -1,9 +1,6 @@
 import {CatchButton, CatchCheckboxInput, CatchEmptyState, CatchField, CatchGap, CatchIndexRow, CatchSection, CatchText, CatchFilePickerButton} from "@catch/web-ui";
-import {useQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState} from "react";
 import {dataMode} from "../../../shared/api/dataMode";
-import {useAdminOperationPending} from "../../../shared/pendingOperation";
-import {searchCanonicalOrganizers} from "../api/salesRepository";
 import type {PrivacyApi, PrivacyBlocker} from "../api/salesPrivacyTypes";
 import {useSalesPrivacyController} from
   "../controllers/useSalesPrivacyController";
@@ -34,64 +31,20 @@ function Blockers({rows}: {rows: PrivacyBlocker[]}) {
 /** An owner may mount this for a selected host or as a Settings lookup. */
 export function renderSalesPrivacyWorkspace({actorUid, isAdminOwner,
   organizerId, organizerName, api}: {actorUid: string;
-  isAdminOwner: boolean; organizerId?: string; organizerName?: string;
+  isAdminOwner: boolean; organizerId: string; organizerName?: string;
   api?: PrivacyApi}) {
   if (!isAdminOwner) return null;
   if (dataMode() === "sample") return <CatchEmptyState title="Private Sales privacy"
     message="This owner-only workflow requires live Admin records. Sample hosts cannot be restricted or processed." />;
-  return <PrivacyEntry actorUid={actorUid} organizerId={organizerId}
-    organizerName={organizerName} api={api} />;
+  return <OwnerPrivacyCase key={`${actorUid}:${organizerId}`} actorUid={actorUid}
+    organizerId={organizerId} organizerName={organizerName ?? "this organizer"} api={api} />;
 }
 
-function PrivacyEntry({actorUid, organizerId, organizerName, api}: {
-  actorUid: string; organizerId?: string; organizerName?: string;
-  api?: PrivacyApi}) {
-  const [searchText, setSearchText] = useState("");
-  const [submitted, setSubmitted] = useState("");
-  const [selected, setSelected] = useState<{
-    id: string; name: string} | null>(null);
-  const [retryRequired, setRetryRequired] = useState(false);
-  const operationPending = useAdminOperationPending();
-  const selectionLocked = operationPending || retryRequired;
-  const matches = useQuery({queryKey: ["sales-privacy-lookup", actorUid,
-    submitted], queryFn: () => searchCanonicalOrganizers(submitted),
-  enabled: !organizerId && submitted.length >= 2, retry: false});
-  const id = organizerId ?? selected?.id;
-  const name = organizerName ?? selected?.name ?? "this organizer";
-  return <>
-    {!organizerId ? <CatchSection title="Find a host privacy case" dividers="none">
-      <CatchGap size="related">
-        <CatchText as="p" variant="supporting">Search canonical organizers, including hosts no longer in the Sales
-          directory. Choosing one only opens its private case.</CatchText>
-        <CatchField recipe="input" title="Host name" value={searchText} onChanged={setSearchText} minLength={2} required
-          inputMode={selectionLocked ? "inactive" : "editable"} />
-        <CatchButton label="Search hosts" variant="secondary" size="sm"
-          onPressed={selectionLocked || searchText.trim().length < 2 ? null : () => setSubmitted(searchText.trim())} />
-        {matches.isPending && submitted ? <CatchText as="p" variant="supporting">Searching hosts…</CatchText> : null}
-        {matches.isError ? <CatchEmptyState title="Host search failed"
-          actions={<CatchButton label="Try again" variant="secondary" size="sm" onPressed={() => void matches.refetch()} />} /> : null}
-        {matches.data?.length === 0 ? <CatchEmptyState title="No matching hosts" /> : null}
-        {matches.data?.map((row) => <CatchIndexRow key={row.organizerId} title={row.name} titleVariant="bodyM"
-          {...(row.cityName ? {subtitle: row.cityName} : {})}
-          trailing={<CatchButton label="Open" variant="secondary" size="sm"
-            onPressed={selectionLocked ? null : () => setSelected({id: row.organizerId, name: row.name})} />} />)}
-      </CatchGap>
-    </CatchSection> : null}
-    {id ? <OwnerPrivacyCase key={`${actorUid}:${id}`} actorUid={actorUid}
-      organizerId={id} organizerName={name} api={api}
-      onRetryRequired={setRetryRequired} /> : null}
-  </>;
-}
-
-function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
-  onRetryRequired}: {
+function OwnerPrivacyCase({actorUid, organizerId, organizerName, api}: {
   actorUid: string; organizerId: string; organizerName: string;
-  api?: PrivacyApi; onRetryRequired?: (required: boolean) => void;
+  api?: PrivacyApi;
 }) {
   const c = useSalesPrivacyController({actorUid, organizerId, api});
-  useEffect(() => {
-    onRetryRequired?.(Boolean(c.pending));
-  }, [c.pending, onRetryRequired]);
   const [reason, setReason] = useState("");
   const [confirm, setConfirm] = useState("");
   const [policyReference, setPolicyReference] = useState("");

@@ -111,6 +111,7 @@ class HostShellBackend {
     return switch (name) {
       'setEventAttendeeAttendance' => _setAttendance(request),
       'createOrganizer' => _createOrganizer(request),
+      'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
       'getEventRosterInsights' => {
         'eventId': eventId,
         'organizerId': _eventOrganizers[eventId],

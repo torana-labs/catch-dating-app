@@ -6,7 +6,6 @@ import {SalesWorkspaceScreen} from "./SalesWorkspaceScreen";
 const controllerMock = vi.hoisted(() => ({use: vi.fn()}));
 const childMocks = vi.hoisted(() => ({
   history: vi.fn(), privacy: vi.fn(), records: vi.fn(),
-  settings: vi.fn(),
 }));
 
 vi.mock("../controllers/useSalesWorkspaceController", () => ({
@@ -35,9 +34,6 @@ vi.mock("./SalesPrivacyWorkspace", () => ({
 vi.mock("./SalesRecordsPanels", () => ({
   SalesRecordsWorkspace: childMocks.records,
 }));
-vi.mock("./SalesSettingsPanel", () => ({
-  renderSalesSettingsWorkspace: childMocks.settings,
-}));
 
 function query<T>(data: T) {
   return {data, error: null, isError: false, isPending: false, isSuccess: true,
@@ -63,9 +59,9 @@ function controller() {
 
 function renderWorkspace(next: Partial<Parameters<typeof SalesWorkspaceScreen>[0]> = {}) {
   const props = {
-    area: "hosts" as const, currentUserUid: "staff-one", isAdminOwner: false,
+    currentUserUid: "staff-one", isAdminOwner: false,
     assignedStaffOnly: true, selectedOrganizerId: null,
-    onGoToToday: vi.fn(), onBackToHosts: vi.fn(), onOpenOrganizer: vi.fn(), ...next,
+    onBackToHosts: vi.fn(), onOpenOrganizer: vi.fn(), ...next,
   };
   return {props, ...render(
     <AdminFeedbackProvider onError={vi.fn()} onNotice={vi.fn()}>
@@ -82,17 +78,6 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     controllerMock.use.mockReturnValue(current);
   });
   afterEach(cleanup);
-
-  it("fails closed on a direct route to a global Sales area", () => {
-    const onGoToToday = vi.fn();
-    renderWorkspace({area: "settings", onGoToToday});
-
-    expect(screen.getByRole("heading", {name: "Assigned Sales access"})).toBeTruthy();
-    expect(childMocks.settings).not.toHaveBeenCalled();
-    expect(childMocks.privacy).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", {name: "Go to Today"}));
-    expect(onGoToToday).toHaveBeenCalled();
-  });
 
   // "When" is a datetime-local wall clock read in the employee's browser zone.
   it.each([

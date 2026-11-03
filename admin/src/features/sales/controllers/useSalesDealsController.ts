@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
-import {getSalesAccount, listSalesAccounts, listSalesOpportunities} from "../api/salesRepository";
+import {getCanonicalOrganizerName, getSalesAccount, listSalesAccounts, listSalesOpportunities} from "../api/salesRepository";
 import type {SalesOpportunity} from "../api/salesTypes";
 import {dealColumn, dealColumns} from "./salesLabels";
 
@@ -66,7 +66,11 @@ export type SalesDealsController = ReturnType<typeof useSalesDealsController>;
 /** One host's name, for a page that must say it. A restricted host can't be read, so it has none. */
 export function useSalesHostName(organizerId: string) {
   const account = useQuery({queryKey: ["sales", "account", organizerId], queryFn: () => getSalesAccount(organizerId)});
-  return {name: account.data?.organizerSummary.name ?? null, isLoading: account.isPending};
+  // A host no longer in Sales, or held for privacy, still has a Catch organizer. Its case needs the name typed to confirm.
+  const organizer = useQuery({enabled: account.isError, queryKey: ["sales", "organizer-name", organizerId],
+    queryFn: () => getCanonicalOrganizerName(organizerId)});
+  return {name: account.data?.organizerSummary.name ?? organizer.data ?? null,
+    isLoading: account.isPending || (account.isError && organizer.isPending)};
 }
 
 export function useSalesHostNames() {

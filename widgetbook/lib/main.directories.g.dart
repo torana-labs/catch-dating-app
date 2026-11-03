@@ -227,6 +227,8 @@ import 'package:widgetbook_workspace/hosts/host_membership_admin_use_cases.dart'
     as _widgetbook_workspace_hosts_host_membership_admin_use_cases;
 import 'package:widgetbook_workspace/hosts/host_offer_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_offer_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_organizer_journey_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_organizer_journey_use_cases;
 import 'package:widgetbook_workspace/hosts/host_payout_connection_use_cases.dart'
     as _widgetbook_workspace_hosts_host_payout_connection_use_cases;
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
@@ -12080,6 +12082,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerJourneySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A waiting claim and a claimed page',
+                    builder:
+                        _widgetbook_workspace_hosts_host_organizer_journey_use_cases
+                            .hostOrganizerJourneySectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostOrganizerJourneySheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reads one organizer',
+                    builder:
+                        _widgetbook_workspace_hosts_host_organizer_journey_use_cases
+                            .hostOrganizerJourneySheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostPaymentAccountCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12149,6 +12173,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_team_management
                             .hostTeamAddHostSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostWaitingClaimsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A page waiting to be claimed',
+                    builder:
+                        _widgetbook_workspace_hosts_host_organizer_journey_use_cases
+                            .hostWaitingClaimsSectionPreview,
                   ),
                 ],
               ),
