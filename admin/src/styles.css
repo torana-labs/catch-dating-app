@@ -547,10 +547,6 @@ select {
   font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
-.workbench-table table {
-  min-width: 920px;
-}
-
 .event-supply-review-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
@@ -943,10 +939,6 @@ select {
   min-height: 0;
   border-radius: var(--catch-radius-xs) var(--catch-radius-xs) 0 0;
   background: var(--ink);
-}
-
-.table-wrap {
-  overflow-x: auto;
 }
 
 table {
