@@ -1,0 +1,12 @@
+import {cleanup, render, screen} from "@testing-library/react";
+import {afterEach, describe, expect, it} from "vitest";
+import {%%Name%%} from "./%%Name%%";
+
+afterEach(cleanup);
+
+describe("%%Name%%", () => {
+  it("shows its label", () => {
+    render(<%%Name%% label="Label" />);
+    expect(screen.getByText("Label")).toBeDefined();
+  });
+});
