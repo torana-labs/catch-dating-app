@@ -11,22 +11,43 @@ import type {
   EventParticipationDocument,
   HostPaymentAccountDocument,
   OrganizerApplicationDocument,
+  OrganizerAttentionItemDocument,
   OrganizerDocument,
   OrganizerFormAutomationRuleDocument,
   OrganizerFormAutomationRunDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import type {ListOrganizerAttentionItemsCallableResponse} from
-  "../shared/generated/listOrganizerAttentionItemsCallableResponse";
 import {
   hostAttentionPolicyCatalog,
 } from "../shared/generated/catalogs/hostAttentionPolicyCatalog";
 
-export type HostAttentionItem =
-  ListOrganizerAttentionItemsCallableResponse["items"][number];
-export type HostAttentionCoverage =
-  ListOrganizerAttentionItemsCallableResponse["coverage"][number];
 export type HostPaymentProvider = "razorpay" | "stripe";
+
+/** One open attention item as the derivation produces it, with millisecond
+ *  times. The evaluator turns it into an `organizerAttentionItems` row. */
+export interface DesiredHostAttentionItem {
+  attentionId: string;
+  kind: OrganizerAttentionItemDocument["kind"];
+  scope: OrganizerAttentionItemDocument["scope"];
+  sourceOwner: OrganizerAttentionItemDocument["sourceOwner"];
+  sourceId: string;
+  sourceRevision: string;
+  eventId: string | null;
+  status: "open";
+  consequence: OrganizerAttentionItemDocument["consequence"];
+  blocking: boolean;
+  urgency: OrganizerAttentionItemDocument["urgency"];
+  destination: OrganizerAttentionItemDocument["destination"];
+  context: OrganizerAttentionItemDocument["context"];
+  dedupeKey: string;
+  policyVersion: number;
+  resolutionVersion: number;
+  assignedHostUid: string | null;
+  openedAtMillis: number;
+  dueAtMillis: number;
+  expiresAtMillis: number | null;
+  sourceUpdatedAtMillis: number;
+}
 
 export interface AttentionSourceRow<T> {
   id: string;
@@ -104,16 +125,95 @@ export interface OrganizerAttentionSources {
   eventOffers: Array<AttentionSourceRow<OfferAttentionSource>>;
 }
 
-export type DesiredHostAttentionItem = HostAttentionItem & {
-  sourceUpdatedAtMillis: number;
-};
-
 const hourMillis = 60 * 60 * 1000;
 const immediateMillis = hostAttentionPolicyCatalog.immediateHours * hourMillis;
 const soonMillis = hostAttentionPolicyCatalog.soonHours * hourMillis;
 export const hostAttentionHorizonMillis =
   hostAttentionPolicyCatalog.horizonHours * hourMillis;
 export const momentAttentionWindowMillis = 24 * hourMillis;
+export const minEvaluationDelayMillis = 60 * 1000;
+export const maxEvaluationDelayMillis = 24 * hourMillis;
+
+export interface OrganizerAttentionDerivation {
+  items: DesiredHostAttentionItem[];
+  /** Earliest instant after now at which the items could change with no
+   *  source write, clamped to [now + 60 s, now + 24 h]; null when no input
+   *  can change with time. */
+  nextChangeAtMillis: number | null;
+}
+
+/**
+ * Derives every source-backed server item from one complete bounded snapshot,
+ * and when that snapshot next needs evaluating without a source write.
+ */
+export function deriveOrganizerAttention(params: {
+  organizerId: string;
+  nowMillis: number;
+  sources: OrganizerAttentionSources;
+}): OrganizerAttentionDerivation {
+  const items = deriveOrganizerAttentionItems(params);
+  return {
+    items,
+    nextChangeAtMillis: nextAttentionChangeAtMillis({
+      nowMillis: params.nowMillis,
+      sources: params.sources,
+      items,
+    }),
+  };
+}
+
+/**
+ * Lists every time at which the derivation's output can change by itself:
+ * urgency boundaries, due and expiry times of produced items, event start,
+ * end and horizon entry, offer expiry and follow-up, provider run expiry,
+ * moment send windows and delivery review due times.
+ */
+export function nextAttentionChangeAtMillis(params: {
+  nowMillis: number;
+  sources: OrganizerAttentionSources;
+  items: readonly DesiredHostAttentionItem[];
+}): number | null {
+  const {nowMillis, sources, items} = params;
+  const candidates: number[] = [];
+  for (const item of items) {
+    candidates.push(item.dueAtMillis - soonMillis,
+      item.dueAtMillis - immediateMillis, item.dueAtMillis);
+    if (item.expiresAtMillis !== null) candidates.push(item.expiresAtMillis);
+  }
+  for (const row of sources.events) {
+    if (!isEventTimeRange(row.data) || row.data.status !== "active") continue;
+    const startMillis = row.data.startTime.toMillis();
+    candidates.push(startMillis, row.data.endTime.toMillis());
+    // Only an event still beyond the horizon has a future entry time.
+    candidates.push(startMillis - hostAttentionHorizonMillis);
+  }
+  for (const row of sources.eventOffers) {
+    candidates.push(row.data.expiresAtMillis,
+      offerFollowUpDueAtMillis(row.data));
+  }
+  for (const row of sources.providerSyncRuns) {
+    candidates.push(row.data.expiresAt.toMillis());
+  }
+  for (const row of sources.momentAttentionSends) {
+    candidates.push(row.data.createdAtMillis + momentAttentionWindowMillis);
+  }
+  for (const row of sources.deliveryReviewWorkItems) {
+    candidates.push(row.data.reviewDueAtMillis);
+  }
+  const hasInputs = items.length > 0 || sources.events.length > 0 ||
+    sources.eventOffers.length > 0 || sources.providerSyncRuns.length > 0 ||
+    sources.momentAttentionSends.length > 0 ||
+    sources.deliveryReviewWorkItems.length > 0;
+  if (!hasInputs) return null;
+  const future = candidates.filter((value) =>
+    Number.isFinite(value) && value > nowMillis);
+  const earliest = future.length > 0 ?
+    Math.min(...future) : Number.POSITIVE_INFINITY;
+  return Math.min(
+    Math.max(earliest, nowMillis + minEvaluationDelayMillis),
+    nowMillis + maxEvaluationDelayMillis
+  );
+}
 
 /**
  * Derives every source-backed server item from one complete bounded snapshot.
@@ -613,7 +713,7 @@ export function deriveOrganizerAttentionItems(params: {
     const send = rows.reduce((a, b) =>
       a.data.createdAtMillis >= b.data.createdAtMillis ? a : b).data;
     const eventScope = send.scopeKind === "event";
-    const consequence: HostAttentionItem["consequence"] =
+    const consequence: DesiredHostAttentionItem["consequence"] =
       send.severity === "urgent" ? "risksGuestExperience" :
         send.severity === "warning" ? "delaysResponse" : "informational";
     items.push(buildItem({
@@ -661,15 +761,6 @@ export function deriveOrganizerAttentionItems(params: {
   }));
 
   return items.sort(compareAttentionItems);
-}
-
-/** Returns a stable coverage row for every catalog kind, including gaps. */
-export function hostAttentionCoverage(): HostAttentionCoverage[] {
-  return hostAttentionPolicyCatalog.definitions.map((definition) => ({
-    kind: definition.kind,
-    state: coverageState(definition.deliveryMode),
-    reason: definition.readinessReason,
-  }));
 }
 
 function derivePayoutItems(params: {
@@ -790,9 +881,12 @@ function buildItem(params: Omit<
   };
 }
 
-function destination(values: Partial<HostAttentionItem["destination"]> & {
-  route: HostAttentionItem["destination"]["route"];
-}): HostAttentionItem["destination"] {
+type AttentionDestination = DesiredHostAttentionItem["destination"];
+type AttentionContext = DesiredHostAttentionItem["context"];
+
+function destination(values: Partial<AttentionDestination> & {
+  route: AttentionDestination["route"];
+}): AttentionDestination {
   return {
     route: values.route,
     section: values.section ?? null,
@@ -804,8 +898,8 @@ function destination(values: Partial<HostAttentionItem["destination"]> & {
 }
 
 function context(
-  values: Partial<HostAttentionItem["context"]>
-): HostAttentionItem["context"] {
+  values: Partial<AttentionContext>
+): AttentionContext {
   return {
     eventName: values.eventName ?? null,
     subjectLabel: values.subjectLabel ?? null,
@@ -882,7 +976,7 @@ function displayEventName(event: EventDocument): string {
 function urgencyFor(
   dueAtMillis: number,
   nowMillis: number
-): HostAttentionItem["urgency"] {
+): DesiredHostAttentionItem["urgency"] {
   const remaining = dueAtMillis - nowMillis;
   if (remaining <= immediateMillis) return "immediate";
   if (remaining <= soonMillis) return "soon";
@@ -898,17 +992,6 @@ function compareAttentionItems(
     Number(right.blocking) - Number(left.blocking) ||
     left.dueAtMillis - right.dueAtMillis ||
     left.attentionId.localeCompare(right.attentionId);
-}
-
-function coverageState(
-  mode: typeof hostAttentionPolicyCatalog.definitions[number]["deliveryMode"]
-): HostAttentionCoverage["state"] {
-  switch (mode) {
-  case "serverProjected": return "complete";
-  case "clientMerged": return "clientMergeRequired";
-  case "shortcutOnly": return "shortcutOnly";
-  case "blockedMissingTruth": return "blockedMissingTruth";
-  }
 }
 
 function attentionId(dedupeKey: string): string {

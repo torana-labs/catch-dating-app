@@ -1346,35 +1346,113 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps organizer attention projections server-only", async () => {
-      await seed(["organizerAttentionItems", "attention-1"], {
-        organizerId: "organizer-1",
+    it("lets managers listen to their own open organizer attention rows", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const row = (organizerId, status, iso) => ({
+        organizerId,
         kind: "eventWaitlistReview",
-        status: "open",
-        dueAt: Timestamp.fromDate(new Date("2026-09-02T10:00:00.000Z")),
+        status,
+        dueAt: Timestamp.fromDate(new Date(iso)),
       });
+      await seed(["organizerAttentionItems", "own-later"],
+        row("org", "open", "2026-09-03T10:00:00.000Z"));
+      await seed(["organizerAttentionItems", "own-sooner"],
+        row("org", "open", "2026-09-02T10:00:00.000Z"));
+      await seed(["organizerAttentionItems", "own-resolved"],
+        row("org", "resolved", "2026-09-01T10:00:00.000Z"));
+      await seed(["organizerAttentionItems", "foreign"],
+        row("other", "open", "2026-09-02T10:00:00.000Z"));
 
-      for (const uid of ["owner-1", "owner-2"]) {
+      for (const uid of ["host-1", "manager"]) {
         const db = authedDb(uid);
-        await assertFails(getDoc(doc(
-          db,
-          "organizerAttentionItems",
-          "attention-1",
-        )));
-        await assertFails(getDocs(query(
-          collection(db, "organizerAttentionItems"),
-          where("organizerId", "==", "organizer-1"),
-        )));
-        await assertFails(setDoc(doc(
-          db,
-          "organizerAttentionItems",
-          `client-${uid}`,
-        ), {
-          organizerId: "organizer-1",
-          kind: "eventWaitlistReview",
-          status: "open",
-        }));
+        const items = collection(db, "organizerAttentionItems");
+        // The Today listener's exact query shape.
+        const open = await assertSucceeds(getDocs(query(items,
+          where("organizerId", "==", "org"),
+          where("status", "==", "open"),
+          orderBy("dueAt"),
+          orderBy(documentId()),
+          limit(400))));
+        assert.deepEqual(open.docs.map((item) => item.id),
+          ["own-sooner", "own-later"]);
+        await assertSucceeds(getDoc(doc(db, "organizerAttentionItems",
+          "own-later")));
+        await assertFails(getDocs(query(items,
+          where("status", "==", "open"))));
+        await assertFails(getDocs(items));
+        await assertFails(getDoc(doc(db, "organizerAttentionItems",
+          "foreign")));
+        await assertFails(getDocs(query(items,
+          where("organizerId", "==", "other"),
+          where("status", "==", "open"))));
+        await assertFails(setDoc(doc(db, "organizerAttentionItems",
+          `client-${uid}`), row("org", "open", "2026-09-02T10:00:00.000Z")));
+        await assertFails(updateDoc(doc(db, "organizerAttentionItems",
+          "own-later"), {status: "resolved"}));
+        await assertFails(deleteDoc(doc(db, "organizerAttentionItems",
+          "own-later")));
       }
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "organizerAttentionItems", "own-later")));
+
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(authedDb("host-1"),
+        "organizerAttentionItems", "own-later")));
+      await assertFails(getDocs(query(
+        collection(authedDb("host-1"), "organizerAttentionItems"),
+        where("organizerId", "==", "org"),
+        where("status", "==", "open"))));
+    });
+
+    it("lets managers get their organizer attention schedule and nothing else", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "fresh"], managed());
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const schedule = (organizerId) => ({
+        schemaVersion: 1,
+        organizerId,
+        policyVersion: 4,
+        revision: 3,
+        evaluatedAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+        nextEvaluationAt: null,
+        sourceCoverage: "complete",
+        overCapSource: null,
+        openItemCount: 0,
+      });
+      await seed(["organizerAttentionSchedules", "org"], schedule("org"));
+      await seed(["organizerAttentionSchedules", "other"], schedule("other"));
+
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        const own = await assertSucceeds(getDoc(doc(db,
+          "organizerAttentionSchedules", "org")));
+        assert.equal(own.exists(), true);
+        await assertFails(getDocs(collection(db,
+          "organizerAttentionSchedules")));
+        await assertFails(getDocs(query(collection(db,
+          "organizerAttentionSchedules"), where("organizerId", "==", "org"))));
+        await assertFails(setDoc(doc(db, "organizerAttentionSchedules",
+          "org"), schedule("org")));
+        await assertFails(updateDoc(doc(db, "organizerAttentionSchedules",
+          "org"), {sourceCoverage: "complete"}));
+        await assertFails(deleteDoc(doc(db, "organizerAttentionSchedules",
+          "org")));
+        await assertFails(getDoc(doc(db, "organizerAttentionSchedules",
+          "other")));
+      }
+      // Not evaluated yet: the manager reads it as missing.
+      const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "organizerAttentionSchedules", "fresh")));
+      assert.equal(missing.exists(), false);
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "organizerAttentionSchedules", "org")));
+      await assertFails(setDoc(doc(authedDb("host-1"),
+        "organizerAttentionSchedules", "fresh"), schedule("fresh")));
     });
 
     it("keeps organizer entitlement state server-only", async () => {

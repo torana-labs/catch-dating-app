@@ -1106,18 +1106,63 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "rulesTestNames": [
-        "keeps organizer attention projections server-only"
+        "lets managers listen to their own open organizer attention rows"
       ],
-      "owner": "Host Today read-through attention reconciliation",
-      "read": "server only; managers receive a bounded sanitized callable projection",
-      "write": "server only; source-owned read-through reconciliation",
+      "owner": "Host Today attention evaluator: hostReadModels attention triggers and sweepOrganizerAttention",
+      "read": "current organizer managers get and list their own organizer's rows through Firestore listeners",
+      "write": "server only; the evaluator writes changed rows ahead of time in one transaction per organizer",
       "exportedFunctions": [
-        "listOrganizerAttentionItems"
+        "onOrganizerAttentionOrganizerChanged",
+        "onOrganizerAttentionEventChanged",
+        "onOrganizerAttentionParticipationChanged",
+        "onOrganizerAttentionAssistanceCaseChanged",
+        "onOrganizerAttentionDeliveryReviewChanged",
+        "onOrganizerAttentionApplicationChanged",
+        "onOrganizerAttentionProviderSyncChanged",
+        "onOrganizerAttentionAutomationRuleChanged",
+        "onOrganizerAttentionAutomationRunChanged",
+        "onOrganizerAttentionMomentSendChanged",
+        "onOrganizerAttentionEventOfferChanged",
+        "onOrganizerAttentionPaymentAccountChanged",
+        "sweepOrganizerAttention"
       ],
       "migrationNotes": [
         "The projection stores evaluated provenance, deadlines, destination, and resolution state; executable trigger and permission policy remains versioned in contracts/catalogs/host_attention_policies.json.",
-        "The list callable reconciles authoritative source collections before returning supported items and fails closed rather than returning a partial source scan.",
+        "A trigger on each of the twelve source collections and a five-minute sweep re-evaluate an organizer from current sources; an evaluation that would read a source over its 400-row cap or write more than 450 rows records only the schedule document and leaves the rows untouched.",
         "Client-local attendance outbox work is merged in Flutter and Dress Rehearsal is a shortcut, so neither is persisted as a mandatory server attention row."
+      ]
+    },
+    {
+      "id": "organizerAttentionSchedules",
+      "path": "organizerAttentionSchedules/{organizerId}",
+      "rulesMatch": "/organizerAttentionSchedules/{organizerId}",
+      "typescriptInterface": "OrganizerAttentionScheduleDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their organizer attention schedule and nothing else"
+      ],
+      "owner": "Host Today attention evaluator: hostReadModels attention triggers and sweepOrganizerAttention",
+      "read": "current organizer managers get their own organizer's document; nobody lists the collection",
+      "write": "server only; written by every committed evaluation and deleted with the organizer",
+      "exportedFunctions": [
+        "onOrganizerAttentionOrganizerChanged",
+        "onOrganizerAttentionEventChanged",
+        "onOrganizerAttentionParticipationChanged",
+        "onOrganizerAttentionAssistanceCaseChanged",
+        "onOrganizerAttentionDeliveryReviewChanged",
+        "onOrganizerAttentionApplicationChanged",
+        "onOrganizerAttentionProviderSyncChanged",
+        "onOrganizerAttentionAutomationRuleChanged",
+        "onOrganizerAttentionAutomationRunChanged",
+        "onOrganizerAttentionMomentSendChanged",
+        "onOrganizerAttentionEventOfferChanged",
+        "onOrganizerAttentionPaymentAccountChanged",
+        "sweepOrganizerAttention"
+      ],
+      "migrationNotes": [
+        "nextEvaluationAt is the earliest time an item can become due, change urgency or expire with no source write, clamped to between one minute and one day, so every organizer with anything loaded is re-evaluated at least daily.",
+        "A missing document or sourceCoverage overCap means the client must not claim a complete queue."
       ]
     },
     {

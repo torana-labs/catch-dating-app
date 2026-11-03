@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
+import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../operations/durableActions";
 import type {OperationWorkItem} from "../operations/models";
 import {
@@ -23,8 +23,9 @@ import type {
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
+  AttentionOrganizerMissingError,
+  AttentionSourceOverCapError,
   buildOrganizerAttentionProjectionPlan,
-  listOrganizerAttentionItemsHandler,
   loadOrganizerAttentionSources,
   maxAttentionSourceRows,
   parseDeliveryReviewAttentionSource,
@@ -32,9 +33,9 @@ import {
 import {
   AttentionSourceRow,
   DeliveryReviewAttentionSource,
+  deriveOrganizerAttention,
   deriveOrganizerAttentionItems,
   DesiredHostAttentionItem,
-  hostAttentionCoverage,
   OfferAttentionSource,
   OrganizerAttentionSources,
 } from "./organizerAttentionPolicy";
@@ -409,39 +410,111 @@ test("accepts only canonical Operations delivery review projections", () => {
   );
 });
 
-test("applies the seven-day horizon and exposes all policy gaps", () => {
-  const sources = emptySources();
-  sources.events = [row("later-event", event({
-    startMillis: nowMillis + 8 * 24 * hourMillis,
-    endMillis: nowMillis + 8 * 24 * hourMillis + 2 * hourMillis,
-    waitlistedCount: 8,
-    priceInPaise: 0,
-  }), nowMillis)];
-  const items = deriveOrganizerAttentionItems({
+// Coverage per kind is now computed by the client from the generated Dart
+// catalog (test/contexts/insights/host_attention_projection_test.dart).
+test("applies the seven-day horizon and wakes when the event enters it",
+  () => {
+    const sources = emptySources();
+    const startMillis = nowMillis + 8 * 24 * hourMillis;
+    sources.events = [row("later-event", event({
+      startMillis,
+      endMillis: startMillis + 2 * hourMillis,
+      waitlistedCount: 8,
+      priceInPaise: 0,
+    }), nowMillis)];
+    const derivation = deriveOrganizerAttention({
+      organizerId: "organizer-1",
+      nowMillis,
+      sources,
+    });
+    assert.deepEqual(derivation.items, []);
+    // Beyond the 24-hour ceiling, so the evaluator still wakes daily.
+    assert.equal(derivation.nextChangeAtMillis, nowMillis + 24 * hourMillis);
+
+    const enteringSoon = emptySources();
+    const soonStart = nowMillis + 7 * 24 * hourMillis + 3 * hourMillis;
+    enteringSoon.events = [row("later-event", event({
+      startMillis: soonStart,
+      endMillis: soonStart + 2 * hourMillis,
+      waitlistedCount: 8,
+      priceInPaise: 0,
+    }), nowMillis)];
+    assert.equal(deriveOrganizerAttention({
+      organizerId: "organizer-1",
+      nowMillis,
+      sources: enteringSoon,
+    }).nextChangeAtMillis, nowMillis + 3 * hourMillis,
+    "the waitlist item appears when the event crosses the horizon");
+  });
+
+test("next evaluation is the earliest time-driven change, clamped", () => {
+  assert.equal(deriveOrganizerAttention({
     organizerId: "organizer-1",
     nowMillis,
-    sources,
-  });
-  assert.deepEqual(items, []);
+    sources: emptySources(),
+  }).nextChangeAtMillis, null, "nothing loaded can change with time");
 
-  const coverage = hostAttentionCoverage();
-  assert.equal(coverage.length, 19);
-  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 19);
-  assert.equal(coverage.find((entry) =>
-    entry.kind === "attendanceSync")?.state, "clientMergeRequired");
-  assert.equal(coverage.find((entry) =>
-    entry.kind === "dressRehearsal")?.state, "shortcutOnly");
-  for (const kind of [
-    "eventSuccessPreparation",
-    "roomLayoutSetup",
-    "eventStaffing",
-    "formResponseReview",
-    "inboxReply",
-    "postEventReconciliation",
-  ]) {
-    assert.equal(coverage.find((entry) =>
-      entry.kind === kind)?.state, "blockedMissingTruth");
-  }
+  // The live event ends in three hours; nothing earlier can change.
+  const live = emptySources();
+  live.events = [row("event-1", event({waitlistedCount: 0}), nowMillis)];
+  const liveDerivation = deriveOrganizerAttention({
+    organizerId: "organizer-1", nowMillis, sources: live,
+  });
+  assert.deepEqual(liveDerivation.items.map((item) => item.kind).sort(),
+    ["eventLiveOperations", "payoutSetup"]);
+  assert.equal(liveDerivation.nextChangeAtMillis, nowMillis + 3 * hourMillis);
+
+  // An application submitted 18 hours ago falls due in six.
+  const review = emptySources();
+  review.applications = [row("application-1", {
+    ...application(),
+    submittedAt: timestamp(nowMillis - 18 * hourMillis),
+  } as OrganizerApplicationDocument, nowMillis)];
+  assert.equal(deriveOrganizerAttention({
+    organizerId: "organizer-1", nowMillis, sources: review,
+  }).nextChangeAtMillis, nowMillis + 6 * hourMillis);
+
+  // A moment send drops out 24 hours after it fired; a send that fired
+  // 23h59m30s ago is clamped to one minute from now.
+  const moment = emptySources();
+  moment.momentAttentionSends = [row("send-1", {
+    runId: "run-a",
+    momentId: "moment-1",
+    scopeKind: "program",
+    scopeId: "program-1",
+    duty: "communications",
+    severity: "info",
+    title: "Manifest ready",
+    createdAtMillis: nowMillis - 24 * hourMillis + 30 * 1000,
+  }, nowMillis)];
+  assert.equal(deriveOrganizerAttention({
+    organizerId: "organizer-1", nowMillis, sources: moment,
+  }).nextChangeAtMillis, nowMillis + 60 * 1000);
+
+  // An offer's payment follow-up falls due before it expires.
+  const offers = emptySources();
+  offers.eventOffers = [row("offer-1", offer({
+    offeredAtMillis: nowMillis - 20 * hourMillis,
+    expiresAtMillis: nowMillis + 30 * hourMillis,
+  }), nowMillis)];
+  const offerDerivation = deriveOrganizerAttention({
+    organizerId: "organizer-1", nowMillis, sources: offers,
+  });
+  assert.equal(offerDerivation.items.length, 1);
+  assert.equal(offerDerivation.nextChangeAtMillis, nowMillis + 4 * hourMillis);
+
+  // Provider runs expire and delivery reviews fall due with no write.
+  const runs = emptySources();
+  runs.providerSyncRuns = [row("run-1", {
+    ...providerRun(),
+    expiresAt: timestamp(nowMillis + 5 * hourMillis),
+  } as ProviderSyncRunDocument, nowMillis)];
+  runs.deliveryReviewWorkItems = [row("work:delivery:one", deliveryReview({
+    reviewDueAtMillis: nowMillis + 2 * hourMillis,
+  }), nowMillis)];
+  assert.equal(deriveOrganizerAttention({
+    organizerId: "organizer-1", nowMillis, sources: runs,
+  }).nextChangeAtMillis, nowMillis + 2 * hourMillis);
 });
 
 test(
@@ -499,7 +572,38 @@ test("projection planning avoids no-op writes and resolves stale opens", () => {
   });
   assert.equal(noChange.sets.length, 0);
   assert.equal(noChange.resolutions.length, 0);
-  assert.equal(noChange.response[0].openedAtMillis, nowMillis);
+
+  // Firestore may return map keys in another order; that is not a change.
+  const reordered = new Map<string, OrganizerAttentionItemDocument>([[
+    desired[0].attentionId,
+    {
+      ...first.sets[0].document,
+      destination: Object.fromEntries(Object.entries(
+        first.sets[0].document.destination).reverse()) as
+        OrganizerAttentionItemDocument["destination"],
+      context: Object.fromEntries(Object.entries(
+        first.sets[0].document.context).reverse()) as
+        OrganizerAttentionItemDocument["context"],
+    },
+  ]]);
+  assert.equal(buildOrganizerAttentionProjectionPlan({
+    organizerId: "organizer-1",
+    now: timestamp(nowMillis + hourMillis),
+    desired,
+    existing: reordered,
+    openIds: [desired[0].attentionId],
+  }).sets.length, 0);
+
+  const revised = buildOrganizerAttentionProjectionPlan({
+    organizerId: "organizer-1",
+    now: timestamp(nowMillis + hourMillis),
+    desired: [{...desired[0], sourceRevision: "revised"}],
+    existing,
+    openIds: [desired[0].attentionId],
+  });
+  assert.equal(revised.sets.length, 1);
+  assert.equal(revised.sets[0].document.openedAt.toMillis(), nowMillis,
+    "a changed open row keeps when it first opened");
 
   const resolved = buildOrganizerAttentionProjectionPlan({
     organizerId: "organizer-1",
@@ -538,57 +642,32 @@ test("projection planning avoids no-op writes and resolves stale opens", () => {
   );
 });
 
-test(
-  "callable enforces authority, rate limit, and complete coverage",
-  async () => {
-    const actions: string[] = [];
-    const result = await listOrganizerAttentionItemsHandler(request(), {
-      firestore: () => ({}) as FirebaseFirestore.Firestore,
-      checkRateLimit: async (_db, uid, action) => {
-        assert.equal(uid, "manager-1");
-        actions.push(action);
-      },
-      requireManager: async ({organizerId, actorUid}) => {
-        assert.equal(organizerId, "organizer-1");
-        assert.equal(actorUid, "manager-1");
-      },
-      timestamp: () => timestamp(nowMillis),
-      loadSources: async () => sourceFixture(),
-      reconcile: async (_db, organizerId, _now, desired) => {
-        assert.equal(organizerId, "organizer-1");
-        return desired.map(withoutSourceTimestamp);
-      },
-    });
-    assert.deepEqual(actions, ["listOrganizerAttentionItems"]);
-    assert.equal(result.generatedAtMillis, nowMillis);
-    assert.equal(result.coverage.length, 19);
-    assert.equal(result.items.length, 6);
-  }
-);
-
-test("callable fails closed instead of returning a partial queue", async () => {
-  const sources = emptySources();
-  sources.applications = Array.from(
-    {length: maxAttentionSourceRows + 1},
-    (_, index) => row(
-      `application-${index}`,
-      application({name: `Applicant ${index}`}),
-      nowMillis
-    )
-  );
+test("loader fails closed instead of returning a partial source", async () => {
+  const fixture = attentionLoaderFixture({
+    organizerApplications: Array.from(
+      {length: maxAttentionSourceRows + 1},
+      (_, index) => row(
+        `application-${index}`,
+        application({name: `Applicant ${index}`}),
+        nowMillis
+      )
+    ),
+  });
   await assert.rejects(
-    listOrganizerAttentionItemsHandler(request(), {
-      firestore: () => ({}) as FirebaseFirestore.Firestore,
-      checkRateLimit: async () => undefined,
-      requireManager: async () => undefined,
-      timestamp: () => timestamp(nowMillis),
-      loadSources: async () => sources,
-      reconcile: async () => {
-        assert.fail("reconciliation must not run after an over-cap derivation");
-      },
-    }),
-    (error: unknown) => error instanceof HttpsError &&
-      error.code === "resource-exhausted"
+    loadOrganizerAttentionSources(fixture.db, "organizer-1",
+      timestamp(nowMillis)),
+    (error: unknown) => error instanceof AttentionSourceOverCapError &&
+      error.code === "resource-exhausted" &&
+      error.source === "organizerApplications"
+  );
+});
+
+test("loader reports a missing organizer distinctly", async () => {
+  const fixture = attentionLoaderFixture({}, undefined, false);
+  await assert.rejects(
+    loadOrganizerAttentionSources(fixture.db, "organizer-1",
+      timestamp(nowMillis)),
+    (error: unknown) => error instanceof AttentionOrganizerMissingError
   );
 });
 
@@ -782,7 +861,9 @@ test("loader bounds enabled rules and does not query historical disabled rules",
     }
   });
 
-test("terminal query failure cannot reconcile or return complete coverage",
+// The evaluator's transaction runs this loader, so a rejected read aborts
+// the evaluation (attentionStore.test.ts proves nothing is written).
+test("terminal query failure rejects instead of loading partial sources",
   async () => {
     const queryError = new Error("Required Firestore index is unavailable.");
     const fixture = attentionLoaderFixture({
@@ -790,23 +871,17 @@ test("terminal query failure cannot reconcile or return complete coverage",
         row("rule-1", automationRule(), nowMillis),
       ],
     }, queryError);
-    await assert.rejects(listOrganizerAttentionItemsHandler(request(), {
-      firestore: () => fixture.db,
-      checkRateLimit: async () => undefined,
-      requireManager: async () => undefined,
-      timestamp: () => timestamp(nowMillis),
-      loadSources: loadOrganizerAttentionSources,
-      reconcile: async () => {
-        return assert.fail("incomplete source must not reconcile");
-      },
-    }), (error: unknown) => error === queryError);
+    await assert.rejects(loadOrganizerAttentionSources(
+      fixture.db, "organizer-1", timestamp(nowMillis)
+    ), (error: unknown) => error === queryError);
   });
 
 // An immutable query double applies filters, ordering and limits against
 // history instead of returning an already-selected hand-built snapshot.
 function attentionLoaderFixture(
   collections: Record<string, Array<AttentionSourceRow<unknown>>>,
-  runError?: Error
+  runError?: Error,
+  organizerExists = true
 ) {
   type Read = {collection: string; limit: number; rows: number};
   const reads: Read[] = [];
@@ -829,7 +904,7 @@ function attentionLoaderFixture(
     orders: Order[] = [], limit = Number.POSITIVE_INFINITY): unknown {
     return {
       doc: (id: string) => ({get: async () => ({
-        id, exists: collection === "organizers",
+        id, exists: organizerExists && collection === "organizers",
         data: () => ({}), updateTime: timestamp(nowMillis),
       })}),
       where: (field: string, operator: string, value: unknown) =>
@@ -1220,21 +1295,6 @@ function row<T>(
 
 function timestamp(millis: number): FirebaseFirestore.Timestamp {
   return admin.firestore.Timestamp.fromMillis(millis);
-}
-
-function request(): CallableRequest<unknown> {
-  return {
-    data: {organizerId: " organizer-1 "},
-    auth: {uid: "manager-1", token: {}},
-  } as CallableRequest<unknown>;
-}
-
-function withoutSourceTimestamp(
-  desired: DesiredHostAttentionItem
-): Omit<DesiredHostAttentionItem, "sourceUpdatedAtMillis"> {
-  const {sourceUpdatedAtMillis, ...item} = desired;
-  void sourceUpdatedAtMillis;
-  return item;
 }
 
 function compareExpected(

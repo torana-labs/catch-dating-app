@@ -451,8 +451,6 @@
     "ListOrganizerRequestsCallableResponse",
     "ListOfferEventTargetsCallablePayload",
     "ListOrganizerApplicationsCallablePayload",
-    "ListOrganizerAttentionItemsCallablePayload",
-    "ListOrganizerAttentionItemsCallableResponse",
     "ListOrganizerCampaignsCallablePayload",
     "ListOrganizerContactMergeCandidatesCallablePayload",
     "ListOrganizerContactsCallablePayload",

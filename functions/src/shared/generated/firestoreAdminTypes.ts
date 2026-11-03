@@ -21280,3 +21280,33 @@ export interface OrganizerEventOfferAuditDocument {
   bankReceiptChecked: boolean;
   reviewNote: string | null;
 }
+
+/**
+ * Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or over cap is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).
+ */
+export interface OrganizerAttentionScheduleDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  /**
+   * hostAttentionPolicyCatalog.policyVersion at evaluation.
+   */
+  policyVersion: number;
+  /**
+   * Increases by one with every committed evaluation.
+   */
+  revision: number;
+  evaluatedAt: FirebaseFirestore.Timestamp;
+  nextEvaluationAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Whether the last evaluation read every source completely. overCap leaves the items as they were.
+   */
+  sourceCoverage: "complete" | "overCap";
+  /**
+   * The source collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; null when coverage is complete.
+   */
+  overCapSource: string | null;
+  /**
+   * Open rows after the evaluation. After an over-cap evaluation it is the number of open rows read, at most 401.
+   */
+  openItemCount: number;
+}

@@ -1,19 +1,18 @@
+import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from
-  "firebase-functions/v2/https";
+import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../operations/durableActions";
 import {validateOperationWorkItem} from "../operations/validation";
-import {findHostPaymentAccount} from "../payments/hostPaymentAccounts";
+import {
+  hostPaymentAccountDocumentId,
+  type HostPaymentProvider,
+} from "../payments/hostPaymentAccounts";
 import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
-import {requireAuth} from "../shared/auth";
-import {normalizePayloadStrings} from
-  "../shared/callablePayloadNormalization";
-import {appCheckCallableOptionsWithLimits} from
-  "../shared/callableOptions";
 import type {
   EventDocument,
   EventParticipationDocument,
+  HostPaymentAccountDocument,
   OrganizerApplicationDocument,
   OrganizerAttentionItemDocument,
   OrganizerDocument,
@@ -21,26 +20,7 @@ import type {
   OrganizerFormAutomationRunDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import type {ListOrganizerAttentionItemsCallablePayload} from
-  "../shared/generated/listOrganizerAttentionItemsCallablePayload";
-import type {ListOrganizerAttentionItemsCallableResponse} from
-  "../shared/generated/listOrganizerAttentionItemsCallableResponse";
-import {
-  hostAttentionPolicyCatalog,
-} from "../shared/generated/catalogs/hostAttentionPolicyCatalog";
-import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
-import {
-  validateListOrganizerAttentionItemsCallablePayload,
-} from
-  "../shared/generated/validators/listOrganizerAttentionItemsInput";
-import {
-  validateListOrganizerAttentionItemsCallableResponse,
-} from
-  "../shared/generated/validators/listOrganizerAttentionItemsOutput";
-import {requireOrganizerManager} from
-  "../shared/organizerManagerAuthority";
-import {checkRateLimit} from "../shared/rateLimit";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {requireDoc} from "../shared/validation";
 import {
   deliveryWorkBasis,
   deliveryWorkIds,
@@ -50,11 +30,7 @@ import {
 import {
   AttentionSourceRow,
   DeliveryReviewAttentionSource,
-  deriveOrganizerAttentionItems,
   DesiredHostAttentionItem,
-  HostAttentionItem,
-  hostAttentionCoverage,
-  hostAttentionHorizonMillis,
   momentAttentionWindowMillis,
   MomentAttentionSendSource,
   OfferAttentionSource,
@@ -63,84 +39,56 @@ import {
 
 export const maxAttentionSourceRows = 400;
 const resolvedRetentionMillis = 30 * 24 * 60 * 60 * 1000;
-const maxBatchWrites = 450;
 
-export interface OrganizerAttentionDeps {
-  firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: typeof checkRateLimit;
-  requireManager: typeof requireOrganizerManager;
-  timestamp: () => FirebaseFirestore.Timestamp;
-  loadSources: typeof loadOrganizerAttentionSources;
-  reconcile: typeof reconcileOrganizerAttentionProjection;
-}
-
-const defaultDeps: OrganizerAttentionDeps = {
-  firestore: () => admin.firestore(),
-  checkRateLimit,
-  requireManager: requireOrganizerManager,
-  timestamp: () => admin.firestore.Timestamp.now(),
-  loadSources: loadOrganizerAttentionSources,
-  reconcile: reconcileOrganizerAttentionProjection,
-};
-
-/** Returns a fully reconciled, explicitly covered Host Today attention view. */
-export async function listOrganizerAttentionItemsHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerAttentionDeps = defaultDeps
-): Promise<ListOrganizerAttentionItemsCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    ListOrganizerAttentionItemsCallablePayload
-  >(
-    request,
-    validateListOrganizerAttentionItemsCallablePayload,
-    (value) => normalizePayloadStrings(value, {
-      stringFields: ["organizerId"],
-    })
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerAttentionItems", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  await deps.requireManager({
-    db,
-    organizerId: data.organizerId,
-    actorUid,
-  });
-  const now = deps.timestamp();
-  const sources = await deps.loadSources(db, data.organizerId, now);
-  const desired = deriveOrganizerAttentionItems({
-    organizerId: data.organizerId,
-    nowMillis: now.toMillis(),
-    sources,
-  });
-  assertBoundedAttentionRows(desired, "derived attention items");
-  const items = await deps.reconcile(db, data.organizerId, now, desired);
-  const response: ListOrganizerAttentionItemsCallableResponse = {
-    organizerId: data.organizerId,
-    policyVersion: hostAttentionPolicyCatalog.policyVersion,
-    generatedAtMillis: now.toMillis(),
-    horizonEndsAtMillis: now.toMillis() + hostAttentionHorizonMillis,
-    items,
-    coverage: hostAttentionCoverage(),
-  };
-  if (!validateListOrganizerAttentionItemsCallableResponse(response)) {
-    throw new HttpsError(
-      "internal",
-      "Host Today produced an invalid attention projection: " +
-        schemaErrorMessages(
-          validateListOrganizerAttentionItemsCallableResponse
-        ).join("; ")
+/** A bounded source read more rows than the evaluator may trust. The
+ *  evaluator records the source instead of writing a partial queue. */
+export class AttentionSourceOverCapError extends HttpsError {
+  constructor(readonly source: string) {
+    super(
+      "resource-exhausted",
+      `Host Today cannot safely evaluate a partial ${source} scan.`
     );
   }
-  return response;
+}
+
+/** The organizer document is gone; its open rows resolve. */
+export class AttentionOrganizerMissingError extends HttpsError {
+  constructor() {
+    super("not-found", "Organizer not found.");
+  }
+}
+
+/** Executes the loader's reads, directly or inside a transaction. */
+export interface AttentionSourceReader {
+  getDoc(
+    ref: FirebaseFirestore.DocumentReference
+  ): Promise<FirebaseFirestore.DocumentSnapshot>;
+  getQuery(
+    query: FirebaseFirestore.Query
+  ): Promise<FirebaseFirestore.QuerySnapshot>;
+}
+
+const directReader: AttentionSourceReader = {
+  getDoc: (ref) => ref.get(),
+  getQuery: (query) => query.get(),
+};
+
+/** Routes every source read through one transaction. */
+export function transactionAttentionReader(
+  tx: FirebaseFirestore.Transaction
+): AttentionSourceReader {
+  return {
+    getDoc: (ref) => tx.get(ref),
+    getQuery: (query) => tx.get(query),
+  };
 }
 
 /** Reads every source collection needed by source-ready server policies. */
 export async function loadOrganizerAttentionSources(
   db: FirebaseFirestore.Firestore,
   organizerId: string,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  reader: AttentionSourceReader = directReader
 ): Promise<OrganizerAttentionSources> {
   const events = db.collection("events");
   const [
@@ -157,36 +105,36 @@ export async function loadOrganizerAttentionSources(
     momentAttentionSendDocs,
     offeredOffers,
   ] = await Promise.all([
-    db.collection("organizers").doc(organizerId).get(),
-    events.where("organizerId", "==", organizerId)
+    reader.getDoc(db.collection("organizers").doc(organizerId)),
+    reader.getQuery(events.where("organizerId", "==", organizerId)
       .where("status", "==", "active")
       .where("endTime", ">", now)
       .orderBy("endTime")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
-    events.where("organizerId", "==", organizerId)
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(events.where("organizerId", "==", organizerId)
       .where("status", "==", "active")
       .where("endTime", ">", now)
       .orderBy("endTime")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("eventParticipations")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("eventParticipations")
       .where("organizerId", "==", organizerId)
       .where("hostApprovalStatus", "==", "pending")
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("eventParticipations")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("eventParticipations")
       .where("organizerId", "==", organizerId)
       .where("hostApprovalStatus", "==", "pending")
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("eventAssistanceCases")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("eventAssistanceCases")
       .where("context.mode", "==", "live")
       .where("context.organizerId", "==", organizerId)
       .where("owner", "==", "eventLead")
       .where("status", "==", "open")
       .orderBy("receivedAt")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("operationWorkItems")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("operationWorkItems")
       .where("workflowId", "==", "event-assistance")
       .where("normalizedPayload.kind", "==", "liveMessageDelivery")
       .where(
@@ -197,25 +145,25 @@ export async function loadOrganizerAttentionSources(
       .where("normalizedPayload.checkpoint.phase", "==", "review")
       .orderBy("normalizedPayload.checkpoint.dueAt")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("organizerApplications")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("organizerApplications")
       .where("organizerId", "==", organizerId)
       .where("reviewStatus", "in", ["submitted", "inReview"])
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("providerSyncRuns")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("providerSyncRuns")
       .where("organizerId", "==", organizerId)
       .where("expiresAt", ">", now)
       .orderBy("expiresAt")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
+      .limit(maxAttentionSourceRows + 1)),
     /* firestore-index: organizerFormAutomationRules (
       organizerId:ASCENDING, enabled:ASCENDING
     ) */
-    db.collection("organizerFormAutomationRules")
+    reader.getQuery(db.collection("organizerFormAutomationRules")
       .where("organizerId", "==", organizerId)
       .where("enabled", "==", true)
-      .limit(maxAttentionSourceRows + 1).get(),
-    db.collection("organizerMomentSends")
+      .limit(maxAttentionSourceRows + 1)),
+    reader.getQuery(db.collection("organizerMomentSends")
       .where("organizerId", "==", organizerId)
       .where("actionKind", "==", "staffAttention")
       .where(
@@ -225,42 +173,31 @@ export async function loadOrganizerAttentionSources(
       )
       .orderBy("createdAtMillis")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
+      .limit(maxAttentionSourceRows + 1)),
     /* firestore-index: organizerEventOffers (
       organizerId:ASCENDING, status:ASCENDING,
       expiresAtMillis:ASCENDING, __name__:ASCENDING
     ) */
-    db.collection("organizerEventOffers")
+    reader.getQuery(db.collection("organizerEventOffers")
       .where("organizerId", "==", organizerId)
       .where("status", "==", "offered")
       .orderBy("expiresAtMillis")
       .orderBy(admin.firestore.FieldPath.documentId())
-      .limit(maxAttentionSourceRows + 1).get(),
+      .limit(maxAttentionSourceRows + 1)),
   ]);
-  if (!organizerSnap.exists) {
-    throw new HttpsError("not-found", "Organizer not found.");
-  }
+  if (!organizerSnap.exists) throw new AttentionOrganizerMissingError();
 
-  assertBoundedSnapshot(canonicalEvents, "canonical active events");
-  assertBoundedSnapshot(compatibilityEvents, "compatible active events");
-  assertBoundedSnapshot(canonicalJoinRequests, "canonical event join requests");
-  assertBoundedSnapshot(
-    compatibilityJoinRequests,
-    "compatible event join requests"
-  );
-  assertBoundedSnapshot(openPracticalCases, "open practical help cases");
-  assertBoundedSnapshot(
-    deliveryReviewWorkItems,
-    "message delivery review work items"
-  );
-  assertBoundedSnapshot(applications, "open organizer applications");
-  assertBoundedSnapshot(providerRuns, "unexpired provider sync runs");
-  assertBoundedSnapshot(automationRules, "form automation rules");
-  assertBoundedSnapshot(
-    momentAttentionSendDocs,
-    "moment staff attention sends"
-  );
-  assertBoundedSnapshot(offeredOffers, "offered event offers");
+  assertBoundedSnapshot(canonicalEvents, "events");
+  assertBoundedSnapshot(compatibilityEvents, "events");
+  assertBoundedSnapshot(canonicalJoinRequests, "eventParticipations");
+  assertBoundedSnapshot(compatibilityJoinRequests, "eventParticipations");
+  assertBoundedSnapshot(openPracticalCases, "eventAssistanceCases");
+  assertBoundedSnapshot(deliveryReviewWorkItems, "operationWorkItems");
+  assertBoundedSnapshot(applications, "organizerApplications");
+  assertBoundedSnapshot(providerRuns, "providerSyncRuns");
+  assertBoundedSnapshot(automationRules, "organizerFormAutomationRules");
+  assertBoundedSnapshot(momentAttentionSendDocs, "organizerMomentSends");
+  assertBoundedSnapshot(offeredOffers, "organizerEventOffers");
 
   const eventRows = new Map<string, AttentionSourceRow<EventDocument>>();
   for (const snapshot of [canonicalEvents, compatibilityEvents]) {
@@ -268,7 +205,7 @@ export async function loadOrganizerAttentionSources(
       eventRows.set(doc.id, sourceRow<EventDocument>(doc));
     }
   }
-  assertBoundedAttentionRows([...eventRows.values()], "active events");
+  assertBoundedAttentionRows([...eventRows.values()], "events");
   const participationRows = new Map<
     string,
     AttentionSourceRow<EventParticipationDocument>
@@ -286,13 +223,13 @@ export async function loadOrganizerAttentionSources(
   }
   assertBoundedAttentionRows(
     [...participationRows.values()],
-    "pending event join requests"
+    "eventParticipations"
   );
 
   const currentAutomationRules = automationRules.docs.map((doc) =>
     sourceRow<OrganizerFormAutomationRuleDocument>(doc));
   const currentAutomationRuns = await loadCurrentAutomationRuns(
-    db, organizerId, currentAutomationRules
+    db, reader, organizerId, currentAutomationRules
   );
 
   const organizer = sourceRow<OrganizerDocument>(organizerSnap);
@@ -301,21 +238,11 @@ export async function loadOrganizerAttentionSources(
   const paymentAccounts: OrganizerAttentionSources["paymentAccounts"] = {};
   if (ownerUid) {
     const [razorpay, stripe] = await Promise.all([
-      findHostPaymentAccount(db, ownerUid, "razorpay"),
-      findHostPaymentAccount(db, ownerUid, "stripe"),
+      loadHostPaymentAccount(db, reader, ownerUid, "razorpay"),
+      loadHostPaymentAccount(db, reader, ownerUid, "stripe"),
     ]);
-    if (razorpay.account) {
-      paymentAccounts.razorpay = sourceRowFromSnapshot(
-        razorpay.snap,
-        razorpay.account
-      );
-    }
-    if (stripe.account) {
-      paymentAccounts.stripe = sourceRowFromSnapshot(
-        stripe.snap,
-        stripe.account
-      );
-    }
+    if (razorpay) paymentAccounts.razorpay = razorpay;
+    if (stripe) paymentAccounts.stripe = stripe;
   }
 
   return {
@@ -348,6 +275,7 @@ export async function loadOrganizerAttentionSources(
  * Success and skipped outcomes are needed to resolve an older failure. */
 async function loadCurrentAutomationRuns(
   db: FirebaseFirestore.Firestore,
+  reader: AttentionSourceReader,
   organizerId: string,
   rules: Array<AttentionSourceRow<OrganizerFormAutomationRuleDocument>>
 ): Promise<OrganizerAttentionSources["automationRuns"]> {
@@ -363,7 +291,7 @@ async function loadCurrentAutomationRuns(
           ruleRevision:ASCENDING, status:ASCENDING,
           updatedAt:DESCENDING, __name__:DESCENDING
         ) */
-        return db.collection("organizerFormAutomationRuns")
+        return reader.getQuery(db.collection("organizerFormAutomationRuns")
           .where("organizerId", "==", organizerId)
           .where("formId", "==", rule.data.formId)
           .where("ruleId", "==", rule.id)
@@ -373,7 +301,7 @@ async function loadCurrentAutomationRuns(
           ])
           .orderBy("updatedAt", "desc")
           .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-          .limit(1).get();
+          .limit(1));
       }));
     for (const snapshot of snapshots) {
       for (const doc of snapshot.docs) {
@@ -382,6 +310,32 @@ async function loadCurrentAutomationRuns(
     }
   }
   return runs;
+}
+
+/** Same lookup as findHostPaymentAccount (canonical id, then the legacy
+ *  Stripe id), routed through the reader so a transaction sees it. */
+async function loadHostPaymentAccount(
+  db: FirebaseFirestore.Firestore,
+  reader: AttentionSourceReader,
+  uid: string,
+  provider: HostPaymentProvider
+): Promise<AttentionSourceRow<HostPaymentAccountDocument> | null> {
+  const accounts = db.collection("hostPaymentAccounts");
+  const canonical = await reader.getDoc(
+    accounts.doc(hostPaymentAccountDocumentId(uid, provider))
+  );
+  if (canonical.exists) {
+    return sourceRowFromSnapshot(
+      canonical,
+      canonical.data() as HostPaymentAccountDocument
+    );
+  }
+  if (provider !== "stripe") return null;
+  const legacy = await reader.getDoc(accounts.doc(uid));
+  return legacy.exists ? sourceRowFromSnapshot(
+    legacy,
+    legacy.data() as HostPaymentAccountDocument
+  ) : null;
 }
 
 /** Lenient journal parse: staffAttention sends missing projection fields
@@ -528,61 +482,6 @@ export function parseDeliveryReviewAttentionSource(
   };
 }
 
-/**
- * Applies only changed rows, resolves stale opens, and returns persisted state.
- */
-export async function reconcileOrganizerAttentionProjection(
-  db: FirebaseFirestore.Firestore,
-  organizerId: string,
-  now: FirebaseFirestore.Timestamp,
-  desired: DesiredHostAttentionItem[]
-): Promise<HostAttentionItem[]> {
-  assertBoundedAttentionRows(desired, "derived attention items");
-  const collection = db.collection("organizerAttentionItems");
-  const openSnapshot = await collection
-    .where("organizerId", "==", organizerId)
-    .where("status", "==", "open")
-    .orderBy("dueAt")
-    .orderBy(admin.firestore.FieldPath.documentId())
-    .limit(maxAttentionSourceRows + 1)
-    .get();
-  assertBoundedSnapshot(openSnapshot, "open attention projection");
-
-  const desiredRefs = desired.map((item) => collection.doc(item.attentionId));
-  const desiredSnapshots = desiredRefs.length > 0 ?
-    await db.getAll(...desiredRefs) : [];
-  const existing = new Map<string, OrganizerAttentionItemDocument>();
-  for (const doc of [...openSnapshot.docs, ...desiredSnapshots]) {
-    if (doc.exists) {
-      existing.set(doc.id, requireDoc<OrganizerAttentionItemDocument>(
-        doc,
-        "OrganizerAttentionItemDocument"
-      ));
-    }
-  }
-  const plan = buildOrganizerAttentionProjectionPlan({
-    organizerId,
-    now,
-    desired,
-    existing,
-    openIds: openSnapshot.docs.map((doc) => doc.id),
-  });
-  const mutations: ProjectionMutation[] = [
-    ...plan.sets.map((entry): ProjectionMutation => ({
-      kind: "set",
-      ref: collection.doc(entry.attentionId),
-      data: entry.document,
-    })),
-    ...plan.resolutions.map((entry): ProjectionMutation => ({
-      kind: "update",
-      ref: collection.doc(entry.attentionId),
-      data: entry.patch,
-    })),
-  ];
-  await commitProjectionMutations(db, mutations);
-  return plan.response;
-}
-
 export interface OrganizerAttentionProjectionPlan {
   sets: Array<{
     attentionId: string;
@@ -592,10 +491,10 @@ export interface OrganizerAttentionProjectionPlan {
     attentionId: string;
     patch: FirebaseFirestore.UpdateData<FirebaseFirestore.DocumentData>;
   }>;
-  response: HostAttentionItem[];
 }
 
-/** Plans deterministic projection changes separately from Firestore writes. */
+/** Plans deterministic projection changes separately from Firestore writes.
+ *  An unchanged open row produces no write. */
 export function buildOrganizerAttentionProjectionPlan(params: {
   organizerId: string;
   now: FirebaseFirestore.Timestamp;
@@ -605,7 +504,6 @@ export function buildOrganizerAttentionProjectionPlan(params: {
 }): OrganizerAttentionProjectionPlan {
   const sets: OrganizerAttentionProjectionPlan["sets"] = [];
   const resolutions: OrganizerAttentionProjectionPlan["resolutions"] = [];
-  const response: HostAttentionItem[] = [];
   const desiredIds = new Set(params.desired.map((item) => item.attentionId));
   for (const item of params.desired) {
     const current = params.existing.get(item.attentionId);
@@ -618,7 +516,6 @@ export function buildOrganizerAttentionProjectionPlan(params: {
     if (!current || !sameOpenProjection(current, document)) {
       sets.push({attentionId: item.attentionId, document});
     }
-    response.push(responseItem(item, document));
   }
   for (const attentionId of params.openIds) {
     if (desiredIds.has(attentionId)) continue;
@@ -626,18 +523,26 @@ export function buildOrganizerAttentionProjectionPlan(params: {
     if (!current || current.status !== "open") continue;
     resolutions.push({
       attentionId,
-      patch: {
-        status: "resolved",
-        resolutionVersion: current.resolutionVersion + 1,
-        resolvedAt: params.now,
-        updatedAt: params.now,
-        purgeAt: admin.firestore.Timestamp.fromMillis(
-          params.now.toMillis() + resolvedRetentionMillis
-        ),
-      },
+      patch: attentionResolutionPatch(current, params.now),
     });
   }
-  return {sets, resolutions, response};
+  return {sets, resolutions};
+}
+
+/** Closes one open row and starts its 30-day retention. */
+export function attentionResolutionPatch(
+  current: Pick<OrganizerAttentionItemDocument, "resolutionVersion">,
+  now: FirebaseFirestore.Timestamp
+): FirebaseFirestore.UpdateData<FirebaseFirestore.DocumentData> {
+  return {
+    status: "resolved",
+    resolutionVersion: current.resolutionVersion + 1,
+    resolvedAt: now,
+    updatedAt: now,
+    purgeAt: admin.firestore.Timestamp.fromMillis(
+      now.toMillis() + resolvedRetentionMillis
+    ),
+  };
 }
 
 export function assertBoundedAttentionRows(
@@ -645,10 +550,7 @@ export function assertBoundedAttentionRows(
   source: string
 ): void {
   if (rows.length > maxAttentionSourceRows) {
-    throw new HttpsError(
-      "resource-exhausted",
-      `Host Today cannot safely return a partial ${source} scan.`
-    );
+    throw new AttentionSourceOverCapError(source);
   }
 }
 
@@ -748,8 +650,9 @@ function sameOpenProjection(
     current.consequence === next.consequence &&
     current.blocking === next.blocking &&
     current.urgency === next.urgency &&
-    JSON.stringify(current.destination) === JSON.stringify(next.destination) &&
-    JSON.stringify(current.context) === JSON.stringify(next.context) &&
+    // Firestore does not keep map key order, so compare maps structurally.
+    isDeepStrictEqual(current.destination, next.destination) &&
+    isDeepStrictEqual(current.context, next.context) &&
     current.dedupeKey === next.dedupeKey &&
     current.policyVersion === next.policyVersion &&
     current.resolutionVersion === next.resolutionVersion &&
@@ -762,46 +665,8 @@ function sameOpenProjection(
     current.resolvedAt === null && current.purgeAt === null;
 }
 
-function responseItem(
-  desired: DesiredHostAttentionItem,
-  document: OrganizerAttentionItemDocument
-): HostAttentionItem {
-  const {sourceUpdatedAtMillis, ...item} = desired;
-  void sourceUpdatedAtMillis;
-  return {
-    ...item,
-    resolutionVersion: document.resolutionVersion,
-    openedAtMillis: document.openedAt.toMillis(),
-  };
-}
-
 function timestampMillis(
   value: FirebaseFirestore.Timestamp | null
 ): number | null {
   return value?.toMillis() ?? null;
 }
-
-type ProjectionMutation = {
-  kind: "set" | "update";
-  ref: FirebaseFirestore.DocumentReference;
-  data: FirebaseFirestore.DocumentData;
-};
-
-async function commitProjectionMutations(
-  db: FirebaseFirestore.Firestore,
-  mutations: ProjectionMutation[]
-): Promise<void> {
-  for (let offset = 0; offset < mutations.length; offset += maxBatchWrites) {
-    const batch = db.batch();
-    for (const mutation of mutations.slice(offset, offset + maxBatchWrites)) {
-      if (mutation.kind === "set") batch.set(mutation.ref, mutation.data);
-      else batch.update(mutation.ref, mutation.data);
-    }
-    await batch.commit();
-  }
-}
-
-export const listOrganizerAttentionItems = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
-  (request) => listOrganizerAttentionItemsHandler(request)
-);

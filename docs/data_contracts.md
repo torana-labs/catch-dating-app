@@ -649,34 +649,64 @@ The catalog distinguishes four delivery modes:
 
 | Delivery mode | Meaning |
 |---|---|
-| `serverProjected` | The backend can derive the item from explicit canonical facts and return it after read-through reconciliation. |
+| `serverProjected` | The backend can derive the item from explicit canonical facts and writes it ahead of time into `organizerAttentionItems`. |
 | `clientMerged` | The fact is intentionally device-local and Flutter merges it after the server response. |
 | `shortcutOnly` | Today exposes an action, but the product does not claim that every organizer has a mandatory task. |
-| `blockedMissingTruth` | A desirable archetype lacks an explicit authoritative workflow field; the callable reports the gap instead of inferring it from a weak proxy. |
+| `blockedMissingTruth` | A desirable archetype lacks an explicit authoritative workflow field; coverage reports the gap instead of inferring it from a weak proxy. |
 
-`organizerAttentionItems/{attentionId}` is a server-only evaluated projection.
-It stores stable source provenance and revision, open/resolved lifecycle,
-urgency, consequence, deadline, destination, display-safe context, policy and
-resolution versions. Open rows use a null TTL; resolved rows receive bounded
-cleanup. It never embeds prose predicates or
-becomes the source of the underlying event, application, form, provider, or
-payout state. Direct client reads and writes are denied.
+`organizerAttentionItems/{attentionId}` is a server-written evaluated
+projection. It stores stable source provenance and revision, open/resolved
+lifecycle, urgency, consequence, deadline, destination, display-safe context,
+policy and resolution versions. Open rows use a null TTL; resolved rows receive
+bounded cleanup. It never embeds prose predicates or becomes the source of the
+underlying event, application, form, provider, or payout state. A current
+manager of the row's organizer may `get` and `list` it under rules
+(`isHostSummaryManager`, the same `hostUserId`, `ownerUserId` and `hostUserIds`
+authority the server uses); every client write is denied.
 
-`listOrganizerAttentionItems` owns the read-through boundary. Before returning
-supported server items it must re-read every declared authoritative source,
-derive the desired open set, upsert changed rows, and resolve stale rows. Each
-source scan is bounded at 400 current records and fails closed when exceeded;
-the callable must never label a truncated scan exhaustive. Form automation
-reads at most 400 enabled rules, then one latest terminal run per matching
-organizer, form, rule and current revision. Runs order by `updatedAt` descending
-and document ID descending; succeeded and skipped outcomes resolve older
-failures, while pending and running retries do not hide terminal failures.
-Historical runs and disabled rules do not consume this current-state bound.
-The required composite index must be deployed and ready before releasing the
-reader; a missing index or failed source query cannot produce complete coverage.
-The response also
-contains one coverage row per catalog kind so clients and tests can distinguish
-complete server coverage, required local merging, shortcuts, and missing truth.
+The evaluator writes the queue ahead of time. `reconcileOrganizerAttention`
+(`functions/src/hostReadModels/attentionStore.ts`) re-evaluates one organizer in
+one transaction: it re-reads the organizer and every declared authoritative
+source, the open rows and the desired rows, derives the desired open set,
+writes only changed rows, resolves stale ones, and records the schedule. A
+trigger on each of the twelve source collections (organizers, events,
+participations, practical help cases, delivery work items, applications,
+provider sync runs, form automation rules and runs, moment sends, event offers
+and payment accounts) resolves the affected organizers from the old and new
+document and evaluates each. Skips are an optimisation for updates that cannot
+touch the queue; creates and deletes always evaluate. Items also become due,
+change urgency or expire with no write, so `sweepOrganizerAttention` runs every
+five minutes and evaluates the organizers whose `nextEvaluationAt` has passed,
+at most 200 a run.
+
+`organizerAttentionSchedules/{organizerId}` records the policy version, a
+revision that grows with every committed evaluation, `evaluatedAt`,
+`nextEvaluationAt`, `sourceCoverage` (`complete` or `overCap`), the
+`overCapSource` and the open-row count. `nextEvaluationAt` is the earliest
+instant after the evaluation at which the derivation's output could change by
+itself (urgency boundaries, due and expiry times, event start, end and horizon
+entry, offer, provider-run, moment-send and delivery-review times), clamped to
+between one minute and one day; it is null only when nothing loaded can change
+with time. A manager may `get` their organizer's schedule; nobody lists it.
+
+Each source scan is bounded at 400 current records. When a scan exceeds the
+cap, the open rows exceed it, the derived queue exceeds it, or one evaluation
+would write more than 450 rows, the evaluator writes only the schedule with
+`sourceCoverage: "overCap"`, the source, and a retry in one hour, logs an
+error, and leaves the rows untouched; it never labels a truncated scan
+exhaustive and never throws for it, since a trigger retry would change nothing.
+A deleted organizer resolves its open rows and drops its schedule. Form
+automation reads at most 400 enabled rules, then one latest terminal run per
+matching organizer, form, rule and current revision. Runs order by `updatedAt`
+descending and document ID descending; succeeded and skipped outcomes resolve
+older failures, while pending and running retries do not hide terminal
+failures. Historical runs and disabled rules do not consume this current-state
+bound. The required composite indexes must be deployed and ready before
+releasing the evaluator; a missing index or failed source query aborts the
+evaluation without a write. `functions/scripts/backfill-host-read-models.cjs
+--model attention --organizer <id>` reports the open-row count and whether a
+schedule exists, and with `--apply` evaluates the organizer; there is no
+activation marker because every environment is reseeded.
 
 The source-ready server kinds are live-event operations, open practical guest-
 help review, delivery work that explicitly requires host review, ordinary
@@ -692,15 +722,21 @@ safety-owned cases remain inside their restricted operator boundary. Delivery
 review is aggregated only from validated `liveMessageDelivery` Operations work
 whose checkpoint and human-review projection agree; message status alone cannot
 create a task. Attendance retry/conflict work is
-merged from the local Host outbox. Flutter consumes the callable through
-`HostAttentionRepository`, parses the closed item and coverage vocabularies
-into typed domain values, verifies the requested organizer, and rejects any
-response that does not contain every catalog kind exactly once. The Today feed
-then merges every normalized `HostAttendanceOutbox` row, deduplicates and sorts
-the combined queue by urgency, blocking consequence, deadline, and stable id.
-The active-event feed remains usable when either optional attention source
-fails, but the presentation receives a source-specific issue and must not claim
-that the organizer has no outstanding work.
+merged from the local Host outbox. Flutter listens through
+`HostAttentionRepository.watch`, which combines a listener on the open rows
+(`organizerId`, `status == "open"`, ordered by `dueAt` and document id,
+limited to the 400-row cap) with a listener on the schedule document. It parses
+the closed item vocabularies into typed domain values and computes one coverage
+row per catalog kind from the generated catalog
+(`lib/platform/schema_contracts/generated/host_attention_policies.g.dart`). A
+missing or over-cap schedule makes the projection incomplete, so Today shows a
+source-specific issue instead of an all-clear. The Today feed then merges every
+normalized `HostAttendanceOutbox` row, deduplicates and sorts the combined
+queue by urgency, blocking consequence, deadline, and stable id, and updates
+while the screen is open. The active-event feed remains usable when either
+optional attention source fails, but the presentation receives a
+source-specific issue and must not claim that the organizer has no outstanding
+work.
 
 Dress Rehearsal is a Today shortcut. Event Success readiness, room-layout
 requirements, staffing requirements, generic form-response review, Inbox reply
@@ -2711,6 +2747,11 @@ queries, and loads further pages only on request. Contains-name search preserves
 the existing bounded exhaustive behavior. Before cutover, legacy Groups reads
 still exhaust callable pages. The Audience workspace switches to compact metadata through
 a coordinated UI patch; mutation and membership-preview authority stay callable.
+
+The Today attention queue reads `organizerAttentionItems` and
+`organizerAttentionSchedules/{organizerId}` under the same manager authority;
+the evaluator that writes them ahead of time is described in
+[Host Today Attention Contract](#host-today-attention-contract).
 
 `hostResponseSummaries/{summaryId}` stores one unified inbox entry per submitted
 response or standalone application. The key hashes the source kind and ID. A

@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_attention_schedules.schema.json",
+  "title": "OrganizerAttentionScheduleDocument",
+  "description": "Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or over cap is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerAttentionSchedules",
+  "x-firestore-path": "organizerAttentionSchedules/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host Today attention evaluator (hostReadModels attention triggers and sweepOrganizerAttention)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "policyVersion",
+    "revision",
+    "evaluatedAt",
+    "nextEvaluationAt",
+    "sourceCoverage",
+    "overCapSource",
+    "openItemCount"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "policyVersion": {"type": "integer", "minimum": 1, "maximum": 1000000, "description": "hostAttentionPolicyCatalog.policyVersion at evaluation.", "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "Increases by one with every committed evaluation.", "x-catch-ownership": "server-only"},
+    "evaluatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "nextEvaluationAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "server-only"},
+    "sourceCoverage": {"enum": ["complete", "overCap"], "description": "Whether the last evaluation read every source completely. overCap leaves the items as they were.", "x-catch-ownership": "server-only"},
+    "overCapSource": {"type": ["string", "null"], "minLength": 1, "maxLength": 80, "description": "The source collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; null when coverage is complete.", "x-catch-ownership": "server-only"},
+    "openItemCount": {"type": "integer", "minimum": 0, "maximum": 1000, "description": "Open rows after the evaluation. After an over-cap evaluation it is the number of open rows read, at most 401.", "x-catch-ownership": "server-only"}
+  }
+}

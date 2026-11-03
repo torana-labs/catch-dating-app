@@ -180852,7 +180852,7 @@ export const organizerAttentionItemDocumentSchema = {
   "x-firestore-collection": "organizerAttentionItems",
   "x-firestore-path": "organizerAttentionItems/{attentionId}",
   "x-document-id-field": "attentionId",
-  "x-owner": "listOrganizerAttentionItems read-through reconciliation",
+  "x-owner": "Host Today attention evaluator (hostReadModels attention triggers and sweepOrganizerAttention)",
   "required": [
     "schemaVersion",
     "attentionId",
@@ -338075,410 +338075,6 @@ export const listOrganizerApplicationsCallableResponseSchema = {
   }
 };
 
-export const listOrganizerAttentionItemsCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/list_organizer_attention_items_payload.schema.json",
-  "title": "ListOrganizerAttentionItemsCallablePayload",
-  "description": "Requests a complete, read-through-reconciled Host Today attention projection for one managed organizer.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-owner": "Host Today",
-  "required": [
-    "organizerId"
-  ],
-  "properties": {
-    "organizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    }
-  }
-};
-
-export const listOrganizerAttentionItemsCallableResponseSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/list_organizer_attention_items_response.schema.json",
-  "title": "ListOrganizerAttentionItemsCallableResponse",
-  "description": "Complete supported Host Today attention items plus explicit coverage for client-merged, shortcut-only, and blocked-missing-truth kinds.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "organizerId",
-    "policyVersion",
-    "generatedAtMillis",
-    "horizonEndsAtMillis",
-    "items",
-    "coverage"
-  ],
-  "properties": {
-    "organizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "policyVersion": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 1000000
-    },
-    "generatedAtMillis": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 9007199254740991
-    },
-    "horizonEndsAtMillis": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 9007199254740991
-    },
-    "items": {
-      "type": "array",
-      "maxItems": 400,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "attentionId",
-          "kind",
-          "scope",
-          "sourceOwner",
-          "sourceId",
-          "sourceRevision",
-          "eventId",
-          "status",
-          "consequence",
-          "blocking",
-          "urgency",
-          "destination",
-          "context",
-          "dedupeKey",
-          "policyVersion",
-          "resolutionVersion",
-          "assignedHostUid",
-          "openedAtMillis",
-          "dueAtMillis",
-          "expiresAtMillis"
-        ],
-        "properties": {
-          "attentionId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "kind": {
-            "type": "string",
-            "enum": [
-              "eventLiveOperations",
-              "eventAssistanceCaseReview",
-              "eventAssistanceDeliveryReview",
-              "eventWaitlistReview",
-              "eventJoinRequestReview",
-              "applicationReview",
-              "providerSyncFailure",
-              "formAutomationFailure",
-              "payoutSetup",
-              "attendanceSync",
-              "dressRehearsal",
-              "eventSuccessPreparation",
-              "roomLayoutSetup",
-              "eventStaffing",
-              "formResponseReview",
-              "inboxReply",
-              "postEventReconciliation",
-              "momentStaffAttention",
-              "eventOfferPaymentFollowUp"
-            ],
-            "x-catch-catalog": "../catalogs/host_attention_policies.json"
-          },
-          "scope": {
-            "type": "string",
-            "enum": [
-              "organizer",
-              "event",
-              "application",
-              "form",
-              "thread",
-              "account"
-            ]
-          },
-          "sourceOwner": {
-            "type": "string",
-            "enum": [
-              "events",
-              "eventParticipations",
-              "organizerApplications",
-              "providerSyncRuns",
-              "organizerFormAutomationRuns",
-              "hostPaymentAccounts",
-              "hostAttendanceOutbox",
-              "eventAssistanceCases",
-              "operationWorkItems",
-              "eventSuccessPlans",
-              "eventRehearsals",
-              "eventStaffGrants",
-              "organizerFormResponses",
-              "organizerWhatsappThreads",
-              "eventAttendees",
-              "organizerMomentSends",
-              "organizerEventOffers"
-            ]
-          },
-          "sourceId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "sourceRevision": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "eventId": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "maxLength": 180
-          },
-          "status": {
-            "const": "open"
-          },
-          "consequence": {
-            "type": "string",
-            "enum": [
-              "blocksLiveOperation",
-              "risksGuestExperience",
-              "risksRevenue",
-              "delaysResponse",
-              "degradesAutomation",
-              "requiresReconciliation",
-              "preparationIncomplete",
-              "informational"
-            ]
-          },
-          "blocking": {
-            "type": "boolean"
-          },
-          "urgency": {
-            "type": "string",
-            "enum": [
-              "immediate",
-              "soon",
-              "upcoming"
-            ]
-          },
-          "destination": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "route",
-              "section",
-              "eventId",
-              "applicationId",
-              "formId",
-              "threadId"
-            ],
-            "properties": {
-              "route": {
-                "type": "string",
-                "enum": [
-                  "hostEventManage",
-                  "hostApplications",
-                  "hostOrganizerPayments",
-                  "hostAudienceForms",
-                  "hostInbox",
-                  "hostDressRehearsal",
-                  "hostEvents",
-                  "hostProgramWork"
-                ]
-              },
-              "section": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 80
-              },
-              "eventId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 180
-              },
-              "applicationId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 180
-              },
-              "formId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 180
-              },
-              "threadId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 180
-              }
-            }
-          },
-          "context": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "eventName",
-              "subjectLabel",
-              "count",
-              "provider",
-              "errorCode"
-            ],
-            "properties": {
-              "eventName": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 160
-              },
-              "subjectLabel": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 160
-              },
-              "count": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "minimum": 0,
-                "maximum": 1000000000
-              },
-              "provider": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 80
-              },
-              "errorCode": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 120
-              }
-            }
-          },
-          "dedupeKey": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 240
-          },
-          "policyVersion": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000
-          },
-          "resolutionVersion": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000
-          },
-          "assignedHostUid": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "maxLength": 180
-          },
-          "openedAtMillis": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "dueAtMillis": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
-          },
-          "expiresAtMillis": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "minimum": 0,
-            "maximum": 9007199254740991
-          }
-        }
-      }
-    },
-    "coverage": {
-      "type": "array",
-      "minItems": 19,
-      "maxItems": 19,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "kind",
-          "state",
-          "reason"
-        ],
-        "properties": {
-          "kind": {
-            "type": "string",
-            "enum": [
-              "eventLiveOperations",
-              "eventAssistanceCaseReview",
-              "eventAssistanceDeliveryReview",
-              "eventWaitlistReview",
-              "eventJoinRequestReview",
-              "applicationReview",
-              "providerSyncFailure",
-              "formAutomationFailure",
-              "payoutSetup",
-              "attendanceSync",
-              "dressRehearsal",
-              "eventSuccessPreparation",
-              "roomLayoutSetup",
-              "eventStaffing",
-              "formResponseReview",
-              "inboxReply",
-              "postEventReconciliation",
-              "momentStaffAttention",
-              "eventOfferPaymentFollowUp"
-            ],
-            "x-catch-catalog": "../catalogs/host_attention_policies.json"
-          },
-          "state": {
-            "type": "string",
-            "enum": [
-              "complete",
-              "clientMergeRequired",
-              "shortcutOnly",
-              "blockedMissingTruth"
-            ]
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 500
-          }
-        }
-      }
-    }
-  }
-};
-
 export const getOrganizerApplicationDetailCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_organizer_application_detail_payload.schema.json",
@@ -357328,6 +356924,130 @@ export const adminListSalesImportsCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 96,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const organizerAttentionScheduleDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_attention_schedules.schema.json",
+  "title": "OrganizerAttentionScheduleDocument",
+  "description": "Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or over cap is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerAttentionSchedules",
+  "x-firestore-path": "organizerAttentionSchedules/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host Today attention evaluator (hostReadModels attention triggers and sweepOrganizerAttention)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "policyVersion",
+    "revision",
+    "evaluatedAt",
+    "nextEvaluationAt",
+    "sourceCoverage",
+    "overCapSource",
+    "openItemCount"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "policyVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "description": "hostAttentionPolicyCatalog.policyVersion at evaluation.",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "nextEvaluationAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "overCap"
+      ],
+      "description": "Whether the last evaluation read every source completely. overCap leaves the items as they were.",
+      "x-catch-ownership": "server-only"
+    },
+    "overCapSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The source collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "openItemCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "description": "Open rows after the evaluation. After an over-cap evaluation it is the number of open rows read, at most 401.",
+      "x-catch-ownership": "server-only"
     }
   }
 };

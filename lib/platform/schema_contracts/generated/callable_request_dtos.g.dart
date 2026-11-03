@@ -286,7 +286,6 @@ export 'callables/list_my_host_assignments_callable_request.g.dart';
 export 'callables/list_my_organizer_journeys_callable_request.g.dart';
 export 'callables/list_offer_event_targets_callable_request.g.dart';
 export 'callables/list_organizer_applications_callable_request.g.dart';
-export 'callables/list_organizer_attention_items_callable_request.g.dart';
 export 'callables/list_organizer_bills_callable_request.g.dart';
 export 'callables/list_organizer_campaigns_callable_request.g.dart';
 export 'callables/list_organizer_contact_merge_candidates_callable_request.g.dart';

@@ -8,7 +8,7 @@
   "x-firestore-collection": "organizerAttentionItems",
   "x-firestore-path": "organizerAttentionItems/{attentionId}",
   "x-document-id-field": "attentionId",
-  "x-owner": "listOrganizerAttentionItems read-through reconciliation",
+  "x-owner": "Host Today attention evaluator (hostReadModels attention triggers and sweepOrganizerAttention)",
   "required": [
     "schemaVersion",
     "attentionId",

@@ -1393,10 +1393,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Today attention rows are evaluated server projections, not client task
-    // definitions. Managers receive a bounded sanitized callable response.
+    // Today attention rows are server-evaluated projections, written ahead of
+    // time by the attention triggers and sweep. A current manager of the row's
+    // organizer listens to them; authority comes from the organizer document,
+    // never from the row. The schedule records when the queue was evaluated
+    // and whether that evaluation was complete.
     match /organizerAttentionItems/{attentionId} {
-      allow read, write: if false;
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /organizerAttentionSchedules/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
     }
 
     // Entitlement grants and meters are billing state. Only admin-authorized

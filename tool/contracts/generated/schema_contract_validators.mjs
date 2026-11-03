@@ -1228,8 +1228,6 @@ import {
   importOrganizerApplicationsCallableResponseSchema,
   listOrganizerApplicationsCallablePayloadSchema,
   listOrganizerApplicationsCallableResponseSchema,
-  listOrganizerAttentionItemsCallablePayloadSchema,
-  listOrganizerAttentionItemsCallableResponseSchema,
   getOrganizerApplicationDetailCallablePayloadSchema,
   getOrganizerApplicationDetailCallableResponseSchema,
   reviewOrganizerApplicationCallablePayloadSchema,
@@ -1383,6 +1381,7 @@ import {
   joinWaitlistHTTPResponseSchema,
   adminListSalesImportHostsCallablePayloadSchema,
   adminListSalesImportsCallablePayloadSchema,
+  organizerAttentionScheduleDocumentSchema,
 } from "./schema_contract_registry.mjs";
 
 const requireFromRepo = createRequire(
@@ -2632,8 +2631,6 @@ export const validateImportOrganizerApplicationsCallablePayload = ajv.compile(im
 export const validateImportOrganizerApplicationsCallableResponse = ajv.compile(importOrganizerApplicationsCallableResponseSchema);
 export const validateListOrganizerApplicationsCallablePayload = ajv.compile(listOrganizerApplicationsCallablePayloadSchema);
 export const validateListOrganizerApplicationsCallableResponse = ajv.compile(listOrganizerApplicationsCallableResponseSchema);
-export const validateListOrganizerAttentionItemsCallablePayload = ajv.compile(listOrganizerAttentionItemsCallablePayloadSchema);
-export const validateListOrganizerAttentionItemsCallableResponse = ajv.compile(listOrganizerAttentionItemsCallableResponseSchema);
 export const validateGetOrganizerApplicationDetailCallablePayload = ajv.compile(getOrganizerApplicationDetailCallablePayloadSchema);
 export const validateGetOrganizerApplicationDetailCallableResponse = ajv.compile(getOrganizerApplicationDetailCallableResponseSchema);
 export const validateReviewOrganizerApplicationCallablePayload = ajv.compile(reviewOrganizerApplicationCallablePayloadSchema);
@@ -2787,6 +2784,7 @@ export const validateJoinWaitlistHTTPRequest = ajv.compile(joinWaitlistHTTPReque
 export const validateJoinWaitlistHTTPResponse = ajv.compile(joinWaitlistHTTPResponseSchema);
 export const validateAdminListSalesImportHostsCallablePayload = ajv.compile(adminListSalesImportHostsCallablePayloadSchema);
 export const validateAdminListSalesImportsCallablePayload = ajv.compile(adminListSalesImportsCallablePayloadSchema);
+export const validateOrganizerAttentionScheduleDocument = ajv.compile(organizerAttentionScheduleDocumentSchema);
 
 export function schemaErrorMessages(validator) {
   return (validator.errors ?? []).map((error) => {
