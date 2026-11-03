@@ -1,0 +1,8 @@
+# package:test configuration
+# https://github.com/dart-lang/test/blob/master/pkgs/test/doc/configuration.md
+
+tags:
+  # Exact PNG visual-regression tests under test/goldens. The baselines are
+  # macOS-rendered, so the Linux "Catch UI package tests" job runs with
+  # --exclude-tags=golden and the macOS goldens lane runs --tags=golden.
+  golden: {}

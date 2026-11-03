@@ -7,43 +7,41 @@ import 'support/golden_pump.dart';
 
 void main() {
   for (final direction in [AnimationStatus.forward, AnimationStatus.reverse]) {
-    testWidgets(
-      'reveal and flight curves preserve ${direction.name} poses',
-      (tester) async {
-        await matchCatchGolden(
-          tester,
-          'reveal_viewport_family.${direction.name}',
-          size: const Size(440, 500),
-          // Pin explicit animation poses even though ordinary goldens disable motion.
-          builder: (context) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(disableAnimations: false),
-            child: Builder(
-              builder: (context) => Padding(
-                padding: const EdgeInsets.all(20),
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    for (final progress in [0.0, 0.5, 1.0])
-                      for (final recipe in ['content', 'stationary', 'flight'])
-                        SizedBox(
-                          width: 124,
-                          height: 140,
-                          child: _pose(
-                            context,
-                            recipe,
-                            _SnapshotAnimation(progress, direction),
-                          ),
+    testWidgets('reveal and flight curves preserve ${direction.name} poses', (
+      tester,
+    ) async {
+      await matchCatchGolden(
+        tester,
+        'reveal_viewport_family.${direction.name}',
+        size: const Size(440, 500),
+        // Pin explicit animation poses even though ordinary goldens disable motion.
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: false),
+          child: Builder(
+            builder: (context) => Padding(
+              padding: const EdgeInsets.all(20),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  for (final progress in [0.0, 0.5, 1.0])
+                    for (final recipe in ['content', 'stationary', 'flight'])
+                      SizedBox(
+                        width: 124,
+                        height: 140,
+                        child: _pose(
+                          context,
+                          recipe,
+                          _SnapshotAnimation(progress, direction),
                         ),
-                  ],
-                ),
+                      ),
+                ],
               ),
             ),
           ),
-        );
-      },
-      tags: const ['golden'],
-    );
+        ),
+      );
+    }, tags: const ['golden']);
   }
 }
 
