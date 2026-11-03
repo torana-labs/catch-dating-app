@@ -140,8 +140,9 @@ export function runPreCommitGeneratedArtifacts({
   }
   for (const generator of plan.triggeredGenerators) {
     runShellCommand({
-      command: generator.checkCommand,
-      failureMessage:
+      command: generator.tracked === false ? generator.writeCommand : generator.checkCommand,
+      failureMessage: generator.tracked === false ?
+        `Could not generate ${generator.id}:\n  ${generator.writeCommand}` :
         `Generated artifact drift for ${generator.id}. Regenerate and stage with:\n` +
         `  ${generator.writeCommand}`,
       repoRoot: resolvedRoot,
@@ -154,7 +155,7 @@ export function runPreCommitGeneratedArtifacts({
 
 function matchesGeneratorPath(candidate, generator) {
   return matchesCodegenInput(candidate, generator) ||
-    generator.outputs.some(pattern => matchesGlobPath(candidate, pattern)) ||
+    (generator.tracked !== false && generator.outputs.some(pattern => matchesGlobPath(candidate, pattern))) ||
     generator.id === "flutter.l10n" && matchesGlobPath(candidate, "packages/l10n/lib/*.arb");
 }
 
@@ -213,7 +214,7 @@ function assertIndexIntegrity({
     plan.triggeredGenerators.some(generator => matchesGeneratorPath(candidate, generator)) ||
     plan.l10nInputChanged && matchesGlobPath(candidate, "packages/l10n/lib/generated/**");
   const patterns = [...stagedDart, "tool/harness/component_graph.json",
-    ...plan.triggeredGenerators.flatMap(generator => [...generator.inputs, ...generator.outputs]),
+    ...plan.triggeredGenerators.flatMap(generator => [...generator.inputs, ...(generator.tracked === false ? [] : generator.outputs)]),
     ...(plan.triggeredGeneratorIds.includes("flutter.l10n") ?
       ["packages/l10n/lib/*.arb", ...(plan.l10nInputChanged ? ["packages/l10n/lib/generated/**"] : [])] : [])];
   // Bound discovery to declared families. Do not exclude ignored files: a

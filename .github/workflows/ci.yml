@@ -337,6 +337,7 @@ jobs:
       - name: Install selected contract generator dependencies
         if: ${{ needs.plan.outputs.preflight_functions_dependencies == 'true' }}
         run: npm --prefix functions ci --ignore-scripts
+      - uses: ./.github/actions/generate-contracts
       - name: Execute complete source and generation preflight
         env:
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}

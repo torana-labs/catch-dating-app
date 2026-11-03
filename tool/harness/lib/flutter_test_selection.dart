@@ -167,12 +167,28 @@ const _globalInputPaths = {
   '.github/workflows/flutter-ci.yml',
   'tool/ci/toolchain.env',
 };
+// The schema generator's outputs aren't tracked, so these reach every test
+// that imports one, and no import graph can show which.
+bool _generatedContractInput(String name) =>
+    (name.startsWith('contracts/') && name.endsWith('.json')) ||
+    const {
+      'tool/contracts/generate_schema_contracts.mjs',
+      'tool/contracts/lib/schema_specs.mjs',
+      'tool/contracts/schema_spec_exceptions.json',
+      'tool/contracts/schema_spec_order.json',
+    }.contains(name);
+
+bool _untrackedGeneratedDart(String name) =>
+    name.startsWith('packages/platform/lib/schema_contracts/generated/') ||
+    RegExp(r'^lib/contexts/[^/]+/data/generated/').hasMatch(name);
+
 const _globalInputDirectories = [
   '.github/actions/load-toolchain/',
   '.github/actions/setup-flutter/',
 ];
 
 bool _globalTestInput(String name) =>
+    _generatedContractInput(name) ||
     _globalInputNames.contains(name.split('/').last) ||
     name.endsWith('.arb') ||
     _globalInputPaths.contains(name) ||
@@ -375,6 +391,7 @@ class _Imports {
         throw StateError('Unsupported Dart URI: $value');
       }
       if (!files.containsKey(target)) {
+        if (_untrackedGeneratedDart(target)) return;
         throw StateError('Missing local Dart module: $target');
       }
       dependencies.add(target);

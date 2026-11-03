@@ -12,6 +12,10 @@ on:
       - "apps/host/**"
       - "assets/**"
       - "contracts/**"
+      - "tool/contracts/generate_schema_contracts.mjs"
+      - "tool/contracts/lib/schema_specs.mjs"
+      - "tool/contracts/schema_spec_exceptions.json"
+      - "tool/contracts/schema_spec_order.json"
       - "firebase.json"
       - "firebase/prod/host/**"
       - "lib/**"
@@ -97,6 +101,7 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: ./.github/actions/generate-contracts
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 

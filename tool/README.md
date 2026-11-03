@@ -1266,3 +1266,7 @@ requires inspecting its retained evidence before a new dispatch; no automatic
 deploy retry or rollback is provided. Production measurement and ad launch
 remain separately held. Run `node tool/run.mjs check ci:host-measurement-preview`
 for the offline release-boundary tests.
+
+## Generated Contract Outputs
+
+The schema contract outputs are generated, not tracked: `packages/platform/lib/schema_contracts/generated`, `lib/contexts/*/data/generated`, `functions/src/shared/generated` (except `brand.ts` and `notificationCopyEn.ts`), `admin/src/generated/contracts`, `tool/contracts/generated` and `website/src/shared/contracts/generated`. Bootstrapping a worktree generates them. Run `npm run generate:contracts` after a pull that touches `contracts/**` or the generator, and the IDE analyzer needs the Dart tree present. The pre-commit hook regenerates them when you stage an input.

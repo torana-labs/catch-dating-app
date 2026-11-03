@@ -13,7 +13,7 @@ node tool/contracts/validate_schema_contracts.mjs
 node tool/contracts/check_migration_contracts.mjs
 
 echo "==> Checking generated schema contract outputs"
-node tool/contracts/generate_schema_contracts.mjs --check
+node tool/contracts/generate_schema_contracts.mjs
 node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs
 node tool/contracts/generate_flutter_form_contract_inventory.mjs --check
 node --check tool/contracts/generated/schema_contract_validators.mjs
@@ -70,6 +70,7 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage \
   "npm --prefix functions run test:rules"
 
 echo "==> Running focused Flutter analysis"
+node tool/contracts/generate_schema_contracts.mjs
 flutter analyze --fatal-infos \
   packages/platform/lib/schema_contracts/generated/callable_request_dtos.g.dart \
   packages/platform/lib/schema_contracts/generated/callables \

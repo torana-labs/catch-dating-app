@@ -52,6 +52,7 @@ jobs:
 
       - run: npm --prefix functions ci
 
+      - uses: ./.github/actions/generate-contracts
       - name: Test report capture offline
         run: node --test tool/data/validate_firestore_data.test.mjs
 

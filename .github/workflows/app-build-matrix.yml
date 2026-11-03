@@ -112,6 +112,7 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: ./.github/actions/generate-contracts
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
@@ -153,6 +154,7 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: ./.github/actions/generate-contracts
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 
@@ -226,6 +228,7 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: ./.github/actions/generate-contracts
       - id: toolchain
         uses: ./.github/actions/load-toolchain
 

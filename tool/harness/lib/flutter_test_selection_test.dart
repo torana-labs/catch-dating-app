@@ -443,6 +443,8 @@ void main() {
       'dart_test.yaml',
       'build.yaml',
       'packages/l10n/l10n.yaml',
+      'contracts/firestore/events.schema.json',
+      'tool/contracts/generate_schema_contracts.mjs',
       '.metadata',
       'packages/l10n/lib/app_en.arb',
       'tool/ci/toolchain.env',
@@ -536,7 +538,6 @@ void main() {
       'website/src/app/page.tsx',
       'admin/src/App.tsx',
       'operations/src/run.ts',
-      'contracts/firestore/user.schema.json',
       'artifacts/marketing/hero.png',
       'docs/plans/spec.md',
       'lib/hosts/inbox/README.md',
@@ -568,6 +569,25 @@ void main() {
     // With no test able to read the disk, nothing proves coverage.
     expect(plan({'design/screens/catch.screens.json'})['mode'], 'full');
   });
+  test(
+    'untracked generated Dart is a leaf the import graph can pass through',
+    () {
+      final files = {
+        ...probed,
+        'packages/platform/pubspec.yaml': 'name: catch_platform\n',
+        'lib/uses_generated.dart':
+            "import 'package:catch_platform/schema_contracts/generated/paths.g.dart'; const usesGenerated = 1;",
+        'test/g_test.dart':
+            "import '../lib/uses_generated.dart'; void main() {}",
+      };
+      expect(
+        selected(
+          plan({'lib/uses_generated.dart'}, before: files, after: files),
+        ),
+        ['test/g_test.dart', 'test/probe_test.dart'],
+      );
+    },
+  );
   test('Dart sources outside lib and test are covered by the import graph', () {
     final files = {
       ...probed,

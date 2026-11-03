@@ -220,6 +220,7 @@
           "uniqueItems": true,
           "items": {"type": "string", "minLength": 1}
         },
+        "tracked": {"type": "boolean", "description": "False when the outputs are generated on demand and not committed. Consumers run writeCommand and stage nothing."},
         "checkCommand": {"type": "string", "minLength": 1},
         "writeCommand": {"type": "string", "minLength": 1},
         "platforms": {

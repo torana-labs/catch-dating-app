@@ -8,6 +8,7 @@ import test from "node:test";
 import {
   collectGovernedDocuments,
   compareDocumentMetadata,
+  retiredDocumentPaths,
   compareSemanticVersions,
   parseDocumentLifecycleStatus,
   parseGovernedDocument,
@@ -571,4 +572,9 @@ test("CLI rejects registry and code references to removed documents and headings
   } finally {
     fs.rmSync(repo, {recursive: true, force: true});
   }
+});
+
+test("a generated document leaving git is not a retired document", () => {
+  const base = new Set(["docs/kept.md", "docs/removed.md", "packages/platform/lib/schema_contracts/generated/INDEX.md"]);
+  assert.deepEqual(retiredDocumentPaths(base, new Set(["docs/kept.md"])), ["docs/removed.md"]);
 });

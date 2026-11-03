@@ -34,7 +34,7 @@ function evaluate(expression, options) {
   }, {timeout: 1000});
 }
 
-function fixture(t, {web = false} = {}) {
+function fixture(t, {web = false, catalog = null} = {}) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "hosted-captures-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   const root = path.join(directory, "source");
@@ -103,6 +103,7 @@ function fixture(t, {web = false} = {}) {
   write("website/src/generated/other.ts", "export const authored = true;\n");
   write("docs/widget_catalog.md", "# Authored guidance\n<!-- BEGIN GENERATED WIDGET INVENTORY -->\nold rows\n<!-- END GENERATED WIDGET INVENTORY -->\nAuthored footer\n");
   write(".gitignore", "/artifacts/marketing/app-screenshots/raw/\n");
+  if (catalog) write("tool/harness/component_graph.json", JSON.stringify(catalog));
   const git = (...args) => {
     const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
     assert.equal(result.status, 0, result.stderr);
@@ -673,6 +674,42 @@ test("a release import refuses images rendered from older capture inputs", async
   assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Capture inputs changed/);
 });
 
+test("the consumer allows untracked only what the verified commit's catalog marks as regenerated", async t => {
+  const f = fixture(t, {catalog: {compileCodegen: [
+    {id: "regenerated", tracked: false, outputs: ["website/src/shared/contracts/generated/**", "lib/contexts/*/data/generated/**"]},
+    {id: "committed", outputs: ["website/src/committed/**"]},
+  ]}});
+  const sha = f.options.sourceSha;
+  const workflowRef = `${f.options.repository}/.github/workflows/ci.yml@refs/heads/main`;
+  f.options.workflowSha = sha;
+  f.options.request = {eventName: "push", sourceSha: sha, workflowRef, workflowSha: sha, workflowDefinitionSha: sha,
+    eventSha: sha, runHeadSha: sha};
+  const receipt = exportHostedCaptures(f.options);
+  const consumer = await import(pathToFileURL(path.join(f.root, "tool/marketing/import_hosted_captures.mjs")));
+  const files = new Map([...receipt.files.map(file => [file.path, fs.readFileSync(path.join(f.options.outputDir, file.path))]),
+    ["capture-receipt.json", fs.readFileSync(path.join(f.options.outputDir, "capture-receipt.json"))]]);
+  const binding = {repository: f.options.repository, sourceSha: sha, workflowRef, workflowSha: sha, workflowDefinitionSha: sha,
+    eventSha: sha, runHeadSha: sha, runId: receipt.runId, runAttempt: receipt.runAttempt,
+    artifactId: "100", artifactDigest: `sha256:${"0".repeat(64)}`};
+  f.write("website/src/shared/contracts/generated/nested/record.ts", "regenerated");
+  f.write("lib/contexts/events/data/generated/event.g.dart", "regenerated");
+  assert.equal(consumer.verifyCaptureFiles({files, binding}).receipt.captures.length, 12);
+  for (const refused of [
+    "website/src/committed/output.ts", // a generator whose outputs are committed
+    "website/src/shared/contracts/record.ts", // beside the tree
+    "website/src/shared/contracts/generated_extra/record.ts", // a name that only starts the same
+    "lib/contexts/events/data/record.dart", // beside the wildcard's tree
+  ]) {
+    f.write(refused, "authored");
+    assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Untracked consumer source/, refused);
+    fs.rmSync(path.join(f.root, refused));
+  }
+  // The working copy of the catalog can't widen what the commit says.
+  const committed = fs.readFileSync(path.join(f.root, "tool/harness/component_graph.json"), "utf8");
+  f.write("tool/harness/component_graph.json", committed.replace("website/src/committed/**", "website/src/**"));
+  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /authored source differs/);
+});
+
 test("actual exporter bundle verifies before import and survives unchanged into website dist", async t => {
   const f = fixture(t);
   const tree = f.git("rev-parse", "HEAD^{tree}");
@@ -718,6 +755,12 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   fs.appendFileSync(path.join(f.root, ".git/info/exclude"), "\nwebsite/src/ignored.tsx\n");
   f.write("website/src/ignored.tsx", "untracked website source");
   assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Untracked consumer source/);
+  fs.rmSync(path.join(f.root, "website/src/ignored.tsx"));
+  // This fixture's commit has no catalog, so it exempts no generated path either.
+  f.write("website/src/shared/contracts/generated/old.ts", "untracked before the catalog named it");
+  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Untracked consumer source/);
+  fs.rmSync(path.join(f.root, "website/src/shared/contracts/generated/old.ts"));
+  f.write("website/src/ignored.tsx", "untracked website source");
   fs.unlinkSync(path.join(f.root, "website/src/ignored.tsx"));
   const generated = receipt.files.filter(file => file.path !== "tool/marketing/capture_manifest.json");
   f.git("restore", "--", ...generated.map(file => file.path));
