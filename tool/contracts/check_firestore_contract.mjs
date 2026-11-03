@@ -209,7 +209,8 @@ function collectDartHttpsCallableUses() {
   if (!fs.existsSync(libDir)) return [];
   const uses = [];
   const pattern = /httpsCallable\(\s*['"]([^'"]+)['"]/g;
-  for (const file of walkFiles(libDir)) {
+  const platformDir = path.join(repoRoot, "packages/platform/lib");
+  for (const file of [...walkFiles(libDir), ...(fs.existsSync(platformDir) ? walkFiles(platformDir) : [])]) {
     if (!file.endsWith(".dart") ||
         file.endsWith(".g.dart") ||
         file.endsWith(".freezed.dart")) {

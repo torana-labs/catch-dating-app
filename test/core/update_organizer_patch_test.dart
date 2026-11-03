@@ -4,7 +4,7 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
-import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

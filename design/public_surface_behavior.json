@@ -5,7 +5,7 @@
   "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
   "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the screen state contracts in design/screens/catch.screens.json; event eligibility remains owned by the viewer availability resolver.",
   "inventorySources": {
-    "appRoutes": "lib/platform/routing/route_contract.dart",
+    "appRoutes": "packages/platform/lib/routing/route_contract.dart",
     "appScreens": "design/screens/catch.screens.json",
     "websiteRoutes": "design/website/routes.json"
   },
@@ -4293,7 +4293,7 @@
       ],
       "evidence": [
         {
-          "path": "lib/platform/routing/route_contract.dart",
+          "path": "packages/platform/lib/routing/route_contract.dart",
           "contains": [
             "savedEventsScreen('/saved-events'"
           ]
@@ -4700,7 +4700,7 @@
       ],
       "evidence": [
         {
-          "path": "lib/platform/routing/route_contract.dart",
+          "path": "packages/platform/lib/routing/route_contract.dart",
           "contains": [
             "eventSuccessCompanionScreen("
           ]

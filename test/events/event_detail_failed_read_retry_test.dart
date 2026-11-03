@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/failed_reads.dart';
+import 'package:catch_platform/riverpod_ui/failed_reads.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

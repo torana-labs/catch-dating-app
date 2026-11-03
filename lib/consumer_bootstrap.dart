@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_scaffold.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_scaffold.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

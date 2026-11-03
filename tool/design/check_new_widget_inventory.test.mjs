@@ -401,13 +401,13 @@ test("generated exclusions are file-specific rather than directory-wide", () => 
   assert.equal(isWidgetInventoryPath("apps/consumer/lib/explore/explore_screen.dart"), true);
   assert.equal(
     isGeneratedProductionWidgetDartPath(
-      "lib/l10n/generated/app_localizations.dart",
+      "packages/platform/lib/generated.g.dart",
     ),
     true,
   );
   assert.equal(
     isGeneratedProductionWidgetDartPath(
-      "lib/l10n/generated/app_localizations_en.dart",
+      "packages/platform/lib/generated.freezed.dart",
     ),
     true,
   );

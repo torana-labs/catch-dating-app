@@ -8,8 +8,8 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_pen
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_sheet.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_organizer_post_controller.g.dart';

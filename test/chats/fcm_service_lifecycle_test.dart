@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
-import 'package:catch_dating_app/platform/push/fcm_service.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/push/fcm_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';

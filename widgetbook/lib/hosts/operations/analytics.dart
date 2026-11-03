@@ -8,7 +8,7 @@ import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_secti
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

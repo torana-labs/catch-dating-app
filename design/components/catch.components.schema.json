@@ -285,7 +285,7 @@
             },
             "file": {
               "type": "string",
-              "pattern": "^(?:lib|packages/catch_ui/lib)/.+\\.dart$"
+              "pattern": "^(?:lib|packages/catch_ui/lib|packages/platform/lib)/.+\\.dart$"
             },
             "constructors": {
               "type": "array",
@@ -848,7 +848,7 @@
         },
         "file": {
           "type": "string",
-          "pattern": "^(?:lib|packages/catch_ui/lib)/.+\\.dart$"
+          "pattern": "^(?:lib|packages/catch_ui/lib|packages/platform/lib)/.+\\.dart$"
         },
         "summary": {
           "type": "string",

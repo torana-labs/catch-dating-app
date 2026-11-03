@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'external_event.freezed.dart';

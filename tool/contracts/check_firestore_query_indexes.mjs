@@ -216,8 +216,9 @@ export function typeScriptQueryShapes(source) {
 }
 
 function repositorySources(repoRoot) {
-  const libRoot = path.join(repoRoot, "lib");
-  const dart = fs.existsSync(libRoot) ? walk(libRoot)
+  const dartRoots = ["lib", "packages/platform/lib"].map((root) => path.join(repoRoot, root))
+    .filter((root) => fs.existsSync(root));
+  const dart = dartRoots.length > 0 ? dartRoots.flatMap((root) => walk(root))
     .filter((file) => file.endsWith(".dart"))
     .filter((file) => file.includes(`${path.sep}data${path.sep}`))
     .filter((file) => path.basename(file).includes("repository"))

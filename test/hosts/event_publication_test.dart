@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/data/event_publication_journal.
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

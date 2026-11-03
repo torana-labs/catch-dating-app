@@ -4,11 +4,11 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operation_projection.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
-import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/persistence/command_journal_storage.dart';
+import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

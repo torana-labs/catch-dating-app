@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
-import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'organizer.freezed.dart';

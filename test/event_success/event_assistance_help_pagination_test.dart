@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scop
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_sheet.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

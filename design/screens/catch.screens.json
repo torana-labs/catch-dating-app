@@ -2005,7 +2005,7 @@
     "OrderedPhotoManagerScreen": {
       "owners": [
         {
-          "file": "lib/platform/media/ordered_photo_picker.dart",
+          "file": "packages/platform/lib/media/ordered_photo_picker.dart",
           "symbol": "_OrderedPhotoManagerScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -19799,7 +19799,7 @@
             "symbol": "OnboardingWelcomeBody"
           },
           {
-            "file": "lib/platform/analytics/app_analytics.dart",
+            "file": "packages/platform/lib/analytics/app_analytics.dart",
             "symbol": "AppAnalytics"
           }
         ],
@@ -24504,13 +24504,13 @@
             "symbol": "EventPinsMap"
           },
           {
-            "file": "lib/platform/device/external_links.dart",
+            "file": "packages/platform/lib/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/platform/device/external_links.dart",
+            "file": "packages/platform/lib/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],
@@ -25949,7 +25949,7 @@
             "symbol": "AuthSessionController"
           },
           {
-            "file": "lib/platform/device/external_links.dart",
+            "file": "packages/platform/lib/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],

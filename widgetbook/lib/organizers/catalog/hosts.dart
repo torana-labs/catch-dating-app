@@ -2,7 +2,7 @@ import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_contact_section.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_formatters.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_host_section.dart';
-import 'package:catch_dating_app/platform/theme/activity_palette.dart';
+import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

@@ -8,11 +8,11 @@ import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

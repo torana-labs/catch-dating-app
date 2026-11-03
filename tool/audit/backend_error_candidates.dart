@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-const defaultRoots = ['lib', 'test'];
+const defaultRoots = ['lib', 'packages/platform/lib', 'test'];
 const generatedSuffixes = ['.g.dart', '.freezed.dart'];
 
 final rules = <CandidateRule>[
@@ -318,7 +318,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/platform/errors/error_logger.dart') {
+  if (path == 'packages/platform/lib/errors/error_logger.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
       reason: 'central logger implementation owns raw crash logging',
@@ -340,7 +340,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/platform/push/fcm_service.dart' &&
+  if (path == 'packages/platform/lib/push/fcm_service.dart' &&
       rule.id == 'direct_firestore_write') {
     return const CandidateDisposition(
       status: CandidateStatus.verified,
@@ -422,8 +422,8 @@ CandidateDisposition _dispositionFor({
 }
 
 bool _isCoreMapperFile(String path) {
-  return path == 'lib/platform/errors/backend_error_util.dart' ||
-      path == 'lib/platform/errors/app_error_message.dart';
+  return path == 'packages/platform/lib/errors/backend_error_util.dart' ||
+      path == 'packages/platform/lib/errors/app_error_message.dart';
 }
 
 bool _isBackendWrapped(List<String> lines, int lineIndex) {

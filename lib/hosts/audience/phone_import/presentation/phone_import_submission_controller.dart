@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/programmes/domain/phone_import_batch.d
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:flutter/foundation.dart';
 
 enum PhoneImportSubmissionPhase {

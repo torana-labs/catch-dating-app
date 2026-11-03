@@ -6,12 +6,12 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_en
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_source_sheet.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/platform/routing/route_contract.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

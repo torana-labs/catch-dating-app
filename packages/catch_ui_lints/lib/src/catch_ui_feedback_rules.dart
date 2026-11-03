@@ -75,8 +75,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     final uri = element?.library?.uri.toString();
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'CatchNoticeOverlay' &&
-        uri ==
-            'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart' &&
+        uri == 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
           '/lib/app.dart',
           '/widgetbook/lib/primitives/catalog/feedback.dart',
@@ -89,7 +88,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     if (element?.name == 'onMessage' &&
         element?.enclosingElement?.name == 'FirebaseMessaging' &&
         uri == 'package:firebase_messaging/firebase_messaging.dart' &&
-        !path.endsWith('/lib/platform/push/fcm_service.dart')) {
+        !path.endsWith('/packages/platform/lib/push/fcm_service.dart')) {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchFeedbackRules.notificationDeliveryIsServiceOwned,

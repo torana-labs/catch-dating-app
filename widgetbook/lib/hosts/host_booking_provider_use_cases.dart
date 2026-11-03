@@ -13,7 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.d
 import 'package:catch_dating_app/hosts/presentation/widgets/host_booking_provider_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_luma_connection_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

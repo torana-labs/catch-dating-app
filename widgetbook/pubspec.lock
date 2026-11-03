@@ -222,6 +222,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  catch_platform:
+    dependency: "direct main"
+    description:
+      path: "../packages/platform"
+      relative: true
+    source: path
+    version: "0.1.0"
   catch_tokens:
     dependency: "direct main"
     description:

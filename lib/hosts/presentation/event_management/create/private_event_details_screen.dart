@@ -7,16 +7,15 @@ import 'package:catch_dating_app/events/events.dart'
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_listing_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_content_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
-import 'package:catch_dating_app/platform/errors/app_error_context.dart'
-    as operation;
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/field_value_validation.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_context.dart' as operation;
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/field_value_validation.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

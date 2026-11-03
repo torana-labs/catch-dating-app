@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/host_attention_policies.g.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
 import 'package:meta/meta.dart';
 
 /// Shared decision horizon for Today's operational queue and event preview.

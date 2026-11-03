@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
-import 'package:catch_dating_app/platform/cache/app_clock.dart';
-import 'package:catch_dating_app/platform/cache/cache_policy.dart';
-import 'package:catch_dating_app/platform/cache/cache_tags.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policy.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

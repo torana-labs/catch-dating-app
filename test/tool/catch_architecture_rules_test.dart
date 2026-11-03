@@ -25,7 +25,7 @@ final _map = ContextMap.parse(
       'contexts': 'lib/contexts/',
       'pages': 'lib/pages/',
       'kernel': 'packages/kernel/lib/',
-      'platform': 'lib/platform/',
+      'platform': 'packages/platform/lib/',
     },
     'contexts': [
       {'id': 'events', 'owns': 'Events.'},
@@ -679,7 +679,7 @@ class HostOrganizersScreen extends ConsumerWidget {}
       );
       for (final path in const [
         'lib/core/firebase_providers.dart',
-        'lib/platform/firebase_providers.dart',
+        'packages/platform/lib/firebase_providers.dart',
       ]) {
         expect(
           _rules(
@@ -780,12 +780,25 @@ final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, ke
       }
       expect(
         _contextRules(
-          'lib/platform/firebase.dart',
+          'packages/platform/lib/firebase.dart',
           "import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';\n",
         ),
         isEmpty,
       );
     });
+
+    test(
+      'the platform pubspec holds its imports, so the upward rule stands down',
+      () {
+        expect(
+          _contextRules(
+            'packages/platform/lib/firebase.dart',
+            "import 'package:catch_dating_app/contexts/events/events.dart';\n",
+          ),
+          isEmpty,
+        );
+      },
+    );
 
     test('app screens may import anything', () {
       expect(
@@ -874,7 +887,7 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
             'contexts': 'lib/contexts/',
             'pages': 'lib/pages/',
             'kernel': 'packages/kernel/lib/',
-            'platform': 'lib/platform/',
+            'platform': 'packages/platform/lib/',
           },
           'contexts': [
             {'id': 'events', 'owns': 'Events.'},

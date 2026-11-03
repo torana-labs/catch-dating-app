@@ -150,7 +150,7 @@ function screenPlan(options) {
     hash: createHash("sha1").update(providerSource).digest("hex"),
   };
   const screenImports = dartImports([
-    "package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart",
+    "package:catch_platform/riverpod_ui/catch_async_boundary.dart",
     "package:catch_ui/catch_ui.dart",
     "package:flutter/widgets.dart",
     "package:flutter_riverpod/flutter_riverpod.dart",
@@ -179,7 +179,7 @@ function screenPlan(options) {
       ...(dependencies.length > 0
         ? [`apps/${app}/pubspec.yaml, under dependencies:\n${dependencies.join("\n")}\nthen flutter pub get`]
         : []),
-      `lib/platform/routing/route_contract.dart and lib/routing/go_router.dart: add the route ${routeId}, then node tool/ui_capture/check_route_inventory.mjs --update writes it to tool/ui_capture/route_inventory.json:\n  {"id": "${routeId}", ...}`,
+      `packages/platform/lib/routing/route_contract.dart and lib/routing/go_router.dart: add the route ${routeId}, then node tool/ui_capture/check_route_inventory.mjs --update writes it to tool/ui_capture/route_inventory.json:\n  {"id": "${routeId}", ...}`,
       `tool/ui_capture/capture_coverage.json, under routes, until the capture lands:\n  {"routeId": "${routeId}", "status": "planned", "priority": "P1", "reason": "Redesigned screen; its capture lands with it."}`,
       `tool/design/screen_top_bar_contracts.json, under contracts:\n  {"path": "${folder}/${name}_screen.dart", "role": "compact", "expression": "CatchTopBar.route", "owner": "CatchTopBar", "surface": "CatchRouteScaffold"}`,
       "After editing the view model, run build_runner so its .g.dart matches.",

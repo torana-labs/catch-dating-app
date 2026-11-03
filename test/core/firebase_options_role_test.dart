@@ -2,7 +2,7 @@ import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/firebase_options_dev.dart';
 import 'package:catch_dating_app/firebase_options_prod.dart';
 import 'package:catch_dating_app/firebase_options_staging.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_platform/app_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 

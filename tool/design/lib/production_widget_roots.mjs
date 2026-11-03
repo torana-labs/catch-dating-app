@@ -1,6 +1,7 @@
 export const productionWidgetRoots = Object.freeze([
   "lib",
   "packages/catch_ui/lib",
+  "packages/platform/lib",
   "apps/consumer/lib",
   "apps/host/lib",
 ]);
@@ -10,8 +11,6 @@ export const productionWidgetGlobs = Object.freeze(
 );
 
 const generatedProductionWidgetFiles = new Set([
-  "lib/l10n/generated/app_localizations.dart",
-  "lib/l10n/generated/app_localizations_en.dart",
 ]);
 
 export function isProductionWidgetDartPath(value) {

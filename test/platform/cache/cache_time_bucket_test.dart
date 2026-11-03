@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/platform/cache/cache_time_bucket.dart';
+import 'package:catch_platform/cache/cache_time_bucket.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

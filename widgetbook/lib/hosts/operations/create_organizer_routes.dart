@@ -9,8 +9,8 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/create/
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

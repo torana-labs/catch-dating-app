@@ -28,8 +28,8 @@ void main() {
         'widgetbook/lib/text.dart',
         'lib/a.g.dart',
         'lib/a.freezed.dart',
-        'lib/platform/theme/a.dart',
-        'lib/l10n/generated/a.dart',
+        'packages/platform/lib/theme/a.dart',
+        'packages/l10n/lib/generated/a.dart',
       ]) {
         expect(textMigrationScope(file), isFalse, reason: file);
       }

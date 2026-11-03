@@ -28,6 +28,7 @@ workspace:
   - packages/catch_ui
   - packages/kernel
   - packages/l10n
+  - packages/platform
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -44,6 +45,8 @@ dependencies:
     path: packages/kernel
   catch_l10n:
     path: packages/l10n
+  catch_platform:
+    path: packages/platform
   flutter:
     sdk: flutter
 

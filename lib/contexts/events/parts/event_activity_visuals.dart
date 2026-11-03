@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:flutter/material.dart';
 
 /// Presentation-only visual taxonomy for event activity surfaces.

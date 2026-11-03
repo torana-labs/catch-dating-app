@@ -3,12 +3,12 @@ import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_res
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
-import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         AddOrganizerManagerCallableRequest,
         CreateOrganizerCallableRequest,

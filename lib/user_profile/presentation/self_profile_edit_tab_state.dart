@@ -6,14 +6,14 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dar
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_height_editor.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/format_utils.dart';
 import 'package:catch_kernel/labelled.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart'
     show AutofillHints, IconData, TextCapitalization, TextInputType, ValueKey;

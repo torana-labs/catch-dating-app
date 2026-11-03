@@ -109,8 +109,8 @@ test("declared Functions runtime modules are imported by runtime code", () => {
 });
 
 const dartDirectories = [
-  "lib/platform/schema_contracts/generated/schemas",
-  "lib/platform/schema_contracts/generated/callables",
+  "packages/platform/lib/schema_contracts/generated/schemas",
+  "packages/platform/lib/schema_contracts/generated/callables",
 ];
 
 function outputFixture(t) {
@@ -202,8 +202,8 @@ test("check retains orphan detection in all exclusive Functions directories", (t
 test("check accepts outputs owned by other generators without writes", (t) => {
   const fixture = outputFixture(t);
   for (const relativePath of [
-    "lib/platform/schema_contracts/generated/domain_producer.g.dart",
-    "lib/platform/schema_contracts/generated/schemas_other/current.g.dart",
+    "packages/platform/lib/schema_contracts/generated/domain_producer.g.dart",
+    "packages/platform/lib/schema_contracts/generated/schemas_other/current.g.dart",
     "packages/l10n/lib/generated/structured_domain_copy.g.dart",
     "functions/src/shared/generated/anotherProducer.ts",
   ]) fixture.write(relativePath, "// independently generated\n");
@@ -212,7 +212,7 @@ test("check accepts outputs owned by other generators without writes", (t) => {
 
 test("publication removes only owned stale outputs and restores expected contents", (t) => {
   const fixture = outputFixture(t);
-  const foreign = "lib/platform/schema_contracts/generated/domain_producer.g.dart";
+  const foreign = "packages/platform/lib/schema_contracts/generated/domain_producer.g.dart";
   fixture.write(foreign, "// keep this producer\n");
   const foreignHash = fixture.hashes()[foreign];
   for (const directory of dartDirectories) {
@@ -292,7 +292,7 @@ test("check reports and publish removes retired outputs only when present", (t) 
 // generated output below the contexts until the output moves into catch_platform.
 test("generated platform Dart imports nothing from a context", () => {
   const root = new URL("../../", import.meta.url).pathname;
-  const generated = path.join(root, "lib/platform/schema_contracts/generated");
+  const generated = path.join(root, "packages/platform/lib/schema_contracts/generated");
   const upward = fs.readdirSync(generated, {recursive: true})
     .filter((file) => file.endsWith(".dart"))
     .filter((file) => fs.readFileSync(path.join(generated, file), "utf8")

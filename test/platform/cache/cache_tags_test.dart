@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/platform/cache/cache_tags.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

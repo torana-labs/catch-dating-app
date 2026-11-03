@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart'
     show HostAudienceView;
-import 'package:catch_dating_app/platform/routing/route_contract.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 
 String? hostOrganizerAudienceRedirect(Uri uri) {
   if (uri.queryParameters['tab'] != 'audience') return null;

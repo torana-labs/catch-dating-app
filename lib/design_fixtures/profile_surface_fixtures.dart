@@ -9,8 +9,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/platform/device/connectivity_service.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 
 /// Shared deterministic fixtures for Profile/Public Profile design review.
 ///

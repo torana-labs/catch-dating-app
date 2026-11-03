@@ -27,11 +27,11 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_loadin
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
-import 'package:catch_dating_app/platform/device/external_share.dart';
-import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
+import 'package:catch_platform/device/external_share.dart';
+import 'package:catch_platform/media/uploaded_photo.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

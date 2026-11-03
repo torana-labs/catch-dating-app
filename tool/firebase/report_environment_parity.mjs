@@ -284,8 +284,8 @@ export function loadRepositoryState(repoRoot = defaultRepoRoot) {
       .map((file) => [file.slice(0, -".json".length),
         JSON.parse(fs.readFileSync(path.join(dartDefinesDir, file), "utf8"))]),
   );
-  const dartSources = readSources(repoRoot, "lib", (file) =>
-    file.endsWith(".dart") && !file.endsWith(".g.dart"));
+  const dartSources = ["lib", "packages/platform/lib"].flatMap((root) => readSources(repoRoot, root, (file) =>
+    file.endsWith(".dart") && !file.endsWith(".g.dart")));
   const policy = readJson(repoRoot, policyPath);
   const gateSources = [
     ...functionSources,

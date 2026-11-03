@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/platform/cache/app_clock.dart';
-import 'package:catch_dating_app/platform/cache/cache_policy.dart';
-import 'package:catch_dating_app/platform/cache/callable_read.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policy.dart';
+import 'package:catch_platform/cache/callable_read.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/platform/errors/error_logger.dart';
+import 'package:catch_platform/errors/error_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A [UserProfileRepository] fake that tracks every update and can simulate

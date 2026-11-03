@@ -3,7 +3,7 @@
   "version": 4,
   "updated": "2026-11-02",
   "sourceOfTruth": {
-    "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and lib/platform are the reference implementation; @catch/web-ui implements the same contracts for React.",
+    "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and packages/platform/lib are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
     "designTools": "Figma and Claude Design may compose these contracts, but they do not own production widget implementation.",
     "handoff": "Design handoffs should name contract ids and props. Arbitrary JSX/CSS is proposal material until mapped to these contracts."
@@ -1976,7 +1976,7 @@
           {
             "id": "catch.error_state.localized_error_state",
             "symbol": "CatchLocalizedErrorState",
-            "file": "lib/platform/riverpod_ui/catch_localized_error_state.dart",
+            "file": "packages/platform/lib/riverpod_ui/catch_localized_error_state.dart",
             "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
             "states": [
               "mapped-error",
@@ -2003,7 +2003,7 @@
           {
             "id": "catch.error_state.localized_error_scaffold",
             "symbol": "CatchLocalizedErrorScaffold",
-            "file": "lib/platform/riverpod_ui/catch_localized_error_scaffold.dart",
+            "file": "packages/platform/lib/riverpod_ui/catch_localized_error_scaffold.dart",
             "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
             "states": [
               "mapped-error",
@@ -2030,7 +2030,7 @@
           {
             "id": "catch.error_state.localized_sliver_error_state",
             "symbol": "CatchLocalizedSliverErrorState",
-            "file": "lib/platform/riverpod_ui/catch_localized_sliver_error_state.dart",
+            "file": "packages/platform/lib/riverpod_ui/catch_localized_sliver_error_state.dart",
             "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
             "states": [
               "mapped-error",
@@ -2384,7 +2384,7 @@
           {
             "id": "catch.banner.localized",
             "symbol": "CatchLocalizedErrorBanner",
-            "file": "lib/platform/riverpod_ui/catch_localized_error_banner.dart",
+            "file": "packages/platform/lib/riverpod_ui/catch_localized_error_banner.dart",
             "summary": "App-localized persistent error mapping and explicit recovery, with a mutation recipe that hides idle/pending/success states. Shared CatchBanner owns paint and actions.",
             "states": [
               "mapped-error",
@@ -2642,7 +2642,7 @@
           {
             "id": "catch.notice.host",
             "symbol": "CatchNoticeOverlay",
-            "file": "lib/platform/riverpod_ui/catch_notice_overlay.dart",
+            "file": "packages/platform/lib/riverpod_ui/catch_notice_overlay.dart",
             "summary": "One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs.",
             "states": [
               "empty",
@@ -6392,7 +6392,7 @@
       "summary": "Exhaustive async-state boundary with typed data retention and one timeout/recovery lifecycle for box and sliver output.",
       "dart": {
         "symbol": "CatchAsyncBoundary",
-        "file": "lib/platform/riverpod_ui/catch_async_boundary.dart",
+        "file": "packages/platform/lib/riverpod_ui/catch_async_boundary.dart",
         "constructors": [
           "CatchAsyncBoundary",
           "CatchAsyncBoundary.sliver"
@@ -7994,7 +7994,7 @@
           {
             "id": "catch.sheet.external_share",
             "symbol": "CatchExternalShareSheet",
-            "file": "lib/platform/riverpod_ui/catch_external_share_sheet.dart",
+            "file": "packages/platform/lib/riverpod_ui/catch_external_share_sheet.dart",
             "summary": "App adapter that captures the preview as PNG, uses ExternalShareController, records best-effort attribution and resolves localized failure copy.",
             "states": [
               "preview",

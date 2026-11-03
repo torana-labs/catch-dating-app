@@ -79,9 +79,9 @@ export function validateReadLimits(sources) {
 }
 
 function repositorySources(repoRoot) {
-  const libRoot = path.join(repoRoot, "lib");
-  if (!fs.existsSync(libRoot)) return [];
-  return walk(libRoot)
+  const dartRoots = ["lib", "packages/platform/lib"].map((root) => path.join(repoRoot, root))
+    .filter((root) => fs.existsSync(root));
+  return dartRoots.flatMap((root) => walk(root))
     .filter((file) => file.endsWith(".dart"))
     .filter((file) => file.includes(`${path.sep}data${path.sep}`))
     .filter(

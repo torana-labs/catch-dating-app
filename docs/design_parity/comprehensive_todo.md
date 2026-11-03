@@ -623,7 +623,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   and `lib/organizers/presentation/detail/widgets/membership_button.dart`
   notification-toggle progress, Settings delete/sign-out mutation progress,
   `lib/pages/startup/splash_screen.dart` startup loading, and
-  `lib/platform/riverpod_ui/catch_async_value_view.dart` core async primitive defaults.
+  `packages/platform/lib/riverpod_ui/catch_async_value_view.dart` core async primitive defaults.
 
 ### Reference Export Queue
 
@@ -1229,7 +1229,7 @@ tests, captures, Widgetbook, Git, and CI.
 - [x] `TODO-DS-002` Keep portable foundation tokens in
   `design/tokens/catch.tokens.json`.
 - [x] `TODO-DS-003` Keep Flutter implementation of tokens/theme under
-  `lib/platform/theme`.
+  `packages/platform/lib/theme`.
 - [ ] `TODO-DS-004` Reconcile every Claude Design primitive against Flutter
   source, component contracts, and Widgetbook entries.
   - Foundation-token Widgetbook specimens now cover color roles, activity

@@ -17,7 +17,7 @@ const repoRoot = path.resolve(toolDir, "../..");
  * serve. `app` is the shared Flutter source of the Consumer and Host apps.
  */
 export const clientCallableSurfaces = Object.freeze({
-  app: Object.freeze({root: "lib", extensions: Object.freeze([".dart"])}),
+  app: Object.freeze({root: "lib", alsoRoots: Object.freeze(["packages/platform/lib"]), extensions: Object.freeze([".dart"])}),
   website: Object.freeze({
     root: "website/src",
     extensions: Object.freeze([".ts", ".tsx"]),
@@ -146,6 +146,9 @@ export function readClientCallableSources(
       }
     };
     walk(path.join(root, definition.root));
+    for (const also of definition.alsoRoots ?? []) {
+      if (fs.existsSync(path.join(root, also))) walk(path.join(root, also));
+    }
   }
   return files;
 }

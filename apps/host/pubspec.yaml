@@ -12,6 +12,8 @@ dependencies:
     path: ../..
   catch_kernel:
     path: ../../packages/kernel
+  catch_platform:
+    path: ../../packages/platform
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.3.2

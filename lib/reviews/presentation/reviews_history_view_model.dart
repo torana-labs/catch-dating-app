@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
 
 ReviewsHistoryState buildReviewsHistoryState({
   required AppLocalizations l10n,

@@ -19,12 +19,12 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
-import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
-import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
-import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

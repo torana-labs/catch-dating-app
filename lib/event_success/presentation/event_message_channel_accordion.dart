@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/event_success/presentation/event_message_preference_section.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

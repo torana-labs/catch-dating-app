@@ -12,9 +12,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
-import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
 
 bool eventDetailHasBookingReadyProfile(
   UserProfile? userProfile, {

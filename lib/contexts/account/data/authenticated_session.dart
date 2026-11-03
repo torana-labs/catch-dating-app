@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/platform/cache/cache_policy.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_platform/cache/cache_policy.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'authenticated_session.g.dart';

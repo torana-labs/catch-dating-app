@@ -3,12 +3,12 @@ import 'package:catch_dating_app/contexts/forms/data/host_application_repository
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

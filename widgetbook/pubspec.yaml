@@ -15,6 +15,8 @@ dependencies:
     path: ../packages/kernel
   catch_l10n:
     path: ../packages/l10n
+  catch_platform:
+    path: ../packages/platform
   flutter:
     sdk: flutter
   flutter_localizations:

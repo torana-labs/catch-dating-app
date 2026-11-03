@@ -334,7 +334,7 @@ jobs:
           # antialiasing noise. Run them locally with `flutter test test/goldens`.
           # Two file workers use the hosted runner without unbounded compiler
           # processes; shard coverage is still owned by this single invocation.
-          flutter test --concurrency=2 --exclude-tags=golden --coverage "${files[@]}"
+          flutter test --concurrency=2 --exclude-tags=golden --coverage --coverage-package '^catch_(dating_app|platform)$' "${files[@]}"
 
       - name: Label synthetic RSVP widget captures
         if: always()

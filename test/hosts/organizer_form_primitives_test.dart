@@ -4,8 +4,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_basics_step.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/widgets/organizer_host_defaults_step.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

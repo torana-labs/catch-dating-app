@@ -54,7 +54,7 @@ export function scanLoadingCompositionSource({relativePath, source}) {
   const protectedPath =
     protectedHostPaths.some((prefix) => relativePath.startsWith(prefix)) ||
     isAppPackageSource(relativePath) ||
-    (relativePath.startsWith('lib/') &&
+    ((relativePath.startsWith('lib/') || relativePath.startsWith('packages/platform/lib/')) &&
       !unresolvedHostPrefixes.some((prefix) => relativePath.startsWith(prefix)) &&
       relativePath !== 'lib/routing/go_router.dart');
 

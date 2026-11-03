@@ -9,9 +9,9 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_a
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
-import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
+import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

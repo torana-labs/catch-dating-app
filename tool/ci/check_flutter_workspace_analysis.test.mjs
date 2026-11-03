@@ -20,6 +20,7 @@ const repositoryPubspecs = {
   "packages/kernel/pubspec.yaml": "name: catch_kernel\nresolution: workspace\n",
   "packages/kernel/test/labelled_test.dart": "",
   "packages/l10n/pubspec.yaml": "name: catch_l10n\nresolution: workspace\n",
+  "packages/platform/pubspec.yaml": "name: catch_platform\nresolution: workspace\n",
   "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",
   "apps/host/pubspec.yaml": "name: catch_host_app\nresolution: workspace\n",
   "pubspec.yaml": "name: catch_dating_app\nworkspace:\n  - apps/host\n",
@@ -30,13 +31,13 @@ test("workspace plan discovers every pubspec and resolves workspace members once
   const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
   assert.deepEqual(
     plan.packages.map((entry) => entry.directory),
-    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "packages/platform", "tool/widget_dedupe", "widgetbook"],
   );
   assert.deepEqual(
     plan.steps.filter((step) => step.phase === "resolve").map((step) => step.directory),
     ["", "tool/widget_dedupe", "widgetbook"],
   );
-  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 8);
+  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 9);
   assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_tokens" && step.phase === "analyze"), {
     phase: "analyze", directory: "packages/catch_tokens", command: "dart",
     args: ["analyze", "lib", "--fatal-infos"],
@@ -63,7 +64,7 @@ test("every nested package is analyzed from its own package boundary", () => {
     .map((step) => step.directory);
   assert.deepEqual(
     analyzedDirectories,
-    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "packages/kernel", "packages/l10n", "packages/platform", "tool/widget_dedupe", "widgetbook"],
   );
 });
 
@@ -156,7 +157,7 @@ test("app packages reach the plugins through the root options, not a block of th
     assert.doesNotMatch(options, /^plugins:/mu, app);
   }
 
-  for (const name of ["kernel", "l10n"]) {
+  for (const name of ["kernel", "l10n", "platform"]) {
     assert.doesNotMatch(rootOptions, new RegExp(`^\\s*- packages/${name}(?:/|\\b)`, "mu"));
     const options = fs.readFileSync(path.join(root, "packages", name, "analysis_options.yaml"), "utf8");
     assert.match(options, /^include: \.\.\/\.\.\/analysis_options\.yaml$/mu, name);

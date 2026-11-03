@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:catch_kernel/brand.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 

@@ -22,7 +22,7 @@ const sharedHomes = new Map([
   ["packages/catch_ui/lib/src/primitives/", "L2"],
   ["packages/catch_ui/lib/src/components/", "L3"],
   ["packages/catch_ui/lib/src/patterns/", "L4"],
-  ["lib/platform/riverpod_ui/", "L4a"],
+  ["packages/platform/lib/riverpod_ui/", "L4a"],
 ]);
 
 export function sharedWidgetLevel(file) {
@@ -36,7 +36,7 @@ export function sharedWidgetLevel(file) {
  */
 export function isAppSharedWidgetSource(file) {
   return /^lib\/contexts\/[^/]+\/parts\//u.test(file) ||
-    file.startsWith("lib/platform/media/") ||
+    file.startsWith("packages/platform/lib/media/") ||
     file.startsWith("lib/pages/startup/");
 }
 
@@ -96,7 +96,7 @@ export function roleNounRedirectAdvice(name, redirects) {
 /** Homes where the reserved `Catch` prefix is legal outside the design-system packages. */
 export function reservedPrefixAllowed(file) {
   return file.startsWith("packages/catch_ui/") || file.startsWith("packages/catch_tokens/") ||
-    file.startsWith("lib/platform/riverpod_ui/") ||
+    file.startsWith("packages/platform/lib/riverpod_ui/") ||
     // App bootstrap files carry the product name, as the grammar exempts them.
     /^lib\/[^/]+\.dart$/u.test(file) || /^apps\/(?:consumer|host)\/lib\/[^/]+\.dart$/u.test(file);
 }

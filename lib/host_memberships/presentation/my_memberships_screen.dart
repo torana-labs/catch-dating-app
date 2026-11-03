@@ -5,11 +5,11 @@ import 'package:catch_dating_app/host_memberships/presentation/host_membership_s
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_controller.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_view_model.dart';
-import 'package:catch_dating_app/platform/errors/app_error_message.dart';
-import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -22,12 +22,12 @@ import 'package:catch_dating_app/explore/presentation/explore_discovery_window_c
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/platform/cache/app_clock.dart';
-import 'package:catch_dating_app/platform/cache/cache_time_bucket.dart';
-import 'package:catch_dating_app/platform/device/device_location.dart';
-import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_time_bucket.dart';
+import 'package:catch_platform/device/device_location.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_feed_providers.g.dart';

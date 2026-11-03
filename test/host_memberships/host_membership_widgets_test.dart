@@ -5,7 +5,7 @@ import 'package:catch_dating_app/host_memberships/presentation/host_membership_p
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_upsell_banner.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_screen.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

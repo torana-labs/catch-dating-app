@@ -27,9 +27,9 @@ const _eventDetailPathFragments = <String>[
 
 const _excludedPathFragments = <String>[
   '/packages/catch_tokens/lib/',
-  '/lib/platform/theme/',
-  '/lib/platform/schema_contracts/generated/',
-  '/lib/l10n/generated/',
+  '/packages/platform/lib/theme/',
+  '/packages/platform/lib/schema_contracts/generated/',
+  '/packages/l10n/lib/generated/',
 ];
 
 // These exact L1 definitions replace the former core/theme owners.
@@ -668,8 +668,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return path.contains('/packages/catch_ui/lib/src/') ||
         RegExp(r'/lib/contexts/[^/]+/parts/').hasMatch(path) ||
         path.contains('/lib/pages/') ||
-        path.contains('/lib/platform/media/') ||
-        path.contains('/lib/platform/dialogs/') ||
+        path.contains('/packages/platform/lib/media/') ||
+        path.contains('/packages/platform/lib/dialogs/') ||
         path.contains('/lib/routing/shell/') ||
         path.contains('/presentation/');
   }

@@ -34,6 +34,16 @@ test("parseLcov keeps product Dart line observations and normalizes paths", () =
   ]);
 });
 
+test("platform package files stay in the report as one feature", () => {
+  const lcov = "TN:\nSF:/repo/packages/platform/lib/errors/app_exception.dart\nDA:1,1\nDA:2,0\nend_of_record\n" +
+    "SF:packages/platform/lib/cache/cache_tags.dart\nDA:1,1\nend_of_record\n";
+  assert.deepEqual(parseLcov(lcov).map((file) => file.path), [
+    "packages/platform/lib/cache/cache_tags.dart",
+    "packages/platform/lib/errors/app_exception.dart",
+  ]);
+  assert.deepEqual(buildCoverageReport(lcov).features.map((row) => row.feature), ["platform"]);
+});
+
 test("coverage report separates generated code and groups handwritten features", () => {
   const report = buildCoverageReport(fixture);
 

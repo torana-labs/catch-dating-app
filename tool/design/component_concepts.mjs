@@ -50,7 +50,7 @@ export function newWidgetPolicyIssues(
   }
   // Design-system homes require the reserved prefix; app-coupled shared
   // widgets follow feature naming but stay registered.
-  if (["lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]
+  if (["packages/platform/lib/riverpod_ui/", "packages/catch_ui/lib/"]
     .some((home) => entry.file.startsWith(home))) {
     if (!/^Catch[A-Z0-9]/u.test(entry.name)) {
       issues.push("noncanonical-core-widget-name");
@@ -59,8 +59,8 @@ export function newWidgetPolicyIssues(
   // The shared media editor predates the registry: registering it needs a
   // Widgetbook contract preview and goldens, which come with its redraw.
   const contractHome = (isAppSharedWidgetSource(entry.file) &&
-      !entry.file.startsWith("lib/platform/media/")) ||
-    ["lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]
+      !entry.file.startsWith("packages/platform/lib/media/")) ||
+    ["packages/platform/lib/riverpod_ui/", "packages/catch_ui/lib/"]
       .some((home) => entry.file.startsWith(home));
   if (contractHome && !componentContracted) issues.push("missing-component-contract");
   // The same symbol at a moved path is a stale registry row, reported above.

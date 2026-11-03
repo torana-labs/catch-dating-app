@@ -11,14 +11,14 @@ import 'package:catch_dating_app/contexts/events/domain/event_private_access.dar
 import 'package:catch_dating_app/contexts/events/domain/event_venue_session.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
-import 'package:catch_dating_app/platform/errors/app_exception.dart';
-import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
-import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
-import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/platform/firebase/firestore_chunks.dart';
-import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
-import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/firestore_chunks.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         CancelEventCallableRequest,
         CreateEventVenueSessionCallableRequest,

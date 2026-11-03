@@ -18,12 +18,12 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
-import 'package:catch_dating_app/platform/app_config.dart';
-import 'package:catch_dating_app/platform/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/persistence/command_journal_provider.dart';
+import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
+import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';

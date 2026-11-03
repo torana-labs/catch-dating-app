@@ -291,7 +291,7 @@ test("deterministic diagnostics do not depend on source or registry ordering", (
 
 test("async box and sliver protocols share one canonical role identity", () => {
   const async = component("CatchAsyncBoundary", "AsyncBoundary", {
-    level: "L4a", dart: {symbol: "CatchAsyncBoundary", file: "lib/platform/riverpod_ui/catch_async_boundary.dart"},
+    level: "L4a", dart: {symbol: "CatchAsyncBoundary", file: "packages/platform/lib/riverpod_ui/catch_async_boundary.dart"},
   });
   assert.deepEqual(problems([async]), []);
   const competing = {...async, id: "catch.other_async"};
@@ -313,7 +313,7 @@ test("app-coupled shared widgets follow feature naming, and Workspace is a route
   assert.deepEqual(issues("CatchEventCard", "lib/contexts/events/parts/catch_event_card.dart"), ["reserved-feature-widget-prefix"]);
   assert.deepEqual(issues("EventCard", "lib/contexts/events/parts/event_card.dart"), []);
   assert.deepEqual(issues("SavedAudienceWorkspace", "lib/hosts/presentation/saved_audience_workspace.dart"), []);
-  assert.deepEqual(issues("CatchAsyncBoundary", "lib/platform/riverpod_ui/catch_async_boundary.dart"), []);
+  assert.deepEqual(issues("CatchAsyncBoundary", "packages/platform/lib/riverpod_ui/catch_async_boundary.dart"), []);
 });
 
 test("off-vocabulary nouns name the role they are spelled as", () => {
@@ -334,7 +334,7 @@ test("Catch-prefixed symbols are reported outside the design-system homes only",
   assert.deepEqual(found.map((entry) => entry.kind), ["class", "enum", "extension", "class", "typedef"]);
   assert.deepEqual(reservedPrefixSymbolProblems(found).map((entry) => entry.name),
     ["CatchMapMarker", "CatchMapType", "CatchLocalizationsBuildContext"]);
-  for (const home of ["lib/platform/riverpod_ui/x.dart", "packages/catch_ui/lib/src/x.dart", "lib/consumer_bootstrap.dart"]) {
+  for (const home of ["packages/platform/lib/riverpod_ui/x.dart", "packages/catch_ui/lib/src/x.dart", "lib/consumer_bootstrap.dart"]) {
     assert.deepEqual(reservedPrefixSymbolProblems(topLevelDeclarations(home, "class CatchThing {}")), []);
   }
 });

@@ -6,10 +6,10 @@ import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/platform/cities/city_repository.dart';
-import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_platform/device/device_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
