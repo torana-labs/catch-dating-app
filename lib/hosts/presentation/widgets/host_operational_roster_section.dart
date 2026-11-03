@@ -557,112 +557,114 @@ class HostRosterInsightRail extends StatelessWidget {
   final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context) => insightsAsync.when(
-    loading: () => CatchLegacyText(
-      context.l10n.hostsOperationalRosterInsightsLoading,
-      variant: CatchLegacyTextVariant.supporting,
-    ),
-    error: (_, _) => _HostRosterInsightsUnavailable(onRetry: onRetry),
-    data: (insights) {
-      // A view the server has not written, or one it could not evaluate,
-      // shows the unavailable state; check-in never depends on it.
-      if (insights.sourceCoverage == HostRosterInsightCoverage.missing ||
-          insights.sourceCoverage == HostRosterInsightCoverage.invalidSource) {
-        return _HostRosterInsightsUnavailable(onRetry: onRetry);
-      }
-      final filters = <HostRosterInsightFilter>[
-        HostRosterInsightFilter.all,
-        for (final filter in HostRosterInsightFilter.values.skip(1))
-          if (hostRosterInsightFilterCount(filter, insights.rows) > 0 ||
-              filter == selected)
-            filter,
-      ];
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchLegacyText(
-            context.l10n.hostsOperationalRosterInsightsCaption,
-            variant: CatchLegacyTextVariant.supporting,
+  Widget build(BuildContext context) =>
+      switch (insightsAsync) {
+        // A view the server has not written, or one it could not evaluate,
+        // shows the unavailable state; check-in never depends on it.
+        AsyncData(:final value)
+            when value.sourceCoverage == HostRosterInsightCoverage.missing ||
+                value.sourceCoverage ==
+                    HostRosterInsightCoverage.invalidSource =>
+          AsyncError<HostEventRosterInsights>(
+            StateError('Roster labels are ${value.sourceCoverage.name}.'),
+            StackTrace.empty,
           ),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final filter in filters)
-                CatchChip.selectable(
-                  label: _insightFilterLabel(
-                    context,
-                    filter,
-                    filter == HostRosterInsightFilter.all
-                        ? attendeeCount
-                        : hostRosterInsightFilterCount(filter, insights.rows),
-                  ),
-                  selected: selected == filter,
-                  onChanged: (_) => onSelected(filter),
-                  contractExemption:
-                      'Manager-only, callable-owned roster insight filter; '
-                      'selection is ephemeral and is never persisted.',
-                ),
-            ],
-          ),
-          if (insights.spendCoverage ==
-              HostRosterSpendCoverage.catchPaymentsOnly) ...[
-            gapH8,
-            Text(
-              context.l10n.hostsOperationalRosterInsightsSpendFootnote,
-              style: CatchTextStyles.meta(context),
+        final insights => insights,
+      }.when(
+        loading: () => CatchLegacyText(
+          context.l10n.hostsOperationalRosterInsightsLoading,
+          variant: CatchLegacyTextVariant.supporting,
+        ),
+        error: (_, _) => Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            CatchLegacyText(
+              context.l10n.hostsOperationalRosterInsightsUnavailable,
+              variant: CatchLegacyTextVariant.supporting,
+            ),
+            CatchButton(
+              label: context.l10n.hostsOperationalRosterInsightsRetry,
+              onPressed: onRetry,
+              size: CatchButtonSize.md,
+              variant: CatchButtonVariant.quiet,
             ),
           ],
-          if (insights.sourceCoverage == HostRosterInsightCoverage.partial) ...[
-            gapH8,
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
+        ),
+        data: (insights) {
+          final filters = <HostRosterInsightFilter>[
+            HostRosterInsightFilter.all,
+            for (final filter in HostRosterInsightFilter.values.skip(1))
+              if (hostRosterInsightFilterCount(filter, insights.rows) > 0 ||
+                  filter == selected)
+                filter,
+          ];
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CatchLegacyText(
+                context.l10n.hostsOperationalRosterInsightsCaption,
+                variant: CatchLegacyTextVariant.supporting,
+              ),
+              gapH8,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  for (final filter in filters)
+                    CatchChip.selectable(
+                      label: _insightFilterLabel(
+                        context,
+                        filter,
+                        filter == HostRosterInsightFilter.all
+                            ? attendeeCount
+                            : hostRosterInsightFilterCount(
+                                filter,
+                                insights.rows,
+                              ),
+                      ),
+                      selected: selected == filter,
+                      onChanged: (_) => onSelected(filter),
+                      contractExemption:
+                          'Manager-only, callable-owned roster insight filter; '
+                          'selection is ephemeral and is never persisted.',
+                    ),
+                ],
+              ),
+              if (insights.spendCoverage ==
+                  HostRosterSpendCoverage.catchPaymentsOnly) ...[
+                gapH8,
                 Text(
-                  context.l10n.hostsOperationalRosterInsightsPreparing,
+                  context.l10n.hostsOperationalRosterInsightsSpendFootnote,
                   style: CatchTextStyles.meta(context),
                 ),
-                CatchButton(
-                  label: context.l10n.hostsOperationalRosterInsightsRetry,
-                  onPressed: onRetry,
-                  size: CatchButtonSize.md,
-                  variant: CatchButtonVariant.quiet,
+              ],
+              if (insights.sourceCoverage ==
+                  HostRosterInsightCoverage.partial) ...[
+                gapH8,
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    Text(
+                      context.l10n.hostsOperationalRosterInsightsPreparing,
+                      style: CatchTextStyles.meta(context),
+                    ),
+                    CatchButton(
+                      label: context.l10n.hostsOperationalRosterInsightsRetry,
+                      onPressed: onRetry,
+                      size: CatchButtonSize.md,
+                      variant: CatchButtonVariant.quiet,
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ],
+            ],
+          );
+        },
       );
-    },
-  );
-}
-
-class _HostRosterInsightsUnavailable extends StatelessWidget {
-  const _HostRosterInsightsUnavailable({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    crossAxisAlignment: WrapCrossAlignment.center,
-    spacing: CatchSpacing.s2,
-    runSpacing: CatchSpacing.s2,
-    children: [
-      CatchLegacyText(
-        context.l10n.hostsOperationalRosterInsightsUnavailable,
-        variant: CatchLegacyTextVariant.supporting,
-      ),
-      CatchButton(
-        label: context.l10n.hostsOperationalRosterInsightsRetry,
-        onPressed: onRetry,
-        size: CatchButtonSize.md,
-        variant: CatchButtonVariant.quiet,
-      ),
-    ],
-  );
 }
 
 CatchPersonLayout _attendeeLayout(
