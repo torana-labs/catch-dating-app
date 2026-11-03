@@ -140,7 +140,7 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
         child: CatchAvatar.monogram(
           size: 36,
           name: 'Riya S.',
-          ground: CatchGround.pink,
+          ground: CatchBandGround.pink,
         ),
       ),
       const WidgetbookContractStateCard(
@@ -149,7 +149,7 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
           size: 88,
           name: 'Carter Road Runners',
           initials: 'CR',
-          ground: CatchGround.coral,
+          ground: CatchBandGround.coral,
           borderWidth: 4,
           borderColor: CatchTokens.editorialWhite,
         ),

@@ -17,7 +17,7 @@ void main() {
         const CatchAvatar.monogram(
           size: 36,
           name: 'Riya Sharma',
-          ground: CatchGround.pink,
+          ground: CatchBandGround.pink,
         ),
       ),
     );
@@ -27,9 +27,9 @@ void main() {
         matching: find.byType(ColoredBox),
       ),
     );
-    expect(fill.color, CatchGround.pink.fillColor);
+    expect(fill.color, CatchBandGround.pink.fillColor);
     final initials = tester.widget<Text>(find.text('RS'));
-    expect(initials.style?.color, CatchGround.pink.inkColor);
+    expect(initials.style?.color, CatchBandGround.pink.inkColor);
     expect(
       initials.style?.fontSize,
       closeTo(36 * CatchLayout.personAvatarInitialsScale, 0.001),
@@ -42,7 +42,7 @@ void main() {
         const CatchAvatar.monogram(
           size: 88,
           initials: 'CR',
-          ground: CatchGround.coral,
+          ground: CatchBandGround.coral,
           borderWidth: 4,
           borderColor: CatchTokens.editorialWhite,
         ),
@@ -59,7 +59,7 @@ void main() {
   });
 
   test('grounds follow the generated palette tokens', () {
-    expect(CatchGround.values.map((ground) => ground.name), [
+    expect(CatchBandGround.values.map((ground) => ground.name), [
       'white',
       'paper',
       'ink',
@@ -70,10 +70,10 @@ void main() {
       'indigo',
       'magenta',
     ]);
-    expect(CatchGround.ink.isDark, isTrue);
-    expect(CatchGround.coral.isDark, isFalse);
+    expect(CatchBandGround.ink.isDark, isTrue);
+    expect(CatchBandGround.coral.isDark, isFalse);
     expect(
-      CatchGround.mint.secondaryInkColor,
+      CatchBandGround.mint.secondaryInkColor,
       GeneratedCatchGroundTokens.mintInkSecondary,
     );
   });
