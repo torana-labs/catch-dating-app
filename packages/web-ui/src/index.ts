@@ -356,6 +356,9 @@ export {useCatch, useGround} from "./components/catchRootContext";
 export type {CatchContextValue} from "./components/catchRootContext";
 export {CatchSurface} from "./components/CatchSurface";
 export type {CatchSurfaceElement, CatchSurfaceProps} from "./components/CatchSurface";
+/** Legacy: the pre-redesign surface, deleted in P7. */
+export {CatchLegacySurface} from "./components/CatchLegacySurface";
+export type {CatchLegacySurfaceProps, CatchSurfaceEmphasis, CatchSurfaceTone} from "./components/CatchLegacySurface";
 export {
   catchFormatTokenName,
   catchFormats,
