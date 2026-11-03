@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical person material: a portrait-first instant photograph with a
@@ -39,7 +39,7 @@ class CatchPolaroid extends StatelessWidget {
     final kickerText = kicker?.trim();
     final metaText = meta?.trim();
 
-    return CatchSurface(
+    return CatchLegacySurface(
       key: const ValueKey('person-polaroid'),
       onTap: onTap,
       borderRole: CatchBorderRole.separator,

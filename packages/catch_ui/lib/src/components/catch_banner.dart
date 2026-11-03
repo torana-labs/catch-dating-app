@@ -4,7 +4,7 @@ import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchBannerTone { primary, success, warning, danger, neutral }
@@ -244,7 +244,7 @@ class CatchBanner extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: variant == CatchBannerVariant.error,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         radius: CatchRadius.md,
         padding: const EdgeInsets.all(CatchSpacing.s4),
         duration: duration,

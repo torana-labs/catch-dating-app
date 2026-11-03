@@ -453,6 +453,8 @@ import 'package:widgetbook_workspace/primitives/contracts/images.dart'
     as _widgetbook_workspace_primitives_contracts_images;
 import 'package:widgetbook_workspace/primitives/contracts/inputs.dart'
     as _widgetbook_workspace_primitives_contracts_inputs;
+import 'package:widgetbook_workspace/primitives/contracts/legacy_text.dart'
+    as _widgetbook_workspace_primitives_contracts_legacy_text;
 import 'package:widgetbook_workspace/primitives/contracts/loading.dart'
     as _widgetbook_workspace_primitives_contracts_loading;
 import 'package:widgetbook_workspace/primitives/contracts/messages.dart'
@@ -465,6 +467,8 @@ import 'package:widgetbook_workspace/primitives/contracts/pane_layout.dart'
     as _widgetbook_workspace_primitives_contracts_pane_layout;
 import 'package:widgetbook_workspace/primitives/contracts/rail.dart'
     as _widgetbook_workspace_primitives_contracts_rail;
+import 'package:widgetbook_workspace/primitives/contracts/root.dart'
+    as _widgetbook_workspace_primitives_contracts_root;
 import 'package:widgetbook_workspace/primitives/contracts/root_screen.dart'
     as _widgetbook_workspace_primitives_contracts_root_screen;
 import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
@@ -477,8 +481,12 @@ import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
     as _widgetbook_workspace_primitives_contracts_section_lists;
 import 'package:widgetbook_workspace/primitives/contracts/sheets.dart'
     as _widgetbook_workspace_primitives_contracts_sheets;
+import 'package:widgetbook_workspace/primitives/contracts/stack.dart'
+    as _widgetbook_workspace_primitives_contracts_stack;
 import 'package:widgetbook_workspace/primitives/contracts/steps.dart'
     as _widgetbook_workspace_primitives_contracts_steps;
+import 'package:widgetbook_workspace/primitives/contracts/surface.dart'
+    as _widgetbook_workspace_primitives_contracts_surface;
 import 'package:widgetbook_workspace/primitives/contracts/surfaces.dart'
     as _widgetbook_workspace_primitives_contracts_surfaces;
 import 'package:widgetbook_workspace/primitives/contracts/table.dart'
@@ -3075,6 +3083,31 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Foundations',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRoot',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_root
+                    .catchRootContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_root
+                    .catchRootScopeContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Host operations',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -3452,12 +3485,47 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchStack',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_stack
+                    .catchStackContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_surfaces
                     .catchViewportContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Legacy',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLegacySurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                    .catchLegacySurfaceContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLegacyText',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_legacy_text
+                    .catchLegacyTextContractStates,
               ),
             ],
           ),
@@ -4325,7 +4393,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                builder: _widgetbook_workspace_primitives_contracts_surface
                     .catchSurfaceContractStates,
               ),
             ],

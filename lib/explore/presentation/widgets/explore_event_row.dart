@@ -77,7 +77,7 @@ class ExploreExternalEventRow extends StatelessWidget {
       container: true,
       explicitChildNodes: true,
       label: state.semanticLabel,
-      child: CatchSurface.card(
+      child: CatchLegacySurface.card(
         borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.content,
         child: Column(
@@ -103,17 +103,17 @@ class ExploreExternalEventRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            CatchText(
+            CatchLegacyText(
               event.title,
-              variant: CatchTextVariant.displayXs,
+              variant: CatchLegacyTextVariant.displayXs,
               maxLines: 2,
             ),
             gapH4,
-            CatchText(
+            CatchLegacyText(
               state.supportingLabel,
               maxLines: 1,
 
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
             gapH10,

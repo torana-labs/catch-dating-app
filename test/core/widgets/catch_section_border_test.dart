@@ -20,7 +20,9 @@ void main() {
       ),
     );
 
-    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    final surface = tester.widget<CatchLegacySurface>(
+      find.byType(CatchLegacySurface),
+    );
     expect(
       surface.borderSpec?.side,
       CatchBorder.resolve(

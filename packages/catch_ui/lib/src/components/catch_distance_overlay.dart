@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Map radius annotation with fixed or available-space geometry.
@@ -52,7 +52,7 @@ class CatchDistanceOverlay extends StatelessWidget {
             hint: semanticHint,
             onTap: onTap,
             child: ExcludeSemantics(
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 onTap: onTap,
                 radius: CatchRadius.pill,
                 borderRole: CatchBorderRole.control,

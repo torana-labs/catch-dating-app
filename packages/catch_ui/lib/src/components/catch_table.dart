@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Where a [CatchTable] column places its label and cells.
@@ -53,7 +53,7 @@ class CatchTable extends StatelessWidget {
 
     return CatchTableScope(
       columns: columns,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         radius: CatchRadius.md,
         backgroundColor: t.surface,
         borderRole: CatchBorderRole.boundary,

@@ -10,5 +10,6 @@ The design source has no README for this component; this text comes from its typ
 <!-- generated:flutter:start -->
 ## Flutter
 
-`catch.root`: No Flutter symbol yet.
+`catch.root`:
+- `CatchRoot`
 <!-- generated:flutter:end -->

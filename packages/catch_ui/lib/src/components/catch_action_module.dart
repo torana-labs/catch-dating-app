@@ -50,7 +50,7 @@ Widget _buildSectionModule(
     header: true,
     child: Text(title, style: CatchTextStyles.sectionTitle(context)),
   );
-  return CatchSurface(
+  return CatchLegacySurface(
     tone: CatchSurfaceTone.primarySoft,
     radius: CatchRadius.md,
     padding: const EdgeInsets.all(CatchSpacing.s4),

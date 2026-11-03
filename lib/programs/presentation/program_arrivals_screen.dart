@@ -276,7 +276,10 @@ class ProgramArrivalRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(row.partyTitle, variant: CatchTextVariant.sectionTitle),
+          CatchLegacyText(
+            row.partyTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
+          ),
           CatchMetaRow(icon: CatchIcons.people, label: _meta(context)),
           gapH4,
           Wrap(

@@ -155,7 +155,6 @@
     "Sliver": ["SectionList", "List", "Body"],
     "Snackbar": ["Notice"],
     "Spinner": ["Indicator"],
-    "Stack": ["Layout", "SectionList"],
     "Stat": ["Tile", "Text"],
     "Strip": ["Rail"],
     "Summary": ["Card", "Section"],
@@ -5723,17 +5722,14 @@
               "conceptRole": "member",
               "conceptId": "catch.section",
               "parentConceptId": "catch.section",
-              "qualifier": "layout",
+              "qualifier": "legacy",
               "decisionRef": "contract-family:catch.section"
             },
             "level": "L3",
             "roleNoun": "Text",
             "naming": {
               "useCase": "Count",
-              "comparedWith": [
-                "catch.typography.mono_label"
-              ],
-              "reason": "Animated uncapped integer typography is consumed by chronological headers. MetadataText displays arbitrary caller text; CountBadge hides zero and clamps counts, which would lose the header total."
+              "reason": "Retired by P2.1: the system CatchText's label roles with numeric figures absorb it. Animated uncapped integer typography served chronological headers."
             }
           },
           {
@@ -6809,17 +6805,14 @@
               "conceptRole": "member",
               "conceptId": "catch.typography",
               "parentConceptId": "catch.typography",
-              "qualifier": "anatomy",
+              "qualifier": "legacy",
               "decisionRef": "contract-family:catch.typography"
             },
             "level": "L2",
             "roleNoun": "Text",
             "naming": {
               "useCase": "Metadata",
-              "comparedWith": [
-                "catch.typography"
-              ],
-              "reason": "Compact factual labels retain sentence casing and lighter metadata weight, with an explicit uppercase option. KickerText is an editorial eyebrow that always forces uppercase; this member shares the same typography contract and style resolver."
+              "reason": "Retired by P2.1: the system CatchText's label roles absorb it. Compact factual labels kept sentence casing and a lighter metadata weight, with an explicit uppercase option."
             }
           }
         ],
@@ -6887,7 +6880,7 @@
       "id": "catch.text",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Every variant, recolor, line clamp and alignment renders in the generated Widgetbook contract; parity tests pin the web roles to CatchTextStyles."
+        "reason": "The 22 roles, tones, alignment, line clamp and tabular figures render in the generated Widgetbook contract; text_roles goldens and coreLibraryParity pin the roles to GeneratedCatchTypeRoleTokens and the web vocabulary."
       },
       "name": "CatchText",
       "status": "active",
@@ -6895,7 +6888,7 @@
       "tier": "T1",
       "aliases": ["Typography", "Paragraph", "BodyText", "HeadingText", "TextBlock"],
       "absorbs": ["CatchKickerText", "CatchMetadataText", "CatchCountText"],
-      "summary": "Text in one CatchTextStyles role: the six Archivo display steps, headings, body copy, supporting copy, labels and metrics.",
+      "summary": "Every piece of text, in one of the 19 generated type roles or the three responsive ones, coloured by its ground unless a tone is set.",
       "dart": {
         "symbol": "CatchText",
         "file": "packages/catch_ui/lib/src/primitives/catch_text.dart",
@@ -6953,38 +6946,66 @@
           {
             "name": "variant",
             "type": "enum",
-            "required": true,
+            "required": false,
+            "default": "body",
             "dartType": "CatchTextVariant",
             "tsType": "CatchTextVariant",
             "values": [
-              "displayXs",
-              "displayS",
-              "displayM",
-              "displayL",
+              "displayHero",
               "displayXl",
-              "displayXxl",
-              "headline",
-              "titleL",
-              "sectionTitle",
-              "titleS",
+              "displayLg",
+              "displayTitle",
+              "displaySection",
+              "displaySm",
+              "displayXs",
               "bodyLead",
-              "bodyL",
-              "bodyM",
-              "bodyS",
-              "supporting",
-              "supportingStrong",
-              "fieldLabel",
-              "statusLabel",
-              "metric"
-            ]
+              "bodyInput",
+              "body",
+              "bodySmall",
+              "bodyMeta",
+              "titleBar",
+              "titleRow",
+              "labelButton",
+              "labelAction",
+              "labelKicker",
+              "labelBadge",
+              "labelCode",
+              "pageTitle",
+              "sectionTitle",
+              "hero"
+            ],
+            "notes": "The 19 roles of GeneratedCatchTypeRoleTokens, then pageTitle, sectionTitle and hero, which resolve through GeneratedCatchTypeVariantTokens by the scope's size class (compact outside a root). React spells them in kebab case."
           },
           {
-            "name": "color",
-            "type": "color",
+            "name": "tone",
+            "type": "enum",
             "required": false,
-            "dartType": "Color?",
-            "tsType": "CatchTextColor",
-            "notes": "Overrides the role's default color; React names the theme role (ink2, danger) or a palette accent (coral, mint). An accent draws its deep shade on light and the accent itself on dark, which is the coloured sentence-case label recipe with supportingStrong."
+            "default": "inherit",
+            "dartType": "CatchTextTone",
+            "tsType": "CatchTextTone",
+            "values": [
+              "inherit",
+              "primary",
+              "secondary",
+              "tertiary",
+              "success",
+              "warning",
+              "danger",
+              "info"
+            ],
+            "notes": "inherit takes the ground's ink; success, warning, danger and info read deepMint, deepYellow, deepCoral and deepIndigo."
+          },
+          {
+            "name": "align",
+            "type": "enum",
+            "required": false,
+            "dartType": "TextAlign?",
+            "tsType": "\"start\" | \"center\" | \"end\"",
+            "values": [
+              "start",
+              "center",
+              "end"
+            ]
           },
           {
             "name": "maxLines",
@@ -6995,35 +7016,50 @@
             "notes": "Ends the last line with an ellipsis."
           },
           {
-            "name": "textAlign",
-            "type": "enum",
+            "name": "numeric",
+            "type": "bool",
             "required": false,
-            "dartType": "TextAlign?",
-            "tsType": "\"start\" | \"center\" | \"end\"",
-            "values": [
-              "start",
-              "center",
-              "end"
-            ]
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean",
+            "notes": "Tabular figures."
+          },
+          {
+            "name": "semanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
           "roles",
           "recolored",
+          "aligned",
           "clamped",
-          "aligned"
+          "numeric"
         ],
         "slots": [],
         "tokens": [
-          "font.family.function",
           "theme.light.color.ink",
-          "theme.light.color.ink2"
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.deepMint",
+          "theme.light.color.deepYellow",
+          "theme.light.color.deepCoral",
+          "theme.light.color.deepIndigo"
         ],
         "dartRoles": [
           "CatchTextVariant",
-          "CatchTextStyles"
+          "CatchTextTone",
+          "GeneratedCatchTypeRoleTokens",
+          "GeneratedCatchTypeVariantTokens",
+          "CatchFonts"
         ],
-        "goldens": [],
+        "goldens": [
+          "text_roles",
+          "text_roles_tones"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -7036,14 +7072,41 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.text.legacy",
+            "symbol": "CatchLegacyText",
+            "summary": "The pre-redesign text in one CatchLegacyTextVariant (CatchTextStyles) role with a colour override, kept for legacy callers until P7 deletes it.",
+            "states": [
+              "roles",
+              "recolored",
+              "clamped",
+              "aligned"
+            ],
+            "file": "packages/catch_ui/lib/src/primitives/catch_legacy_text.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.text",
+              "parentConceptId": "catch.text",
+              "qualifier": "legacy",
+              "decisionRef": "contract-family:catch.text"
+            },
+            "level": "L2",
+            "roleNoun": "Text",
+            "naming": {
+              "useCase": "Legacy",
+              "reason": "Retired by P2.1, which gave CatchText to the system roles; legacy screens call it until their redraw."
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for headings, body and supporting copy, labels and metrics in their CatchTextStyles role; choose the heading element by document outline, not size.",
-          "CatchText is the canonical Flutter text API. Moving Text(style: CatchTextStyles.<role>) call sites onto it, with a shrink-only lint steer, is tracked in Linear CAT-211.",
-          "Kickers and mono metadata stay with catch.typography (CatchKickerText, CatchMetadataText)."
+          "Pick the role that says what the text is, never a size; colour comes from the ground unless a tone is set.",
+          "Family and optical sizing follow CatchTextStyles: Archivo for the display roles through CatchFonts.voice, the platform function family through CatchFonts.sans for the rest.",
+          "CatchKickerText, CatchMetadataText and CatchCountText are absorbed and stay unchanged until their last caller is redrawn. CatchLegacyText (with CatchLegacyTextVariant) is the legacy member, kept for legacy callers until P7. The web-only as and htmlFor props have no Dart counterpart."
         ]
       },
       "governance": {
@@ -8095,7 +8158,7 @@
       "id": "catch.icon",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Every size, tone and the labelled state render in the generated Widgetbook contract; the icon-family gate and parity tests pin both frameworks to design/tokens/catch.icons.json."
+        "reason": "The four sizes, the inherited colour on tile, a format colour and night, and the labelled state render in the generated Widgetbook contract; icon_family goldens and the icon-family gate pin roles to design/tokens/catch.icons.json."
       },
       "name": "CatchIcon",
       "status": "active",
@@ -8107,7 +8170,7 @@
         "SvgIcon",
         "LucideIcon"
       ],
-      "summary": "One icon role from the catalog, drawn at a CatchIconSize step in a semantic tone; decorative unless it has a label.",
+      "summary": "One icon role from the catalog at 16, 18, 20 or 24, in the colour of the text around it; decorative unless it has a label.",
       "dart": {
         "symbol": "CatchIcon",
         "file": "packages/catch_ui/lib/src/primitives/catch_icon.dart",
@@ -8162,49 +8225,20 @@
           },
           {
             "name": "size",
-            "type": "enum",
+            "type": "number",
             "required": false,
-            "default": "md",
+            "default": 20,
             "dartType": "double",
-            "tsType": "\"micro\" | \"sm\" | \"xs\" | \"md\" | \"control\" | \"row\" | \"lg\" | \"tile\" | \"emptyState\" | \"hero\"",
-            "values": [
-              "micro",
-              "sm",
-              "xs",
-              "md",
-              "control",
-              "row",
-              "lg",
-              "tile",
-              "emptyState",
-              "hero"
-            ],
-            "notes": "A CatchIconSize step; React names the step."
+            "tsType": "number",
+            "notes": "16, 18, 20 or 24 (CatchIconSize.xs, md, control, lg; a debug assert). The web's stroke rule (2 to 20, 1.75 at 24) has no glyph-font equivalent."
           },
           {
-            "name": "tone",
-            "type": "enum",
-            "required": false,
-            "default": "inherit",
-            "dartType": "CatchIconTone",
-            "tsType": "CatchIconTone",
-            "values": [
-              "inherit",
-              "ink",
-              "muted",
-              "primary",
-              "success",
-              "warning",
-              "danger"
-            ]
-          },
-          {
-            "name": "semanticLabel",
+            "name": "label",
             "type": "string",
             "required": false,
             "dartType": "String?",
             "tsType": "string",
-            "notes": "Without a label the icon is decorative and hidden from assistive technology."
+            "notes": "Makes it a labelled image; without one it is excluded from semantics."
           }
         ],
         "states": [
@@ -8215,18 +8249,18 @@
         "slots": [],
         "tokens": [
           "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.primary",
-          "theme.light.color.success",
-          "theme.light.color.warning",
-          "theme.light.color.danger"
+          "theme.dark.color.ink"
         ],
         "dartRoles": [
           "CatchIcons",
+          "CatchIconSize.xs",
           "CatchIconSize.md",
-          "CatchIconTone"
+          "CatchIconSize.control",
+          "CatchIconSize.lg"
         ],
-        "goldens": [],
+        "goldens": [
+          "icon_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -8245,7 +8279,8 @@
         "allowedChildren": [],
         "notes": [
           "Name a role from design/tokens/catch.icons.json; never a glyph of an icon family.",
-          "Components that take an icon slot (IconData in Flutter, ReactNode in React) receive CatchIcons.<role> or <CatchIcon icon=\"<role>\" />."
+          "There is no tone: the colour is the IconTheme the root and ground scopes set. A legacy component that needs a fixed colour wraps its icon in an IconTheme.",
+          "Components that take an icon slot (IconData in Flutter, ReactNode in React) receive CatchIcons.<role> or <CatchIcon name=\"<role>\" />."
         ]
       },
       "governance": {
@@ -10210,14 +10245,12 @@
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["AppCard", "BaseCard", "ContentCard", "Panel", "RoundedContainer", "CatchGroundCard", "CatchBand", "CatchPhotoTile", "CatchFormatTile"],
-      "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted panels, and tappable tiles.",
+      "summary": "The blocks every screen is built from, and the only component that draws a filled box: plain, tile, spotlight, floating and band, each telling its children what they sit on.",
       "dart": {
         "symbol": "CatchSurface",
         "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
         "constructors": [
-          "CatchSurface",
-          "CatchSurface.card",
-          "CatchSurface.tinted"
+          "CatchSurface"
         ]
       },
       "react": {
@@ -10261,105 +10294,90 @@
       "contract": {
         "props": [
           {
+            "name": "block",
+            "type": "enum",
+            "required": false,
+            "default": "tile",
+            "dartType": "CatchSurfaceBlock",
+            "tsType": "CatchSurfaceBlock",
+            "values": [
+              "plain",
+              "tile",
+              "spotlight",
+              "floating",
+              "band"
+            ]
+          },
+          {
+            "name": "color",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSurfaceColor?",
+            "tsType": "CatchSurfaceColor | null",
+            "values": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut",
+              "ink",
+              "tile"
+            ],
+            "notes": "Spotlight: a format or ink. Band: a format, ink or tile. Other blocks ignore it."
+          },
+          {
+            "name": "padding",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSurfacePadding?",
+            "tsType": "CatchSurfacePadding | null",
+            "values": [
+              "none",
+              "sm",
+              "md",
+              "lg"
+            ],
+            "notes": "0, 12, 16 or 20. Null takes the block's default: none for plain, lg for spotlight, floating and a band's top and bottom, sm for a nested tile, otherwise md. A band's sides keep the size class gutter."
+          },
+          {
+            "name": "onPress",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?",
+            "tsType": "() => void",
+            "notes": "Makes the whole block a button with CatchRowPressSurface's hover and pressed overlays, clipped to the block's radius."
+          },
+          {
+            "name": "aspect",
+            "type": "number",
+            "required": false,
+            "dartType": "double?",
+            "tsType": "number",
+            "notes": "Width over height; the content sits at the bottom."
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "The button's label when onPress is set; React labels the element itself."
+          },
+          {
             "name": "child",
             "type": "widget",
             "required": true,
             "dartType": "Widget",
             "tsType": "ReactNode"
-          },
-          {
-            "name": "tone",
-            "type": "enum",
-            "required": false,
-            "default": "surface",
-            "dartType": "CatchSurfaceTone",
-            "tsType": "CatchSurfaceTone",
-            "values": [
-              "surface",
-              "raised",
-              "primarySoft",
-              "transparent"
-            ]
-          },
-          {
-            "name": "emphasis",
-            "type": "enum",
-            "required": false,
-            "default": "flat",
-            "dartType": "CatchSurfaceEmphasis",
-            "tsType": "CatchSurfaceEmphasis",
-            "values": [
-              "flat",
-              "subtle",
-              "raised",
-              "floating"
-            ],
-            "notes": "Selects the shared shadow prominence preset. Named surface recipes supply their own defaults; callers do not provide a separate role marker."
-          },
-          {
-            "name": "padding",
-            "type": "object",
-            "required": false,
-            "dartType": "EdgeInsetsGeometry?",
-            "tsType": "CSSProperties[\"padding\"]"
-          },
-          {
-            "name": "radius",
-            "type": "number",
-            "required": false,
-            "default": "CatchRadius.lg",
-            "dartType": "double",
-            "tsType": "number"
-          },
-          {
-            "name": "onTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?",
-            "tsType": "() => void"
-          },
-          {
-            "name": "onFocusChange",
-            "type": "callback",
-            "required": false,
-            "dartType": "ValueChanged<bool>?",
-            "tsType": "(value: boolean) => void"
-          },
-          {
-            "name": "borderRole",
-            "type": "enum",
-            "required": false,
-            "dartType": "CatchBorderRole?",
-            "tsType": "CatchBorderRole",
-            "values": [
-              "separator",
-              "boundary",
-              "control",
-              "selected",
-              "focus",
-              "danger",
-              "warning"
-            ]
-          },
-          {
-            "name": "borderSpec",
-            "type": "object",
-            "required": false,
-            "dartType": "CatchBorderSpec?",
-            "tsType": "CatchBorderSpec"
           }
         ],
         "states": [
-          "surface",
-          "raised",
-          "primary-soft",
-          "transparent",
-          "tappable",
-          "semantic-border",
-          "focused",
-          "elevated",
-          "card",
-          "tinted"
+          "five-blocks",
+          "tile-in-tile",
+          "tile-in-spotlight",
+          "floating-on-night",
+          "band-colours",
+          "pressable"
         ],
         "slots": [
           {
@@ -10368,30 +10386,39 @@
           }
         ],
         "tokens": [
-          "radius.lg",
-          "theme.light.color.surface",
-          "theme.light.color.raised",
-          "theme.light.color.primarySoft",
+          "theme.light.color.tile",
+          "theme.light.color.nested",
+          "theme.light.color.ink",
+          "theme.light.color.ground",
+          "theme.dark.color.tile",
+          "theme.dark.color.ground",
+          "theme.light.elevation.float",
           "radius.md",
+          "radius.lg",
+          "radius.xl",
           "space.s3",
+          "space.s4",
           "space.s5",
-          "space.micro14",
-          "theme.light.color.line",
-          "theme.light.color.primary"
+          "opacity.onColour",
+          "opacity.hover",
+          "opacity.pressed",
+          "layout.gutterCompact",
+          "layout.gutterMedium",
+          "layout.gutterExpanded"
         ],
         "dartRoles": [
-          "CatchBorder",
-          "CatchBorderRole",
-          "CatchBorderSpec",
-          "CatchElevation.none",
-          "CatchElevation.card",
-          "CatchElevation.raised",
-          "CatchElevation.overlay",
-          "CatchMotion.fast",
-          "CatchSurface.card",
-          "CatchSurface.tinted"
+          "CatchSurfaceBlock",
+          "CatchSurfaceColor",
+          "CatchSurfacePadding",
+          "CatchRootScope",
+          "CatchRowPressSurface",
+          "CatchElevation.float"
         ],
-        "goldens": [],
+        "goldens": [
+          "surface_family",
+          "surface_family_spotlights",
+          "surface_family_bands"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -10404,7 +10431,40 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.surface.legacy",
+            "symbol": "CatchLegacySurface",
+            "summary": "The pre-redesign surface (tone, emphasis, free radius and borders; .card and .tinted), kept for legacy callers until P7 deletes it; new screens use the system block.",
+            "states": [
+              "surface",
+              "raised",
+              "primary-soft",
+              "transparent",
+              "tappable",
+              "semantic-border",
+              "focused",
+              "elevated",
+              "card",
+              "tinted"
+            ],
+            "file": "packages/catch_ui/lib/src/primitives/catch_legacy_surface.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.surface",
+              "parentConceptId": "catch.surface",
+              "qualifier": "legacy",
+              "decisionRef": "contract-family:catch.surface"
+            },
+            "level": "L2",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "Legacy",
+              "reason": "Retired by P2.1, which gave CatchSurface to the system block; legacy screens call it until their redraw."
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [
@@ -10414,9 +10474,9 @@
           "catch.option_card"
         ],
         "notes": [
-          "CatchSurface owns low-level paint and interaction. Use CatchSurface.card or CatchSurface.tinted for surface chrome and CatchSection.contained for section-card content chrome.",
-          "Choose borderRole for ordinary semantic lines and borderSpec only for a role with a justified color override; raw borderColor and borderWidth are deprecated migration shims.",
-          "Use CatchBanner for icon/title/message composition. Surface paint must not own a second feedback renderer."
+          "CatchSurface owns block paint and press feedback, and hands its children their ground through a CatchRootScope: a tile in a tile is the nested block, anything in a coloured spotlight sits on colour, an ink spotlight turns night.",
+          "Never draw a box by hand and never outline a block; outlines belong to controls. Surface paint must not own a second feedback renderer.",
+          "The web-only as and href props have no Dart counterpart. CatchLegacySurface (and its CatchSurfaceTone and CatchSurfaceEmphasis) is the legacy member, kept for legacy callers until P7."
         ]
       },
       "governance": {
@@ -16359,8 +16419,8 @@
             "name": "ground",
             "type": "enum",
             "required": false,
-            "dartType": "CatchGround",
-            "tsType": "CatchGround",
+            "dartType": "CatchBandGround",
+            "tsType": "CatchBandGround",
             "values": [
               "white",
               "paper",
@@ -21722,14 +21782,45 @@
       "id": "catch.root",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+        "reason": "Day and night at each size class, the measured size and a format render in the Widgetbook contract; root_family goldens and core_library_test pin the theme, size class, ground ink and scope."
       },
       "name": "CatchRoot",
-      "status": "planned",
+      "status": "active",
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["AppRoot", "ThemeRoot", "DesignSystemRoot"],
-      "summary": "Sets the theme and size class for everything inside it. Wrap each screen (or the whole app) once.",
+      "summary": "Sets the theme, size class, format and register for everything inside it and paints the ground. Wrap each screen (or the whole app) once.",
+      "dart": {
+        "symbol": "CatchRoot",
+        "file": "packages/catch_ui/lib/src/foundations/catch_root.dart",
+        "constructors": [
+          "CatchRoot"
+        ]
+      },
+      "react": {
+        "symbol": "CatchRoot",
+        "file": "packages/web-ui/src/components/CatchRoot.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchRoot.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "day-compact",
+            "day-medium",
+            "day-expanded",
+            "night-compact",
+            "night-medium",
+            "night-expanded",
+            "auto",
+            "format"
+          ]
+        },
+        "additionalSymbols": [
+          "CatchGroundProvider"
+        ],
+        "notes": "theme defaults to auto (prefers-color-scheme), resolved after hydration; a page that must not flash sets data-catch-theme in a pre-hydration script when it adopts Root (a P6 concern). CatchGroundProvider re-provides the context with a new ground for Surface and later Chip, Button and Field; Dart has no counterpart, since CatchRoot and CatchSurface compose a CatchRootScope with the child ground themselves."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -21747,12 +21838,100 @@
         }
       },
       "contract": {
-        "props": [],
-        "states": [],
-        "slots": [],
-        "tokens": [],
-        "dartRoles": [],
-        "goldens": [],
+        "props": [
+          {
+            "name": "theme",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchThemeMode?",
+            "values": [
+              "day",
+              "night"
+            ],
+            "notes": "Null follows the phone's dark-mode setting (MediaQuery.platformBrightnessOf); pass night only to force night (the door, the live console, staff screens) and day only to force white. React adds auto, its default."
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchWindowSize?",
+            "values": [
+              "compact",
+              "medium",
+              "expanded"
+            ],
+            "notes": "Null measures the root's own width (600 and 840 from GeneratedCatchWindowSizeTokens)."
+          },
+          {
+            "name": "format",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFormat?",
+            "values": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ],
+            "notes": "The event this screen is about: accent parts pick up its colour."
+          },
+          {
+            "name": "register",
+            "type": "enum",
+            "required": false,
+            "default": "app",
+            "dartType": "CatchRegister",
+            "values": [
+              "app",
+              "quiet"
+            ]
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          }
+        ],
+        "states": [
+          "day-compact",
+          "day-medium",
+          "day-expanded",
+          "night-compact",
+          "night-medium",
+          "night-expanded",
+          "auto",
+          "format"
+        ],
+        "slots": [
+          {
+            "name": "child",
+            "kind": "required-content-widget"
+          }
+        ],
+        "tokens": [
+          "theme.light.color.ground",
+          "theme.light.color.ink",
+          "theme.dark.color.ground",
+          "theme.dark.color.ink",
+          "windowSize.mediumMinWidth",
+          "windowSize.expandedMinWidth"
+        ],
+        "dartRoles": [
+          "CatchRootScope",
+          "CatchRootScopeData",
+          "CatchTheme.light",
+          "CatchTheme.dark",
+          "CatchThemeMode",
+          "CatchWindowSize",
+          "CatchFormat",
+          "CatchRegister",
+          "CatchGround"
+        ],
+        "goldens": [
+          "root_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -21765,12 +21944,41 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.root.scope",
+            "symbol": "CatchRootScope",
+            "summary": "Publishes where a component sits as CatchRootScopeData (theme, size class, format, register, ground, reduced motion); CatchRootScope.of asserts a root above, maybeOf returns null. CatchRoot and CatchSurface are its only providers.",
+            "states": [
+              "read"
+            ],
+            "file": "packages/catch_ui/lib/src/foundations/catch_root.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.root",
+              "parentConceptId": "catch.root",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.root"
+            },
+            "level": "L1",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "Root",
+              "comparedWith": [
+                "catch.root"
+              ],
+              "reason": "Publishes the root's context (theme, size class, format, register, ground) to every component inside it; CatchRoot and CatchSurface own the paint and provide it."
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Port both frameworks: theme, size class, format, register, reduced motion. CatchTheme stays the token theme it reads."
+          "One root per screen (or app). It installs CatchTheme.light or .dark, so CatchTokens.of and Theme.of resolve inside it, and it never scrolls, pads or constrains.",
+          "Components read CatchRootScope.of(context). CatchRoot and CatchSurface are its only providers: each composes the Theme (when the theme flips), DefaultTextStyle and IconTheme in the ground's ink, and a CatchRootScope with the child ground.",
+          "Web-only props (className, style) have no Dart counterpart."
         ]
       },
       "governance": {
@@ -21785,6 +21993,11 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.root"
+      },
+      "level": "L1",
+      "roleNoun": "Root",
+      "naming": {
+        "useCase": ""
       },
       "system": {
         "name": "Root",
@@ -21805,15 +22018,39 @@
       "id": "catch.stack",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+        "reason": "Gaps, equal shares, wrapping and a collapsing row render in the Widgetbook contract; stack_family goldens pin collapse at 599 and 600 px."
       },
       "name": "CatchStack",
-      "status": "planned",
+      "status": "active",
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["CatchGap", "CatchInset", "CatchGrid"],
       "absorbs": ["CatchSplit", "CatchSectionList"],
       "summary": "Lays children out in a column or a row with a token gap.",
+      "dart": {
+        "symbol": "CatchStack",
+        "file": "packages/catch_ui/lib/src/primitives/catch_stack.dart",
+        "constructors": [
+          "CatchStack"
+        ]
+      },
+      "react": {
+        "symbol": "CatchStack",
+        "file": "packages/web-ui/src/components/CatchStack.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStack.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "gaps",
+            "equal",
+            "wrap",
+            "collapse"
+          ]
+        },
+        "notes": "React takes gap as pixels (0 to 64) or \"section\", collapseBelow as \"medium\" | \"expanded\", and as for the element, which is web-only."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -21831,12 +22068,151 @@
         }
       },
       "contract": {
-        "props": [],
-        "states": [],
-        "slots": [],
-        "tokens": [],
-        "dartRoles": [],
-        "goldens": [],
+        "props": [
+          {
+            "name": "direction",
+            "type": "enum",
+            "required": false,
+            "default": "column",
+            "dartType": "CatchStackDirection",
+            "tsType": "CatchStackDirection",
+            "values": [
+              "column",
+              "row"
+            ]
+          },
+          {
+            "name": "gap",
+            "type": "enum",
+            "required": false,
+            "default": "g12",
+            "dartType": "CatchStackGap",
+            "tsType": "CatchStackGap",
+            "values": [
+              "none",
+              "g2",
+              "g4",
+              "g6",
+              "g8",
+              "g12",
+              "g16",
+              "g20",
+              "g24",
+              "g28",
+              "g32",
+              "g40",
+              "g48",
+              "g64",
+              "section"
+            ],
+            "notes": "A spacing token; section is 28 on compact and 40 wider. React takes the pixels (0 … 64) or \"section\"."
+          },
+          {
+            "name": "align",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchStackAlign?",
+            "tsType": "CatchStackAlign | null",
+            "values": [
+              "start",
+              "center",
+              "end",
+              "stretch",
+              "baseline"
+            ],
+            "notes": "Cross axis. Unset, a column stretches its children to its width when it has one; a row top-aligns them."
+          },
+          {
+            "name": "justify",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchStackJustify?",
+            "tsType": "CatchStackJustify | null",
+            "values": [
+              "start",
+              "center",
+              "end",
+              "between"
+            ]
+          },
+          {
+            "name": "wrap",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean"
+          },
+          {
+            "name": "equal",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean",
+            "notes": "Rows only: children share the width."
+          },
+          {
+            "name": "collapseBelow",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchWindowSize?",
+            "tsType": "CatchWindowSize | null",
+            "values": [
+              "medium",
+              "expanded"
+            ],
+            "notes": "Rows only: below this size class the row stacks into a column, drops equal and keeps align only when it is center or end. React takes \"medium\" | \"expanded\"."
+          },
+          {
+            "name": "children",
+            "type": "list",
+            "required": true,
+            "dartType": "List<Widget>",
+            "tsType": "ReactNode"
+          }
+        ],
+        "states": [
+          "gaps",
+          "equal",
+          "wrap",
+          "collapse"
+        ],
+        "slots": [
+          {
+            "name": "children",
+            "kind": "content-widget-list"
+          }
+        ],
+        "tokens": [
+          "space.s0",
+          "space.micro2",
+          "space.s1",
+          "space.micro6",
+          "space.s2",
+          "space.s3",
+          "space.s4",
+          "space.s5",
+          "space.s6",
+          "space.s7",
+          "space.s8",
+          "space.s10",
+          "space.s12",
+          "space.s16",
+          "layout.sectionGapCompact",
+          "layout.sectionGapWide"
+        ],
+        "dartRoles": [
+          "CatchStackGap",
+          "CatchStackDirection",
+          "CatchStackAlign",
+          "CatchStackJustify",
+          "CatchRootScope"
+        ],
+        "goldens": [
+          "stack_family",
+          "stack_family_collapse"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -21854,7 +22230,8 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Port both frameworks; absorbs the web layout helpers when its first redesigned consumer lands (Split and Grid become equal plus collapseBelow)."
+          "Use for a token gap between children; framework Column and Row stay legal for arrangement. The web lane's CatchGap, CatchInset, CatchSplit and CatchGrid are absorbed when their first redesigned consumer lands (Split and Grid become equal plus collapseBelow).",
+          "The web-only as prop has no Dart counterpart."
         ]
       },
       "governance": {
@@ -21869,6 +22246,11 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.stack"
+      },
+      "level": "L2",
+      "roleNoun": "Stack",
+      "naming": {
+        "useCase": ""
       },
       "system": {
         "name": "Stack",

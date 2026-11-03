@@ -98,28 +98,28 @@ class EventAssistanceRuntimeChannelsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l.eventAssistanceRuntimeChannels,
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           l.eventAssistanceRuntimeChannelBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         CatchSection.fieldRows(first: true, children: channelFields),
         if (choices.every((c) => !c.canSelect)) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventAssistanceRuntimeNoSenders,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         for (final c in choices.where((c) => !c.canSelect)) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             '${runtimeSenderLabel(l, c)}\n${runtimeSenderIssue(l, c.availability)}',
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         for (final route in moreRoutes)

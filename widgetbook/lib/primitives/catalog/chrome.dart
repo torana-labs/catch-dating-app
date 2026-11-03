@@ -380,7 +380,9 @@ Widget catchSliverHeaderCatalogStates(BuildContext context) {
                     horizontal: CatchSpacing.screenPx,
                     vertical: CatchSpacing.s2,
                   ),
-                  child: CatchSurface.card(child: Text('Result ${index + 1}')),
+                  child: CatchLegacySurface.card(
+                    child: Text('Result ${index + 1}'),
+                  ),
                 ),
               ),
             ],

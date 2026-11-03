@@ -210,6 +210,15 @@ jobs:
           CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
         run: flutter test --concurrency=1 test/goldens
 
+      # The library's own golden families (packages/catch_ui/test/goldens,
+      # tagged golden), reported through the same comparator and report.
+      - name: Catch UI package goldens (report pixel changes)
+        env:
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+        run: >-
+          (cd packages/catch_ui &&
+          flutter test --concurrency=1 --tags=golden)
+
       - name: Widgetbook package suites (pass 1)
         env:
           CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
@@ -256,7 +265,9 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: flutter-golden-failures-${{ github.run_id }}
-          path: test/goldens/failures/
+          path: |
+            test/goldens/failures/
+            packages/catch_ui/test/goldens/failures/
           if-no-files-found: ignore
           retention-days: 14
 

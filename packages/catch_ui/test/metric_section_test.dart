@@ -50,7 +50,7 @@ void main() {
           dark: dark,
           scale: scale,
         );
-        final surfaces = find.byType(CatchSurface);
+        final surfaces = find.byType(CatchLegacySurface);
         expect(surfaces, findsNWidgets(4));
         final rects = [
           for (var i = 0; i < 4; i++) tester.getRect(surfaces.at(i)),
@@ -66,7 +66,7 @@ void main() {
             expect(rects[i].top - rects[i - 1].bottom, 12);
           }
         }
-        for (final surface in tester.widgetList<CatchSurface>(surfaces)) {
+        for (final surface in tester.widgetList<CatchLegacySurface>(surfaces)) {
           expect(surface.borderRole, CatchBorderRole.boundary);
           expect(surface.emphasis, CatchSurfaceEmphasis.flat);
         }
@@ -88,7 +88,7 @@ void main() {
       CatchMetricSection.grid(items: items.take(3).toList()),
       width: 320,
     );
-    final surfaces = find.byType(CatchSurface);
+    final surfaces = find.byType(CatchLegacySurface);
     for (var i = 0; i < 3; i++) {
       expect(tester.getSize(surfaces.at(i)).width, 280);
     }
@@ -133,7 +133,7 @@ void main() {
     tester,
   ) async {
     await mount(tester, const CatchMetricSection.grid(items: []));
-    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchLegacySurface), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

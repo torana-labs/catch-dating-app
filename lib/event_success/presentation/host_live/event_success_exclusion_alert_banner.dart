@@ -86,7 +86,7 @@ class _EventSuccessExclusionAlertBannerState
     final thresholdMinutes = widget.alertThreshold.inMinutes;
     return Semantics(
       liveRegion: true,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         duration: Duration.zero,
         radius: CatchRadius.none,
         backgroundColor: CatchTokens.of(context).surface,

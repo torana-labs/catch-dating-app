@@ -33,9 +33,9 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
     final eventIdentity = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           event.title,
-          variant: CatchTextVariant.titleL,
+          variant: CatchLegacyTextVariant.titleL,
           color: dark.ink,
           maxLines: 2,
         ),
@@ -46,7 +46,7 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
       ],
     );
     final syncPill = EventSuccessControlRoomSyncBadge(state: syncState);
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: CatchTokens.editorialBlack,
@@ -81,9 +81,9 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                     : CatchTextStyles.displayL(context, color: dark.ink),
               ),
               gapH14,
-              CatchText(
+              CatchLegacyText(
                 plan.activeStep.hostInstruction,
-                variant: CatchTextVariant.bodyL,
+                variant: CatchLegacyTextVariant.bodyL,
                 color: dark.ink2,
               ),
               if (attendeeExperience case final copy?) ...[
@@ -98,9 +98,9 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                     ),
                     gapW8,
                     Expanded(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         copy,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: dark.ink2,
                       ),
                     ),
@@ -113,9 +113,9 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                 style: CatchTextStyles.monoLabel(context, color: dark.ink2),
               ),
               gapH6,
-              CatchText(
+              CatchLegacyText(
                 nextStepTitle,
-                variant: CatchTextVariant.bodyLead,
+                variant: CatchLegacyTextVariant.bodyLead,
                 color: dark.ink,
                 maxLines: 2,
               ),

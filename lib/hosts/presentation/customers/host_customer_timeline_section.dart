@@ -141,9 +141,9 @@ class HostCustomerReachSection extends StatelessWidget {
         ),
         gapH8,
         CatchSection.content(
-          child: CatchText(
+          child: CatchLegacyText(
             l10n.hostCustomersPauseWhatsappHandoffsBody,
-            variant: CatchTextVariant.bodyS,
+            variant: CatchLegacyTextVariant.bodyS,
             color: CatchTokens.of(context).ink2,
           ),
         ),
@@ -471,11 +471,11 @@ class HostCustomerTimelineSection extends StatelessWidget {
         children: [
           if (entries.isEmpty)
             CatchSection.content(
-              child: CatchText(
+              child: CatchLegacyText(
                 hasGap
                     ? context.l10n.hostCustomersTimelineUnavailable
                     : context.l10n.hostCustomersTimelineEmpty,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             )
           else
@@ -489,9 +489,9 @@ class HostCustomerTimelineSection extends StatelessWidget {
           if (hasGap && entries.isNotEmpty) ...[
             gapH12,
             CatchSection.content(
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.hostCustomersTimelinePartialBody,
-                variant: CatchTextVariant.bodyS,
+                variant: CatchLegacyTextVariant.bodyS,
                 color: CatchTokens.of(context).ink2,
               ),
             ),
@@ -499,9 +499,9 @@ class HostCustomerTimelineSection extends StatelessWidget {
           if (showMessageBoundary) ...[
             gapH12,
             CatchSection.content(
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.hostCustomersTimelineReplyBoundary,
-                variant: CatchTextVariant.bodyS,
+                variant: CatchLegacyTextVariant.bodyS,
                 color: CatchTokens.of(context).ink2,
               ),
             ),

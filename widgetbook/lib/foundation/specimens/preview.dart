@@ -15,7 +15,7 @@ class WidgetbookFoundationSpecSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.surface,
       borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,

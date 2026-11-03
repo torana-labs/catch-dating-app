@@ -32,7 +32,7 @@ class EventDetailTicketStubRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final cells = _ticketStubCells(event, context.l10n);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.surface,
@@ -107,7 +107,7 @@ class EventDetailHintList extends StatelessWidget {
             padding: const EdgeInsets.only(
               top: CatchLayout.eventDetailHintDotTopInset,
             ),
-            child: CatchSurface(
+            child: CatchLegacySurface(
               width: CatchLayout.eventDetailHintDotExtent,
               height: CatchLayout.eventDetailHintDotExtent,
               radius: CatchRadius.pill,
@@ -117,9 +117,9 @@ class EventDetailHintList extends StatelessWidget {
           ),
           gapW12,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               hints[index],
-              variant: CatchTextVariant.sectionTitle,
+              variant: CatchLegacyTextVariant.sectionTitle,
               color: textColor ?? t.ink,
             ),
           ),
@@ -216,7 +216,7 @@ class EventDetailMapCard extends StatelessWidget {
     return Semantics(
       button: canOpen,
       label: event.locationName,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         height: CatchLayout.eventDetailMapCardHeight,
         backgroundColor: surfaceColor ?? t.surface,
         radius: CatchRadius.none,
@@ -230,7 +230,7 @@ class EventDetailMapCard extends StatelessWidget {
         padding: const EdgeInsets.all(CatchStroke.hairline),
         onTap: canOpen ? onTap : null,
         duration: Duration.zero,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           duration: Duration.zero,
           tone: CatchSurfaceTone.transparent,
           radius: CatchRadius.md - 1,
@@ -253,9 +253,9 @@ class EventDetailMapCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         event.locationName,
-                        variant: CatchTextVariant.titleS,
+                        variant: CatchLegacyTextVariant.titleS,
                         color: t.ink,
                         maxLines: 1,
                       ),
@@ -429,15 +429,15 @@ class EventDetailFactList extends StatelessWidget {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CatchText(
+                          CatchLegacyText(
                             row.title,
-                            variant: CatchTextVariant.bodyLead,
+                            variant: CatchLegacyTextVariant.bodyLead,
                             color: resolvedTitleColor,
                           ),
                           gapH2,
-                          CatchText(
+                          CatchLegacyText(
                             row.body,
-                            variant: CatchTextVariant.supporting,
+                            variant: CatchLegacyTextVariant.supporting,
                             color: resolvedBodyColor,
                           ),
                         ],
@@ -563,20 +563,20 @@ class EventDetailPhotoTile extends StatelessWidget {
     return SizedBox(
       key: ValueKey('event-photo-strip-tile-$index'),
       height: CatchLayout.eventDetailPhotoStripTileHeight,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         duration: Duration.zero,
         tone: CatchSurfaceTone.transparent,
         radius: CatchRadius.infoTile,
         clipBehavior: Clip.antiAlias,
         child: photo == null
-            ? CatchSurface(
+            ? CatchLegacySurface(
                 key: ValueKey('event-photo-strip-placeholder-$index'),
                 duration: Duration.zero,
                 radius: CatchRadius.none,
                 backgroundColor: backgroundColor,
                 child: Icon(icon, color: iconColor, size: CatchIconSize.lg),
               )
-            : CatchSurface(
+            : CatchLegacySurface(
                 duration: Duration.zero,
                 radius: CatchRadius.none,
                 backgroundColor: backgroundColor,

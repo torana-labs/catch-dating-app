@@ -6,14 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
-    'CatchSurface.tinted renders the handoff primary-soft inset row',
+    'CatchLegacySurface.tinted renders the handoff primary-soft inset row',
     (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
           home: const Scaffold(
             body: Center(
-              child: CatchSurface.tinted(
+              child: CatchLegacySurface.tinted(
                 child: Text('Only you see this privacy note.'),
               ),
             ),
@@ -23,13 +23,15 @@ void main() {
 
       expect(find.text('Only you see this privacy note.'), findsOneWidget);
 
-      final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+      final surface = tester.widget<CatchLegacySurface>(
+        find.byType(CatchLegacySurface),
+      );
       expect(surface.tone, CatchSurfaceTone.primarySoft);
       expect(surface.emphasis, CatchSurfaceEmphasis.flat);
       expect(surface.radius, CatchRadius.sm);
       final container = tester.widget<AnimatedContainer>(
         find.descendant(
-          of: find.byType(CatchSurface),
+          of: find.byType(CatchLegacySurface),
           matching: find.byType(AnimatedContainer),
         ),
       );

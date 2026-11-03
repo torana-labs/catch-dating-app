@@ -20,7 +20,7 @@ Widget horizontalScrollViewStates(BuildContext context) =>
             listPadding: EdgeInsets.zero,
             itemCount: 3,
             itemWidth: const CatchRailItemWidth.fixed(160),
-            itemBuilder: (context, index) => CatchSurface.card(
+            itemBuilder: (context, index) => CatchLegacySurface.card(
               height: height == null ? 84 : 110,
               child: Text(
                 'Item ${index + 1}',

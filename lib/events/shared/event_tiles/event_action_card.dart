@@ -58,7 +58,7 @@ class EventActionCard extends StatelessWidget {
           t.raised.withValues(alpha: CatchOpacity.gradientBand),
         ];
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: EdgeInsets.zero,
       backgroundColor: backgroundColor ?? t.surface,
       borderSpec: CatchBorder.resolve(
@@ -87,7 +87,7 @@ class EventActionCard extends StatelessWidget {
           if (topAccentColors != null && topAccentColors!.isNotEmpty)
             SizedBox(
               height: CatchSpacing.micro6,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 tone: CatchSurfaceTone.transparent,
                 // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 gradient: LinearGradient(colors: topAccentColors!),
@@ -104,18 +104,18 @@ class EventActionCard extends StatelessWidget {
                 EventActionCardHeader(badges: badges, indexLabel: indexLabel),
                 if (headerAccessory != null) ...[gapH10, headerAccessory!],
                 gapH12,
-                CatchText(
+                CatchLegacyText(
                   title ?? event.title,
-                  variant: CatchTextVariant.displayXs,
+                  variant: CatchLegacyTextVariant.displayXs,
                   maxLines: 2,
                 ),
                 if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
                   gapH4,
-                  CatchText(
+                  CatchLegacyText(
                     subtitle!,
                     maxLines: 1,
 
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                   ),
                 ],

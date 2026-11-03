@@ -81,9 +81,9 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.hostInboxChoosePerson,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                       ),
                       gapH12,
                       CatchSearchField.expanded(
@@ -146,9 +146,9 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                 if (page.contacts.isEmpty)
                   SliverToBoxAdapter(
                     child: CatchSection.content(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         context.l10n.hostCustomersNoResults,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                       ),
                     ),
                   ),
@@ -376,9 +376,9 @@ class HostNewMessageRouteSection extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostInboxPartialSources,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 if (whatsappPage?.nextCursor != null)
                   CatchButton(
@@ -405,9 +405,9 @@ class HostNewMessageRouteSection extends ConsumerWidget {
           ),
         if (valid && !catchAvailable && whatsapp == null && whatsappComplete)
           CatchSection.content(
-            child: CatchText(
+            child: CatchLegacyText(
               context.l10n.hostInboxNewMessageUnavailable,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ),
       ],

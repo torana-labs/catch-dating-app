@@ -441,9 +441,9 @@ class _ProgramWorkspacePageBodyState
               ),
               if (mode == 'selectedGuests') ...[
                 gapH12,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.programsGuestsInviteSelectionHint,
-                  variant: CatchTextVariant.bodyS,
+                  variant: CatchLegacyTextVariant.bodyS,
                 ),
               ],
             ],
@@ -490,12 +490,15 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(fn.name, variant: CatchTextVariant.sectionTitle),
+              CatchLegacyText(
+                fn.name,
+                variant: CatchLegacyTextVariant.sectionTitle,
+              ),
               const SizedBox(height: CatchSpacing.s1),
-              CatchText(
+              CatchLegacyText(
                 '${AppTimeFormatters.time(fn.startsAt)} – '
                 '${AppTimeFormatters.time(fn.endsAt)} · ${fn.venueName}',
-                variant: CatchTextVariant.bodyS,
+                variant: CatchLegacyTextVariant.bodyS,
               ),
               const SizedBox(height: CatchSpacing.s2),
               Wrap(
@@ -529,7 +532,10 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
               ),
               if (fn.instructions != null && fn.instructions!.isNotEmpty) ...[
                 gapH8,
-                CatchText(fn.instructions!, variant: CatchTextVariant.bodyS),
+                CatchLegacyText(
+                  fn.instructions!,
+                  variant: CatchLegacyTextVariant.bodyS,
+                ),
               ],
               gapH12,
               Wrap(

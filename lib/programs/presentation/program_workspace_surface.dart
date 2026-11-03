@@ -155,22 +155,22 @@ class _ProgramFunctionEditDialogState extends State<ProgramFunctionEditDialog> {
         ),
         CatchFieldRow.standard(
           leading: Icon(CatchIcons.time),
-          body: CatchText(
+          body: CatchLegacyText(
             _startsAt == null
                 ? context.l10n.programsWorkspaceFunctionStarts
                 : AppTimeFormatters.dateTime(_startsAt!),
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
           ),
           trailing: Icon(CatchIcons.disclosure),
           onTap: () => _pickDateTime(isStart: true),
         ),
         CatchFieldRow.standard(
           leading: Icon(CatchIcons.time),
-          body: CatchText(
+          body: CatchLegacyText(
             _endsAt == null
                 ? context.l10n.programsWorkspaceFunctionEnds
                 : AppTimeFormatters.dateTime(_endsAt!),
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
           ),
           trailing: Icon(CatchIcons.disclosure),
           onTap: () => _pickDateTime(isStart: false),
@@ -221,9 +221,12 @@ class ProgramWorkspaceStationTile extends StatelessWidget {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(station.label, variant: CatchTextVariant.sectionTitle),
+              CatchLegacyText(
+                station.label,
+                variant: CatchLegacyTextVariant.sectionTitle,
+              ),
               const SizedBox(height: CatchSpacing.s1),
-              CatchText(
+              CatchLegacyText(
                 [
                   station.kind,
                   if (station.iataCode != null && station.iataCode!.isNotEmpty)
@@ -231,7 +234,7 @@ class ProgramWorkspaceStationTile extends StatelessWidget {
                   if (station.terminal != null && station.terminal!.isNotEmpty)
                     station.terminal!,
                 ].join(' · '),
-                variant: CatchTextVariant.bodyS,
+                variant: CatchLegacyTextVariant.bodyS,
               ),
               const SizedBox(height: CatchSpacing.s2),
               Wrap(
@@ -249,17 +252,17 @@ class ProgramWorkspaceStationTile extends StatelessWidget {
               if (station.meetingZone != null &&
                   station.meetingZone!.isNotEmpty) ...[
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   station.meetingZone!,
-                  variant: CatchTextVariant.bodyS,
+                  variant: CatchLegacyTextVariant.bodyS,
                 ),
               ],
               if (station.instructions != null &&
                   station.instructions!.isNotEmpty) ...[
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   station.instructions!,
-                  variant: CatchTextVariant.bodyS,
+                  variant: CatchLegacyTextVariant.bodyS,
                 ),
               ],
               gapH12,
@@ -305,17 +308,23 @@ class ProgramWorkspaceHotelTile extends StatelessWidget {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CatchText(hotel.name, variant: CatchTextVariant.sectionTitle),
+              CatchLegacyText(
+                hotel.name,
+                variant: CatchLegacyTextVariant.sectionTitle,
+              ),
               if (hotel.address != null && hotel.address!.isNotEmpty) ...[
                 const SizedBox(height: CatchSpacing.s1),
-                CatchText(hotel.address!, variant: CatchTextVariant.bodyS),
+                CatchLegacyText(
+                  hotel.address!,
+                  variant: CatchLegacyTextVariant.bodyS,
+                ),
               ],
               if (hotel.receptionContact != null &&
                   hotel.receptionContact!.isNotEmpty) ...[
                 const SizedBox(height: CatchSpacing.s1),
-                CatchText(
+                CatchLegacyText(
                   hotel.receptionContact!,
-                  variant: CatchTextVariant.bodyS,
+                  variant: CatchLegacyTextVariant.bodyS,
                 ),
               ],
               const SizedBox(height: CatchSpacing.s2),
@@ -462,9 +471,9 @@ class _ProgramPickupPointEditDialogState
       child: SingleChildScrollView(
         child: CatchSection.containedFieldRows(
           children: [
-            CatchText(
+            CatchLegacyText(
               context.l10n.programsWorkspacePickupKind,
-              variant: CatchTextVariant.supportingStrong,
+              variant: CatchLegacyTextVariant.supportingStrong,
             ),
             gapH8,
             CatchChoiceInput<String>.segmented(

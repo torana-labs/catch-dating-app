@@ -87,11 +87,11 @@ class OrganizerHostIdentityRow extends StatelessWidget {
             children: [
               CatchKickerText(label: eyebrow, color: t.ink3),
               gapH2,
-              CatchText(
+              CatchLegacyText(
                 hostName,
                 maxLines: 1,
 
-                variant: CatchTextVariant.statusLabel,
+                variant: CatchLegacyTextVariant.statusLabel,
                 color: t.ink,
               ),
             ],

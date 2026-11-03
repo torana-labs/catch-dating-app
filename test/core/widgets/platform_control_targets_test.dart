@@ -640,17 +640,18 @@ void main() {
         child: const Icon(Icons.add),
       ),
     );
-    Color? fill() =>
-        tester.widget<CatchSurface>(find.byType(CatchSurface)).backgroundColor;
+    Color? fill() => tester
+        .widget<CatchLegacySurface>(find.byType(CatchLegacySurface))
+        .backgroundColor;
     final resting = fill();
-    final visualRect = tester.getRect(find.byType(CatchSurface));
+    final visualRect = tester.getRect(find.byType(CatchLegacySurface));
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: const Offset(400, 400));
     await mouse.moveTo(tester.getCenter(find.byType(CatchIconAction)));
     await tester.pump();
     final hovered = fill();
     expect(hovered, isNot(resting));
-    expect(tester.getRect(find.byType(CatchSurface)), visualRect);
+    expect(tester.getRect(find.byType(CatchLegacySurface)), visualRect);
     await mouse.down(tester.getCenter(find.byType(CatchIconAction)));
     await tester.pump();
     expect(fill(), isNot(hovered));

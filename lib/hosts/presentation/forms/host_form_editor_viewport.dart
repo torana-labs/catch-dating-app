@@ -57,7 +57,7 @@ class HostFormEditorViewport extends StatelessWidget {
               ),
               CatchDivider.vertical(color: t.line),
               Expanded(
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   duration: Duration.zero,
                   radius: CatchRadius.none,
                   backgroundColor: t.surface,
@@ -195,9 +195,9 @@ class HostFormOutlineMenu extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      CatchText(
+      CatchLegacyText(
         context.l10n.hostFormOutline,
-        variant: CatchTextVariant.sectionTitle,
+        variant: CatchLegacyTextVariant.sectionTitle,
       ),
       gapH12,
       CatchSection.containedFieldRows(

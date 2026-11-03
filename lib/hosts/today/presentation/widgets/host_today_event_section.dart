@@ -42,9 +42,9 @@ class HostTodayEventSection extends StatelessWidget {
           borderColor: Colors.transparent,
         ),
         gapH16,
-        CatchText(
+        CatchLegacyText(
           event.title,
-          variant: CatchTextVariant.displayM,
+          variant: CatchLegacyTextVariant.displayM,
           color: t.ink,
         ),
         gapH14,
@@ -114,7 +114,7 @@ class HostTodayEventSection extends StatelessWidget {
     );
     return !contained
         ? content
-        : CatchSurface(
+        : CatchLegacySurface(
             borderRole: CatchBorderRole.separator,
             backgroundColor: t.surface,
             // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -140,17 +140,17 @@ class HostTodayEventMetadataRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final time = CatchText(
+    final time = CatchLegacyText(
       context.l10n.hostsHostTodayTextEventdaylabelTime(
         eventDayLabel: _eventDayLabel(context, event, now),
         time: EventFormatters.time(event.startTime),
       ),
-      variant: CatchTextVariant.supporting,
+      variant: CatchLegacyTextVariant.supporting,
       color: t.ink2,
     );
-    final location = CatchText(
+    final location = CatchLegacyText(
       event.locationName,
-      variant: CatchTextVariant.supporting,
+      variant: CatchLegacyTextVariant.supporting,
       color: t.ink2,
     );
     return Wrap(
@@ -204,9 +204,9 @@ class HostTodayEventMetricTile extends StatelessWidget {
         ),
         if (supporting != null) ...[
           gapH2,
-          CatchText(
+          CatchLegacyText(
             supporting!,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
         ],

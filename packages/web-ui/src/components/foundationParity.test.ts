@@ -14,12 +14,10 @@ const generatedTokensCss = read("../../../web-config/generated/catch-tokens.css"
 const insetsDart = read("../../../catch_tokens/lib/src/semantic/catch_insets.dart");
 const textStylesDart = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dart");
 const fontsDart = read("../../../catch_ui/lib/src/foundations/catch_fonts.dart");
-const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_text_variant.dart");
+const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_legacy_text_variant.dart");
 const textVariantTs = read("./CatchLegacyText.tsx");
 const textStoriesTs = read("./foundations.stories.tsx");
-const textPreviewDart = read("../../../../widgetbook/lib/primitives/contracts/text.dart");
-const textContract = JSON.parse(read("../../../../design/components/catch.components.json"))
-  .components.find((component: {id: string}) => component.id === "catch.text");
+const textPreviewDart = read("../../../../widgetbook/lib/primitives/contracts/legacy_text.dart");
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
 const insetCss = read("./CatchInset.module.css");
@@ -157,7 +155,7 @@ describe("CatchInsets parity", () => {
 });
 
 describe("CatchTextStyles parity", () => {
-  const values = textVariantDart.match(/enum CatchTextVariant \{([^;]*);/)?.[1]
+  const values = textVariantDart.match(/enum CatchLegacyTextVariant \{([^;]*);/)?.[1]
     .split(",").map((value) => value.trim()).filter(Boolean) ?? [];
 
   function roleBody(role: string) {
@@ -230,18 +228,16 @@ describe("CatchTextStyles parity", () => {
     expect(selectorValues(textCss, "variant").sort()).toEqual([...values].sort());
   });
 
-  it("publishes the same roles in TypeScript and the registry contract", () => {
+  // The registry records the system roles since P2.1; coreLibraryParity pins those.
+  it("publishes the same legacy roles in TypeScript", () => {
     const union = textVariantTs.match(/export type CatchLegacyTextVariant =([^;]*);/)?.[1] ?? "";
     const tsValues = [...union.matchAll(/"(\w+)"/g)].map((match) => match[1]);
-    const registered = textContract.contract.props
-      .find((prop: {name: string}) => prop.name === "variant").values;
     expect(tsValues).toEqual(values);
-    expect(registered).toEqual(values);
   });
 
   it("covers every canonical role in both previews", () => {
     const flutterList = textPreviewDart.match(/const variants = \[([\s\S]*?)\];/)?.[1] ?? "";
-    const flutterPreview = [...flutterList.matchAll(/CatchTextVariant\.(\w+)/g)]
+    const flutterPreview = [...flutterList.matchAll(/CatchLegacyTextVariant\.(\w+)/g)]
       .map((match) => match[1]);
     const reactList = textStoriesTs.match(/const textVariants: readonly CatchLegacyTextVariant\[\] = \[([\s\S]*?)\];/)?.[1] ?? "";
     const reactPreview = [...reactList.matchAll(/"(\w+)"/g)].map((match) => match[1]);

@@ -45,21 +45,21 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           item.displayName ?? l10n.eventAssistanceDeliveryUnknownGuest,
-          variant: CatchTextVariant.titleL,
+          variant: CatchLegacyTextVariant.titleL,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           deliveryPurposeLabel(l10n, item.purpose),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
-        CatchText(
+        CatchLegacyText(
           deliveryTimeLabel(context, item.createdAt),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (item.lifecycle != AssistanceMessageLifecycle.active)
-          CatchText(switch (item.lifecycle) {
+          CatchLegacyText(switch (item.lifecycle) {
             AssistanceMessageLifecycle.cancelled =>
               l10n.eventAssistanceDeliveryStopReasonCancelled,
             AssistanceMessageLifecycle.superseded =>
@@ -67,16 +67,19 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
             AssistanceMessageLifecycle.responded =>
               l10n.eventAssistanceDeliveryStopReasonResponded,
             AssistanceMessageLifecycle.active => '',
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
         if (contextMessage != null) ...[
           gapH8,
-          CatchText(contextMessage!, variant: CatchTextVariant.supporting),
+          CatchLegacyText(
+            contextMessage!,
+            variant: CatchLegacyTextVariant.supporting,
+          ),
         ],
         if (item.attendeeId == null) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliverySourceChanged,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         CatchSection.divided(
@@ -84,45 +87,45 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchText(
+              CatchLegacyText(
                 deliveryStatusLabel(l10n, item.status),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               if (item.status == AssistanceDeliveryStatus.accepted)
-                CatchText(
+                CatchLegacyText(
                   l10n.eventAssistanceDeliveryAcceptedBody,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               if (item.status == AssistanceDeliveryStatus.unknown ||
                   item.status == AssistanceDeliveryStatus.conflictingEvidence)
-                CatchText(
+                CatchLegacyText(
                   l10n.eventAssistanceDeliveryUnknownBody,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               if (item.status == AssistanceDeliveryStatus.revoked)
-                CatchText(
+                CatchLegacyText(
                   l10n.eventAssistanceDeliveryRevokedBody,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
             ],
           ),
         ),
         CatchSection.divided(
           title: l10n.eventAssistanceDeliveryCoordination,
-          child: CatchText(
+          child: CatchLegacyText(
             item.handling is AssistanceManualDeliveryHandling
                 ? l10n.eventAssistanceDeliveryManualStopped
                 : practice && item.coordination is AssistanceDeliveryUntracked
                 ? l10n.eventAssistanceDeliveryPracticeSending
                 : deliveryCoordinationLabel(l10n, item.coordination),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ),
         CatchSection.divided(
           title: l10n.eventAssistanceDeliveryHandling,
-          child: CatchText(
+          child: CatchLegacyText(
             deliveryHandlingLabel(l10n, item.handling, actorUid),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ),
         if (item.attempts.isNotEmpty)
@@ -156,9 +159,9 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
         gapH12,
         if (phase == EventAssistanceDeliveryPhase.ready &&
             item.offersManualHandoff) ...[
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliveryTakeOverBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           CatchButton(
@@ -174,9 +177,9 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
             onPressed: null,
           ),
         if (phase == EventAssistanceDeliveryPhase.retryRequired) ...[
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliveryRetryBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           CatchButton(
@@ -185,9 +188,9 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
           ),
         ],
         if (phase == EventAssistanceDeliveryPhase.refreshRequired) ...[
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliveryRefresh,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           CatchButton(
@@ -196,14 +199,14 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
           ),
         ],
         if (phase == EventAssistanceDeliveryPhase.saved) ...[
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliverySaved,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliverySavedBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH12,

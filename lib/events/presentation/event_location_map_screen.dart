@@ -132,7 +132,7 @@ class EventLocationMapLoadingBody extends StatelessWidget {
           bottom: CatchSpacing.s5,
           child: SafeArea(
             top: false,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               tone: CatchSurfaceTone.raised,
               emphasis: CatchSurfaceEmphasis.floating,
               borderRole: CatchBorderRole.separator,

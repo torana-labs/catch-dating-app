@@ -143,41 +143,47 @@ class _EventAssistanceCheckpointSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(widget.contextMessage, variant: CatchTextVariant.supporting),
+        CatchLegacyText(
+          widget.contextMessage,
+          variant: CatchLegacyTextVariant.supporting,
+        ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceCheckpointDeparture(
             number: widget.progressRevision,
           ),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (roster != null) ...[
           gapH12,
-          CatchText(roster.label, variant: CatchTextVariant.titleL),
+          CatchLegacyText(roster.label, variant: CatchLegacyTextVariant.titleL),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceCheckpointBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceCheckpointSelected(
               count: selected.length,
               total: roster.members.length,
             ),
-            variant: CatchTextVariant.titleS,
+            variant: CatchLegacyTextVariant.titleS,
             color: CatchTokens.of(context).ink,
           ),
           if (roster.members.isEmpty) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceCheckpointEmptyRoster,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
           if (widget.requestMessage case final message?) ...[
             gapH8,
-            CatchText(message, variant: CatchTextVariant.supporting),
+            CatchLegacyText(
+              message,
+              variant: CatchLegacyTextVariant.supporting,
+            ),
           ],
           gapH12,
           if (roster.members.isNotEmpty)
@@ -204,21 +210,21 @@ class _EventAssistanceCheckpointSectionState
               ),
             ),
             gapH8,
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceCheckpointCorrectionBody,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ] else if (widget.phase != EventAssistanceCheckpointPhase.saved &&
               widget.submittedObservation?.correctionReason != null) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               widget.submittedObservation!.correctionReason!,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
         ] else if (available is AssistanceCheckpointUnavailable) ...[
           gapH12,
-          CatchText(switch (available.reason) {
+          CatchLegacyText(switch (available.reason) {
             AssistanceCheckpointUnavailableReason.rosterNotRecorded =>
               l10n.eventAssistanceCheckpointNoRoster,
             AssistanceCheckpointUnavailableReason.destinationNotRecorded =>
@@ -228,11 +234,11 @@ class _EventAssistanceCheckpointSectionState
             AssistanceCheckpointUnavailableReason.differentCheckpoint ||
             AssistanceCheckpointUnavailableReason.setupChanged =>
               l10n.eventAssistanceCheckpointSetupChanged,
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
         ],
         if (widget.phase != EventAssistanceCheckpointPhase.ready) ...[
           gapH12,
-          CatchText(switch (widget.phase) {
+          CatchLegacyText(switch (widget.phase) {
             EventAssistanceCheckpointPhase.submitting =>
               l10n.eventAssistanceCheckpointSaving,
             EventAssistanceCheckpointPhase.retryRequired =>
@@ -244,7 +250,7 @@ class _EventAssistanceCheckpointSectionState
             EventAssistanceCheckpointPhase.unavailable =>
               l10n.eventAssistanceCheckpointReadOnly,
             EventAssistanceCheckpointPhase.ready => '',
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
         ],
         if (widget.error != null) ...[
           gapH12,

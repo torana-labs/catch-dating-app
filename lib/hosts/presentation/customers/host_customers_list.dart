@@ -99,9 +99,9 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
           spacing: CatchSpacing.s3,
           runSpacing: CatchSpacing.s1,
           children: [
-            CatchText(
+            CatchLegacyText(
               header,
-              variant: CatchTextVariant.titleS,
+              variant: CatchLegacyTextVariant.titleS,
               color: CatchTokens.of(context).ink,
             ),
             if (onClear != null || trailing != null)
@@ -134,9 +134,9 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               if (campaignBlocker case final String blocker)
-                CatchText(
+                CatchLegacyText(
                   hostCampaignBlockerLabel(context, blocker),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: CatchTokens.of(context).warning,
                 ),
               if (onMessage case final message?)

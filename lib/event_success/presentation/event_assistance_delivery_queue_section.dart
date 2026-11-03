@@ -29,15 +29,15 @@ class EventAssistanceDeliveryQueueSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceDeliveryBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH12,
         if (items.isEmpty)
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDeliveryEmpty,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         if (items.isNotEmpty)
           CatchSection.containedRows(
@@ -62,11 +62,11 @@ class EventAssistanceDeliveryQueueSection extends StatelessWidget {
             ],
           ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           practice
               ? l10n.eventAssistanceDeliveryPracticeBody
               : l10n.eventAssistanceDeliveryPageBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH8,
         Wrap(

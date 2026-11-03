@@ -120,7 +120,7 @@ class _EventSuccessHostRevealSurfaceState
       roundCount: roundCount,
       remainingSeconds: remainingSeconds,
     );
-    return CatchSurface(
+    return CatchLegacySurface(
       clipBehavior: Clip.antiAlias,
       // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
       gradient: LinearGradient(
@@ -269,13 +269,13 @@ class _EventSuccessHostRevealSurfaceState
           ],
           if (widget.actionState.error != null) ...[
             gapH10,
-            CatchText(
+            CatchLegacyText(
               appErrorMessage(
                 widget.actionState.error!,
                 l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.surface,
             ),
           ],

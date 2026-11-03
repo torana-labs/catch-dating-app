@@ -223,14 +223,14 @@ class ActivityTypeRow extends StatelessWidget {
         color: visual.accent,
         size: CatchLayout.eventTypeIndexDotSize,
       ),
-      trailing: CatchText(
+      trailing: CatchLegacyText(
         context.l10n.exploreExploreEventTypeBrowseGridTextCount(
           count: entry.count,
         ),
         maxLines: 1,
 
         textAlign: TextAlign.end,
-        variant: CatchTextVariant.titleL,
+        variant: CatchLegacyTextVariant.titleL,
         color: t.ink2,
       ),
       onTap: onTap,

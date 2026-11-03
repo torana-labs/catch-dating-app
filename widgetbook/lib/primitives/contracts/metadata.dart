@@ -205,7 +205,7 @@ Widget catchBadgeContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'on-dark metadata / status',
-        child: CatchSurface(
+        child: CatchLegacySurface(
           backgroundColor: t.ink,
           padding: CatchInsets.content,
           child: WidgetbookContractWrap(
@@ -334,7 +334,7 @@ Widget catchCountBadgeContractStates(BuildContext context) {
           width: WidgetbookPreviewLayout.fullWidthButtonWidth,
           child: CatchCountBadge(
             count: 12,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               padding: CatchInsets.content,
               child: Text('Messages'),
             ),

@@ -49,9 +49,9 @@ class HostMembershipPlanSheet extends ConsumerWidget {
         if (plan == null) {
           return CatchSheet.standard(
             title: context.l10n.membershipsPlanUnavailableTitle,
-            child: CatchText(
+            child: CatchLegacyText(
               context.l10n.membershipsPlanUnavailableBody,
-              variant: CatchTextVariant.bodyM,
+              variant: CatchLegacyTextVariant.bodyM,
             ),
           );
         }
@@ -245,9 +245,9 @@ class _HostMembershipJoinSheetState
             ],
           ),
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l10n.membershipsJoinMandateNote,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
       ),

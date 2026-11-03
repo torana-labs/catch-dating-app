@@ -170,7 +170,7 @@ class ProgramFunctionCountsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,9 +178,9 @@ class ProgramFunctionCountsRow extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   name ?? counts.functionId,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -246,14 +246,14 @@ class ProgramHotelOccupancyRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             name ?? occupancy.hotelId,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           gapH8,
           CatchMetaRow(

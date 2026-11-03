@@ -36,17 +36,20 @@ class EventAssistanceDepartureHistorySection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(contextMessage, variant: CatchTextVariant.supporting),
+        CatchLegacyText(
+          contextMessage,
+          variant: CatchLegacyTextVariant.supporting,
+        ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceHistoryBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH12,
         if (items.isEmpty)
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceHistoryEmpty,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         if (items.isNotEmpty)
           CatchSection.containedRows(

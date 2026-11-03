@@ -667,7 +667,7 @@ class EventPinsFallbackMap extends StatelessWidget {
     final ringRadiusKm = distanceRingRadiusKm;
     final showDistanceRing =
         userLocation != null && ringRadiusKm != null && ringRadiusKm > 0;
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.primarySoft,

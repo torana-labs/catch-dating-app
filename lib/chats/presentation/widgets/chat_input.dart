@@ -98,7 +98,7 @@ class _ChatInputBarState extends State<ChatInput> {
                 duration: CatchMotion.fast,
                 curve: CatchMotion.standardCurve,
                 alignment: Alignment.bottomCenter,
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   tone: CatchSurfaceTone.transparent,
                   radius: CatchRadius.pill,
                   boxShadow: CatchElevation.raised,

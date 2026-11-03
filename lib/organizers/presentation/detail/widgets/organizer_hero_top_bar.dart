@@ -285,7 +285,7 @@ class OrganizerHeroHeader extends StatelessWidget {
       OrganizerHeroVariant.full => _buildFull(context),
     };
 
-    return CatchSurface(
+    return CatchLegacySurface(
       key: const ValueKey('club-detail-hero-module'),
       duration: Duration.zero,
       radius: CatchRadius.none,
@@ -326,7 +326,7 @@ class OrganizerHeroHeader extends StatelessWidget {
     return Padding(
       key: const ValueKey('club-detail-hero-masthead-padding'),
       padding: organizerInteractionMediaPadding,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         key: const ValueKey('club-detail-hero-masthead'),
         height: mediaHeight + captionExtent,
         borderRole: CatchBorderRole.separator,
@@ -352,14 +352,14 @@ class OrganizerHeroHeader extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            CatchText(
+            CatchLegacyText(
               organizer.name,
               key: ValueKey(
                 context
                     .l10n
                     .organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle,
               ),
-              variant: CatchTextVariant.displayS,
+              variant: CatchLegacyTextVariant.displayS,
               color: t.ink,
               maxLines: 2,
             ),
@@ -375,11 +375,11 @@ class OrganizerHeroHeader extends StatelessWidget {
                 ),
                 gapW6,
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     locationLabel,
                     maxLines: 1,
 
-                    variant: CatchTextVariant.bodyLead,
+                    variant: CatchLegacyTextVariant.bodyLead,
                     color: t.ink2,
                   ),
                 ),
@@ -411,14 +411,14 @@ class OrganizerHeroHeader extends StatelessWidget {
             viewportTopRadius: viewportTopRadius,
             cornerRadius: CatchRadius.lg,
           ),
-          child: CatchSurface(
+          child: CatchLegacySurface(
             duration: Duration.zero,
             radius: CatchRadius.none,
             backgroundColor: t.surface,
             child: Padding(
               key: const ValueKey('club-detail-hero-padding'),
               padding: organizerInteractionMediaPadding,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 key: const ValueKey('club-detail-hero-frame'),
                 backgroundColor: t.surface,
                 borderSpec: CatchBorder.resolve(
@@ -456,14 +456,14 @@ class OrganizerHeroHeader extends StatelessWidget {
             children: [
               CatchMetadataText(kickerLabel, color: t.ink),
               gapH8,
-              CatchText(
+              CatchLegacyText(
                 organizer.name,
                 key: ValueKey(
                   context
                       .l10n
                       .organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle,
                 ),
-                variant: CatchTextVariant.displayS,
+                variant: CatchLegacyTextVariant.displayS,
                 color: t.ink,
                 maxLines: 2,
               ),
@@ -479,11 +479,11 @@ class OrganizerHeroHeader extends StatelessWidget {
                   ),
                   gapW6,
                   Expanded(
-                    child: CatchText(
+                    child: CatchLegacyText(
                       locationLabel,
                       maxLines: 1,
 
-                      variant: CatchTextVariant.bodyLead,
+                      variant: CatchLegacyTextVariant.bodyLead,
                       color: t.ink2,
                     ),
                   ),

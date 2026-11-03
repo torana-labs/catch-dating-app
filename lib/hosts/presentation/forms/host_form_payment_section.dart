@@ -95,9 +95,9 @@ class HostFormPaymentSetupSection extends StatelessWidget {
       title: l10n.hostFormPaymentTitle,
       footer: fee == null
           ? null
-          : CatchText(
+          : CatchLegacyText(
               l10n.hostFormPaymentPublishHelp,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
       children: [
         CatchField.content(
@@ -255,9 +255,9 @@ class HostFormPaymentSetupSection extends StatelessWidget {
             onPressed: () => Navigator.of(dialogContext).pop(true),
           ),
         ],
-        child: CatchText(
+        child: CatchLegacyText(
           context.l10n.hostFormPaymentDisconnectHelp,
-          variant: CatchTextVariant.bodyM,
+          variant: CatchLegacyTextVariant.bodyM,
           color: CatchTokens.of(context).ink,
         ),
       ),

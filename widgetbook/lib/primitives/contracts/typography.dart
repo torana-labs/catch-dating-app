@@ -115,13 +115,13 @@ Widget catchIndexRowContractStates(BuildContext context) {
           subtitle: '6:30 am · Carter Road jetty',
           leading: const CatchAvatar.monogram(
             size: 56,
-            ground: CatchGround.pink,
+            ground: CatchBandGround.pink,
             initials: '1',
             variant: CatchAvatarVariant.square,
           ),
-          footer: CatchText(
+          footer: CatchLegacyText(
             '₹500 · 12 spots left',
-            variant: CatchTextVariant.supportingStrong,
+            variant: CatchLegacyTextVariant.supportingStrong,
             color: t.ink,
           ),
           trailing: Icon(CatchIcons.forward, size: CatchIconSize.sm),

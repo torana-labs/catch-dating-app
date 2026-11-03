@@ -67,30 +67,30 @@ class _EventSuccessOutcomeSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.eventSuccessLiveControlRecordRoundTitle(
               roundNumber: widget.nextRoundIndex + 1,
             ),
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
             color: t.surface,
           ),
           gapH6,
-          CatchText(
+          CatchLegacyText(
             isRank
                 ? context.l10n.eventSuccessLiveControlRankEntryInstructions
                 : context.l10n.eventSuccessLiveControlScoreEntryInstructions,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.surface.withValues(
               alpha: CatchOpacity.revealMutedForeground,
             ),
           ),
           gapH12,
           if (widget.units.isEmpty)
-            CatchText(
+            CatchLegacyText(
               isRank
                   ? context.l10n.eventSuccessLiveControlEmptyUnitsMessage
                   : context.l10n.eventSuccessLiveControlEmptyScoreTeamsMessage,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.surface,
             )
           else
@@ -120,13 +120,13 @@ class _EventSuccessOutcomeSectionState
             ),
           if (widget.actionState.error != null) ...[
             gapH10,
-            CatchText(
+            CatchLegacyText(
               appErrorMessage(
                 widget.actionState.error!,
                 l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.surface,
             ),
           ],

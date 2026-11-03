@@ -180,19 +180,19 @@ class HostEventToolsPageIndicator extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostEventToolsTextValue1OfItemcount(
               value1: selectedIndex + 1,
               itemCount: itemCount,
             ),
             maxLines: 1,
 
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
             color: t.ink2,
           ),
           gapW10,
           Expanded(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               tone: CatchSurfaceTone.transparent,
               radius: CatchRadius.pill,

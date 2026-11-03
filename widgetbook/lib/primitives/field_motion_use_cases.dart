@@ -183,7 +183,7 @@ class _Comparison extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -245,7 +245,7 @@ class _AccordionPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Column(
@@ -269,7 +269,7 @@ class _ProposedReveal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Column(
@@ -319,7 +319,7 @@ class _DrawerPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       child: CatchFieldDrawer(
         open: open,
@@ -344,7 +344,7 @@ class _StatusSnapshot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Row(

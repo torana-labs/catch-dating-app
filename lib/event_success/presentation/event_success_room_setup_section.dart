@@ -54,9 +54,9 @@ class EventSuccessRoomSetupSection extends StatelessWidget {
     final layouts = layoutsState.value ?? const <EventSuccessLayout>[];
     return CatchSection.fieldRows(
       title: context.l10n.hostsEventSuccessStepRoomLayoutTitle,
-      footer: CatchText(
+      footer: CatchLegacyText(
         context.l10n.hostsEventSuccessStepRoomLayoutSubtitle,
-        variant: CatchTextVariant.supporting,
+        variant: CatchLegacyTextVariant.supporting,
         color: t.ink2,
       ),
       children: [

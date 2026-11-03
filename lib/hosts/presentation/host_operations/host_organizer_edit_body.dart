@@ -742,9 +742,9 @@ class HostOrganizerPublicationChannelRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 label,
-                variant: CatchTextVariant.statusLabel,
+                variant: CatchLegacyTextVariant.statusLabel,
                 color: tokens.ink,
               ),
             ),

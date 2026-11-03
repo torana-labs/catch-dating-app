@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchBarIndicatorVariant { rounded, square }
@@ -40,7 +40,7 @@ class CatchBarIndicator extends StatelessWidget {
         widthFactor: 1,
         heightFactor: ratio,
         child: switch (variant) {
-          CatchBarIndicatorVariant.rounded => CatchSurface(
+          CatchBarIndicatorVariant.rounded => CatchLegacySurface(
             radius: CatchRadius.xs,
             backgroundColor: color,
             child: const SizedBox.expand(),

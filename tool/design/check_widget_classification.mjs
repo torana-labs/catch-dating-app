@@ -25,7 +25,7 @@ const roles = new Set([
   "atom", "composition", "pattern", "feature-adapter", "screen", "widget-state",
 ]);
 const conceptRoles = new Set(["concept", "member", "composition", "screen", "unclassified"]);
-const qualifiers = new Set(["variant", "anatomy", "adapter", "recipe", "layout"]);
+const qualifiers = new Set(["variant", "anatomy", "adapter", "recipe", "layout", "legacy"]);
 const catalogStatuses = new Set([
   "contracted", "cataloged", "route-covered", "uncataloged", "not-applicable",
 ]);

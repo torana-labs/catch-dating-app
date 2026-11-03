@@ -13,7 +13,7 @@ class EventSuccessRevealProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       tone: CatchSurfaceTone.transparent,
       radius: CatchRadius.pill,

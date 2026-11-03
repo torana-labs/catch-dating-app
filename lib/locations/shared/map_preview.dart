@@ -37,7 +37,7 @@ class MapPreview extends StatelessWidget {
     final coordinate = this.coordinate;
     if (coordinate == null || !enableNetworkTiles) {
       final t = CatchTokens.of(context);
-      return CatchSurface(
+      return CatchLegacySurface(
         duration: Duration.zero,
         radius: CatchRadius.none,
         backgroundColor: t.bg,
@@ -50,11 +50,11 @@ class MapPreview extends StatelessWidget {
                 Icon(CatchIcons.map, color: t.ink3, size: CatchIconSize.lg),
                 if (fallbackLabel.trim().isNotEmpty) ...[
                   gapH6,
-                  CatchText(
+                  CatchLegacyText(
                     fallbackLabel,
                     maxLines: 2,
                     textAlign: TextAlign.center,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink3,
                   ),
                 ],

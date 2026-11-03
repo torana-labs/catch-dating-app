@@ -17,10 +17,10 @@ List<Widget> widgetbookTableRows(
   bool longCopy = false,
 }) {
   final t = CatchTokens.of(context);
-  CatchText cell(String value) => CatchText(
+  CatchLegacyText cell(String value) => CatchLegacyText(
     value,
     maxLines: 1,
-    variant: CatchTextVariant.sectionTitle,
+    variant: CatchLegacyTextVariant.sectionTitle,
     color: CatchTokens.of(context).ink,
   );
   Text meta(String value) =>

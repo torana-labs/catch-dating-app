@@ -26,7 +26,7 @@ class PaymentConfirmationLoadingScreen extends StatelessWidget {
             gapH12,
             CatchSkeleton.textBlock(lines: 2),
             gapH24,
-            CatchSurface(
+            CatchLegacySurface(
               padding: CatchInsets.content,
               borderRole: CatchBorderRole.separator,
               child: Column(

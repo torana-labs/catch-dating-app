@@ -46,7 +46,7 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchSurface(
+                    CatchLegacySurface(
                       backgroundColor: entry.$2.$1,
                       // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                       borderRadius: BorderRadius.circular(CatchRadius.xs),
@@ -57,9 +57,9 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                       ),
                     ),
                     gapW6,
-                    CatchText(
+                    CatchLegacyText(
                       entry.$2.$2,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: t.ink2,
                     ),
                   ],
@@ -69,9 +69,9 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
           ),
           gapH16,
           if (widget.points.isEmpty)
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostAnalyticsTextNoAnalyticsInThisRange,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             )
           else
@@ -102,7 +102,7 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
             ),
           if (selectedPoint != null) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostAnalyticsTextPeriodDemandBookings(
                 period: _trendDetailPeriod(
                   selectedPoint.periodStart,
@@ -118,7 +118,7 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                     0,
               ),
               key: const ValueKey('host-analytics-trend-detail'),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ],
@@ -161,7 +161,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
         demand: demand.round(),
         bookings: bookings.round(),
       ),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         tone: CatchSurfaceTone.transparent,
         // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
         borderRadius: BorderRadius.circular(CatchRadius.sm),
@@ -187,7 +187,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
                         height: height,
                         child: child,
                       ),
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         backgroundColor: t.primarySoft,
                         // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                         borderRadius: BorderRadius.circular(CatchRadius.xs),
@@ -206,7 +206,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
                         height: height,
                         child: child,
                       ),
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         backgroundColor: t.ink,
                         // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                         borderRadius: BorderRadius.circular(CatchRadius.xs),
@@ -227,12 +227,12 @@ class HostAnalyticsBarTile extends StatelessWidget {
               gapH6,
               SizedBox(
                 width: CatchSpacing.s8,
-                child: CatchText(
+                child: CatchLegacyText(
                   label,
                   maxLines: 1,
                   textAlign: TextAlign.center,
 
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink3,
                 ),
               ),

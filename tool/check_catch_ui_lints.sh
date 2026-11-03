@@ -251,16 +251,16 @@ class CatchUiLintProbe extends StatelessWidget {
           ),
           child: const SizedBox.shrink(),
         ),
-        const CatchSurface(
-          child: CatchSurface(
+        const CatchLegacySurface(
+          child: CatchLegacySurface(
             child: SizedBox.shrink(),
           ),
         ),
-        const CatchSurface(
+        const CatchLegacySurface(
           borderWidth: 1,
           child: SizedBox.shrink(),
         ),
-        const CatchSurface(
+        const CatchLegacySurface(
           borderSpec: CatchBorderSpec(
             role: CatchBorderRole.boundary,
             color: Colors.transparent,
@@ -462,7 +462,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 Widget textMigrationCleanProbe(BuildContext context, TextTheme suppliedTheme) => Column(children: [
-  const CatchText('Library text', variant: CatchTextVariant.supporting),
+  const CatchText('Library text'),
   Text('Uncovered role', style: CatchTextStyles.mono(context)),
   Text('Extra API', semanticsLabel: 'Details', style: CatchTextStyles.supporting(context)),
   Text('Clipped text', maxLines: 1, style: CatchTextStyles.supporting(context)),
@@ -499,7 +499,7 @@ stage_probe "drawing steer permits arrangement, library primitives and unavailab
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 Widget arrangementProbe(BuildContext context) => Column(children: [
-  const CatchText('Library', variant: CatchTextVariant.supporting),
+  const CatchText('Library'),
   const Row(), const Stack(), const SizedBox.shrink(),
   const Padding(padding: CatchInsets.pageBody),
   const Icon(Icons.close),
@@ -715,7 +715,7 @@ class CatchUiLintProbe extends StatelessWidget {
           padding: CatchInsets.pageBody,
           child: SizedBox.shrink(),
         ),
-        CatchSurface.tinted(child: SizedBox.shrink()),
+        CatchLegacySurface.tinted(child: SizedBox.shrink()),
       ],
     );
   }
@@ -786,17 +786,14 @@ class CatchUiMutationProbe extends ConsumerWidget {
         EventDetailMutationProbeController.deleteMutation;
     final deleteMutation = ref.watch(deleteMutationHandle);
     if (saveMutation.hasError) {
-      return const CatchText('Failed', variant: CatchTextVariant.supporting);
+      return const CatchText('Failed');
     }
     listenToCatchMutationErrors(
       context,
       ref,
       mutations: [deleteMutationHandle],
     );
-    return CatchText(
-      deleteMutation.isPending ? 'Deleting' : 'Ready',
-      variant: CatchTextVariant.supporting,
-    );
+    return CatchText(deleteMutation.isPending ? 'Deleting' : 'Ready');
   }
 }
 DART
@@ -1305,7 +1302,7 @@ class TodayBody extends StatelessWidget {
         child: Row(
           children: [
             Flexible(
-              child: CatchText('x', variant: CatchTextVariant.bodyM),
+              child: CatchText('x'),
             ),
             CatchIcon(CatchIcons.close),
           ],

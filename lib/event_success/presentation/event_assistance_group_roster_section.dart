@@ -40,9 +40,9 @@ class _EventAssistanceGroupRosterSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceGroupRosterBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           if (widget.error != null)
@@ -50,9 +50,9 @@ class _EventAssistanceGroupRosterSectionState
           if (widget.loading)
             const CatchLoadingIndicator()
           else if (widget.guests.isEmpty)
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceGroupNoGuests,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             )
           else ...[
             CatchField<String>.select(

@@ -400,9 +400,9 @@ class PhoneCountryCodePicker extends StatelessWidget {
                         width: CatchSpacing.s6,
                       ),
                     gapW8,
-                    CatchText(
+                    CatchLegacyText(
                       selected?.dialCode ?? countryCode,
-                      variant: CatchTextVariant.bodyLead,
+                      variant: CatchLegacyTextVariant.bodyLead,
                       color: t.ink,
                     ),
                     gapW4,

@@ -171,14 +171,14 @@ class _ProfileReactionCommentSheetState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSurface(
+          CatchLegacySurface(
             radius: CatchRadius.md,
             backgroundColor: t.raised,
             borderRole: CatchBorderRole.separator,
             padding: CatchInsets.contentDense,
-            child: CatchText(
+            child: CatchLegacyText(
               widget.target.preview,
-              variant: CatchTextVariant.bodyLead,
+              variant: CatchLegacyTextVariant.bodyLead,
               color: t.ink2,
               maxLines: 3,
             ),

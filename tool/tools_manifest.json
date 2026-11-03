@@ -6915,6 +6915,31 @@
       "baseline": "tool/design/icon_family_usage_baseline.json"
     },
     {
+      "id": "design:legacy-library-rename",
+      "category": "design",
+      "path": "tool/design/rename_legacy_library_symbols.mjs",
+      "command": "node tool/design/rename_legacy_library_symbols.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "generator",
+      "description": "Redesign P2.1 (Flutter): renames the pre-redesign catch_ui callers of CatchSurface, CatchText and CatchTextVariant to CatchLegacySurface, CatchLegacyText and CatchLegacyTextVariant, and the moved files' paths, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
+      "checks": [
+        "node --check tool/design/rename_legacy_library_symbols.mjs",
+        "node --test tool/design/rename_legacy_library_symbols.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/design/rename_legacy_library_symbols.mjs",
+        "tool/design/rename_legacy_library_symbols.test.mjs",
+        "tool/design/check_library_shims.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "design:legacy-web-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_web_library_symbols.mjs",

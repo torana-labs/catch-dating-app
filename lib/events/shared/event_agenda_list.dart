@@ -161,7 +161,7 @@ class EventAgendaTileSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.boundary,
       radius: CatchRadius.md,
       padding: EdgeInsets.zero,
@@ -170,7 +170,7 @@ class EventAgendaTileSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchSkeleton.custom(
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 width: CatchLayout.eventDateRailWidth,
                 backgroundColor: CatchTokens.editorialWhite,
                 // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -277,9 +277,9 @@ class AgendaDaySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           eventDateRailDayLabel(date, today).toUpperCase(),
-          variant: CatchTextVariant.statusLabel,
+          variant: CatchLegacyTextVariant.statusLabel,
           color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
         ),
         SizedBox(height: dayLabelBottomGap),

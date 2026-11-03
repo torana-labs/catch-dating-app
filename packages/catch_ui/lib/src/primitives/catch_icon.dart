@@ -1,45 +1,43 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/widgets.dart';
 
-/// Semantic ink an icon draws in. [inherit] uses the surrounding [IconTheme].
-enum CatchIconTone { inherit, ink, muted, primary, success, warning, danger }
-
-/// Draws one icon role at a [CatchIconSize] extent in a semantic tone.
+/// One icon role from `CatchIcons`, at 16, 18, 20 or 24.
 ///
-/// The glyph is a role from `CatchIcons`; React's `CatchIcon` names the same
-/// role. Without a [semanticLabel] the icon is decorative.
+/// It takes the colour of the text around it: the [IconTheme] that
+/// [CatchRoot] and the ground scopes set. There is no tone. Without a [label]
+/// the icon is decorative and hidden from screen readers; with one it is a
+/// labelled image. React's `CatchIcon` names the same role as a string.
+///
+/// The web draws a 2px stroke up to 20 and 1.75 at 24; a glyph font has no
+/// stroke to set, so Flutter draws the Lucide glyphs as they are.
 class CatchIcon extends StatelessWidget {
   const CatchIcon(
     this.icon, {
     super.key,
-    this.size = CatchIconSize.md,
-    this.tone = CatchIconTone.inherit,
-    this.semanticLabel,
-  });
+    this.size = CatchIconSize.control,
+    this.label,
+  }) : assert(
+         size == CatchIconSize.xs ||
+             size == CatchIconSize.md ||
+             size == CatchIconSize.control ||
+             size == CatchIconSize.lg,
+         'CatchIcon size is 16, 18, 20 or 24.',
+       );
 
   /// A role from `CatchIcons`.
   final IconData icon;
 
-  /// A [CatchIconSize] extent.
+  /// 16 ([CatchIconSize.xs]), 18 ([CatchIconSize.md]), 20
+  /// ([CatchIconSize.control], the default) or 24 ([CatchIconSize.lg]).
   final double size;
 
-  final CatchIconTone tone;
-
-  /// Accessible name; leave null for a decorative icon.
-  final String? semanticLabel;
+  /// Read aloud; leave null for a decorative icon.
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
-    final tokens = CatchTokens.of(context);
-    final color = switch (tone) {
-      CatchIconTone.inherit => null,
-      CatchIconTone.ink => tokens.ink,
-      CatchIconTone.muted => tokens.ink2,
-      CatchIconTone.primary => tokens.primary,
-      CatchIconTone.success => tokens.success,
-      CatchIconTone.warning => tokens.warning,
-      CatchIconTone.danger => tokens.danger,
-    };
-    return Icon(icon, size: size, color: color, semanticLabel: semanticLabel);
+    final glyph = ExcludeSemantics(child: Icon(icon, size: size));
+    if (label == null) return glyph;
+    return Semantics(label: label, image: true, child: glyph);
   }
 }

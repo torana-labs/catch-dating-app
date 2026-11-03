@@ -112,16 +112,16 @@ class CompanionBouncyChip extends StatelessWidget {
       glowColor: t.primary,
       borderRadius: radius,
       semanticLabel: label,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         borderRadius: radius,
         backgroundColor: background,
         borderRole: active ? null : CatchBorderRole.boundary,
         padding: _companionStagePillPadding,
-        child: CatchText(
+        child: CatchLegacyText(
           label,
           maxLines: 1,
 
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: foreground,
         ),
       ),

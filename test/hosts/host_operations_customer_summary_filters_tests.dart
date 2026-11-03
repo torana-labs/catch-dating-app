@@ -51,8 +51,8 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
     );
     await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     expect(selectedFilter, HostCustomerFilter.repeat);
-    final surfaces = tester.widgetList<CatchSurface>(
-      find.descendant(of: summary, matching: find.byType(CatchSurface)),
+    final surfaces = tester.widgetList<CatchLegacySurface>(
+      find.descendant(of: summary, matching: find.byType(CatchLegacySurface)),
     );
     expect(
       surfaces.every((surface) => surface.radius == CatchRadius.sm),

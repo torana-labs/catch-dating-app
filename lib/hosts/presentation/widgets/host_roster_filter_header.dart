@@ -126,17 +126,17 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchText(
+              CatchLegacyText(
                 context.l10n.hostsHostEventAttendancePanelTextWaitlistMovement,
-                variant: CatchTextVariant.titleS,
+                variant: CatchLegacyTextVariant.titleS,
                 color: t.ink,
                 maxLines: 1,
               ),
-              CatchText(
+              CatchLegacyText(
                 detail,
                 maxLines: 1,
 
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
             ],
@@ -154,7 +154,7 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
       status: (isPending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: isPending ? null : onOffer,
     );
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.compactControlContent,
       borderSpec: CatchBorder.resolve(
         t,

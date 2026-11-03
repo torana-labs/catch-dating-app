@@ -76,17 +76,17 @@ class _HostTrackingSettingsInputSectionState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l10n.hostsTrackingSettingsPolicyBlocked,
                   key: const ValueKey('host-tracking-policy-blocked'),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 if (!widget.current.canEdit) ...[
                   gapH12,
-                  CatchText(
+                  CatchLegacyText(
                     l10n.hostsTrackingSettingsUnclaimed,
                     key: const ValueKey('host-tracking-unclaimed'),
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                 ],
               ],
@@ -132,9 +132,9 @@ class _HostTrackingSettingsInputSectionState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   l10n.hostsTrackingSettingsPrivacy,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
                 if (widget.error != null) ...[
                   gapH12,
@@ -143,9 +143,9 @@ class _HostTrackingSettingsInputSectionState
                     context: AppErrorContext.organizer,
                   ),
                   gapH6,
-                  CatchText(
+                  CatchLegacyText(
                     l10n.hostsTrackingSettingsReloadForConflict,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                 ],
                 gapH12,

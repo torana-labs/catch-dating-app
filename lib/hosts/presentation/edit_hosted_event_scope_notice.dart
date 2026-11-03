@@ -31,7 +31,7 @@ class EditHostedEventScopeNotice extends StatelessWidget {
         ? context.l10n.hostsEditHostedEventScreenMessageYouCanEditThe
         : context.l10n.hostsEditHostedEventScreenMessageYouCanEditSchedule;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.content,
       borderRole: CatchBorderRole.separator,
       child: Row(
@@ -49,9 +49,9 @@ class EditHostedEventScopeNotice extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         title,
-                        variant: CatchTextVariant.sectionTitle,
+                        variant: CatchLegacyTextVariant.sectionTitle,
                       ),
                     ),
                     if (scheduleLocked && !isCancelled)
@@ -62,9 +62,9 @@ class EditHostedEventScopeNotice extends StatelessWidget {
                   ],
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   message,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],

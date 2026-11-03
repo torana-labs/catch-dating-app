@@ -548,9 +548,9 @@ class EventPriceText extends StatelessWidget {
                 (note ?? '').toUpperCase(),
                 style: CatchTextStyles.monoLabel(context, color: t.warning),
               )
-            : CatchText(
+            : CatchLegacyText(
                 note ?? context.l10n.eventsEventDetailCtaTextPerPerson,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
       ],
@@ -582,11 +582,11 @@ class WaitlistOfferNotice extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           expiresLabel,
           maxLines: 1,
 
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
         CatchButton.text(
@@ -620,9 +620,9 @@ class EventDockStatusText extends StatelessWidget {
       children: [
         Icon(icon, color: t.primary, size: CatchIconSize.md),
         gapW6,
-        CatchText(
+        CatchLegacyText(
           label,
-          variant: CatchTextVariant.titleS,
+          variant: CatchLegacyTextVariant.titleS,
           color: CatchTokens.of(context).ink,
         ),
       ],

@@ -71,7 +71,7 @@ void main() {
           find
               .descendant(
                 of: find.byType(CatchIconAction),
-                matching: find.byType(CatchSurface),
+                matching: find.byType(CatchLegacySurface),
               )
               .first,
         );
@@ -79,7 +79,7 @@ void main() {
           find
               .descendant(
                 of: find.byType(CatchSearchField),
-                matching: find.byType(CatchSurface),
+                matching: find.byType(CatchLegacySurface),
               )
               .first,
         );

@@ -233,9 +233,9 @@ class _HostResponseOfferScreenState
         sections: [
           CatchSectionListItem(
             child: !available
-                ? CatchText(
+                ? CatchLegacyText(
                     context.l10n.hostEventOfferUnavailable,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   )
                 : HostEventOfferWorkspaceSection(
                     organizerId: widget.organizerId,

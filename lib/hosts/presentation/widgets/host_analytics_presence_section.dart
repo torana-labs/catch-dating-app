@@ -71,7 +71,7 @@ class HostAnalyticsPresenceSection extends StatelessWidget {
           ],
           if (!unavailable && links.trafficSources.isNotEmpty) ...[
             gapH6,
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostAnalyticsTextLinkClicksBySource(
                 sources: [
                   for (final MapEntry(key: source, value: clicks)
@@ -85,28 +85,28 @@ class HostAnalyticsPresenceSection extends StatelessWidget {
                 ].join(', '),
               ),
               key: const ValueKey('host-analytics-link-sources'),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
           gapH12,
           if (unavailable || empty) ...[
-            CatchText(
+            CatchLegacyText(
               unavailable
                   ? context.l10n.hostsHostAnalyticsTextPresenceUnavailable
                   : context.l10n.hostsHostAnalyticsTextPresenceEmpty,
               key: const ValueKey('host-analytics-presence-empty'),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH6,
           ],
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostAnalyticsTextPresenceObservedTotals,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH6,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostAnalyticsTextPresenceExternalLimits,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
       ),

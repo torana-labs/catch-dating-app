@@ -249,19 +249,19 @@ class _LaunchAccessApplicationFormState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
-              variant: CatchTextVariant.displayXs,
+              variant: CatchLegacyTextVariant.displayXs,
               color: t.ink,
             ),
             gapH8,
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
-              variant: CatchTextVariant.bodyLead,
+              variant: CatchLegacyTextVariant.bodyLead,
               color: t.ink2,
             ),
             gapH24,

@@ -182,7 +182,7 @@ class _StateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       child: Column(

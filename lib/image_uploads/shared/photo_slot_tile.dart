@@ -68,7 +68,7 @@ class PhotoSlotTile extends StatelessWidget {
           url!,
           width: double.infinity,
           height: double.infinity,
-          errorBuilder: (context, error, stackTrace) => CatchSurface(
+          errorBuilder: (context, error, stackTrace) => CatchLegacySurface(
             duration: Duration.zero,
             radius: CatchRadius.none,
             backgroundColor: t.raised,
@@ -113,7 +113,7 @@ class PhotoSlotTile extends StatelessWidget {
       child: Tooltip(
         message: label,
         excludeFromSemantics: true,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           borderRadius: borderRadius,
           tone: CatchSurfaceTone.raised,
           clipBehavior: Clip.antiAlias,
@@ -122,7 +122,7 @@ class PhotoSlotTile extends StatelessWidget {
             children: [
               content,
               if (isLoading)
-                CatchSurface(
+                CatchLegacySurface(
                   duration: Duration.zero,
                   radius: CatchRadius.none,
                   backgroundColor: CatchTokens.editorialBlack.withValues(
@@ -173,21 +173,21 @@ class PhotoSlotTile extends StatelessWidget {
                   left: CatchSpacing.micro6,
                   right: CatchLayout.photoSlotDeleteControlInset,
                   bottom: CatchSpacing.micro6,
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     radius: CatchRadius.sm,
                     backgroundColor: CatchTokens.editorialBlack.withValues(
                       alpha: CatchOpacity.photoPromptScrim,
                     ),
                     padding: CatchInsets.infoTileContent,
-                    child: CatchText(
+                    child: CatchLegacyText(
                       prompt!.displayPrompt,
-                      variant: CatchTextVariant.statusLabel,
+                      variant: CatchLegacyTextVariant.statusLabel,
                       color: CatchTokens.editorialWhite,
                       maxLines: 1,
                     ),
                   ),
                 ),
-              CatchSurface(
+              CatchLegacySurface(
                 tone: CatchSurfaceTone.transparent,
                 radius: CatchRadius.none,
                 borderRadius: borderRadius,

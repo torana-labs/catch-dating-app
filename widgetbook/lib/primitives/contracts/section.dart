@@ -617,7 +617,7 @@ Widget catchSectionContractStates(BuildContext context) {
             fullBleed: fullBleed,
             itemCount: 3,
             height: WidgetbookPreviewLayout.catalogRailHeight,
-            itemBuilder: (context, index) => CatchSurface.card(
+            itemBuilder: (context, index) => CatchLegacySurface.card(
               width: WidgetbookPreviewLayout.catalogCardWidth,
               child: Text(
                 'Card ${index + 1}',
@@ -638,7 +638,7 @@ Widget catchSectionContractStates(BuildContext context) {
             min: 160,
             max: 260,
           ),
-          itemBuilder: (context, index) => CatchSurface.card(
+          itemBuilder: (context, index) => CatchLegacySurface.card(
             child: Text(
               'Club ${index + 1}',
               style: CatchTextStyles.statusLabel(context),

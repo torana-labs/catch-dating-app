@@ -82,9 +82,9 @@ class EventRehearsalHelpSheet extends ConsumerWidget {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.eventAssistanceHelpMissing,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                         ),
                         CatchButton(
                           label: context.l10n.eventAssistanceHelpReload,

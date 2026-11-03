@@ -75,7 +75,7 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
             label: context.l10n.hostsHostInboxScreenLabelInboxScope,
             value: selectedLabel,
             hint: context.l10n.hostsHostInboxScreenVisiblecopySelectAnEventOr,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               tone: CatchSurfaceTone.transparent,
               radius: CatchRadius.none,

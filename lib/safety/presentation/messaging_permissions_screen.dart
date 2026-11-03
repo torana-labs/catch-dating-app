@@ -67,9 +67,9 @@ class MessagingPermissionsPageBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l10n.messagingPermissionsDescription,
-          variant: CatchTextVariant.bodyM,
+          variant: CatchLegacyTextVariant.bodyM,
           color: CatchTokens.of(context).ink,
         ),
         gapH24,

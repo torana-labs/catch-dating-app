@@ -56,7 +56,7 @@ class EventSuccessCountdownSurface extends StatelessWidget {
         : seconds <= 7
         ? 0.72
         : 0.38;
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.transparent,
       radius: CatchRadius.sm,
       padding: EdgeInsets.zero,
@@ -134,20 +134,20 @@ class EventSuccessCountdownSurface extends StatelessWidget {
                   intensity: urgency,
                 ),
                 gapH16,
-                CatchText(
+                CatchLegacyText(
                   _countdownStageHeadline(seconds),
-                  variant: CatchTextVariant.titleL,
+                  variant: CatchLegacyTextVariant.titleL,
                   color: t.ink,
                   textAlign: TextAlign.center,
                 ),
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   context.l10n
                       .eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun(
                         assignmentNoun: kind.assignmentNoun,
                       ),
                   textAlign: TextAlign.center,
-                  variant: CatchTextVariant.bodyM,
+                  variant: CatchLegacyTextVariant.bodyM,
                   color: t.ink.withValues(
                     alpha: CatchOpacity.revealMutedForeground,
                   ),

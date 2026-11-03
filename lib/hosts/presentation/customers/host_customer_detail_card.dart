@@ -133,13 +133,13 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
               footer: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     widget.customer.contactDetailsEditable
                         ? context.l10n.hostCustomersUnverifiedContactDetails
                         : context
                               .l10n
                               .hostCustomersVerifiedDetailsManagedByCatch,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                   gapH12,
                   if (_contactMethodError != null) ...[
@@ -437,12 +437,12 @@ class HostCustomerAttendanceCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (segment != null) ...[
-          CatchText(
+          CatchLegacyText(
             _customerFilterLabel(
               context,
               hostCustomerFilterForAudienceSegment(segment),
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH16,
         ],
@@ -455,20 +455,20 @@ class HostCustomerAttendanceCard extends StatelessWidget {
           ],
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           context.l10n.hostCustomersAttendanceSummary(
             cancelled: traits.cancelledEventCount,
             noShows: traits.noShowCount,
             imported: traits.importedEventCount,
           ),
-          variant: CatchTextVariant.bodyS,
+          variant: CatchLegacyTextVariant.bodyS,
           color: CatchTokens.of(context).ink2,
         ),
         if (traits.sourceCoverage != HostAudienceSourceCoverage.exact) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostCustomersAttendancePartial,
-            variant: CatchTextVariant.bodyS,
+            variant: CatchLegacyTextVariant.bodyS,
             color: CatchTokens.of(context).ink2,
           ),
         ],
@@ -538,13 +538,13 @@ class HostCustomerDetailsSection extends StatelessWidget {
         ],
       ),
       CatchSection.content(
-        child: CatchText(
+        child: CatchLegacyText(
           customer.phoneE164 == null && customer.email == null
               ? context.l10n.hostCustomersNoContactMethods
               : customer.contactDetailsEditable
               ? context.l10n.hostCustomersUnverifiedContactDetails
               : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-          variant: CatchTextVariant.bodyS,
+          variant: CatchLegacyTextVariant.bodyS,
           color: CatchTokens.of(context).ink2,
         ),
       ),
@@ -612,14 +612,14 @@ class HostCustomerRevenueCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (revenue.coverage == HostCustomerRevenueCoverage.unavailable)
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostCustomersDetailRevenueUnavailable,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           )
         else if (revenue.amounts.isEmpty)
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostCustomersDetailNoRevenue,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           )
         else
           Column(
@@ -629,26 +629,26 @@ class HostCustomerRevenueCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       NumberFormat.simpleCurrency(
                         name: amount.currency,
                       ).format(amount.amountMinor / 100),
-                      variant: CatchTextVariant.metric,
+                      variant: CatchLegacyTextVariant.metric,
                     ),
                     gapH4,
-                    CatchText(
+                    CatchLegacyText(
                       '${amount.currency} · ${context.l10n.hostCustomersDetailRevenueFacts(count: amount.factCount)}',
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                     for (final source in amount.sources) ...[
                       gapH4,
-                      CatchText(
+                      CatchLegacyText(
                         _customerRevenueSourceSummary(
                           context,
                           source,
                           amount.currency,
                         ),
-                        variant: CatchTextVariant.bodyS,
+                        variant: CatchLegacyTextVariant.bodyS,
                         color: CatchTokens.of(context).ink2,
                       ),
                     ],

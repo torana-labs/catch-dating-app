@@ -60,7 +60,7 @@ final class CatchRecordLayout extends CatchFieldLayout {
   @override
   Widget _leading(BuildContext context) {
     final tone = color ?? CatchTokens.of(context).ink2;
-    return CatchSurface(
+    return CatchLegacySurface(
       width: CatchRecordTokens.avatarExtent,
       height: CatchRecordTokens.avatarExtent,
       radius: CatchRadius.pill,
@@ -74,16 +74,16 @@ final class CatchRecordLayout extends CatchFieldLayout {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      CatchText(
+      CatchLegacyText(
         title,
-        variant: CatchTextVariant.sectionTitle,
+        variant: CatchLegacyTextVariant.sectionTitle,
         color: CatchTokens.of(context).ink,
       ),
       if (metadata case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
-        CatchText(
+        CatchLegacyText(
           text,
-          variant: CatchTextVariant.bodyS,
+          variant: CatchLegacyTextVariant.bodyS,
           color: CatchTokens.of(context).ink2,
         ),
       ],
@@ -197,9 +197,9 @@ final class CatchPersonLayout extends CatchFieldLayout {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   name,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                   color: CatchTokens.of(context).ink,
                 ),
               ),
@@ -223,17 +223,17 @@ final class CatchPersonLayout extends CatchFieldLayout {
         ],
         if (this.context case final text? when text.isNotEmpty) ...[
           const SizedBox(height: CatchRecordTokens.titleGap),
-          CatchText(
+          CatchLegacyText(
             text,
-            variant: CatchTextVariant.bodyS,
+            variant: CatchLegacyTextVariant.bodyS,
             color: CatchTokens.of(context).ink2,
           ),
         ],
         for (final fact in facts) ...[
           const SizedBox(height: CatchRecordTokens.titleGap),
-          CatchText(
+          CatchLegacyText(
             fact,
-            variant: CatchTextVariant.bodyS,
+            variant: CatchLegacyTextVariant.bodyS,
             color: CatchTokens.of(context).ink2,
           ),
         ],
@@ -305,18 +305,18 @@ final class CatchConversationLayout extends CatchFieldLayout {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      CatchText(
+      CatchLegacyText(
         name,
-        variant: CatchTextVariant.sectionTitle,
+        variant: CatchLegacyTextVariant.sectionTitle,
         color: CatchTokens.of(context).ink,
       ),
       const SizedBox(height: CatchRecordTokens.titleGap),
-      CatchText(preview, variant: CatchTextVariant.supporting),
+      CatchLegacyText(preview, variant: CatchLegacyTextVariant.supporting),
       if (this.context case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
-        CatchText(
+        CatchLegacyText(
           text,
-          variant: CatchTextVariant.bodyS,
+          variant: CatchLegacyTextVariant.bodyS,
           color: CatchTokens.of(context).ink2,
         ),
       ],
@@ -327,9 +327,9 @@ final class CatchConversationLayout extends CatchFieldLayout {
           runSpacing: CatchSpacing.s2,
           children: [
             if (timestamp case final text?)
-              CatchText(
+              CatchLegacyText(
                 text,
-                variant: CatchTextVariant.bodyS,
+                variant: CatchLegacyTextVariant.bodyS,
                 color: CatchTokens.of(context).ink2,
               ),
             if (activityLabel case final text?)

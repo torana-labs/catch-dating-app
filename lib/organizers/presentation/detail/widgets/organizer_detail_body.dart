@@ -49,7 +49,7 @@ class OrganizerDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.bg,
@@ -160,9 +160,9 @@ class OrganizerDetailSliverBody extends StatelessWidget {
                 CatchSection.divided(
                   title: context.l10n.organizersOrganizerDetailBodyTitleAbout,
                   first: true,
-                  child: CatchText(
+                  child: CatchLegacyText(
                     organizer.description,
-                    variant: CatchTextVariant.bodyL,
+                    variant: CatchLegacyTextVariant.bodyL,
                     color: t.ink,
                   ),
                 ),
@@ -296,7 +296,7 @@ class OrganizerNextRunBanner extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       label: _nextRunLabel(event),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         onTap: onTap,
         radius: CatchRadius.md,
         padding: _organizerActivityTilePadding,

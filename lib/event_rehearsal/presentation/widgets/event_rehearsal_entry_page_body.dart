@@ -33,16 +33,16 @@ class EventRehearsalEntryPageBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           source == null
               ? l10n.hostRehearsalEntrySample
               : l10n.hostRehearsalEntryUpcoming,
-          variant: CatchTextVariant.displayS,
+          variant: CatchLegacyTextVariant.displayS,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           l10n.hostRehearsalEntryExplanation,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH24,
         CatchSection.plain(
@@ -81,18 +81,18 @@ class EventRehearsalEntryPageBody extends StatelessWidget {
         ),
         if (!configuration.hasValidDuration) ...[
           gapH16,
-          CatchText(
+          CatchLegacyText(
             l10n.hostRehearsalDurationLimit,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (!configuration.useSimulatedGuests &&
             (configuration.actorCount < 2 ||
                 configuration.actorCount > 50)) ...[
           gapH16,
-          CatchText(
+          CatchLegacyText(
             l10n.hostRehearsalRosterLimit(count: configuration.actorCount),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
       ],

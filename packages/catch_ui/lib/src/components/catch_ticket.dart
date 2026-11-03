@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_ticket_divider.dart';
 import 'package:catch_ui/src/components/catch_ticket_shape_clipper.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchTicketSectionBuilder =
@@ -58,7 +58,7 @@ class CatchTicket extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             color: t.surface,
             elevation: CatchElevation.physicalTicket,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               onTap: onTap,
               padding: EdgeInsets.zero,
               child: Column(

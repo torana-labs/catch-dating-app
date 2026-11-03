@@ -30,7 +30,7 @@ class EventSuccessPresenceSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final likelyDeparted = summary?.likelyDeparted ?? const [];
     final lateArrivals = summary?.lateArrivals ?? const [];
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -51,17 +51,17 @@ class EventSuccessPresenceSection extends StatelessWidget {
           ],
           if (likelyDeparted.isNotEmpty) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n
                   .eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft(
                     count: likelyDeparted.length,
                   ),
-              variant: CatchTextVariant.sectionTitle,
+              variant: CatchLegacyTextVariant.sectionTitle,
             ),
             gapH4,
-            CatchText(
+            CatchLegacyText(
               likelyDeparted.map((entry) => entry.displayName).join(', '),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH10,
             CatchButton(
@@ -77,9 +77,9 @@ class EventSuccessPresenceSection extends StatelessWidget {
           ],
           if (lateArrivals.isNotEmpty) ...[
             gapH16,
-            CatchText(
+            CatchLegacyText(
               context.l10n.eventSuccessEventSuccessHostLiveTitleLateArrivals,
-              variant: CatchTextVariant.sectionTitle,
+              variant: CatchLegacyTextVariant.sectionTitle,
             ),
             gapH4,
             ...lateArrivals.map(
@@ -88,9 +88,9 @@ class EventSuccessPresenceSection extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         candidate.displayName,
-                        variant: CatchTextVariant.sectionTitle,
+                        variant: CatchLegacyTextVariant.sectionTitle,
                         color: CatchTokens.of(context).ink,
                       ),
                     ),

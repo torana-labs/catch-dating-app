@@ -212,9 +212,9 @@ class EventPhotoHeroSurface extends StatelessWidget {
                 child: HeroActivityBadge(visual: visual),
               ),
               const SizedBox(height: CatchSpacing.s3),
-              CatchText(
+              CatchLegacyText(
                 event.title,
-                variant: CatchTextVariant.displayS,
+                variant: CatchLegacyTextVariant.displayS,
                 color: d.ink,
                 maxLines: 2,
               ),
@@ -274,7 +274,7 @@ class EventDetailTicketSurface extends StatelessWidget {
         : t.ink2;
     final lineColor = isSpotlight ? d.line : t.line2;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: bodyColor,
@@ -293,7 +293,7 @@ class EventDetailTicketSurface extends StatelessWidget {
               fallbackIconOpacity: 0.15,
               fallbackPatternOpacity: 0.24,
             ),
-            CatchSurface(
+            CatchLegacySurface(
               tone: CatchSurfaceTone.transparent,
               radius: 0,
               padding: EdgeInsets.zero,
@@ -337,17 +337,17 @@ class EventDetailTicketSurface extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchText(
+            CatchLegacyText(
               event.title,
-              variant: CatchTextVariant.displayS,
+              variant: CatchLegacyTextVariant.displayS,
               color: titleColor,
               maxLines: 2,
             ),
             if (!compact) ...[
               const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-              CatchText(
+              CatchLegacyText(
                 _heroSubtitle(event),
-                variant: CatchTextVariant.supportingStrong,
+                variant: CatchLegacyTextVariant.supportingStrong,
                 color: metaColor,
                 maxLines: 2,
               ),
@@ -369,7 +369,7 @@ class HeroActivityBadge extends StatelessWidget {
     const d = CatchTokens.dark;
     // Design-system EventHero activity tag: frosted pill carrying the activity
     // glyph + label (the only chroma is the glyph; chrome stays neutral).
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.compactLabelContent,
       radius: CatchRadius.pill,
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
@@ -405,7 +405,7 @@ class HeroTimeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const d = CatchTokens.dark;
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.md,
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.subtleFill),
@@ -421,9 +421,9 @@ class HeroTimeChip extends StatelessWidget {
             ),
           ),
           gapH2,
-          CatchText(
+          CatchLegacyText(
             EventFormatters.time(event.localStartTime),
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
             color: d.ink,
           ),
         ],

@@ -216,7 +216,9 @@ void _registerCatchPrimitivesSearchMenuTests() {
       ),
     );
 
-    final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+    final surface = tester.widget<CatchLegacySurface>(
+      find.byType(CatchLegacySurface),
+    );
     expect(surface.width, 220);
     expect(surface.radius, CatchRadius.md);
     expect(surface.emphasis, CatchSurfaceEmphasis.floating);

@@ -205,7 +205,8 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         label: 'data',
         child: CatchAsyncBoundary<String>(
           value: const AsyncValue.data('3 events ready'),
-          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          builder: (context, value) =>
+              CatchLegacySurface.card(child: Text(value)),
         ),
       ),
       WidgetbookContractStateCard(
@@ -235,14 +236,16 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         label: 'refreshing',
         child: CatchAsyncBoundary<String>(
           value: refreshing,
-          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          builder: (context, value) =>
+              CatchLegacySurface.card(child: Text(value)),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'stale-data-with-error',
         child: CatchAsyncBoundary<String>(
           value: staleDataWithError,
-          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          builder: (context, value) =>
+              CatchLegacySurface.card(child: Text(value)),
           retainDataOn: const {
             CatchAsyncBoundaryMode.refresh,
             CatchAsyncBoundaryMode.error,
@@ -267,7 +270,8 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         label: 'skip-loading-on-refresh',
         child: CatchAsyncBoundary<String>(
           value: const AsyncValue.data('Existing data remains visible'),
-          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          builder: (context, value) =>
+              CatchLegacySurface.card(child: Text(value)),
           retainDataOn: const {CatchAsyncBoundaryMode.refresh},
         ),
       ),

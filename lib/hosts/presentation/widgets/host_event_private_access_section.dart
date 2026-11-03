@@ -68,11 +68,11 @@ class HostPrivateAccessAsyncBoundary extends StatelessWidget {
             const HostInlineIconSkeleton(),
             gapW12,
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.hostsHostEventManageScreenTextLoadingInviteAccess,
                 maxLines: 1,
 
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
             ),
@@ -122,7 +122,7 @@ class HostPrivateAccessSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.content,
       borderRole: CatchBorderRole.separator,
       child: child,
@@ -177,14 +177,14 @@ class HostPrivateAccessSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       context.l10n.hostsHostEventManageScreenTextPrivateAccess,
-                      variant: CatchTextVariant.sectionTitle,
+                      variant: CatchLegacyTextVariant.sectionTitle,
                     ),
                     gapH4,
-                    CatchText(
+                    CatchLegacyText(
                       privateAccessState.description,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: t.ink2,
                     ),
                   ],
@@ -283,9 +283,9 @@ class HostInviteLinksSection extends StatelessWidget {
           ? CatchButtonStatus.loading
           : CatchButtonStatus.idle,
     );
-    final heading = CatchText(
+    final heading = CatchLegacyText(
       context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
-      variant: CatchTextVariant.titleS,
+      variant: CatchLegacyTextVariant.titleS,
       color: CatchTokens.of(context).ink,
     );
 
@@ -310,9 +310,9 @@ class HostInviteLinksSection extends StatelessWidget {
           ),
         ),
         gapH6,
-        CatchText(
+        CatchLegacyText(
           context.l10n.hostsHostEventManageScreenTextTrackWhichChannelsCreate,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
         if (mutationError != null) ...[
@@ -326,9 +326,9 @@ class HostInviteLinksSection extends StatelessWidget {
         CatchAsyncBoundary<List<EventInviteLink>>(
           value: linksAsync,
           onRetry: onRetry,
-          loadingBuilder: (_) => CatchText(
+          loadingBuilder: (_) => CatchLegacyText(
             context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
@@ -339,9 +339,9 @@ class HostInviteLinksSection extends StatelessWidget {
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, links) => links.isEmpty
-              ? CatchText(
+              ? CatchLegacyText(
                   state.emptyCopy,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 )
               : Column(
@@ -409,9 +409,9 @@ class HostInviteLinkRow extends StatelessWidget {
           runSpacing: CatchSpacing.s1,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            CatchText(
+            CatchLegacyText(
               rowState.label,
-              variant: CatchTextVariant.titleS,
+              variant: CatchLegacyTextVariant.titleS,
               color: CatchTokens.of(context).ink,
             ),
             if (rowState.showDisabledBadge)
@@ -422,20 +422,20 @@ class HostInviteLinkRow extends StatelessWidget {
         ),
         if (rowState.source != null) ...[
           gapH2,
-          CatchText(
+          CatchLegacyText(
             rowState.source!,
             maxLines: 1,
 
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
         ],
         gapH8,
-        CatchText(
+        CatchLegacyText(
           rowState.stats,
           maxLines: 2,
 
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.ink2,
         ),
       ],
@@ -474,7 +474,7 @@ class HostInviteLinkRow extends StatelessWidget {
     );
     return Padding(
       padding: CatchInsets.sectionItemBottomGap,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         padding: CatchInsets.contentDense,
         borderRole: CatchBorderRole.separator,
         child: CatchViewport.atWidth(

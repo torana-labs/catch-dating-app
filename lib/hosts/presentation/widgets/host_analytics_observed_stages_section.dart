@@ -84,9 +84,9 @@ class HostAnalyticsObservedStagesSection extends StatelessWidget {
             ],
           ),
           gapH12,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostAnalyticsTextObservedStageLimits,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
       ),

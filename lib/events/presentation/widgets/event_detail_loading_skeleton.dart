@@ -143,7 +143,7 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.surface,
@@ -373,7 +373,7 @@ class EventDetailCompanionSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: surfaceStyle.surfaceBackground,
       borderSpec: CatchBorder.resolve(
         CatchTokens.of(context),

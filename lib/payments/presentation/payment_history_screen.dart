@@ -233,7 +233,7 @@ class PaymentHistoryTile extends StatelessWidget {
       ),
       child: Padding(
         padding: CatchInsets.contentVertical,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           key: PaymentHistoryKeys.paymentTile(payment.id),
           tone: CatchSurfaceTone.transparent,
           radius: CatchRadius.none,
@@ -246,11 +246,14 @@ class PaymentHistoryTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(eventTitle, variant: CatchTextVariant.sectionTitle),
+                CatchLegacyText(
+                  eventTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
+                ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   AppTimeFormatters.dateTime(payment.createdAt),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
                 gapH8,
@@ -274,9 +277,9 @@ class PaymentHistoryTile extends StatelessWidget {
                 ),
                 if (statusPresentation.detail case final detail?) ...[
                   gapH4,
-                  CatchText(
+                  CatchLegacyText(
                     detail,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                   ),
                 ],
@@ -359,12 +362,12 @@ class PaymentReceiptSheet extends StatelessWidget {
                       label: statusPresentation.label,
                       tone: statusPresentation.tone,
                     ),
-                    CatchText(
+                    CatchLegacyText(
                       EventFormatters.priceInPaise(
                         payment.amount,
                         currencyCode: payment.currency,
                       ),
-                      variant: CatchTextVariant.titleL,
+                      variant: CatchLegacyTextVariant.titleL,
                     ),
                   ],
                 ),

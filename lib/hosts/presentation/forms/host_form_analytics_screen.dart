@@ -74,9 +74,9 @@ class _HostFormAnalyticsScreenState
                     value: ref.watch(editorProvider),
                     onRetry: () => ref.read(editorProvider.notifier).reload(),
                     loadingBuilder: (_) => CatchSkeleton.content(
-                      child: CatchText(
+                      child: CatchLegacyText(
                         context.l10n.hostFormAnalyticsTitle,
-                        variant: CatchTextVariant.headline,
+                        variant: CatchLegacyTextVariant.headline,
                       ),
                     ),
                     errorBuilder: (_, error, _, onBoundaryRetry) =>
@@ -86,17 +86,17 @@ class _HostFormAnalyticsScreenState
                           mode: CatchErrorStateMode.compact,
                           onRetry: onBoundaryRetry,
                         ),
-                    builder: (context, editor) => CatchText(
+                    builder: (context, editor) => CatchLegacyText(
                       editor.editor.definition.title,
-                      variant: CatchTextVariant.headline,
+                      variant: CatchLegacyTextVariant.headline,
                     ),
                   ),
                   gapH8,
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostAudienceResultsVersion(
                       version: value.version,
                     ),
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                   gapH24,
                   HostFormMetricRow(
@@ -122,37 +122,37 @@ class _HostFormAnalyticsScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           value.starts == 0
                               ? '—'
                               : '${(value.completionRate * 100).round()}%',
-                          variant: CatchTextVariant.headline,
+                          variant: CatchLegacyTextVariant.headline,
                         ),
                         gapH8,
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.hostAudienceCompletionDenominator(
                             submissions: value.submissions,
                             starts: value.starts,
                           ),
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                         ),
                         if (value.medianCompletionMillis
                             case final milliseconds?) ...[
                           gapH8,
-                          CatchText(
+                          CatchLegacyText(
                             context.l10n.hostAudienceMedianCompletion(
                               duration: _duration(milliseconds),
                             ),
-                            variant: CatchTextVariant.supporting,
+                            variant: CatchLegacyTextVariant.supporting,
                           ),
                         ],
                       ],
                     ),
                   ),
                   gapH24,
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostFormAnalyticsPrivacyNotice,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                   for (final question in value.questions) ...[
                     gapH24,
@@ -161,24 +161,24 @@ class _HostFormAnalyticsScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          CatchText(
+                          CatchLegacyText(
                             question.label,
-                            variant: CatchTextVariant.sectionTitle,
+                            variant: CatchLegacyTextVariant.sectionTitle,
                             color: CatchTokens.of(context).ink,
                           ),
                           gapH8,
-                          CatchText(
+                          CatchLegacyText(
                             context.l10n.hostFormAnalyticsQuestionSummary(
                               count: question.responseCount,
                             ),
-                            variant: CatchTextVariant.bodyS,
+                            variant: CatchLegacyTextVariant.bodyS,
                             color: CatchTokens.of(context).ink2,
                           ),
                           if (question.kind == 'multiChoice') ...[
                             gapH8,
-                            CatchText(
+                            CatchLegacyText(
                               context.l10n.hostAudienceMultipleChoiceResults,
-                              variant: CatchTextVariant.supporting,
+                              variant: CatchLegacyTextVariant.supporting,
                             ),
                           ],
                           for (final choice in question.choiceCounts) ...[
@@ -187,16 +187,16 @@ class _HostFormAnalyticsScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: CatchText(
+                                  child: CatchLegacyText(
                                     choice.label,
-                                    variant: CatchTextVariant.bodyL,
+                                    variant: CatchLegacyTextVariant.bodyL,
                                     color: CatchTokens.of(context).ink,
                                   ),
                                 ),
                                 gapW12,
-                                CatchText(
+                                CatchLegacyText(
                                   '${choice.count}',
-                                  variant: CatchTextVariant.sectionTitle,
+                                  variant: CatchLegacyTextVariant.sectionTitle,
                                   color: CatchTokens.of(context).ink,
                                 ),
                               ],
@@ -221,7 +221,7 @@ class _HostFormAnalyticsScreenState
                           ],
                           if (question.numericCount > 0) ...[
                             gapH16,
-                            CatchText(
+                            CatchLegacyText(
                               context.l10n.hostAudienceNumericResult(
                                 average:
                                     (question.numericSum /
@@ -229,7 +229,7 @@ class _HostFormAnalyticsScreenState
                                         .toStringAsFixed(1),
                                 count: question.numericCount,
                               ),
-                              variant: CatchTextVariant.bodyL,
+                              variant: CatchLegacyTextVariant.bodyL,
                               color: CatchTokens.of(context).ink,
                             ),
                           ],
@@ -250,9 +250,9 @@ class _HostFormAnalyticsScreenState
                       },
                     ),
                   ),
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostAudienceResponsesAllVersions,
-                    variant: CatchTextVariant.bodyS,
+                    variant: CatchLegacyTextVariant.bodyS,
                     color: CatchTokens.of(context).ink2,
                   ),
                   if (value.sources.isNotEmpty) ...[
@@ -279,9 +279,9 @@ class _HostFormAnalyticsScreenState
                   ],
                   if (value.sources.isNotEmpty) ...[
                     gapH8,
-                    CatchText(
+                    CatchLegacyText(
                       context.l10n.hostAudienceSourceTotalsScope,
-                      variant: CatchTextVariant.bodyS,
+                      variant: CatchLegacyTextVariant.bodyS,
                       color: CatchTokens.of(context).ink2,
                     ),
                   ],

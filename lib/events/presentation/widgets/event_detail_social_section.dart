@@ -96,7 +96,7 @@ class GuestWhoIsGoingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderSpec: CatchBorder.resolve(
         t,
@@ -116,18 +116,18 @@ class GuestWhoIsGoingCard extends StatelessWidget {
                   color: surfaceStyle?.mutedColor ?? t.ink3,
                 ),
                 const SizedBox(width: CatchSpacing.s2),
-                CatchText(
+                CatchLegacyText(
                   context.l10n.eventsEventDetailSocialSectionTextWhoSGoing,
-                  variant: CatchTextVariant.titleL,
+                  variant: CatchLegacyTextVariant.titleL,
                   color: surfaceStyle?.headingColor,
                 ),
               ],
             ),
             const SizedBox(height: CatchLayout.detailScreenSupportingGap),
           ],
-          CatchText(
+          CatchLegacyText(
             context.l10n.eventsEventDetailSocialSectionTextSignInToSee,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: surfaceStyle?.bodyColor ?? t.ink2,
           ),
         ],

@@ -25,7 +25,7 @@ class AvatarChip extends StatelessWidget {
       label: context.l10n.organizersAvatarChipLabelOpenNameOrganizer(
         name: organizer.name,
       ),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         tone: CatchSurfaceTone.transparent,
         radius: CatchRadius.none,
         duration: Duration.zero,
@@ -35,7 +35,7 @@ class AvatarChip extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchSurface(
+              CatchLegacySurface(
                 width: _avatarChipTileSize,
                 height: _avatarChipTileSize,
                 radius: CatchRadius.pill,
@@ -43,7 +43,7 @@ class AvatarChip extends StatelessWidget {
                     ? CatchBorder.resolve(t, CatchBorderRole.selected)
                     : CatchBorder.resolve(t, CatchBorderRole.boundary),
                 padding: CatchInsets.iconChipContentTight,
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   duration: Duration.zero,
                   tone: CatchSurfaceTone.transparent,
                   radius: CatchRadius.pill,
@@ -55,18 +55,18 @@ class AvatarChip extends StatelessWidget {
                 ),
               ),
               gapH6,
-              CatchText(
+              CatchLegacyText(
                 organizer.name,
-                variant: CatchTextVariant.statusLabel,
+                variant: CatchLegacyTextVariant.statusLabel,
                 color: t.ink,
                 textAlign: TextAlign.center,
                 maxLines: 1,
               ),
               if (showLiveBadge) ...[
                 gapH2,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.organizersAvatarChipTextEventSoon,
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: t.primary,
                   textAlign: TextAlign.center,
                   maxLines: 1,

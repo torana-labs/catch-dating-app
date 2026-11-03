@@ -93,7 +93,7 @@ class HostFullCapacityBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.listBody,
       backgroundColor: t.ink,
       radius: CatchRadius.md,
@@ -325,7 +325,7 @@ class HostPublicRegistrationField extends StatelessWidget {
               ),
             ),
             gapH8,
-            CatchText(
+            CatchLegacyText(
               !supportsStandaloneRegistration
                   ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
                   : organizerPublished
@@ -333,7 +333,7 @@ class HostPublicRegistrationField extends StatelessWidget {
                         ? context.l10n.hostsHostPublicRegistrationBodyPaid
                         : context.l10n.hostsHostPublicRegistrationBodyPublished
                   : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).ink2,
             ),
             gapH12,
@@ -444,11 +444,11 @@ class HostEventSummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final iconWidget = Icon(icon, color: t.ink2, size: CatchIconSize.md);
-    final labelText = CatchText(
+    final labelText = CatchLegacyText(
       label,
       maxLines: 1,
 
-      variant: CatchTextVariant.supporting,
+      variant: CatchLegacyTextVariant.supporting,
       color: t.ink2,
     );
 
@@ -467,9 +467,9 @@ class HostEventSummaryRow extends StatelessWidget {
                   children: [
                     labelText,
                     gapH2,
-                    CatchText(
+                    CatchLegacyText(
                       value,
-                      variant: CatchTextVariant.titleS,
+                      variant: CatchLegacyTextVariant.titleS,
                       color: CatchTokens.of(context).ink,
                       maxLines: 1,
                     ),
@@ -486,9 +486,9 @@ class HostEventSummaryRow extends StatelessWidget {
               gapW10,
               Expanded(
                 flex: 3,
-                child: CatchText(
+                child: CatchLegacyText(
                   value,
-                  variant: CatchTextVariant.titleS,
+                  variant: CatchLegacyTextVariant.titleS,
                   color: CatchTokens.of(context).ink,
                   maxLines: 1,
                   textAlign: TextAlign.right,

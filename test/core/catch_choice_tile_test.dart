@@ -56,7 +56,9 @@ void main() {
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pump();
         expect(calls, 1);
-        final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
+        final surface = tester.widget<CatchLegacySurface>(
+          find.byType(CatchLegacySurface),
+        );
         expect(surface.borderSpec!.width, CatchStroke.focusRing);
         rebuild(() {
           selected = true;

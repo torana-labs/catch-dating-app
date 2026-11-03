@@ -46,11 +46,11 @@ class HostCustomerSubmissionsSection extends ConsumerWidget {
           return CatchSection.content(
             key: const ValueKey('host-customer-submitted-information'),
             title: context.l10n.hostCustomersSubmittedInformation,
-            child: CatchText(
+            child: CatchLegacyText(
               exact
                   ? context.l10n.hostCustomersNoSubmittedInformation
                   : context.l10n.hostCustomersSubmissionsUnavailable,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           );
         }

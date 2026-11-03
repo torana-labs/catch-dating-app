@@ -5,7 +5,7 @@ import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/components/catch_menu_row.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchMenuBuilder =
@@ -100,7 +100,7 @@ class _CatchMenuState<T> extends State<CatchMenu<T>> {
     );
     final maxHeight = CatchLayout.menuMaxHeightFor(viewportHeight);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       emphasis: CatchSurfaceEmphasis.floating,
       radius: CatchRadius.md,
       borderRole: CatchBorderRole.boundary,

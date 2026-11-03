@@ -130,16 +130,16 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                   .toList(growable: false) ??
               const <Event>[];
           if (connection == null || !connection.isActive) {
-            return CatchText(
+            return CatchLegacyText(
               context.l10n.hostsHostAudienceCampaignNeedsActiveSender,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).ink2,
             );
           }
           if (approved.isEmpty) {
-            return CatchText(
+            return CatchLegacyText(
               context.l10n.hostsHostAudienceCampaignNeedsTemplate,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).ink2,
             );
           }
@@ -208,17 +208,17 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                   },
                 ),
                 gapH12,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostSendsDeliveryTime,
-                  variant: CatchTextVariant.bodyLead,
+                  variant: CatchLegacyTextVariant.bodyLead,
                   color: CatchTokens.of(context).ink,
                 ),
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   _scheduledAt == null
                       ? context.l10n.hostSendsSendNow
                       : AppTimeFormatters.dateTime(_scheduledAt!),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: CatchTokens.of(context).ink2,
                 ),
                 gapH8,
@@ -250,16 +250,16 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                 ),
                 if (_scheduleError case final error?) ...[
                   gapH8,
-                  CatchText(
+                  CatchLegacyText(
                     error,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: CatchTokens.of(context).warning,
                   ),
                 ],
                 gapH12,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostsHostAudienceRecipients,
-                  variant: CatchTextVariant.bodyLead,
+                  variant: CatchLegacyTextVariant.bodyLead,
                   color: CatchTokens.of(context).ink,
                 ),
                 gapH8,
@@ -639,24 +639,24 @@ class HostCampaignReportSection extends StatelessWidget {
         ),
         if (campaign.blockers.isNotEmpty) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             campaign.blockers
                 .map((value) => hostCampaignBlockerLabel(context, value))
                 .join(' · '),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: CatchTokens.of(context).warning,
           ),
         ],
         if (delivery.values.values.any((value) => value > 0)) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostAudienceDeliveryCounts(
               sent: delivery['sent'],
               delivered: delivery['delivered'],
               read: delivery['read'],
               failed: delivery['failed'],
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: CatchTokens.of(context).ink2,
           ),
         ],

@@ -205,9 +205,9 @@ Widget catchScrollTerminalGapCatalogStates(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           label,
-          variant: CatchTextVariant.bodyLead,
+          variant: CatchLegacyTextVariant.bodyLead,
           color: CatchTokens.of(context).ink,
         ),
         gapH4,
@@ -308,7 +308,7 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
         child: CatchHeroViewport.ticket(
           prefix: 'event',
           id: 'widgetbook-ticket',
-          child: CatchSurface.card(
+          child: CatchLegacySurface.card(
             child: Text(
               'Ticket surface keeps the shared Hero tag and flight behavior.',
               style: CatchTextStyles.bodyM(context),
@@ -341,7 +341,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
               height: CatchLayout.distanceRingDefaultSize,
               child: CatchRevealViewport.stationary(
                 animation: const AlwaysStoppedAnimation<double>(0.58),
-                child: CatchSurface.card(
+                child: CatchLegacySurface.card(
                   child: Center(
                     child: Text(
                       'Native map remains stationary below the veil.',
@@ -373,19 +373,19 @@ Widget responsiveBuilderCatalogStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.catalogSliverSpacerHeight,
           child: CatchViewport(
-            compactBuilder: (_) => CatchSurface.card(
+            compactBuilder: (_) => CatchLegacySurface.card(
               child: Text(
                 'Compact layout',
                 style: CatchTextStyles.bodyM(context),
               ),
             ),
-            mediumBuilder: (_) => CatchSurface.card(
+            mediumBuilder: (_) => CatchLegacySurface.card(
               child: Text(
                 'Medium layout',
                 style: CatchTextStyles.bodyM(context),
               ),
             ),
-            expandedBuilder: (_) => CatchSurface.card(
+            expandedBuilder: (_) => CatchLegacySurface.card(
               child: Text(
                 'Expanded layout',
                 style: CatchTextStyles.bodyM(context),
@@ -417,13 +417,13 @@ Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
                 width: width,
                 child: CatchViewport.atWidth(
                   breakpoint: 320,
-                  compactBuilder: (_) => CatchSurface.card(
+                  compactBuilder: (_) => CatchLegacySurface.card(
                     child: Text(
                       'Compact component',
                       style: CatchTextStyles.bodyM(context),
                     ),
                   ),
-                  expandedBuilder: (_) => CatchSurface.card(
+                  expandedBuilder: (_) => CatchLegacySurface.card(
                     child: Text(
                       'Expanded component',
                       style: CatchTextStyles.bodyM(context),
@@ -463,7 +463,7 @@ Widget catchViewportSliverCatalogStates(
                         BuildContext context,
                         CatchViewportGeometry viewport,
                       ) => SliverToBoxAdapter(
-                        child: CatchSurface.card(
+                        child: CatchLegacySurface.card(
                           child: Text(
                             '${viewport.width.toInt()} px · ${viewport.sizeClass.name}',
                             style: CatchTextStyles.bodyM(context),

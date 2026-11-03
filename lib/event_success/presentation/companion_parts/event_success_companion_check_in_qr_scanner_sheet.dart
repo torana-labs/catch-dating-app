@@ -30,11 +30,11 @@ class _EventCheckInQrScannerSheetState
                 Icon(CatchIcons.scanQr, color: t.primary),
                 gapW10,
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     context
                         .l10n
                         .eventSuccessEventSuccessCompanionLiveCardsTextScanHostQr,
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                   ),
                 ),
                 Tooltip(
@@ -54,7 +54,7 @@ class _EventCheckInQrScannerSheetState
             ),
             gapH10,
             Expanded(
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 duration: Duration.zero,
                 tone: CatchSurfaceTone.transparent,
                 radius: CatchRadius.sm,
@@ -66,7 +66,7 @@ class _EventCheckInQrScannerSheetState
                       eventId: widget.eventId,
                       onResult: _handleScanResult,
                     ),
-                    CatchSurface(
+                    CatchLegacySurface(
                       tone: CatchSurfaceTone.transparent,
                       radius: CatchRadius.sm,
                       borderSpec: CatchBorderSpec(
@@ -81,16 +81,16 @@ class _EventCheckInQrScannerSheetState
                     if (_errorText != null)
                       Align(
                         alignment: Alignment.bottomCenter,
-                        child: CatchSurface(
+                        child: CatchLegacySurface(
                           width: double.infinity,
                           padding: CatchInsets.contentDense,
                           backgroundColor: t.ink.withValues(
                             alpha: CatchOpacity.eventSuccessQrErrorFill,
                           ),
                           radius: CatchRadius.none,
-                          child: CatchText(
+                          child: CatchLegacyText(
                             _errorText!,
-                            variant: CatchTextVariant.supporting,
+                            variant: CatchLegacyTextVariant.supporting,
                             color: CatchTokens.editorialWhite,
                             textAlign: TextAlign.center,
                           ),
@@ -101,11 +101,11 @@ class _EventCheckInQrScannerSheetState
               ),
             ),
             gapH10,
-            CatchText(
+            CatchLegacyText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ],

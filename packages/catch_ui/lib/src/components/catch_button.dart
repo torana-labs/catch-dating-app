@@ -5,9 +5,9 @@ import 'package:catch_ui/src/components/catch_button_content_row.dart';
 import 'package:catch_ui/src/components/catch_count_badge.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 /// D20 variants. `quiet` is the unboxed action; `light` is primary on a dark
@@ -439,7 +439,7 @@ class _CatchButtonState extends State<CatchButton> {
         },
       );
 
-      final pill = CatchSurface(
+      final pill = CatchLegacySurface(
         radius: CatchRadius.pill,
         emphasis: CatchSurfaceEmphasis.raised,
         backgroundColor: t.floatingPillFill,

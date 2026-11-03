@@ -691,11 +691,11 @@ class _PrivateEventCreateScreenState
                           ),
                         ),
                         gapH4,
-                        CatchText(
+                        CatchLegacyText(
                           widget.returnToResponsesOnSave
                               ? context.l10n.hostsPrivateEventReturnToReviewHint
                               : context.l10n.hostsPrivateEventSaveHint,
-                          variant: CatchTextVariant.bodyM,
+                          variant: CatchLegacyTextVariant.bodyM,
                           color: t.ink2,
                         ),
                         if (_error != null) ...[

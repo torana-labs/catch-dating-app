@@ -40,7 +40,7 @@ class OrganizerHostSection extends StatelessWidget {
     );
     final establishedLabel = organizerEstablishedLabel(organizer);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.tileContentCompact,
       child: Column(
@@ -128,9 +128,9 @@ class OrganizerHostRow extends StatelessWidget {
               Row(
                 children: [
                   Flexible(
-                    child: CatchText(
+                    child: CatchLegacyText(
                       host.displayName,
-                      variant: CatchTextVariant.sectionTitle,
+                      variant: CatchLegacyTextVariant.sectionTitle,
                       color: CatchTokens.of(context).ink,
                       maxLines: 1,
                     ),
@@ -174,7 +174,7 @@ class OrganizerHostRow extends StatelessWidget {
     );
 
     if (onTap == null) return row;
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       tone: CatchSurfaceTone.transparent,
       radius: CatchRadius.none,

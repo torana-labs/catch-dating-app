@@ -81,7 +81,7 @@ class WeekDayTile extends StatelessWidget {
         day: day,
         day2: date.day,
       ),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: active ? t.ink : Colors.transparent,
         radius: CatchRadius.none,
         // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -91,9 +91,9 @@ class WeekDayTile extends StatelessWidget {
         duration: Duration.zero,
         child: Column(
           children: [
-            CatchText(
+            CatchLegacyText(
               day,
-              variant: CatchTextVariant.statusLabel,
+              variant: CatchLegacyTextVariant.statusLabel,
               color: active
                   ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
                   : t.ink3,
@@ -144,9 +144,9 @@ class MonthDayTile extends StatelessWidget {
         : enabled
         ? t.ink
         : t.ink3.withValues(alpha: CatchOpacity.mutedContent);
-    final dayText = CatchText(
+    final dayText = CatchLegacyText(
       context.l10n.eventsEventDateMarkerTextDay(day: date.day),
-      variant: CatchTextVariant.titleS,
+      variant: CatchLegacyTextVariant.titleS,
       color: textColor,
     );
 
@@ -154,7 +154,7 @@ class MonthDayTile extends StatelessWidget {
       button: enabled,
       selected: active,
       label: context.l10n.eventsEventDateMarkerLabelDay(day: date.day),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         height: _monthMarkerHeight,
         backgroundColor: active ? t.ink : Colors.transparent,
         radius: CatchRadius.none,

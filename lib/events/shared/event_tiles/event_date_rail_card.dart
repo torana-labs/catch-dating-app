@@ -107,7 +107,7 @@ class EventDateRailCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       color: t.surface,
       shadowColor: CatchElevation.physicalShadow,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         onTap: onTap,
         radius: CatchRadius.md,
         backgroundColor: Colors.transparent,
@@ -128,19 +128,19 @@ class EventDateRailCard extends StatelessWidget {
                       uppercase: true,
                     ),
                     gapH6,
-                    CatchText(
+                    CatchLegacyText(
                       effectiveTitle,
-                      variant: CatchTextVariant.displayXs,
+                      variant: CatchLegacyTextVariant.displayXs,
                       maxLines: 1,
                     ),
                     if (effectiveSupporting != null &&
                         effectiveSupporting.isNotEmpty) ...[
                       gapH4,
-                      CatchText(
+                      CatchLegacyText(
                         effectiveSupporting,
                         maxLines: 2,
 
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: t.ink2,
                       ),
                     ],
@@ -544,7 +544,7 @@ class DateRail extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CatchSurface(
+          CatchLegacySurface(
             duration: Duration.zero,
             radius: CatchRadius.none,
             backgroundColor: color,
@@ -579,11 +579,11 @@ class DateRail extends StatelessWidget {
                   ),
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.eventsEventDateRailCardTextDay(
                     day: startTime.day,
                   ),
-                  variant: CatchTextVariant.displayS,
+                  variant: CatchLegacyTextVariant.displayS,
                   color: onColor,
                 ),
                 gapH3,

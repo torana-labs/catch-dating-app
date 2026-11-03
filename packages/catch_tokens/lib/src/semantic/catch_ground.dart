@@ -1,66 +1,28 @@
-import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
-import 'package:flutter/painting.dart';
-
-/// A Website v2 ground from the palette tokens (CAT-245): a fill with the ink
-/// and secondary ink that clear AA on it. `@catch/web-ui` names the same nine
-/// grounds in the same order as `CatchGround`.
+/// What a component sits on (the system's `Ground`). A component reads it from
+/// the scope above it to pick its own fill, outline and ink: a tile on the
+/// white ground is grey, a tile inside a tile is the nested block, and
+/// anything inside a coloured spotlight goes translucent white.
+///
+/// `@catch/web-ui` names the same six, in kebab case (`night-tile`).
 enum CatchGround {
-  white(
-    GeneratedCatchGroundTokens.whiteFill,
-    GeneratedCatchGroundTokens.whiteInk,
-    GeneratedCatchGroundTokens.whiteInkSecondary,
-  ),
-  paper(
-    GeneratedCatchGroundTokens.paperFill,
-    GeneratedCatchGroundTokens.paperInk,
-    GeneratedCatchGroundTokens.paperInkSecondary,
-  ),
-  ink(
-    GeneratedCatchGroundTokens.inkFill,
-    GeneratedCatchGroundTokens.inkInk,
-    GeneratedCatchGroundTokens.inkInkSecondary,
-  ),
-  coral(
-    GeneratedCatchGroundTokens.coralFill,
-    GeneratedCatchGroundTokens.coralInk,
-    GeneratedCatchGroundTokens.coralInkSecondary,
-  ),
-  pink(
-    GeneratedCatchGroundTokens.pinkFill,
-    GeneratedCatchGroundTokens.pinkInk,
-    GeneratedCatchGroundTokens.pinkInkSecondary,
-  ),
-  yellow(
-    GeneratedCatchGroundTokens.yellowFill,
-    GeneratedCatchGroundTokens.yellowInk,
-    GeneratedCatchGroundTokens.yellowInkSecondary,
-  ),
-  mint(
-    GeneratedCatchGroundTokens.mintFill,
-    GeneratedCatchGroundTokens.mintInk,
-    GeneratedCatchGroundTokens.mintInkSecondary,
-  ),
-  indigo(
-    GeneratedCatchGroundTokens.indigoFill,
-    GeneratedCatchGroundTokens.indigoInk,
-    GeneratedCatchGroundTokens.indigoInkSecondary,
-  ),
-  magenta(
-    GeneratedCatchGroundTokens.magentaFill,
-    GeneratedCatchGroundTokens.magentaInk,
-    GeneratedCatchGroundTokens.magentaInkSecondary,
-  );
+  /// The screen itself: white by day.
+  ground,
 
-  const CatchGround(this.fillColor, this.inkColor, this.secondaryInkColor);
+  /// Inside a grey tile.
+  tile,
 
-  final Color fillColor;
+  /// Inside a block nested in a tile.
+  nested,
 
-  /// Text and glyphs on the ground.
-  final Color inkColor;
+  /// Inside a spotlight or band in a format colour.
+  colour,
 
-  /// Supporting text on the ground.
-  final Color secondaryInkColor;
+  /// The night screen, or an ink spotlight or band.
+  night,
 
-  /// The ink ground carries light text; every other ground carries dark text.
-  bool get isDark => this == CatchGround.ink;
+  /// Inside a tile on a night screen.
+  nightTile;
+
+  /// Whether this is one of the two night grounds.
+  bool get isNight => this == night || this == nightTile;
 }

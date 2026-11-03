@@ -91,7 +91,7 @@ void main() {
         MaterialApp(
           theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
           home: Center(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               key: const ValueKey('semantic-border-surface'),
               borderRole: role,
               padding: const EdgeInsets.all(CatchSpacing.s3),

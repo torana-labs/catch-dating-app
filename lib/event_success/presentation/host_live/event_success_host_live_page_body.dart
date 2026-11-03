@@ -533,7 +533,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
           ],
         ),
       };
-      return CatchSurface(
+      return CatchLegacySurface(
         duration: Duration.zero,
         radius: CatchRadius.none,
         backgroundColor: CatchTokens.of(context).bg,

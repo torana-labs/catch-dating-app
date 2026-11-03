@@ -111,9 +111,9 @@ class _ProgramGuestGroupEditDialogState
                 setState(() => _hotelId = selection.firstOrNull),
           )
         else
-          CatchText(
+          CatchLegacyText(
             context.l10n.programsGuestsNoHotelsAvailable,
-            variant: CatchTextVariant.bodyS,
+            variant: CatchLegacyTextVariant.bodyS,
           ),
       ],
     ),

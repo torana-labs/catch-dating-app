@@ -157,9 +157,9 @@ class _HostBroadcastComposerSheetState
             ),
           ),
           gapH20,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostBroadcastComposerSheetTextAudience,
-            variant: CatchTextVariant.bodyLead,
+            variant: CatchLegacyTextVariant.bodyLead,
             color: CatchTokens.of(context).ink,
           ),
           gapH8,
@@ -197,9 +197,9 @@ class _HostBroadcastComposerSheetState
             onChanged: mutation.isPending ? null : _selectAudience,
           ),
           gapH20,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostsHostBroadcastComposerSheetTextTemplate,
-            variant: CatchTextVariant.bodyLead,
+            variant: CatchLegacyTextVariant.bodyLead,
             color: CatchTokens.of(context).ink,
           ),
           gapH8,
@@ -238,17 +238,17 @@ class _HostBroadcastComposerSheetState
           ),
           if (!_sendingEnabled) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostBroadcastComposerSheetTextSendingStaysOffIn,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ],
           if (recipientCount == 0) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               context.l10n.hostsHostBroadcastComposerSheetTextThisAudienceHasNo,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ],

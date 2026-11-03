@@ -6,7 +6,7 @@ import 'package:catch_ui/src/components/catch_notice_data.dart';
 import 'package:catch_ui/src/components/catch_notice_tone.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 class CatchNotice extends StatelessWidget {
@@ -67,7 +67,7 @@ class CatchNotice extends StatelessWidget {
         notice.title,
         if (notice.message != null) notice.message!,
       ].join('. '),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         onTap: notice.onOpen == null
             ? null
             : () {

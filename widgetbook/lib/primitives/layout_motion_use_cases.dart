@@ -17,7 +17,7 @@ Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
       CatchFractionalViewport(
         fraction: fraction,
         maxWidth: 280,
-        child: CatchSurface.card(
+        child: CatchLegacySurface.card(
           child: Text(
             'Fraction $fraction; maximum 280',
             style: CatchTextStyles.bodyM(context),
@@ -37,7 +37,7 @@ Widget pagerFocusStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.screen_body.pager_focus_boundary',
   children: const [
     CatchPagerFocusViewport(
-      child: CatchSurface.card(
+      child: CatchLegacySurface.card(
         child: TextField(
           decoration: InputDecoration(labelText: 'Pager message'),
         ),
@@ -68,7 +68,7 @@ Widget revealViewportStates(BuildContext context) => WidgetbookCatalogFrame(
             data: MediaQuery.of(context).copyWith(disableAnimations: false),
             child: CatchRevealViewport(
               animation: AlwaysStoppedAnimation<double>(value),
-              child: CatchSurface.card(
+              child: CatchLegacySurface.card(
                 child: Text(
                   'Route content',
                   style: CatchTextStyles.bodyM(context),
@@ -92,7 +92,7 @@ Widget heroViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   children: [
     CatchHeroViewport(
       tag: 'hero-viewport-catalog',
-      child: CatchSurface.card(
+      child: CatchLegacySurface.card(
         child: Text(
           'Card flight surface',
           style: CatchTextStyles.bodyM(context),
@@ -123,7 +123,7 @@ Widget tabViewportContractStates(BuildContext context) =>
               gapH8,
               SizedBox(
                 height: 160,
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   padding: EdgeInsets.zero,
                   child: CatchTabViewportScope(
                     index: 0,

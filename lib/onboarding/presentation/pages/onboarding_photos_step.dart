@@ -114,9 +114,9 @@ class OnboardingPhotosStep extends StatelessWidget {
           ),
           if (state.continueHint(context.l10n) case final continueHint?) ...[
             gapH12,
-            CatchText(
+            CatchLegacyText(
               continueHint,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
               textAlign: TextAlign.center,
             ),
@@ -150,9 +150,9 @@ class OnboardingPhotosStep extends StatelessWidget {
                   ),
                   gapW8,
                   Expanded(
-                    child: CatchText(
+                    child: CatchLegacyText(
                       state.supportingCopy(context.l10n),
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: t.ink2,
                     ),
                   ),

@@ -18,11 +18,15 @@ class EventSuccessRevealHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(headline, variant: CatchTextVariant.titleL, color: t.surface),
+        CatchLegacyText(
+          headline,
+          variant: CatchLegacyTextVariant.titleL,
+          color: t.surface,
+        ),
         gapH6,
-        CatchText(
+        CatchLegacyText(
           body,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: t.surface.withValues(
             alpha: CatchOpacity.revealMutedForeground,
           ),

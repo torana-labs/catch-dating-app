@@ -56,8 +56,8 @@ void main() {
             scale: scale,
             dark: dark,
           );
-          final surface = tester.widget<CatchSurface>(
-            find.byType(CatchSurface).first,
+          final surface = tester.widget<CatchLegacySurface>(
+            find.byType(CatchLegacySurface).first,
           );
           expect(surface.tone, CatchSurfaceTone.primarySoft);
           expect(surface.emphasis, CatchSurfaceEmphasis.flat);

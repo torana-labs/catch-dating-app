@@ -3,7 +3,7 @@ import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 const read = (path: string) => fs.readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
-const dart = read("../../../catch_ui/lib/src/primitives/catch_surface.dart");
+const dart = read("../../../catch_ui/lib/src/primitives/catch_legacy_surface.dart");
 const css = read("./CatchLegacySurface.module.css");
 const ts = read("./CatchLegacySurface.tsx");
 describe("CatchLegacySurface native recipe parity", () => {

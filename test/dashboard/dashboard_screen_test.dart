@@ -1021,7 +1021,7 @@ Future<void> _pumpDashboardUi(WidgetTester tester) async {
 Finder _runFocusCardSurface(String title) {
   return find.ancestor(
     of: find.text(title),
-    matching: find.byType(CatchSurface),
+    matching: find.byType(CatchLegacySurface),
   );
 }
 

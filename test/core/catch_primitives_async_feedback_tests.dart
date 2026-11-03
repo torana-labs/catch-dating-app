@@ -590,40 +590,45 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect((logo.image as AssetImage).assetName, SplashScreen.darkIconAsset);
   });
 
-  testWidgets('CatchSurface supports padding, fixed size, and tap handling', (
+  testWidgets(
+    'CatchLegacySurface supports padding, fixed size, and tap handling',
+    (tester) async {
+      var tapped = false;
+
+      await tester.pumpWidget(
+        _wrap(
+          CatchLegacySurface(
+            width: 180,
+            padding: const EdgeInsets.all(16),
+            tone: CatchSurfaceTone.raised,
+            borderRole: CatchBorderRole.boundary,
+            onTap: () => tapped = true,
+            child: const Text('Surface content'),
+          ),
+        ),
+      );
+
+      expect(find.text('Surface content'), findsOneWidget);
+      expect(tester.getSize(find.byType(CatchLegacySurface)).width, 180);
+
+      await tester.tap(find.text('Surface content'));
+      await tester.pump();
+      expect(tapped, isTrue);
+    },
+  );
+
+  testWidgets('CatchLegacySurface.card renders the handoff card surface', (
     tester,
   ) async {
-    var tapped = false;
-
     await tester.pumpWidget(
       _wrap(
-        CatchSurface(
-          width: 180,
-          padding: const EdgeInsets.all(16),
-          tone: CatchSurfaceTone.raised,
-          borderRole: CatchBorderRole.boundary,
-          onTap: () => tapped = true,
-          child: const Text('Surface content'),
-        ),
+        const CatchLegacySurface.card(width: 240, child: Text('Panel content')),
       ),
     );
 
-    expect(find.text('Surface content'), findsOneWidget);
-    expect(tester.getSize(find.byType(CatchSurface)).width, 180);
-
-    await tester.tap(find.text('Surface content'));
-    await tester.pump();
-    expect(tapped, isTrue);
-  });
-
-  testWidgets('CatchSurface.card renders the handoff card surface', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(const CatchSurface.card(width: 240, child: Text('Panel content'))),
+    final panelSurface = tester.widget<CatchLegacySurface>(
+      find.byType(CatchLegacySurface),
     );
-
-    final panelSurface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(find.text('Panel content'), findsOneWidget);
     expect(panelSurface.width, 240);
     expect(panelSurface.padding, CatchInsets.contentRelaxed);
@@ -647,10 +652,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     final messageSurfaceFinder = find.byType(CatchBanner);
     final renderedSurfaceFinder = find.descendant(
       of: messageSurfaceFinder,
-      matching: find.byType(CatchSurface),
+      matching: find.byType(CatchLegacySurface),
     );
     final messageSurface = tester.widget<CatchBanner>(messageSurfaceFinder);
-    final renderedSurface = tester.widget<CatchSurface>(renderedSurfaceFinder);
+    final renderedSurface = tester.widget<CatchLegacySurface>(
+      renderedSurfaceFinder,
+    );
     expect(find.text('Host tip'), findsOneWidget);
     expect(
       find.text('Keep the first message short and specific.'),
@@ -676,7 +683,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchLegacySurface), findsNothing);
     expect(find.byType(CatchEmptyState), findsOneWidget);
     expect(find.byType(CatchIconTile), findsOneWidget);
 
@@ -876,20 +883,20 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
   });
 
   testWidgets(
-    'CatchSurface disables chrome animation when reduced motion is on',
+    'CatchLegacySurface disables chrome animation when reduced motion is on',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
           const MediaQuery(
             data: MediaQueryData(disableAnimations: true),
-            child: CatchSurface.card(child: Text('Panel')),
+            child: CatchLegacySurface.card(child: Text('Panel')),
           ),
         ),
       );
 
       final surface = tester.widget<AnimatedContainer>(
         find.descendant(
-          of: find.byType(CatchSurface),
+          of: find.byType(CatchLegacySurface),
           matching: find.byType(AnimatedContainer),
         ),
       );

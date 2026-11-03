@@ -304,9 +304,11 @@ test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequent
     assert.equal(matches.length, 1, `${name} must run exactly once`);
     const [step] = matches;
     assert.equal(step.workingDirectory, directory);
-    // No filenames, tags or name filters: Flutter discovers the whole package,
-    // including nested and newly added test files.
-    assert.equal(step.run, "flutter test --concurrency=1");
+    // No filenames or name filters: Flutter discovers the whole package,
+    // including nested and newly added test files. The library's macOS PNG
+    // goldens run in visual-integration-ci.yml, so its job excludes the tag.
+    assert.equal(step.run, directory === "packages/catch_ui" ?
+      "flutter test --concurrency=1 --exclude-tags=golden" : "flutter test --concurrency=1");
     assert.equal(step.runnable, true);
     assert.doesNotMatch(namedStep(job, name), /continue-on-error:|\n        if:/u);
   }
@@ -1359,11 +1361,12 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   assert.equal(steps[first].run, "(cd widgetbook && flutter test --concurrency=1 test)");
   assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
   assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
-  for (const name of [steps[first].name, "Flutter goldens (report pixel changes)"]) {
+  const library = "Catch UI package goldens (report pixel changes)";
+  for (const name of [steps[first].name, "Flutter goldens (report pixel changes)", library]) {
     assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
   }
   // Golden pixel changes are reported through the shared comparator, never failed.
-  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (report pixel changes)"]) {
+  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (report pixel changes)", library]) {
     assert.ok(namedStep(source, name).includes(
       "CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv"), name);
   }
@@ -1377,10 +1380,15 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   assert.doesNotMatch(determinism, /(?:continue-on-error:|--update-goldens)/u);
   assert.equal(steps.find((step) => step.name === "Flutter goldens (report pixel changes)").run,
     "flutter test --concurrency=1 test/goldens");
+  // The library's goldens follow the app's, before the report reads both.
+  const app = steps.findIndex((step) => step.name === "Flutter goldens (report pixel changes)");
+  const libraryIndex = steps.findIndex((step) => step.name === library);
+  assert.ok(libraryIndex === app + 1, "library goldens follow the app goldens");
+  assert.equal(steps[libraryIndex].run, "(cd packages/catch_ui && flutter test --concurrency=1 --tags=golden)");
   const upload = namedStep(source, "Retain golden failure diffs");
   assert.ok(upload.includes("if: ${{ failure() || steps.golden-report.outputs.has_changes == 'true' }}"));
   assert.match(upload, /uses: actions\/upload-artifact@/u);
-  assert.match(upload, /path: test\/goldens\/failures\//u);
+  assert.match(upload, /path: \|\n\s+test\/goldens\/failures\/\n\s+packages\/catch_ui\/test\/goldens\/failures\//u);
 });
 
 for (const exitCode of [0, 37]) {
@@ -1388,8 +1396,10 @@ for (const exitCode of [0, 37]) {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "widgetbook-workflow-"));
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
     const packageRoot = path.join(root, "widgetbook");
+    const libraryRoot = path.join(root, "packages/catch_ui");
     const bin = path.join(root, "bin");
     fs.mkdirSync(packageRoot);
+    fs.mkdirSync(libraryRoot, {recursive: true});
     fs.mkdirSync(bin);
     const trace = path.join(root, "invocation.json");
     // This executes the actual workflow shell, not Flutter discovery or rendering.
@@ -1402,6 +1412,7 @@ process.exit(Number(process.env.FAKE_FLUTTER_EXIT));
       ["Widgetbook package suites (pass 1)", "test", packageRoot],
       ["Widgetbook corpus goldens (pass 2, determinism)", "test/primitive_goldens_test.dart", packageRoot],
       ["Flutter goldens (report pixel changes)", "test/goldens", root],
+      ["Catch UI package goldens (report pixel changes)", "--tags=golden", libraryRoot],
     ]) {
       const step = steps.find((entry) => entry.name === name);
       assert.ok(step?.run, name);
