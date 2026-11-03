@@ -5,7 +5,7 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import {CatchBadge, CatchText, DataTableControl} from "@catch/web-ui";
+import {CatchBadge, CatchText} from "@catch/web-ui";
 import {Lock} from "lucide-react";
 
 import {
@@ -13,7 +13,6 @@ import {
   layoutSpanClass,
   type AlertTone,
   type QualityRowTone,
-  type DataTableVariant,
   type AdminFormVariant,
   type PanelProps,
 } from "./shared";
@@ -75,36 +74,6 @@ export function QualityList({
     <div className={classNames("quality-list", className)} {...props}>
       {children}
     </div>
-  );
-}
-
-export function DataTable({
-  ariaLabel,
-  children,
-  className = "",
-  compact = false,
-  variant = "default",
-  ...props
-}: {
-  ariaLabel: string;
-  children: ReactNode;
-  className?: string;
-  compact?: boolean;
-  variant?: DataTableVariant;
-} & HTMLAttributes<HTMLDivElement>) {
-  return (
-    <DataTableControl
-      {...props}
-      ariaLabel={ariaLabel}
-      className={classNames(
-        "table-wrap",
-        variant === "workbench" && "workbench-table",
-        compact && "compact",
-        className
-      )}
-    >
-      {children}
-    </DataTableControl>
   );
 }
 

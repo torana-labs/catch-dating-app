@@ -12,7 +12,6 @@ import {
   AdminEventSupplyLinks,
   AdminLinkButton,
   CheckboxField,
-  DataTable,
   EmptyState,
   QualityList,
   QualityRow,

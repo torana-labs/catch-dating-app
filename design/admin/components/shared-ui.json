@@ -410,26 +410,6 @@
       "componentId": "catch.toggle"
     },
     {
-      "id": "shared_data_table",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
-      "exportName": "DataTable",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "DataTableStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of the @catch/web-ui DataTableControl.",
-      "componentId": "catch.table"
-    },
-    {
       "id": "shared_empty_state",
       "kind": "shared-primitive",
       "owner": "shared/ui",

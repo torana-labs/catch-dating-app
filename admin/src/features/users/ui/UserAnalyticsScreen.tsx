@@ -37,7 +37,6 @@ import {
   AdminToolbar,
   AdminWorkbenchStack,
   AlertRow,
-  DataTable,
   EmptyState,
   Panel,
   QualityList,

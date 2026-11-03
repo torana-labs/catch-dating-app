@@ -80,7 +80,7 @@
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
     "react/forbid-component-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-dom-props": {
       "count": 11

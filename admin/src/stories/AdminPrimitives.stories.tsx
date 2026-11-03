@@ -47,7 +47,6 @@ import {
   AlertRow,
   CardHeader,
   CheckboxField,
-  DataTable,
   EmptyState,
   PageHeader,
   QualityList,
@@ -205,41 +204,6 @@ export const AdminCardStory: Story = {
         <h3>Intake card shell</h3>
         <p>Use for source review and publication workflow content.</p>
       </AdminCard>
-    </AdminWorkspace>
-  ),
-};
-
-export const DataTableStory: Story = {
-  name: "Data table",
-  parameters: {
-    catchComponent: {
-      id: "shared_data_table",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <DataTable ariaLabel="Organizer queue">
-        <thead>
-          <tr>
-            <th>Organizer</th>
-            <th>Status</th>
-            <th>Owner</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Afterfly Social</td>
-            <td>Ready</td>
-            <td>Ops</td>
-          </tr>
-          <tr>
-            <td>City Supper Club</td>
-            <td>Needs source</td>
-            <td>Growth</td>
-          </tr>
-        </tbody>
-      </DataTable>
     </AdminWorkspace>
   ),
 };

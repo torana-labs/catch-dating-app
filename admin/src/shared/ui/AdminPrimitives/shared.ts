@@ -27,7 +27,6 @@ export type QualityRowTone = "base" | AlertTone | string;
 export type AdminOverviewQueueIntent = "danger" | "warning" | "neutral";
 export type AdminSignalTone = "neutral" | "green" | "teal" | "orange" | "red";
 export type AdminOverviewSignalTone = AdminSignalTone;
-export type DataTableVariant = "default" | "workbench";
 export type AdminFormVariant = "default" | "publishing";
 export type AdminEditorGridElement = "div" | "section";
 export type AdminTagRowElement = "div" | "span";

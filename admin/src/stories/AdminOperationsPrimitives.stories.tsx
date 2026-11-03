@@ -4,6 +4,7 @@ import {
   CatchBadge,
   CatchField,
   CatchGap,
+  CatchTable,
 } from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
@@ -53,7 +54,6 @@ import {
   AdminSurfacePreview,
   AdminWorkspace,
   AlertRow,
-  DataTable,
   DecisionFooter,
   EmptyState,
   Panel,
@@ -148,14 +148,12 @@ export const AdminEventSupplyReviewGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminEventSupplyReviewGrid>
-        <DataTable ariaLabel="Event supply review" compact variant="workbench">
-          <tbody>
-            <tr>
-              <td>Venue import</td>
-              <td><CatchBadge recipe="status" tone="warning" label="Review" /></td>
-            </tr>
-          </tbody>
-        </DataTable>
+        <CatchTable
+          columns={[{key: "source", label: "Source"}, {key: "status", label: "Status", kind: "badge"}]}
+          label="Event supply review"
+          rowKey={(row) => row.source}
+          rows={[{source: "Venue import", status: {recipe: "status", tone: "warning", label: "Review"}}]}
+        />
         <AdminEventSupplyDetail>
           <StateRow label="Source" value="Partner feed" />
         </AdminEventSupplyDetail>
