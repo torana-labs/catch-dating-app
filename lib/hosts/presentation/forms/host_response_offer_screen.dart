@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
@@ -102,11 +103,13 @@ class _HostResponseOfferScreenState
           throw StateError('Response selection changed.');
         }
       }
-      // provider-graph: ownership-repository-construction:_HostResponseOfferScreenState._createEvent:construct:PrivateEventSetupRepository planned CAT156 -- _HostResponseOfferScreenState._createEvent directly constructs PrivateEventSetupRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences.
-      final summary = await PrivateEventSetupRepository(
-        // provider-graph: ownership-widget-backend:_HostResponseOfferScreenState._createEvent:read:firebaseFunctionsProvider planned CAT156 -- _HostResponseOfferScreenState._createEvent reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
-        ref.read(firebaseFunctionsProvider),
-      ).get(organizerId: widget.organizerId, eventId: eventId);
+      // The server writes the new event's setup view just after create; wait
+      // for its first complete delivery rather than reading through a callable.
+      final summary = await firstCompleteSetupView(
+        ref
+            .read(hostEventSetupViewReadsProvider)
+            .watch(organizerId: widget.organizerId, eventId: eventId),
+      );
       if (!_current(account)) return;
       if (summary.organizerId != widget.organizerId ||
           summary.eventId != eventId ||

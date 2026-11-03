@@ -104,13 +104,6 @@ class PrivateEventSetupRepository {
     atLeastRevision: atLeastRevision,
   );
 
-  /// Transitional one-shot read for the response offer screen, whose move
-  /// to [firstComplete] waits on the shared library rename.
-  Future<PrivateEventBasicSummary> get({
-    required String organizerId,
-    required String eventId,
-  }) => firstComplete(organizerId: organizerId, eventId: eventId);
-
   /// Manager inventory for basics-only private events that cannot be decoded
   /// through the public rich Event model or a device-local draft list.
   Future<PrivateEventSetupInventoryPage> list({
