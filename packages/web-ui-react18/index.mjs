@@ -14,5 +14,3 @@ export const reactDir = path.dirname(require.resolve("react/package.json"));
 export const reactDomDir = path.dirname(require.resolve("react-dom/package.json"));
 /** The module hooks that send every `react` and `react-dom` import to React 18. */
 export const hooksPath = path.join(react18Root, "hooks.mjs");
-/** A setup file that fails the run unless React and React DOM are 18. */
-export const setupPath = path.join(react18Root, "setup.mjs");

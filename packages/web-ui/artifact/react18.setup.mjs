@@ -1,5 +1,6 @@
-// Fails the React 18 run if an alias or hook stopped applying and the tests
-// would silently render with React 19 again.
+// Setup for web-ui's react18 test project: fails the run if an alias or hook
+// stopped applying and the tests would silently render with React 19 again.
+// It sits inside web-ui so Vite serves it wherever web-ui is checked out.
 import {version as reactVersion} from "react";
 import {version as reactDomVersion} from "react-dom";
 
