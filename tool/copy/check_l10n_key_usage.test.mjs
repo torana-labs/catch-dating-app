@@ -41,7 +41,7 @@ test("known-bad fixture reports every orphaned key", () => {
   assert.deepEqual(
     result.excludedFiles.map(({path: filePath, reason}) => [filePath, reason]),
     [
-      ["packages/l10n/lib/generated/app_localizations.dart", "l10n-generated-directory"],
+      ["lib/generated/app_localizations.dart", "generated-directory"],
       ["lib/secondary.g.dart", "generated-suffix"],
     ],
   );
@@ -285,7 +285,7 @@ function fixtureRoot(name) {
 function scanFixture(root) {
   return scanL10nKeyUsage({
     repoRoot: root,
-    arbPath: path.join(root, "lib", "l10n", "app_en.arb"),
+    arbPath: path.join(root, "packages", "l10n", "lib", "app_en.arb"),
     sourceRoots: [path.join(root, "lib")],
   });
 }

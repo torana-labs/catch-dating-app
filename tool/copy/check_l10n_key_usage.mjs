@@ -133,7 +133,6 @@ export function scanL10nKeyUsage({
         "exact ARB-key identifiers and statically recognized l10n.<key> member references in handwritten production Dart",
       excluded: [
         "Dart files under generated directories",
-        "packages/l10n/lib/generated/**",
         "*.g.dart, *.freezed.dart, *.gen.dart, *.gr.dart, and *.mocks.dart",
         "Dart files with a generated-code do-not-edit header",
         "comments and non-interpolated string contents",
@@ -242,9 +241,6 @@ export function stableJson(value) {
 
 function generatedFileExclusionReason({relativePath, source}) {
   const normalizedPath = normalizePath(relativePath);
-  if (normalizedPath.startsWith("packages/l10n/lib/generated/")) {
-    return "l10n-generated-directory";
-  }
   if (normalizedPath.split("/").includes("generated")) {
     return "generated-directory";
   }
