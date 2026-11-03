@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/platform/cache/page_reload.dart'
     if (dart.library.js_interop) 'package:catch_dating_app/platform/cache/page_reload_web.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,15 +56,29 @@ final class FirestoreCacheWipe {
     if (_reloadPageAfterWipe) _reload();
   }
 
+  static const _terminate = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'stop Firestore at sign-out',
+    resource: 'firestore_instance',
+  );
+  static const _clear = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'clear the on-device Firestore cache at sign-out',
+    resource: 'firestore_persistence',
+  );
+
   // A read that starts between the two calls starts a new instance, which
   // clearPersistence refuses; terminating again and retrying once covers it.
   Future<void> _terminateAndClear(FirebaseFirestore firestore) async {
     for (var attempt = 0; ; attempt++) {
-      await firestore.terminate();
+      await withBackendErrorContext(firestore.terminate, context: _terminate);
       try {
-        await firestore.clearPersistence();
+        await withBackendErrorContext(
+          firestore.clearPersistence,
+          context: _clear,
+        );
         return;
-      } on FirebaseException catch (error) {
+      } on AppException catch (error) {
         if (error.code != 'failed-precondition' || attempt > 0) rethrow;
       }
     }
