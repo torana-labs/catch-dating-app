@@ -4840,6 +4840,7 @@ and `./tool/check_data_contract.sh`.
 | General feed/history | 40 / 50 | Feed page / chronological history page. |
 | Directory | 30 | Clubs and other entity directories. |
 | Bounded operational set | 1,000 | Contract ceiling for rosters and reviewed exceptions; never a browse-page substitute. |
+| Host attention queue | 400 | `hostAttentionQueue`: the attention evaluator's open-row cap, so the Today listener reads every open row or an over-cap schedule. |
 | Search | 20 | Interactive callable result window. |
 | Recommendation rail | 10 | Ranked, explicitly non-exhaustive rail. |
 | Deterministic lookup | 1 | Prefer direct document reads; use only where no deterministic id exists. |
