@@ -10,16 +10,11 @@ import {
   candidateFiles,
   countReferences,
   isRenamed,
-  legacySymbolsIn,
   migrate,
   plan,
   renameSource,
   sortImportRuns,
-  usesLegacy,
-  withLegacyIgnore,
 } from "./rename_legacy_library_symbols.mjs";
-
-const legacy = ["CatchKickerText", "CatchLegacySurface", "CatchLegacyText", "CatchLegacyTextVariant"];
 
 test("whole words move to the legacy names; longer names and the system's other symbols stay", () => {
   const source = [
@@ -89,33 +84,11 @@ test("a moved path re-sorts the imports it displaces, and nothing else", () => {
     "import 'dart:io';\nimport 'package:a/a.dart' as a;\nimport 'package:b/b.dart';\nimport 'a.dart';");
 });
 
-test("a second run changes nothing", () => {
-  const once = migrate("lib/a.dart", "final a = CatchSurface.card(child: CatchText('x', variant: CatchTextVariant.bodyM));", legacy);
-  assert.equal(migrate("lib/a.dart", once, legacy), once);
-  assert.equal(once.split("\n")[0], "// ignore_for_file: deprecated_member_use");
-});
-
-test("outside catch_ui a caller of a legacy component carries the deprecated ignore once", () => {
-  assert.equal(migrate("lib/a.dart", "final a = CatchKickerText(label: 'x');", legacy),
-    "// ignore_for_file: deprecated_member_use\nfinal a = CatchKickerText(label: 'x');");
-  assert.equal(migrate("packages/catch_ui/lib/src/a.dart", "final a = CatchText('x', variant: CatchTextVariant.bodyM);", legacy),
-    "final a = CatchLegacyText('x', variant: CatchLegacyTextVariant.bodyM);");
-  for (const existing of [
-    "// ignore_for_file: deprecated_member_use\n",
-    "// ignore_for_file: unused_import, deprecated_member_use\n",
-  ]) {
-    const source = `${existing}final a = CatchKickerText(label: 'x');`;
-    assert.equal(withLegacyIgnore(source), source);
-  }
-  const sameOnly = "// ignore_for_file: deprecated_member_use_from_same_package\nfinal a = CatchKickerText();";
-  assert.equal(withLegacyIgnore(sameOnly), `// ignore_for_file: deprecated_member_use\n${sameOnly}`);
-});
-
-test("a legacy name only in a comment or a string is no use", () => {
-  assert.equal(usesLegacy("// CatchKickerText\nfinal a = 'CatchLegacyText';\n/// [CatchLegacySurface]\nclass A {}", legacy), false);
-  assert.equal(usesLegacy("final a = MyCatchKickerText();", legacy), false);
-  assert.equal(usesLegacy("final a = ui.CatchKickerText();", legacy), true);
-  assert.equal(usesLegacy("final a = CatchKickerText();", []), false);
+test("a second run changes nothing, and no analyzer ignore is added", () => {
+  const once = migrate("final a = CatchSurface.card(child: CatchText('x', variant: CatchTextVariant.bodyM));");
+  assert.equal(migrate(once), once);
+  assert.equal(once, "final a = CatchLegacySurface.card(child: CatchLegacyText('x', variant: CatchLegacyTextVariant.bodyM));");
+  assert.doesNotMatch(once, /ignore_for_file/u);
 });
 
 test("generated files, the hand-written system and legacy files, the lint package and design stay", () => {
@@ -157,8 +130,7 @@ function seedRepository(files) {
     "export 'src/primitives/catch_legacy_surface.dart';",
     "export 'src/primitives/catch_surface.dart';",
   ].join("\n"));
-  write("packages/catch_ui/lib/src/primitives/catch_legacy_surface.dart",
-    "@Deprecated('Legacy: use CatchSurface with a block; deleted in P7')\nclass CatchLegacySurface {}");
+  write("packages/catch_ui/lib/src/primitives/catch_legacy_surface.dart", "class CatchLegacySurface {}");
   write("packages/catch_ui/lib/src/primitives/catch_surface.dart", "class CatchSurface {}");
   for (const [file, text] of Object.entries(files)) write(file, text);
   return root;
@@ -175,7 +147,6 @@ test("a repository plan renames callers, counts them, and skips what it must", (
     "tool/other/thing.dart": "final a = CatchSurface();\n",
   });
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
-  assert.deepEqual(legacySymbolsIn(root), ["CatchLegacySurface"]);
   assert.deepEqual(candidateFiles(root), [
     "apps/host/lib/today.dart",
     "lib/screen.dart",
@@ -187,7 +158,7 @@ test("a repository plan renames callers, counts them, and skips what it must", (
     "packages/catch_ui/lib/src/components/banner.dart",
   ]);
   assert.equal(changes[0].next,
-    "// ignore_for_file: deprecated_member_use\nimport 'package:catch_ui/catch_ui.dart';\nfinal a = CatchLegacySurface.card(child: CatchLegacyText('x'));\n");
+    "import 'package:catch_ui/catch_ui.dart';\nfinal a = CatchLegacySurface.card(child: CatchLegacyText('x'));\n");
   assert.equal(changes[1].next,
     "import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';\nfinal a = CatchLegacySurface();\n");
   assert.deepEqual(countReferences(changes), {
@@ -195,7 +166,6 @@ test("a repository plan renames callers, counts them, and skips what it must", (
     references: {CatchTextVariant: 0, CatchSurface: 2, CatchText: 1},
     calls: {CatchSurface: 2, CatchText: 1},
     paths: 1,
-    ignores: 1,
   });
 });
 
@@ -217,7 +187,6 @@ test("--check fails while a caller still names an old symbol, and passes once no
   const before = check();
   assert.equal(before.status, 1);
   assert.match(before.stderr, /lib\/screen\.dart/u);
-  fs.writeFileSync(path.join(root, "lib/screen.dart"),
-    "// ignore_for_file: deprecated_member_use\nfinal a = CatchLegacySurface();\n");
+  fs.writeFileSync(path.join(root, "lib/screen.dart"), "final a = CatchLegacySurface();\n");
   assert.equal(check().status, 0);
 });

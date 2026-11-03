@@ -10,13 +10,11 @@
 //   CatchTextStyles keep their names);
 // - the paths that name the moved files (`src/primitives/catch_surface.dart`
 //   becomes `src/primitives/catch_legacy_surface.dart`), in imports and in
-//   test fixtures alike, re-sorting the imports a moved path displaces;
-// - and, outside package:catch_ui, a file that then uses a legacy component
-//   (any catch_ui symbol whose @Deprecated message begins with `Legacy`, as
-//   check_library_shims.mjs reads them) carries
-//   `// ignore_for_file: deprecated_member_use`. The shim ratchet is the guard,
-//   not the analyzer hint, and the ratchet's new-root gate refuses that ignore
-//   under apps/*/lib and lib/pages.
+//   test fixtures alike, re-sorting the imports a moved path displaces.
+//
+// Legacy status lives in the component registry (the `legacy` members that
+// check_library_shims.mjs counts), not in @Deprecated, so a renamed caller needs
+// no analyzer ignore.
 //
 // It leaves alone generated files, the files that define the system and the
 // legacy components (and the barrel, which exports both), the new golden
@@ -37,7 +35,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {repoRoot} from "../lib/repo_paths.mjs";
-import {maskDart, scanLibrary} from "./check_library_shims.mjs";
+import {maskDart} from "./check_library_shims.mjs";
 
 /** Old name to new name. Word boundaries keep CatchSurfaceTone and CatchTextStyles as they are. */
 export const legacyRenames = new Map([
@@ -88,7 +86,6 @@ export const handWrittenFiles = new Set([
 export const handWrittenPackages = ["packages/catch_ui_lints/"];
 
 const generated = /\.(?:g|freezed)\.dart$/u;
-const ignoreLine = "// ignore_for_file: deprecated_member_use";
 
 const oldNames = [...legacyRenames.keys()].sort((left, right) => right.length - left.length);
 const oldNamePattern = new RegExp(`(?<![\\w$])(?:${oldNames.join("|")})(?![\\w$])`, "gu");
@@ -136,26 +133,9 @@ export function renameSource(source) {
   return moved === renamed ? moved : sortImportRuns(moved);
 }
 
-/** Whether a source uses any of the legacy symbols in code (not in a comment or a string). */
-export function usesLegacy(source, legacySymbols) {
-  if (legacySymbols.length === 0) return false;
-  const pattern = new RegExp(`(?<![\\w$])(?:${legacySymbols.join("|")})(?![\\w$])`, "u");
-  return pattern.test(maskDart(source));
-}
-
-/** Adds the file-wide deprecated_member_use ignore, once, above the first directive or declaration. */
-export function withLegacyIgnore(source) {
-  if (/^\s*\/\/\s*ignore_for_file:[^\n]*\bdeprecated_member_use\b(?!_)/mu.test(source)) return source;
-  return `${ignoreLine}\n${source}`;
-}
-
 /** The new text of one file, or the same text when nothing changes. */
-export function migrate(relative, source, legacySymbols) {
-  let next = renameSource(source);
-  if (!relative.startsWith(`${library}/`) && usesLegacy(next, legacySymbols)) {
-    next = withLegacyIgnore(next);
-  }
-  return next;
+export function migrate(source) {
+  return renameSource(source);
 }
 
 function expandRoot(root, pattern) {
@@ -200,22 +180,12 @@ export function candidateFiles(root) {
   return [...files].filter((relative) => fs.existsSync(path.join(root, relative)) && isRenamed(relative)).sort();
 }
 
-/** The legacy components package:catch_ui exports, as the shim ratchet reads them. */
-export function legacySymbolsIn(root) {
-  const readText = (file) => fs.readFileSync(path.join(root, file), "utf8");
-  return scanLibrary(readText).deprecated
-    .filter((symbol) => symbol.legacy && symbol.owner === null)
-    .map((symbol) => symbol.name)
-    .sort();
-}
-
 /** The files that would change, with their new text; pure apart from reading. */
 export function plan(root) {
-  const legacySymbols = legacySymbolsIn(root);
   const changes = [];
   for (const relative of candidateFiles(root)) {
     const source = fs.readFileSync(path.join(root, relative), "utf8");
-    const next = migrate(relative, source, legacySymbols);
+    const next = migrate(source);
     if (next !== source) changes.push({relative, source, next});
   }
   return changes;
@@ -228,22 +198,20 @@ const callPatterns = {
 
 /**
  * What a plan renames: the files, each old name's whole-word references (in
- * code, comments and strings), the constructor calls among them (code only),
- * the moved-file paths and the files that gain the deprecated_member_use ignore.
+ * code, comments and strings), the constructor calls among them (code only)
+ * and the moved-file paths.
  */
 export function countReferences(changes) {
   const references = Object.fromEntries(oldNames.map((name) => [name, 0]));
   const calls = Object.fromEntries(Object.keys(callPatterns).map((name) => [name, 0]));
   let paths = 0;
-  let ignores = 0;
-  for (const {source, next} of changes) {
+  for (const {source} of changes) {
     for (const match of source.matchAll(oldNamePattern)) references[match[0]] += 1;
     const code = maskDart(source);
     for (const [name, pattern] of Object.entries(callPatterns)) calls[name] += [...code.matchAll(pattern)].length;
     paths += [...source.matchAll(oldPathPattern)].length;
-    if (next.startsWith(`${ignoreLine}\n`) && !source.startsWith(`${ignoreLine}\n`)) ignores += 1;
   }
-  return {files: changes.length, references, calls, paths, ignores};
+  return {files: changes.length, references, calls, paths};
 }
 
 function format(root, files) {
