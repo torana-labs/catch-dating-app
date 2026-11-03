@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/platform/cache/screen_time_to_content.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/firebase/initial_load_policy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary_builders.dart';
@@ -18,6 +19,9 @@ export 'catch_async_boundary_policy.dart';
 /// The default constructor builds boxes; [CatchAsyncBoundary.sliver] requires
 /// sliver-producing builders. The boundary supplies branded defaults and never
 /// adds geometry around caller-produced data or custom states.
+///
+/// The boundaries on one route share a [ScreenVisit]; the first to show data
+/// logs the screen's time to content through the app's analytics.
 class CatchAsyncBoundary<T> extends StatefulWidget {
   const CatchAsyncBoundary({
     super.key,
@@ -66,11 +70,22 @@ class CatchAsyncBoundary<T> extends StatefulWidget {
 class _CatchAsyncBoundaryState<T> extends State<CatchAsyncBoundary<T>> {
   Timer? _deadline;
   bool _timedOut = false;
+  bool _joinedVisit = false;
+  ScreenVisit? _visit;
 
   @override
   void initState() {
     super.initState();
     _syncDeadline();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_joinedVisit) return;
+    _joinedVisit = true;
+    _visit = ScreenVisit.join(context, hasData: _showsData);
+    _reportContent();
   }
 
   @override
@@ -82,6 +97,22 @@ class _CatchAsyncBoundaryState<T> extends State<CatchAsyncBoundary<T>> {
       _timedOut = false;
     }
     _syncDeadline();
+    _reportContent();
+  }
+
+  bool get _showsData =>
+      !_timedOut &&
+      catchAsyncBoundaryStatus(
+            widget.value,
+            retainDataOn: widget.retainDataOn,
+          ) ==
+          CatchAsyncBoundaryStatus.data;
+
+  void _reportContent() {
+    final visit = _visit;
+    if (visit == null || !_showsData) return;
+    _visit = null;
+    visit.showedContent();
   }
 
   @override
