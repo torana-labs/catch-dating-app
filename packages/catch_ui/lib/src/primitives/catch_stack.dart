@@ -5,8 +5,10 @@ import 'package:flutter/widgets.dart';
 
 enum CatchStackDirection { column, row }
 
-/// Cross-axis placement. A column with none set stretches its children to
-/// its width, as the web's flex box does; a row with none set top-aligns them.
+/// Cross-axis placement. A column with none set gives every child its full
+/// width when it has one (as the web's flex box stretches its blocks; a child's
+/// own width does not survive it, so a column that keeps widths sets [start]);
+/// a row with none set top-aligns its children.
 enum CatchStackAlign { start, center, end, stretch, baseline }
 
 /// Main-axis placement. A row fills its width, so it can spread its children;
