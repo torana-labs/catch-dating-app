@@ -7,7 +7,7 @@ import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/platform/routing/route_contract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'

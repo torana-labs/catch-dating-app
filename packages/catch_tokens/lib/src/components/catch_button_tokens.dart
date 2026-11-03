@@ -2,13 +2,13 @@ import 'package:catch_tokens/src/primitives/catch_radius.dart';
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
 import 'package:catch_tokens/src/primitives/catch_stroke.dart';
 
-/// Exact component tokens for CatchButton (UI blueprint D20).
+/// Exact component tokens for CatchButton (UI blueprint D20, D22).
 ///
 /// One shape, three heights and one state model for every labelled action.
 /// The web reads the same values as `--catch-button-*`.
 abstract final class CatchButtonTokens {
-  /// Every button draws 4px corners; pills belong to chips and filters.
-  static const double radius = CatchRadius.xs;
+  /// Every button draws 10px corners; pills belong to chips and filters.
+  static const double radius = CatchRadius.sm;
 
   static const double largeHeight = CatchSpacing.s12;
   static const double mediumHeight = CatchSpacing.s10;

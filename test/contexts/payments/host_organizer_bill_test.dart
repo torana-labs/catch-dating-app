@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -74,5 +77,27 @@ void main() {
   test('a sent bill without its link cannot be paid in the app', () {
     expect(HostOrganizerBill.fromJson(_bill()).canPay, isTrue);
     expect(HostOrganizerBill.fromJson(_bill(url: null)).canPay, isFalse);
+  });
+
+  // Admin's test reads the same file, so the two surfaces can't drift apart on
+  // money.
+  group('the figures shared with Admin', () {
+    final file = File(
+      'test/contexts/payments/fixtures/organizer_kept_months.json',
+    );
+    final months =
+        (jsonDecode(file.readAsStringSync()) as Map<String, Object?>)['months']!
+            as List<Object?>;
+    for (final entry in months.cast<Map<String, Object?>>()) {
+      final expected = entry['expected']! as Map<String, Object?>;
+      test('gives the same answer for ${entry['name']}', () {
+        final bill = HostOrganizerBill.fromJson(
+          entry['bill']! as Map<String, Object?>,
+        );
+        expect(bill.salesMinor, expected['salesMinor']);
+        expect(bill.billMinor, expected['billMinor']);
+        expect(bill.keptMinor, expected['keptMinor']);
+      });
+    }
   });
 }

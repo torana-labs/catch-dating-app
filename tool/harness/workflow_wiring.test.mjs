@@ -308,6 +308,12 @@ test("Flutter CI discovers all Catch UI, Consumer and Host package tests sequent
     assert.equal(step.runnable, true);
     assert.doesNotMatch(namedStep(job, name), /continue-on-error:|\n        if:/u);
   }
+  const kernel = steps.filter((step) => step.name === "Kernel package tests");
+  assert.equal(kernel.length, 1, "Kernel package tests must run exactly once");
+  assert.equal(kernel[0].workingDirectory, "packages/kernel");
+  // The kernel has no Flutter dependency, so Dart runs its whole test directory.
+  assert.equal(kernel[0].run, "dart test --concurrency=1");
+  assert.equal(kernel[0].runnable, true);
   assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
 
   const aggregate = extractSteps(flutter)

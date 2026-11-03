@@ -9,6 +9,7 @@ import {
   CatchSection,
   CatchText,
   CatchTopBar,
+  CatchViewport,
   type CatchMetaEntry,
 } from "@catch/web-ui";
 import {eventWhenLabel} from "../../../shared/domain/recordDates";
@@ -119,7 +120,9 @@ export function EventPageScreen({
   onBack,
   onOpenOrganizer,
   onTabChanged,
+  editor,
   pageEditor,
+  pilots,
   record,
   tab,
 }: {
@@ -127,15 +130,19 @@ export function EventPageScreen({
   onBack: () => void;
   onOpenOrganizer: (organizerId: string) => void;
   onTabChanged: (tab: EventPageTab) => void;
-  /** The Page tab's editor for a Catch event, or the Takedown tab's review for an imported one. */
+  /** The Page tab of a Catch event: its form, what sits beside it, and Save and Discard. */
+  editor?: {main: ReactNode; aside: ReactNode; actions: ReactNode} | null;
+  /** The Takedown tab's review for an imported event. */
   pageEditor: ReactNode;
+  /** Overview's pilot review for a Catch event. */
+  pilots?: ReactNode;
   record: EventPageRecord | null;
   tab: EventPageTab;
 }) {
   const sourceUrl = record?.source === "imported" ? record.event.primaryExternalUrl ?? record.event.eventUrl : null;
   const top = (
     <CatchTopBar
-      actions={sourceUrl ? (
+      actions={tab === "page" && editor ? editor.actions : sourceUrl ? (
         <CatchButton href={sourceUrl} label={eventOriginLabel({source: "imported",
           platform: record?.source === "imported" ? record.event.platform : null}).replace("From", "Open on")}
         newTab onPressed={() => undefined} size="sm" variant="secondary" />
@@ -170,6 +177,18 @@ export function EventPageScreen({
       size="sm"
     />
   ) : null;
+  if (tab === "page" && editor) {
+    // Its own viewport keeps Save, the checks and the changes on screen down a long form.
+    return (
+      <CatchViewport fill="parent" register="quiet" topBar={top}>
+        <CatchPaneLayout
+          aside={editor.aside}
+          main={<CatchGap size="section">{tabs}{editor.main}</CatchGap>}
+          pattern="reading"
+        />
+      </CatchViewport>
+    );
+  }
   if (editorTab && tab === editorTab.value) {
     return (
       <>
@@ -185,7 +204,7 @@ export function EventPageScreen({
     <>
       {top}
       <CatchPaneLayout
-        aside={<CatchGap size="majorSection">{body.organizer}{body.aside}</CatchGap>}
+        aside={<CatchGap size="majorSection">{body.organizer}{body.aside}{pilots}</CatchGap>}
         main={<CatchGap size="section">{tabs}{body.main}</CatchGap>}
         pattern="reading"
       />

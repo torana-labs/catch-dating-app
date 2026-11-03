@@ -256,6 +256,7 @@ ScanResult scanMobileCopy(Directory root) {
       for (final app in apps.listSync().whereType<Directory>())
         Directory('${app.path}/lib'),
     Directory('${root.path}/packages/catch_ui/lib'),
+    Directory('${root.path}/packages/kernel/lib'),
   ];
   final files =
       sourceRoots
@@ -319,8 +320,8 @@ String? _fileAllowanceReason(String source) {
 
 bool _supportsFileAllowance(String file) =>
     file.startsWith('lib/design_fixtures/') ||
-    file == 'lib/kernel/city_catalog.dart' ||
-    file == 'lib/kernel/country_markets.dart';
+    file == 'packages/kernel/lib/city_catalog.dart' ||
+    file == 'packages/kernel/lib/country_markets.dart';
 
 class _CopyVisitor extends RecursiveAstVisitor<void> {
   _CopyVisitor({required this.file, required this.source, required this.unit});
@@ -568,7 +569,7 @@ bool _isCandidate(String path, String root) {
     return false;
   }
   // Generated from packages/brand/brand.json; the brand record, not copy.
-  if (relative == 'lib/kernel/brand.dart') return false;
+  if (relative == 'packages/kernel/lib/brand.dart') return false;
   return true;
 }
 

@@ -437,6 +437,66 @@ export async function applySalesImport(
   };
 }
 
+/** Applied batches, newest first. Hosts stay out: they are read per batch. */
+export async function listSalesImports(
+  db: FirebaseFirestore.Firestore,
+  principal: SalesPrincipal,
+  input: {limit?: number; cursor?: string},
+): Promise<Record<string, unknown>> {
+  assertEmployee(principal);
+  const jobs = db.collection("salesImportJobs");
+  const limit = input.limit ?? 25;
+  let query = jobs.orderBy("createdAt", "desc");
+  if (input.cursor) {
+    const cursor = await jobs.doc(input.cursor).get();
+    if (!cursor.exists) {
+      throw new HttpsError("invalid-argument", "Import page is out of date.");
+    }
+    query = query.startAfter(cursor);
+  }
+  const page = await query.limit(limit + 1).get();
+  const docs = page.docs.slice(0, limit);
+  return {
+    rows: docs.map((doc) => {
+      const job = doc.data();
+      return {
+        importId: doc.id,
+        sourceId: job.sourceId,
+        rowCount: job.rowCount,
+        counts: job.counts,
+        appliedAt: job.createdAt,
+        appliedBy: job.createdBy,
+      };
+    }),
+    nextCursor: page.docs.length > docs.length ?
+      docs.at(-1)?.id ?? null : null,
+  };
+}
+
+/** One batch's hosts, so a correction picks a host rather than typing IDs. */
+export async function listSalesImportHosts(
+  db: FirebaseFirestore.Firestore,
+  principal: SalesPrincipal,
+  input: {importId: string},
+): Promise<Record<string, unknown>> {
+  assertEmployee(principal);
+  const job = await db.collection("salesImportJobs").doc(input.importId).get();
+  if (!job.exists) throw new HttpsError("not-found", "Import not found.");
+  const effects: unknown = job.data()?.accountEffects;
+  const ids = [...new Set((Array.isArray(effects) ? effects : [])
+    .map((effect) => (effect as {organizerId?: unknown}).organizerId)
+    .filter((id): id is string => typeof id === "string"))];
+  const accounts = await Promise.all(ids.map((id) =>
+    db.collection("organizerSalesAccounts").doc(id).get()));
+  return {
+    rows: accounts.map((account) => ({
+      importId: input.importId,
+      organizerId: account.id,
+      name: account.data()?.name ?? account.id,
+    })),
+  };
+}
+
 function countDecisions(
   decisions: RowDecision[],
 ): Record<RowDecision["disposition"], number> {

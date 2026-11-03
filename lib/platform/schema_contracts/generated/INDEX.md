@@ -1237,7 +1237,7 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | UpsertProgramRoomBlockCallableRequest | UpsertProgramRoomBlockCallablePayload | `callables/upsert_program_room_block_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/upsert_program_room_block_callable_request.g.dart` |
 | ListTransportVendorsCallableRequest | ListTransportVendorsCallablePayload | `callables/list_transport_vendors_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/list_transport_vendors_callable_request.g.dart` |
 | GetEventRehearsalMovementCallableRequest | GetEventRehearsalMovementCallablePayload | `callables/get_event_rehearsal_movement_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/get_event_rehearsal_movement_callable_request.g.dart` |
-| UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/platform/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
+| UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/contexts/profiles/data/generated/update_user_profile_patch.g.dart` |
 | CreateOrganizerCallableRequest | CreateOrganizerCallablePayload | `callables/create_organizer_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_organizer_callable_request.g.dart` |
 | ArchiveOrganizerCallableRequest | ArchiveOrganizerCallablePayload | `callables/archive_organizer_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/archive_organizer_callable_request.g.dart` |
 | DeleteOrganizerCallableRequest | DeleteOrganizerCallablePayload | `callables/delete_organizer_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/delete_organizer_callable_request.g.dart` |
@@ -1305,8 +1305,8 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | UpdatePrivateEventBasicsCallableRequest | UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/update_private_event_basics_callable_request.g.dart` |
 | GetPrivateEventSetupCallableRequest | GetPrivateEventSetupCallablePayload | `callables/get_private_event_setup_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/get_private_event_setup_callable_request.g.dart` |
 | QueryOrganizerFormResponsesCallableRequest | QueryOrganizerFormResponsesCallablePayload | `callables/query_organizer_form_responses_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/query_organizer_form_responses_callable_request.g.dart` |
-| CreateEventPrivateAccess | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_event_callable_request.g.dart` |
-| CreateEventCallableRequest | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/create_event_callable_request.g.dart` |
+| CreateEventPrivateAccess | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/contexts/events/data/generated/create_event_callable_request.g.dart` |
+| CreateEventCallableRequest | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/contexts/events/data/generated/create_event_callable_request.g.dart` |
 | UpdateEventCallableRequest | UpdateEventCallablePayload | `callables/update_event_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/update_event_callable_request.g.dart` |
 | CancelEventCallableRequest | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/cancel_event_callable_request.g.dart` |
 | DeleteEventCallableRequest | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/delete_event_callable_request.g.dart` |
@@ -1486,6 +1486,8 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | AdminCreateOrganizerDraftFromCandidateCallableRequest | AdminCreateOrganizerDraftFromCandidateCallablePayload | `callables/admin_create_organizer_draft_from_candidate_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_create_organizer_draft_from_candidate_callable_request.g.dart` |
 | AdminCreateMarketingContentDraftCallableRequest | AdminCreateMarketingContentDraftCallablePayload | `callables/admin_create_marketing_content_draft_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_create_marketing_content_draft_callable_request.g.dart` |
 | AdminRecordMarketingReviewDecisionCallableRequest | AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_record_marketing_review_decision_callable_request.g.dart` |
+| AdminListSalesImportHostsCallableRequest | AdminListSalesImportHostsCallablePayload | `callables/admin_sales_imports_hosts_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_sales_import_hosts_callable_request.g.dart` |
+| AdminListSalesImportsCallableRequest | AdminListSalesImportsCallablePayload | `callables/admin_sales_imports_list_payload.schema.json` | `lib/platform/schema_contracts/generated/callables/admin_list_sales_imports_callable_request.g.dart` |
 
 ## Callable Schemas Still Hand-Written In Dart
 
@@ -1573,4 +1575,5 @@ Only the contracts declared in `contracts/functions/runtime_modules.json`
 | `lib/platform/schema_contracts/generated/profile_schema_contracts.g.dart` | Dart profile catalog and storage policy constants. |
 | `lib/platform/schema_contracts/generated/field_constraints.g.dart` | UI constraints for the schema fields declared in `contracts/forms/field_constraint_bindings.json`. |
 | `lib/platform/schema_contracts/generated/callable_request_dtos.g.dart` | Generated Dart callable request and patch helper barrel. |
+| `lib/contexts/*/data/generated/*.g.dart` | Generated Dart callable requests that carry a context's domain types. |
 | `lib/platform/schema_contracts/generated/callables/*.g.dart` | One generated Dart callable request or patch helper file per schema-owned class. |

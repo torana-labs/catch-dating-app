@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/cache/app_clock.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,8 +18,10 @@ part 'dashboard_full_view_model.g.dart';
 
 const dashboardHomeClockTick = swipeWindowClockTick;
 
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
-DateTime dashboardNow(Ref ref) => DateTime.now();
+DateTime dashboardNow(Ref ref) => ref.watch(appClockProvider).now();
 
 enum DashboardSectionStatus { loading, error, data }
 

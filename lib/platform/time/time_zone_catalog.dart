@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/platform/time/time_zone_calendar.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 /// Uses the same bundled IANA database as program validation and scheduling.

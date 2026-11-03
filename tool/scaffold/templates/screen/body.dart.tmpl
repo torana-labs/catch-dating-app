@@ -1,0 +1,17 @@
+// architecture: provider-free
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/widgets.dart';
+
+/// Arranges library components from view-model data. It takes values and
+/// callbacks, watches no providers and draws nothing: a visual the library
+/// lacks is a library change.
+class %%Name%%Body extends StatelessWidget {
+  const %%Name%%Body({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchPageBody.screen(child: CatchEmptyState(title: title));
+  }
+}

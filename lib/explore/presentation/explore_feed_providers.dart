@@ -22,10 +22,12 @@ import 'package:catch_dating_app/explore/presentation/explore_discovery_window_c
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_dating_app/platform/cache/app_clock.dart';
+import 'package:catch_dating_app/platform/cache/cache_time_bucket.dart';
 import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_feed_providers.g.dart';
@@ -34,8 +36,12 @@ part 'explore_feed_providers.g.dart';
 ///
 /// Keeping the query window and date-strip labels on the same provider avoids
 /// midnight drift and gives capture/tests one explicit deterministic seam.
+///
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
-DateTime exploreDiscoveryReferenceNow(Ref ref) => _discoveryReferenceNow();
+DateTime exploreDiscoveryReferenceNow(Ref ref) =>
+    CacheTimeBucket.minute(ref.watch(appClockProvider).now()).start;
 
 @riverpod
 AsyncValue<String?> exploreViewerCohortId(Ref ref) {
@@ -720,11 +726,6 @@ bool _matchesExternalSearch(
     event.platformLabel,
   ].whereType<String>().join(' ').toLowerCase();
   return searchable.contains(normalizedQuery);
-}
-
-DateTime _discoveryReferenceNow() {
-  final now = DateTime.now();
-  return DateTime(now.year, now.month, now.day, now.hour, now.minute);
 }
 
 ActivityKind? _activityKindForFilter(String? value) {

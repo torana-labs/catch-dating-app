@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/kernel/brand.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter/foundation.dart';
 
 enum AppEnvironment {

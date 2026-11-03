@@ -3,6 +3,8 @@ import {
   CatchAdminCommandStack,
   CatchBadge,
   CatchField,
+  CatchGap,
+  CatchTable,
 } from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
@@ -27,14 +29,6 @@ import {
 import {
   AdminButton,
   AdminCard,
-  AdminChecklistCopy,
-  AdminChecklistHeader,
-  AdminChecklistStack,
-  AdminDiffList,
-  AdminDiffRow,
-  AdminEditorGrid,
-  AdminEditorPanel,
-  AdminEditorSection,
   AdminFieldGrid,
   AdminEventSupplyDetail,
   AdminEventSupplyEmptyState,
@@ -47,18 +41,11 @@ import {
   AdminFeatureDropPreviewCard,
   AdminFeatureDropPreviewGrid,
   AdminFeatureDropWideField,
-  AdminMutedCell,
-  AdminPublishingLoadbar,
   AdminQueryList,
   AdminQueryRow,
-  AdminRoadmapList,
-  AdminRoadmapListItem,
   AdminStateRow,
-  AdminTagRow,
-  AdminSurfacePreview,
   AdminWorkspace,
   AlertRow,
-  DataTable,
   DecisionFooter,
   EmptyState,
   Panel,
@@ -86,62 +73,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const AdminPublishingLoadbarStory: Story = {
-  name: "Publishing loadbar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_publishing_loadbar",
-      states: ["loaded"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminPublishingLoadbar>
-        <span>Publication packet loaded</span>
-        <CatchBadge recipe="status" tone="success" label="Synced" />
-      </AdminPublishingLoadbar>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSurfacePreviewStory: Story = {
-  name: "Surface preview",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_surface_preview",
-      states: ["listing-preview"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSurfacePreview>
-        <AdminTagRow>
-          <CatchBadge label="public listing" />
-          <CatchBadge recipe="status" tone="success" label="claim CTA" />
-        </AdminTagRow>
-        <QualityRow icon={<Eye size={16} />} tone="success">
-          Preview copy matches the generated route payload.
-        </QualityRow>
-      </AdminSurfacePreview>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMutedCellStory: Story = {
-  name: "Muted cell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_muted_cell",
-      states: ["inline"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMutedCell>Last checked 3 minutes ago</AdminMutedCell>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminEventSupplyReviewGridStory: Story = {
   name: "Event supply review grid",
   parameters: {
@@ -153,14 +84,12 @@ export const AdminEventSupplyReviewGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminEventSupplyReviewGrid>
-        <DataTable ariaLabel="Event supply review" compact variant="workbench">
-          <tbody>
-            <tr>
-              <td>Venue import</td>
-              <td><CatchBadge recipe="status" tone="warning" label="Review" /></td>
-            </tr>
-          </tbody>
-        </DataTable>
+        <CatchTable
+          columns={[{key: "source", label: "Source"}, {key: "status", label: "Status", kind: "badge"}]}
+          label="Event supply review"
+          rowKey={(row) => row.source}
+          rows={[{source: "Venue import", status: {recipe: "status", tone: "warning", label: "Review"}}]}
+        />
         <AdminEventSupplyDetail>
           <StateRow label="Source" value="Partner feed" />
         </AdminEventSupplyDetail>
@@ -250,88 +179,6 @@ export const AdminCommandRowStory: Story = {
   ),
 };
 
-export const AdminChecklistStackStory: Story = {
-  name: "Checklist stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_checklist_stack",
-      states: ["checks"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminChecklistStack>
-        <AlertRow icon={<CheckCircle2 size={16} />} title="Route contract" tone="success">
-          Public path is present.
-        </AlertRow>
-        <AlertRow icon={<FileWarning size={16} />} title="Claim copy" tone="warning">
-          Needs owner review.
-        </AlertRow>
-      </AdminChecklistStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminChecklistHeaderStory: Story = {
-  name: "Checklist header",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_checklist_header",
-      states: ["incomplete"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminChecklistHeader label="Publication checks" detail="3 tasks remaining" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminChecklistCopyStory: Story = {
-  name: "Checklist copy",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_checklist_copy",
-      states: ["actionable"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminChecklistCopy
-        label="Source evidence verified"
-        detail="Open the captured source and confirm it supports the listing."
-      />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminEditorGridStory: Story = {
-  name: "Editor grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_editor_grid",
-      states: ["section", "div"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEditorGrid aria-label="Publishing editor">
-        <CatchField recipe="input" title="Title" value="Friday Social" onChanged={noop} />
-        <CatchField recipe="input" title="Slug" value="friday-social" onChanged={noop} />
-      </AdminEditorGrid>
-      <AdminEditorGrid as="div">
-        <CatchField
-          recipe="input"
-          title="Review note"
-          maxLines={3}
-          value="Approved with source evidence."
-          onChanged={noop}
-        />
-      </AdminEditorGrid>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminEventSupplyEmptyStateStory: Story = {
   name: "Event supply empty state",
   parameters: {
@@ -345,72 +192,6 @@ export const AdminEventSupplyEmptyStateStory: Story = {
       <AdminEventSupplyEmptyState icon={<CalendarDays size={18} />}>
         Select an event candidate to inspect its source evidence.
       </AdminEventSupplyEmptyState>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDiffListStory: Story = {
-  name: "Diff list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_diff_list",
-      states: ["rows"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDiffList>
-        <AdminDiffRow field="Title" before="Old meetup" after="Friday Social" />
-        <AdminDiffRow field="CTA" before="Join" after="Claim listing" />
-      </AdminDiffList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDiffRowStory: Story = {
-  name: "Diff row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_diff_row",
-      states: ["before-after"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDiffRow field="Status" before="Draft" after="Ready" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminRoadmapListStory: Story = {
-  name: "Roadmap list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_roadmap_list",
-      states: ["items"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminRoadmapList>
-        <AdminRoadmapListItem>Move public route copy to generated contract.</AdminRoadmapListItem>
-        <AdminRoadmapListItem>Promote claim CTA once ownership is verified.</AdminRoadmapListItem>
-      </AdminRoadmapList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminRoadmapListItemStory: Story = {
-  name: "Roadmap list item",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_roadmap_list_item",
-      states: ["single"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminRoadmapListItem>Backfill listing screenshots after route launch.</AdminRoadmapListItem>
     </AdminWorkspace>
   ),
 };
@@ -470,10 +251,10 @@ export const AdminFeatureDropFeatureListStory: Story = {
       <AdminFeatureDropFeatureList>
         <AdminFeatureDropFeatureEditor>
           <strong>Organizer profiles</strong>
-          <AdminTagRow>
+          <CatchGap direction="horizontal" size="inline" wrap>
             <CatchBadge recipe="status" tone="success" label="ready" />
             <CatchBadge label="public route" />
-          </AdminTagRow>
+          </CatchGap>
         </AdminFeatureDropFeatureEditor>
       </AdminFeatureDropFeatureList>
     </AdminWorkspace>
@@ -617,31 +398,6 @@ export const AdminFeatureDropCaptureThumbStory: Story = {
   ),
 };
 
-export const AdminEditorSectionStory: Story = {
-  name: "Editor section",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_editor_section",
-      states: ["fieldset"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEditorSection>
-        <legend>Review fields</legend>
-        <AdminFieldGrid columns={1}>
-          <CatchField
-            recipe="input"
-            title="Canonical owner"
-            value="Organizer team"
-            onChanged={noop}
-          />
-        </AdminFieldGrid>
-      </AdminEditorSection>
-    </AdminWorkspace>
-  ),
-};
-
 export const PanelStory: Story = {
   name: "Panel",
   parameters: {
@@ -661,41 +417,6 @@ export const PanelStory: Story = {
           <QualityRow icon={<Lock size={16} />}>Claim handoff remains staff reviewed.</QualityRow>
         </QualityList>
       </Panel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminEditorPanelStory: Story = {
-  name: "Editor panel",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_editor_panel",
-      states: ["editor", "wide"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEditorPanel
-        action={<AdminButton variant="primary">Save</AdminButton>}
-        icon={<ClipboardList size={18} />}
-        span={2}
-        title="Listing editor"
-      >
-        <AdminEditorGrid as="div">
-          <CatchField
-            recipe="input"
-            title="Listing title"
-            value="Rooftop Social"
-            onChanged={noop}
-          />
-          <CatchField
-            recipe="input"
-            title="Path"
-            value="/organizers/rooftop-social"
-            onChanged={noop}
-          />
-        </AdminEditorGrid>
-      </AdminEditorPanel>
     </AdminWorkspace>
   ),
 };

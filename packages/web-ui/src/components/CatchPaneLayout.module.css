@@ -41,7 +41,7 @@
 
 /* ---------- list-detail ---------- */
 .panes[data-pattern="list-detail"][data-split] { grid-template-columns: 360px minmax(0, 1fr); }
-.panes[data-pattern="list-detail"][data-split] > .pane[data-slot="main"] { --catch-pane-inline: var(--catch-space-s4); border-right: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
+.panes[data-pattern="list-detail"][data-split] > .pane[data-slot="main"] { --catch-pane-inline: var(--catch-space-s4); --catch-row-bleed: var(--catch-space-s2); border-right: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
 .panes[data-pattern="list-detail"][data-split] > .pane[data-slot="detail"] { --catch-pane-inline: var(--catch-space-s8); }
 
 /* Unsplit, one pane replaces the other. */
@@ -58,6 +58,8 @@
 .panes[data-pattern="feed"][data-split] { grid-template-columns: minmax(0, 1fr) 360px; column-gap: var(--catch-space-s10); }
 .panes[data-pattern="feed"][data-split] > .pane[data-slot="aside"] { padding-left: 0; }
 .panes[data-pattern="feed"][data-split] > .pane[data-slot="main"] { padding-right: 0; }
+/* A reading page is as tall as its content, so the body scrolls it and the aside can stick. */
+.panes[data-pattern="reading"] { flex-shrink: 0; }
 .panes[data-pattern="reading"] > .pane[data-slot="main"] { display: flex; flex-direction: column; row-gap: var(--catch-space-s6); width: 100%; max-width: 600px; }
 .panes[data-pattern="reading"][data-split] { grid-template-columns: minmax(0, 600px) 360px; justify-content: center; column-gap: var(--catch-space-s12); align-items: start; }
 .panes[data-pattern="reading"][data-split] > .pane { padding-inline: 0; }

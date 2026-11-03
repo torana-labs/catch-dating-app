@@ -7,7 +7,7 @@
   "roots": {
     "contexts": "lib/contexts/",
     "pages": "lib/pages/",
-    "kernel": "lib/kernel/",
+    "kernel": "packages/kernel/lib/",
     "platform": "lib/platform/"
   },
   "contexts": [
@@ -30,6 +30,7 @@
     {"id": "insights", "owns": "Reports, stats and the alerts that need a host's attention."}
   ],
   "legacy": [
+    {"path": "lib/kernel/", "layer": "kernel"},
     {"path": "lib/app.dart", "layer": "app"},
     {"path": "lib/app_bootstrap.dart", "layer": "app"},
     {"path": "lib/consumer_bootstrap.dart", "layer": "app"},
@@ -42,7 +43,6 @@
 
     {"path": "lib/firebase_options", "layer": "platform"},
     {"path": "lib/l10n/", "layer": "platform"},
-    {"path": "lib/routing/route_contract.dart", "layer": "platform"},
 
     {"path": "lib/auth/", "context": "account"},
     {"path": "lib/force_update/", "context": "account"},

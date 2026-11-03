@@ -1,4 +1,12 @@
-import {CatchAdminIntakeSectionTitle, CatchBadge, CatchField, CatchGap} from "@catch/web-ui";
+import {
+  CatchSection,
+  CatchAdminIntakeSectionTitle,
+  CatchBadge,
+  CatchField,
+  CatchGap,
+  CatchIndexRow,
+  CatchText,
+} from "@catch/web-ui";
 import {
   BarChart3,
   Clock3,
@@ -22,19 +30,11 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
-  AdminEditorGrid,
-  AdminEditorPanel,
   AdminFieldGrid,
   AdminMetricCard,
   AdminMetricGrid,
-  AdminRoadmapList,
-  AdminRoadmapListItem,
-  AdminSecondaryDisclosure,
-  AdminToolbar,
-  AdminWorkbenchNote,
   AdminWorkbenchStack,
   AlertRow,
-  DataTable,
   EmptyState,
   Panel,
   QualityList,
@@ -89,7 +89,7 @@ export function UserAnalyticsWorkspace({
         action={controller.isLoading ? "Loading new user" : "read-only"}
         span={2}
       >
-        <AdminToolbar>
+        <CatchGap direction="horizontal" size="related" wrap crossAxisAlignment="end">
           <CatchField
             recipe="input"
             title="users/{uid}"
@@ -130,7 +130,7 @@ export function UserAnalyticsWorkspace({
           >
             Load
           </AdminButton>
-        </AdminToolbar>
+        </CatchGap>
         {controller.rangePreset === "custom" && (
           <AdminFieldGrid columns={2}>
             <CatchField
@@ -188,10 +188,10 @@ export function UserAnalyticsWorkspace({
           action="retry available"
           span={2}
         >
-          <AdminWorkbenchNote>
+          <CatchText as="p" color="ink2" variant="bodyM">
             {controller.errorMessage ??
               "No aggregate analytics are available for this exact UID and range."}
-          </AdminWorkbenchNote>
+          </CatchText>
           <AdminButton
             icon={<RefreshCw size={15} strokeWidth={1.9} />}
             onClick={() => void controller.load()}
@@ -260,11 +260,11 @@ function UserLookupContractPanel({
       title="Privacy and action boundary"
       action="aggregate-only"
     >
-      <AdminWorkbenchNote>
+      <CatchText as="p" color="ink2" variant="bodyM">
         Reads aggregate analytics for one exact UID. It does not search identity,
         expose raw scoring data, or provide account, safety, support, or payment actions.
-      </AdminWorkbenchNote>
-      <AdminSecondaryDisclosure summary="View exact scope and unavailable capabilities">
+      </CatchText>
+      <CatchSection dividers="none" title="Exact scope and unavailable capabilities">
         <QualityList>
           <StateRow label="Normalized uid" value={contract.normalizedUserId} />
           <StateRow label="Target path" value={contract.targetPath} />
@@ -288,7 +288,7 @@ function UserLookupContractPanel({
             </CatchGap>
           </CatchGap>
         </AdminWorkbenchStack>
-      </AdminSecondaryDisclosure>
+      </CatchSection>
     </Panel>
   );
 }
@@ -304,7 +304,7 @@ function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
       >
         <ActivityTrend points={report.trend} />
       </Panel>
-      <AdminEditorGrid>
+      <CatchGap size="section">
         <SummaryPanel
           connection={report.connectionSummary}
           profile={report.profileSummary}
@@ -323,28 +323,27 @@ function UserAnalyticsReportView({report}: {report: UserAnalyticsResponse}) {
             <StateRow label="Timezone" value={report.timezone} />
           </QualityList>
         </Panel>
-      </AdminEditorGrid>
-      <AdminEditorGrid>
+      </CatchGap>
+      <CatchGap size="section">
         <Panel
           icon={<Sparkles size={18} strokeWidth={1.9} />}
           title="Coaching references"
           action={`${report.coachingTipRefs.length} refs`}
         >
-          <AdminRoadmapList>
+          <CatchGap size="related">
             {report.coachingTipRefs.map((tip) => (
-              <AdminRoadmapListItem key={tip.id}>
-                <Sparkles size={15} strokeWidth={1.9} />
-                <span>
-                  <strong>{tip.copyKey}</strong> · priority {tip.priority} ·{" "}
-                  {tip.metricIds.join(", ")}
-                </span>
-              </AdminRoadmapListItem>
+              <CatchIndexRow
+                key={tip.id}
+                subtitle={`priority ${tip.priority} · ${tip.metricIds.join(", ")}`}
+                title={tip.copyKey}
+                titleVariant="bodyM"
+              />
             ))}
-          </AdminRoadmapList>
+          </CatchGap>
         </Panel>
 
         <DataQualityPanel rows={report.dataQuality} />
-      </AdminEditorGrid>
+      </CatchGap>
     </AdminWorkbenchStack>
   );
 }

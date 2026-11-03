@@ -9,7 +9,7 @@
 .shade,
 .custom > *,
 .content :where(h1, h2, h3, h4, h5, h6, p, span, a, li, dt, dd, label, small, strong, em, time, button, img, svg, video) {
-  background: linear-gradient(90deg, var(--catch-theme-raised) 30%, var(--catch-theme-surface) 50%, var(--catch-theme-raised) 70%) 100% 0 / 300% 100%;
+  background: linear-gradient(90deg, var(--catch-theme-tile) 30%, var(--catch-theme-ground) 50%, var(--catch-theme-tile) 70%) 100% 0 / 300% 100%;
   animation: catch-skeleton-shimmer 1200ms linear infinite;
 }
 
@@ -68,6 +68,6 @@
   .custom > *,
   .content :where(h1, h2, h3, h4, h5, h6, p, span, a, li, dt, dd, label, small, strong, em, time, button, img, svg, video) {
     animation: none;
-    background: var(--catch-theme-raised);
+    background: var(--catch-theme-tile);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 
 class PlaceAutocompleteSuggestion {
   const PlaceAutocompleteSuggestion({

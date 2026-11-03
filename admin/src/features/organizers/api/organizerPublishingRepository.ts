@@ -15,12 +15,6 @@ import type {
   AdminUpdateOrganizerDetailsResponse,
 } from "../../../shared/types/adminTypes";
 
-export function listOrganizerProfiles(
-  payload: AdminListOrganizerDetailsPayload = {}
-): Promise<AdminListOrganizerDetailsResponse> {
-  return listOrganizerDetails(payload);
-}
-
 export function loadOrganizerProfile(
   payload: AdminGetOrganizerDetailsPayload
 ): Promise<AdminGetOrganizerDetailsResponse> {

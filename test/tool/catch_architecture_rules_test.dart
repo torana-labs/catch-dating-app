@@ -24,7 +24,7 @@ final _map = ContextMap.parse(
     'roots': {
       'contexts': 'lib/contexts/',
       'pages': 'lib/pages/',
-      'kernel': 'lib/kernel/',
+      'kernel': 'packages/kernel/lib/',
       'platform': 'lib/platform/',
     },
     'contexts': [
@@ -108,7 +108,7 @@ import 'package:pub_semver/pub_semver.dart';
       expect(_rules('lib/events/domain/event.dart', call), [
         ArchitectureCodes.domainClockAccess,
       ]);
-      expect(_rules('lib/kernel/clock.dart', call), [
+      expect(_rules('packages/kernel/lib/clock.dart', call), [
         ArchitectureCodes.domainClockAccess,
       ]);
       expect(
@@ -162,7 +162,7 @@ class Sample {}
       );
     });
 
-    test('context domain and kernel files follow the domain rules', () {
+    test('context domain files follow the domain rules', () {
       expect(
         _rules(
           'lib/contexts/events/domain/event.dart',
@@ -170,13 +170,48 @@ class Sample {}
         ),
         [ArchitectureCodes.domainFrameworkImport],
       );
+    });
+
+    test('domain files may import the kernel package', () {
       expect(
         _rules(
-          'lib/kernel/ids.dart',
-          "import 'package:flutter/widgets.dart';\n",
+          'lib/contexts/events/domain/event.dart',
+          "import 'package:catch_kernel/labelled.dart';\n",
         ),
-        [ArchitectureCodes.domainFrameworkImport],
+        isEmpty,
       );
+    });
+
+    test(
+      'the kernel pubspec holds its imports, so the import rules stand down',
+      () {
+        for (final uri in const [
+          'package:flutter/widgets.dart',
+          'package:catch_dating_app/events/presentation/widget.dart',
+        ]) {
+          expect(
+            _rules('packages/kernel/lib/ids.dart', "import '$uri';\n"),
+            isEmpty,
+            reason: uri,
+          );
+        }
+      },
+    );
+
+    test('only the kernel package joins the placed package roots', () {
+      final root = Directory.current.path;
+      expect(
+        architectureRelativePath('$root/packages/kernel/lib/ids.dart'),
+        'packages/kernel/lib/ids.dart',
+      );
+      for (final path in const [
+        'packages/kernel/lib/city_data.g.dart',
+        'packages/kernel/lib/city_data.freezed.dart',
+        'packages/kernel/test/ids_test.dart',
+        'packages/catch_ui/lib/catch_ui.dart',
+      ]) {
+        expect(architectureRelativePath('$root/$path'), isNull, reason: path);
+      }
     });
   });
 
@@ -818,7 +853,7 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
           'roots': {
             'contexts': 'lib/contexts/',
             'pages': 'lib/pages/',
-            'kernel': 'lib/kernel/',
+            'kernel': 'packages/kernel/lib/',
             'platform': 'lib/platform/',
           },
           'contexts': [
@@ -923,6 +958,14 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
         _ignoreProblems(
           'lib/contexts/events/domain/event.dart',
           "// ignore: catch_ui_lints/catch_arch_domain_framework_import -- reason\nimport 'package:flutter/widgets.dart';\n",
+        ),
+        [contains('carries no architecture exceptions')],
+      );
+      expect(
+        _ignoreProblems(
+          'packages/kernel/lib/clock.dart',
+          '// ignore: catch_ui_lints/catch_arch_domain_clock_access -- reason\n'
+              'bool past(DateTime at) => at.isBefore(DateTime.now());\n',
         ),
         [contains('carries no architecture exceptions')],
       );

@@ -8,8 +8,8 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

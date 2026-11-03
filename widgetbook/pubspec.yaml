@@ -11,6 +11,8 @@ dependencies:
     path: ../packages/catch_ui
   catch_tokens:
     path: ../packages/catch_tokens
+  catch_kernel:
+    path: ../packages/kernel
   flutter:
     sdk: flutter
   flutter_localizations:

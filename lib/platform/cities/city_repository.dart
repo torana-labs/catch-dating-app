@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:catch_dating_app/kernel/city_catalog.dart';
-import 'package:catch_dating_app/kernel/city_data.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_kernel/city_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

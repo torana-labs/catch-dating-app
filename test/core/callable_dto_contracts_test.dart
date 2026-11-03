@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_callable_response.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/contexts/events/data/generated/create_event_callable_request.g.dart'
+    show CreateEventCallableRequest, CreateEventPrivateAccess;
 import 'package:catch_dating_app/contexts/events/data/places_callable_requests.dart';
 import 'package:catch_dating_app/contexts/events/data/places_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -17,17 +19,14 @@ import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_res
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         BlockUserCallableRequest,
         CancelEventCallableRequest,
         OrganizerMembershipCallableRequest,
         CreateOrganizerCallableRequest,
-        CreateEventCallableRequest,
-        CreateEventPrivateAccess,
         CreateEventReviewCallableRequest,
         DeleteOrganizerCallableRequest,
         DeleteEventReviewCallableRequest,
@@ -40,8 +39,10 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/callable_re
         StartOrganizerConversationCallableRequest,
         UnblockUserCallableRequest,
         UpdateEventCallableRequest,
-        UpdateEventReviewCallableRequest,
-        UpdateUserProfilePatch;
+        UpdateEventReviewCallableRequest;
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/brand.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

@@ -75,6 +75,7 @@
                   "{workspaceRoot}/tool/contracts/**/*",
                   "{workspaceRoot}/functions/src/**/*",
                   "{workspaceRoot}/lib/**/*",
+                  "{workspaceRoot}/packages/kernel/lib/**/*",
                   "{workspaceRoot}/admin/src/generated/**/*",
                   "{workspaceRoot}/website/src/shared/contracts/generated/**/*"
                 ]
@@ -87,6 +88,7 @@
                   "{workspaceRoot}/functions/src/**/*",
                   "{workspaceRoot}/functions/package-lock.json",
                   "{workspaceRoot}/lib/**/*",
+                  "{workspaceRoot}/packages/kernel/lib/**/*",
                   "{workspaceRoot}/firestore.rules"
                 ]
               }
@@ -401,6 +403,7 @@
                   "{workspaceRoot}/design/visual_baselines/**/*",
                   "{workspaceRoot}/design/public_surface_behavior.json",
                   "!{workspaceRoot}/lib/platform/schema_contracts/generated/**/*",
+                  "!{workspaceRoot}/lib/contexts/*/data/generated/**/*",
                   "!{workspaceRoot}/**/*.md"
                 ]
               }
@@ -469,6 +472,10 @@
             "contracts",
             "@catch/brand"
           ],
+          "catch_kernel": [
+            "contracts",
+            "@catch/brand"
+          ],
           "functions": [
             "contracts",
             "@catch/brand",
@@ -512,6 +519,7 @@
           "lane-visual": [
             "catch_consumer_app",
             "catch_host_app",
+            "catch_kernel",
             "catch_tokens",
             "catch_ui"
           ],

@@ -57,21 +57,21 @@ void main() {
     expect(meanDifference(icon, master), greaterThan(4));
   });
 
-  test('the manifest theme colour follows the light bg token', () {
+  test('the manifest theme colour follows the light tile token', () {
     final tokens =
         jsonDecode(File('design/tokens/catch.tokens.json').readAsStringSync())
             as Map<String, dynamic>;
     final theme = tokens['theme'] as Map<String, dynamic>;
     final light = theme['light'] as Map<String, dynamic>;
     final colors = light['color'] as Map<String, dynamic>;
-    final bg =
-        (colors['bg'] as Map<String, dynamic>)['\$value']
+    final tile =
+        (colors['tile'] as Map<String, dynamic>)['\$value']
             as Map<String, dynamic>;
     final manifest =
         jsonDecode(
               File('website/public/assets/site.webmanifest').readAsStringSync(),
             )
             as Map<String, dynamic>;
-    expect(manifest['theme_color'], (bg['hex'] as String).toUpperCase());
+    expect(manifest['theme_color'], (tile['hex'] as String).toUpperCase());
   });
 }

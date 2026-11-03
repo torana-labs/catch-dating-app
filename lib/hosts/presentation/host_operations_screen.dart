@@ -48,9 +48,6 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_obser
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
-import 'package:catch_dating_app/kernel/labelled.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/organizers.dart'
     show OrganizerDetailReadOnlyPreview;
@@ -73,6 +70,9 @@ import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_kernel/labelled.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

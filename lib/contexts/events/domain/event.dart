@@ -9,11 +9,11 @@ import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_types.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
-import 'package:catch_dating_app/kernel/labelled.dart';
 import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/country_markets.dart';
+import 'package:catch_kernel/labelled.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 export 'event_extensions.dart';

@@ -185,18 +185,14 @@ describe("CatchTextStyles parity", () => {
     return {profile: base.profile, color: color ?? base.color, weight: weight ?? base.weight};
   }
 
-  // The six display steps (D19) set Archivo from one step table rather than a
-  // platform profile; the web reads typography.brand.display* tokens, and these
-  // tests pin each generated token to that table.
-  const displaySteps: Record<string, {size: number; height: number; tracking: number}> =
-    Object.fromEntries(
-      [...textStylesDart.matchAll(/^  (x*[sml])\(([\d.]+), ([\d.]+), (-?[\d.]+)\)[,;]$/gm)]
-        .map((match) => [match[1], {
-          size: Number(match[2]),
-          height: Number(match[3]),
-          tracking: Number(match[4]),
-        }]),
-    );
+  // The six older display names read a system role (D22) rather than a platform
+  // profile; the web reads typography.brand.display* tokens, and these tests pin
+  // each one to the typography.role token its Flutter name reads.
+  const displaySteps: Record<string, string> = Object.fromEntries(
+    [...textStylesDart.matchAll(/static TextStyle display(Xs|S|M|L|Xl|Xxl)\([^)]*\) => _display\(\s*GeneratedCatchTypeRoleTokens\.(\w+),/g)]
+      .map((match) => [match[1].toLowerCase(), match[2]]),
+  );
+  const tokenValue = (name: string) => generatedTokensCss.match(new RegExp(`${name}: ([^;]+);`))?.[1];
   const displayWeight = textStylesDart.match(/_displayWeight = FontWeight\((\d+)\);/)?.[1];
 
   it("sets the display steps in Archivo at the Flutter width and weight", () => {
@@ -263,17 +259,14 @@ describe("CatchTextStyles parity", () => {
         const step = displaySteps[stepName];
         expect(step, `missing Flutter display step for ${variant}`).toBeDefined();
         const token = `--catch-typography-brand-display-${stepName}`;
-        for (const [property, value] of [
-          ["size", `${step.size}px`],
-          ["line-height", `${step.height}`],
-          ["weight", displayWeight],
-          ["tracking", `${step.tracking}em`],
-        ]) {
+        for (const property of ["size", "line-height", "weight", "tracking"]) {
           expect(declaration(rule, `--catch-text-${property}`), variant)
             .toBe(`var(${token}-${property})`);
-          expect(generatedTokensCss, `${variant} ${property}`)
-            .toContain(`${token}-${property}: ${value};`);
+          const expected = tokenValue(`--catch-typography-role-${kebab(step)}-${property}`);
+          expect(expected, `${variant} ${step} ${property}`).toBeDefined();
+          expect(tokenValue(`${token}-${property}`), `${variant} ${property}`).toBe(expected);
         }
+        expect(tokenValue(`${token}-weight`), variant).toBe(displayWeight);
         expect(declaration(rule, "--catch-text-role-color"), variant)
           .toBe("var(--catch-theme-ink)");
         continue;

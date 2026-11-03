@@ -1,5 +1,6 @@
 import type {CSSProperties, ReactNode} from "react";
 import styles from "./CatchSkeleton.module.css";
+import {inertProps} from "./inert";
 
 type Extent = number | string;
 
@@ -22,10 +23,10 @@ const extent = (value: Extent | undefined) => (typeof value === "number" ? `${va
 export function CatchSkeleton(props: CatchSkeletonProps) {
   if (props.shape === "content") {
     const enabled = props.enabled ?? true;
-    return enabled ? <div aria-hidden="true" className={styles.content} inert>{props.children}</div> : <>{props.children}</>;
+    return enabled ? <div aria-hidden="true" className={styles.content} {...inertProps(true)}>{props.children}</div> : <>{props.children}</>;
   }
   if (props.shape === "custom") {
-    return <span aria-hidden="true" className={styles.custom} inert>{props.children}</span>;
+    return <span aria-hidden="true" className={styles.custom} {...inertProps(true)}>{props.children}</span>;
   }
   if (props.shape === "textBlock") {
     const lines = Math.max(props.lines ?? 3, 1);

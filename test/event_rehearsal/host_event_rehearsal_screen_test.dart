@@ -17,9 +17,9 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

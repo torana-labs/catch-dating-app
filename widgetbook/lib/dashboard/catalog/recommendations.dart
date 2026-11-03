@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

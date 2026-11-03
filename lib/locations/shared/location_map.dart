@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/google_maps_coordinate_adapter.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';

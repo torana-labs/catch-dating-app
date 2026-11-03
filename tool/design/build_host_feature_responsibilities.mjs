@@ -16,7 +16,7 @@ const schemaPath = fromRepo(
 const shellManifestPath = fromRepo(
   "design/source_packs/host-v2/host-coverage-manifest.json",
 );
-const routeContractPath = fromRepo("lib/routing/route_contract.dart");
+const routeContractPath = fromRepo("lib/platform/routing/route_contract.dart");
 const expectedFeatureIds = ["today", "events", "audience", "inbox", "organizer"];
 const generatedNotice =
   "<!-- GENERATED FROM design/features/host_feature_responsibilities.json. DO NOT EDIT. -->";

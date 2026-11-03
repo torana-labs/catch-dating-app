@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

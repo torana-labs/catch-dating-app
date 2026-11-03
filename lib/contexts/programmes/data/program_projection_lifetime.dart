@@ -1,14 +1,18 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/platform/cache/app_clock.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_projection_lifetime.g.dart';
 
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 @riverpod
-DateTime Function() programProjectionClock(Ref ref) => DateTime.now;
+DateTime Function() programProjectionClock(Ref ref) =>
+    ref.watch(appClockProvider).now;
 
 /// One exact deadline signal shared by reads and modal projections. Null is
 /// reserved for organizer managers; staff projections carry a server deadline.

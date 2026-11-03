@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

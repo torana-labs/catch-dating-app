@@ -125,6 +125,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dar
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
@@ -220,10 +222,6 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
-import 'package:catch_dating_app/kernel/city_data.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';
@@ -261,8 +259,6 @@ import 'package:catch_dating_app/platform/riverpod_ui/catch_external_share_sheet
 import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
@@ -288,6 +284,10 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/brand.dart';
+import 'package:catch_kernel/city_data.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';

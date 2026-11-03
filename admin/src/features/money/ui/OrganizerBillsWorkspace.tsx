@@ -8,6 +8,7 @@ import {
 } from "@catch/web-ui";
 import {billState, moneyNowMillis, monthLabel, rupees} from "../controllers/moneyLabels";
 import {
+  organizerSalesMinor,
   useOrganizerBillsController,
   type OrganizerBillsController,
 } from "../controllers/useOrganizerBillsController";
@@ -61,7 +62,7 @@ export function OrganizerBillsWorkspace({
           <CatchBarIndicator
             bars={oldestFirst.map((bill) => ({
               label: monthLabel(bill.month).slice(0, 3),
-              value: Math.round(bill.sales.baseMinor / 100),
+              value: Math.round(organizerSalesMinor(bill) / 100),
             }))}
             label="Ticket sales each month, in rupees"
             recipe="chart"
@@ -75,7 +76,7 @@ export function OrganizerBillsWorkspace({
             <CatchIndexRow
               key={bill.billId}
               onTap={() => onOpenBill(bill.billId)}
-              subtitle={`${rupees(bill.sales.baseMinor)} in ticket sales${bill.commission.capped ? " · capped" : ""}`}
+              subtitle={`${rupees(organizerSalesMinor(bill))} in ticket sales${bill.commission.capped ? " · capped" : ""}`}
               title={`${monthLabel(bill.month)}: ${bill.status === "free" ? "free" : rupees(bill.totalMinor)}`}
               titleVariant="bodyM"
               trailing={(
@@ -92,7 +93,7 @@ export function OrganizerBillsWorkspace({
           {amountRow("Ticket sales", rupees(latest.salesMinor),
             latest.refundedMinor > 0 ? `After ${rupees(latest.refundedMinor)} refunded` : undefined)}
           {amountRow("Razorpay fees", rupees(-latest.providerFeeMinor), "Taken by Razorpay")}
-          {amountRow("Catch bill", rupees(-latest.billMinor))}
+          {amountRow("Catch bill", rupees(-latest.billMinor), latest.writtenOff ? "Written off" : undefined)}
           {amountRow("They kept", rupees(latest.keptMinor))}
         </CatchSection>
       ) : null}

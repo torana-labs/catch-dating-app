@@ -7,9 +7,9 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_dating_app/platform/device/device_location.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

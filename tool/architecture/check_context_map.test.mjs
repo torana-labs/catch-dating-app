@@ -11,7 +11,7 @@ const fixtureMapSource = JSON.stringify({
   roots: {
     contexts: "lib/contexts/",
     pages: "lib/pages/",
-    kernel: "lib/kernel/",
+    kernel: "packages/kernel/lib/",
     platform: "lib/platform/",
   },
   contexts: [

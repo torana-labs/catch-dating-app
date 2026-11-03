@@ -2,7 +2,7 @@
   "version": 5,
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
-    "path": "lib/routing/route_contract.dart",
+    "path": "lib/platform/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
     "routeContractSha256": "ddf4efcec8d72a7ff55c9645f5697d4cb17161e449fc8fb2ff7712e310f5b9d8",
     "goRouteCount": 129,

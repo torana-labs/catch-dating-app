@@ -4,46 +4,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Package-internal welcome paint; use CatchWelcomeText from the public API.
-/// The welcome reel is set in the M display step.
+/// The welcome reel is set in the page-title display role.
 @internal
-TextStyle catchWelcomeTextStyle(Color color) =>
-    CatchTextStyles._display(_CatchDisplayStep.m, color: color);
+TextStyle catchWelcomeTextStyle(Color color) => CatchTextStyles._display(
+  GeneratedCatchTypeRoleTokens.displayTitle,
+  color: color,
+);
 
-/// The display scale (blueprint D19): six Archivo steps on a 1.25 ratio.
-///
-/// Every step is set at weight 760 in the single Archivo width. Line height
-/// and tracking tighten as the size grows; tracking is in em.
-enum _CatchDisplayStep {
-  xs(24, 1.10, -0.020),
-  s(30, 1.05, -0.025),
-  m(38, 1.05, -0.030),
-  l(48, 1.00, -0.035),
-  xl(60, 1.00, -0.040),
-  xxl(72, 1.00, -0.040);
-
-  const _CatchDisplayStep(this.size, this.height, this.trackingEm);
-
-  final double size;
-  final double height;
-  final double trackingEm;
-}
-
-/// Catch's typographic scale — one principled hierarchy across three roles:
-/// Archivo for *voice/head* (brand display, heroes, deliberate poster moments),
-/// the platform system font for *function* (body, controls, names, dense UI),
-/// and IBM Plex Mono for *data* (kickers, numerics, labels).
+/// Catch's typographic scale — the system's type roles (blueprint D22), which
+/// `GeneratedCatchTypeRoleTokens` carries: Archivo for the display roles and the
+/// platform system font for every other role.
 ///
 /// **Fidelity rules** (`docs/design_language.md` and the generated design
 /// context pack):
 /// - Archivo is the roman-only display voice. It is not used for long-form or
 ///   user-authored reading text.
-/// - Function and body tracking is zero. The display steps own their negative
-///   tracking, and uppercase mono roles own their explicit tracking here.
+/// - Function and body tracking is zero. The display roles own their negative
+///   tracking.
 /// - Body/prose roles use the platform system font with generous leading.
 ///
-/// **Scale discipline:** the display tier is exactly six steps, `displayXs`
-/// to `displayXxl` (no near-duplicate mid-sizes or per-call height and weight
-/// overrides); fine steps only where function needs them (labels/body).
+/// **Scale discipline:** the older names below read the role that replaces them
+/// (no near-duplicate mid-sizes or per-call height and weight overrides). P2.1
+/// moves the function roles from the platform profiles onto the system roles.
 ///
 /// Prefer the named styles over ad hoc [TextStyle]; use `copyWith` only for local
 /// state (unread/disabled).
@@ -93,38 +75,46 @@ abstract final class CatchTextStyles {
     ),
   );
 
-  static const double _kickerTracking = 1.76; // 0.16em at 11px.
-  static const double _kickerLargeTracking = 2.16; // 0.18em at 12px.
-  static const double _monoCapsTracking = 1.43; // 0.13em at 11px.
-  static const double _badgeCapsTracking = 0.72; // 0.08em at 9px.
-
   // ===========================================================================
   // DISPLAY — Archivo (brand display and deliberate poster moments)
   // ===========================================================================
 
-  /// 24px display: compact brand headings, card and room titles.
-  static TextStyle displayXs(BuildContext context, {Color? color}) =>
-      _display(_CatchDisplayStep.xs, color: color ?? _ink(context));
+  /// 24px display (`display-sm`): compact brand headings, card and room titles.
+  static TextStyle displayXs(BuildContext context, {Color? color}) => _display(
+    GeneratedCatchTypeRoleTokens.displaySm,
+    color: color ?? _ink(context),
+  );
 
-  /// 30px display: event and club titles in lists and hero bars.
-  static TextStyle displayS(BuildContext context, {Color? color}) =>
-      _display(_CatchDisplayStep.s, color: color ?? _ink(context));
+  /// 30px display (`display-section`): event and club titles in lists and hero
+  /// bars.
+  static TextStyle displayS(BuildContext context, {Color? color}) => _display(
+    GeneratedCatchTypeRoleTokens.displaySection,
+    color: color ?? _ink(context),
+  );
 
-  /// 38px display: page heroes and the welcome reel.
-  static TextStyle displayM(BuildContext context, {Color? color}) =>
-      _display(_CatchDisplayStep.m, color: color ?? _ink(context));
+  /// 38px display (`display-title`): page heroes and the welcome reel.
+  static TextStyle displayM(BuildContext context, {Color? color}) => _display(
+    GeneratedCatchTypeRoleTokens.displayTitle,
+    color: color ?? _ink(context),
+  );
 
-  /// 48px display: celebration and live-countdown moments.
-  static TextStyle displayL(BuildContext context, {Color? color}) =>
-      _display(_CatchDisplayStep.l, color: color ?? _ink(context));
+  /// 48px display (`display-lg`): celebration and live-countdown moments.
+  static TextStyle displayL(BuildContext context, {Color? color}) => _display(
+    GeneratedCatchTypeRoleTokens.displayLg,
+    color: color ?? _ink(context),
+  );
 
-  /// 60px display: poster-scale moments.
-  static TextStyle displayXl(BuildContext context, {Color? color}) =>
-      _display(_CatchDisplayStep.xl, color: color ?? _ink(context));
+  /// 64px display (`display-xl`): poster-scale moments.
+  static TextStyle displayXl(BuildContext context, {Color? color}) => _display(
+    GeneratedCatchTypeRoleTokens.displayXl,
+    color: color ?? _ink(context),
+  );
 
-  /// 72px display: the largest poster moment.
-  static TextStyle displayXxl(BuildContext context, {Color? color}) =>
-      _display(_CatchDisplayStep.xxl, color: color ?? _ink(context));
+  /// 96px display (`display-hero`): the largest poster moment.
+  static TextStyle displayXxl(BuildContext context, {Color? color}) => _display(
+    GeneratedCatchTypeRoleTokens.displayHero,
+    color: color ?? _ink(context),
+  );
 
   /// System title scale for functional root-screen headings.
   static TextStyle headline(BuildContext context, {Color? color}) =>
@@ -280,7 +270,7 @@ abstract final class CatchTextStyles {
       : avatarInitials(context, size: size, color: color);
 
   /// OTP digit boxes (`.t-code`).
-  static TextStyle otpDigit(BuildContext context, {Color? color}) => _mono(
+  static TextStyle otpDigit(BuildContext context, {Color? color}) => _figures(
     context,
     size: 26,
     weight: FontWeight.w600,
@@ -301,77 +291,51 @@ abstract final class CatchTextStyles {
       const TextStyle(color: Colors.transparent);
 
   // ===========================================================================
-  // DATA — IBM Plex Mono (kickers, numerics, labels)
+  // LABELS — the system's label roles (kickers, counts, badges), tabular figures
   // ===========================================================================
 
-  /// Uppercase kicker — eyebrows, time-line labels (`TONIGHT · 8:50 PM`).
-  /// Render text already upper-cased; this sets weight, size, and leading.
-  static TextStyle kicker(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: 11,
-    weight: FontWeight.w700,
-    height: 1.15,
-    letterSpacing: _kickerTracking,
+  /// Kicker: eyebrows and time-line labels (`label-kicker`). An owner that also
+  /// enforces uppercase renders the text already upper-cased.
+  static TextStyle kicker(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelKicker,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  /// Exact FieldSection kicker from the canonical Field handoff.
+  /// FieldSection kicker (`label-kicker`).
   static TextStyle fieldSectionKicker(BuildContext context, {Color? color}) =>
-      _mono(
-        context,
-        size: CatchFieldTokens.sectionKickerFontSize,
-        weight: FontWeight.w600,
-        height: 1.15,
-        letterSpacing: CatchFieldTokens.sectionKickerLetterSpacing,
+      _label(
+        GeneratedCatchTypeRoleTokens.labelKicker,
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  /// Larger uppercase kicker for editorial sashes (`TONIGHT'S PICK`).
-  static TextStyle kickerLg(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: 12,
-    weight: FontWeight.w700,
-    height: 1.1,
-    letterSpacing: _kickerLargeTracking,
+  /// Larger kicker for editorial sashes (`label-kicker`).
+  static TextStyle kickerLg(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelKicker,
     color: color ?? CatchTokens.of(context).ink,
   );
 
-  /// Compact count paired with a section kicker in the field handoff.
-  static TextStyle sectionCount(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: CatchFieldTokens.sectionCountFontSize,
-    weight: FontWeight.w600,
-    height: 1.15,
-    letterSpacing: CatchFieldTokens.sectionCountLetterSpacing,
+  /// Compact count paired with a section kicker (`label-badge`).
+  static TextStyle sectionCount(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelBadge,
     color: color ?? CatchTokens.of(context).ink3,
   );
 
-  /// Sentence/data mono label — ticket meta, counts, and compact phrases.
-  /// This role is deliberately untracked because its content is not caps-only.
-  static TextStyle monoLabel(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: 11,
-    weight: FontWeight.w600,
-    height: 1.15,
+  /// Ticket meta, counts and compact phrases (`label-kicker`).
+  static TextStyle monoLabel(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelKicker,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  /// Uppercase mono label. Use through an owner that also enforces uppercase.
-  static TextStyle monoCapsLabel(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: 11,
-    weight: FontWeight.w600,
-    height: 1.15,
-    letterSpacing: _monoCapsTracking,
-    color: color ?? CatchTokens.of(context).ink2,
-  );
+  /// Label for an owner that also enforces uppercase (`label-kicker`).
+  static TextStyle monoCapsLabel(BuildContext context, {Color? color}) =>
+      _label(
+        GeneratedCatchTypeRoleTokens.labelKicker,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
 
-  /// Smallest mono label — date-rail weekday/month, micro meta.
-  static TextStyle monoLabelS(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: 10,
-    weight: FontWeight.w700,
-    height: 1.15,
+  /// Smallest label — date-rail weekday/month, micro meta (`label-badge`).
+  static TextStyle monoLabelS(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelBadge,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -383,14 +347,11 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink,
       );
 
-  /// Tabular numerals for prominent quantities (`6/6`, `2.3 km`).
-  static TextStyle numericLarge(BuildContext context, {Color? color}) =>
-      CatchFonts.mono(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        height: 1.2,
-        color: color ?? CatchTokens.of(context).ink,
-      );
+  /// Tabular numerals for prominent quantities (`title-row`: `6/6`, `2.3 km`).
+  static TextStyle numericLarge(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.titleRow,
+    color: color ?? CatchTokens.of(context).ink,
+  );
 
   /// Smaller tabular figure for inline meta (`7 km · 4 min walk`).
   static TextStyle numericMeta(BuildContext context, {Color? color}) =>
@@ -401,32 +362,22 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  /// Compact mono meta (`.t-meta`).
-  static TextStyle meta(BuildContext context, {Color? color}) =>
-      CatchFonts.mono(
-        fontSize: 10.5,
-        fontWeight: FontWeight.w600,
-        height: 1.2,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
+  /// Meta lines and timestamps (`body-meta`).
+  static TextStyle meta(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.bodyMeta,
+    color: color ?? CatchTokens.of(context).ink2,
+  );
 
-  /// Tiny status badge label (`.t-badge`).
-  static TextStyle badge(BuildContext context, {Color? color}) =>
-      CatchFonts.mono(
-        fontSize: 9,
-        fontWeight: FontWeight.w700,
-        height: 1.1,
-        color: color ?? CatchTokens.of(context).ink,
-      );
+  /// Badges and counts (`label-badge`). Nothing is set smaller.
+  static TextStyle badge(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelBadge,
+    color: color ?? CatchTokens.of(context).ink,
+  );
 
-  /// Tiny uppercase status badge label (`.t-badge`).
-  static TextStyle badgeCaps(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: 9,
-    weight: FontWeight.w700,
-    height: 1.1,
-    letterSpacing: _badgeCapsTracking,
-    color: color,
+  /// Badge label for an owner that also enforces uppercase (`label-badge`).
+  static TextStyle badgeCaps(BuildContext context, {Color? color}) => _label(
+    GeneratedCatchTypeRoleTokens.labelBadge,
+    color: color ?? CatchTokens.of(context).ink,
   );
 
   /// Oversized tabular stat number.
@@ -522,34 +473,36 @@ abstract final class CatchTextStyles {
   static TextStyle _tabular(TextStyle style) =>
       style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 
-  static const FontWeight _displayWeight = FontWeight(760);
-
-  /// D19: Archivo is only for headlines of 24px and up.
-  static const double _displayMinimumSize = 24;
-
-  static Color _ink(BuildContext context) => CatchTokens.of(context).ink;
-
-  static TextStyle _display(_CatchDisplayStep step, {required Color color}) =>
-      CatchFonts.voice(
-        fontSize: step.size,
-        fontWeight: _displayWeight,
-        height: step.height,
-        letterSpacing: step.size * step.trackingEm,
-        color: color,
-      );
-
-  static TextStyle _mono(
+  static TextStyle _figures(
     BuildContext context, {
     required double size,
     required FontWeight weight,
     required double height,
-    double letterSpacing = 0,
     Color? color,
   }) => CatchFonts.mono(
     fontSize: size,
     fontWeight: weight,
     height: height,
-    letterSpacing: letterSpacing,
     color: color ?? CatchTokens.of(context).ink,
   );
+
+  /// A system role on the function family, with figures that align in columns.
+  static TextStyle _label(TextStyle role, {required Color color}) =>
+      _tabular(_functionProfile(role, color: color));
+
+  static const FontWeight _displayWeight = FontWeight(760);
+
+  /// Avatar initials take Archivo from 24px, the size an organiser's mark uses.
+  static const double _displayMinimumSize = 24;
+
+  static Color _ink(BuildContext context) => CatchTokens.of(context).ink;
+
+  static TextStyle _display(TextStyle role, {required Color color}) =>
+      CatchFonts.voice(
+        fontSize: role.fontSize!,
+        fontWeight: role.fontWeight!,
+        height: role.height!,
+        letterSpacing: role.letterSpacing!,
+        color: color,
+      );
 }

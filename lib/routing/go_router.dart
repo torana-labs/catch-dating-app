@@ -75,6 +75,7 @@ import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/platform/routing/route_contract.dart';
 import 'package:catch_dating_app/platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
@@ -98,7 +99,6 @@ import 'package:catch_dating_app/public_profile/presentation/public_profile_scre
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
@@ -116,7 +116,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-export 'route_contract.dart';
+export 'package:catch_dating_app/platform/routing/route_contract.dart';
 
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';

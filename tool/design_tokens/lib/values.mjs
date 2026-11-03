@@ -127,6 +127,14 @@ export function isCubicBezier(value) {
     value.every((part) => typeof part === "number");
 }
 
+/**
+ * A font stack is already CSS. A generic keyword must stay bare: a quoted
+ * "system-ui" names a font called system-ui, so a reader's next fallback wins.
+ */
+function cssFontFamily(value) {
+  return value.includes(",") || value === "system-ui" ? value : `"${value}"`;
+}
+
 /** The CSS value of one token, or null when a type has no CSS form. */
 export function cssTokenValue(type, value) {
   switch (type) {
@@ -134,7 +142,7 @@ export function cssTokenValue(type, value) {
     case "dimension":
     case "duration": return cssDimension(value);
     case "number": return rawCssValue(value);
-    case "fontFamily": return `"${value}"`;
+    case "fontFamily": return cssFontFamily(value);
     case "cubicBezier":
       if (!isCubicBezier(value)) throw new Error("cubicBezier needs four numeric values.");
       return `cubic-bezier(${value.map(formatNumber).join(", ")})`;

@@ -1,6 +1,7 @@
 // Public API of the profiles context: what other contexts may import.
 // Written by tool/architecture/move_to_contexts.mjs from the imports that
 // crossed into this context; trim it as the context's API settles.
+export 'data/generated/update_user_profile_patch.g.dart';
 export 'data/image_upload_repository.dart';
 export 'data/public_profile_callable_response.dart';
 export 'data/public_profile_repository.dart';

@@ -90,6 +90,7 @@ const _appPackage = 'package:catch_dating_app/';
 
 const _allowedDomainPackages = <String>{
   'catch_dating_app',
+  'catch_kernel',
   'collection',
   'freezed_annotation',
   'json_annotation',
@@ -141,7 +142,7 @@ const _routeScreenBases = <String>{
 final _probePrefix = RegExp(r'^tool/catch_ui_lints_probe/[^/]+/\d+/arch/');
 
 /// The repository-relative path these rules place, or null when the file is
-/// outside lib/ and apps/*/lib/ or is generated.
+/// outside lib/, apps/*/lib/ and packages/kernel/lib/ or is generated.
 String? architectureRelativePath(String absolutePath) {
   final normalized = absolutePath.replaceAll(r'\', '/');
   if (normalized.endsWith('.g.dart') || normalized.endsWith('.freezed.dart')) {
@@ -153,6 +154,7 @@ String? architectureRelativePath(String absolutePath) {
       .substring(root.length + 1)
       .replaceFirst(_probePrefix, '');
   return relative.startsWith('lib/') ||
+          relative.startsWith('packages/kernel/lib/') ||
           RegExp(r'^apps/[^/]+/lib/').hasMatch(relative)
       ? relative
       : null;
@@ -160,8 +162,9 @@ String? architectureRelativePath(String absolutePath) {
 
 // Places a file for the dependency-direction rules: legacy features use
 // lib/<feature>/<layer>/; bounded-context roots use lib/contexts/<context>/,
-// lib/kernel/ (held to domain rules), lib/platform/, lib/pages/<page>/ and
-// apps/<app>/lib/<destination>/ (held to screen rules).
+// lib/platform/, lib/pages/<page>/ and apps/<app>/lib/<destination>/ (held to
+// screen rules). packages/kernel/lib/ is its own layer: its pubspec holds its
+// imports, and the clock rule, which no dependency can hold, still reads it.
 ({String root, String owner, String layer})? placeSource(String relativePath) {
   var match = RegExp(
     r'^lib/contexts/([^/]+)/(domain|data|actions|parts)/.+\.dart$',
@@ -169,6 +172,11 @@ String? architectureRelativePath(String absolutePath) {
   if (match != null) {
     return (root: 'context', owner: 'contexts/${match[1]}', layer: match[2]!);
   }
+  if (RegExp(r'^packages/kernel/lib/.+\.dart$').hasMatch(relativePath)) {
+    return (root: 'kernel', owner: 'kernel', layer: 'kernel');
+  }
+  // Temporary: the lib/kernel/ids.dart probe in tool/check_catch_ui_lints.sh expects
+  // this placement until that file can take its package probe.
   if (RegExp(r'^lib/kernel/.+\.dart$').hasMatch(relativePath)) {
     return (root: 'kernel', owner: 'kernel', layer: 'domain');
   }
@@ -395,7 +403,7 @@ List<ArchitectureFinding> dependencyDirectionFindings({
   for (final token in _codeTokens(unit)) {
     final next = token.next!;
     final lexeme = token.lexeme;
-    if (layer == 'domain' &&
+    if ((layer == 'domain' || layer == 'kernel') &&
         lexeme == 'DateTime' &&
         _isMemberAccess(next) &&
         next.next!.lexeme == 'now' &&

@@ -180,6 +180,8 @@ export type SalesReadAction =
   | "fields.list"
   | "receipts.get"
   | "intents.list"
+  | "imports.list"
+  | "imports.hosts"
   | "imports.preview"
   | "imports.compensation.preview"
   | "imports.history.preview"

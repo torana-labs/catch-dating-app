@@ -10,6 +10,8 @@ import {
   type CatchTableColumn,
 } from "@catch/web-ui";
 import {useState, type ReactNode} from "react";
+
+import {displayAdminCode, displayAdminQueueTitle} from "../../../shared/ui/adminPresentation";
 import type {AccessReviewController} from
   "../controllers/useAccessReviewController";
 import type {AccountAction} from "../api/accountSafetyRepository";
@@ -205,13 +207,14 @@ export function SafetyScreen({
 
   const selectedCase = cases.find((row) => row.key === selectedCaseKey) ??
     null;
+  const shownIndex = shown.findIndex((row) => row.key === selectedCaseKey);
+  // A linked case can have left the queue; the detail then says so itself.
   const detail = view === "open" ?
-    selectedCase?.kind === "access" ?
+    selectedCase?.kind === "access" || selectedCaseKey?.startsWith("access:") ?
       <AccessDetail access={access} /> :
-      selectedCase ?
-        <CaseDetail job={job} onAct={sheet.open} position={
-          `${shown.findIndex((row) => row.key === selectedCase.key) + 1} of ` +
-          `${shown.length}`} triage={triage} /> :
+      selectedCaseKey ?
+        <CaseDetail job={job} onAct={sheet.open} position={shownIndex >= 0 ?
+          `${shownIndex + 1} of ${shown.length}` : undefined} triage={triage} /> :
         null :
     actions.selected ?
       <ActionDetail action={actions.selected} actions={actions} job={job} /> :
@@ -239,7 +242,7 @@ function CaseDetail({
 }: {
   job: SafetyJob;
   onAct: SafetyActionSheetController["open"];
-  position: string;
+  position?: string;
   triage: SafetyTriageController;
 }) {
   const item = triage.selectedDetail;
@@ -262,7 +265,7 @@ function CaseDetail({
       <CatchWorkspaceHeader
         kicker="Safety"
         note={position}
-        title={item.title}
+        title={displayAdminQueueTitle(item.title)}
       />
       <CatchGap size="section">
         <Block title="The case">
@@ -363,15 +366,15 @@ function AccessDetail({access}: {access: AccessReviewController}) {
         <Block title="The application">
           {details ? (
             <>
-              <Fact label="City" value={details.city ?? "Not given"} />
-              <Fact label="Role" value={details.role ?? "Not given"} />
+              <Fact label="City" value={details.city ? displayAdminCode(details.city) : "Not given"} />
+              <Fact label="Role" value={details.role ? displayAdminCode(details.role) : "Not given"} />
               <Fact label="Wants to host"
                 value={details.wantsToHost ? "Yes" : "No"} />
               {details.eventTypes.length > 0 ? (
-                <Fact label="Events" value={details.eventTypes.join(", ")} />
+                <Fact label="Events" value={details.eventTypes.map(displayAdminCode).join(", ")} />
               ) : null}
               {details.instagramHandle ? (
-                <Fact label="Instagram" value={`@${details.instagramHandle}`} />
+                <Fact label="Instagram" value={`@${details.instagramHandle.replace(/^@+/u, "")}`} />
               ) : null}
               {details.whyCatch ? (
                 <CatchText as="p" variant="bodyM">{details.whyCatch}</CatchText>

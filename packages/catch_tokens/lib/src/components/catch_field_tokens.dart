@@ -67,10 +67,10 @@ abstract final class CatchFieldTokens {
   static const double sectionRuleGap = CatchSpacing.s2;
   static const double containedSectionFooterTopPadding = CatchSpacing.micro2;
   static const double dividedSectionFooterTopPadding = CatchSpacing.s2;
-  static const double sectionCountFontSize = 9.5;
-  static const double sectionCountLetterSpacing = 0.76;
-  static const double sectionKickerFontSize = 11;
-  static const double sectionKickerLetterSpacing = 1.43;
+  static const double sectionCountFontSize = 12;
+  static const double sectionCountLetterSpacing = 0;
+  static const double sectionKickerFontSize = 13;
+  static const double sectionKickerLetterSpacing = 0;
 
   static double get valueFontSize =>
       CatchPlatformTokens.typography.fieldValue.fontSize!;

@@ -8,9 +8,7 @@ import {
 } from "../../../shared/api/sampleData";
 import type {AdminEventListRow, AdminListExternalEventDetailsResponse} from "../../../shared/types/adminTypes";
 import {
-  buildEventListPayload,
   buildExternalEventListPayload,
-  filterEventRows,
   filterExternalEventRows,
   useEventPublishingController,
 } from "./useEventPublishingController";
@@ -43,27 +41,9 @@ describe("useEventPublishingController", () => {
     repository.listExternalEventProfiles.mockResolvedValue({generatedAt: null, rows: []});
   });
 
-  it("loads only the active directory boundary without eagerly loading detail", async () => {
-    const {result} = renderHook(
-      () => useEventPublishingController({onError: vi.fn(), onNotice: vi.fn()}),
-      {wrapper: createWrapper()}
-    );
-
-    await waitFor(() => {
-      expect(result.current.isListLoading).toBe(false);
-    });
-    expect(repository.listEventProfiles).toHaveBeenCalledWith(
-      buildEventListPayload("launchCities", "")
-    );
-    expect(repository.listExternalEventProfiles).not.toHaveBeenCalled();
-    expect(repository.loadEventProfile).not.toHaveBeenCalled();
-    expect(result.current.view).toBe("list");
-  });
-
   it("loads only the external workspace when it is selected", async () => {
     const external = renderHook(
       () => useEventPublishingController({
-        activeWorkspace: "external",
         onError: vi.fn(),
         onNotice: vi.fn(),
       }),
@@ -74,26 +54,6 @@ describe("useEventPublishingController", () => {
       expect(repository.listExternalEventProfiles).toHaveBeenCalled();
     });
     expect(repository.listEventProfiles).not.toHaveBeenCalled();
-    expect(external.result.current.view).toBe("external");
-  });
-
-  it("loads a route-selected event even when the directory query is disabled", async () => {
-    const event = sampleEventDetails["mumbai-padel-mixer-1"];
-    const onError = vi.fn();
-    repository.loadEventProfile.mockResolvedValue({event});
-    const {result} = renderHook(
-      () => useEventPublishingController({
-        onError,
-        onNotice: vi.fn(),
-        selectedEventId: event.eventId,
-      }),
-      {wrapper: createWrapper()}
-    );
-
-    await waitFor(() => expect(result.current.event?.eventId).toBe(event.eventId));
-    expect(repository.listEventProfiles).not.toHaveBeenCalled();
-    expect(repository.loadEventProfile).toHaveBeenCalledWith({eventId: event.eventId});
-    expect(result.current.view).toBe("detail");
   });
 
   it("dry-runs before applying an external-event takedown", async () => {
@@ -106,7 +66,6 @@ describe("useEventPublishingController", () => {
       });
     const {result} = renderHook(
       () => useEventPublishingController({
-        activeWorkspace: "external",
         onError: vi.fn(),
         onNotice: vi.fn(),
       }),
@@ -143,8 +102,7 @@ describe("useEventPublishingController", () => {
       const onError = vi.fn();
       const onNotice = vi.fn();
       const {result, rerender} = renderHook(
-        ({selectedId}: {selectedId: string | null}) => useEventPublishingController({
-          activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
+        ({selectedId}: {selectedId: string | null}) => useEventPublishingController({ selectedExternalEventId: selectedId, onError, onNotice,
         }),
         {wrapper: createWrapper(), initialProps: {selectedId: null as string | null}}
       );
@@ -177,8 +135,7 @@ describe("useEventPublishingController", () => {
     const onError = vi.fn();
     const onNotice = vi.fn();
     function Inventory() {
-      const controller = useEventPublishingController({
-        activeWorkspace: "external", selectedExternalEventId: row.eventId, onError, onNotice,
+      const controller = useEventPublishingController({ selectedExternalEventId: row.eventId, onError, onNotice,
       });
       return <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />;
     }
@@ -222,8 +179,7 @@ describe("useEventPublishingController", () => {
     const onNotice = vi.fn();
     let controller!: ReturnType<typeof useEventPublishingController>;
     function Inventory({selectedId}: {selectedId: string | null}) {
-      controller = useEventPublishingController({
-        activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
+      controller = useEventPublishingController({ selectedExternalEventId: selectedId, onError, onNotice,
       });
       return <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />;
     }
@@ -254,8 +210,7 @@ describe("useEventPublishingController", () => {
     const onError = vi.fn();
     const onNotice = vi.fn();
     const {result, rerender} = renderHook(
-      ({selectedId}) => useEventPublishingController({
-        activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
+      ({selectedId}) => useEventPublishingController({ selectedExternalEventId: selectedId, onError, onNotice,
       }),
       {wrapper: createWrapper(), initialProps: {selectedId: row.eventId}}
     );
@@ -281,8 +236,7 @@ describe("useEventPublishingController", () => {
       const onError = vi.fn();
       const onNotice = vi.fn();
       const {result, rerender} = renderHook(
-        ({selectedId}) => useEventPublishingController({
-          activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
+        ({selectedId}) => useEventPublishingController({ selectedExternalEventId: selectedId, onError, onNotice,
         }),
         {wrapper: createWrapper(), initialProps: {selectedId: row.eventId}}
       );
@@ -308,7 +262,7 @@ describe("useEventPublishingController", () => {
     }
   );
 
-  it.each(["detail", "directory"] as const)(
+  it.each(["detail"] as const)(
     "ignores a held inventory refresh failure after navigating to %s",
     async (destination) => {
       const row = sampleExternalEventRows.find((entry) => entry.publicationStatus === "public")!;
@@ -323,7 +277,7 @@ describe("useEventPublishingController", () => {
         ({selectedId, workspace}: {
           selectedId: string | null; workspace: "external" | "directory";
         }) => useEventPublishingController({
-          activeWorkspace: workspace, selectedExternalEventId: selectedId, onError, onNotice,
+          selectedExternalEventId: selectedId, onError, onNotice,
         }),
         {wrapper: createWrapper(), initialProps: {
           selectedId: null as string | null, workspace: "external" as "external" | "directory",
@@ -339,7 +293,7 @@ describe("useEventPublishingController", () => {
       if (destination === "detail") {
         await waitFor(() => expect(result.current.selectedExternalEvent).toEqual(row));
       } else {
-        await waitFor(() => expect(repository.listEventProfiles).toHaveBeenCalledTimes(1));
+        await waitFor(() => expect(result.current.externalRows).toEqual([row]));
       }
       onError.mockClear();
       await act(async () => {
@@ -366,8 +320,7 @@ describe("useEventPublishingController", () => {
     const onError = vi.fn();
     const onNotice = vi.fn();
     function Inventory({selectedId}: {selectedId: string}) {
-      const controller = useEventPublishingController({
-        activeWorkspace: "external", selectedExternalEventId: selectedId, onError, onNotice,
+      const controller = useEventPublishingController({ selectedExternalEventId: selectedId, onError, onNotice,
       });
       return <eventPublishingDirectoryPanels.ExternalEventDetailView controller={controller} />;
     }
@@ -417,8 +370,7 @@ describe("useEventPublishingController", () => {
     repository.takedownExternalEventProfile.mockRejectedValue(new Error("Takedown was not accepted."));
     const onError = vi.fn();
     const onNotice = vi.fn();
-    const {result, rerender} = renderHook(() => useEventPublishingController({
-      activeWorkspace: "external", selectedExternalEventId: row.eventId, onError, onNotice,
+    const {result, rerender} = renderHook(() => useEventPublishingController({ selectedExternalEventId: row.eventId, onError, onNotice,
     }), {wrapper: createWrapper()});
     await waitFor(() => expect(result.current.selectedExternalEvent).toEqual(row));
     await act(async () => {
@@ -434,11 +386,6 @@ describe("useEventPublishingController", () => {
   });
 
   it("normalizes query and filter payloads", () => {
-    expect(buildEventListPayload("cancelled", "  mixer  ")).toMatchObject({
-      limit: 100,
-      query: "mixer",
-      status: "cancelled",
-    });
     expect(buildExternalEventListPayload("public", "  run  ")).toMatchObject({
       limit: 100,
       publicationStatus: "public",
@@ -446,38 +393,7 @@ describe("useEventPublishingController", () => {
     });
   });
 
-  it("applies time, capacity, launch-market, search, and review filters", () => {
-    const base: AdminEventListRow = {
-      eventId: "event-1",
-      organizerId: "club-1",
-      organizerName: "Sunday Club",
-      title: "Sunday Table",
-      activityKind: "singlesMixer",
-      activityLabel: "Singles mixer",
-      startTime: "2026-07-02T18:00:00.000Z",
-      citySlug: "in-mp-indore",
-      meetingPoint: "Indore",
-      status: "active",
-      availability: "available",
-      crossPathsDiscoveryEnabled: false,
-      bookedCount: 8,
-      capacityLimit: 8,
-      priceInPaise: 120000,
-      currency: "INR",
-      searchIndexStatus: "indexed",
-    };
-    const rows = [
-      base,
-      {...base, eventId: "past", startTime: "2026-06-01T18:00:00.000Z"},
-      {...base, eventId: "search", searchIndexStatus: "missing" as const},
-    ];
-    expect(filterEventRows(rows, "upcoming", "2026-07-01T00:00:00.000Z"))
-      .toEqual([base, rows[2]]);
-    expect(filterEventRows(rows, "full", "2026-07-01T00:00:00.000Z"))
-      .toEqual([base, rows[2]]);
-    expect(filterEventRows(rows, "searchIssues", "2026-07-01T00:00:00.000Z"))
-      .toEqual([rows[2]]);
-
+  it("applies review filters to imported events", () => {
     expect(filterExternalEventRows(sampleExternalEventRows, "reviewOpen", "2026-06-01T00:00:00.000Z"))
       .toEqual(expect.arrayContaining([
         expect.objectContaining({publicationStatus: "draft"}),
@@ -495,31 +411,3 @@ function deferred<T>() {
   return {promise, resolve, reject};
 }
 
-describe("supported pilot review", () => {
-  afterEach(cleanup);
-  it("shows an explicit real-event choice and binds the reviewed revision", async () => {
-    const {formFromEventProfile, buildEventSavePayload} = await import("./eventPublishingHelpers");
-    const {eventPublishingEditorPanels} = await import("../ui/eventPublishingEditorPanels");
-    const event = {...sampleEventDetails["mumbai-padel-mixer-1"],
-      hostPilotReview: {realEvent: false, revision: 3, reviewedAt: 100}};
-    const form = formFromEventProfile(event);
-    const onFormChange = vi.fn();
-    render(<eventPublishingEditorPanels.EventEditor
-      event={event} eventId={event.eventId} form={form}
-      diffRows={[]} isDetailLoading={false} isSaving={false}
-      validationIssues={[]} onEventIdChange={vi.fn()}
-      onFormChange={onFormChange} onLoad={vi.fn()} onSave={vi.fn()}
-    />);
-    const choice = screen.getByRole("checkbox", {
-      name: "I reviewed this as a real pilot event, not a test",
-    });
-    expect((choice as HTMLInputElement).checked).toBe(false);
-    fireEvent.click(choice);
-    const changed = {...onFormChange.mock.calls[0][0], reviewNote: "Real supported pilot"};
-    expect(buildEventSavePayload(event, changed)).toEqual({
-      eventId: event.eventId, reviewNote: "Real supported pilot",
-      fields: {hostPilotReview: {realEvent: true, expectedRevision: 3}},
-    });
-    expect(screen.getByText(/Earlier check-ins are excluded/)).toBeTruthy();
-  });
-});

@@ -23,7 +23,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
-import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/errors/app_error_context.dart'
     as app_ops;
@@ -34,7 +33,8 @@ import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/platform/routing/route_contract.dart';
+import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

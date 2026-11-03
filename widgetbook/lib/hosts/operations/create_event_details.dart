@@ -14,8 +14,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_guest_details_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
-import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
-import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

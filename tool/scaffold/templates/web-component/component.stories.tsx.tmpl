@@ -1,0 +1,23 @@
+import type {Meta, StoryObj} from "@storybook/react-vite";
+import {%%Name%%} from "./%%Name%%";
+
+const meta = {
+  title: "Web UI/%%Name%%",
+  component: %%Name%%,
+  args: {label: "Label"},
+} satisfies Meta<typeof %%Name%%>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/** Every state of the contract, in the day and night themes. */
+export const Contract: Story = {
+  render: (args) => (
+    <>
+      <%%Name%% {...args} />
+      <div data-catch-theme="dark">
+        <%%Name%% {...args} />
+      </div>
+    </>
+  ),
+};

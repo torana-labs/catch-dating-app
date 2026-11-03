@@ -9,11 +9,6 @@
       "count": 1
     }
   },
-  "src/features/events/ui/eventPublishingEditorPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 5
-    }
-  },
   "src/features/events/ui/eventPublishingSupplyPanels.tsx": {
     "react/forbid-elements": {
       "count": 3
@@ -39,11 +34,6 @@
       "count": 19
     }
   },
-  "src/features/organizers/ui/organizerDetailPanels.tsx": {
-    "react/forbid-elements": {
-      "count": 9
-    }
-  },
   "src/features/partners/ui/PartnerDemoReviewWorkspace.tsx": {
     "react/forbid-elements": {
       "count": 2
@@ -54,22 +44,7 @@
       "count": 2
     }
   },
-  "src/features/sales/ui/SalesImportedHistoryPanel.tsx": {
-    "react/forbid-elements": {
-      "count": 4
-    }
-  },
   "src/features/sales/ui/SalesPrivacyWorkspace.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
-  "src/features/sales/ui/SalesWorkspaceScreen.tsx": {
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/features/users/ui/UserAnalyticsScreen.tsx": {
     "react/forbid-elements": {
       "count": 2
     }
@@ -87,15 +62,15 @@
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
     "react/forbid-dom-props": {
-      "count": 11
+      "count": 5
     },
     "react/forbid-elements": {
-      "count": 14
+      "count": 5
     }
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
     "react/forbid-component-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-dom-props": {
       "count": 11
@@ -105,22 +80,11 @@
     }
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
     "react/forbid-dom-props": {
       "count": 2
     },
     "react/forbid-elements": {
       "count": 8
-    }
-  },
-  "src/shared/ui/AdminPrimitives/intake.tsx": {
-    "react/forbid-dom-props": {
-      "count": 1
-    },
-    "react/forbid-elements": {
-      "count": 1
     }
   },
   "src/shared/ui/AdminPrimitives/marketing-composer.tsx": {
@@ -174,10 +138,10 @@
   },
   "src/shared/ui/AdminPrimitives/metrics.tsx": {
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 10
     },
     "react/forbid-elements": {
-      "count": 14
+      "count": 11
     }
   },
   "src/shared/ui/AdminPrimitives/overview.tsx": {
@@ -198,13 +162,13 @@
   },
   "src/shared/ui/AdminPrimitives/workbench.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 10
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 14
+      "count": 1
     }
   }
 }

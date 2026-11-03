@@ -1,10 +1,4 @@
-import {
-  CatchAdminIntakeSourceList,
-  CatchAdminSearchCandidateHeader,
-  CatchBadge,
-  CatchField,
-  CatchText,
-} from "@catch/web-ui";
+import {CatchAdminIntakeSourceList, CatchAdminSearchCandidateHeader, CatchBadge, CatchField, CatchGap, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {Clock3, ExternalLink, FileWarning, FolderSearch} from "lucide-react";
 import type {
@@ -18,14 +12,11 @@ import {
   AdminEventSupplyLinks,
   AdminLinkButton,
   CheckboxField,
-  DataTable,
   EmptyState,
   QualityList,
   QualityRow,
   StateRow,
   AdminEyebrow,
-  AdminMutedCell,
-  AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {type ExternalEventTakedownRequest} from "../controllers/useEventPublishingController";
 import {
@@ -33,7 +24,6 @@ import {
   externalEventNeedsReview,
   formatEventLabel,
 } from "../controllers/eventPublishingHelpers";
-import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
 
 function ExternalEventSupplyDetail({
   event,
@@ -63,8 +53,8 @@ function ExternalEventSupplyDetail({
         <StateRow label="Canonical organizer" value={event.canonicalHostId} />
         <StateRow label="Compatibility club" value={event.canonicalHostId} />
         <StateRow label="City" value={event.citySlug} />
-        <StateRow label="Starts" value={eventPublishingEditorPanels.formatDateTime(event.startTime)} />
-        <StateRow label="Ends" value={eventPublishingEditorPanels.formatDateTime(event.endTime)} />
+        <StateRow label="Starts" value={formatDateTime(event.startTime)} />
+        <StateRow label="Ends" value={formatDateTime(event.endTime)} />
         <StateRow label="Venue" value={event.meetingPoint || null} />
         <StateRow label="Activity" value={formatEventLabel(event.activityKind)} />
         <StateRow
@@ -73,16 +63,16 @@ function ExternalEventSupplyDetail({
         />
         <StateRow
           label="Price"
-          value={event.priceDisplayText ?? eventPublishingEditorPanels.formatExternalMoney(event)}
+          value={event.priceDisplayText ?? formatExternalMoney(event)}
         />
         <StateRow label="Publication" value={event.publicationStatus} />
       </QualityList>
-      <AdminTagRow>
+      <CatchGap direction="horizontal" size="inline" wrap>
         <CatchBadge label={`import policy ${event.importPolicyAcknowledged ? "ok" : "open"}`} />
         <CatchBadge label={`owner-safe copy ${event.ownerSafeCopyReviewed ? "ok" : "open"}`} />
         <CatchBadge label={`${event.duplicateCandidateCount} duplicate candidates`} />
         <CatchBadge label={event.availability} />
-      </AdminTagRow>
+      </CatchGap>
       <CatchAdminIntakeSourceList>
         <StateRow label="Platform" value={event.platform} />
         <StateRow label="Source key" value={event.sourceEventKey} />
@@ -216,6 +206,39 @@ function ExternalEventTakedownPanel({
       </AdminButton>
     </AdminEventSupplyDetail>
   );
+}
+
+function formatDateTime(value: string | null | undefined): string {
+  if (!value) return "none";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function formatMoney(row: {
+  currency: string;
+  priceInPaise: number;
+}): string {
+  const amount = row.priceInPaise / 100;
+  return new Intl.NumberFormat("en-IN", {
+    currency: row.currency,
+    maximumFractionDigits: 0,
+    style: "currency",
+  }).format(amount);
+}
+
+function formatExternalMoney(row: {
+  currency: string;
+  parsedPriceInPaise: number | null;
+}): string {
+  if (row.parsedPriceInPaise === null) return "none";
+  return formatMoney({
+    currency: row.currency,
+    priceInPaise: row.parsedPriceInPaise,
+  });
 }
 
 export const eventPublishingSupplyPanels = {

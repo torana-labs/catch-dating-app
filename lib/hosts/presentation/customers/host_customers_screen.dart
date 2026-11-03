@@ -33,7 +33,6 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -47,6 +46,7 @@ import 'package:catch_dating_app/platform/schema_contracts/generated/field_const
 import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
+import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

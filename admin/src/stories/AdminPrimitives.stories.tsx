@@ -1,4 +1,8 @@
-import {CatchBadge, CatchField} from "@catch/web-ui";
+import {
+  CatchBadge,
+  CatchField,
+  CatchText,
+} from "@catch/web-ui";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
@@ -20,9 +24,6 @@ import {
   AdminButton,
   AdminCard,
   AdminCardList,
-  AdminDecisionFooterShell,
-  AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
   AdminEyebrow,
   AdminFieldGrid,
   AdminForm,
@@ -31,23 +32,17 @@ import {
   AdminMetricCard,
   AdminMetricGrid,
   AdminPanel,
-  AdminSecondaryDisclosure,
   AdminSignInActions,
   AdminSignInMeta,
   AdminSignInPanel,
   AdminSignInScreen,
   AdminStateRow,
   AdminStatGrid,
-  AdminStatusGrid,
-  AdminTagRow,
-  AdminToolbar,
-  AdminWorkbenchNote,
   AdminWorkbenchStack,
   AdminWorkspace,
   AlertRow,
   CardHeader,
   CheckboxField,
-  DataTable,
   EmptyState,
   PageHeader,
   QualityList,
@@ -205,41 +200,6 @@ export const AdminCardStory: Story = {
         <h3>Intake card shell</h3>
         <p>Use for source review and publication workflow content.</p>
       </AdminCard>
-    </AdminWorkspace>
-  ),
-};
-
-export const DataTableStory: Story = {
-  name: "Data table",
-  parameters: {
-    catchComponent: {
-      id: "shared_data_table",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <DataTable ariaLabel="Organizer queue">
-        <thead>
-          <tr>
-            <th>Organizer</th>
-            <th>Status</th>
-            <th>Owner</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Afterfly Social</td>
-            <td>Ready</td>
-            <td>Ops</td>
-          </tr>
-          <tr>
-            <td>City Supper Club</td>
-            <td>Needs source</td>
-            <td>Growth</td>
-          </tr>
-        </tbody>
-      </DataTable>
     </AdminWorkspace>
   ),
 };
@@ -588,41 +548,6 @@ export const AdminEyebrowStory: Story = {
   ),
 };
 
-export const AdminToolbarStory: Story = {
-  name: "Toolbar",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_toolbar",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminToolbar>
-        <AdminButton>Reset</AdminButton>
-      </AdminToolbar>
-      <AdminToolbar compact>
-        <AdminButton>Compact action</AdminButton>
-      </AdminToolbar>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminWorkbenchNoteStory: Story = {
-  name: "Workbench note",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_workbench_note",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminWorkbenchNote>Generated bridge data is read-only in this view.</AdminWorkbenchNote>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminWorkbenchStackStory: Story = {
   name: "Workbench stack",
   parameters: {
@@ -639,89 +564,8 @@ export const AdminWorkbenchStackStory: Story = {
         </AdminCard>
       </AdminWorkbenchStack>
       <AdminWorkbenchStack compact>
-        <AdminWorkbenchNote>Compact stack item.</AdminWorkbenchNote>
+        <CatchText as="p" color="ink2" variant="bodyM">Compact stack item.</CatchText>
       </AdminWorkbenchStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSecondaryDisclosureStory: Story = {
-  name: "Secondary disclosure",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_secondary_disclosure",
-      states: ["closed", "open"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSecondaryDisclosure summary="Diagnostics and source details">
-        <AdminWorkbenchNote>
-          Technical context remains available without competing with the task.
-        </AdminWorkbenchNote>
-      </AdminSecondaryDisclosure>
-      <AdminSecondaryDisclosure open summary="Expanded diagnostics">
-        <AdminWorkbenchNote>Source generated at 14 Jul 2026, 15:10.</AdminWorkbenchNote>
-      </AdminSecondaryDisclosure>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDirectoryScreenStackStory: Story = {
-  name: "Directory screen stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_directory_screen_stack",
-      states: ["directory"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDirectoryScreenStack>
-        <PageHeader eyebrow="Directory" title="Organizer queue" />
-        <AdminCard>Directory list content</AdminCard>
-      </AdminDirectoryScreenStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDetailScreenStackStory: Story = {
-  name: "Detail screen stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_detail_screen_stack",
-      states: ["detail"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDetailScreenStack>
-        <PageHeader eyebrow="Detail" title="Afterfly Social" />
-        <AdminPanel icon={<ShieldCheck size={18} />} title="Readiness">
-          <AdminStateRow label="Route" value="Ready" />
-        </AdminPanel>
-      </AdminDetailScreenStack>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminStatusGridStory: Story = {
-  name: "Status grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_status_grid",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminStatusGrid>
-        <AdminStateRow label="Route" value="Ready" />
-        <AdminStateRow label="Claim CTA" value="Enabled" />
-      </AdminStatusGrid>
-      <AdminStatusGrid compact>
-        <AdminStateRow label="Public API" value="Verified" />
-      </AdminStatusGrid>
     </AdminWorkspace>
   ),
 };
@@ -779,7 +623,7 @@ export const AdminPanelStory: Story = {
         </QualityList>
       </AdminPanel>
       <AdminPanel icon={<Sparkles size={18} />} span={2} title="Wide panel">
-        <AdminWorkbenchNote>Spans the workbench grid.</AdminWorkbenchNote>
+        <CatchText as="p" color="ink2" variant="bodyM">Spans the workbench grid.</CatchText>
       </AdminPanel>
     </AdminWorkspace>
   ),
@@ -799,27 +643,6 @@ export const AdminCardListStory: Story = {
         <AdminCard>Queue card one</AdminCard>
         <AdminCard>Queue card two</AdminCard>
       </AdminCardList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminTagRowStory: Story = {
-  name: "Admin tag row",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_tag_row",
-      states: ["div", "span"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTagRow>
-        <CatchBadge label="organizer" />
-        <CatchBadge label="profile" />
-      </AdminTagRow>
-      <AdminTagRow as="span">
-        <CatchBadge label="inline" />
-      </AdminTagRow>
     </AdminWorkspace>
   ),
 };
@@ -956,27 +779,6 @@ export const QualityRowStory: Story = {
         <strong>Blocked row</strong>
         <span>Cannot publish.</span>
       </QualityRow>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminDecisionFooterShellStory: Story = {
-  name: "Decision footer shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_decision_footer_shell",
-      states: ["default", "compact"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminDecisionFooterShell>
-        <AdminButton>Needs changes</AdminButton>
-        <AdminButton variant="primary">Approve</AdminButton>
-      </AdminDecisionFooterShell>
-      <AdminDecisionFooterShell compact>
-        <AdminButton>Hold</AdminButton>
-      </AdminDecisionFooterShell>
     </AdminWorkspace>
   ),
 };

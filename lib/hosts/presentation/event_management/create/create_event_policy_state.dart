@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_kernel/country_markets.dart';
 
 enum EventAdmissionPreset {
   openCapacity,

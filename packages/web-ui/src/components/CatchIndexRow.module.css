@@ -4,17 +4,23 @@
  * keeps 12px above and below its copy, 2px under the title and 6px before the
  * footer. Hover takes a 4% ink overlay and press 8%. Keyboard focus adds an
  * inset ring on the web, where the overlay alone is too faint to find.
+ *
+ * A chosen row is a grey block with no line, reaching 12px past the text on
+ * each side (8px in a list-detail list) so the text doesn't move. CatchSection
+ * sets the same inset on the other rows of a list you pick from.
  */
 .row {
   position: relative;
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  width: 100%;
+  width: calc(100% + 2 * var(--catch-row-inset, 0px));
   min-height: 66px;
-  padding: 0;
+  margin-inline: calc(-1 * var(--catch-row-inset, 0px));
+  padding: 0 var(--catch-row-inset, 0px);
   border: 0;
   border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  border-radius: var(--catch-row-radius, 0);
   background: none;
   color: var(--catch-theme-ink);
   font: inherit;
@@ -24,9 +30,18 @@
 
 .row[data-stacked] { padding-block: var(--catch-space-s3); }
 
+.row[aria-current] {
+  --catch-row-inset: var(--catch-row-bleed, var(--catch-space-s3));
+  --catch-row-radius: var(--catch-radius-md);
+
+  border-bottom-color: transparent;
+  background: var(--catch-theme-bg);
+}
+
 .row::after {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: var(--catch-theme-ink);
   opacity: 0;
   pointer-events: none;

@@ -1,6 +1,7 @@
 import {
   CatchIndexRow,
   CatchPaneLayout,
+  CatchSection,
   CatchWorkspaceHeader,
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
@@ -34,15 +35,18 @@ export function SettingsScreen({
       main={
         <>
           <CatchWorkspaceHeader title="Settings" />
-          {pages.map((page) => (
-            <CatchIndexRow
-              key={page.id}
-              onTap={() => onSelectPage(page.id)}
-              selected={page.id === selectedPage}
-              subtitle={page.subtitle}
-              title={page.title}
-            />
-          ))}
+          <CatchSection dividers="none">
+            {pages.map((page) => (
+              <CatchIndexRow
+                key={page.id}
+                onTap={() => onSelectPage(page.id)}
+                selected={page.id === selectedPage}
+                subtitle={page.subtitle}
+                title={page.title}
+                titleVariant="sectionTitle"
+              />
+            ))}
+          </CatchSection>
         </>
       }
       pattern="list-detail"

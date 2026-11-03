@@ -7,18 +7,18 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.d
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/kernel/brand.dart';
 import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/analytics/host_analytics_choice.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/device/external_links.dart';
-import 'package:catch_dating_app/platform/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
+import 'package:catch_kernel/brand.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

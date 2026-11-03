@@ -167,6 +167,22 @@ export interface SalesImportPreview {
   effectsApplied: false;
 }
 
+/** One applied batch of a reviewed import. Batches of a file share a sourceId. */
+export interface SalesImportBatch {
+  importId: string;
+  sourceId: string;
+  rowCount: number;
+  counts: Record<string, number>;
+  appliedAt: string;
+  appliedBy: string;
+}
+
+export interface SalesImportHost {
+  importId: string;
+  organizerId: string;
+  name: string;
+}
+
 export interface SalesImportCompensationInput {
   importId: string;
   organizerId: string;

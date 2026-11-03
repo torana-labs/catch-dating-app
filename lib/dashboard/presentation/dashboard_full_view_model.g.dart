@@ -8,13 +8,20 @@ part of 'dashboard_full_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
 
 @ProviderFor(dashboardNow)
 final dashboardNowProvider = DashboardNowProvider._();
 
+/// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+/// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
+
 final class DashboardNowProvider
     extends $FunctionalProvider<DateTime, DateTime, DateTime>
     with $Provider<DateTime> {
+  /// Deprecated alias of `appClockProvider`; 1.3b moves the callers and deletes
+  /// it. Not annotated `@Deprecated`, which would flag Widgetbook's callers.
   DashboardNowProvider._()
     : super(
         from: null,
@@ -48,7 +55,7 @@ final class DashboardNowProvider
   }
 }
 
-String _$dashboardNowHash() => r'91e11349a0f778936d9df6327401917812107880';
+String _$dashboardNowHash() => r'493043b093160e1d5eeea1c587a86355fdba7532';
 
 /// Combines signed-up and attended events into the live-layer home model.
 
