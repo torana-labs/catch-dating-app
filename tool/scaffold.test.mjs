@@ -207,6 +207,7 @@ const toolchainMissing = !process.env.CI &&
 describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "flutter or node_modules is missing"}, () => {
   // A stable path, so the analyzer's per-path plugin build is reused between runs.
   const tree = path.join(fs.realpathSync(os.tmpdir()), `catch-scaffold-test-${createHash("sha1").update(repoRoot).digest("hex").slice(0, 8)}`);
+  const archive = `${tree}.tar`;
   const inTree = (...segments) => path.join(tree, ...segments);
   const created = new Set();
   const outputs = new Map();
@@ -239,11 +240,14 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
   before(() => {
     fs.rmSync(tree, {recursive: true, force: true});
     fs.mkdirSync(tree, {recursive: true});
-    const copy = run("sh", ["-c", `git archive HEAD -- . ${[
+    const excluded = [
       "artifacts", "test", "integration_test", "website/public", "admin/public", "functions",
       "apps/host/android", "apps/host/ios", "apps/host/web", "apps/consumer/android", "apps/consumer/ios", "apps/consumer/web",
-    ].map((entry) => `':(exclude)${entry}'`).join(" ")} | tar -x -C '${tree}'`]);
-    assertOk(copy, "copying the tree");
+    ];
+    assertOk(run("git", ["archive", "--format=tar", `--output=${archive}`, "HEAD", "--", ".",
+      ...excluded.map((entry) => `:(exclude)${entry}`)]), "archiving the tree");
+    assertOk(run("tar", ["-x", "-f", archive, "-C", tree]), "unpacking the tree");
+    fs.rmSync(archive);
     // The tool under test may not be committed yet.
     fs.copyFileSync(scaffold, inTree("tool/scaffold.mjs"));
     fs.cpSync(fromRepo("tool/scaffold"), inTree("tool/scaffold"), {recursive: true});
@@ -261,7 +265,10 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     assertOk(run("flutter", ["pub", "get", "--offline"], tree), "flutter pub get");
   });
 
-  after(() => fs.rmSync(tree, {recursive: true, force: true}));
+  after(() => {
+    fs.rmSync(tree, {recursive: true, force: true});
+    fs.rmSync(archive, {force: true});
+  });
 
   test("every Dart file it writes is already formatted", () => {
     const dart = [...created].filter((file) => file.endsWith(".dart"));
