@@ -2,15 +2,43 @@ import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
 import 'package:catch_tokens/src/semantic/catch_opacity.dart';
 import 'package:flutter/material.dart';
 
-/// Design tokens for Catch — B&W editorial palette (paper + ink).
-/// No brand accent; color is reserved for activity meaning (§3 of
-/// design_language.md).
+/// Design tokens for Catch: the system v15 colour roles (blueprint D22), day
+/// and night, with the older role names kept as aliases until P7 deletes them.
 ///
 /// Access via `CatchTokens.of(context)` inside any widget.
 /// `AppTheme` wires `light` / `dark` into [ThemeData.extensions].
 @immutable
 class CatchTokens extends ThemeExtension<CatchTokens> {
   const CatchTokens({
+    required this.ground,
+    required this.tile,
+    required this.nested,
+    required this.paper,
+    required this.map,
+    required this.scrim,
+    required this.onPrimary,
+    required this.controlLine,
+    required this.fieldLine,
+    required this.focus,
+    required this.track,
+    required this.switchOff,
+    required this.formatRun,
+    required this.formatDinner,
+    required this.formatGames,
+    required this.formatCourts,
+    required this.formatNightsOut,
+    required this.indigo,
+    required this.onFormat,
+    required this.tintMint,
+    required this.tintYellow,
+    required this.tintCoral,
+    required this.tintIndigo,
+    required this.tintPink,
+    required this.deepMint,
+    required this.deepYellow,
+    required this.deepCoral,
+    required this.deepIndigo,
+    required this.deepPink,
     required this.bg,
     required this.surface,
     required this.raised,
@@ -39,18 +67,107 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     required this.heroGrad,
   });
 
-  // ── Semantic colour roles ─────────────────────────────────────────────────────
+  // ── System v15 colour roles ───────────────────────────────────────────────────
 
-  /// App background (cool gallery off-white in light mode).
+  /// Page background. Day screens are white; night screens are ink.
+  final Color ground;
+
+  /// The grey tile block and segmented tracks.
+  final Color tile;
+
+  /// Anything sitting inside a tile: chips, fields, nested boxes.
+  final Color nested;
+
+  /// Warm paper ground for website bands and the night primary button.
+  final Color paper;
+
+  /// Map ground behind pins and routes.
+  final Color map;
+
+  /// Dims the screen behind sheets and dialogs.
+  final Color scrim;
+
+  /// Label on a primary button.
+  final Color onPrimary;
+
+  /// Outline of secondary buttons, chips, icon buttons and choice cards.
+  final Color controlLine;
+
+  /// Text field outline at rest.
+  final Color fieldLine;
+
+  /// Focus ring.
+  final Color focus;
+
+  /// Meter and slider tracks on white.
+  final Color track;
+
+  /// Switch track when off.
+  final Color switchOff;
+
+  /// Runs and walks.
+  final Color formatRun;
+
+  /// Suppers and dinners.
+  final Color formatDinner;
+
+  /// Games, quizzes and trivia.
+  final Color formatGames;
+
+  /// Racket sports and courts.
+  final Color formatCourts;
+
+  /// Parties, crawls and nights out.
+  final Color formatNightsOut;
+
+  /// Person colours for avatars, placeholders and charts; never an event colour.
+  final Color indigo;
+
+  /// Text and icons on any format colour.
+  final Color onFormat;
+
+  /// Success and confirmed rows.
+  final Color tintMint;
+
+  /// Warning badges.
+  final Color tintYellow;
+
+  /// Danger and refund notes.
+  final Color tintCoral;
+
+  /// Information badges.
+  final Color tintIndigo;
+
+  /// Social labels and soft highlights.
+  final Color tintPink;
+
+  /// Text and icons on tintMint.
+  final Color deepMint;
+
+  /// Text on tintYellow.
+  final Color deepYellow;
+
+  /// Text on tintCoral and destructive text actions.
+  final Color deepCoral;
+
+  /// Text on tintIndigo.
+  final Color deepIndigo;
+
+  /// Text on tintPink.
+  final Color deepPink;
+
+  // ── Older role names: each resolves to a system role. P7 deletes the aliases. ─
+
+  /// Alias of [tile].
   final Color bg;
 
-  /// Card / modal surface.
+  /// Alias of [ground].
   final Color surface;
 
-  /// Slightly raised surface (e.g. input backgrounds).
+  /// Alias of [nested].
   final Color raised;
 
-  /// Modal scrim / overlay.
+  /// Alias of [scrim].
   final Color overlay;
 
   /// Primary text colour.
@@ -65,55 +182,55 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   /// Hairline divider.
   final Color line;
 
-  /// Slightly heavier divider.
+  /// Alias of [controlLine].
   final Color line2;
 
   /// Default action colour (ink in light, paper in dark).
   final Color primary;
 
-  /// Text/icon colour on top of [primary] fills.
+  /// Alias of [onPrimary].
   final Color primaryInk;
 
-  /// Tinted background for soft primary containers (chips, badges).
+  /// Alias of [tile]; the system has no soft primary.
   final Color primarySoft;
 
-  /// Compatibility alias for the default action colour.
+  /// Alias of [primary].
   final Color accent;
 
-  /// Text/icon colour on top of [accent] fills.
+  /// Alias of [onPrimary].
   final Color accentInk;
 
-  /// Positive state colour.
+  /// Alias of [deepMint].
   final Color success;
 
-  /// Warning / attention state colour.
+  /// Alias of [deepYellow].
   final Color warning;
 
-  /// Error / destructive state colour.
+  /// Alias of [deepCoral].
   final Color danger;
 
-  /// Swipe-like affordance colour.
+  /// Alias of [primary].
   final Color like;
 
-  /// Swipe-pass affordance colour.
+  /// Alias of [ink3].
   final Color pass;
 
-  /// Gold / highlight colour (streak, achievement).
-  /// Readable categorical status foreground, paired with a subtle fill.
+  /// Alias of [deepMint].
   final Color positiveText;
 
-  /// Readable categorical status foreground, paired with a subtle fill.
+  /// Alias of [deepYellow].
   final Color attentionText;
 
-  /// Readable categorical status foreground, paired with a subtle fill.
+  /// Alias of [deepPink].
   final Color affinityText;
 
-  /// Readable destructive text on neutral surfaces and badge tints.
+  /// Alias of [deepCoral].
   final Color dangerText;
 
-  /// Readable gold text on neutral surfaces and badge tints.
+  /// Alias of [deepYellow].
   final Color goldText;
 
+  /// Alias of [deepYellow].
   final Color gold;
 
   /// Deprecated compatibility gradient for older surfaces. New event/club hero
@@ -166,10 +283,38 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   Color get floatingPillFill =>
       surface.withValues(alpha: CatchOpacity.floatingPillFill);
 
-  // ── Paper/ink palette — light (launch default) ───────────────────────────────
+  // ── Day ───────────────────────────────────────────────────────────────────────
 
-  // B&W base — light (browse/forms register)
   static const light = CatchTokens(
+    ground: GeneratedCatchColorTokens.lightGround,
+    tile: GeneratedCatchColorTokens.lightTile,
+    nested: GeneratedCatchColorTokens.lightNested,
+    paper: GeneratedCatchColorTokens.lightPaper,
+    map: GeneratedCatchColorTokens.lightMap,
+    scrim: GeneratedCatchColorTokens.lightScrim,
+    onPrimary: GeneratedCatchColorTokens.lightOnPrimary,
+    controlLine: GeneratedCatchColorTokens.lightControlLine,
+    fieldLine: GeneratedCatchColorTokens.lightFieldLine,
+    focus: GeneratedCatchColorTokens.lightFocus,
+    track: GeneratedCatchColorTokens.lightTrack,
+    switchOff: GeneratedCatchColorTokens.lightSwitchOff,
+    formatRun: GeneratedCatchColorTokens.lightFormatRun,
+    formatDinner: GeneratedCatchColorTokens.lightFormatDinner,
+    formatGames: GeneratedCatchColorTokens.lightFormatGames,
+    formatCourts: GeneratedCatchColorTokens.lightFormatCourts,
+    formatNightsOut: GeneratedCatchColorTokens.lightFormatNightsOut,
+    indigo: GeneratedCatchColorTokens.lightIndigo,
+    onFormat: GeneratedCatchColorTokens.lightOnFormat,
+    tintMint: GeneratedCatchColorTokens.lightTintMint,
+    tintYellow: GeneratedCatchColorTokens.lightTintYellow,
+    tintCoral: GeneratedCatchColorTokens.lightTintCoral,
+    tintIndigo: GeneratedCatchColorTokens.lightTintIndigo,
+    tintPink: GeneratedCatchColorTokens.lightTintPink,
+    deepMint: GeneratedCatchColorTokens.lightDeepMint,
+    deepYellow: GeneratedCatchColorTokens.lightDeepYellow,
+    deepCoral: GeneratedCatchColorTokens.lightDeepCoral,
+    deepIndigo: GeneratedCatchColorTokens.lightDeepIndigo,
+    deepPink: GeneratedCatchColorTokens.lightDeepPink,
     bg: GeneratedCatchColorTokens.lightBg,
     surface: GeneratedCatchColorTokens.lightSurface,
     raised: GeneratedCatchColorTokens.lightRaised,
@@ -200,10 +345,38 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     heroGrad: GeneratedCatchGradientTokens.lightHeroGrad,
   );
 
-  // ── Paper/ink palette — dark ("wow" surfaces) ───────────────────────────────
+  // ── Night ─────────────────────────────────────────────────────────────────────
 
-  // B&W base — dark (wow surfaces)
   static const dark = CatchTokens(
+    ground: GeneratedCatchColorTokens.darkGround,
+    tile: GeneratedCatchColorTokens.darkTile,
+    nested: GeneratedCatchColorTokens.darkNested,
+    paper: GeneratedCatchColorTokens.darkPaper,
+    map: GeneratedCatchColorTokens.darkMap,
+    scrim: GeneratedCatchColorTokens.darkScrim,
+    onPrimary: GeneratedCatchColorTokens.darkOnPrimary,
+    controlLine: GeneratedCatchColorTokens.darkControlLine,
+    fieldLine: GeneratedCatchColorTokens.darkFieldLine,
+    focus: GeneratedCatchColorTokens.darkFocus,
+    track: GeneratedCatchColorTokens.darkTrack,
+    switchOff: GeneratedCatchColorTokens.darkSwitchOff,
+    formatRun: GeneratedCatchColorTokens.darkFormatRun,
+    formatDinner: GeneratedCatchColorTokens.darkFormatDinner,
+    formatGames: GeneratedCatchColorTokens.darkFormatGames,
+    formatCourts: GeneratedCatchColorTokens.darkFormatCourts,
+    formatNightsOut: GeneratedCatchColorTokens.darkFormatNightsOut,
+    indigo: GeneratedCatchColorTokens.darkIndigo,
+    onFormat: GeneratedCatchColorTokens.darkOnFormat,
+    tintMint: GeneratedCatchColorTokens.darkTintMint,
+    tintYellow: GeneratedCatchColorTokens.darkTintYellow,
+    tintCoral: GeneratedCatchColorTokens.darkTintCoral,
+    tintIndigo: GeneratedCatchColorTokens.darkTintIndigo,
+    tintPink: GeneratedCatchColorTokens.darkTintPink,
+    deepMint: GeneratedCatchColorTokens.darkDeepMint,
+    deepYellow: GeneratedCatchColorTokens.darkDeepYellow,
+    deepCoral: GeneratedCatchColorTokens.darkDeepCoral,
+    deepIndigo: GeneratedCatchColorTokens.darkDeepIndigo,
+    deepPink: GeneratedCatchColorTokens.darkDeepPink,
     bg: GeneratedCatchColorTokens.darkBg,
     surface: GeneratedCatchColorTokens.darkSurface,
     raised: GeneratedCatchColorTokens.darkRaised,
@@ -243,6 +416,35 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
 
   @override
   CatchTokens copyWith({
+    Color? ground,
+    Color? tile,
+    Color? nested,
+    Color? paper,
+    Color? map,
+    Color? scrim,
+    Color? onPrimary,
+    Color? controlLine,
+    Color? fieldLine,
+    Color? focus,
+    Color? track,
+    Color? switchOff,
+    Color? formatRun,
+    Color? formatDinner,
+    Color? formatGames,
+    Color? formatCourts,
+    Color? formatNightsOut,
+    Color? indigo,
+    Color? onFormat,
+    Color? tintMint,
+    Color? tintYellow,
+    Color? tintCoral,
+    Color? tintIndigo,
+    Color? tintPink,
+    Color? deepMint,
+    Color? deepYellow,
+    Color? deepCoral,
+    Color? deepIndigo,
+    Color? deepPink,
     Color? bg,
     Color? surface,
     Color? raised,
@@ -270,6 +472,35 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     Color? gold,
     Gradient? heroGrad,
   }) => CatchTokens(
+    ground: ground ?? this.ground,
+    tile: tile ?? this.tile,
+    nested: nested ?? this.nested,
+    paper: paper ?? this.paper,
+    map: map ?? this.map,
+    scrim: scrim ?? this.scrim,
+    onPrimary: onPrimary ?? this.onPrimary,
+    controlLine: controlLine ?? this.controlLine,
+    fieldLine: fieldLine ?? this.fieldLine,
+    focus: focus ?? this.focus,
+    track: track ?? this.track,
+    switchOff: switchOff ?? this.switchOff,
+    formatRun: formatRun ?? this.formatRun,
+    formatDinner: formatDinner ?? this.formatDinner,
+    formatGames: formatGames ?? this.formatGames,
+    formatCourts: formatCourts ?? this.formatCourts,
+    formatNightsOut: formatNightsOut ?? this.formatNightsOut,
+    indigo: indigo ?? this.indigo,
+    onFormat: onFormat ?? this.onFormat,
+    tintMint: tintMint ?? this.tintMint,
+    tintYellow: tintYellow ?? this.tintYellow,
+    tintCoral: tintCoral ?? this.tintCoral,
+    tintIndigo: tintIndigo ?? this.tintIndigo,
+    tintPink: tintPink ?? this.tintPink,
+    deepMint: deepMint ?? this.deepMint,
+    deepYellow: deepYellow ?? this.deepYellow,
+    deepCoral: deepCoral ?? this.deepCoral,
+    deepIndigo: deepIndigo ?? this.deepIndigo,
+    deepPink: deepPink ?? this.deepPink,
     bg: bg ?? this.bg,
     surface: surface ?? this.surface,
     raised: raised ?? this.raised,
@@ -302,6 +533,35 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
   CatchTokens lerp(CatchTokens? other, double t) {
     if (other is! CatchTokens) return this;
     return CatchTokens(
+      ground: Color.lerp(ground, other.ground, t)!,
+      tile: Color.lerp(tile, other.tile, t)!,
+      nested: Color.lerp(nested, other.nested, t)!,
+      paper: Color.lerp(paper, other.paper, t)!,
+      map: Color.lerp(map, other.map, t)!,
+      scrim: Color.lerp(scrim, other.scrim, t)!,
+      onPrimary: Color.lerp(onPrimary, other.onPrimary, t)!,
+      controlLine: Color.lerp(controlLine, other.controlLine, t)!,
+      fieldLine: Color.lerp(fieldLine, other.fieldLine, t)!,
+      focus: Color.lerp(focus, other.focus, t)!,
+      track: Color.lerp(track, other.track, t)!,
+      switchOff: Color.lerp(switchOff, other.switchOff, t)!,
+      formatRun: Color.lerp(formatRun, other.formatRun, t)!,
+      formatDinner: Color.lerp(formatDinner, other.formatDinner, t)!,
+      formatGames: Color.lerp(formatGames, other.formatGames, t)!,
+      formatCourts: Color.lerp(formatCourts, other.formatCourts, t)!,
+      formatNightsOut: Color.lerp(formatNightsOut, other.formatNightsOut, t)!,
+      indigo: Color.lerp(indigo, other.indigo, t)!,
+      onFormat: Color.lerp(onFormat, other.onFormat, t)!,
+      tintMint: Color.lerp(tintMint, other.tintMint, t)!,
+      tintYellow: Color.lerp(tintYellow, other.tintYellow, t)!,
+      tintCoral: Color.lerp(tintCoral, other.tintCoral, t)!,
+      tintIndigo: Color.lerp(tintIndigo, other.tintIndigo, t)!,
+      tintPink: Color.lerp(tintPink, other.tintPink, t)!,
+      deepMint: Color.lerp(deepMint, other.deepMint, t)!,
+      deepYellow: Color.lerp(deepYellow, other.deepYellow, t)!,
+      deepCoral: Color.lerp(deepCoral, other.deepCoral, t)!,
+      deepIndigo: Color.lerp(deepIndigo, other.deepIndigo, t)!,
+      deepPink: Color.lerp(deepPink, other.deepPink, t)!,
       bg: Color.lerp(bg, other.bg, t)!,
       surface: Color.lerp(surface, other.surface, t)!,
       raised: Color.lerp(raised, other.raised, t)!,

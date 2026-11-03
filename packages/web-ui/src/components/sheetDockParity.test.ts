@@ -71,7 +71,7 @@ describe("CatchDock parity", () => {
     expect(dock).toContain("fullWidth: true,");
     expect(dock).toContain("gapW14,");
     expect(dockCss).toContain("gap: var(--catch-space-micro14);");
-    expect(dock).toContain("const SizedBox(height: CatchSpacing.s2),\n                      Text(\n                        action.footnote!,");
+    expect(dock).toContain("const SizedBox(height: CatchSpacing.s2),\n                      ConstrainedBox(\n                        constraints: textBound,\n                        child: SingleChildScrollView(\n                          primary: false,\n                          child: Text(\n                            action.footnote!,");
     expect(dockCss).toContain("margin: var(--catch-space-s2) 0 0;");
     expect(dock).toContain("Border(top: BorderSide(color: t.line))");
     expect(dockCss).toContain("border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);");

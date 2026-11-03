@@ -4,6 +4,10 @@ analyzer:
   exclude:
     - lib/generated/**
     - build/**
+  errors:
+    # The hand-written API keeps reading the deprecated generated aliases until
+    # P7 deletes them; `dart analyze --fatal-infos` would fail every one.
+    deprecated_member_use_from_same_package: ignore
 
 linter:
   rules:

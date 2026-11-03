@@ -239,8 +239,8 @@ void main() {
   test('shared spacing and motion are generated semantic dependencies', () {
     expect(CatchSpacing.screenPx, GeneratedCatchLayoutTokens.pageGutter);
     expect(CatchSpacing.screenPt, GeneratedCatchLayoutTokens.pageBodyStart);
-    expect(CatchMotion.base, GeneratedCatchMotionTokens.base);
-    expect(CatchMotion.standardCurve, GeneratedCatchMotionTokens.standardCurve);
+    expect(CatchMotion.base, GeneratedCatchDurationTokens.standard);
+    expect(CatchMotion.standardCurve, GeneratedCatchEasingTokens.standard);
     expect(GeneratedCatchAccessibilityTokens.minimumTextContrast, 4.5);
     expect(GeneratedCatchAccessibilityTokens.largeTextContrast, 3);
   });

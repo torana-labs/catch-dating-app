@@ -152,27 +152,27 @@ void _registerCatchPrimitivesControlsTests() {
       TextDecoration.none,
     });
     expect(styles.map((style) => style.letterSpacing).toSet(), {0});
-    // Blueprint D19: six steps on a 1.25 ratio at weight 760, with line
-    // height and em tracking tightening as the size grows.
-    const d19 = [
-      (24.0, 1.10, -0.020),
-      (30.0, 1.05, -0.025),
-      (38.0, 1.05, -0.030),
-      (48.0, 1.00, -0.035),
-      (60.0, 1.00, -0.040),
-      (72.0, 1.00, -0.040),
+    // Blueprint D22: the six older names read display-sm to display-hero, at
+    // weight 760, with line height and em tracking tightening as the size grows.
+    const d22 = [
+      (24.0, 1.10, -0.010),
+      (30.0, 1.05, -0.020),
+      (38.0, 1.00, -0.030),
+      (48.0, 1.00, -0.030),
+      (64.0, 0.95, -0.040),
+      (96.0, 0.90, -0.045),
     ];
-    for (final (index, (size, height, trackingEm)) in d19.indexed) {
+    for (final (index, (size, height, trackingEm)) in d22.indexed) {
       final style = displays[index];
       expect(style.fontSize, size);
       expect(style.height, height);
       expect(style.fontWeight, const FontWeight(760));
       expect(style.letterSpacing, closeTo(size * trackingEm, 1e-9));
     }
-    expect(kicker.letterSpacing, 1.76);
-    expect(kickerLarge.letterSpacing, 2.16);
-    expect(monoCapsLabel.letterSpacing, 1.43);
-    expect(badgeCaps.letterSpacing, 0.72);
+    expect(kicker.letterSpacing, 0);
+    expect(kickerLarge.letterSpacing, 0);
+    expect(monoCapsLabel.letterSpacing, 0);
+    expect(badgeCaps.letterSpacing, 0);
   });
 
   testWidgets('CatchKickerText renders uppercase mono eyebrow sizes', (

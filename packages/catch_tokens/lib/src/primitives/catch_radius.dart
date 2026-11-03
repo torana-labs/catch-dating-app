@@ -8,10 +8,13 @@ abstract final class CatchRadius {
   static const double sm = GeneratedCatchRadiusTokens.sm;
   static const double md = GeneratedCatchRadiusTokens.md;
   static const double lg = GeneratedCatchRadiusTokens.lg;
+  static const double xl = GeneratedCatchRadiusTokens.xl;
   static const double profileHeroBottom = CatchSpacing.s7;
   static const double segmentedInner = CatchSpacing.micro18;
   static const double segmentedOuter = 22.0;
   static const double infoTile = 10.0;
+
+  /// Alias of [sm]; P7 deletes it.
   static const double interactiveTile =
       GeneratedCatchRadiusTokens.interactiveTile;
   static const double heroCard = 22.0;

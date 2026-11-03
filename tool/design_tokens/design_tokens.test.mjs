@@ -5,7 +5,8 @@ import path from "node:path";
 import test from "node:test";
 import {generateTokenOutputs, staleOutputs, writeOutputs} from "../design_tokens.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
-import {assertTokenTree, fontFaces} from "./lib/style_dictionary.config.mjs";
+import {artifactJsonPath} from "./lib/artifact.mjs";
+import {assertTokenTree, fontFaces, isDeprecated} from "./lib/style_dictionary.config.mjs";
 import {cssTokenValue, dartColor, derivedActivitySwatches, formatDartNumber} from "./lib/values.mjs";
 
 const source = JSON.parse(fs.readFileSync(fromRepo("design/tokens/catch.tokens.json"), "utf8"));
@@ -61,12 +62,20 @@ test("tokens that cannot be represented fail generation", async () => {
     [/color roles must match/u, (doc) => { doc.theme.dark.color.extra = {$type: "color", $value: srgb("#010203")}; }],
     [/Typography platform roles/u, (doc) => { delete doc.typography.android[firstKey(doc.typography.ios)]; }],
     [/Invalid typography metrics/u, (doc) => { doc.typography.ios[firstKey(doc.typography.ios)].weight.$value = 450; }],
-    [/Missing opacity tokens/u, (doc) => { delete doc.opacity; }],
+    [/Missing size tokens/u, (doc) => { delete doc.size; }],
     [/Unsupported gap token/u, (doc) => { doc.gap.wrong = {$type: "number", $value: 1}; }],
     [/Invalid duration/u, (doc) => { doc.motion.wrong = {$type: "duration", $value: {value: 1, unit: "s"}}; }],
     [/Invalid accessibility floor/u, (doc) => { doc.accessibility.wrong = {$type: "number", $value: 0}; }],
     [/Unknown token reference/u, (doc) => { doc.$extensions["org.catch"].website.legacyAliases.bad = "{no.such}"; }],
     [/fontFace.family/u, (doc) => { delete doc.$extensions["org.catch"].website.fontFaces[0].family; }],
+    [/Missing typeVariants/u, (doc) => { delete doc.$extensions["org.catch"].typeVariants; }],
+    [/Unknown type variant role/u, (doc) => { doc.$extensions["org.catch"].typeVariants.hero.compact = "nope"; }],
+    [/Missing artifact manifest/u, (doc) => { delete doc.$extensions["org.catch"].artifact; }],
+    [/Artifact token not found/u, (doc) => { doc.$extensions["org.catch"].artifact.radius[0].token = "radius.nope"; }],
+    [/needs a \$description/u, (doc) => { delete doc.radius.xs.$description; }],
+    [/cannot publish a deprecated token/u, (doc) => {
+      doc.$extensions["org.catch"].artifact.radius[0].token = "radius.interactiveTile";
+    }],
   ]) {
     await assert.rejects(inSandbox(mutate), message);
   }
@@ -105,3 +114,67 @@ test("activity swatches keep Flutter's HSLColor results, including black", () =>
     "soft-dark": "#541C1C",
   });
 });
+
+test("an artifact output is optional, but must match its generator when present", async () => {
+  const {root, outputs} = await inSandbox(() => {});
+  writeOutputs(outputs, {root});
+  assert.deepEqual(staleOutputs(outputs, {root}), []);
+  fs.rmSync(path.join(root, artifactJsonPath));
+  assert.deepEqual(staleOutputs(outputs, {root}), []);
+  fs.writeFileSync(path.join(root, artifactJsonPath), "{}");
+  assert.deepEqual(staleOutputs(outputs, {root}), [`stale ${artifactJsonPath}`]);
+  fs.rmSync(root, {recursive: true});
+});
+
+test("the artifact publishes every system family, under the system's names", async () => {
+  const {artifacts} = await generateTokenOutputs();
+  const artifact = JSON.parse(artifacts.find(({destination}) => destination === artifactJsonPath).output);
+  assert.deepEqual(Object.keys(artifact), ["name", "version", "meta", "color", "type", "spacing", "radius",
+    "shadow", "size", "stroke", "duration", "easing", "layout", "opacity"]);
+  assert.equal(artifact.color.tokens.length, 34);
+  assert.equal(artifact.type.groups.flatMap(({styles}) => styles).length, 19);
+  const value = (family, name) => artifact[family].tokens.find((token) => token.name === name)?.value;
+  assert.deepEqual(artifact.radius.tokens.map((token) => token.value),
+    ["6px", "10px", "16px", "20px", "24px", "999px"]);
+  assert.equal(value("size", "control-lg"), "48px");
+  assert.equal(value("stroke", "stroke-control"), "1.5px");
+  assert.equal(value("layout", "pane-lane"), "600px");
+  assert.equal(value("layout", "bp-expanded"), "840px");
+  assert.equal(value("duration", "duration-emphasized"), "360ms");
+  assert.equal(value("easing", "ease-spring"), "cubic-bezier(0.34, 1.36, 0.64, 1)");
+  assert.equal(value("color", "paper"), "#f6f0e8");
+  assert.deepEqual(value("color", "ink-2"), {day: "#5a5450", night: "#bdb3a7"});
+  const css = artifacts.find(({destination}) => destination.endsWith(".css")).output;
+  assert.ok(css.includes(':root, [data-theme="day"] {\n  --ground: #ffffff;'));
+  assert.ok(css.includes('[data-theme="night"] {\n  --ground: #141114;'));
+  assert.ok(css.includes(".label-code { font-family: var(--font-sans); font-size: 13px; line-height: 1.35; " +
+    "font-weight: 500; letter-spacing: 0.12em; }"));
+});
+
+test("old names resolve to their system role and are marked deprecated everywhere", async () => {
+  const {files} = await generateTokenOutputs();
+  const css = files.find(({destination}) => destination.endsWith(".css")).output;
+  const dart = files.find(({destination}) => destination.endsWith(".dart")).output;
+  assert.ok(css.includes("--catch-color-light-bg: #F3F3F1;"));
+  assert.ok(css.includes("--catch-theme-bg: var(--catch-color-light-bg);"));
+  assert.ok(css.includes("--catch-radius-interactive-tile: 10px;"));
+  assert.ok(css.includes("--catch-motion-fast: 100ms;"));
+  assert.ok(css.includes("--catch-font-mono: system-ui;"));
+  const banner = css.indexOf("Deprecated aliases of the system v15 roles");
+  assert.ok(banner > 0 && banner < css.indexOf("--catch-color-light-bg:"));
+  assert.match(dart, /@Deprecated\('Alias of theme\.light\.color\.tile; P7 deletes it\.'\)\s+static const Color lightBg/u);
+  assert.match(dart, /@Deprecated\('Alias of radius\.sm; P7 deletes it\.'\)\s+static const double interactiveTile/u);
+  assert.equal(isDeprecated(source, {path: ["typography", "brand", "kicker", "size"]}), true);
+  assert.equal(isDeprecated(source, {path: ["typography", "role", "labelKicker", "size"]}), false);
+});
+
+test("the responsive text variants resolve by size class on both platforms", async () => {
+  const {files} = await generateTokenOutputs();
+  const css = files.find(({destination}) => destination.endsWith(".css")).output;
+  const dart = files.find(({destination}) => destination.endsWith(".dart")).output;
+  assert.ok(css.includes("--catch-typography-variant-hero-size: var(--catch-typography-role-display-lg-size);"));
+  assert.match(css, /@media \(min-width: 840px\) \{\n {2}:root \{[^}]*--catch-typography-variant-hero-size: var\(--catch-typography-role-display-hero-size\);/u);
+  assert.match(dart, /heroExpanded =\s+GeneratedCatchTypeRoleTokens\.displayHero;/u);
+  assert.match(dart, /pageTitleCompact =\s+GeneratedCatchTypeRoleTokens\.displayTitle;/u);
+});
+

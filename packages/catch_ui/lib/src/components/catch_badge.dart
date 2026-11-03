@@ -447,6 +447,37 @@ class _BadgePalette {
     pigment,
   );
 
+  /// The system's soft status pair: a pale tint under its deep ink (D22).
+  static _BadgePalette? _tinted(CatchBadgeTone tone, CatchTokens t) =>
+      switch (tone) {
+        CatchBadgeTone.success => _BadgePalette(
+          background: t.tintMint,
+          foreground: t.deepMint,
+          border: Colors.transparent,
+        ),
+        CatchBadgeTone.warning => _BadgePalette(
+          background: t.tintYellow,
+          foreground: t.deepYellow,
+          border: Colors.transparent,
+        ),
+        CatchBadgeTone.danger => _BadgePalette(
+          background: t.tintCoral,
+          foreground: t.deepCoral,
+          border: Colors.transparent,
+        ),
+        CatchBadgeTone.gold => _BadgePalette(
+          background: t.tintYellow,
+          foreground: t.deepYellow,
+          border: Colors.transparent,
+        ),
+        CatchBadgeTone.affinity => _BadgePalette(
+          background: t.tintPink,
+          foreground: t.deepPink,
+          border: Colors.transparent,
+        ),
+        CatchBadgeTone.neutral || CatchBadgeTone.brand => null,
+      };
+
   static _BadgePalette from(
     CatchBadgeTone tone,
     CatchTokens t, {
@@ -469,23 +500,15 @@ class _BadgePalette {
     if (recipe == _CatchBadgeRecipe.optional) {
       final error = tone == CatchBadgeTone.danger;
       return _BadgePalette(
-        background: error
-            ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
-            : t.raised,
-        foreground: error ? t.dangerText : t.ink2,
+        background: error ? t.tintCoral : t.raised,
+        foreground: error ? t.deepCoral : t.ink2,
         border: Colors.transparent,
       );
     }
     if (recipe == _CatchBadgeRecipe.status) {
-      final color = switch (tone) {
-        CatchBadgeTone.neutral => t.ink2,
-        CatchBadgeTone.brand => t.primary,
-        CatchBadgeTone.success => t.positiveText,
-        CatchBadgeTone.warning => t.attentionText,
-        CatchBadgeTone.danger => t.dangerText,
-        CatchBadgeTone.gold => t.goldText,
-        CatchBadgeTone.affinity => t.affinityText,
-      };
+      final tinted = _tinted(tone, t);
+      if (tinted != null) return tinted;
+      final color = tone == CatchBadgeTone.brand ? t.primary : t.ink2;
       return _BadgePalette(
         background: color.withValues(alpha: CatchOpacity.subtleFill),
         foreground: color,
@@ -542,31 +565,15 @@ class _BadgePalette {
         foreground: t.primary,
         border: Colors.transparent,
       ),
-      CatchBadgeTone.success => _BadgePalette(
-        background: t.success.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: t.positiveText,
-        border: Colors.transparent,
-      ),
-      CatchBadgeTone.warning => _BadgePalette(
-        background: t.warning.withValues(alpha: CatchOpacity.warningFill),
-        foreground: t.attentionText,
-        border: Colors.transparent,
-      ),
-      CatchBadgeTone.danger => _BadgePalette(
-        background: t.danger.withValues(alpha: CatchOpacity.dangerFill),
-        foreground: t.dangerText,
-        border: Colors.transparent,
-      ),
-      CatchBadgeTone.affinity => _BadgePalette(
-        background: t.affinityText.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: t.affinityText,
-        border: Colors.transparent,
-      ),
       CatchBadgeTone.gold => _BadgePalette(
-        background: t.gold.withValues(alpha: CatchOpacity.subtleFill),
-        foreground: t.goldText,
-        border: t.gold.withValues(alpha: CatchOpacity.subtleBorder),
+        background: t.tintYellow,
+        foreground: t.deepYellow,
+        border: t.deepYellow.withValues(alpha: CatchOpacity.subtleBorder),
       ),
+      CatchBadgeTone.success ||
+      CatchBadgeTone.warning ||
+      CatchBadgeTone.danger ||
+      CatchBadgeTone.affinity => _tinted(tone, t)!,
     };
   }
 }

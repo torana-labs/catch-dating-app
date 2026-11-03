@@ -627,19 +627,16 @@ class _CatchFieldStatePreview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Wrap(
+          spacing: CatchSpacing.s3,
+          runSpacing: CatchSpacing.s1,
           children: [
             CatchBadge.functional(label: label),
-            if (description != null) ...[
-              const SizedBox(width: CatchSpacing.s3),
-              Expanded(
-                child: Text(
-                  description!,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
+            if (description != null)
+              Text(
+                description!,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
-            ],
           ],
         ),
         const SizedBox(height: CatchSpacing.s3),
