@@ -196,6 +196,20 @@ read owner that touches the uid, the session or an `organizerId`, `userId`
 or `uid` parameter. A retry is a closure passed as `onRetry`, `onRefresh` or
 `onReload`, or a function named for a retry, refresh or reload.
 
+## Rollout
+
+### Phase 1: foundations, report-only
+
+The pieces above land with no read owner migrated, and the rules list today's
+findings instead of failing on them.
+
+### Phase 2: context migrations empty the baseline
+
+1.3b moves the feature clocks' callers to `appClockProvider`. Each context's
+migration PR then puts its read owners on the contract, applies the shared
+harness to them and deletes its baseline entries. When the baseline is empty,
+the rules gate with no list.
+
 ## Code map
 
 | Piece | File |

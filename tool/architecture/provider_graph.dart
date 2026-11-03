@@ -2309,6 +2309,9 @@ String renderCacheBaseline(List<CacheFinding> findings) {
   final sorted = [...findings]..sort(_compareCacheFindings);
   return renderProviderGraphJson({
     'owner': 'app_architecture',
+    'targetPhase':
+        'docs/screen_data_caching.md'
+        '#phase-2-context-migrations-empty-the-baseline',
     'version': 1,
     'doc': 'docs/screen_data_caching.md',
     'mode': 'report-only',
