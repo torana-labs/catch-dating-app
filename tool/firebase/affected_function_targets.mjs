@@ -76,7 +76,8 @@ const SCHEMA_GENERATOR = "tool/contracts/generate_schema_contracts.mjs";
 class ContractGenerationError extends Error {}
 
 // Rebuild the modules this commit would deploy, unless it predates untracking
-// and still holds them, or has no generator at all.
+// and still holds them, or has no generator at all. A file force-added later would
+// make this trust a partial tree; meta:repository-root-hygiene refuses those.
 function withGeneratedContracts(root, sha, tree) {
   const holdsModules = [...tree.keys()].some((name) => name.startsWith(GENERATED_CONTRACTS) &&
     !TRACKED_GENERATED.has(name) && name !== functionsCatalogModule);

@@ -85,6 +85,9 @@ jobs:
           # Reused PNGs must prove their original render is an ancestor.
           fetch-depth: 0
           persist-credentials: false
+      - uses: ./.github/actions/generate-contracts
+        with:
+          root: capture-source
       - id: toolchain
         uses: ./.github/actions/load-toolchain
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -367,6 +370,9 @@ jobs:
           # Reused PNGs must prove their original render is an ancestor.
           fetch-depth: 0
           persist-credentials: false
+      - uses: ./.github/actions/generate-contracts
+        with:
+          root: capture-source
       - name: Receive seeds from the plan
         if: ${{ needs.plan.outputs.seeded == 'true' }}
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
