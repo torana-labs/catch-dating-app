@@ -80,9 +80,6 @@
     }
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
     "react/forbid-dom-props": {
       "count": 2
     },
@@ -141,10 +138,10 @@
   },
   "src/shared/ui/AdminPrimitives/metrics.tsx": {
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 10
     },
     "react/forbid-elements": {
-      "count": 14
+      "count": 11
     }
   },
   "src/shared/ui/AdminPrimitives/overview.tsx": {
@@ -168,10 +165,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 5
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 9
+      "count": 1
     }
   }
 }

@@ -18,18 +18,6 @@ export {selectOptions} from "./shared";
 
 export {StateRow} from "./data";
 
-export function AdminEditorPanel({
-  className = "",
-  ...props
-}: PanelProps) {
-  return (
-    <Panel
-      {...props}
-      className={classNames("publishing-editor-panel", className)}
-    />
-  );
-}
-
 export function AdminStateRow({
   label,
   value,
