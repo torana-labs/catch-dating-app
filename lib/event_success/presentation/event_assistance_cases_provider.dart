@@ -113,13 +113,14 @@ class EventAssistanceCases extends _$EventAssistanceCases {
   void reload() {
     final account = ref.read(eventAssistanceAccountProvider);
     if (account.isLoading || account.hasError || account.asData == null) return;
-    final source = eventAssistanceCasesForAccountProvider(
-      query,
-      account: account.requireValue,
+    // With a settled account, an error here is the listener's own.
+    if (!state.hasError) return;
+    ref.invalidate(
+      eventAssistanceCasesForAccountProvider(
+        query,
+        account: account.requireValue,
+      ),
     );
-    if (ref.exists(source) && ref.read(source).hasError) {
-      ref.invalidate(source);
-    }
   }
 }
 
