@@ -9,6 +9,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 
 export 'private_event_setup_models.dart';
 export 'private_event_setup_view.dart';
+export 'read_models/host_event_setup_view_reads.dart'
+    show privateEventSetupViewProvider;
 
 // firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:DESCENDING, __name__:DESCENDING)

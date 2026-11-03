@@ -6,6 +6,8 @@ import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 export 'manager_event_setup_defaults_view.dart';
+export 'read_models/host_event_setup_default_view_reads.dart'
+    show managerEventSetupDefaultsViewProvider;
 
 final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
 final _idPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');

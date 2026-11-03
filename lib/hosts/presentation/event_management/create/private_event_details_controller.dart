@@ -6,8 +6,6 @@ import 'package:catch_dating_app/contexts/events/data/private_event_details_jour
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
-import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
-import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_media_service.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
@@ -124,10 +122,12 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     _eventView = ReadModelFollower(
       onValue: _onEventView,
       onError: _onListenerError,
+      reject: (view) => privateEventSetupViewMismatch(view, scope),
     );
     _defaultsView = ReadModelFollower(
       onValue: _onDefaultsView,
       onError: _onListenerError,
+      reject: (view) => defaultsViewMismatch(view, scope.organizerId),
     );
     ref.onDispose(() {
       _eventView.close();
@@ -208,13 +208,7 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
       (s) =>
           s.copyWith(loading: true, error: null, event: null, defaults: null),
     );
-    _eventView.follow(
-      ref,
-      privateEventSetupViewProvider(
-        organizerId: _organizerId,
-        eventId: _eventId,
-      ),
-    );
+    _followEvent();
     _defaultsView.follow(
       ref,
       managerEventSetupDefaultsViewProvider(_organizerId),
@@ -233,7 +227,14 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
       _journalLoaded = true;
       _settleLoading();
     }
+    // Returns once every listener has answered, loaded or not.
+    await Future.wait([_eventView.firstDelivery, _defaultsView.firstDelivery]);
   }
+
+  void _followEvent() => _eventView.follow(
+    ref,
+    privateEventSetupViewProvider(organizerId: _organizerId, eventId: _eventId),
+  );
 
   void _onEventView(PrivateEventSetupView view) {
     if (!_actorAvailable) return;
@@ -296,6 +297,7 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
 
   /// Loading ends when the journal and both listeners have answered.
   void _settleLoading() {
+    if (!ref.mounted) return;
     if (!_loading) return;
     final answered =
         _listenerError != null ||
@@ -487,6 +489,7 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     // No reread: saving ends when the listener delivers the committed
     // revision (an older replay revision is already reflected).
     final revision = receipt.setupRevision;
+    if (!_eventView.following) _followEvent();
     await _eventView.until(
       (view) =>
           view.reflects(revision) ||

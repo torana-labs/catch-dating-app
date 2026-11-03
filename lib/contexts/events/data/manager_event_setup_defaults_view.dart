@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -120,15 +122,49 @@ class ManagerEventSetupDefaultsView {
 /// one is a [ManagerEventSetupDefaultsUnavailable].
 Future<ManagerEventSetupDefaults> firstCompleteDefaultsView(
   Stream<ManagerEventSetupDefaultsView> views,
-) async {
-  await for (final view in views) {
-    if (view.sourceCoverage ==
-        ManagerEventSetupDefaultsCoverage.invalidSource) {
-      view.requireDefaults();
-    }
-    if (view.isComplete) return view.defaults!;
+) {
+  final done = Completer<ManagerEventSetupDefaults>();
+  late final StreamSubscription<ManagerEventSetupDefaultsView> subscription;
+  void finish(void Function() complete) {
+    if (done.isCompleted) return;
+    complete();
+    // The answer does not wait for the listener to stop.
+    unawaited(subscription.cancel());
   }
-  throw const ManagerEventSetupDefaultsUnavailable(
-    ManagerEventSetupDefaultsCoverage.missing,
+
+  subscription = views.listen(
+    (view) {
+      if (view.sourceCoverage ==
+          ManagerEventSetupDefaultsCoverage.invalidSource) {
+        finish(
+          () => done.completeError(
+            ManagerEventSetupDefaultsUnavailable(
+              view.sourceCoverage,
+              source: view.incompleteSource,
+            ),
+          ),
+        );
+      } else if (view.isComplete) {
+        finish(() => done.complete(view.defaults));
+      }
+    },
+    onError: (Object error, StackTrace stackTrace) =>
+        finish(() => done.completeError(error, stackTrace)),
+    onDone: () => finish(
+      () => done.completeError(
+        const ManagerEventSetupDefaultsUnavailable(
+          ManagerEventSetupDefaultsCoverage.missing,
+        ),
+      ),
+    ),
   );
+  return done.future;
 }
+
+/// A defaults view for another organizer than [organizerId], as an error.
+FormatException? defaultsViewMismatch(
+  ManagerEventSetupDefaultsView view,
+  String organizerId,
+) => view.organizerId != organizerId
+    ? const FormatException('Organizer defaults view changed identity')
+    : null;

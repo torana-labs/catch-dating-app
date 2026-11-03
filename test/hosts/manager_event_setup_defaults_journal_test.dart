@@ -72,6 +72,8 @@ void main() {
     () async {
       final sent = <Map<String, Object?>>[];
       var attempts = 0;
+      // The server's defaults view reflects the last committed revision.
+      var committed = 0;
       Future<ManagerEventSetupDefaultsUpdateReceipt> write(
         ManagerEventSetupDefaultsUpdateRequest value,
       ) async {
@@ -79,6 +81,7 @@ void main() {
         attempts++;
         if (attempts == 1) throw StateError('response lost');
         if (attempts == 2) throw StateError('permission denied');
+        committed = 1;
         return ManagerEventSetupDefaultsUpdateReceipt(
           appliedRevision: 1,
           current: snapshot(1),
@@ -89,7 +92,7 @@ void main() {
       final first = TestHostManagerEventSetupDefaultsController(
         organizerId: 'club-1',
         userId: 'host-1',
-        read: (_) async => snapshot(0),
+        read: (_) async => snapshot(committed),
         write: write,
       );
       await first.load();
@@ -102,7 +105,7 @@ void main() {
       final reopened = TestHostManagerEventSetupDefaultsController(
         organizerId: 'club-1',
         userId: 'host-1',
-        read: (_) async => snapshot(0),
+        read: (_) async => snapshot(committed),
         write: write,
       );
       await reopened.load();
@@ -138,8 +141,10 @@ void main() {
     );
     await controller.load();
     expect(controller.canEdit, isTrue);
+    // The listener reports the revoked access.
     denied = true;
-    await controller.load();
+    await controller.defaultsFeed.refresh();
+    await pumpEventQueue();
     expect(controller.current, isNull);
     expect(controller.canEdit, isFalse);
     expect(controller.error, isNotNull);

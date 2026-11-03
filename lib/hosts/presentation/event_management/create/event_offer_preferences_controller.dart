@@ -4,7 +4,6 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
-import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
@@ -62,10 +61,16 @@ class EventOfferPreferencesController extends _$EventOfferPreferencesController
     _configurationView = ReadModelFollower(
       onValue: _onConfiguration,
       onError: _onListenerError,
+      reject: (configuration) =>
+          configuration.organizerId != scope.organizerId ||
+              configuration.eventId != scope.eventId
+          ? const FormatException('Offer settings identity changed')
+          : null,
     );
     _defaultsView = ReadModelFollower(
       onValue: _onDefaultsView,
       onError: _onListenerError,
+      reject: (view) => defaultsViewMismatch(view, scope.organizerId),
     );
     ref.onDispose(() {
       _configurationView.close();
@@ -123,13 +128,7 @@ class EventOfferPreferencesController extends _$EventOfferPreferencesController
     _error = null;
     _configuration = null;
     _defaults = null;
-    _configurationView.follow(
-      ref,
-      eventOfferConfigurationProvider(
-        organizerId: _organizerId,
-        eventId: _eventId,
-      ),
-    );
+    _followConfiguration();
     _defaultsView.follow(
       ref,
       managerEventSetupDefaultsViewProvider(_organizerId),
@@ -146,7 +145,20 @@ class EventOfferPreferencesController extends _$EventOfferPreferencesController
       _journalLoaded = true;
       _settleLoading();
     }
+    // Returns once every listener has answered, loaded or not.
+    await Future.wait([
+      _configurationView.firstDelivery,
+      _defaultsView.firstDelivery,
+    ]);
   }
+
+  void _followConfiguration() => _configurationView.follow(
+    ref,
+    eventOfferConfigurationProvider(
+      organizerId: _organizerId,
+      eventId: _eventId,
+    ),
+  );
 
   void _onConfiguration(EventOfferConfiguration configuration) {
     if (!actorIsAvailable()) return;
@@ -192,6 +204,7 @@ class EventOfferPreferencesController extends _$EventOfferPreferencesController
 
   /// Loading ends when the journal and both listeners have answered.
   void _settleLoading() {
+    if (!ref.mounted) return;
     if (!_loading) return;
     final answered =
         _listenerError != null || (_configuration != null && _defaults != null);
@@ -292,6 +305,7 @@ class EventOfferPreferencesController extends _$EventOfferPreferencesController
     _pending = null;
     // No reread: the command settles when the listener delivers its revision.
     final applied = receipt.preferencesRevision;
+    if (!_configurationView.following) _followConfiguration();
     await _configurationView.until(
       (configuration) => configuration.preferencesRevision >= applied,
     );

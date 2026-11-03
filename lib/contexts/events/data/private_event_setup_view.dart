@@ -142,17 +142,48 @@ class PrivateEventSetupView {
 Future<PrivateEventBasicSummary> firstCompleteSetupView(
   Stream<PrivateEventSetupView> views, {
   int atLeastRevision = 1,
-}) async {
-  await for (final view in views) {
-    if (view.sourceCoverage == PrivateEventSetupCoverage.invalidSource) {
-      throw PrivateEventSetupViewUnavailable(
-        view.sourceCoverage,
-        source: view.incompleteSource,
-      );
-    }
-    if (view.reflects(atLeastRevision)) return view.summary!;
+}) {
+  final done = Completer<PrivateEventBasicSummary>();
+  late final StreamSubscription<PrivateEventSetupView> subscription;
+  void finish(void Function() complete) {
+    if (done.isCompleted) return;
+    complete();
+    // The answer does not wait for the listener to stop.
+    unawaited(subscription.cancel());
   }
-  throw const PrivateEventSetupViewUnavailable(
-    PrivateEventSetupCoverage.missing,
+
+  subscription = views.listen(
+    (view) {
+      if (view.sourceCoverage == PrivateEventSetupCoverage.invalidSource) {
+        finish(
+          () => done.completeError(
+            PrivateEventSetupViewUnavailable(
+              view.sourceCoverage,
+              source: view.incompleteSource,
+            ),
+          ),
+        );
+      } else if (view.reflects(atLeastRevision)) {
+        finish(() => done.complete(view.summary));
+      }
+    },
+    onError: (Object error, StackTrace stackTrace) =>
+        finish(() => done.completeError(error, stackTrace)),
+    onDone: () => finish(
+      () => done.completeError(
+        const PrivateEventSetupViewUnavailable(
+          PrivateEventSetupCoverage.missing,
+        ),
+      ),
+    ),
   );
+  return done.future;
 }
+
+/// A view for another event or organizer than [scope] names, as an error.
+FormatException? privateEventSetupViewMismatch(
+  PrivateEventSetupView view,
+  ({String organizerId, String eventId, String userId}) scope,
+) => view.organizerId != scope.organizerId || view.eventId != scope.eventId
+    ? const FormatException('Private event setup view changed identity')
+    : null;

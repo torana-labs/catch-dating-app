@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
@@ -18,6 +22,115 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_defaults_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'support/read_model_feeds.dart';
+
+/// The event as a step reads it; a feed delivers it as a complete setup view.
+typedef ReadPrivateEventForPreferences =
+    Future<PrivateEventBasicSummary> Function({
+      required String organizerId,
+      required String eventId,
+    });
+typedef ReadEventOfferConfiguration =
+    Future<EventOfferConfiguration> Function({
+      required String organizerId,
+      required String eventId,
+    });
+typedef ReadManagerEventSetupDefaults =
+    Future<ManagerEventSetupDefaults> Function(String organizerId);
+
+/// Setup view feed over [read]; refreshed after each committed command.
+SetupViewFeed setupViewFeed(
+  ReadPrivateEventForPreferences read, {
+  required String organizerId,
+  required String eventId,
+}) => SetupViewFeed(read, organizerId: organizerId, eventId: eventId);
+
+/// A setup view feed that, like the server's trigger, never delivers a
+/// revision older than the last command it saw commit.
+class SetupViewFeed extends ReadModelFeed<PrivateEventSetupView> {
+  SetupViewFeed(
+    ReadPrivateEventForPreferences read, {
+    required String organizerId,
+    required String eventId,
+  }) : this._(read, organizerId, eventId, _Floor());
+
+  SetupViewFeed._(
+    ReadPrivateEventForPreferences read,
+    String organizerId,
+    String eventId,
+    this._floor,
+  ) : super(() async {
+        final summary = await read(organizerId: organizerId, eventId: eventId);
+        return PrivateEventSetupView.complete(
+          summary.setupRevision >= _floor.value
+              ? summary
+              : _withRevision(summary, _floor.value),
+        );
+      });
+
+  final _Floor _floor;
+
+  /// Records a command result's committed setup revision, when it has one.
+  void commit(Object? result) {
+    final revision = switch (result) {
+      PrivateEventCreateReceipt(:final setupRevision) => setupRevision,
+      EventPublicationReceipt(:final setupRevision) => setupRevision,
+      PrivateSeatReconciliationResult(:final receipt?) => receipt.setupRevision,
+      _ => null,
+    };
+    if (revision != null && revision > _floor.value) _floor.value = revision;
+  }
+}
+
+final class _Floor {
+  int value = 0;
+}
+
+PrivateEventBasicSummary _withRevision(
+  PrivateEventBasicSummary summary,
+  int revision,
+) => PrivateEventBasicSummary(
+  eventId: summary.eventId,
+  organizerId: summary.organizerId,
+  setupRevision: revision,
+  name: summary.name,
+  city: summary.city,
+  localDate: summary.localDate,
+  localStartTime: summary.localStartTime,
+  timezone: summary.timezone,
+  startTimeMillis: summary.startTimeMillis,
+  status: summary.status,
+  setupDefaults: summary.setupDefaults,
+  detailsConfigured: summary.detailsConfigured,
+  eventPreferences: summary.eventPreferences,
+  publicationState: summary.publicationState,
+  publicationReadiness: summary.publicationReadiness,
+  canEditBasics: summary.canEditBasics,
+  canChangeCity: summary.canChangeCity,
+  eventDetails: summary.eventDetails,
+);
+
+/// Defaults view feed over [read].
+ReadModelFeed<ManagerEventSetupDefaultsView> defaultsViewFeed(
+  ReadManagerEventSetupDefaults read,
+  String organizerId,
+) => ReadModelFeed(
+  () async => ManagerEventSetupDefaultsView.complete(await read(organizerId)),
+);
+
+/// Runs [write], then lets the feeds deliver what the server would rewrite.
+Future<R> Function(Q) refreshingAfter<Q, R>(
+  Future<R> Function(Q) write,
+  List<ReadModelFeed<Object?>> feeds,
+) => (request) async {
+  final result = await write(request);
+  for (final feed in feeds) {
+    if (feed is SetupViewFeed) feed.commit(result);
+    unawaited(feed.refresh());
+  }
+  return result;
+};
 
 class _SeededPrivateEventPreferencesController
     extends PrivateEventPreferencesController {
@@ -40,14 +153,25 @@ class TestPrivateEventPreferencesController {
         const PrivateEventPreferencesJournal(),
   }) {
     scope = (userId: userId, organizerId: organizerId, eventId: eventId);
+    eventFeed = setupViewFeed(
+      readEvent,
+      organizerId: organizerId,
+      eventId: eventId,
+    );
+    defaultsFeed = defaultsViewFeed(readDefaults, organizerId);
     container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(userId)),
+        privateEventSetupViewProvider(
+          organizerId: organizerId,
+          eventId: eventId,
+        ).overrideWith((ref) => eventFeed.stream),
+        managerEventSetupDefaultsViewProvider(
+          organizerId,
+        ).overrideWith((ref) => defaultsFeed.stream),
         privateEventPreferencesDependenciesProvider.overrideWithValue(
           PrivateEventPreferencesDependencies(
-            readEvent: readEvent,
-            readDefaults: readDefaults,
-            write: write,
+            write: refreshingAfter(write, [eventFeed]),
             readPreview: readPreview,
             currentUserId: currentUserId,
             journal: journal,
@@ -70,6 +194,8 @@ class TestPrivateEventPreferencesController {
     _controller.seed(_controller.snapshot().copyWith(displayName: displayName));
   }
   late final EventEditorScope scope;
+  late final SetupViewFeed eventFeed;
+  late final ReadModelFeed<ManagerEventSetupDefaultsView> defaultsFeed;
   late final ProviderContainer container;
   late final _SeededPrivateEventPreferencesController _controller;
   PrivateEventPreferencesController get notifier => _controller;
@@ -145,14 +271,23 @@ class TestEventOfferPreferencesController {
     EventOfferPreferencesJournal journal = const EventOfferPreferencesJournal(),
   }) {
     scope = (userId: userId, organizerId: organizerId, eventId: eventId);
+    configurationFeed = ReadModelFeed(
+      () => readConfiguration(organizerId: organizerId, eventId: eventId),
+    );
+    defaultsFeed = defaultsViewFeed(readDefaults, organizerId);
     container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(userId)),
+        eventOfferConfigurationProvider(
+          organizerId: organizerId,
+          eventId: eventId,
+        ).overrideWith((ref) => configurationFeed.stream),
+        managerEventSetupDefaultsViewProvider(
+          organizerId,
+        ).overrideWith((ref) => defaultsFeed.stream),
         eventOfferPreferencesDependenciesProvider.overrideWithValue(
           EventOfferPreferencesDependencies(
-            readConfiguration: readConfiguration,
-            readDefaults: readDefaults,
-            write: write,
+            write: refreshingAfter(write, [configurationFeed]),
             readPreview: readPreview,
             currentUserId: currentUserId,
             journal: journal,
@@ -170,6 +305,8 @@ class TestEventOfferPreferencesController {
     _controller.seed(_controller.snapshot().copyWith(displayName: displayName));
   }
   late final EventEditorScope scope;
+  late final ReadModelFeed<EventOfferConfiguration> configurationFeed;
+  late final ReadModelFeed<ManagerEventSetupDefaultsView> defaultsFeed;
   late final ProviderContainer container;
   late final _SeededEventOfferPreferencesController _controller;
   EventOfferPreferencesController get notifier => _controller;
@@ -246,13 +383,17 @@ class TestEventPublicationController {
     EventPublicationJournal journal = const EventPublicationJournal(),
   }) {
     scope = (userId: userId, organizerId: organizerId, eventId: eventId);
+    eventFeed = setupViewFeed(read, organizerId: organizerId, eventId: eventId);
     container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(userId)),
+        privateEventSetupViewProvider(
+          organizerId: organizerId,
+          eventId: eventId,
+        ).overrideWith((ref) => eventFeed.stream),
         eventPublicationDependenciesProvider.overrideWithValue(
           EventPublicationDependencies(
-            read: read,
-            write: write,
+            write: refreshingAfter(write, [eventFeed]),
             currentUserId: currentUserId,
             journal: journal,
           ),
@@ -268,6 +409,7 @@ class TestEventPublicationController {
             as _SeededEventPublicationController;
   }
   late final EventEditorScope scope;
+  late final SetupViewFeed eventFeed;
   late final ProviderContainer container;
   late final _SeededEventPublicationController _controller;
   EventPublicationController get notifier => _controller;
@@ -322,13 +464,16 @@ class TestHostManagerEventSetupDefaultsController {
         const ManagerEventSetupDefaultsJournal(),
   }) {
     scope = (userId: userId, organizerId: organizerId);
+    defaultsFeed = defaultsViewFeed(read, organizerId);
     container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(userId)),
+        managerEventSetupDefaultsViewProvider(
+          organizerId,
+        ).overrideWith((ref) => defaultsFeed.stream),
         hostManagerEventSetupDefaultsDependenciesProvider.overrideWithValue(
           HostManagerEventSetupDefaultsDependencies(
-            read: read,
-            write: write,
+            write: refreshingAfter(write, [defaultsFeed]),
             currentUserId: currentUserId,
             journal: journal,
           ),
@@ -349,6 +494,7 @@ class TestHostManagerEventSetupDefaultsController {
             as _SeededHostManagerEventSetupDefaultsController;
   }
   late final ({String userId, String organizerId}) scope;
+  late final ReadModelFeed<ManagerEventSetupDefaultsView> defaultsFeed;
   late final ProviderContainer container;
   late final _SeededHostManagerEventSetupDefaultsController _controller;
   HostManagerEventSetupDefaultsController get notifier => _controller;

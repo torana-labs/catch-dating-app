@@ -5,7 +5,6 @@ import 'package:catch_dating_app/contexts/events/data/event_publication_journal.
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
-import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -69,6 +68,7 @@ class EventPublicationController extends _$EventPublicationController {
     _eventView = ReadModelFollower(
       onValue: _onEventView,
       onError: _onListenerError,
+      reject: (view) => privateEventSetupViewMismatch(view, scope),
     );
     ref.onDispose(() => _eventView.close());
     ref.listen(uidProvider, (_, next) {
@@ -132,13 +132,7 @@ class EventPublicationController extends _$EventPublicationController {
     _loading = true;
     _event = null;
     _error = null;
-    _eventView.follow(
-      ref,
-      privateEventSetupViewProvider(
-        organizerId: _organizerId,
-        eventId: _eventId,
-      ),
-    );
+    _followEvent();
     try {
       _pending = await _journal.load(
         userId: _userId,
@@ -151,7 +145,14 @@ class EventPublicationController extends _$EventPublicationController {
       _journalLoaded = true;
       _settleLoading();
     }
+    // Returns once every listener has answered, loaded or not.
+    await _eventView.firstDelivery;
   }
+
+  void _followEvent() => _eventView.follow(
+    ref,
+    privateEventSetupViewProvider(organizerId: _organizerId, eventId: _eventId),
+  );
 
   void _onEventView(PrivateEventSetupView view) {
     if (!_actorAvailable) return;
@@ -176,6 +177,7 @@ class EventPublicationController extends _$EventPublicationController {
   }
 
   void _settleLoading() {
+    if (!ref.mounted) return;
     if (_loading && _journalLoaded && (_event != null || state.error != null)) {
       _loading = false;
     }
@@ -183,6 +185,7 @@ class EventPublicationController extends _$EventPublicationController {
 
   /// No reread after a command: wait until the listener delivers [revision].
   Future<void> _reflecting(int revision) async {
+    if (!_eventView.following) _followEvent();
     await _eventView.until(
       (view) =>
           view.reflects(revision) ||

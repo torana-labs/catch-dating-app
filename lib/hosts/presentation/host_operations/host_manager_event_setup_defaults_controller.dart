@@ -5,7 +5,6 @@ import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaul
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
-import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -76,6 +75,7 @@ class HostManagerEventSetupDefaultsController
     _defaultsView = ReadModelFollower(
       onValue: _onDefaultsView,
       onError: _onListenerError,
+      reject: (view) => defaultsViewMismatch(view, scope.organizerId),
     );
     ref.onDispose(() => _defaultsView.close());
     ref.listen(uidProvider, (_, next) {
@@ -139,10 +139,7 @@ class HostManagerEventSetupDefaultsController
     _loading = true;
     _error = null;
     _current = null;
-    _defaultsView.follow(
-      ref,
-      managerEventSetupDefaultsViewProvider(_organizerId),
-    );
+    _followDefaults();
     try {
       // Restore the frozen command before allowing any fresh edit.
       _pending = await _journal.load(
@@ -153,9 +150,18 @@ class HostManagerEventSetupDefaultsController
       _error = cause;
     } finally {
       _journalLoaded = true;
-      if (_current != null || state.error != null) _loading = false;
+      if (ref.mounted && (_current != null || state.error != null)) {
+        _loading = false;
+      }
     }
+    // Returns once every listener has answered, loaded or not.
+    await _defaultsView.firstDelivery;
   }
+
+  void _followDefaults() => _defaultsView.follow(
+    ref,
+    managerEventSetupDefaultsViewProvider(_organizerId),
+  );
 
   void _onDefaultsView(ManagerEventSetupDefaultsView view) {
     if (!_actorAvailable) return;
@@ -249,6 +255,7 @@ class HostManagerEventSetupDefaultsController
     _pending = null;
     // No reread: the command settles when the listener delivers its revision.
     final applied = receipt.appliedRevision;
+    if (!_defaultsView.following) _followDefaults();
     await _defaultsView.until(
       (view) =>
           view.sourceCoverage ==
