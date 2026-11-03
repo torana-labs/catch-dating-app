@@ -184,18 +184,21 @@ class _InvitationDetailBody extends ConsumerWidget {
           ),
         ),
         CatchSectionListItem(
-          child: CatchSurface.card(
+          child: CatchLegacySurface.card(
             padding: CatchInsets.content,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(event.title, variant: CatchTextVariant.sectionTitle),
+                CatchLegacyText(
+                  event.title,
+                  variant: CatchLegacyTextVariant.sectionTitle,
+                ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   '${EventFormatters.shortDate(event.startTime)} · '
                   '${EventFormatters.time(event.startTime)} · '
                   '${event.meetingPoint}',
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],
@@ -418,29 +421,29 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
     final minutes = remaining.inMinutes.clamp(0, 999);
     final isRequester = hold.requesterUid == widget.currentUid;
     final active = hold.status.isActive && remaining > Duration.zero;
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             active
                 ? context.l10n.crossPathsPairInventoryStatusHeldNotBooked
                 : context.l10n.crossPathsPairInventoryStatusNoLongerHeld,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             active
                 ? context.l10n.crossPathsPairInventoryHoldCountdown(
                     minutes: minutes,
                   )
                 : context.l10n.crossPathsPairInventoryHoldEndedBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             context.l10n.crossPathsPairInventoryBookingStates(
               requesterStatus: _bookingStatusLabel(
                 context,
@@ -451,7 +454,7 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
                 hold.attendeeBookingStatus,
               ),
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           if (active && isRequester) ...[
@@ -467,9 +470,9 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
             ),
           ] else if (active) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               context.l10n.crossPathsPairInventoryWaitingForRequester,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ] else ...[

@@ -38,7 +38,7 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchSurface(
+            CatchLegacySurface(
               duration: Duration.zero,
               radius: CatchRadius.none,
               backgroundColor: CatchTokens.editorialWhite,

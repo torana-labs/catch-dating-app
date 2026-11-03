@@ -526,9 +526,9 @@ class _HostOfferPaymentSetupPageBodyState
                     ),
                     if (_mode != null) ...[
                       gapH4,
-                      CatchText(
+                      CatchLegacyText(
                         l10n.hostsEventPreferenceProviderHint,
-                        variant: CatchTextVariant.bodyM,
+                        variant: CatchLegacyTextVariant.bodyM,
                         color: tokens.ink2,
                       ),
                     ],

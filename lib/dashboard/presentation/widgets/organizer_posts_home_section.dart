@@ -73,7 +73,7 @@ class OrganizerPostHomeCard extends StatelessWidget {
         organizer?.name ?? notification.actorName ?? notification.title;
     final hasEventLink = notification.eventId != null;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentVerticalMedium,
       backgroundColor: Colors.transparent,
       onTap: onTap,
@@ -93,9 +93,9 @@ class OrganizerPostHomeCard extends StatelessWidget {
               children: [
                 CatchMetadataText(organizerName.toUpperCase(), color: t.ink3),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   notification.body,
-                  variant: CatchTextVariant.bodyLead,
+                  variant: CatchLegacyTextVariant.bodyLead,
                   color: CatchTokens.of(context).ink,
                   maxLines: 3,
                 ),
@@ -110,13 +110,13 @@ class OrganizerPostHomeCard extends StatelessWidget {
                       ),
                       gapW6,
                       Expanded(
-                        child: CatchText(
+                        child: CatchLegacyText(
                           context
                               .l10n
                               .dashboardOrganizerPostsHomeSectionTextLinkedEvent,
                           maxLines: 1,
 
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                           color: t.ink2,
                         ),
                       ),

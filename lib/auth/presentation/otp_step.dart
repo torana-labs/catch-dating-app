@@ -180,9 +180,9 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             width: CatchSpacing.s6,
           ),
           gapW8,
-          CatchText(
+          CatchLegacyText(
             data.countryCode,
-            variant: CatchTextVariant.bodyLead,
+            variant: CatchLegacyTextVariant.bodyLead,
             color: t.ink,
           ),
           gapW8,
@@ -197,11 +197,11 @@ class _OtpStepState extends ConsumerState<OtpStep> {
           ),
           gapW8,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               viewState.maskedNationalPhoneNumber.isEmpty
                   ? l10n.authYourNumber
                   : viewState.maskedNationalPhoneNumber,
-              variant: CatchTextVariant.bodyLead,
+              variant: CatchLegacyTextVariant.bodyLead,
               color: t.ink,
               maxLines: 1,
             ),
@@ -228,9 +228,9 @@ class _OtpStepState extends ConsumerState<OtpStep> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchText(
+            CatchLegacyText(
               l10n.authOtpTitle,
-              variant: CatchTextVariant.sectionTitle,
+              variant: CatchLegacyTextVariant.sectionTitle,
             ),
             gapH16,
             if (reflowPhoneSummary) ...[
@@ -262,9 +262,9 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             ),
             if (verifyError != null) ...[
               gapH8,
-              CatchText(
+              CatchLegacyText(
                 verifyError,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.danger,
               ),
             ],
@@ -282,10 +282,10 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             if (viewState.verifyButtonLoading) ...[
               HostAuthProgressButton(label: l10n.authHostVerifyingStatus),
               gapH8,
-              CatchText(
+              CatchLegacyText(
                 l10n.authHostVerificationPendingHint,
                 textAlign: TextAlign.center,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
               ),
             ] else if (viewState.isSendPending)

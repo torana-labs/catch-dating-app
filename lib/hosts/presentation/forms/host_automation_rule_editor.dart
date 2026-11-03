@@ -159,9 +159,9 @@ class _HostAutomationRuleEditorState
                       gapH16,
                     ],
                     if (_validation case final message?) ...[
-                      CatchText(
+                      CatchLegacyText(
                         message,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                         color: CatchTokens.of(context).danger,
                       ),
                       gapH16,

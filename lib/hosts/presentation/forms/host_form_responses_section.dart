@@ -270,11 +270,11 @@ class _HostFormResponsesSectionState
                       _answerWorkspaceOpen = false;
                     }),
                   ),
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostResponseQueryVersionScope(
                       version: _versionNumber(capability.versionId),
                     ),
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                   gapH16,
                 ],
@@ -407,7 +407,10 @@ class _HostFormResponsesSectionState
                 ),
                 if (widget.formId != null && versionLabel != null) ...[
                   gapH8,
-                  CatchText(versionLabel, variant: CatchTextVariant.supporting),
+                  CatchLegacyText(
+                    versionLabel,
+                    variant: CatchLegacyTextVariant.supporting,
+                  ),
                 ],
                 if (widget.queryCapability != null && widget.formId != null)
                   CatchButton(

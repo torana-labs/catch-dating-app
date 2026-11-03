@@ -382,8 +382,11 @@ void _registerCatchPrimitivesControlsTests() {
     final floatFinder = find.byKey(const ValueKey('float-icon-button'));
     final plainFinder = find.byKey(const ValueKey('plain-icon-button'));
     final tokens = CatchTokens.of(tester.element(borderedFinder));
-    final borderedSurface = tester.widget<CatchSurface>(
-      find.descendant(of: borderedFinder, matching: find.byType(CatchSurface)),
+    final borderedSurface = tester.widget<CatchLegacySurface>(
+      find.descendant(
+        of: borderedFinder,
+        matching: find.byType(CatchLegacySurface),
+      ),
     );
     final activeIconTheme = tester.widget<IconTheme>(
       find
@@ -393,11 +396,17 @@ void _registerCatchPrimitivesControlsTests() {
           )
           .first,
     );
-    final floatSurface = tester.widget<CatchSurface>(
-      find.descendant(of: floatFinder, matching: find.byType(CatchSurface)),
+    final floatSurface = tester.widget<CatchLegacySurface>(
+      find.descendant(
+        of: floatFinder,
+        matching: find.byType(CatchLegacySurface),
+      ),
     );
-    final plainSurface = tester.widget<CatchSurface>(
-      find.descendant(of: plainFinder, matching: find.byType(CatchSurface)),
+    final plainSurface = tester.widget<CatchLegacySurface>(
+      find.descendant(
+        of: plainFinder,
+        matching: find.byType(CatchLegacySurface),
+      ),
     );
 
     expect(
@@ -408,7 +417,7 @@ void _registerCatchPrimitivesControlsTests() {
       tester.getSize(
         find.descendant(
           of: borderedFinder,
-          matching: find.byType(CatchSurface),
+          matching: find.byType(CatchLegacySurface),
         ),
       ),
       const Size.square(CatchLayout.iconButtonSize),
@@ -641,10 +650,10 @@ void _registerCatchPrimitivesControlsTests() {
         .map((box) => box.decoration)
         .whereType<BoxDecoration>()
         .singleWhere((decoration) => decoration.border != null);
-    final iconSurface = tester.widget<CatchSurface>(
+    final iconSurface = tester.widget<CatchLegacySurface>(
       find.descendant(
         of: find.byKey(const ValueKey('outlined-icon-control')),
-        matching: find.byType(CatchSurface),
+        matching: find.byType(CatchLegacySurface),
       ),
     );
     final buttonBorder = (buttonDecoration.border! as Border).top;

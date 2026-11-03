@@ -248,22 +248,22 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
               children: [
                 Icon(CatchIcons.offline, size: 48),
                 gapH24,
-                CatchText(
+                CatchLegacyText(
                   l10n.sharedForceUpdateCheckErrorTitle,
-                  variant: CatchTextVariant.titleL,
+                  variant: CatchLegacyTextVariant.titleL,
                   textAlign: TextAlign.center,
                 ),
                 gapH12,
-                CatchText(
+                CatchLegacyText(
                   l10n.sharedForceUpdateCheckErrorBody,
-                  variant: CatchTextVariant.bodyM,
+                  variant: CatchLegacyTextVariant.bodyM,
                   textAlign: TextAlign.center,
                 ),
                 if (diagnostic != null) ...[
                   gapH12,
-                  CatchText(
+                  CatchLegacyText(
                     diagnostic,
-                    variant: CatchTextVariant.bodyS,
+                    variant: CatchLegacyTextVariant.bodyS,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     textAlign: TextAlign.center,
                   ),

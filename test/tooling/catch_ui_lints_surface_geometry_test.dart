@@ -52,7 +52,7 @@ void main() {
 
 InstanceCreationExpression _surface(String arguments) {
   final unit = parseString(
-    content: 'Widget build() => const CatchSurface($arguments);',
+    content: 'Widget build() => const CatchLegacySurface($arguments);',
   ).unit;
   final visitor = _Instances();
   unit.accept(visitor);

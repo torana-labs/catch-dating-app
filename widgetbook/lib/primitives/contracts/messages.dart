@@ -404,7 +404,7 @@ class _MessageFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       width: WidgetbookPreviewLayout.wideContractWidth,
       tone: CatchSurfaceTone.surface,
       borderRole: CatchBorderRole.separator,

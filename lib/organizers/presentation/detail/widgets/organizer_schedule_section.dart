@@ -93,12 +93,12 @@ class OrganizerScheduleSection extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CatchText(
+                      CatchLegacyText(
                         eventDateRailDayLabel(
                           groupedRows[groupIndex].key,
                           today,
                         ).toUpperCase(),
-                        variant: CatchTextVariant.statusLabel,
+                        variant: CatchLegacyTextVariant.statusLabel,
                         color:
                             DateUtils.isSameDay(
                               groupedRows[groupIndex].key,

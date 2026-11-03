@@ -400,7 +400,7 @@ class _CollapsedTitleFrame extends StatelessWidget {
       );
     }
 
-    return CatchSurface(
+    return CatchLegacySurface(
       width: WidgetbookPreviewLayout.standardContractWidth,
       borderRole: CatchBorderRole.separator,
       padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),

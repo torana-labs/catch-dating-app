@@ -371,15 +371,15 @@ extension _CatchFieldRendering on _CatchFieldState {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     title,
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                     color: _toneColor(t, primaryFallback: t.ink),
                   ),
                   const SizedBox(height: CatchRecordTokens.titleGap),
-                  CatchText(
+                  CatchLegacyText(
                     inlineMetadata!,
-                    variant: CatchTextVariant.bodyS,
+                    variant: CatchLegacyTextVariant.bodyS,
                     color: CatchTokens.of(context).ink2,
                   ),
                 ],

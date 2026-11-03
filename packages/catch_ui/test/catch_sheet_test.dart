@@ -148,7 +148,7 @@ void main() {
         );
         expect(
           tester
-              .widgetList<CatchSurface>(find.byType(CatchSurface))
+              .widgetList<CatchLegacySurface>(find.byType(CatchLegacySurface))
               .where(
                 (surface) => surface.emphasis == CatchSurfaceEmphasis.floating,
               ),

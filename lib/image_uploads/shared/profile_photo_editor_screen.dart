@@ -233,7 +233,7 @@ class _ProfilePhotoEditorScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchSurface(
+            CatchLegacySurface(
               backgroundColor: t.raised,
               borderRole: CatchBorderRole.separator,
               clipBehavior: Clip.antiAlias,
@@ -357,12 +357,12 @@ class _ProfilePhotoEditorScreenState
               ),
               if (!widget.canDelete) ...[
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   context.l10n
                       .imageUploadsProfilePhotoEditorScreenTextKeepAtLeastMinimumprofilephotocount(
                         minimumProfilePhotoCount: minimumProfilePhotoCount,
                       ),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],
@@ -409,7 +409,7 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
 
     if (loading) {
       return CatchSkeleton.custom(
-        child: const CatchSurface(
+        child: const CatchLegacySurface(
           duration: Duration.zero,
           radius: CatchRadius.none,
           backgroundColor: CatchTokens.editorialWhite,
@@ -439,7 +439,7 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
     if (existingUrl != null) {
       return CatchNetworkImage(existingUrl);
     }
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.primarySoft,

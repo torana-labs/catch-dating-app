@@ -184,7 +184,10 @@ class ProgramUnplacedGuestRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
+          CatchLegacyText(
+            guest.displayName,
+            variant: CatchLegacyTextVariant.sectionTitle,
+          ),
           CatchMetaRow(
             icon: CatchIcons.key,
             label: suggested != null
@@ -235,9 +238,9 @@ class ProgramStayRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             stay.guestDisplayName,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           CatchMetaRow(
             icon: CatchIcons.key,
@@ -297,11 +300,11 @@ class ProgramRoomBlockRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             block.roomType != null
                 ? '${block.label} · ${block.roomType}'
                 : block.label,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           CatchMetaRow(
             icon: CatchIcons.key,
@@ -472,9 +475,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.programsRoomsBlockLabel,
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
           ),
           gapH8,
           for (final option in <(String?, String)>[
@@ -490,9 +493,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
                     ? CatchIcons.selected
                     : CatchIcons.unselected,
               ),
-              body: CatchText(
+              body: CatchLegacyText(
                 option.$2,
-                variant: CatchTextVariant.sectionTitle,
+                variant: CatchLegacyTextVariant.sectionTitle,
               ),
               onTap: _placementLocked || _busy
                   ? null
@@ -514,9 +517,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
             ],
           ),
           gapH12,
-          CatchText(
+          CatchLegacyText(
             context.l10n.programsRoomsStatusLabel,
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
           ),
           gapH8,
           Wrap(

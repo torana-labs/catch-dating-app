@@ -211,9 +211,9 @@ class HostManualSendListBody extends StatelessWidget {
       footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostManualSendQueueDisclosure,
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
             color: CatchTokens.of(context).ink,
           ),
           if (nextCursor != null) ...[

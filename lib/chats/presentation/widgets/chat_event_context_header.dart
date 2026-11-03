@@ -46,7 +46,7 @@ class ChatEventContextHeader extends StatelessWidget {
 
     return Padding(
       padding: _contextHeaderOuterPadding,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         radius: CatchRadius.md,
         backgroundColor: visual?.soft ?? t.primarySoft,
         borderSpec: CatchBorder.resolve(
@@ -78,14 +78,14 @@ class ChatEventContextHeader extends StatelessWidget {
                     ).copyWith(fontSize: 10, fontWeight: FontWeight.w800),
                   ),
                   gapH2,
-                  CatchText(
+                  CatchLegacyText(
                     date == null
                         ? title
                         : context.l10n.chatsChatEventContextHeaderTextTitleDate(
                             title: title,
                             date: date,
                           ),
-                    variant: CatchTextVariant.supportingStrong,
+                    variant: CatchLegacyTextVariant.supportingStrong,
                     color: t.ink,
                     maxLines: 1,
                   ),

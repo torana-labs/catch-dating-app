@@ -19,7 +19,7 @@ class ExploreEventsSkeleton extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: exploreEventsLoadingPadding,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           clipBehavior: Clip.antiAlias,
           borderRole: CatchBorderRole.separator,
           emphasis: CatchSurfaceEmphasis.subtle,

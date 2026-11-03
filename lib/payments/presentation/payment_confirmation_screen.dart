@@ -159,7 +159,7 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
         children: [
           Positioned.fill(child: PaymentCheckoutHeader(event: event)),
           Positioned.fill(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               radius: CatchRadius.none,
               backgroundColor: t.ink.withValues(
@@ -207,7 +207,7 @@ class PaymentCheckoutHeader extends StatelessWidget {
       children: [
         SizedBox(
           height: CatchLayout.paymentCheckoutBackdropHeight,
-          child: CatchSurface(
+          child: CatchLegacySurface(
             tone: CatchSurfaceTone.transparent,
             radius: 0,
             padding: CatchInsets.pageBody.copyWith(
@@ -222,11 +222,11 @@ class PaymentCheckoutHeader extends StatelessWidget {
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: CatchText(
+              child: CatchLegacyText(
                 event.title,
                 maxLines: 2,
 
-                variant: CatchTextVariant.headline,
+                variant: CatchLegacyTextVariant.headline,
                 color: t.primaryInk,
               ),
             ),
@@ -237,7 +237,7 @@ class PaymentCheckoutHeader extends StatelessWidget {
             top: CatchSpacing.s4,
             bottom: 0,
           ),
-          child: CatchText(
+          child: CatchLegacyText(
             context.l10n
                 .paymentsPaymentConfirmationScreenTextLongdatelabelTimerangelabelLocationnamePriceinpaise(
                   longDateLabel: event.longDateLabel,
@@ -249,7 +249,7 @@ class PaymentCheckoutHeader extends StatelessWidget {
                   ),
                   capacityLimit: event.capacityLimit,
                 ),
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
             color: t.ink2,
           ),
         ),
@@ -307,7 +307,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                 providerLabel2: providerLabel,
               );
 
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: t.surface,
       borderRole: CatchBorderRole.separator,
       // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
@@ -335,7 +335,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
               child: SizedBox(
                 width: CatchLayout.paymentCheckoutMedallionExtent,
                 height: CatchLayout.paymentCheckoutMedallionExtent,
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   duration: Duration.zero,
                   radius: CatchRadius.none,
                   backgroundColor: medallionFill,
@@ -350,9 +350,17 @@ class PaymentCheckoutSheet extends StatelessWidget {
               ),
             ),
             gapH14,
-            CatchText(title, variant: CatchTextVariant.displayXs, color: t.ink),
+            CatchLegacyText(
+              title,
+              variant: CatchLegacyTextVariant.displayXs,
+              color: t.ink,
+            ),
             gapH8,
-            CatchText(message, variant: CatchTextVariant.bodyM, color: t.ink2),
+            CatchLegacyText(
+              message,
+              variant: CatchLegacyTextVariant.bodyM,
+              color: t.ink2,
+            ),
             gapH18,
             Padding(
               padding: CatchInsets.content,
@@ -362,11 +370,11 @@ class PaymentCheckoutSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           event.title,
                           maxLines: 1,
 
-                          variant: CatchTextVariant.sectionTitle,
+                          variant: CatchLegacyTextVariant.sectionTitle,
                           color: t.ink,
                         ),
                         gapH4,
@@ -567,7 +575,7 @@ class PaymentConfirmationBody extends StatelessWidget {
                     key: actions[index].key,
                     child: Semantics(
                       label: actions[index].label,
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         onTap: actions[index].onPressed,
                         padding: CatchInsets.content,
                         radius: CatchRadius.md,
@@ -586,9 +594,9 @@ class PaymentConfirmationBody extends StatelessWidget {
                               radius: CatchRadius.sm,
                             ),
                             gapH8,
-                            CatchText(
+                            CatchLegacyText(
                               actions[index].label,
-                              variant: CatchTextVariant.titleS,
+                              variant: CatchLegacyTextVariant.titleS,
                               color: CatchTokens.of(context).ink,
                               maxLines: 2,
                             ),
@@ -636,22 +644,22 @@ class PaymentConfirmationNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.primarySoft,
       padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.paymentsPaymentConfirmationScreenTextHeadsUp,
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
             color: t.primary,
           ),
           gapH6,
-          CatchText(
+          CatchLegacyText(
             context.l10n.paymentsPaymentConfirmationScreenTextBringAWaterBottle,
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
             color: t.ink,
           ),
         ],
@@ -669,7 +677,7 @@ class PaymentReferralBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       key: PaymentConfirmationKeys.referralShare,
       onTap: onShare,
       padding: CatchInsets.tileContentCompact,
@@ -687,26 +695,26 @@ class PaymentReferralBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context
                       .l10n
                       .paymentsPaymentConfirmationScreenTextBringSomeoneYouActually,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
                 gapH2,
-                CatchText(
+                CatchLegacyText(
                   context
                       .l10n
                       .paymentsPaymentConfirmationScreenTextTheBestInvitesHappen,
-                  variant: CatchTextVariant.bodyM,
+                  variant: CatchLegacyTextVariant.bodyM,
                   color: t.ink2,
                 ),
               ],
             ),
           ),
-          CatchText(
+          CatchLegacyText(
             context.l10n.paymentsPaymentConfirmationScreenTextShare,
-            variant: CatchTextVariant.titleS,
+            variant: CatchLegacyTextVariant.titleS,
             color: t.primary,
           ),
         ],

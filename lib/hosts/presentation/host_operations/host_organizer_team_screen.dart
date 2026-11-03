@@ -372,7 +372,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
         key: const ValueKey<String>('host-team-professional-profile-preview'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchSurface(
+          CatchLegacySurface(
             borderRole: CatchBorderRole.separator,
             padding: CatchInsets.cardContent,
             child: Column(
@@ -385,16 +385,16 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
                   borderColor: t.primarySoft,
                 ),
                 gapH16,
-                CatchText(
+                CatchLegacyText(
                   profile.displayName,
-                  variant: CatchTextVariant.displayXs,
+                  variant: CatchLegacyTextVariant.displayXs,
                   textAlign: TextAlign.center,
                 ),
                 if (roleTitle?.isNotEmpty == true) ...[
                   gapH8,
-                  CatchText(
+                  CatchLegacyText(
                     roleTitle!,
-                    variant: CatchTextVariant.bodyLead,
+                    variant: CatchLegacyTextVariant.bodyLead,
                     color: t.ink2,
                     textAlign: TextAlign.center,
                   ),
@@ -408,10 +408,10 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
                 ),
                 if (bio?.isNotEmpty == true) ...[
                   gapH16,
-                  CatchText(
+                  CatchLegacyText(
                     bio!,
                     textAlign: TextAlign.center,
-                    variant: CatchTextVariant.bodyM,
+                    variant: CatchLegacyTextVariant.bodyM,
                     color: t.ink2,
                   ),
                 ],

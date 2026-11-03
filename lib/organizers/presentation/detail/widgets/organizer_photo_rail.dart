@@ -22,7 +22,7 @@ class OrganizerPhotoRail extends StatelessWidget {
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     duration: Duration.zero,
                     tone: CatchSurfaceTone.transparent,
                     radius: CatchRadius.infoTile,

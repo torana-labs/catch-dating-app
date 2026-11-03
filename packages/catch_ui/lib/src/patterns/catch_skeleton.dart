@@ -53,7 +53,7 @@ class CatchSkeleton extends StatelessWidget {
   /// Rounded-rectangle card placeholder.
   ///
   /// Defaults to full width with a 120 px height — a reasonable proxy for a
-  /// `CatchSurface` or another content shell.
+  /// `CatchLegacySurface` or another content shell.
   factory CatchSkeleton.card({
     double? width,
     double height = CatchLayout.skeletonCardHeight,

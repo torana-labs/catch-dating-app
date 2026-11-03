@@ -105,7 +105,7 @@ class EventShareCard extends StatelessWidget {
 
     return AspectRatio(
       aspectRatio: CatchLayout.richShareCardAspectRatio,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.ink,
         borderRole: CatchBorderRole.boundary,
         padding: EdgeInsets.zero,
@@ -128,7 +128,7 @@ class EventShareCard extends StatelessWidget {
                   Positioned(
                     top: CatchSpacing.s5,
                     left: CatchSpacing.s5,
-                    child: CatchSurface(
+                    child: CatchLegacySurface(
                       backgroundColor: t.primaryInk.withValues(
                         alpha: CatchOpacity.scrimFill,
                       ),
@@ -141,9 +141,9 @@ class EventShareCard extends StatelessWidget {
                       ),
                       radius: CatchRadius.pill,
                       padding: CatchInsets.compactLabelContent,
-                      child: CatchText(
+                      child: CatchLegacyText(
                         context.l10n.eventsEventShareCardTextCatchInvite,
-                        variant: CatchTextVariant.statusLabel,
+                        variant: CatchLegacyTextVariant.statusLabel,
                         color: visual.accent,
                       ),
                     ),
@@ -180,9 +180,9 @@ class EventShareCard extends StatelessWidget {
                           ),
                         ),
                         gapH8,
-                        CatchText(
+                        CatchLegacyText(
                           event.title,
-                          variant: CatchTextVariant.displayS,
+                          variant: CatchLegacyTextVariant.displayS,
                           color: t.primaryInk,
                           maxLines: 3,
                         ),
@@ -194,7 +194,7 @@ class EventShareCard extends StatelessWidget {
             ),
             Expanded(
               flex: 4,
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 duration: Duration.zero,
                 radius: CatchRadius.none,
                 backgroundColor: t.surface,
@@ -257,7 +257,7 @@ class EventShareChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       backgroundColor: t.primarySoft,
       borderSpec: CatchBorder.resolve(
         t,
@@ -266,9 +266,9 @@ class EventShareChip extends StatelessWidget {
       ),
       radius: CatchRadius.pill,
       padding: CatchInsets.compactLabelContent,
-      child: CatchText(
+      child: CatchLegacyText(
         label,
-        variant: CatchTextVariant.statusLabel,
+        variant: CatchLegacyTextVariant.statusLabel,
         color: t.ink,
       ),
     );

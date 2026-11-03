@@ -412,9 +412,10 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                         Row(
                           children: [
                             Expanded(
-                              child: CatchText(
+                              child: CatchLegacyText(
                                 householdById[householdId]!.label,
-                                variant: CatchTextVariant.supportingStrong,
+                                variant:
+                                    CatchLegacyTextVariant.supportingStrong,
                               ),
                             ),
                             if (widget.canShareRsvpLinks)
@@ -447,9 +448,9 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.programsGuestsNoHousehold,
-                          variant: CatchTextVariant.supportingStrong,
+                          variant: CatchLegacyTextVariant.supportingStrong,
                         ),
                         gapH8,
                         for (final member in unaffiliated)
@@ -489,18 +490,18 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                     body: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           group.label,
-                          variant: CatchTextVariant.sectionTitle,
+                          variant: CatchLegacyTextVariant.sectionTitle,
                         ),
                         const SizedBox(height: CatchSpacing.s1),
-                        CatchText(
+                        CatchLegacyText(
                           '${group.dimension} · '
                           '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
-                          variant: CatchTextVariant.bodyS,
+                          variant: CatchLegacyTextVariant.bodyS,
                         ),
                         if (group.hotelId != null)
-                          CatchText(
+                          CatchLegacyText(
                             context.l10n.programsGuestsGroupHotelSummary(
                               hotel:
                                   widget.hotels
@@ -512,7 +513,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                                       ?.name ??
                                   context.l10n.programsGuestsHotelUnavailable,
                             ),
-                            variant: CatchTextVariant.bodyS,
+                            variant: CatchLegacyTextVariant.bodyS,
                           ),
                       ],
                     ),
@@ -669,7 +670,10 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
+          CatchLegacyText(
+            guest.displayName,
+            variant: CatchLegacyTextVariant.sectionTitle,
+          ),
           const SizedBox(height: CatchSpacing.s2),
           Wrap(
             spacing: CatchSpacing.s1,

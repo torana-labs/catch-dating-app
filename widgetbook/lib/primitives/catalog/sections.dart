@@ -24,7 +24,7 @@ Widget catchSectionHorizontalCatalogStates(BuildContext context) {
           title: 'Recommended',
           itemCount: 4,
           height: WidgetbookPreviewLayout.catalogRailHeight,
-          itemBuilder: (context, index) => CatchSurface.card(
+          itemBuilder: (context, index) => CatchLegacySurface.card(
             width: WidgetbookPreviewLayout.catalogCardWidth,
             child: Text(
               'Card ${index + 1}',
@@ -41,7 +41,7 @@ Widget catchSectionHorizontalCatalogStates(BuildContext context) {
           itemCount: 4,
           fullBleed: true,
           height: WidgetbookPreviewLayout.catalogRailHeight,
-          itemBuilder: (context, index) => CatchSurface.card(
+          itemBuilder: (context, index) => CatchLegacySurface.card(
             width: WidgetbookPreviewLayout.catalogCardWidth,
             child: Text(
               'Card ${index + 1}',
@@ -126,7 +126,7 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
                         horizontal: CatchSpacing.screenPx,
                         vertical: CatchSpacing.s1,
                       ),
-                      child: CatchSurface.card(
+                      child: CatchLegacySurface.card(
                         child: Text('Chronological item ${index + 1}'),
                       ),
                     ),

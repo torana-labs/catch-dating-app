@@ -85,7 +85,7 @@ class CompanionArrivalSection extends StatelessWidget {
                 ),
                 // ignore: catch_ui_lints/catch_no_raw_surface_shell -- D18 drawing debt until this moves onto a library component (CAT-227)
                 child: ClipOval(
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     duration: Duration.zero,
                     radius: CatchRadius.none,
                     backgroundColor: color,
@@ -115,10 +115,10 @@ class CompanionArrivalSection extends StatelessWidget {
                         ),
                   ),
                   gapH2,
-                  CatchText(
+                  CatchLegacyText(
                     caption,
                     textAlign: TextAlign.center,
-                    variant: CatchTextVariant.statusLabel,
+                    variant: CatchLegacyTextVariant.statusLabel,
                     color: fg.withValues(
                       alpha: CatchOpacity.eventSuccessArrivalCaption,
                     ),
@@ -163,18 +163,18 @@ class CompanionActionsEmptyState extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context
                       .l10n
                       .eventSuccessEventSuccessCompanionSharedTextTheHostIsRunning,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
                 gapH4,
-                CatchText(
+                CatchLegacyText(
                   context
                       .l10n
                       .eventSuccessEventSuccessCompanionSharedTextYourNextPromptOr,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink2,
                 ),
               ],

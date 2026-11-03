@@ -116,9 +116,9 @@ class _ProgramHotelDeskScreenState
       CatchSectionListItem(
         child: CatchFieldRow.standard(
           leading: Icon(CatchIcons.key),
-          body: CatchText(
+          body: CatchLegacyText(
             context.l10n.programsHotelRoomsOpen,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           trailing: Icon(CatchIcons.disclosure),
           onTap: () => context.pushNamed(
@@ -221,9 +221,9 @@ class _ProgramHotelDeskScreenState
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CatchText(
+                            CatchLegacyText(
                               leg.partyLabel ?? leg.guestDisplayName,
-                              variant: CatchTextVariant.sectionTitle,
+                              variant: CatchLegacyTextVariant.sectionTitle,
                             ),
                             CatchMetaRow(
                               icon: CatchIcons.people,
@@ -298,7 +298,7 @@ class _ProgramHotelInboundTripTileState
   @override
   Widget build(BuildContext context) {
     final trip = widget.trip;
-    return CatchSurface.card(
+    return CatchLegacySurface.card(
       padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,9 +306,9 @@ class _ProgramHotelInboundTripTileState
           Row(
             children: [
               Expanded(
-                child: CatchText(
+                child: CatchLegacyText(
                   trip.plateDisplay,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -328,9 +328,9 @@ class _ProgramHotelInboundTripTileState
             ),
           ),
           if (trip.manifestSource == TransportManifestSource.currentRecords)
-            CatchText(
+            CatchLegacyText(
               context.l10n.programsTripCurrentNames,
-              variant: CatchTextVariant.bodyS,
+              variant: CatchLegacyTextVariant.bodyS,
             ),
           CatchMetaRow(
             icon: CatchIcons.time,

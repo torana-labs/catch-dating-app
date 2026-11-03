@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 class CatchErrorDetailsAccordion extends StatefulWidget {
@@ -71,7 +71,7 @@ class _CatchErrorDetailsAccordionState
         Semantics(
           button: true,
           expanded: _expanded,
-          child: CatchSurface(
+          child: CatchLegacySurface(
             tone: CatchSurfaceTone.transparent,
             radius: 0,
             padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),

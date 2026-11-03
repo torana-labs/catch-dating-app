@@ -135,7 +135,7 @@ Widget _keyboardFocusTreatmentSample(
     width: width,
     label: label,
     description: description,
-    child: CatchSurface(
+    child: CatchLegacySurface(
       tone: CatchSurfaceTone.raised,
       borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,
@@ -280,7 +280,7 @@ Widget _mixedSectionPageSample(
     width: width,
     label: label,
     description: description,
-    child: CatchSurface(
+    child: CatchLegacySurface(
       tone: CatchSurfaceTone.raised,
       borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,
@@ -442,7 +442,7 @@ Widget _scaledReviewViewport(
           child: SizedBox(
             width: viewportWidth,
             height: viewportHeight,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               tone: CatchSurfaceTone.raised,
               borderRole: CatchBorderRole.separator,
               clipBehavior: Clip.antiAlias,

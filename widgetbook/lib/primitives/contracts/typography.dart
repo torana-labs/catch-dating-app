@@ -119,9 +119,9 @@ Widget catchIndexRowContractStates(BuildContext context) {
             initials: '1',
             variant: CatchAvatarVariant.square,
           ),
-          footer: CatchText(
+          footer: CatchLegacyText(
             '₹500 · 12 spots left',
-            variant: CatchTextVariant.supportingStrong,
+            variant: CatchLegacyTextVariant.supportingStrong,
             color: t.ink,
           ),
           trailing: Icon(CatchIcons.forward, size: CatchIconSize.sm),

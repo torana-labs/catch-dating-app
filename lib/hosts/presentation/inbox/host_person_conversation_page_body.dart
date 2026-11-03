@@ -306,10 +306,10 @@ class _HostPersonConversationPageBodyState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchSection.content(
-            child: CatchText(
+            child: CatchLegacyText(
               widget.scopeLabel ??
                   context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ),
           Expanded(
@@ -326,19 +326,19 @@ class _HostPersonConversationPageBodyState
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CatchText(
+                      CatchLegacyText(
                         context.l10n.hostInboxHistoryCoverage,
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                       ),
                       if (sharedScope)
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.hostInboxSharedThreadHistory,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                         ),
                       if (partial) ...[
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.hostInboxPartialSources,
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                         ),
                         CatchButton(
                           label: context.l10n.sharedActionTryAgain,
@@ -373,9 +373,9 @@ class _HostPersonConversationPageBodyState
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       message.channel,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                     MessageBubble(
                       text: message.text,
@@ -393,9 +393,9 @@ class _HostPersonConversationPageBodyState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostInboxReplyVia,
-                  variant: CatchTextVariant.titleS,
+                  variant: CatchLegacyTextVariant.titleS,
                   color: CatchTokens.of(context).ink,
                 ),
                 Wrap(
@@ -415,11 +415,11 @@ class _HostPersonConversationPageBodyState
                   ],
                 ),
                 if (!canSend)
-                  CatchText(
+                  CatchLegacyText(
                     selected == null
                         ? context.l10n.hostInboxChooseReplyRoute
                         : context.l10n.hostInboxRouteUnavailable,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
               ],
             ),

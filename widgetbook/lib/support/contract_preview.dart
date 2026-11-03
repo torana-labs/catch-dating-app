@@ -129,7 +129,7 @@ class WidgetbookContractStateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.surface,
       borderRole: CatchBorderRole.separator,
       radius: CatchRadius.lg,
@@ -198,7 +198,7 @@ class WidgetbookContractTopBarFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.raised,
       borderRole: CatchBorderRole.separator,
       clipBehavior: Clip.antiAlias,
@@ -270,7 +270,7 @@ class WidgetbookContractBodySpec extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.surface,
       borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,

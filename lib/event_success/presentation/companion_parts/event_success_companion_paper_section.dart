@@ -102,11 +102,11 @@ class CompanionPaperNavigationRow extends StatelessWidget {
             ),
             gapW8,
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 context
                     .l10n
                     .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
-                variant: CatchTextVariant.bodyLead,
+                variant: CatchLegacyTextVariant.bodyLead,
                 color: CatchTokens.of(context).ink,
                 textAlign: TextAlign.center,
               ),
@@ -114,14 +114,14 @@ class CompanionPaperNavigationRow extends StatelessWidget {
             gapW8,
             SizedBox(
               width: CatchLayout.eventSuccessStageNavExtent,
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n
                     .eventSuccessEventSuccessCompanionSharedTextPadleftTotalsteps(
                       padLeft: activeStep.toString().padLeft(2, '0'),
                       totalSteps: totalSteps,
                     ),
                 textAlign: TextAlign.end,
-                variant: CatchTextVariant.statusLabel,
+                variant: CatchLegacyTextVariant.statusLabel,
                 color: t.ink2,
               ),
             ),
@@ -152,7 +152,7 @@ class CompanionPaperProgressIndicator extends StatelessWidget {
       children: [
         for (var index = 0; index < count; index++) ...[
           Expanded(
-            child: CatchSurface(
+            child: CatchLegacySurface(
               backgroundColor: index < active ? t.primary : t.line2,
               radius: CatchRadius.pill,
               height: CatchSpacing.micro3,
@@ -187,21 +187,21 @@ class CompanionPaperTicket extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           context
               .l10n
               .eventSuccessEventSuccessCompanionSharedTextYourTicketToday,
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: t.ink2,
         ),
         gapH12,
-        CatchSurface(
+        CatchLegacySurface(
           padding: EdgeInsets.zero,
           radius: CatchRadius.md,
           backgroundColor: t.surface,
           borderRole: CatchBorderRole.separator,
           boxShadow: CatchElevation.card,
-          child: CatchSurface(
+          child: CatchLegacySurface(
             duration: Duration.zero,
             tone: CatchSurfaceTone.transparent,
             radius: CatchRadius.md,
@@ -289,7 +289,7 @@ class CompanionPaperTicketHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final foreground = CatchTokens.editorialWhite;
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.none,
       backgroundColor: swatch.deep,
       child: Stack(
@@ -312,7 +312,7 @@ class CompanionPaperTicketHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   context.l10n
                       .eventSuccessEventSuccessCompanionSharedTextTitleLocationname(
                         title: plan.playbook.title,
@@ -321,17 +321,17 @@ class CompanionPaperTicketHeader extends StatelessWidget {
                       .toUpperCase(),
                   maxLines: 1,
 
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                   color: foreground.withValues(
                     alpha: CatchOpacity.eventSuccessProminent,
                   ),
                 ),
                 gapH6,
-                CatchText(
+                CatchLegacyText(
                   event.title,
                   maxLines: 2,
 
-                  variant: CatchTextVariant.titleL,
+                  variant: CatchLegacyTextVariant.titleL,
                   color: foreground,
                 ),
               ],
@@ -359,17 +359,17 @@ class CompanionPaperTicketRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchText(
+        CatchLegacyText(
           label,
           maxLines: 1,
 
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: t.ink3,
         ),
         gapH6,
-        CatchText(
+        CatchLegacyText(
           value,
-          variant: CatchTextVariant.titleS,
+          variant: CatchLegacyTextVariant.titleS,
           color: CatchTokens.of(context).ink,
           maxLines: 2,
         ),
@@ -455,7 +455,7 @@ class CompanionExpectationSection extends StatelessWidget {
       showSelfCheckIn: showSelfCheckIn,
       eventEnded: eventEnded,
     );
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.md,
       backgroundColor: t.surface,
       borderRole: CatchBorderRole.separator,
@@ -500,7 +500,10 @@ class CompanionExpectationRow extends StatelessWidget {
         ),
         gapW12,
         Expanded(
-          child: CatchText(item.label, variant: CatchTextVariant.supporting),
+          child: CatchLegacyText(
+            item.label,
+            variant: CatchLegacyTextVariant.supporting,
+          ),
         ),
       ],
     );
@@ -515,7 +518,7 @@ class CompanionPrivacySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.sm,
       backgroundColor: t.primarySoft,
       padding: CatchInsets.contentDense,
@@ -525,9 +528,9 @@ class CompanionPrivacySection extends StatelessWidget {
           Icon(CatchIcons.locked, size: CatchIconSize.sm, color: t.ink2),
           gapW8,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               text,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
           ),

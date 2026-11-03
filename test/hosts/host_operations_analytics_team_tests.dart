@@ -45,7 +45,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
         (widget) => widget is CatchSection && widget.title == 'Audience',
       );
       expect(
-        find.ancestor(of: audience, matching: find.byType(CatchSurface)),
+        find.ancestor(of: audience, matching: find.byType(CatchLegacySurface)),
         findsNothing,
       );
       final metrics = tester.widget<CatchMetricSection>(

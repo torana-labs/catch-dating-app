@@ -165,7 +165,7 @@ class ProfileSurfaceHeroSkeleton extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Padding(
       padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
-      child: CatchSurface(
+      child: CatchLegacySurface(
         borderRole: CatchBorderRole.separator,
         radius: CatchLayout.personPolaroidRadius,
         emphasis: CatchSurfaceEmphasis.subtle,
@@ -275,7 +275,7 @@ class ProfileSurfacePhotoSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: CatchInsets.contentVertical,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         duration: Duration.zero,
         tone: CatchSurfaceTone.transparent,
         clipBehavior: Clip.antiAlias,

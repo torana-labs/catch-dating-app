@@ -34,16 +34,16 @@ class _HostFormBodyState extends State<HostFormBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           widget.definition.title,
-          variant: CatchTextVariant.headline,
+          variant: CatchLegacyTextVariant.headline,
           color: t.ink,
         ),
         if (widget.definition.description case final description?) ...[
           gapH10,
-          CatchText(
+          CatchLegacyText(
             description,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
         ],
@@ -65,9 +65,9 @@ class _HostFormBodyState extends State<HostFormBody> {
             first: indexedSection.$1 == 0,
             footer: indexedSection.$2.description == null
                 ? null
-                : CatchText(
+                : CatchLegacyText(
                     indexedSection.$2.description!,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                   ),
             children: [
@@ -89,12 +89,12 @@ class _HostFormBodyState extends State<HostFormBody> {
           fullWidth: true,
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           widget.preview
               ? context.l10n.hostFormPreviewNoResponses
               : widget.definition.completionTitle,
           textAlign: TextAlign.center,
-          variant: CatchTextVariant.bodyS,
+          variant: CatchLegacyTextVariant.bodyS,
           color: CatchTokens.of(context).ink2,
         ),
       ],

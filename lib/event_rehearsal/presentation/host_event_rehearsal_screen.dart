@@ -660,9 +660,9 @@ class _RehearsalCoachDock extends StatelessWidget {
           Icon(CatchIcons.labs, color: t.danger),
           gapW8,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               context.l10n.hostEventRehearsalCoachCollapsed,
-              variant: CatchTextVariant.statusLabel,
+              variant: CatchLegacyTextVariant.statusLabel,
               color: CatchTokens.of(context).ink2,
             ),
           ),
@@ -695,7 +695,7 @@ class _RehearsalCoachDock extends StatelessWidget {
     final taskCopy = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchSurface(
+        CatchLegacySurface(
           width: CatchIconAction.navSize,
           height: CatchIconAction.navSize,
           radius: CatchRadius.sm,
@@ -717,15 +717,15 @@ class _RehearsalCoachDock extends StatelessWidget {
                 maxLines: null,
               ),
               gapH4,
-              CatchText(
+              CatchLegacyText(
                 task.title,
-                variant: CatchTextVariant.sectionTitle,
+                variant: CatchLegacyTextVariant.sectionTitle,
                 maxLines: largeText ? null : 2,
               ),
               gapH2,
-              CatchText(
+              CatchLegacyText(
                 task.body,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: t.ink2,
                 maxLines: largeText ? null : 1,
               ),

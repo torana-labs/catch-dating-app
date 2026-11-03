@@ -166,14 +166,14 @@ class _EventAssignmentFeatureChoicesPageBodyState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l.eventMatchingDisclosure,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l.eventMatchingCoverageNote,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (_mutationError case final error?) ...[
           gapH12,
@@ -184,26 +184,26 @@ class _EventAssignmentFeatureChoicesPageBodyState
         ],
         if (_saved) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l.eventMatchingSaved,
-            variant: CatchTextVariant.supportingStrong,
+            variant: CatchLegacyTextVariant.supportingStrong,
           ),
         ],
         gapH12,
         if (choices.isEmpty)
-          CatchText(
+          CatchLegacyText(
             l.eventMatchingNoChoices,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         for (final choice in choices) ...[
-          CatchText(
+          CatchLegacyText(
             choice.questionLabel ?? l.eventMatchingUnavailable,
-            variant: CatchTextVariant.supportingStrong,
+            variant: CatchLegacyTextVariant.supportingStrong,
           ),
           if (choice.answerLabel case final answer?)
-            CatchText(
+            CatchLegacyText(
               '${l.eventMatchingAnswerLabel}: $answer',
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           gapH8,
           CatchButton(

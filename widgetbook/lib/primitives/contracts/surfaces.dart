@@ -9,14 +9,14 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchSurface,
+  type: CatchLegacySurface,
   path: '[Core primitives]/Legacy',
 )
 Widget catchLegacySurfaceContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookContractFrame(
-    title: 'CatchSurface',
+    title: 'CatchLegacySurface',
     contractId: 'catch.surface.legacy',
     states: const [
       'surface',
@@ -62,7 +62,7 @@ Widget catchLegacySurfaceContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'semantic-border',
-        child: CatchSurface(
+        child: CatchLegacySurface(
           borderRole: CatchBorderRole.boundary,
           padding: CatchInsets.contentRelaxed,
           child: Text(
@@ -73,7 +73,7 @@ Widget catchLegacySurfaceContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'focused',
-        child: CatchSurface(
+        child: CatchLegacySurface(
           borderRole: CatchBorderRole.focus,
           padding: CatchInsets.contentRelaxed,
           child: Text(
@@ -100,7 +100,7 @@ Widget catchLegacySurfaceContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'card',
-        child: CatchSurface.card(
+        child: CatchLegacySurface.card(
           width: WidgetbookPreviewLayout.surfaceCardWidth,
           child: Text(
             'Default bounded group',
@@ -110,7 +110,7 @@ Widget catchLegacySurfaceContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'tinted',
-        child: CatchSurface.tinted(
+        child: CatchLegacySurface.tinted(
           child: Text(
             'Only attendees can see this matching detail.',
             style: CatchTextStyles.supporting(context),
@@ -256,19 +256,19 @@ Widget catchViewportContractStates(
           child: SizedBox(
             width: width,
             child: CatchViewport(
-              compactBuilder: (_) => CatchSurface.card(
+              compactBuilder: (_) => CatchLegacySurface.card(
                 child: Text(
                   'Compact layout',
                   style: CatchTextStyles.bodyM(context),
                 ),
               ),
-              mediumBuilder: (_) => CatchSurface.card(
+              mediumBuilder: (_) => CatchLegacySurface.card(
                 child: Text(
                   'Medium layout',
                   style: CatchTextStyles.bodyM(context),
                 ),
               ),
-              expandedBuilder: (_) => CatchSurface.card(
+              expandedBuilder: (_) => CatchLegacySurface.card(
                 child: Text(
                   'Expanded layout',
                   style: CatchTextStyles.bodyM(context),
@@ -288,14 +288,14 @@ Widget catchViewportContractStates(
           child: SizedBox(
             width: 840,
             child: CatchViewport(
-              compactBuilder: (_) => CatchSurface.card(
+              compactBuilder: (_) => CatchLegacySurface.card(
                 child: Text(
                   'Compact fallback',
                   style: CatchTextStyles.bodyM(context),
                 ),
               ),
               mediumBuilder: provideMedium
-                  ? (_) => CatchSurface.card(
+                  ? (_) => CatchLegacySurface.card(
                       child: Text(
                         'Medium fallback',
                         style: CatchTextStyles.bodyM(context),
@@ -315,13 +315,13 @@ Widget catchViewportContractStates(
             width: width,
             child: CatchViewport.atWidth(
               breakpoint: 320,
-              compactBuilder: (_) => CatchSurface.card(
+              compactBuilder: (_) => CatchLegacySurface.card(
                 child: Text(
                   'Compact component',
                   style: CatchTextStyles.bodyM(context),
                 ),
               ),
-              expandedBuilder: (_) => CatchSurface.card(
+              expandedBuilder: (_) => CatchLegacySurface.card(
                 child: Text(
                   'Expanded component',
                   style: CatchTextStyles.bodyM(context),
@@ -343,7 +343,7 @@ Widget catchViewportContractStates(
               slivers: [
                 CatchViewport.sliver(
                   sliverBuilder: (context, viewport) => SliverToBoxAdapter(
-                    child: CatchSurface.card(
+                    child: CatchLegacySurface.card(
                       child: Text(
                         '${viewport.width.toInt()} px · ${viewport.sizeClass.name}',
                         style: CatchTextStyles.bodyM(context),
@@ -371,7 +371,7 @@ Widget catchViewportContractStates(
                   (
                     BuildContext context,
                     CatchViewportSceneData viewport,
-                  ) => CatchSurface.card(
+                  ) => CatchLegacySurface.card(
                     child: Text(
                       '${viewport.width.toInt()} × ${viewport.height.toInt()}\n'
                       'Insets ${viewport.mediaPadding.top.toInt()} / '
@@ -468,7 +468,7 @@ Widget catchMotionViewportContractStates(BuildContext context) {
               child: CatchRevealViewport(
                 variant: pose.$2,
                 animation: AlwaysStoppedAnimation<double>(pose.$3),
-                child: CatchSurface.card(
+                child: CatchLegacySurface.card(
                   child: Text(
                     'Route content',
                     style: CatchTextStyles.bodyM(context),
@@ -504,7 +504,7 @@ class _SurfaceSpec extends StatelessWidget {
     final t = CatchTokens.of(context);
     final color = foregroundColor ?? t.ink;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: tone,
       emphasis: emphasis,
       borderSpec: CatchBorder.resolve(
@@ -521,7 +521,11 @@ class _SurfaceSpec extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          CatchText(label, variant: CatchTextVariant.bodyLead, color: color),
+          CatchLegacyText(
+            label,
+            variant: CatchLegacyTextVariant.bodyLead,
+            color: color,
+          ),
           const SizedBox(height: CatchSpacing.s2),
           Text(
             onTap == null ? 'Static panel' : 'Tap target',

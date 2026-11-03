@@ -78,39 +78,45 @@ class EventMessagePreferenceSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (senderName != null)
-            CatchText(senderName!, variant: CatchTextVariant.sectionTitle),
+            CatchLegacyText(
+              senderName!,
+              variant: CatchLegacyTextVariant.sectionTitle,
+            ),
           if (senderPhone != null)
-            CatchText(senderPhone!, variant: CatchTextVariant.supporting),
+            CatchLegacyText(
+              senderPhone!,
+              variant: CatchLegacyTextVariant.supporting,
+            ),
           if (earlierSender) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               l.eventMessagesEarlierSender,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
           gapH8,
-          CatchText(switch (permission) {
+          CatchLegacyText(switch (permission) {
             EventMessagePermission.notSet => l.eventMessagesNotSet,
             EventMessagePermission.enabled => l.eventMessagesEnabled,
             EventMessagePermission.disabled => l.eventMessagesDisabled,
             EventMessagePermission.expired => l.eventMessagesExpired,
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
           if (phoneLastFour != null)
-            CatchText(
+            CatchLegacyText(
               l.eventMessagesPhoneEnding(digits: phoneLastFour!),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           if (expiry != null)
-            CatchText(
+            CatchLegacyText(
               l.eventMessagesUntil(
                 date: material.formatFullDate(expiry),
                 time: material.formatTimeOfDay(TimeOfDay.fromDateTime(expiry)),
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           if (availability != EventMessageAvailability.ready) ...[
             gapH8,
-            CatchText(switch (availability) {
+            CatchLegacyText(switch (availability) {
               EventMessageAvailability.ready => '',
               EventMessageAvailability.verifyPhone =>
                 l.eventMessagesVerifyPhone,
@@ -122,34 +128,37 @@ class EventMessagePreferenceSection extends StatelessWidget {
                 l.eventMessagesSenderUnavailable,
               EventMessageAvailability.subscriptionUnavailable =>
                 l.eventMessagesSubscriptionUnavailable,
-            }, variant: CatchTextVariant.supporting),
+            }, variant: CatchLegacyTextVariant.supporting),
           ],
           gapH12,
           // Server-authored consent is deliberately complete, never a preview
           // or locally reconstructed promise about delivery or privacy.
-          CatchText(consentText, variant: CatchTextVariant.supporting),
+          CatchLegacyText(
+            consentText,
+            variant: CatchLegacyTextVariant.supporting,
+          ),
           if (phase != EventMessageSavePhase.ready) ...[
             gapH12,
             Semantics(
               liveRegion: true,
-              child: CatchText(switch (phase) {
+              child: CatchLegacyText(switch (phase) {
                 EventMessageSavePhase.ready => '',
                 EventMessageSavePhase.saving => l.eventMessagesSaving,
                 EventMessageSavePhase.uncertain => l.eventMessagesUncertain,
                 EventMessageSavePhase.refreshRequired =>
                   l.eventMessagesReviewChanged,
-              }, variant: CatchTextVariant.supporting),
+              }, variant: CatchLegacyTextVariant.supporting),
             ),
           ],
           if (notice != EventMessageSaveNotice.none) ...[
             gapH8,
             Semantics(
               liveRegion: true,
-              child: CatchText(switch (notice) {
+              child: CatchLegacyText(switch (notice) {
                 EventMessageSaveNotice.none => '',
                 EventMessageSaveNotice.saved => l.eventMessagesSaved,
                 EventMessageSaveNotice.changed => l.eventMessagesChanged,
-              }, variant: CatchTextVariant.supporting),
+              }, variant: CatchLegacyTextVariant.supporting),
             ),
           ],
           if (error != null) ...[gapH8, CatchLocalizedErrorBanner(error!)],

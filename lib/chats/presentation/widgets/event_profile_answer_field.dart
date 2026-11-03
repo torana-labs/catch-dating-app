@@ -35,7 +35,10 @@ class EventProfileAnswerField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: CatchText(label, variant: CatchTextVariant.fieldLabel),
+              child: CatchLegacyText(
+                label,
+                variant: CatchLegacyTextVariant.fieldLabel,
+              ),
             ),
             if (selected case final value?) ...[
               gapW16,
@@ -50,9 +53,9 @@ class EventProfileAnswerField extends StatelessWidget {
           ],
         ),
         gapH4,
-        CatchText(
+        CatchLegacyText(
           answer,
-          variant: CatchTextVariant.bodyL,
+          variant: CatchLegacyTextVariant.bodyL,
           color: CatchTokens.of(context).ink,
         ),
       ],

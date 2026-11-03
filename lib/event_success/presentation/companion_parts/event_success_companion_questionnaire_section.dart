@@ -76,11 +76,11 @@ class _CompatibilityQuestionnaireSectionState
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchText(
+              CatchLegacyText(
                 context
                     .l10n
                     .eventSuccessEventSuccessCompanionQuestionnaireTextAFewQuickQuestions,
-                variant: CatchTextVariant.sectionTitle,
+                variant: CatchLegacyTextVariant.sectionTitle,
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
@@ -110,7 +110,7 @@ class _CompatibilityQuestionnaireSectionState
             ],
           ),
           gapH10,
-          CatchText(
+          CatchLegacyText(
             rankingOn
                 ? context
                       .l10n
@@ -118,7 +118,7 @@ class _CompatibilityQuestionnaireSectionState
                 : context
                       .l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireTextYourAnswersCanShape025884,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           gapH16,
@@ -144,9 +144,9 @@ class _CompatibilityQuestionnaireSectionState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     activeQuestion.prompt,
-                    variant: CatchTextVariant.titleL,
+                    variant: CatchLegacyTextVariant.titleL,
                   ),
                   gapH12,
                   Wrap(
@@ -175,13 +175,13 @@ class _CompatibilityQuestionnaireSectionState
           ),
           if (widget.actionState.error != null) ...[
             gapH14,
-            CatchText(
+            CatchLegacyText(
               appErrorMessage(
                 widget.actionState.error!,
                 l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.danger,
             ),
             gapH10,
@@ -270,7 +270,7 @@ class QuestionProgressRail extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchSurface(
+          child: CatchLegacySurface(
             duration: Duration.zero,
             tone: CatchSurfaceTone.transparent,
             radius: CatchRadius.pill,
@@ -300,7 +300,7 @@ class QuestionProgressRail extends StatelessWidget {
                   ),
               selected: index == activeIndex,
               onTap: () => onSelect(index),
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 width: CatchLayout.questionnaireDotExtent,
                 height: CatchLayout.questionnaireDotExtent,
                 radius: CatchRadius.pill,
@@ -310,12 +310,12 @@ class QuestionProgressRail extends StatelessWidget {
                     ? t.primarySoft
                     : t.surface,
                 borderRole: CatchBorderRole.separator,
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireTextValue1(
                         value1: index + 1,
                       ),
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: index == activeIndex ? t.surface : t.ink2,
                 ),
               ),

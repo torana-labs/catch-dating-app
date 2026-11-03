@@ -159,14 +159,14 @@ class EventRecapReadyBody extends StatelessWidget {
             children: [
               RecapHeader(state: state.hero),
               gapH24,
-              CatchText(
+              CatchLegacyText(
                 context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
-                variant: CatchTextVariant.titleL,
+                variant: CatchLegacyTextVariant.titleL,
               ),
               gapH4,
-              CatchText(
+              CatchLegacyText(
                 context.l10n.swipesEventRecapScreenTextTapPeopleYouRemember,
-                variant: CatchTextVariant.bodyM,
+                variant: CatchLegacyTextVariant.bodyM,
                 color: t.ink2,
               ),
               gapH14,
@@ -322,7 +322,7 @@ class RecapHeaderSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentRelaxed,
       backgroundColor: t.ink,
       child: Column(
@@ -417,29 +417,29 @@ class RecapHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentRelaxed,
       backgroundColor: t.ink,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchText(
+          CatchLegacyText(
             state.kicker,
-            variant: CatchTextVariant.statusLabel,
+            variant: CatchLegacyTextVariant.statusLabel,
             color: t.surface.withValues(
               alpha: CatchOpacity.eventRecapHeroKicker,
             ),
           ),
           gapH10,
-          CatchText(
+          CatchLegacyText(
             state.distanceLabel,
-            variant: CatchTextVariant.headline,
+            variant: CatchLegacyTextVariant.headline,
             color: t.surface,
           ),
           gapH4,
-          CatchText(
+          CatchLegacyText(
             state.activityCheckedInLabel,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.surface.withValues(alpha: CatchOpacity.eventRecapHeroMeta),
           ),
           gapH18,
@@ -480,17 +480,17 @@ class RecapStatTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchText(
+            CatchLegacyText(
               label.toUpperCase(),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.surface.withValues(
                 alpha: CatchOpacity.eventRecapHeroStatLabel,
               ),
             ),
             gapH3,
-            CatchText(
+            CatchLegacyText(
               value,
-              variant: CatchTextVariant.statusLabel,
+              variant: CatchLegacyTextVariant.statusLabel,
               color: t.surface,
               maxLines: 2,
             ),
@@ -517,7 +517,7 @@ class VibeTile extends StatelessWidget {
         button: true,
         selected: row.selected,
         label: row.semanticLabel,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           onTap: onTap,
           backgroundColor: t.surface,
           radius: CatchRadius.md,
@@ -535,7 +535,7 @@ class VibeTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               RecapProfilePhoto(profile: row.profile),
-              CatchSurface(
+              CatchLegacySurface(
                 tone: CatchSurfaceTone.transparent,
                 radius: 0,
                 padding: EdgeInsets.zero,
@@ -559,9 +559,9 @@ class VibeTile extends StatelessWidget {
                 left: CatchSpacing.s2,
                 right: CatchSpacing.s2,
                 bottom: CatchSpacing.s2,
-                child: CatchText(
+                child: CatchLegacyText(
                   row.displayName,
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: CatchTokens.editorialWhite,
                   maxLines: 1,
                 ),
@@ -602,7 +602,7 @@ class RecapProfilePhoto extends StatelessWidget {
   Widget build(BuildContext context) {
     final photoUrl = profile?.primaryPhotoThumbnailUrl;
     if (photoUrl == null) {
-      return CatchSurface(
+      return CatchLegacySurface(
         backgroundColor: CatchTokens.of(context).primarySoft,
         radius: CatchRadius.none,
         duration: Duration.zero,

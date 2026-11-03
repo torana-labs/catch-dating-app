@@ -23,7 +23,7 @@ class EventRehearsalChoiceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     expanded: expanded,
-    child: CatchSurface(
+    child: CatchLegacySurface(
       tone: CatchSurfaceTone.transparent,
       onTap: onTap,
       child: Padding(
@@ -44,9 +44,15 @@ class EventRehearsalChoiceTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchText(title, variant: CatchTextVariant.sectionTitle),
+                  CatchLegacyText(
+                    title,
+                    variant: CatchLegacyTextVariant.sectionTitle,
+                  ),
                   gapH8,
-                  CatchText(description, variant: CatchTextVariant.supporting),
+                  CatchLegacyText(
+                    description,
+                    variant: CatchLegacyTextVariant.supporting,
+                  ),
                 ],
               ),
             ),

@@ -19,7 +19,7 @@ class WidgetbookCatalogStateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),
       borderRole: CatchBorderRole.separator,
       child: Column(
@@ -73,11 +73,11 @@ class WidgetbookCatalogPhoneFrame extends StatelessWidget {
 }
 
 Widget widgetbookCatalogTextData(String value) =>
-    CatchSurface.card(child: Text(value));
+    CatchLegacySurface.card(child: Text(value));
 
 Widget widgetbookCatalogSliverTextData(String value) => SliverToBoxAdapter(
   child: Padding(
     padding: const EdgeInsets.all(CatchSpacing.s4),
-    child: CatchSurface.card(child: Text(value)),
+    child: CatchLegacySurface.card(child: Text(value)),
   ),
 );

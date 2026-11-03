@@ -90,7 +90,7 @@ void main() {
       expect(avatar.size, CatchLayout.noticeIconExtent);
       expect(find.text('AR'), findsOneWidget);
       expect(find.byIcon(CatchIcons.info), findsNothing);
-      expect(find.byType(CatchSurface), findsOneWidget);
+      expect(find.byType(CatchLegacySurface), findsOneWidget);
     },
   );
 

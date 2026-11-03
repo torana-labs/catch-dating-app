@@ -32,15 +32,15 @@ class HostFormPaymentDetailSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             hostFormPaymentStatusHelp(l10n, payment.status),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           if (payment.mode == HostFormPaymentMode.test) ...[
             gapH16,
-            CatchText(
+            CatchLegacyText(
               l10n.hostFormPaymentsTestHelp,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
           gapH24,
@@ -97,7 +97,10 @@ class HostFormPaymentDetailSheet extends StatelessWidget {
                       payment.providerRefundId!,
                     ),
                 ]) ...[
-                  CatchText(entry.$1, variant: CatchTextVariant.supporting),
+                  CatchLegacyText(
+                    entry.$1,
+                    variant: CatchLegacyTextVariant.supporting,
+                  ),
                   gapH8,
                   SelectableText(entry.$2),
                   gapH16,

@@ -179,7 +179,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               inputHint: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff,
-              meta: CatchText(
+              meta: CatchLegacyText(
                 context.l10n
                     .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
                       text: _attendeePromptPreview(
@@ -187,7 +187,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                         widget.attendeePrompt,
                       ),
                     ),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               minLines: 2,
               maxLines: 4,

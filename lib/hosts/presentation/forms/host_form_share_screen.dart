@@ -72,9 +72,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CatchText(
+                          CatchLegacyText(
                             context.l10n.hostFormShare,
-                            variant: CatchTextVariant.headline,
+                            variant: CatchLegacyTextVariant.headline,
                           ),
                           gapH8,
                           CatchBadge.status(label: context.l10n.hostFormShare),
@@ -91,9 +91,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     builder: (context, editor) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           editor.editor.definition.title,
-                          variant: CatchTextVariant.headline,
+                          variant: CatchLegacyTextVariant.headline,
                         ),
                         gapH8,
                         CatchBadge.status(
@@ -221,9 +221,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     ),
                   ],
                   gapH24,
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostFormCanonicalLinkHelp,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
                 ],
               ),
@@ -247,7 +247,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                 child: Semantics(
                   label: assets.canonicalUrl,
                   image: true,
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     backgroundColor: CatchTokens.editorialWhite,
                     padding: CatchInsets.iconChipContent,
                     radius: CatchRadius.sm,

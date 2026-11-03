@@ -46,11 +46,11 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     );
 
     await pumpMode(CatchErrorStateMode.inline);
-    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchLegacySurface), findsNothing);
     expect(find.byType(CatchErrorState), findsOneWidget);
 
     await pumpMode(CatchErrorStateMode.compact);
-    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchLegacySurface), findsNothing);
     expect(find.byType(CatchErrorState), findsOneWidget);
   });
 

@@ -29,11 +29,11 @@ class HostTodayPersonalizationSection extends StatelessWidget {
             label: l10n.hostTodayChangeFocus,
             onPressed: onChangeFocus,
           ),
-          child: CatchText(
+          child: CatchLegacyText(
             state.focus == null
                 ? l10n.hostTodayExploreFocus
                 : hostTodayFocusTitle(l10n, state.focus!),
-            variant: CatchTextVariant.titleL,
+            variant: CatchLegacyTextVariant.titleL,
           ),
         ),
         if (state.primaryAction case final action?)
@@ -48,9 +48,9 @@ class HostTodayPersonalizationSection extends StatelessWidget {
           ),
         CatchSection.content(
           title: l10n.hostTodayRoadmapTitle,
-          child: CatchText(
+          child: CatchLegacyText(
             l10n.hostTodayRoadmapIntroduction,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ),
         CatchSection.rows(

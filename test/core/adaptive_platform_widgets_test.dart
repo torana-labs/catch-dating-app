@@ -167,10 +167,10 @@ void main() {
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Delete'), findsOneWidget);
-      final surface = tester.widget<CatchSurface>(
+      final surface = tester.widget<CatchLegacySurface>(
         find.descendant(
           of: find.byType(CatchDialog<bool>),
-          matching: find.byType(CatchSurface),
+          matching: find.byType(CatchLegacySurface),
         ),
       );
       expect(surface.width, CatchLayout.confirmDialogMaxWidth);

@@ -138,7 +138,7 @@ Widget recapStatTileStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'three stats on the dark header',
-        child: CatchSurface(
+        child: CatchLegacySurface(
           backgroundColor: CatchTokens.of(context).ink,
           padding: CatchInsets.content,
           child: const Row(

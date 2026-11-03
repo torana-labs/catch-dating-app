@@ -40,9 +40,9 @@ class EventAssistanceSweepSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             l10n.eventSuccessAccountabilitySubtitle,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH8,
           if (error != null)
@@ -50,12 +50,12 @@ class EventAssistanceSweepSection extends StatelessWidget {
           if (loading)
             const CatchLoadingIndicator()
           else if (guests.isEmpty)
-            CatchText(
+            CatchLegacyText(
               l10n.eventSuccessAccountabilityEmpty,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             )
           else ...[
-            CatchText(
+            CatchLegacyText(
               l10n.eventSuccessAccountabilityProgress(
                 resolved: guests
                     .where(
@@ -66,7 +66,7 @@ class EventAssistanceSweepSection extends StatelessWidget {
                     .length,
                 total: guests.length,
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH8,
             CatchFieldLanes.divided(

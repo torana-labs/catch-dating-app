@@ -38,19 +38,19 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             ],
           ),
           gapH10,
-          CatchText(
+          CatchLegacyText(
             context.l10n
                 .eventSuccessEventSuccessCompanionAfterglowTextYourNightAtTitle(
                   title: event.title,
                 ),
-            variant: CatchTextVariant.titleL,
+            variant: CatchLegacyTextVariant.titleL,
           ),
           gapH4,
-          CatchText(
+          CatchLegacyText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionAfterglowTextASmallRecapFor,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
             color: t.ink2,
           ),
           gapH14,
@@ -125,11 +125,11 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
                 ),
                 gapW8,
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     context
                         .l10n
                         .eventSuccessEventSuccessCompanionAfterglowTextOnlyYouSeeThis,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink,
                   ),
                 ),
@@ -259,7 +259,7 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
           opacity: entry,
           child: Transform.translate(
             offset: Offset(0, slide),
-            child: CatchSurface(
+            child: CatchLegacySurface(
               backgroundColor: t.surface,
               borderRole: CatchBorderRole.separator,
               radius: CatchRadius.sm,
@@ -277,14 +277,14 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           beat.label,
-                          variant: CatchTextVariant.sectionTitle,
+                          variant: CatchLegacyTextVariant.sectionTitle,
                         ),
                         gapH2,
-                        CatchText(
+                        CatchLegacyText(
                           _animatedValueString(beat),
-                          variant: CatchTextVariant.supporting,
+                          variant: CatchLegacyTextVariant.supporting,
                           color: t.ink2,
                         ),
                       ],

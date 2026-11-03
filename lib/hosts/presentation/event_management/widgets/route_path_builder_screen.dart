@@ -105,7 +105,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
               bottom: CatchSpacing.s4,
               child: SafeArea(
                 top: false,
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   backgroundColor: t.surface,
                   borderRole: CatchBorderRole.separator,
                   emphasis: CatchSurfaceEmphasis.floating,
@@ -114,13 +114,13 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CatchText(
+                      CatchLegacyText(
                         coordinates.isEmpty
                             ? context.l10n.hostsRoutePathBuilderEmpty
                             : context.l10n.hostsRoutePathBuilderCount(
                                 count: coordinates.length,
                               ),
-                        variant: CatchTextVariant.supporting,
+                        variant: CatchLegacyTextVariant.supporting,
                       ),
                       gapH12,
                       Row(

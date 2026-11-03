@@ -53,7 +53,7 @@ class ItineraryRow extends StatelessWidget {
                   padding: const EdgeInsets.only(
                     top: CatchLayout.eventDetailItineraryDotTopInset,
                   ),
-                  child: CatchSurface(
+                  child: CatchLegacySurface(
                     width: CatchLayout.eventDetailItineraryDotExtent,
                     height: CatchLayout.eventDetailItineraryDotExtent,
                     radius: CatchRadius.pill,
@@ -75,7 +75,7 @@ class ItineraryRow extends StatelessWidget {
                       ),
                       child: SizedBox(
                         width: CatchStroke.underline,
-                        child: CatchSurface(
+                        child: CatchLegacySurface(
                           duration: Duration.zero,
                           radius: CatchRadius.none,
                           backgroundColor: railColor,
@@ -94,16 +94,16 @@ class ItineraryRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     step.title,
-                    variant: CatchTextVariant.bodyLead,
+                    variant: CatchLegacyTextVariant.bodyLead,
                     color: (titleColor) ?? CatchTokens.of(context).ink,
                   ),
                   if (step.detail case final detail?) ...[
                     const SizedBox(height: CatchSpacing.micro2),
-                    CatchText(
+                    CatchLegacyText(
                       detail,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: detailColor,
                     ),
                   ],

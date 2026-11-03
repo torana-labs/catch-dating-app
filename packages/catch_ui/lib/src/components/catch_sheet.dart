@@ -5,8 +5,8 @@ import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_sheet_header.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 Future<T?> showCatchBottomSheet<T>({
@@ -176,7 +176,7 @@ class CatchSheet extends StatelessWidget {
     final hasHeader =
         (title?.isNotEmpty ?? false) || glyph != null || right != null;
 
-    final content = CatchSurface(
+    final content = CatchLegacySurface(
       emphasis: CatchSurfaceEmphasis.floating,
       duration: Duration.zero,
       borderRadius: const BorderRadius.only(
@@ -252,7 +252,7 @@ class CatchSheet extends StatelessWidget {
                   top: Radius.circular(CatchLayout.sheetTopRadius),
                 ),
                 child: pinFooter && footer != null
-                    ? CatchSurface(
+                    ? CatchLegacySurface(
                         emphasis: CatchSurfaceEmphasis.floating,
                         duration: Duration.zero,
                         borderRadius: content.borderRadius,

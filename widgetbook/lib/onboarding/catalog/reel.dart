@@ -217,9 +217,9 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
             child: WelcomeRevealTransition(
               landingValue: 0.62,
               order: 0,
-              child: CatchText(
+              child: CatchLegacyText(
                 'Show up to something you would do anyway.',
-                variant: CatchTextVariant.bodyM,
+                variant: CatchLegacyTextVariant.bodyM,
                 color: CatchTokens.editorialWhite,
               ),
             ),
@@ -235,9 +235,9 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
             child: WelcomeRevealTransition(
               landingValue: 1,
               order: 1,
-              child: CatchText(
+              child: CatchLegacyText(
                 'Continue with phone',
-                variant: CatchTextVariant.titleS,
+                variant: CatchLegacyTextVariant.titleS,
                 color: CatchTokens.editorialWhite,
               ),
             ),

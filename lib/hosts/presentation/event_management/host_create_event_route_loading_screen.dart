@@ -95,7 +95,7 @@ class CreateEventDockSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.bg,

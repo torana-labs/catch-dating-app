@@ -46,18 +46,18 @@ class EventChatMessageTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (message.available && message.kind == 'announcement')
-              CatchText(
+              CatchLegacyText(
                 l.eventChatAnnouncement,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             if (message.available)
               Row(
                 children: [
                   Expanded(
                     child: onViewProfile == null
-                        ? CatchText(
+                        ? CatchLegacyText(
                             isMe ? l.eventChatYou : message.senderName ?? '',
-                            variant: CatchTextVariant.supporting,
+                            variant: CatchLegacyTextVariant.supporting,
                           )
                         : Align(
                             alignment: AlignmentDirectional.centerStart,
@@ -119,7 +119,7 @@ class EventChatMessageTile extends StatelessWidget {
                   ),
                 ],
               ),
-            CatchSurface(
+            CatchLegacySurface(
               padding: CatchInsets.chatBubbleContent,
               backgroundColor: isMe ? t.primary : t.surface,
               borderRole: isMe ? null : CatchBorderRole.separator,
@@ -127,21 +127,21 @@ class EventChatMessageTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (message.reply case final reply?) ...[
-                    CatchText(
+                    CatchLegacyText(
                       reply.available
                           ? reply.senderName ?? ''
                           : l.eventChatUnavailable,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: ink,
                     ),
                     gapH4,
-                    CatchText(
+                    CatchLegacyText(
                       reply.available
                           ? reply.text ?? ''
                           : l.eventChatUnavailable,
                       maxLines: 3,
 
-                      variant: CatchTextVariant.bodyM,
+                      variant: CatchLegacyTextVariant.bodyM,
                       color: ink,
                     ),
                     gapH12,
@@ -228,9 +228,9 @@ class EventChatReactionSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.eventChatReactionsTitle,
-                variant: CatchTextVariant.bodyL,
+                variant: CatchLegacyTextVariant.bodyL,
                 color: CatchTokens.of(context).ink,
               ),
             ),

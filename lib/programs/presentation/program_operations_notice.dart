@@ -285,26 +285,26 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (entries.isEmpty)
-            CatchText(
+            CatchLegacyText(
               context.l10n.programsOperationsReviewEmpty,
-              variant: CatchTextVariant.bodyL,
+              variant: CatchLegacyTextVariant.bodyL,
               color: CatchTokens.of(context).ink,
             ),
           for (final entry in entries) ...[
-            CatchSurface.card(
+            CatchLegacySurface.card(
               padding: CatchInsets.contentDense,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     _operationLabel(context, entry),
-                    variant: CatchTextVariant.supportingStrong,
+                    variant: CatchLegacyTextVariant.supportingStrong,
                   ),
-                  CatchText(
+                  CatchLegacyText(
                     AppTimeFormatters.dateTime(entry.createdAt),
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
-                  CatchText(
+                  CatchLegacyText(
                     (entry.kind == ProgramOperationKind.dispatch
                             ? (entry.payload['legIds']! as List).map(
                                 (id) =>
@@ -320,7 +320,7 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
                                         .programsOperationsGuestUnavailable,
                               ])
                         .join(', '),
-                    variant: CatchTextVariant.bodyL,
+                    variant: CatchLegacyTextVariant.bodyL,
                     color: CatchTokens.of(context).ink,
                   ),
                   gapH8,

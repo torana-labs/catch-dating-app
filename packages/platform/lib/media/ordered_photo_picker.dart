@@ -276,18 +276,18 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
             if (_photos.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-                child: CatchText(
+                child: CatchLegacyText(
                   context.l10n.coreOrderedPhotoPickerBodyCoverPhoto,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink3,
                 ),
               ),
             Row(
               children: [
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     context.l10n.coreOrderedPhotoPickerTitleGallery,
-                    variant: CatchTextVariant.sectionTitle,
+                    variant: CatchLegacyTextVariant.sectionTitle,
                   ),
                 ),
                 CatchButton.text(
@@ -527,7 +527,7 @@ class OrderedPhotoTile extends StatelessWidget {
           value1: index + 1,
         ),
         excludeFromSemantics: true,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           tone: CatchSurfaceTone.raised,
           radius: CatchRadius.md,
           clipBehavior: Clip.antiAlias,
@@ -540,7 +540,7 @@ class OrderedPhotoTile extends StatelessWidget {
               else
                 CatchNetworkImage(
                   photo.imageUrl!,
-                  errorBuilder: (_, _, _) => CatchSurface(
+                  errorBuilder: (_, _, _) => CatchLegacySurface(
                     duration: Duration.zero,
                     radius: CatchRadius.none,
                     backgroundColor: t.raised,
@@ -597,7 +597,7 @@ class OrderedPhotoTile extends StatelessWidget {
                 Positioned(
                   top: CatchSpacing.s1,
                   left: CatchSpacing.s1,
-                  child: CatchSurface.tinted(
+                  child: CatchLegacySurface.tinted(
                     radius: CatchRadius.pill,
                     backgroundColor: t.ink.withValues(
                       alpha: CatchOpacity.photoSlotDeleteChrome,
@@ -641,7 +641,7 @@ class OrderedPhotoTile extends StatelessWidget {
                     label: failed && onRetry != null
                         ? '$statusLabel. $retryLabel'
                         : statusLabel,
-                    child: CatchSurface(
+                    child: CatchLegacySurface(
                       backgroundColor: (failed ? t.danger : t.ink).withValues(
                         alpha: CatchOpacity.hostMediaStatusScrim,
                       ),
@@ -702,7 +702,7 @@ class OrderedPhotoAddTile extends StatelessWidget {
       child: Tooltip(
         message: label,
         excludeFromSemantics: true,
-        child: CatchSurface(
+        child: CatchLegacySurface(
           key: OrderedPhotoPickerKeys.addAction(label),
           tone: CatchSurfaceTone.raised,
           radius: CatchRadius.md,
@@ -725,9 +725,9 @@ class OrderedPhotoAddTile extends StatelessWidget {
                     ),
                     if (showLabel) ...[
                       gapH8,
-                      CatchText(
+                      CatchLegacyText(
                         label,
-                        variant: CatchTextVariant.bodyLead,
+                        variant: CatchLegacyTextVariant.bodyLead,
                         color: t.ink2,
                         textAlign: TextAlign.center,
                         maxLines: 2,

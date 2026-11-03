@@ -70,7 +70,7 @@ class EventSuccessGroupRotationRow extends StatelessWidget {
         .toList(growable: false);
     return Padding(
       padding: eventSuccessRevealAssignmentRowGap,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         tone: CatchSurfaceTone.raised,
         borderRole: CatchBorderRole.separator,
         padding: CatchInsets.contentDense,
@@ -95,11 +95,14 @@ class EventSuccessGroupRotationRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            CatchText(timeRange, variant: CatchTextVariant.sectionTitle),
+            CatchLegacyText(
+              timeRange,
+              variant: CatchLegacyTextVariant.sectionTitle,
+            ),
             gapH4,
-            CatchText(
+            CatchLegacyText(
               eventSuccessRevealCompatibilityExplanation(slot.compatibility),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.ink2,
             ),
             gapH10,

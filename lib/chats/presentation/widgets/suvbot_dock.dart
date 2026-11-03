@@ -83,15 +83,15 @@ class SuvbotDock extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.chatsSuvbotActionBarTextSuvbotControls,
-                          variant: CatchTextVariant.sectionTitle,
+                          variant: CatchLegacyTextVariant.sectionTitle,
                           color: t.ink,
                         ),
                         gapH2,
-                        CatchText(
+                        CatchLegacyText(
                           context.l10n.chatsSuvbotActionBarTextNoTypingNeeded,
-                          variant: CatchTextVariant.statusLabel,
+                          variant: CatchLegacyTextVariant.statusLabel,
                           color: t.ink2,
                         ),
                       ],
@@ -346,7 +346,7 @@ class SuvbotResetActionRow extends StatelessWidget {
       opacity: pending ? CatchOpacity.disabledControl : 1,
       duration: CatchMotion.fast,
       curve: CatchMotion.standardCurve,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         tone: CatchSurfaceTone.transparent,
         radius: 0,
         onTap: pending ? null : onTap,
@@ -368,15 +368,15 @@ class SuvbotResetActionRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     action.label,
-                    variant: CatchTextVariant.bodyLead,
+                    variant: CatchLegacyTextVariant.bodyLead,
                     color: tone,
                   ),
                   gapH4,
-                  CatchText(
+                  CatchLegacyText(
                     action.description,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                   ),
                 ],
@@ -454,14 +454,14 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             context.l10n.chatsSuvbotActionBarTextMatchTester,
-            variant: CatchTextVariant.titleL,
+            variant: CatchLegacyTextVariant.titleL,
           ),
           const SizedBox(height: CatchSpacing.s1),
-          CatchText(
+          CatchLegacyText(
             context.l10n.chatsSuvbotActionBarTextEnterAnAllowlistedBeta,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           const SizedBox(height: CatchSpacing.s3),
           CatchFieldLanes.single(

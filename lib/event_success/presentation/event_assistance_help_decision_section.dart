@@ -112,36 +112,36 @@ class _EventAssistanceHelpDecisionSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           row.displayName ?? l10n.eventAssistanceHelpUnknownGuest,
-          variant: CatchTextVariant.titleL,
+          variant: CatchLegacyTextVariant.titleL,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           helpCategoryLabel(l10n, row.category),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
-        CatchText(
+        CatchLegacyText(
           helpReceivedLabel(context, row.receivedAt),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (row.assignment != null)
-          CatchText(
+          CatchLegacyText(
             helpAssignmentLabel(l10n, row.assignment!, options),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         if (row.resolution != null)
-          CatchText(
+          CatchLegacyText(
             row.resolution == AssistanceCaseResolutionOutcome.resolved
                 ? l10n.eventAssistanceHelpResolved
                 : l10n.eventAssistanceHelpDeclined,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             widget.contextMessage!,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH12,
@@ -160,12 +160,12 @@ class _EventAssistanceHelpDecisionSectionState
               gapH8,
             ],
         ] else if (ready) ...[
-          CatchText(switch (_action!) {
+          CatchLegacyText(switch (_action!) {
             _HelpAction.take => l10n.eventAssistanceHelpTakeBody,
             _HelpAction.transfer => l10n.eventAssistanceHelpTransferBody,
             _HelpAction.resolve => l10n.eventAssistanceHelpResolveBody,
             _HelpAction.decline => l10n.eventAssistanceHelpDeclineBody,
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
           if (_action == _HelpAction.transfer) ...[
             gapH12,
             if (named.isNotEmpty)
@@ -184,14 +184,14 @@ class _EventAssistanceHelpDecisionSectionState
                 ),
               )
             else
-              CatchText(
+              CatchLegacyText(
                 l10n.eventAssistanceHelpNoHosts,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             if (named.length != candidates.length)
-              CatchText(
+              CatchLegacyText(
                 l10n.eventAssistanceHelpUnnamedHosts,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
           ],
           gapH12,
@@ -209,7 +209,7 @@ class _EventAssistanceHelpDecisionSectionState
             onPressed: () => setState(_clear),
           ),
         ] else ...[
-          CatchText(switch (widget.phase) {
+          CatchLegacyText(switch (widget.phase) {
             EventAssistanceHelpPhase.submitting =>
               l10n.eventAssistanceHelpSaving,
             EventAssistanceHelpPhase.retryRequired =>
@@ -226,10 +226,10 @@ class _EventAssistanceHelpDecisionSectionState
                   ? l10n.eventAssistanceHelpSourceChanged
                   : l10n.eventAssistanceHelpLegacy,
             EventAssistanceHelpPhase.ready => '',
-          }, variant: CatchTextVariant.supporting),
+          }, variant: CatchLegacyTextVariant.supporting),
           if (widget.submittedDecision case final choice?) ...[
             gapH8,
-            CatchText(
+            CatchLegacyText(
               l10n.eventAssistanceHelpSelected(
                 action: switch (choice) {
                   AssistanceCaseResolve() => l10n.eventAssistanceHelpResolve,
@@ -242,7 +242,7 @@ class _EventAssistanceHelpDecisionSectionState
                     ),
                 },
               ),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
           ],
         ],

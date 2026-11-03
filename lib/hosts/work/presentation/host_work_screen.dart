@@ -167,18 +167,18 @@ class HostWorkPageBody extends StatelessWidget {
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CatchText(
+                            CatchLegacyText(
                               assignment.title,
-                              variant: CatchTextVariant.sectionTitle,
+                              variant: CatchLegacyTextVariant.sectionTitle,
                             ),
                             if (assignment.subtitle case final subtitle?)
-                              CatchText(
+                              CatchLegacyText(
                                 subtitle,
-                                variant: CatchTextVariant.bodyS,
+                                variant: CatchLegacyTextVariant.bodyS,
                               ),
-                            CatchText(
+                            CatchLegacyText(
                               _assignmentMeta(context, assignment),
-                              variant: CatchTextVariant.bodyS,
+                              variant: CatchLegacyTextVariant.bodyS,
                             ),
                           ],
                         ),

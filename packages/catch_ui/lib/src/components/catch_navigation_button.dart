@@ -4,7 +4,7 @@ import 'package:catch_ui/src/components/catch_navigation_button_status.dart';
 import 'package:catch_ui/src/components/catch_tab_bar_item.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/foundations/catch_transitions.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// A navigation destination with bottom-bar and side-rail layout recipes.
@@ -140,7 +140,7 @@ class _CatchNavigationButtonState<T> extends State<CatchNavigationButton<T>> {
                 Expanded(child: label),
                 if (widget.item.badgeCount > 0) ...[
                   const SizedBox(width: CatchSpacing.s2),
-                  CatchSurface(
+                  CatchLegacySurface(
                     radius: CatchRadius.pill,
                     backgroundColor: selected ? t.surface : t.bg,
                     child: Padding(

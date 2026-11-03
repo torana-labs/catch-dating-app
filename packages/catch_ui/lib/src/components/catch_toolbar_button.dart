@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Labelled action or current-value selector button in canonical app chrome.
@@ -125,7 +125,7 @@ class _CatchToolbarButtonState extends State<CatchToolbarButton> {
               height: targetHeight,
               child: Center(
                 widthFactor: 1,
-                child: CatchSurface(
+                child: CatchLegacySurface(
                   height: visualHeight,
                   radius: CatchRadius.pill,
                   backgroundColor: enabled && (_hovered || _pressed)

@@ -131,7 +131,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                 tone: presentation.tone,
               ),
               gapH14,
-              CatchText(
+              CatchLegacyText(
                 isRazorpay
                     ? context
                           .l10n
@@ -139,7 +139,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                     : context
                           .l10n
                           .hostsHostPaymentAccountCardTextCatchPaysHostsThrough,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: sheetTokens.ink2,
               ),
               gapH16,
@@ -163,9 +163,9 @@ class HostPaymentAccountCard extends StatelessWidget {
                 ],
               ),
               gapH12,
-              CatchText(
+              CatchLegacyText(
                 context.l10n.hostsHostPaymentAccountCardTextWeWillRefreshYour,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
                 color: sheetTokens.ink3,
                 textAlign: TextAlign.center,
               ),
@@ -367,9 +367,9 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchText(
+            CatchLegacyText(
               l10n.hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: CatchTokens.of(context).ink2,
             ),
             gapH16,

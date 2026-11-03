@@ -150,7 +150,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             onMapCreated: (controller) => _mapController = controller,
             onTap: _setSelectedPoint,
           )
-        : CatchSurface(
+        : CatchLegacySurface(
             duration: Duration.zero,
             radius: CatchRadius.none,
             backgroundColor: t.bg,
@@ -475,7 +475,7 @@ class PlaceSearchSection extends StatelessWidget {
         ),
         if (suggestions.isNotEmpty) ...[
           gapH8,
-          CatchSurface(
+          CatchLegacySurface(
             padding: EdgeInsets.zero,
             emphasis: CatchSurfaceEmphasis.floating,
             borderRole: CatchBorderRole.separator,
@@ -521,7 +521,7 @@ class PlaceSuggestionRow extends StatelessWidget {
         : suggestion.description;
     final subtitle = suggestion.secondaryText;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       tone: CatchSurfaceTone.transparent,
       radius: 0,
       onTap: onTap,
@@ -545,17 +545,17 @@ class PlaceSuggestionRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   title,
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: CatchTokens.of(context).ink2,
                   maxLines: 1,
                 ),
                 if (subtitle.isNotEmpty) ...[
                   gapH4,
-                  CatchText(
+                  CatchLegacyText(
                     subtitle,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                     maxLines: 1,
                   ),
@@ -596,7 +596,7 @@ class SelectedPointSection extends StatelessWidget {
                     .eventsLocationPickerScreenSubtitleConfirmThisPlaceOr
         : context.l10n.eventsLocationPickerScreenSubtitleSearchForAPlace;
 
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.content,
       emphasis: CatchSurfaceEmphasis.floating,
       borderRole: CatchBorderRole.separator,
@@ -622,16 +622,16 @@ class SelectedPointSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       title,
-                      variant: CatchTextVariant.titleS,
+                      variant: CatchLegacyTextVariant.titleS,
                       color: t.ink,
                       maxLines: 1,
                     ),
                     gapH4,
-                    CatchText(
+                    CatchLegacyText(
                       subtitle,
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                       color: t.ink2,
                     ),
                   ],

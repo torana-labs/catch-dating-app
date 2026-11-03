@@ -39,16 +39,16 @@ class _EventAssistanceDepartureRosterSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceDepartureRosterBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceDepartureSelected(
             count: widget.selectedIds.length,
           ),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         gapH8,
         CatchSearchField.expanded(
@@ -64,9 +64,9 @@ class _EventAssistanceDepartureRosterSectionState
         ),
         if (matches.isEmpty) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDepartureNoGuests,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (matches.isNotEmpty)

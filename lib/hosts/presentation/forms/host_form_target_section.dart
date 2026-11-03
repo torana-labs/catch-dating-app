@@ -171,9 +171,9 @@ class _HostFormTargetSectionState extends ConsumerState<HostFormTargetSection> {
         CatchSection.fieldRows(
           title: context.l10n.hostFormTargetTitle,
           footer: widget.hasPublishedVersion
-              ? CatchText(
+              ? CatchLegacyText(
                   context.l10n.hostFormTargetPublishedNotice,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 )
               : null,
           children: [

@@ -74,7 +74,7 @@ class StarRatingPicker extends StatelessWidget {
               value2: value == 1 ? '' : context.l10n.reviewsStarRatingLabelS,
             ),
             selected: clampedRating == value,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               duration: Duration.zero,
               tone: CatchSurfaceTone.transparent,
               key: keyBuilder?.call(value),

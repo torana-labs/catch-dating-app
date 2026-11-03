@@ -92,9 +92,9 @@ class EventRehearsalStaffEditSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (form.phase == RehearsalStaffPhase.saved)
-            CatchText(
+            CatchLegacyText(
               l10n.hostEventRehearsalStaffSaved,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             )
           else ...[
             if (change != null && assignment is AssistanceAssignGroupDuty)
@@ -190,16 +190,16 @@ class EventRehearsalStaffEditSection extends ConsumerWidget {
             ],
             if (form.canRetry) ...[
               gapH12,
-              CatchText(
+              CatchLegacyText(
                 l10n.hostEventRehearsalStaffPending,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             ],
             if (!current && form.canReload) ...[
               gapH12,
-              CatchText(
+              CatchLegacyText(
                 l10n.hostEventRehearsalStaffReviewChanged,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             ],
           ],

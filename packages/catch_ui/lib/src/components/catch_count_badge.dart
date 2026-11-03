@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 String catchCountLabel(int count) => count > 99 ? '99+' : '$count';
@@ -92,7 +92,7 @@ class CatchCountBadge extends StatelessWidget {
     final t = CatchTokens.of(context);
     final label = count <= 0
         ? const SizedBox.shrink()
-        : CatchSurface(
+        : CatchLegacySurface(
             radius: CatchRadius.pill,
             backgroundColor: t.primary,
             borderSpec: CatchBorderSpec(

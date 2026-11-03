@@ -657,11 +657,11 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     expect(cityMaterial.color, Colors.transparent);
 
-    final searchShell = tester.widget<CatchSurface>(
+    final searchShell = tester.widget<CatchLegacySurface>(
       find
           .descendant(
             of: find.byType(CatchSearchField),
-            matching: find.byType(CatchSurface),
+            matching: find.byType(CatchLegacySurface),
           )
           .first,
     );
@@ -684,9 +684,12 @@ void _registerExploreDiscoveryWidgetsTests() {
         of: find.byIcon(icon),
         matching: find.byType(CatchIconAction),
       );
-      final buttonSurface = tester.widget<CatchSurface>(
+      final buttonSurface = tester.widget<CatchLegacySurface>(
         find
-            .descendant(of: buttonFinder, matching: find.byType(CatchSurface))
+            .descendant(
+              of: buttonFinder,
+              matching: find.byType(CatchLegacySurface),
+            )
             .first,
       );
       expect(buttonSurface.backgroundColor, CatchTokens.dark.surface);
@@ -715,11 +718,11 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.text('Mumbai'), findsOneWidget);
     expect(find.text('Find an event worth showing up for.'), findsNothing);
     expect(find.byType(FeaturedEventPoster), findsNothing);
-    final cityButton = tester.widget<CatchSurface>(
+    final cityButton = tester.widget<CatchLegacySurface>(
       find
           .descendant(
             of: find.byType(ExploreCityPicker),
-            matching: find.byType(CatchSurface),
+            matching: find.byType(CatchLegacySurface),
           )
           .first,
     );

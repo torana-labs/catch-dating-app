@@ -33,7 +33,7 @@ class CompanionStageScaffold extends StatelessWidget {
     return CatchScaffold.workspace(
       key: const ValueKey('eventSuccessCompanionStage'),
       backgroundColor: stageTheme.background,
-      body: CatchSurface(
+      body: CatchLegacySurface(
         duration: CatchMotion.slow,
         radius: CatchRadius.none,
         gradient: stageTheme.gradient,
@@ -187,15 +187,15 @@ class CompanionMomentViewport extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchText(
+                CatchLegacyText(
                   presentation.headline,
-                  variant: CatchTextVariant.headline,
+                  variant: CatchLegacyTextVariant.headline,
                   color: stageTheme.foreground,
                 ),
                 gapH10,
-                CatchText(
+                CatchLegacyText(
                   presentation.body,
-                  variant: CatchTextVariant.bodyL,
+                  variant: CatchLegacyTextVariant.bodyL,
                   color: stageTheme.foreground.withValues(
                     alpha: CatchOpacity.eventSuccessProminent,
                   ),
@@ -247,11 +247,11 @@ class CompanionStageNavigationRow extends StatelessWidget {
         ),
         gapW8,
         Expanded(
-          child: CatchText(
+          child: CatchLegacyText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
-            variant: CatchTextVariant.titleS,
+            variant: CatchLegacyTextVariant.titleS,
             color: foreground.withValues(
               alpha: CatchOpacity.eventSuccessChrome,
             ),
@@ -328,15 +328,19 @@ class CompanionHeroSection extends StatelessWidget {
           ],
         ),
         gapH14,
-        CatchText(event.title, variant: CatchTextVariant.titleL, color: fg),
+        CatchLegacyText(
+          event.title,
+          variant: CatchLegacyTextVariant.titleL,
+          color: fg,
+        ),
         gapH4,
-        CatchText(
+        CatchLegacyText(
           context.l10n
               .eventSuccessEventSuccessCompanionSharedTextTitleLocationname29e462(
                 title: plan.playbook.title,
                 locationName: event.locationName,
               ),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
           color: fg.withValues(alpha: CatchOpacity.eventSuccessMutedInk),
         ),
       ],
@@ -366,7 +370,7 @@ class CompanionPrivacyText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stageTheme = _stageTheme;
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
       backgroundColor: stageTheme.foreground.withValues(
@@ -391,9 +395,9 @@ class CompanionPrivacyText extends StatelessWidget {
           ),
           gapW8,
           Expanded(
-            child: CatchText(
+            child: CatchLegacyText(
               text,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: stageTheme.foreground.withValues(
                 alpha: CatchOpacity.eventSuccessProminent,
               ),
@@ -445,7 +449,7 @@ class CompanionStageActionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.sm,
       backgroundColor: t.ink.withValues(
         alpha: CatchOpacity.eventSuccessActionDockFill,
@@ -468,7 +472,7 @@ class CompanionStageBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.sm,
       backgroundColor: t.primarySoft,
       child: Padding(padding: CatchInsets.contentDense, child: child),

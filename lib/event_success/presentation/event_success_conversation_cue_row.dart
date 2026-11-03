@@ -31,15 +31,18 @@ class ConversationCueRow extends StatelessWidget {
                   runSpacing: CatchSpacing.s1,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    CatchText(
+                    CatchLegacyText(
                       cue.title,
-                      variant: CatchTextVariant.sectionTitle,
+                      variant: CatchLegacyTextVariant.sectionTitle,
                     ),
                     CatchBadge(label: cue.contextLabel),
                   ],
                 ),
                 const SizedBox(height: CatchSpacing.s1),
-                CatchText(cue.body, variant: CatchTextVariant.supporting),
+                CatchLegacyText(
+                  cue.body,
+                  variant: CatchLegacyTextVariant.supporting,
+                ),
               ],
             ),
           ),

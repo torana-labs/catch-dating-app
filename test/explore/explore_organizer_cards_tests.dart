@@ -133,7 +133,7 @@ void _registerExploreOrganizerCardsTests() {
             find
                 .ancestor(
                   of: find.text('MUMBAI'),
-                  matching: find.byType(CatchSurface),
+                  matching: find.byType(CatchLegacySurface),
                 )
                 .first,
           )

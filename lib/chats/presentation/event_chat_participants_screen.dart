@@ -207,18 +207,18 @@ class EventChatParticipantsRowList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           l.eventChatParticipantsDescription,
-          variant: CatchTextVariant.bodyM,
+          variant: CatchLegacyTextVariant.bodyM,
           color: CatchTokens.of(context).ink,
         ),
         gapH24,
         if (state.page.items.isEmpty)
-          CatchText(
+          CatchLegacyText(
             state.page.nextCursor == null
                 ? l.eventChatParticipantsEmpty
                 : l.eventChatParticipantsContinue,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         if (state.page.items.isNotEmpty)
           CatchSection.fieldRows(

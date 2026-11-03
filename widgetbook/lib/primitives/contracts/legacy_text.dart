@@ -9,36 +9,36 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchText,
+  type: CatchLegacyText,
   path: '[Core primitives]/Legacy',
 )
 Widget catchLegacyTextContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   const variants = [
-    CatchTextVariant.displayXs,
-    CatchTextVariant.displayS,
-    CatchTextVariant.displayM,
-    CatchTextVariant.displayL,
-    CatchTextVariant.displayXl,
-    CatchTextVariant.displayXxl,
-    CatchTextVariant.headline,
-    CatchTextVariant.titleL,
-    CatchTextVariant.sectionTitle,
-    CatchTextVariant.titleS,
-    CatchTextVariant.bodyLead,
-    CatchTextVariant.bodyL,
-    CatchTextVariant.bodyM,
-    CatchTextVariant.bodyS,
-    CatchTextVariant.supporting,
-    CatchTextVariant.supportingStrong,
-    CatchTextVariant.fieldLabel,
-    CatchTextVariant.statusLabel,
-    CatchTextVariant.metric,
+    CatchLegacyTextVariant.displayXs,
+    CatchLegacyTextVariant.displayS,
+    CatchLegacyTextVariant.displayM,
+    CatchLegacyTextVariant.displayL,
+    CatchLegacyTextVariant.displayXl,
+    CatchLegacyTextVariant.displayXxl,
+    CatchLegacyTextVariant.headline,
+    CatchLegacyTextVariant.titleL,
+    CatchLegacyTextVariant.sectionTitle,
+    CatchLegacyTextVariant.titleS,
+    CatchLegacyTextVariant.bodyLead,
+    CatchLegacyTextVariant.bodyL,
+    CatchLegacyTextVariant.bodyM,
+    CatchLegacyTextVariant.bodyS,
+    CatchLegacyTextVariant.supporting,
+    CatchLegacyTextVariant.supportingStrong,
+    CatchLegacyTextVariant.fieldLabel,
+    CatchLegacyTextVariant.statusLabel,
+    CatchLegacyTextVariant.metric,
   ];
 
   return WidgetbookContractFrame(
-    title: 'CatchText',
+    title: 'CatchLegacyText',
     contractId: 'catch.text.legacy',
     states: const ['roles', 'recolored', 'clamped', 'aligned'],
     children: [
@@ -49,8 +49,8 @@ Widget catchLegacyTextContractStates(BuildContext context) {
           spacing: CatchGaps.related,
           children: [
             for (final variant in variants)
-              CatchText(
-                variant == CatchTextVariant.metric
+              CatchLegacyText(
+                variant == CatchLegacyTextVariant.metric
                     ? '1,280'
                     : '${variant.name}: Thursday supper club',
                 variant: variant,
@@ -64,14 +64,14 @@ Widget catchLegacyTextContractStates(BuildContext context) {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: CatchGaps.inline,
           children: [
-            CatchText(
+            CatchLegacyText(
               'Payment failed',
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.danger,
             ),
-            CatchText(
+            CatchLegacyText(
               'Spot confirmed',
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
               color: t.positiveText,
             ),
           ],
@@ -81,9 +81,9 @@ Widget catchLegacyTextContractStates(BuildContext context) {
         label: 'clamped',
         child: SizedBox(
           width: WidgetbookPreviewLayout.kickerTruncationWidth,
-          child: CatchText(
+          child: CatchLegacyText(
             'A long description of the evening wraps past the line limit',
-            variant: CatchTextVariant.bodyL,
+            variant: CatchLegacyTextVariant.bodyL,
             maxLines: 2,
           ),
         ),
@@ -92,9 +92,9 @@ Widget catchLegacyTextContractStates(BuildContext context) {
         label: 'aligned',
         child: SizedBox(
           width: double.infinity,
-          child: CatchText(
+          child: CatchLegacyText(
             'Centred copy',
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
             textAlign: TextAlign.center,
           ),
         ),

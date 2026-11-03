@@ -69,12 +69,12 @@ class _HostFormAdmissionSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchText(
+          CatchLegacyText(
             l10n.hostFormAdmissionTitle,
-            variant: CatchTextVariant.sectionTitle,
+            variant: CatchLegacyTextVariant.sectionTitle,
           ),
           gapH8,
-          CatchText(
+          CatchLegacyText(
             done
                 ? l10n.hostFormAdmissionComplete
                 : pending != null
@@ -84,7 +84,7 @@ class _HostFormAdmissionSectionState
                       ? l10n.hostFormAdmissionRetain
                       : l10n.hostFormAdmissionReady)
                 : l10n.hostFormAdmissionReview,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           if (preview?.blocker case final blocker?) ...[
             gapH8,

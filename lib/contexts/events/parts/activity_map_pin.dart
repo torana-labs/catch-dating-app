@@ -34,7 +34,7 @@ class ActivityMapPin extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (selected && flagLabel != null && flagLabel.isNotEmpty) ...[
-          CatchSurface(
+          CatchLegacySurface(
             duration: Duration.zero,
             tone: CatchSurfaceTone.transparent,
             radius: CatchRadius.pill,

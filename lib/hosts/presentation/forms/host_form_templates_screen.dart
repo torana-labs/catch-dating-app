@@ -50,9 +50,9 @@ class _HostFormTemplatesScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchText(
+                  CatchLegacyText(
                     context.l10n.hostFormTemplatesSubtitle,
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                     color: t.ink2,
                   ),
                   gapH20,

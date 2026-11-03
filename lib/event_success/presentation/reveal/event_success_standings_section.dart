@@ -32,21 +32,21 @@ class EventSuccessStandingsSection extends StatelessWidget {
               children: [
                 SizedBox(
                   width: CatchSpacing.s9,
-                  child: CatchText(
+                  child: CatchLegacyText(
                     '#${entries[index].position}',
-                    variant: CatchTextVariant.statusLabel,
+                    variant: CatchLegacyTextVariant.statusLabel,
                     color: CatchTokens.of(context).ink2,
                   ),
                 ),
                 Expanded(
-                  child: CatchText(
+                  child: CatchLegacyText(
                     entries[index].unitLabel,
-                    variant: CatchTextVariant.bodyM,
+                    variant: CatchLegacyTextVariant.bodyM,
                     color: CatchTokens.of(context).ink,
                   ),
                 ),
                 gapW12,
-                CatchText(
+                CatchLegacyText(
                   unitOutcome == EventSuccessUnitOutcome.score
                       ? context.l10n.eventSuccessLiveControlPointsValue(
                           points: entries[index].value,
@@ -54,7 +54,7 @@ class EventSuccessStandingsSection extends StatelessWidget {
                       : context.l10n.eventSuccessLiveControlRankValue(
                           rank: entries[index].value.toInt(),
                         ),
-                  variant: CatchTextVariant.statusLabel,
+                  variant: CatchLegacyTextVariant.statusLabel,
                   color: t.primary,
                 ),
               ],

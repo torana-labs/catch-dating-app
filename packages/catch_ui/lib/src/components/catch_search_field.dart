@@ -9,7 +9,7 @@ import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_control_surface.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_text_input.dart';
 import 'package:flutter/material.dart';
 
@@ -319,7 +319,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                     width: targetWidth,
                     height: targetHeight,
                     child: Center(
-                      child: CatchSurface(
+                      child: CatchLegacySurface(
                         width: width,
                         height: fieldHeight,
                         borderRadius: radius,

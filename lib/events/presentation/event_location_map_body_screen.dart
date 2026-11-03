@@ -57,7 +57,7 @@ class EventLocationMapScreen extends StatelessWidget {
           bottom: CatchSpacing.s5,
           child: SafeArea(
             top: false,
-            child: CatchSurface(
+            child: CatchLegacySurface(
               tone: CatchSurfaceTone.raised,
               emphasis: CatchSurfaceEmphasis.floating,
               borderRole: CatchBorderRole.separator,
@@ -70,7 +70,7 @@ class EventLocationMapScreen extends StatelessWidget {
                       SizedBox(
                         width: CatchLayout.eventInfoTileExtent,
                         height: CatchLayout.eventInfoTileExtent,
-                        child: CatchSurface(
+                        child: CatchLegacySurface(
                           duration: Duration.zero,
                           radius: CatchRadius.none,
                           backgroundColor: t.primarySoft,
@@ -87,26 +87,26 @@ class EventLocationMapScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CatchText(
+                            CatchLegacyText(
                               state.locationName,
-                              variant: CatchTextVariant.sectionTitle,
+                              variant: CatchLegacyTextVariant.sectionTitle,
                             ),
                             if (state.event.effectiveMeetingLocation?.address
                                     ?.trim()
                                 case final address?
                                 when address.isNotEmpty) ...[
                               gapH2,
-                              CatchText(
+                              CatchLegacyText(
                                 address,
-                                variant: CatchTextVariant.supporting,
+                                variant: CatchLegacyTextVariant.supporting,
                                 color: t.ink2,
                               ),
                             ],
                             if (state.locationNotes != null) ...[
                               gapH2,
-                              CatchText(
+                              CatchLegacyText(
                                 state.locationNotes!,
-                                variant: CatchTextVariant.supporting,
+                                variant: CatchLegacyTextVariant.supporting,
                                 color: t.ink2,
                               ),
                             ],

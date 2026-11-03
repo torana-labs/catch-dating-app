@@ -4,7 +4,7 @@ import 'package:catch_ui/src/components/catch_metric_data.dart';
 import 'package:catch_ui/src/components/catch_metric_tile.dart';
 import 'package:catch_ui/src/components/catch_metric_value.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchMetricSectionVariant { rail, grid, dataQuality }
@@ -125,7 +125,7 @@ class CatchMetricSection extends StatelessWidget {
     assert(items.isNotEmpty);
     final t = CatchTokens.of(context);
     final reflow = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
-    return CatchSurface(
+    return CatchLegacySurface(
       padding: padding,
       radius: CatchRadius.md,
       backgroundColor: backgroundColor,

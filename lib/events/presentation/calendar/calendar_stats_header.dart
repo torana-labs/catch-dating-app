@@ -17,7 +17,7 @@ class CalendarStatsHeader extends StatelessWidget {
           constraints: const BoxConstraints(
             maxWidth: CatchLayout.maxContentWidth,
           ),
-          child: CatchSurface(
+          child: CatchLegacySurface(
             padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
             borderRole: CatchBorderRole.separator,

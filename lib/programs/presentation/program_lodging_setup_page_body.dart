@@ -61,11 +61,14 @@ class _ProgramLodgingSetupPageBodyState
         children: [
           if (_error ?? widget.error case final error?)
             CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
-          CatchText(
+          CatchLegacyText(
             l10n.programsLodgingSharingHint,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
-          CatchText(catalog.timezone, variant: CatchTextVariant.supporting),
+          CatchLegacyText(
+            catalog.timezone,
+            variant: CatchLegacyTextVariant.supporting,
+          ),
           CatchSection.containedFieldRows(
             title: l10n.programsLodgingDemand,
             children: [
@@ -118,9 +121,9 @@ class _ProgramLodgingSetupPageBodyState
                 onPressed: _demand,
               ),
               for (final row in _draft.rows('demand'))
-                CatchText(
+                CatchLegacyText(
                   label('guests', requiredString(row, 'guestId')),
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               CatchButton(
                 label: l10n.programsLodgingRemove,
@@ -291,9 +294,9 @@ class _ProgramLodgingSetupPageBodyState
           CatchSection.containedFieldRows(
             title: l10n.programsLodgingInventory,
             children: [
-              CatchText(
+              CatchLegacyText(
                 l10n.programsLodgingInventoryHint,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               CatchField<String>.choices(
                 copy: copy,
@@ -410,9 +413,9 @@ class _ProgramLodgingSetupPageBodyState
                 contract: CatchContractConstraints
                     .programLodgingConfigDocumentRoomsItemsVerifiedFeaturesItems,
               ),
-              CatchText(
+              CatchLegacyText(
                 l10n.programsLodgingResourcesHint,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               CatchField<String>.choices(
                 copy: copy,
@@ -634,15 +637,15 @@ class _ProgramLodgingSetupPageBodyState
                         },
                 ),
                 for (final adoption in _adoptions.values)
-                  CatchText(
+                  CatchLegacyText(
                     '${l10n.programsLodgingVerified} · ${label('guests', requiredString(catalog.row('activeStays', adoption['stayId']! as String), 'guestId'))}',
-                    variant: CatchTextVariant.supporting,
+                    variant: CatchLegacyTextVariant.supporting,
                   ),
               ],
             ),
-          CatchText(
+          CatchLegacyText(
             l10n.programsLodgingSaveHint,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           CatchButton(
             label: l10n.programsLodgingSaveSetup,

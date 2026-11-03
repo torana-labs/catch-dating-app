@@ -49,7 +49,7 @@ class EventSuccessCountdownNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchLegacySurface(
       radius: CatchRadius.sm,
       backgroundColor: t.ink.withValues(alpha: CatchOpacity.revealCueFill),
       borderSpec: CatchBorder.resolve(
@@ -67,15 +67,15 @@ class EventSuccessCountdownNotice extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchText(
+                CatchLegacyText(
                   title,
-                  variant: CatchTextVariant.sectionTitle,
+                  variant: CatchLegacyTextVariant.sectionTitle,
                   color: t.ink,
                 ),
                 gapH2,
-                CatchText(
+                CatchLegacyText(
                   body,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                   color: t.ink.withValues(
                     alpha: CatchOpacity.eventSuccessMutedInk,
                   ),

@@ -78,23 +78,23 @@ class EventRehearsalStaffSection extends ConsumerWidget {
         builder: (context, review) {
           final staff = review.snapshot.staffReview;
           if (staff == null) {
-            return CatchText(
+            return CatchLegacyText(
               l10n.hostEventRehearsalStaffReadOnly,
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             );
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchText(
+              CatchLegacyText(
                 l10n.hostEventRehearsalStaffBody,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
               if (!staff.canAssign) ...[
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   l10n.hostEventRehearsalStaffReadOnly,
-                  variant: CatchTextVariant.supporting,
+                  variant: CatchLegacyTextVariant.supporting,
                 ),
               ],
               gapH12,

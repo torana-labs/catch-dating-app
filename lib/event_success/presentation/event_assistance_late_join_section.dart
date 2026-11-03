@@ -159,24 +159,27 @@ class _EventAssistanceLateJoinSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchText(widget.groupLabel, variant: CatchTextVariant.titleL),
+        CatchLegacyText(
+          widget.groupLabel,
+          variant: CatchLegacyTextVariant.titleL,
+        ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           lateJoinStatusLabel(l10n, widget.status),
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (origin != null)
-          CatchText(origin, variant: CatchTextVariant.supporting),
+          CatchLegacyText(origin, variant: CatchLegacyTextVariant.supporting),
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceLateJoinBody,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (saved) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceLateJoinSavedBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         CatchSection.fieldRows(
@@ -208,7 +211,7 @@ class _EventAssistanceLateJoinSectionState
         ),
         if (rules != null && value.mode != LateJoinDraftMode.inherit) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             rules.destination is LateJoinConfirmedProgress
                 ? l10n.eventAssistanceLateJoinConfirmed
                 : l10n.eventAssistanceLateJoinDestinationSummary(
@@ -218,26 +221,26 @@ class _EventAssistanceLateJoinSectionState
                       widget.setup,
                     ),
                   ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
-          CatchText(switch (rules.cutoff) {
+          CatchLegacyText(switch (rules.cutoff) {
             LateJoinEventEnd() => l10n.eventAssistanceLateJoinEventEnd,
             LateJoinAtTime(:final at) =>
               l10n.eventAssistanceLateJoinCutoffSummary(
                 time: lateJoinTimeLabel(context, at),
               ),
-          }, variant: CatchTextVariant.supporting),
-          CatchText(
+          }, variant: CatchLegacyTextVariant.supporting),
+          CatchLegacyText(
             l10n.eventAssistanceLateJoinLimitSummary(
               count: rules.maxMessagesPerEpisode,
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceLateJoinGapSummary(
               minutes: rules.minimumMinutesBetweenMessages,
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           if (_editable && widget.setup != null) ...[
             CatchButton(
@@ -270,15 +273,15 @@ class _EventAssistanceLateJoinSectionState
         ],
         if (issue != null && _editable) ...[
           gapH12,
-          CatchText(
+          CatchLegacyText(
             lateJoinIssueLabel(l10n, issue),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH12,
-        CatchText(
+        CatchLegacyText(
           l10n.eventAssistanceLateJoinDeliveryRequired,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
         if (widget.error != null) ...[
           gapH12,
@@ -295,9 +298,9 @@ class _EventAssistanceLateJoinSectionState
                 : null,
           ),
         if (widget.phase == EventAssistanceLateJoinPhase.retryRequired) ...[
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceLateJoinRetryBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           CatchButton(
@@ -306,9 +309,9 @@ class _EventAssistanceLateJoinSectionState
           ),
         ],
         if (widget.phase == EventAssistanceLateJoinPhase.refreshRequired) ...[
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceLateJoinRefreshBody,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           CatchButton(

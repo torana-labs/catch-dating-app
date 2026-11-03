@@ -4,7 +4,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_count_badge.dart';
 import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
 import 'package:catch_ui/src/components/catch_toolbar_scope.dart';
-import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchIconActionVariant { bordered, float, plain }
@@ -297,7 +297,7 @@ class _CatchIconActionState extends State<CatchIconAction> {
 
     final button = Opacity(
       opacity: disabled ? CatchOpacity.disabledControl : 1,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         width: size,
         height: size,
         backgroundColor: enabled && (_hovered || _pressed)

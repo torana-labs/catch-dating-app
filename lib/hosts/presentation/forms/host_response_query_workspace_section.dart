@@ -283,11 +283,11 @@ class _HostResponseQueryWorkspaceSectionState
                 children: [
                   Semantics(
                     liveRegion: true,
-                    child: CatchText(
+                    child: CatchLegacyText(
                       context.l10n.hostResponseQueryResultCount(
                         count: view.total,
                       ),
-                      variant: CatchTextVariant.sectionTitle,
+                      variant: CatchLegacyTextVariant.sectionTitle,
                     ),
                   ),
                   CatchButton.command(
@@ -328,9 +328,9 @@ class _HostResponseQueryWorkspaceSectionState
             ),
           if (view.status == HostResponseQueryStatus.empty)
             CatchSection.content(
-              child: CatchText(
+              child: CatchLegacyText(
                 copy.empty,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             ),
           if (ready && view.selectedIds.isNotEmpty)
@@ -340,9 +340,9 @@ class _HostResponseQueryWorkspaceSectionState
                 children: [
                   Semantics(
                     liveRegion: true,
-                    child: CatchText(
+                    child: CatchLegacyText(
                       copy.selected(view.selectedIds.length),
-                      variant: CatchTextVariant.supporting,
+                      variant: CatchLegacyTextVariant.supporting,
                     ),
                   ),
                   gapH8,

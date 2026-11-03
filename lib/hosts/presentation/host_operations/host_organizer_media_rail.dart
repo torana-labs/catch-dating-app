@@ -47,7 +47,7 @@ class HostOrganizerMediaRail extends StatelessWidget {
                     top: CatchSpacing.s1,
                     left: CatchSpacing.s1,
                     child: IgnorePointer(
-                      child: CatchSurface.tinted(
+                      child: CatchLegacySurface.tinted(
                         radius: CatchRadius.pill,
                         backgroundColor: CatchTokens.of(context).ink.withValues(
                           alpha: CatchOpacity.photoSlotDeleteChrome,

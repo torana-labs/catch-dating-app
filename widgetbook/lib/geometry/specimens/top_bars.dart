@@ -102,7 +102,7 @@ Widget _topBarSpecimen(
     context,
     label: label,
     description: description,
-    child: CatchSurface(
+    child: CatchLegacySurface(
       tone: CatchSurfaceTone.raised,
       borderRole: CatchBorderRole.separator,
       clipBehavior: Clip.antiAlias,

@@ -346,9 +346,9 @@ class WelcomeSceneLayout extends StatelessWidget {
             child: WelcomeRevealTransition(
               landingValue: landingValue,
               order: 0,
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n.onboardingWelcomePageTextShowUpToSomething,
-                variant: CatchTextVariant.bodyL,
+                variant: CatchLegacyTextVariant.bodyL,
                 color: tokens.ink.withValues(
                   alpha: CatchOpacity.welcomeIntroBody,
                 ),

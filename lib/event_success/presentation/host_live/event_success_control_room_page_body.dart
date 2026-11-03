@@ -83,7 +83,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
             checkedIn: checkedInCount,
             expected: expectedCount,
           );
-    final supportingFields = CatchSurface(
+    final supportingFields = CatchLegacySurface(
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.surface,

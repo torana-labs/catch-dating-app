@@ -104,9 +104,9 @@ class _HostContactMergeReviewSheetState
             ],
             if (_dismissed.isNotEmpty) ...[
               gapH8,
-              CatchText(
+              CatchLegacyText(
                 context.l10n.hostCustomersDismissedDuplicates,
-                variant: CatchTextVariant.sectionTitle,
+                variant: CatchLegacyTextVariant.sectionTitle,
               ),
               gapH12,
               for (final candidate in _dismissed) ...[
@@ -178,43 +178,46 @@ class _HostContactMergeCandidateCardState
   @override
   Widget build(BuildContext context) {
     final candidate = widget.candidate;
-    return CatchSurface(
+    return CatchLegacySurface(
       key: ValueKey('host-contact-merge-${candidate.candidateId}'),
       padding: CatchInsets.cardContent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final contact in candidate.contacts) ...[
-            CatchText(
+            CatchLegacyText(
               contact.displayName,
-              variant: CatchTextVariant.sectionTitle,
+              variant: CatchLegacyTextVariant.sectionTitle,
               color: CatchTokens.of(context).ink,
             ),
             if (contact.phoneE164 != null)
-              CatchText(
+              CatchLegacyText(
                 contact.phoneE164!,
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             if (contact.email != null)
-              CatchText(contact.email!, variant: CatchTextVariant.supporting),
-            CatchText(
+              CatchLegacyText(
+                contact.email!,
+                variant: CatchLegacyTextVariant.supporting,
+              ),
+            CatchLegacyText(
               _sourceLabel(context, contact.primarySource),
-              variant: CatchTextVariant.supporting,
+              variant: CatchLegacyTextVariant.supporting,
             ),
             gapH12,
           ],
-          CatchText(
+          CatchLegacyText(
             candidate.matchKinds
                 .map((kind) => _matchKindLabel(context, kind))
                 .join(' · '),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH4,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostCustomersMergeSharedEvents(
               count: candidate.sharedEventCount,
             ),
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
           gapH12,
           Wrap(
@@ -341,23 +344,23 @@ class _HostDismissedMergeCandidateCardState
   bool _saving = false;
 
   @override
-  Widget build(BuildContext context) => CatchSurface(
+  Widget build(BuildContext context) => CatchLegacySurface(
     padding: CatchInsets.cardContent,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(
+        CatchLegacyText(
           widget.candidate.contacts
               .map((contact) => contact.displayName)
               .join(' · '),
-          variant: CatchTextVariant.sectionTitle,
+          variant: CatchLegacyTextVariant.sectionTitle,
           color: CatchTokens.of(context).ink,
         ),
         if (!widget.candidate.canReopen) ...[
           gapH4,
-          CatchText(
+          CatchLegacyText(
             context.l10n.hostCustomersReopenOwnerOnly,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         gapH12,

@@ -20,7 +20,7 @@ class RotationSlotRow extends StatelessWidget {
         );
     return Padding(
       padding: _companionRotationSlotGap,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.primarySoft,
         radius: CatchRadius.sm,
         padding: CatchInsets.contentDense,
@@ -34,13 +34,13 @@ class RotationSlotRow extends StatelessWidget {
             ),
             gapW8,
             Expanded(
-              child: CatchText(
+              child: CatchLegacyText(
                 context.l10n
                     .eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername(
                       timeRange: timeRange,
                       peerName: peerName,
                     ),
-                variant: CatchTextVariant.supporting,
+                variant: CatchLegacyTextVariant.supporting,
               ),
             ),
           ],

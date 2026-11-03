@@ -5913,7 +5913,7 @@ class _HostChatReportFailureNoticeCapture extends StatelessWidget {
             top: false,
             child: Padding(
               padding: const EdgeInsets.all(CatchSpacing.s3),
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
                 backgroundColor: t.ink,
@@ -5921,9 +5921,9 @@ class _HostChatReportFailureNoticeCapture extends StatelessWidget {
                   horizontal: CatchSpacing.s4,
                   vertical: CatchSpacing.micro14,
                 ),
-                child: CatchText(
+                child: CatchLegacyText(
                   'Unable to submit report. Please try again.',
-                  variant: CatchTextVariant.titleS,
+                  variant: CatchLegacyTextVariant.titleS,
                   color: t.bg,
                 ),
               ),
@@ -6452,7 +6452,7 @@ class _MatchChatFeedbackNoticeCapture extends StatelessWidget {
             top: false,
             child: Padding(
               padding: const EdgeInsets.all(CatchSpacing.s3),
-              child: CatchSurface(
+              child: CatchLegacySurface(
                 emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
                 backgroundColor: t.ink,
@@ -6460,9 +6460,9 @@ class _MatchChatFeedbackNoticeCapture extends StatelessWidget {
                   horizontal: CatchSpacing.s4,
                   vertical: CatchSpacing.micro14,
                 ),
-                child: CatchText(
+                child: CatchLegacyText(
                   message,
-                  variant: CatchTextVariant.titleS,
+                  variant: CatchLegacyTextVariant.titleS,
                   color: t.bg,
                 ),
               ),

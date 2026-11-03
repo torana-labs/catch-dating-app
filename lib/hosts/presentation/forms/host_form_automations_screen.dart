@@ -71,13 +71,13 @@ class _HostFormAutomationsScreenState
     final scopeHeader = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchText(scopeTitle, variant: CatchTextVariant.headline),
+        CatchLegacyText(scopeTitle, variant: CatchLegacyTextVariant.headline),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           formId == null
               ? context.l10n.hostAudienceAutomationScopeAll
               : context.l10n.hostAudienceAutomationScopeForm,
-          variant: CatchTextVariant.supporting,
+          variant: CatchLegacyTextVariant.supporting,
         ),
       ],
     );
@@ -257,18 +257,18 @@ class _HostFormAutomationsScreenState
                             'Read-only disclosure of a server-owned automation run outcome; no scalar value is persisted.',
                         body:
                             '${_runStatusLabel(context, run.status)} · ${AppTimeFormatters.compactRelativeTime(run.createdAt)}',
-                        child: CatchText(
+                        child: CatchLegacyText(
                           _runBody(context, run),
-                          variant: CatchTextVariant.bodyL,
+                          variant: CatchLegacyTextVariant.bodyL,
                           color: CatchTokens.of(context).ink,
                         ),
                       ),
                   ],
                 ),
                 gapH8,
-                CatchText(
+                CatchLegacyText(
                   context.l10n.hostAutomationRunHelp,
-                  variant: CatchTextVariant.bodyS,
+                  variant: CatchLegacyTextVariant.bodyS,
                   color: CatchTokens.of(context).ink2,
                 ),
                 if (state.canLoadMore) ...[

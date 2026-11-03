@@ -60,9 +60,9 @@ class _EventAssistanceCheckpointRosterSectionState
         ),
         if (matches.isEmpty) ...[
           gapH8,
-          CatchText(
+          CatchLegacyText(
             l10n.eventAssistanceDepartureNoGuests,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           ),
         ],
         if (matches.isNotEmpty)

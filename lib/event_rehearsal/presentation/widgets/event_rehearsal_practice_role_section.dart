@@ -33,9 +33,9 @@ class EventRehearsalPracticeRoleSection extends ConsumerWidget {
         if (staff == null ||
             staff.clockId != scope.clockId ||
             !staff.isManager) {
-          return CatchText(
+          return CatchLegacyText(
             l10n.eventAssistanceVisitChanged,
-            variant: CatchTextVariant.supporting,
+            variant: CatchLegacyTextVariant.supporting,
           );
         }
         return CatchFieldLanes.single(

@@ -229,11 +229,11 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                       body: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CatchText(
+                          CatchLegacyText(
                             member.displayName.isEmpty
                                 ? '•••${member.phoneLastFour}'
                                 : member.displayName,
-                            variant: CatchTextVariant.sectionTitle,
+                            variant: CatchLegacyTextVariant.sectionTitle,
                           ),
                           const SizedBox(height: CatchSpacing.s1),
                           Wrap(
@@ -408,30 +408,30 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
         ),
         CatchFieldRow.standard(
           leading: Icon(CatchIcons.date),
-          body: CatchText(
+          body: CatchLegacyText(
             _expiresAt == null
                 ? context.l10n.programsTeamExpiryLabel
                 : AppTimeFormatters.shortDate(_expiresAt!),
-            variant: CatchTextVariant.bodyM,
+            variant: CatchLegacyTextVariant.bodyM,
           ),
           trailing: Icon(CatchIcons.disclosure),
           onTap: _pickExpiry,
         ),
         gapH8,
-        CatchText(
+        CatchLegacyText(
           context.l10n.programsTeamDutiesLabel,
-          variant: CatchTextVariant.statusLabel,
+          variant: CatchLegacyTextVariant.statusLabel,
         ),
         for (final duty in ProgramStaffDuty.values)
           CatchFieldRow.standard(
-            body: CatchText(
+            body: CatchLegacyText(
               duty == ProgramStaffDuty.programAdmin
                   ? context.l10n.programsTeamProgramAdmin
                   : duty.name.replaceAllMapped(
                       RegExp('([a-z])([A-Z])'),
                       (m) => '${m[1]} ${m[2]}'.toLowerCase(),
                     ),
-              variant: CatchTextVariant.bodyM,
+              variant: CatchLegacyTextVariant.bodyM,
             ),
             trailing: _duties.contains(duty)
                 ? Icon(CatchIcons.check, size: CatchIconSize.md)

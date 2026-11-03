@@ -24,7 +24,7 @@ class GroupRotationSlotRow extends StatelessWidget {
         .toList(growable: false);
     return Padding(
       padding: _companionRotationSlotGap,
-      child: CatchSurface(
+      child: CatchLegacySurface(
         backgroundColor: t.primarySoft,
         radius: CatchRadius.sm,
         padding: CatchInsets.contentDense,
@@ -46,7 +46,10 @@ class GroupRotationSlotRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            CatchText(timeRange, variant: CatchTextVariant.supporting),
+            CatchLegacyText(
+              timeRange,
+              variant: CatchLegacyTextVariant.supporting,
+            ),
             gapH8,
             Wrap(
               spacing: CatchSpacing.s2,

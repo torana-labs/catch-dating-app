@@ -61,7 +61,7 @@ class _ExploreDiscoveryCoverHeaderState
     final coverItem = featuredItem;
 
     if (!chrome.showCoverStory || coverItem == null) {
-      return CatchSurface(
+      return CatchLegacySurface(
         duration: Duration.zero,
         radius: CatchRadius.none,
         backgroundColor: CatchTokens.of(context).bg,
