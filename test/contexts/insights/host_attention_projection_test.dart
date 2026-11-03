@@ -98,6 +98,19 @@ void main() {
       expect(projection.evaluatedAt, DateTime.fromMillisecondsSinceEpoch(5000));
     });
 
+    test('an invalid source evaluation is incomplete', () {
+      final projection = HostAttentionProjection.fromFirestore(
+        organizerId: 'organizer-1',
+        items: const [],
+        schedule: _schedule(sourceCoverage: 'invalidSource'),
+      );
+      expect(
+        projection.sourceCoverage,
+        HostAttentionSourceCoverage.invalidSource,
+      );
+      expect(projection.isComplete, isFalse);
+    });
+
     test('rejects another organizer schedule or an unknown coverage', () {
       expect(
         () => HostAttentionProjection.fromFirestore(
@@ -168,7 +181,9 @@ Map<String, Object?> _schedule({String sourceCoverage = 'complete'}) => {
   'evaluatedAt': Timestamp.fromMillisecondsSinceEpoch(5000),
   'nextEvaluationAt': null,
   'sourceCoverage': sourceCoverage,
-  'overCapSource': sourceCoverage == 'overCap' ? 'organizerApplications' : null,
+  'incompleteSource': sourceCoverage == 'complete'
+      ? null
+      : 'organizerApplications',
   'openItemCount': 0,
 };
 

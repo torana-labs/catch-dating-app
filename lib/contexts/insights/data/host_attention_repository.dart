@@ -24,6 +24,9 @@ class FirebaseHostAttentionRepository implements HostAttentionRepository {
 
   final FirebaseFirestore _db;
 
+  // Each listener carries its own error context. The outer context covers
+  // combining them; an error a listener already mapped passes through it
+  // unchanged (normalizeBackendError returns an AppException as it is).
   @override
   Stream<HostAttentionProjection> watch(String organizerId) =>
       withBackendErrorStream(
@@ -45,26 +48,42 @@ class FirebaseHostAttentionRepository implements HostAttentionRepository {
 
   // The server never keeps more open rows than its 400-row cap.
   // firestore-index: organizerAttentionItems (organizerId:ASCENDING,status:ASCENDING,dueAt:ASCENDING,__name__:ASCENDING)
-  Stream<List<HostAttentionItem>> _openItems(String organizerId) => _db
-      .collection(_itemsPath)
-      .where('organizerId', isEqualTo: organizerId)
-      .where('status', isEqualTo: 'open')
-      .orderBy('dueAt')
-      .orderBy(FieldPath.documentId)
-      .limit(ReadLimitPolicy.hostAttentionQueue)
-      .snapshots()
-      .map(
-        (snapshot) => [
-          for (final doc in snapshot.docs)
-            HostAttentionItem.fromFirestore(doc.id, doc.data()),
-        ],
+  Stream<List<HostAttentionItem>> _openItems(String organizerId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_itemsPath)
+            .where('organizerId', isEqualTo: organizerId)
+            .where('status', isEqualTo: 'open')
+            .orderBy('dueAt')
+            .orderBy(FieldPath.documentId)
+            .limit(ReadLimitPolicy.hostAttentionQueue)
+            .snapshots()
+            .map(
+              (snapshot) => [
+                for (final doc in snapshot.docs)
+                  HostAttentionItem.fromFirestore(doc.id, doc.data()),
+              ],
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch the Host Today attention queue',
+          resource: _itemsPath,
+        ),
       );
 
-  Stream<Map<String, Object?>?> _schedule(String organizerId) => _db
-      .collection(_schedulesPath)
-      .doc(organizerId)
-      .snapshots()
-      .map((snapshot) => snapshot.data());
+  Stream<Map<String, Object?>?> _schedule(String organizerId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_schedulesPath)
+            .doc(organizerId)
+            .snapshots()
+            .map((snapshot) => snapshot.data()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch the Host Today attention schedule',
+          resource: _schedulesPath,
+        ),
+      );
 }
 
 /// Emits [combine] of the latest value of each stream once both have

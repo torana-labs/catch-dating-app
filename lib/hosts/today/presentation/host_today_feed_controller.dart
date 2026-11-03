@@ -37,7 +37,8 @@ class HostTodayFeedRequest {
 enum HostTodayAttentionIssueSource { serverProjection, attendanceOutbox }
 
 /// The server's attention evaluation is not a complete all-clear: no
-/// evaluation is recorded yet, or a source exceeded the evaluator's cap.
+/// evaluation is recorded yet, a source exceeded the evaluator's cap, or a
+/// source row failed validation.
 class HostTodayAttentionIncompleteException implements Exception {
   const HostTodayAttentionIncompleteException(this.sourceCoverage);
 
@@ -242,9 +243,14 @@ class HostTodayFeedController extends _$HostTodayFeedController {
     return compose();
   }
 
-  /// Re-reads the events and the local outbox. The attention listener is
-  /// not invalidated: it is already live and re-subscribed by the rebuild.
+  /// Re-reads the events and the local outbox. A healthy attention listener
+  /// is kept (the rebuild re-subscribes to it); one that ended in an error
+  /// is restarted, since a failed Firestore listener never recovers alone.
   void retry() {
+    final organizerId = request.organizerId;
+    if (ref.read(hostAttentionProjectionProvider(organizerId)).hasError) {
+      ref.invalidate(hostAttentionProjectionProvider(organizerId));
+    }
     ref.invalidateSelf();
   }
 }

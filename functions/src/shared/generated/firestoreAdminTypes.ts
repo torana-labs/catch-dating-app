@@ -21282,7 +21282,7 @@ export interface OrganizerEventOfferAuditDocument {
 }
 
 /**
- * Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or over cap is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).
+ * Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or incomplete is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).
  */
 export interface OrganizerAttentionScheduleDocument {
   schemaVersion: 1;
@@ -21298,15 +21298,15 @@ export interface OrganizerAttentionScheduleDocument {
   evaluatedAt: FirebaseFirestore.Timestamp;
   nextEvaluationAt: FirebaseFirestore.Timestamp | null;
   /**
-   * Whether the last evaluation read every source completely. overCap leaves the items as they were.
+   * Whether the last evaluation read every source completely. overCap (a source over its cap) and invalidSource (a loaded source row failed validation) both leave the items as they were.
    */
-  sourceCoverage: "complete" | "overCap";
+  sourceCoverage: "complete" | "overCap" | "invalidSource";
   /**
-   * The source collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; null when coverage is complete.
+   * The source behind an incomplete evaluation: for overCap, the collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; for invalidSource, the collection whose row failed validation. Null when coverage is complete.
    */
-  overCapSource: string | null;
+  incompleteSource: string | null;
   /**
-   * Open rows after the evaluation. After an over-cap evaluation it is the number of open rows read, at most 401.
+   * Open rows after the evaluation. After an incomplete evaluation it is the number of open rows read, at most 401.
    */
   openItemCount: number;
 }

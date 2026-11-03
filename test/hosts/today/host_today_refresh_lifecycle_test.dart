@@ -172,29 +172,24 @@ void main() {
     expect(fixture.attention.organizers, ['org-a']);
   });
 
-  testWidgets(
-    'an attention listener error stays an issue until the listener delivers',
-    (tester) async {
-      final fixture = _Fixture();
-      fixture.attention.failNext = true;
-      await fixture.mount(tester);
-      final originalState = fixture.todayState(tester);
-      final body = tester.widget<HostTodayBody>(find.byType(HostTodayBody));
-      expect(body.state.attentionIssues, isNotEmpty);
-      expect(body.state.attentionCountIsComplete, isFalse);
-      body.onRetry();
-      await pumpFeatureUi(tester);
-      fixture.expectRetained(tester, originalState);
-      // Retry re-reads the events and never restarts the listener.
-      expect(fixture.events.active, hasLength(2));
-      expect(fixture.attention.organizers, ['org-a']);
-      expect(fixture.display(tester).attentionIssues, isNotEmpty);
-      fixture.attention.version = 'after-listener-recovers';
-      await pumpFeatureUi(tester);
-      expect(fixture.display(tester).attentionIssues, isEmpty);
-      expect(fixture.taskIds(tester), ['after-listener-recovers']);
-    },
-  );
+  testWidgets('retry restarts an attention listener that ended in error', (
+    tester,
+  ) async {
+    final fixture = _Fixture();
+    fixture.attention.failNext = true;
+    await fixture.mount(tester);
+    final originalState = fixture.todayState(tester);
+    final body = tester.widget<HostTodayBody>(find.byType(HostTodayBody));
+    expect(body.state.attentionIssues, isNotEmpty);
+    expect(body.state.attentionCountIsComplete, isFalse);
+    body.onRetry();
+    await pumpFeatureUi(tester);
+    fixture.expectRetained(tester, originalState);
+    expect(fixture.events.active, hasLength(2));
+    expect(fixture.attention.organizers, ['org-a', 'org-a']);
+    expect(fixture.display(tester).attentionIssues, isEmpty);
+    expect(fixture.taskIds(tester), ['before']);
+  });
 
   testWidgets('existing event entry return refreshes the retained feed', (
     tester,
@@ -806,7 +801,9 @@ class _Attention implements HostAttentionRepository {
       onListen: () {
         _open[controller] = organizerId;
         if (fail) {
+          // A failed Firestore listener ends; it never delivers again.
           controller.addError(StateError('attention unavailable'));
+          unawaited(controller.close());
         } else {
           controller.add(_projection(organizerId));
         }

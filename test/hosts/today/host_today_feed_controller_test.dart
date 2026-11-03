@@ -186,7 +186,7 @@ void main() {
   );
 
   test(
-    'Today flags a missing or over-cap evaluation and keeps the count open',
+    'Today flags a missing or incomplete evaluation and keeps the count open',
     () async {
       final boundary = DateTime(2026, 9, 1, 12);
       final active = buildEvent(
@@ -197,6 +197,7 @@ void main() {
       for (final coverage in [
         HostAttentionSourceCoverage.missing,
         HostAttentionSourceCoverage.overCap,
+        HostAttentionSourceCoverage.invalidSource,
       ]) {
         final container = _container(
           events: _TodayEventRepository(

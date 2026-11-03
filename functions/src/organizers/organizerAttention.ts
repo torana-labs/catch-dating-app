@@ -20,7 +20,6 @@ import type {
   OrganizerFormAutomationRunDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {requireDoc} from "../shared/validation";
 import {
   deliveryWorkBasis,
   deliveryWorkIds,
@@ -48,6 +47,15 @@ export class AttentionSourceOverCapError extends HttpsError {
       "resource-exhausted",
       `Host Today cannot safely evaluate a partial ${source} scan.`
     );
+  }
+}
+
+/** A loaded source row failed validation. The evaluator records the source
+ *  and the detail instead of retrying a write that cannot change it. */
+export class AttentionSourceInvalidError extends HttpsError {
+  constructor(readonly source: string, readonly detail: string) {
+    super("internal", `Host Today cannot evaluate an invalid ${source} row: ` +
+      detail);
   }
 }
 
@@ -202,7 +210,7 @@ export async function loadOrganizerAttentionSources(
   const eventRows = new Map<string, AttentionSourceRow<EventDocument>>();
   for (const snapshot of [canonicalEvents, compatibilityEvents]) {
     for (const doc of snapshot.docs) {
-      eventRows.set(doc.id, sourceRow<EventDocument>(doc));
+      eventRows.set(doc.id, sourceRow<EventDocument>(doc, "events"));
     }
   }
   assertBoundedAttentionRows([...eventRows.values()], "events");
@@ -217,7 +225,7 @@ export async function loadOrganizerAttentionSources(
     for (const doc of snapshot.docs) {
       participationRows.set(
         doc.id,
-        sourceRow<EventParticipationDocument>(doc)
+        sourceRow<EventParticipationDocument>(doc, "eventParticipations")
       );
     }
   }
@@ -227,12 +235,13 @@ export async function loadOrganizerAttentionSources(
   );
 
   const currentAutomationRules = automationRules.docs.map((doc) =>
-    sourceRow<OrganizerFormAutomationRuleDocument>(doc));
+    sourceRow<OrganizerFormAutomationRuleDocument>(
+      doc, "organizerFormAutomationRules"));
   const currentAutomationRuns = await loadCurrentAutomationRuns(
     db, reader, organizerId, currentAutomationRules
   );
 
-  const organizer = sourceRow<OrganizerDocument>(organizerSnap);
+  const organizer = sourceRow<OrganizerDocument>(organizerSnap, "organizers");
   const ownerUid = organizer.data.ownership?.ownerUserId ??
     organizer.data.ownerUserId ?? organizer.data.hostUserId ?? null;
   const paymentAccounts: OrganizerAttentionSources["paymentAccounts"] = {};
@@ -249,14 +258,14 @@ export async function loadOrganizerAttentionSources(
     organizer,
     events: [...eventRows.values()],
     eventAssistanceCases: openPracticalCases.docs.map((doc) =>
-      sourceRow<EventAssistanceCaseDocument>(doc)),
+      sourceRow<EventAssistanceCaseDocument>(doc, "eventAssistanceCases")),
     deliveryReviewWorkItems: deliveryReviewWorkItems.docs.map((doc) =>
       deliveryReviewSourceRow(doc, now.toMillis())),
     eventParticipations: [...participationRows.values()],
     applications: applications.docs.map((doc) =>
-      sourceRow<OrganizerApplicationDocument>(doc)),
+      sourceRow<OrganizerApplicationDocument>(doc, "organizerApplications")),
     providerSyncRuns: providerRuns.docs.map((doc) =>
-      sourceRow<ProviderSyncRunDocument>(doc)),
+      sourceRow<ProviderSyncRunDocument>(doc, "providerSyncRuns")),
     automationRules: currentAutomationRules,
     automationRuns: currentAutomationRuns,
     paymentAccounts,
@@ -305,7 +314,8 @@ async function loadCurrentAutomationRuns(
       }));
     for (const snapshot of snapshots) {
       for (const doc of snapshot.docs) {
-        runs.push(sourceRow<OrganizerFormAutomationRunDocument>(doc));
+        runs.push(sourceRow<OrganizerFormAutomationRunDocument>(
+          doc, "organizerFormAutomationRuns"));
       }
     }
   }
@@ -327,14 +337,16 @@ async function loadHostPaymentAccount(
   if (canonical.exists) {
     return sourceRowFromSnapshot(
       canonical,
-      canonical.data() as HostPaymentAccountDocument
+      canonical.data() as HostPaymentAccountDocument,
+      "hostPaymentAccounts"
     );
   }
   if (provider !== "stripe") return null;
   const legacy = await reader.getDoc(accounts.doc(uid));
   return legacy.exists ? sourceRowFromSnapshot(
     legacy,
-    legacy.data() as HostPaymentAccountDocument
+    legacy.data() as HostPaymentAccountDocument,
+    "hostPaymentAccounts"
   ) : null;
 }
 
@@ -371,7 +383,7 @@ function momentAttentionSendRow(
     severity,
     title,
     createdAtMillis,
-  });
+  }, "organizerMomentSends");
 }
 
 /** Lenient offer parse: malformed offer rows drop out of the source set
@@ -420,17 +432,22 @@ function offerAttentionSourceRow(
     currency: currency as string | null,
     manualPaymentStatus,
     updatedAtMillis,
-  });
+  }, "organizerEventOffers");
 }
 
 function deliveryReviewSourceRow(
   snapshot: FirebaseFirestore.DocumentSnapshot,
   nowMillis: number
 ): AttentionSourceRow<DeliveryReviewAttentionSource> {
-  const raw = requireDoc<unknown>(snapshot, "delivery review work item");
+  const raw = snapshot.data();
+  if (raw === undefined) {
+    throw new AttentionSourceInvalidError("operationWorkItems",
+      `${snapshot.id} is empty or missing.`);
+  }
   return sourceRowFromSnapshot(
     snapshot,
-    parseDeliveryReviewAttentionSource(raw, snapshot.id, nowMillis)
+    parseDeliveryReviewAttentionSource(raw, snapshot.id, nowMillis),
+    "operationWorkItems"
   );
 }
 
@@ -442,13 +459,17 @@ export function parseDeliveryReviewAttentionSource(
 ): DeliveryReviewAttentionSource {
   const result = validateOperationWorkItem(raw);
   if (!result.ok) {
-    throw new HttpsError(
-      "internal",
-      "A delivery review work item failed its canonical contract."
-    );
+    throw new AttentionSourceInvalidError("operationWorkItems",
+      `${documentId} failed its canonical contract.`);
   }
   const item = result.value;
-  const payload = parseDeliveryWork(item.normalizedPayload, nowMillis);
+  let payload: ReturnType<typeof parseDeliveryWork>;
+  try {
+    payload = parseDeliveryWork(item.normalizedPayload, nowMillis);
+  } catch (error) {
+    throw new AttentionSourceInvalidError("operationWorkItems",
+      `${documentId} has an invalid delivery payload: ${String(error)}`);
+  }
   const checkpoint = payload.checkpoint;
   const projection = deliveryWorkProjection(payload);
   const ids = deliveryWorkIds(payload.messageId);
@@ -468,10 +489,8 @@ export function parseDeliveryReviewAttentionSource(
       item.expiresAt !== new Date(payload.expiresAt).toISOString() ||
       Date.parse(item.updatedAt) < payload.createdAt ||
       Date.parse(item.updatedAt) > nowMillis) {
-    throw new HttpsError(
-      "internal",
-      "A delivery review work item has inconsistent runtime evidence."
-    );
+    throw new AttentionSourceInvalidError("operationWorkItems",
+      `${documentId} has inconsistent runtime evidence.`);
   }
   return {
     workItemId: item.workItemId,
@@ -562,24 +581,26 @@ function assertBoundedSnapshot(
 }
 
 function sourceRow<T>(
-  snapshot: FirebaseFirestore.DocumentSnapshot
+  snapshot: FirebaseFirestore.DocumentSnapshot,
+  source: string
 ): AttentionSourceRow<T> {
-  return sourceRowFromSnapshot(
-    snapshot,
-    requireDoc<T>(snapshot, "attention source")
-  );
+  const data = snapshot.data();
+  if (data === undefined) {
+    throw new AttentionSourceInvalidError(source,
+      `${snapshot.id} is empty or missing.`);
+  }
+  return sourceRowFromSnapshot(snapshot, data as T, source);
 }
 
 function sourceRowFromSnapshot<T>(
   snapshot: FirebaseFirestore.DocumentSnapshot,
-  data: T
+  data: T,
+  source: string
 ): AttentionSourceRow<T> {
   const updatedAt = snapshot.updateTime ?? snapshot.createTime;
   if (!updatedAt) {
-    throw new HttpsError(
-      "internal",
-      "An attention source is missing Firestore update metadata."
-    );
+    throw new AttentionSourceInvalidError(source,
+      `${snapshot.id} is missing Firestore update metadata.`);
   }
   return {
     id: snapshot.id,

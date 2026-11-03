@@ -1421,7 +1421,7 @@ describe("firestore.rules", () => {
         evaluatedAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
         nextEvaluationAt: null,
         sourceCoverage: "complete",
-        overCapSource: null,
+        incompleteSource: null,
         openItemCount: 0,
       });
       await seed(["organizerAttentionSchedules", "org"], schedule("org"));

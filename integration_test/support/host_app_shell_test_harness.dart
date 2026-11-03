@@ -97,7 +97,7 @@ class HostShellBackend {
           'evaluatedAt': Timestamp.now(),
           'nextEvaluationAt': null,
           'sourceCoverage': 'complete',
-          'overCapSource': null,
+          'incompleteSource': null,
           'openItemCount': 0,
         });
   }

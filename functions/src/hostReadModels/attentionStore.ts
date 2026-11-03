@@ -11,6 +11,7 @@ import {requireDoc} from "../shared/validation";
 import {
   AttentionOrganizerMissingError,
   attentionResolutionPatch,
+  AttentionSourceInvalidError,
   AttentionSourceOverCapError,
   buildOrganizerAttentionProjectionPlan,
   loadOrganizerAttentionSources,
@@ -25,13 +26,19 @@ import {
 /** One evaluation writes at most this many attention rows, plus the
  *  schedule document. More is recorded as over cap, never split. */
 export const maxAttentionMutations = 450;
-const overCapRetryMillis = 60 * 60 * 1000;
+const incompleteRetryMillis = 60 * 60 * 1000;
 const itemsCollection = "organizerAttentionItems";
 const schedulesCollection = "organizerAttentionSchedules";
 
 export type AttentionReconcileOutcome =
   | {kind: "organizerMissing"; resolved: number}
-  | {kind: "overCap"; overCapSource: string; revision: number}
+  | {kind: "overCap"; incompleteSource: string; revision: number}
+  | {
+    kind: "invalidSource";
+    incompleteSource: string;
+    detail: string;
+    revision: number;
+  }
   | {
     kind: "complete";
     sets: number;
@@ -53,8 +60,10 @@ const defaultDeps: AttentionStoreDeps = {
  * Re-evaluates one organizer's Today attention queue from current sources in
  * one transaction: the twelve bounded source reads, the open rows, the
  * desired rows and the schedule document, then only the rows that changed
- * and the schedule. A source over the cap records the schedule alone and
- * leaves the rows as they were, so a trigger never retries forever on it.
+ * and the schedule. A source over the cap, or a source row that fails
+ * validation, records the schedule alone and leaves the rows as they were,
+ * so a trigger never retries forever on it. Any other error throws, so the
+ * trigger retries.
  */
 export async function reconcileOrganizerAttention(
   db: FirebaseFirestore.Firestore,
@@ -68,6 +77,7 @@ export async function reconcileOrganizerAttention(
     const scheduleRef = db.collection(schedulesCollection).doc(organizerId);
     let sources: OrganizerAttentionSources | null = null;
     let overCapSource: string | null = null;
+    let invalid: AttentionSourceInvalidError | null = null;
     let organizerMissing = false;
     try {
       sources = await loadOrganizerAttentionSources(
@@ -78,6 +88,8 @@ export async function reconcileOrganizerAttention(
         organizerMissing = true;
       } else if (error instanceof AttentionSourceOverCapError) {
         overCapSource = error.source;
+      } else if (error instanceof AttentionSourceInvalidError) {
+        invalid = error;
       } else {
         throw error;
       }
@@ -109,18 +121,31 @@ export async function reconcileOrganizerAttention(
     }
 
     const revision = previousRevision(scheduleSnap) + 1;
+    const recordIncomplete = (
+      sourceCoverage: "overCap" | "invalidSource",
+      source: string
+    ) => tx.set(scheduleRef, scheduleDocument({
+      organizerId,
+      revision,
+      now,
+      nextEvaluationAtMillis: now.toMillis() + incompleteRetryMillis,
+      sourceCoverage,
+      incompleteSource: source,
+      openItemCount: openSnapshot.size,
+    }));
     const recordOverCap = (source: string): AttentionReconcileOutcome => {
-      tx.set(scheduleRef, scheduleDocument({
-        organizerId,
-        revision,
-        now,
-        nextEvaluationAtMillis: now.toMillis() + overCapRetryMillis,
-        sourceCoverage: "overCap",
-        overCapSource: source,
-        openItemCount: openSnapshot.size,
-      }));
-      return {kind: "overCap", overCapSource: source, revision};
+      recordIncomplete("overCap", source);
+      return {kind: "overCap", incompleteSource: source, revision};
     };
+    if (invalid !== null) {
+      recordIncomplete("invalidSource", invalid.source);
+      return {
+        kind: "invalidSource" as const,
+        incompleteSource: invalid.source,
+        detail: invalid.detail,
+        revision,
+      };
+    }
     if (overCapSource !== null || sources === null) {
       return recordOverCap(overCapSource ?? "unknown");
     }
@@ -170,7 +195,7 @@ export async function reconcileOrganizerAttention(
       now,
       nextEvaluationAtMillis: derivation.nextChangeAtMillis,
       sourceCoverage: "complete",
-      overCapSource: null,
+      incompleteSource: null,
       openItemCount: derivation.items.length,
     }));
     return {
@@ -186,7 +211,13 @@ export async function reconcileOrganizerAttention(
   if (outcome.kind === "overCap") {
     logger.error("Host Today attention evaluation is over its cap.", {
       organizerId,
-      overCapSource: outcome.overCapSource,
+      incompleteSource: outcome.incompleteSource,
+    });
+  } else if (outcome.kind === "invalidSource") {
+    logger.error("Host Today attention evaluation read an invalid source.", {
+      organizerId,
+      incompleteSource: outcome.incompleteSource,
+      detail: outcome.detail,
     });
   }
   return outcome;
@@ -308,7 +339,7 @@ function scheduleDocument(params: {
   now: FirebaseFirestore.Timestamp;
   nextEvaluationAtMillis: number | null;
   sourceCoverage: OrganizerAttentionScheduleDocument["sourceCoverage"];
-  overCapSource: string | null;
+  incompleteSource: string | null;
   openItemCount: number;
 }): OrganizerAttentionScheduleDocument {
   return {
@@ -320,7 +351,7 @@ function scheduleDocument(params: {
     nextEvaluationAt: params.nextEvaluationAtMillis === null ? null :
       admin.firestore.Timestamp.fromMillis(params.nextEvaluationAtMillis),
     sourceCoverage: params.sourceCoverage,
-    overCapSource: params.overCapSource,
+    incompleteSource: params.incompleteSource,
     openItemCount: params.openItemCount,
   };
 }

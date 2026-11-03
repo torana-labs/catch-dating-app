@@ -681,8 +681,8 @@ at most 200 a run.
 
 `organizerAttentionSchedules/{organizerId}` records the policy version, a
 revision that grows with every committed evaluation, `evaluatedAt`,
-`nextEvaluationAt`, `sourceCoverage` (`complete` or `overCap`), the
-`overCapSource` and the open-row count. `nextEvaluationAt` is the earliest
+`nextEvaluationAt`, `sourceCoverage` (`complete`, `overCap` or
+`invalidSource`), the `incompleteSource` and the open-row count. `nextEvaluationAt` is the earliest
 instant after the evaluation at which the derivation's output could change by
 itself (urgency boundaries, due and expiry times, event start, end and horizon
 entry, offer, provider-run, moment-send and delivery-review times), clamped to
@@ -695,7 +695,12 @@ would write more than 450 rows, the evaluator writes only the schedule with
 `sourceCoverage: "overCap"`, the source, and a retry in one hour, logs an
 error, and leaves the rows untouched; it never labels a truncated scan
 exhaustive and never throws for it, since a trigger retry would change nothing.
-A deleted organizer resolves its open rows and drops its schedule. Form
+A loaded source row that fails validation (an empty document, missing update
+metadata, or a delivery work item that fails its canonical contract or runtime
+evidence) is recorded the same way with `sourceCoverage: "invalidSource"`, the
+collection as `incompleteSource` and the detail in the error log. Any other
+error throws, so the trigger retries. A deleted organizer resolves its open
+rows and drops its schedule. Form
 automation reads at most 400 enabled rules, then one latest terminal run per
 matching organizer, form, rule and current revision. Runs order by `updatedAt`
 descending and document ID descending; succeeded and skipped outcomes resolve
@@ -729,8 +734,10 @@ limited to the 400-row cap) with a listener on the schedule document. It parses
 the closed item vocabularies into typed domain values and computes one coverage
 row per catalog kind from the generated catalog
 (`lib/platform/schema_contracts/generated/host_attention_policies.g.dart`). A
-missing or over-cap schedule makes the projection incomplete, so Today shows a
-source-specific issue instead of an all-clear. The Today feed then merges every
+missing, over-cap or invalid-source schedule makes the projection incomplete,
+so Today shows a source-specific issue instead of an all-clear. Today's retry
+re-reads the events and keeps a healthy listener; it restarts only a listener
+that ended in an error. The Today feed then merges every
 normalized `HostAttendanceOutbox` row, deduplicates and sorts the combined
 queue by urgency, blocking consequence, deadline, and stable id, and updates
 while the screen is open. The active-event feed remains usable when either

@@ -24,6 +24,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   AttentionOrganizerMissingError,
+  AttentionSourceInvalidError,
   AttentionSourceOverCapError,
   buildOrganizerAttentionProjectionPlan,
   loadOrganizerAttentionSources,
@@ -406,7 +407,16 @@ test("accepts only canonical Operations delivery review projections", () => {
       item.workItemId,
       nowMillis
     ),
-    HttpsError
+    (error: unknown) => error instanceof AttentionSourceInvalidError &&
+      error instanceof HttpsError && error.source === "operationWorkItems"
+  );
+  assert.throws(
+    () => parseDeliveryReviewAttentionSource(
+      {...item, normalizedPayload: {}},
+      item.workItemId,
+      nowMillis
+    ),
+    (error: unknown) => error instanceof AttentionSourceInvalidError
   );
 });
 

@@ -273,8 +273,10 @@ HostAttentionCoverageState hostAttentionCoverageState(
 };
 
 /// Whether the server's last evaluation read every source completely.
-/// [missing] means no evaluation has been recorded for the organizer.
-enum HostAttentionSourceCoverage { complete, overCap, missing }
+/// [overCap]: a source exceeded the evaluator's cap. [invalidSource]: a
+/// loaded source row failed validation. [missing]: no evaluation has been
+/// recorded for the organizer.
+enum HostAttentionSourceCoverage { complete, overCap, invalidSource, missing }
 
 /// Today order: urgency, then blocking work, then deadline, then stable id.
 int compareHostAttentionItems(HostAttentionItem left, HostAttentionItem right) {
@@ -328,6 +330,7 @@ class HostAttentionProjection {
           : switch (_requiredString(schedule, 'sourceCoverage')) {
               'complete' => HostAttentionSourceCoverage.complete,
               'overCap' => HostAttentionSourceCoverage.overCap,
+              'invalidSource' => HostAttentionSourceCoverage.invalidSource,
               _ => throw const FormatException('Invalid sourceCoverage.'),
             },
     );

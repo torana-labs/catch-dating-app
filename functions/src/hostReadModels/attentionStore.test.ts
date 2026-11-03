@@ -89,7 +89,7 @@ test("evaluates ahead of time, records the schedule and skips no-op writes",
       JSON.stringify(validateSchedule.errors));
     assert.equal(schedule.revision, 1);
     assert.equal(schedule.sourceCoverage, "complete");
-    assert.equal(schedule.overCapSource, null);
+    assert.equal(schedule.incompleteSource, null);
     assert.equal(schedule.openItemCount, 2);
     assert.equal((schedule.evaluatedAt as Timestamp).toMillis(), nowMillis);
     // The live event ends in three hours; nothing changes earlier.
@@ -138,13 +138,13 @@ test("a source over the cap records only the schedule and keeps the rows",
     const outcome = await reconcileOrganizerAttention(store.asFirestore(),
       "org", clock(nowMillis));
     assert.deepEqual(outcome, {kind: "overCap",
-      overCapSource: "organizerApplications", revision: 1});
+      incompleteSource: "organizerApplications", revision: 1});
     assert.deepEqual(rowsOf(store), [openRow("attention-kept")]);
     const schedule = store.docs["organizerAttentionSchedules/org"];
     assert.equal(validateSchedule(schedule), true,
       JSON.stringify(validateSchedule.errors));
     assert.equal(schedule.sourceCoverage, "overCap");
-    assert.equal(schedule.overCapSource, "organizerApplications");
+    assert.equal(schedule.incompleteSource, "organizerApplications");
     assert.equal(schedule.openItemCount, 1);
     assert.equal((schedule.nextEvaluationAt as Timestamp).toMillis(),
       nowMillis + hourMillis);
@@ -161,11 +161,46 @@ test("more than 450 row writes is over cap rather than split", async () => {
   const store = attentionStore(docs);
   const outcome = await reconcileOrganizerAttention(store.asFirestore(), "org",
     clock(nowMillis));
-  assert.deepEqual(outcome, {kind: "overCap", overCapSource: "mutations",
+  assert.deepEqual(outcome, {kind: "overCap", incompleteSource: "mutations",
     revision: 1});
   assert.equal(rowsOf(store, "open").length, 300);
   assert.equal(rowsOf(store).length, 300, "no attention row was written");
 });
+
+test("an invalid source row records only the schedule and keeps the rows",
+  async () => {
+    const store = attentionStore({
+      "organizers/org": organizer(),
+      "organizerAttentionItems/attention-kept": openRow("attention-kept"),
+      // Matches the delivery review query but is not a canonical work item.
+      "operationWorkItems/work:delivery:broken": {
+        workflowId: "event-assistance",
+        normalizedPayload: {
+          kind: "liveMessageDelivery",
+          scope: {context: {mode: "live", eventId: "event-1",
+            organizerId: "org"}},
+          checkpoint: {phase: "review", dueAt: nowMillis + hourMillis},
+        },
+      },
+    });
+    const outcome = await reconcileOrganizerAttention(store.asFirestore(),
+      "org", clock(nowMillis));
+    assert.equal(outcome.kind, "invalidSource");
+    assert.equal(outcome.kind === "invalidSource" && outcome.incompleteSource,
+      "operationWorkItems");
+    assert.match(outcome.kind === "invalidSource" ? outcome.detail : "",
+      /work:delivery:broken failed its canonical contract/);
+    assert.deepEqual(rowsOf(store), [openRow("attention-kept")],
+      "no attention row is written or resolved");
+    const schedule = store.docs["organizerAttentionSchedules/org"];
+    assert.equal(validateSchedule(schedule), true,
+      JSON.stringify(validateSchedule.errors));
+    assert.equal(schedule.sourceCoverage, "invalidSource");
+    assert.equal(schedule.incompleteSource, "operationWorkItems");
+    assert.equal(schedule.openItemCount, 1);
+    assert.equal((schedule.nextEvaluationAt as Timestamp).toMillis(),
+      nowMillis + hourMillis);
+  });
 
 test("a deleted organizer resolves its open rows and drops its schedule",
   async () => {

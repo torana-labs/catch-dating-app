@@ -1128,7 +1128,7 @@
       ],
       "migrationNotes": [
         "The projection stores evaluated provenance, deadlines, destination, and resolution state; executable trigger and permission policy remains versioned in contracts/catalogs/host_attention_policies.json.",
-        "A trigger on each of the twelve source collections and a five-minute sweep re-evaluate an organizer from current sources; an evaluation that would read a source over its 400-row cap or write more than 450 rows records only the schedule document and leaves the rows untouched.",
+        "A trigger on each of the twelve source collections and a five-minute sweep re-evaluate an organizer from current sources; an evaluation that would read a source over its 400-row cap, write more than 450 rows, or read a source row that fails validation records only the schedule document (overCap or invalidSource) and leaves the rows untouched.",
         "Client-local attendance outbox work is merged in Flutter and Dress Rehearsal is a shortcut, so neither is persisted as a mandatory server attention row."
       ]
     },
@@ -1162,7 +1162,7 @@
       ],
       "migrationNotes": [
         "nextEvaluationAt is the earliest time an item can become due, change urgency or expire with no source write, clamped to between one minute and one day, so every organizer with anything loaded is re-evaluated at least daily.",
-        "A missing document or sourceCoverage overCap means the client must not claim a complete queue."
+        "A missing document, or sourceCoverage overCap or invalidSource with its incompleteSource, means the client must not claim a complete queue."
       ]
     },
     {

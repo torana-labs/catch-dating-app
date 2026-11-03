@@ -356932,7 +356932,7 @@ export const organizerAttentionScheduleDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_attention_schedules.schema.json",
   "title": "OrganizerAttentionScheduleDocument",
-  "description": "Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or over cap is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).",
+  "description": "Server-owned evaluation record for one organizer's Host Today attention queue: when the evaluator last committed, when the five-minute sweep must evaluate it again, and whether that evaluation read every source completely. Managers read it beside the open organizerAttentionItems rows; a queue whose schedule is missing or incomplete is never a complete all-clear. evaluatedAt is when the last evaluation committed; nextEvaluationAt is when an item can next become due, change urgency or expire with no source write (null when nothing can change with time).",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerAttentionSchedules",
@@ -356947,7 +356947,7 @@ export const organizerAttentionScheduleDocumentSchema = {
     "evaluatedAt",
     "nextEvaluationAt",
     "sourceCoverage",
-    "overCapSource",
+    "incompleteSource",
     "openItemCount"
   ],
   "properties": {
@@ -357027,26 +357027,27 @@ export const organizerAttentionScheduleDocumentSchema = {
     "sourceCoverage": {
       "enum": [
         "complete",
-        "overCap"
+        "overCap",
+        "invalidSource"
       ],
-      "description": "Whether the last evaluation read every source completely. overCap leaves the items as they were.",
+      "description": "Whether the last evaluation read every source completely. overCap (a source over its cap) and invalidSource (a loaded source row failed validation) both leave the items as they were.",
       "x-catch-ownership": "server-only"
     },
-    "overCapSource": {
+    "incompleteSource": {
       "type": [
         "string",
         "null"
       ],
       "minLength": 1,
       "maxLength": 80,
-      "description": "The source collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; null when coverage is complete.",
+      "description": "The source behind an incomplete evaluation: for overCap, the collection that exceeded the 400-row cap (organizerAttentionItems for the open rows, derivedItems for the derived queue), or mutations when one evaluation would write more than 450 rows; for invalidSource, the collection whose row failed validation. Null when coverage is complete.",
       "x-catch-ownership": "server-only"
     },
     "openItemCount": {
       "type": "integer",
       "minimum": 0,
       "maximum": 1000,
-      "description": "Open rows after the evaluation. After an over-cap evaluation it is the number of open rows read, at most 401.",
+      "description": "Open rows after the evaluation. After an incomplete evaluation it is the number of open rows read, at most 401.",
       "x-catch-ownership": "server-only"
     }
   }
