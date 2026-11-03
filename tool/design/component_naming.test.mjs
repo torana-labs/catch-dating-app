@@ -84,6 +84,24 @@ test("API axes and slots match the binding grammar", () => {
   assert.deepEqual(words(slots[1]), widgetSlotNames);
 });
 
+test("Surface and Stack own the layout axes, and Color is a palette choice", () => {
+  const owner = fs.readFileSync(new URL("../../docs/app_architecture.md", import.meta.url), "utf8");
+  const variants = owner.match(/\*\*Variants\.\*\*([\s\S]*?)\n- \*\*/u);
+  assert.ok(variants, "binding Variants paragraph is required");
+  const text = variants[1].replace(/\s+/gu, " ");
+  const owners = {Surface: ["Block", "Color", "Padding"], Stack: ["Gap", "Direction", "Align", "Justify"]};
+  for (const [component, axes] of Object.entries(owners)) {
+    const list = `${axes.slice(0, -1).join(", ")} and ${axes.at(-1)}`;
+    assert.match(text, new RegExp(`${list} are ${component}'s axes`, "u"));
+    for (const axis of axes) {
+      assert.ok(componentAxes.includes(axis), `${axis} must be a closed axis`);
+      assert.ok(text.includes(`\`Catch${component}${axis}\``), `Catch${component}${axis} must be named`);
+    }
+  }
+  assert.match(text, /Color names a palette choice, such as a format, ink or tile, never a raw colour\./u);
+  for (const open of ["Shape", "Kind", "Type", "Style"]) assert.equal(componentAxes.includes(open), false);
+});
+
 function scopeFamily() {
   const field = component("CatchField", "Field");
   field.contract = {members: [{

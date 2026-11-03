@@ -12,6 +12,7 @@ export const reservedPrefixPattern = /^Catch[A-Z0-9]/u;
 export const componentLevels = Object.freeze(schema.$defs.componentLevel.enum);
 export const componentAxes = Object.freeze([
   "Variant", "Size", "Tone", "Emphasis", "Status", "Placement", "Mode",
+  "Block", "Color", "Padding", "Gap", "Direction", "Align", "Justify",
 ]);
 export const widgetSlotNames = Object.freeze([
   "leading", "trailing", "title", "subtitle", "kicker", "meta", "body", "footer",

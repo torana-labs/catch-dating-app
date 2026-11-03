@@ -114,8 +114,8 @@ Under `apps/*/lib` and `lib/pages`, [App Roots](#app-roots) adds file kinds and 
   record its concrete distinction from the nearest existing contract in the
   registry; a new ID or implementation technique does not establish one.
 - Variant axes are enums `<Component><Axis>` with axis vocabulary
-  `Variant|Size|Tone|Emphasis|Status|Placement|Mode`; a third boolean
-  constructor parameter forces an enum.
+  `Variant|Size|Tone|Emphasis|Status|Placement|Mode|Block|Color|Padding|Gap|Direction|Align|Justify`;
+  a third boolean constructor parameter forces an enum.
 - Files: snake case of the primary class, suffix vocabulary
   `_screen|_controller|_view_model|_state|_repository|_service|_providers`
   or a role-noun widget suffix; one primary public widget per shared-library
@@ -3277,8 +3277,14 @@ same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
   be registered members of its primary Widget's concept; private Widget classes
   remain confined to L5. Non-Widget implementation helpers may be private.
 - **Variants.** Axes are enums named `<Component><Axis>` with axis vocabulary
-  `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`. At
+  `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`,
+  `Block`, `Color`, `Padding`, `Gap`, `Direction`, `Align`, `Justify`. At
   most two booleans per public component constructor; a third forces an enum.
+  Block, Color and Padding are Surface's axes (`CatchSurfaceBlock`,
+  `CatchSurfaceColor`, `CatchSurfacePadding`). Gap, Direction, Align and
+  Justify are Stack's axes (`CatchStackGap`, `CatchStackDirection`,
+  `CatchStackAlign`, `CatchStackJustify`). Color names a palette choice,
+  such as a format, ink or tile, never a raw colour.
   Field context options name their actual scope owner:
   `CatchDividedFieldInteractionScopeMode` selects section interaction policy;
   `CatchFieldGeometryScopeMode` assigns the content gutter; and
