@@ -61,7 +61,13 @@ export function useOrganizerPageEditorController(
     queryFn: () => loadOrganizerProfile({organizerId}),
   });
   const saveMutation = useMutation({mutationFn: saveOrganizerProfile});
-  const publishMutation = useMutation({mutationFn: publishOrganizerProfile});
+  const publishMutation = useMutation({mutationFn: async ({changes, publish}: {
+    changes: ReturnType<typeof buildOrganizerSavePayload> | null;
+    publish: ReturnType<typeof buildOrganizerPublishPayload>;
+  }) => {
+    if (changes) await saveOrganizerProfile(changes);
+    return publishOrganizerProfile(publish);
+  }});
   const organizer = detail.data?.organizer ?? null;
   const [form, setForm] = useState<OrganizerPublishingFormState | null>(null);
   const [checklist, setChecklist] = useState<PublishChecklistState>(emptyPublishChecklist);
@@ -125,9 +131,11 @@ export function useOrganizerPageEditorController(
     const operation = beginOperation();
     if (!operation) return false;
     try {
-      const payload = buildOrganizerSavePayload(organizer, form);
-      if (Object.keys(payload.fields).length > 0) await saveMutation.mutateAsync(payload);
-      const result = await publishMutation.mutateAsync(buildOrganizerPublishPayload(form, checklist));
+      const changes = buildOrganizerSavePayload(organizer, form);
+      const result = await publishMutation.mutateAsync({
+        changes: Object.keys(changes.fields).length > 0 ? changes : null,
+        publish: buildOrganizerPublishPayload(form, checklist),
+      });
       setChecklist(emptyPublishChecklist);
       await refresh();
       onError(null);
@@ -139,7 +147,7 @@ export function useOrganizerPageEditorController(
     } finally {
       endOperation(operation);
     }
-  }, [beginOperation, checklist, endOperation, form, onError, onNotice, organizer, publishIssues, publishMutation, refresh, saveMutation]);
+  }, [beginOperation, checklist, endOperation, form, onError, onNotice, organizer, publishIssues, publishMutation, refresh]);
 
   const discard = useCallback(() => {
     if (organizer) setForm(formFromOrganizerProfile(organizer));
