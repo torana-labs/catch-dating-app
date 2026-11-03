@@ -152,7 +152,8 @@ jobs:
           needs.preflight.outputs.producer_attempt == format('{0}', github.run_attempt) &&
           needs.preflight.outputs.tool_mode == 'affected' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Measured 3 Nov 2026 on #1516: a 40-tool affected set with the scaffold real run and the lint probes needs about 20 minutes; the bucket jobs allow 30 and 45.
+    timeout-minutes: 30
 
     steps:
       - name: Checkout affected index closure
