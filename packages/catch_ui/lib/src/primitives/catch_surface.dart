@@ -130,8 +130,9 @@ class CatchSurface extends StatelessWidget {
     );
 
     final ratio = aspect;
-    if (ratio != null)
+    if (ratio != null) {
       content = AspectRatio(aspectRatio: ratio, child: content);
+    }
     if (look.fill == null) return content;
     return DecoratedBox(
       decoration: BoxDecoration(

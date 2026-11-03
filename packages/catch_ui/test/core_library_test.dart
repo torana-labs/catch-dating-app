@@ -1,7 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Records the scope and inherited paint wherever it sits.
@@ -540,7 +539,7 @@ void main() {
       expect(find.bySemanticsLabel('Back'), findsOneWidget);
       expect(
         tester.getSemantics(find.byKey(const ValueKey('labelled'))),
-        containsSemantics(label: 'Back', isImage: true),
+        isSemantics(label: 'Back', isImage: true),
       );
       handle.dispose();
     });
