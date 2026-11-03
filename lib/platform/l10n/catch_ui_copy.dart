@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';
 
 /// Resolves field grammar and actions at the app's localization boundary.

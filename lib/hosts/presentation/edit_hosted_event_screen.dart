@@ -27,7 +27,6 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.d
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/device/device_location.dart';
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
@@ -42,6 +41,7 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/business_rules.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/location_coordinate.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -487,7 +487,7 @@ function scanManualSendContract(root) {
 }
 
 function scanHostCrmCountCopy(root) {
-  const relativePath = "lib/l10n/app_en.arb";
+  const relativePath = "packages/l10n/lib/app_en.arb";
   const file = path.join(root, relativePath);
   if (!fs.existsSync(file)) return [missingFinding(relativePath)];
   try {

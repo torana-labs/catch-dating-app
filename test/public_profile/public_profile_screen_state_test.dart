@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_state.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen_view_model.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

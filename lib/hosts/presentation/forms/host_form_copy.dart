@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_logic.dar
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 String hostFormQuestionSummary(

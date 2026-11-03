@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter/widgets.dart';
 
-export 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+export 'package:catch_l10n/generated/app_localizations.dart';
 
 final AppLocalizations _englishFallback = AppLocalizationsEn();
 

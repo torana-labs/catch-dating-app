@@ -1121,6 +1121,18 @@ test("Kernel package selects what lib/ selected before it moved", () => {
   assert.deepEqual(kernel.operations.ciTargets, plan("lib/example_shared_file.dart").operations.ciTargets);
 });
 
+test("L10n package selects what lib/l10n selected before it moved", () => {
+  const seam = plan("packages/l10n/lib/l10n.dart");
+  assert.deepEqual(seam.directComponents, ["app.l10n"]);
+  for (const owner of ["app.shared", "app.consumer", "app.host"]) {
+    assert.ok(seam.affectedComponents.includes(owner), owner);
+  }
+  assert.deepEqual(seam.operations.ciTargets, plan("lib/example_shared_file.dart").operations.ciTargets);
+  assert.deepEqual(plan("packages/l10n/lib/app_en.arb").directComponents, ["app.l10n-source"]);
+  assert.deepEqual(plan("packages/l10n/l10n.yaml").directComponents, ["app.l10n-config"]);
+  assert.deepEqual(plan("packages/l10n/lib/generated/app_localizations.dart").directComponents, ["app.generated.l10n"]);
+});
+
 test("Flutter token package preserves app and visual checks and selects no captures", () => {
   const result = plan("packages/catch_tokens/lib/src/primitives/catch_spacing.dart");
   assert.deepEqual(result.directComponents, ["app.tokens"]);
@@ -1230,8 +1242,8 @@ test("only capture tooling and images select capture production; app inputs leav
       "marketing.capture-artifact-docs"].includes(entry.id));
   const appInputs = [
     "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
-    "lib/main_consumer.dart", "lib/l10n/app_en.arb",
-    "lib/l10n/generated/app_localizations.dart",
+    "lib/main_consumer.dart", "packages/l10n/lib/app_en.arb",
+    "packages/l10n/lib/generated/app_localizations.dart",
     "lib/platform/schema_contracts/generated/schema_paths.dart",
     "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart",
     "test/ui_captures/catalog/screen_capture_catalog.dart", "test/example_test.dart",

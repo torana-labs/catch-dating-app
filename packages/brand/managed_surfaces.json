@@ -1,7 +1,7 @@
 {
   "description": "Files another toolchain reads raw, so they keep literal brand values. generate.mjs rewrites them from applied.json to brand.json on a rebrand. 'distinctive' rewrites only the domain, origins, contacts and handle; 'all' also rewrites names. exceptKeys lists ARB messages where the word is the 'a catch' feature noun or a verb, not the brand.",
   "surfaces": [
-    {"path": "lib/l10n/app_en.arb", "kind": "json-values", "then": "flutter gen-l10n",
+    {"path": "packages/l10n/lib/app_en.arb", "kind": "json-values", "then": "node packages/l10n/generate.mjs",
       "exceptKeys": [
         "matchesMatchCelebrationDialogTitleItSACatch",
         "swipesSwipeEmptyContentTitleCatchUnavailable",
@@ -46,8 +46,8 @@
     {"path": "packages/web-ui/src/components/CatchQrCode.test.tsx", "kind": "text"}
   ],
   "regenerated": [
-    "lib/l10n/generated/app_localizations_en.dart",
-    "lib/l10n/generated/structured_domain_copy.g.dart",
+    "packages/l10n/lib/generated/app_localizations_en.dart",
+    "packages/l10n/lib/generated/structured_domain_copy.g.dart",
     "apps/consumer/ios/Runner/Info.plist",
     "apps/host/ios/Runner/Info.plist",
     "apps/consumer/macos/Runner/Info.plist",

@@ -18,7 +18,7 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
     watchWithLegacyProjection();
     import "organizer_projection_fallback.dart";
   `);
-  write(root, "lib/l10n/app_en.arb", JSON.stringify({copy: "Join club"}));
+  write(root, "packages/l10n/lib/app_en.arb", JSON.stringify({copy: "Join club"}));
 
   const result = checkOrganizerNomenclature({root});
 
@@ -70,7 +70,7 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     ["lib/platform/analytics/app_analytics.dart", ["static const organizerId = 'organizer_id';"]],
     ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],
   ])) write(root, file, markers.join("\n"));
-  write(root, "lib/l10n/app_en.arb", JSON.stringify({
+  write(root, "packages/l10n/lib/app_en.arb", JSON.stringify({
     generic: "Follow organizer",
     hostsOrganizerTypeClub: "Club",
   }));
@@ -93,7 +93,7 @@ test("organizer nomenclature gate rejects club in Flutter names but keeps the su
   ].join("\n"));
   write(root, "lib/platform/schema_contracts/generated/schemas/request.g.dart",
     "final class CreateClubRequest { final String clubId = ''; }");
-  write(root, "lib/l10n/app_en.arb", JSON.stringify({clubsTitle: "Organizers", hostsOrganizerTypeClub: "Club"}));
+  write(root, "packages/l10n/lib/app_en.arb", JSON.stringify({clubsTitle: "Organizers", hostsOrganizerTypeClub: "Club"}));
 
   const findings = checkOrganizerNomenclature({root}).findings
     .filter((item) => item.rule === "clubInFlutterNames");
@@ -101,12 +101,12 @@ test("organizer nomenclature gate rejects club in Flutter names but keeps the su
   assert.deepEqual(findings.map((item) => item.path).sort(), [
     "lib/clubs/club_card.dart",
     "lib/clubs/club_card.dart",
-    "lib/l10n/app_en.arb",
     "lib/organizers/organizer_tile.dart",
+    "packages/l10n/lib/app_en.arb",
   ]);
   const tile = findings.find((item) => item.path === "lib/organizers/organizer_tile.dart");
   assert.match(tile.detail, /clubLabel, isClub$/u);
-  assert.match(findings.find((item) => item.path === "lib/l10n/app_en.arb").detail, /clubsTitle$/u);
+  assert.match(findings.find((item) => item.path === "packages/l10n/lib/app_en.arb").detail, /clubsTitle$/u);
 });
 
 test("organizer nomenclature gate rejects club in wire names but keeps the subtype and snake_case code keys", () => {

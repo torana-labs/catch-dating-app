@@ -3,7 +3,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_revie
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 
 /// The versioned query workspace cannot represent the legacy route's search
 /// or one-contact scope. Keep those routes on their existing inbox until the

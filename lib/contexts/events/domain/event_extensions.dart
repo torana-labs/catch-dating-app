@@ -6,10 +6,10 @@ import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_service.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/brand.dart';
+import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
 
 const _legacyUnattributedCohortId = 'legacyUnattributed';
 

@@ -41,7 +41,7 @@ test("known-bad fixture reports every orphaned key", () => {
   assert.deepEqual(
     result.excludedFiles.map(({path: filePath, reason}) => [filePath, reason]),
     [
-      ["lib/l10n/generated/app_localizations.dart", "l10n-generated-directory"],
+      ["packages/l10n/lib/generated/app_localizations.dart", "l10n-generated-directory"],
       ["lib/secondary.g.dart", "generated-suffix"],
     ],
   );
@@ -258,7 +258,7 @@ test("a key used only in an app package is not orphaned, and its missing getter 
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.writeFileSync(path.join(root, file), source);
   };
-  write("lib/l10n/app_en.arb", JSON.stringify({usedInHost: "Host", usedInConsumer: "Consumer", orphan: "Nobody"}));
+  write("packages/l10n/lib/app_en.arb", JSON.stringify({usedInHost: "Host", usedInConsumer: "Consumer", orphan: "Nobody"}));
   write("lib/kept.dart", "class Kept {}\n");
   write("apps/host/lib/today/today_screen.dart", "Widget build(l10n) => Text(l10n.usedInHost);\n");
   write("apps/consumer/lib/explore/explore_screen.dart", "Widget build(l10n) => Text('${l10n.usedInConsumer} ${l10n.missingInCatalog}');\n");

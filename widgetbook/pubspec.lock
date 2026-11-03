@@ -215,6 +215,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  catch_l10n:
+    dependency: "direct main"
+    description:
+      path: "../packages/l10n"
+      relative: true
+    source: path
+    version: "0.1.0"
   catch_tokens:
     dependency: "direct main"
     description:

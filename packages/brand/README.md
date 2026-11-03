@@ -45,7 +45,7 @@ come from their own tools.
 
 1. Edit `brand.json`.
 2. `node packages/brand/generate.mjs`, then run the follow-up commands it
-   prints (`flutter gen-l10n`, `node tool/copy/sync_native_copy.mjs`,
+   prints (`node packages/l10n/generate.mjs`, `node tool/copy/sync_native_copy.mjs`,
    `cd website && node scripts/renderPreviewCards.mjs --update`).
 3. Re-render marketing captures (they show the domain in Safari's address bar).
 4. Register the external surfaces listed in the rebrand PR checklist.

@@ -200,7 +200,7 @@ void _sync() {
       )
       .join('\n');
   _writeOrCheck(
-    File('lib/l10n/generated/structured_domain_copy.g.dart'),
+    File('packages/l10n/lib/generated/structured_domain_copy.g.dart'),
     '// GENERATED CODE - DO NOT EDIT.\n'
     '// Source: copy/structured_domain_copy_en.json\n\n'
     'abstract final class StructuredDomainCopy {\n'

@@ -20,7 +20,7 @@ const arb = JSON.stringify({
 
 function fixture(extra = {}) {
   const sources = {
-    "lib/l10n/app_en.arb": arb,
+    "packages/l10n/lib/app_en.arb": arb,
     "lib/clubs/club_card.dart": [
       "import 'package:catch_dating_app/contexts/organizers/domain/club.dart';",
       "",

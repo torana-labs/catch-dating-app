@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

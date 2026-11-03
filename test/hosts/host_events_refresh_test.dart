@@ -12,12 +12,12 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_stat
 import 'package:catch_dating_app/hosts/events/presentation/host_events_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
 import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

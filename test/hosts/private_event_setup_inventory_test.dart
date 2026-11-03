@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 
 import 'package:catch_dating_app/hosts/presentation/event_management/host_private_event_setup_inventory_section.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

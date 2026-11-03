@@ -24,7 +24,7 @@ test("every catalogued committed compile generator has a staged-source trigger",
     "copy/native_en.json",
     "copy/notifications_en.json",
     "copy/structured_domain_copy_en.json",
-    "lib/l10n/app_en.arb",
+    "packages/l10n/lib/app_en.arb",
     "tool/platform/ios/Podfile.template",
   ];
   const plan = planPreCommitActions({graph, stagedPaths});
@@ -49,7 +49,7 @@ test("ARB generation, Dart formatting, explicit staging, and freshness checks st
     stagedPaths: [
       "contracts/callables/create_event.schema.json",
       "lib/example.dart",
-      "lib/l10n/app_en.arb",
+      "packages/l10n/lib/app_en.arb",
     ],
     unstagedPaths: [],
   });
@@ -61,14 +61,14 @@ test("ARB generation, Dart formatting, explicit staging, and freshness checks st
     "flutter.l10n",
   ]);
   assert.deepEqual(calls.slice(0, 4), [
-    {command: "/bin/sh", args: ["-c", "flutter gen-l10n"]},
+    {command: "/bin/sh", args: ["-c", "node packages/l10n/generate.mjs"]},
     {
       command: "git",
       args: [
         "add",
         "--",
-        "lib/l10n/generated/app_localizations.dart",
-        "lib/l10n/generated/app_localizations_en.dart",
+        "packages/l10n/lib/generated/app_localizations.dart",
+        "packages/l10n/lib/generated/app_localizations_en.dart",
       ],
     },
     {
@@ -77,8 +77,8 @@ test("ARB generation, Dart formatting, explicit staging, and freshness checks st
         "format",
         "--",
         "lib/example.dart",
-        "lib/l10n/generated/app_localizations.dart",
-        "lib/l10n/generated/app_localizations_en.dart",
+        "packages/l10n/lib/generated/app_localizations.dart",
+        "packages/l10n/lib/generated/app_localizations_en.dart",
       ],
     },
     {
@@ -87,8 +87,8 @@ test("ARB generation, Dart formatting, explicit staging, and freshness checks st
         "add",
         "--",
         "lib/example.dart",
-        "lib/l10n/generated/app_localizations.dart",
-        "lib/l10n/generated/app_localizations_en.dart",
+        "packages/l10n/lib/generated/app_localizations.dart",
+        "packages/l10n/lib/generated/app_localizations_en.dart",
       ],
     },
   ]);
@@ -197,7 +197,7 @@ test("copy-generated Dart keeps exact generator ownership while source formats",
   const output = graph.compileCodegen
     .find((generator) => generator.id === "copy.structured-domain")
     .outputs.find((candidate) => candidate.endsWith(".dart") &&
-      !candidate.startsWith("lib/l10n/"));
+      !candidate.startsWith("packages/l10n/lib/"));
   const result = runPreCommitGeneratedArtifacts({
     fileExists: () => true, graph, repoRoot: "/fixture",
     runCommand: () => ({status: 0, stderr: "", stdout: ""}),
@@ -226,10 +226,10 @@ test("stale generated Dart still rejects the commit without a formatter rewrite"
     ["-c", "node tool/contracts/generate_schema_contracts.mjs --check"]);
 });
 
-const arb = "lib/l10n/app_en.arb";
-const output = "lib/l10n/generated/app_localizations.dart";
+const arb = "packages/l10n/lib/app_en.arb";
+const output = "packages/l10n/lib/generated/app_localizations.dart";
 const fixtureGraph = {compileCodegen: [{
-  id: "flutter.l10n", inputs: [arb, "l10n.yaml"], outputs: [output],
+  id: "flutter.l10n", inputs: [arb, "packages/l10n/l10n.yaml"], outputs: [output],
   writeCommand: "fixture-generate", checkCommand: "fixture-check",
 }, {
   id: "fixture.admin", inputs: ["admin/src/**"],
@@ -255,7 +255,7 @@ function gitFixture(t) {
   };
   git("init", "-q");
   for (const [name, value] of Object.entries({[arb]: "original", [output]: "original",
-    "l10n.yaml": "config", "lib/example.dart": "original",
+    "packages/l10n/l10n.yaml": "config", "lib/example.dart": "original",
     "admin/src/client.ts": "original", "admin/src/example.test.ts": "test",
     "admin/src/generated/validators.ts": "original", ".gitignore": "*.ignored\n",
     "tool/harness/component_graph.json": JSON.stringify(fixtureGraph)})) write(name, value);
@@ -303,19 +303,19 @@ function gitFixture(t) {
 
 for (const [label, prepare] of [
   ["partially staged ARB", f => f.write(arb, "unstaged")],
-  ["other selected input", f => f.write("l10n.yaml", "unstaged")],
-  ["unstaged input deletion", f => fs.unlinkSync(path.join(f.root, "l10n.yaml"))],
+  ["other selected input", f => f.write("packages/l10n/l10n.yaml", "unstaged")],
+  ["unstaged input deletion", f => fs.unlinkSync(path.join(f.root, "packages/l10n/l10n.yaml"))],
   ["unstaged output", f => f.write(output, "unstaged")],
   ["partially staged output", f => { f.stage(output, "staged"); f.write(output, "unstaged"); }],
   ["unstaged output deletion", f => fs.unlinkSync(path.join(f.root, output))],
   ["staged output deletion", f => f.git("rm", "--", output)],
   ["reintroduced deleted output", f => { f.git("rm", "--", output); f.write(output, "untracked"); }],
-  ["reintroduced deleted input", f => { f.git("rm", "--", "l10n.yaml"); f.write("l10n.yaml", "untracked"); }],
-  ["untracked wildcard input", f => f.write("lib/l10n/app_fr.arb", "untracked")],
-  ["ignored wildcard input", f => { f.write(".git/info/exclude", "*.arb\n"); f.write("lib/l10n/app_fr.arb", "ignored"); }],
+  ["reintroduced deleted input", f => { f.git("rm", "--", "packages/l10n/l10n.yaml"); f.write("packages/l10n/l10n.yaml", "untracked"); }],
+  ["untracked wildcard input", f => f.write("packages/l10n/lib/app_fr.arb", "untracked")],
+  ["ignored wildcard input", f => { f.write(".git/info/exclude", "*.arb\n"); f.write("packages/l10n/lib/app_fr.arb", "ignored"); }],
   ["ignored output collision", f => { f.git("rm", "--", output); f.write(".git/info/exclude", "*.dart\n"); f.write(output, "ignored"); }],
-  ["hidden assume-unchanged input", f => { f.git("update-index", "--assume-unchanged", "l10n.yaml"); f.write("l10n.yaml", "hidden"); }],
-  ["hidden skip-worktree input", f => { f.git("update-index", "--skip-worktree", "l10n.yaml"); f.write("l10n.yaml", "hidden"); }],
+  ["hidden assume-unchanged input", f => { f.git("update-index", "--assume-unchanged", "packages/l10n/l10n.yaml"); f.write("packages/l10n/l10n.yaml", "hidden"); }],
+  ["hidden skip-worktree input", f => { f.git("update-index", "--skip-worktree", "packages/l10n/l10n.yaml"); f.write("packages/l10n/l10n.yaml", "hidden"); }],
 ]) {
   test(`${label} fails before generation, formatting, or staging`, t => {
     const f = gitFixture(t);
@@ -411,7 +411,7 @@ for (const mode of ["unstaged", "assume-unchanged", "skip-worktree", "reintroduc
   });
 }
 
-for (const candidate of ["l10n.yaml", output, "lib/example.dart", "tool/harness/component_graph.json"]) {
+for (const candidate of ["packages/l10n/l10n.yaml", output, "lib/example.dart", "tool/harness/component_graph.json"]) {
   test(`indexed symlink at ${candidate} refuses indirect working-tree data`, t => {
     const f = gitFixture(t);
     const target = "private-target.txt";
@@ -455,7 +455,7 @@ test("docs-only staging permits an unrelated dirty catalog", t => {
 for (const obstruction of ["terminal directory", "file ancestor"]) {
   test(`generated output ${obstruction} fails before any earlier output is written`, t => {
     const f = gitFixture(t);
-    const blockedOutput = "lib/l10n/generated/blocked/second.dart";
+    const blockedOutput = "packages/l10n/lib/generated/blocked/second.dart";
     const selected = structuredClone(fixtureGraph);
     selected.compileCodegen[0].outputs.push(blockedOutput);
     f.stage("tool/harness/component_graph.json", JSON.stringify(selected));
@@ -463,7 +463,7 @@ for (const obstruction of ["terminal directory", "file ancestor"]) {
     if (obstruction === "terminal directory") {
       fs.mkdirSync(path.join(f.root, blockedOutput), {recursive: true});
     } else {
-      f.write("lib/l10n/generated/blocked", "private obstruction");
+      f.write("packages/l10n/lib/generated/blocked", "private obstruction");
     }
     f.refusesWithoutWrites();
     assert.equal(fs.readFileSync(path.join(f.root, output), "utf8"), "original");

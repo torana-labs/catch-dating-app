@@ -11,10 +11,10 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/platform/device/clipboard.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

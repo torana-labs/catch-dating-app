@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

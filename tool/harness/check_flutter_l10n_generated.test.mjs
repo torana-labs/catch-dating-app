@@ -40,12 +40,13 @@ test("comparison reports missing and stale generated outputs", () => {
 
 test("checker generates only inside a disposable project and compares tracked output", () => {
   withTempDir((repositoryRoot) => {
-    const sourceDir = path.join(repositoryRoot, "lib", "l10n");
+    const packageRoot = path.join(repositoryRoot, "packages", "l10n");
+    const sourceDir = path.join(packageRoot, "lib");
     const expectedDir = path.join(sourceDir, "generated");
     fs.mkdirSync(expectedDir, {recursive: true});
     fs.writeFileSync(path.join(sourceDir, "app_en.arb"), "{}");
-    fs.writeFileSync(path.join(repositoryRoot, "l10n.yaml"), "arb-dir: lib/l10n\noutput-dir: lib/l10n/generated\n");
-    fs.writeFileSync(path.join(repositoryRoot, "pubspec.yaml"), "name: app\nenvironment:\n  sdk: ^3.12.0\n");
+    fs.writeFileSync(path.join(packageRoot, "l10n.yaml"), "arb-dir: lib\noutput-dir: lib/generated\n");
+    fs.writeFileSync(path.join(packageRoot, "pubspec.yaml"), "name: catch_l10n\nenvironment:\n  sdk: ^3.12.0\n");
     fs.writeFileSync(path.join(expectedDir, "app_localizations.dart"), "one");
     fs.writeFileSync(path.join(expectedDir, "app_localizations_en.dart"), "two");
 
@@ -58,7 +59,7 @@ test("checker generates only inside a disposable project and compares tracked ou
         generatorCwd = cwd;
         generatorPubspec = fs.readFileSync(path.join(cwd, "pubspec.yaml"), "utf8");
         generatorPackageConfig = JSON.parse(fs.readFileSync(path.join(cwd, ".dart_tool", "package_config.json"), "utf8"));
-        const outputDir = path.join(cwd, "lib", "l10n", "generated");
+        const outputDir = path.join(cwd, "lib", "generated");
         fs.mkdirSync(outputDir, {recursive: true});
         fs.writeFileSync(path.join(outputDir, "app_localizations.dart"), "one");
         fs.writeFileSync(path.join(outputDir, "app_localizations_en.dart"), "two");

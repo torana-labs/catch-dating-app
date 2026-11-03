@@ -356,7 +356,7 @@ test("flags provider delivery states on manual handoffs", () => {
 
 test("flags visible Host CRM counts without ICU plurals", () => {
   const findings = hostCrmCountCopyFindings({
-    relativePath: "lib/l10n/app_en.arb",
+    relativePath: "packages/l10n/lib/app_en.arb",
     catalog: {
       hostSendsRecipients: "{count} people",
       "@hostSendsRecipients": {

@@ -179,7 +179,7 @@ function isGeneratedDartPath(filePath) {
   return (
     filePath.endsWith(".g.dart") ||
     filePath.endsWith(".freezed.dart") ||
-    filePath.startsWith("lib/l10n/generated/") ||
+    filePath.startsWith("packages/l10n/lib/generated/") ||
     /^lib\/firebase_options(?:_[^/]+)?\.dart$/u.test(filePath)
   );
 }

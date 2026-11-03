@@ -28,7 +28,7 @@ This section records the 2026-10-22 audit against Guidelines 3.1.1, 3.1.3(c),
 **What was searched.** The Host native graph (`apps/host/ios/Podfile.lock`)
 has no StoreKit or `in_app_purchase`. The Host routes in
 `lib/routing/go_router.dart` and the Host-audience copy in
-`lib/l10n/app_en.arb` contain no plan, subscription, trial, upgrade, price for
+`packages/l10n/lib/app_en.arb` contain no plan, subscription, trial, upgrade, price for
 Catch Host, or "pay Catch" call to action. The only plan-like UI is the weekly
 post quota ("{remainingQuota} of {weeklyQuota} posts left this week" and
 "Weekly limit reached"), which has no paid path.
