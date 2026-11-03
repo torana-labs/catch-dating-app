@@ -38,6 +38,7 @@ export interface CatchSplitProps
  * Two columns at a set ratio that stack into one when the page (the nearest
  * `catch-page` container, which `CatchBand` declares) is narrower than 840px.
  * Stacked columns keep source order, so reading and focus order never change.
+ * @deprecated Legacy: use CatchStack direction="row" equal collapseBelow; deleted in P7.
  */
 export function CatchSplit({
   align = "start",

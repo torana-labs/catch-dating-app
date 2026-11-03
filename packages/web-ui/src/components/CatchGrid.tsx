@@ -36,6 +36,7 @@ const keyOf = (child: ReactNode, index: number) =>
  * Equal responsive columns. The column count follows the page (the nearest
  * `catch-page` container, which `CatchBand` declares) rather than the grid's
  * own width, so a grid in a narrow page column keeps its desktop count.
+ * @deprecated Legacy: use CatchStack direction="row" equal collapseBelow; deleted in P7.
  */
 export function CatchGrid({
   align = "stretch",

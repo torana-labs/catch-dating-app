@@ -54,6 +54,7 @@ export interface CatchGapProps
 /**
  * Lays its children out along one axis, separated by one semantic gap: the
  * web counterpart of Flutter `Column`/`Row`/`Wrap` with `spacing: CatchGaps.*`.
+ * @deprecated Legacy: use CatchStack (direction, gap, align, justify, wrap); deleted in P7.
  */
 export function CatchGap({
   as: Element = "div",
