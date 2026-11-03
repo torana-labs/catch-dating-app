@@ -16,6 +16,11 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 // - the files that define the system components or the legacy ones (and the
 //   barrel, which exports both): they are written by hand;
 // - a line carrying `@deprecated`, which names the system replacement;
+// - Flutter's CatchTextVariant enum, which the web parity tests read from Dart
+//   source: `enum CatchTextVariant` and member access (`CatchTextVariant.x`,
+//   also escaped in a regular expression). A TypeScript union has no members,
+//   so these spellings only ever name the Dart enum; the Flutter lane renames
+//   it with its own codemod;
 // - generated folders.
 //
 // It is idempotent, and --check fails while any caller still uses an old
@@ -68,6 +73,13 @@ export const handWrittenFiles = new Set([
 const oldNames = [...legacyRenames.keys()].sort((left, right) => right.length - left.length);
 const oldNamePattern = new RegExp(`\\b(?:${oldNames.join("|")})\\b`, "gu");
 
+/** Whether this occurrence names Flutter's CatchTextVariant enum rather than the TypeScript union. */
+function isDartEnumReference(name, line, offset) {
+  if (name !== "CatchTextVariant") return false;
+  const after = line.slice(offset + name.length);
+  return /^\\?\./u.test(after) || /\benum\s+$/u.test(line.slice(0, offset));
+}
+
 /** Renames one source text. Returns the new text and how many of each old name it replaced. */
 export function renameLegacyWebSymbols(source) {
   const counts = new Map();
@@ -75,7 +87,8 @@ export function renameLegacyWebSymbols(source) {
     .split("\n")
     .map((line) => {
       if (line.includes("@deprecated")) return line;
-      return line.replace(oldNamePattern, (name) => {
+      return line.replace(oldNamePattern, (name, offset) => {
+        if (isDartEnumReference(name, line, offset)) return name;
         counts.set(name, (counts.get(name) ?? 0) + 1);
         return legacyRenames.get(name);
       });

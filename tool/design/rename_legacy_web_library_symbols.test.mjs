@@ -70,6 +70,23 @@ test("leaves a @deprecated line naming the system replacement", () => {
   assert.match(text, /A full-width section; CatchLegacyText inside/u);
 });
 
+test("keeps Flutter's CatchTextVariant enum, which parity tests read from Dart", () => {
+  const source = [
+    "const values = textVariantDart.match(/enum CatchTextVariant \\{([^;]*);/)?.[1];",
+    "const flutter = [...list.matchAll(/CatchTextVariant\\.(\\w+)/g)];",
+    "expect(dart).toContain(`CatchTextVariant.${role}`);",
+    "const union = textVariantTs.match(/export type CatchTextVariant =([^;]*);/);",
+    "const roles: readonly CatchTextVariant[] = [];",
+  ].join("\n");
+  assert.equal(renameLegacyWebSymbols(source).text, [
+    "const values = textVariantDart.match(/enum CatchTextVariant \\{([^;]*);/)?.[1];",
+    "const flutter = [...list.matchAll(/CatchTextVariant\\.(\\w+)/g)];",
+    "expect(dart).toContain(`CatchTextVariant.${role}`);",
+    "const union = textVariantTs.match(/export type CatchLegacyTextVariant =([^;]*);/);",
+    "const roles: readonly CatchLegacyTextVariant[] = [];",
+  ].join("\n"));
+});
+
 test("is idempotent", () => {
   const once = renameLegacyWebSymbols(caller).text;
   const twice = renameLegacyWebSymbols(once);
