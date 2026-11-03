@@ -69,11 +69,15 @@ class EventAssistanceDeparture extends _$EventAssistanceDeparture {
         .asData
         ?.value;
     if (account == null) return;
-    final listener = eventAssistanceDepartureForAccountProvider(
-      scope,
-      account: account,
-    );
-    if (ref.read(listener).hasError) ref.invalidate(listener);
+    if (ref
+        .read(
+          eventAssistanceDepartureForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceDepartureForAccountProvider(scope, account: account),
+      );
+    }
   }
 }
 

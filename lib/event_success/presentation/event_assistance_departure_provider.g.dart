@@ -117,7 +117,7 @@ final class EventAssistanceDepartureProvider
 }
 
 String _$eventAssistanceDepartureHash() =>
-    r'c5fffe52d94311d0b47c2502c161e7a9c0196570';
+    r'559c14e604e241bf8f4f586106451bccda84c582';
 
 final class EventAssistanceDepartureFamily extends $Family
     with

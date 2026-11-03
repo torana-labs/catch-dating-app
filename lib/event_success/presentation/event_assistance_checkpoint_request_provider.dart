@@ -78,16 +78,30 @@ class EventAssistanceCheckpointRequest
       return;
     }
     final account = authState.value!;
-    final checkpoint = eventAssistanceCheckpointForAccountProvider(
-      scope,
-      account: account,
-    );
-    final group = eventAssistanceDepartureForAccountProvider(
-      scope.group,
-      account: account,
-    );
-    if (ref.read(checkpoint).hasError) ref.invalidate(checkpoint);
-    if (ref.read(group).hasError) ref.invalidate(group);
+    if (ref
+        .read(
+          eventAssistanceCheckpointForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceCheckpointForAccountProvider(scope, account: account),
+      );
+    }
+    if (ref
+        .read(
+          eventAssistanceDepartureForAccountProvider(
+            scope.group,
+            account: account,
+          ),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceDepartureForAccountProvider(
+          scope.group,
+          account: account,
+        ),
+      );
+    }
   }
 }
 

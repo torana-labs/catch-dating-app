@@ -73,7 +73,7 @@ final class EventAssistanceDepartureHistoryProvider
 }
 
 String _$eventAssistanceDepartureHistoryHash() =>
-    r'300402a45acacea48278f00a942e3352c9e70f81';
+    r'dd8d28fe1187d578d21068f2fdb9431daab0b1bd';
 
 /// Account-scoped pages never render a previous sign-in's history on refresh.
 

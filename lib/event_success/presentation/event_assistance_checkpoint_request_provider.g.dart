@@ -74,7 +74,7 @@ final class EventAssistanceCheckpointRequestProvider
 }
 
 String _$eventAssistanceCheckpointRequestHash() =>
-    r'af07becdf8188218db6084f805330751d7170c0d';
+    r'2a46aa23305b03bb3a1e8387aeb1a278ebe6e732';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 

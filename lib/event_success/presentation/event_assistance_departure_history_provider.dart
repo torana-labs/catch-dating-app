@@ -58,11 +58,22 @@ class EventAssistanceDepartureHistory
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    final listener = eventAssistanceDepartureHistoryForAccountProvider(
-      query,
-      account: authState.value!,
-    );
-    if (ref.read(listener).hasError) ref.invalidate(listener);
+    final account = authState.value!;
+    if (ref
+        .read(
+          eventAssistanceDepartureHistoryForAccountProvider(
+            query,
+            account: account,
+          ),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceDepartureHistoryForAccountProvider(
+          query,
+          account: account,
+        ),
+      );
+    }
   }
 }
 

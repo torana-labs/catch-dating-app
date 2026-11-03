@@ -285,11 +285,16 @@ class EventAssistanceCheckpointController
   /// The checkpoint view is a listener that delivers every write; it is
   /// restarted only after it ended in an error.
   void _refresh() {
-    final listener = eventAssistanceCheckpointForAccountProvider(
-      scope,
-      account: _account!,
-    );
-    if (ref.read(listener).hasError) ref.invalidate(listener);
+    final account = _account!;
+    if (ref
+        .read(
+          eventAssistanceCheckpointForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceCheckpointForAccountProvider(scope, account: account),
+      );
+    }
   }
 
   void _publish(CheckpointForm form) {

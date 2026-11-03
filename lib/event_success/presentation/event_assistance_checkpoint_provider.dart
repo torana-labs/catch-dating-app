@@ -77,11 +77,16 @@ class EventAssistanceCheckpoint extends _$EventAssistanceCheckpoint {
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    final listener = eventAssistanceCheckpointForAccountProvider(
-      scope,
-      account: authState.value!,
-    );
-    if (ref.read(listener).hasError) ref.invalidate(listener);
+    final account = authState.value!;
+    if (ref
+        .read(
+          eventAssistanceCheckpointForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceCheckpointForAccountProvider(scope, account: account),
+      );
+    }
   }
 }
 
