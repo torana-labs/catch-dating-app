@@ -10,7 +10,8 @@ import type {RepairEventAssistanceDeliveryCallablePayload as Command} from
   "../shared/generated/repairEventAssistanceDeliveryCallablePayload";
 import {EventAssistanceDeliveriesStore} from
   "../eventSuccess/operations/hostDeliveriesStore";
-import {deliveryWorkIds} from "../eventSuccess/operations/deliveryWorkRecords";
+import {deliveryWorkIds, hasAutomaticDelivery} from
+  "../eventSuccess/operations/deliveryWorkRecords";
 import {deliveryActionsUntil} from
   "../eventSuccess/operations/hostDeliveryRecords";
 import {messageWindowOpen} from "../eventSuccess/operations/guestRecords";
@@ -177,6 +178,27 @@ test("a missing coordinator records invalidSource and keeps the previous view",
     assert.deepEqual(after.view, before.view);
     assert.equal(after.relevantUntilMillis, before.relevantUntilMillis);
   });
+
+test("an automatic message under a malformed id fails closed", async () => {
+  const h = await harness();
+  const raw = (await h.read("eventAssistanceMessages/" +
+    h.published.messageId))!;
+  assert.ok(hasAutomaticDelivery(await h.record()));
+  // The record names the malformed id, or keeps its own under a malformed
+  // document id. Either way no projection is written and nothing throws.
+  for (const [index, named] of [true, false].entries()) {
+    const malformed = "outbox:" + String(index).repeat(3) + "Z".repeat(61);
+    await h.write("eventAssistanceMessages/" + malformed,
+      named ? {...raw, messageId: malformed} : raw);
+    const outcome = await h.reconcile(malformed);
+    assert.ok(outcome.kind === "invalidSource", JSON.stringify(outcome));
+    assert.equal(outcome.incompleteSource, "eventAssistanceMessages");
+    const written = (await h.view(malformed))!;
+    assert.equal(written.sourceCoverage, "invalidSource");
+    assert.equal(written.view, null);
+    assert.equal(written.relevantUntilMillis, null);
+  }
+});
 
 test("a missing or rehearsal message, organizer or event removes the view",
   async () => {

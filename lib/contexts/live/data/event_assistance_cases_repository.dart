@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/live/data/live_a_listener_streams.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_managers.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
@@ -9,6 +8,7 @@ import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/resolve_event_assistance_case_callable_request.g.dart';
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -38,7 +38,7 @@ class EventAssistanceCasesRepository {
     EventAssistanceCaseQuery query, {
     required String actorUid,
   }) => withBackendErrorStream(
-    () => combineLatestPair(
+    () => combineLatest(
       _views(query),
       _organizers.watchOrganizer(query.organizerId),
       (rows, organizer) => EventAssistanceCasesPage.fromViews(

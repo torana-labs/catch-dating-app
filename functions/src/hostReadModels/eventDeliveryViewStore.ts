@@ -31,6 +31,7 @@ import {
 } from "../eventSuccess/operations/hostDeliveryRecords";
 import {
   isAssistanceId,
+  isSourceInvalid,
   pagedIds,
   positiveInteger,
   stage,
@@ -107,9 +108,20 @@ export async function reconcileEventDeliveryView(
         return null;
       }
     })();
-    const automatic = hasAutomaticDelivery(raw as never);
-    const workIds = automatic && /^outbox:[a-f0-9]{64}$/.test(messageId) ?
-      deliveryWorkIds(messageId) : null;
+    // Automatic delivery is tracked by a run and work item keyed by the
+    // message id. A malformed id is an invalid work source: it is staged here
+    // and raised in the evaluation below, so the previous view is kept.
+    let workIds: ReturnType<typeof deliveryWorkIds> | null = null;
+    let workIdsInvalid: ViewSourceInvalidError | null = null;
+    if (hasAutomaticDelivery(raw as never)) {
+      try {
+        workIds = stage(operationCollections.workItems,
+          () => deliveryWorkIds(messageId));
+      } catch (error) {
+        if (!(error instanceof ViewSourceInvalidError)) throw error;
+        workIdsInvalid = error;
+      }
+    }
     const [organizerSnap, eventSnap, attendeeSnap, guestSnap, runSnap,
       itemSnap] = await tx.getAll(
       db.collection("organizers").doc(organizerId),
@@ -150,14 +162,16 @@ export async function reconcileEventDeliveryView(
         }
       });
       const message = stage(EVENT_ASSISTANCE_MESSAGES, () =>
-        parseHostDelivery(raw, messageId, context, nowMillis));
+        parseLiveDelivery(raw, messageId, context, nowMillis));
       if (attendeeSnap === undefined || guestSnap === undefined) {
         throw new ViewSourceInvalidError(EVENT_ASSISTANCE_MESSAGES,
           "The message names no usable attendee.");
       }
-      const work = workIds === null ? null :
+      if (workIdsInvalid !== null) throw workIdsInvalid;
+      const ids = workIds;
+      const work = ids === null ? null :
         stage(operationCollections.workItems, () => readDeliveryWorkRecords(
-          runSnap!.data(), itemSnap!.data(), workIds.workItemId, nowMillis));
+          runSnap!.data(), itemSnap!.data(), ids.workItemId, nowMillis));
       const row = attendeeSnap.data();
       const attendeeMatches = !!row && row.eventId === eventId &&
         row.organizerId === organizerId;
@@ -229,6 +243,22 @@ export async function reconcileEventDeliveryView(
     });
   }
   return outcome;
+}
+
+/**
+ * The message parser is pure over the record already read, so whatever it
+ * rejects is the record itself: its plain validation errors name the messages
+ * collection instead of retrying the trigger.
+ */
+function parseLiveDelivery(
+  ...args: Parameters<typeof parseHostDelivery>
+): ReturnType<typeof parseHostDelivery> {
+  try {
+    return parseHostDelivery(...args);
+  } catch (error) {
+    if (!(error instanceof Error) || isSourceInvalid(error)) throw error;
+    throw new ViewSourceInvalidError(EVENT_ASSISTANCE_MESSAGES, error.message);
+  }
 }
 
 export interface EventDeliveryViewBackfillReport {
