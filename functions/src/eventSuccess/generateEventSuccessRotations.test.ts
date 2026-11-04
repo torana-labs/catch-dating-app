@@ -261,7 +261,6 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
         rateLimitCalls.push(`${uid}:${action}`);
       },
       nowMillis: () => Date.parse("2026-05-21T08:10:01.000Z"),
-      environment: {},
     },
   };
 }

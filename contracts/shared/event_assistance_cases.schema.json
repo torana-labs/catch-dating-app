@@ -31,36 +31,6 @@
         }
       }
     },
-    "ReadInput": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context",
-        "status",
-        "cursor"
-      ],
-      "properties": {
-        "context": {
-          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-        },
-        "status": {
-          "enum": [
-            "open",
-            "resolved"
-          ],
-          "type": "string"
-        },
-        "cursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        }
-      }
-    },
     "WriteInput": {
       "type": "object",
       "additionalProperties": false,
@@ -404,67 +374,6 @@
           }
         }
       ]
-    },
-    "ListResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context",
-        "serverTime",
-        "coverage",
-        "status",
-        "cases",
-        "nextCursor"
-      ],
-      "properties": {
-        "context": {
-          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-        },
-        "serverTime": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
-        "coverage": {
-          "const": "page"
-        },
-        "status": {
-          "enum": [
-            "open",
-            "resolved"
-          ]
-        },
-        "cases": {
-          "type": "array",
-          "maxItems": 50,
-          "items": {
-            "$ref": "#/definitions/View"
-          }
-        },
-        "nextCursor": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "managerOptions": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/ManagerOptions"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
     },
     "Response": {
       "type": "object",

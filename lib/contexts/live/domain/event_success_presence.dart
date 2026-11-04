@@ -58,18 +58,11 @@ final class EventSuccessPresenceEntry {
     required this.heartbeatAtMillis,
   });
 
-  factory EventSuccessPresenceEntry.fromJson(Map<String, dynamic> json) =>
-      EventSuccessPresenceEntry(
-        uid: _requiredString(json, 'uid'),
-        displayName: _requiredString(json, 'displayName'),
-        state: EventSuccessPresenceState.values.byName(
-          _requiredString(json, 'presenceState'),
-        ),
-        heartbeatAtMillis: _requiredNonNegativeInt(json, 'heartbeatAtMillis'),
-      );
-
   final String uid;
-  final String displayName;
+
+  /// The roster's name for the guest, or null when it has no usable name;
+  /// the screen then names the guest in its own copy.
+  final String? displayName;
   final EventSuccessPresenceState state;
   final int heartbeatAtMillis;
 }
@@ -81,22 +74,18 @@ final class EventSuccessLateArrivalCandidate {
     required this.checkedInAtMillis,
   });
 
-  factory EventSuccessLateArrivalCandidate.fromJson(
-    Map<String, dynamic> json,
-  ) => EventSuccessLateArrivalCandidate(
-    uid: _requiredString(json, 'uid'),
-    displayName: _requiredString(json, 'displayName'),
-    checkedInAtMillis: _requiredNonNegativeInt(json, 'checkedInAtMillis'),
-  );
-
   final String uid;
-  final String displayName;
+
+  /// The roster's name for the guest, or null when it has no usable name;
+  /// the screen then names the guest in its own copy.
+  final String? displayName;
   final int checkedInAtMillis;
 }
 
+/// The room's presence and late arrivals as a manager's phone derives them
+/// from its listeners and its own clock.
 final class EventSuccessPresenceSummary {
   const EventSuccessPresenceSummary({
-    required this.serverTimeMillis,
     required this.liveControlRevision,
     required this.nextRoundIndex,
     required this.policy,
@@ -104,26 +93,6 @@ final class EventSuccessPresenceSummary {
     required this.lateArrivals,
   });
 
-  factory EventSuccessPresenceSummary.fromJson(Map<String, dynamic> json) =>
-      EventSuccessPresenceSummary(
-        serverTimeMillis: _requiredNonNegativeInt(json, 'serverTimeMillis'),
-        liveControlRevision: _requiredNonNegativeInt(
-          json,
-          'liveControlRevision',
-        ),
-        nextRoundIndex: _requiredNonNegativeInt(json, 'nextRoundIndex'),
-        policy: EventSuccessPresencePolicy.fromJson(
-          Map<String, dynamic>.from(json['policy'] as Map),
-        ),
-        entries: _objectList(
-          json['entries'],
-        ).map(EventSuccessPresenceEntry.fromJson).toList(growable: false),
-        lateArrivals: _objectList(json['lateArrivals'])
-            .map(EventSuccessLateArrivalCandidate.fromJson)
-            .toList(growable: false),
-      );
-
-  final int serverTimeMillis;
   final int liveControlRevision;
   final int nextRoundIndex;
   final EventSuccessPresencePolicy policy;
@@ -162,13 +131,6 @@ final class EventSuccessLateArrivalResolution {
   final int assignmentDraftRevision;
   final String reason;
 }
-
-List<Map<String, dynamic>> _objectList(Object? value) => value is List
-    ? value
-          .whereType<Map>()
-          .map(Map<String, dynamic>.from)
-          .toList(growable: false)
-    : const [];
 
 String _requiredString(Map<String, dynamic> json, String key) {
   final value = json[key];

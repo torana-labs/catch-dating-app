@@ -2,35 +2,20 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
-import type {EventIdCallablePayload} from
-  "../shared/generated/eventIdCallablePayload";
-import type {GetEventSuccessPresenceSummaryCallableResponse} from
-  "../shared/generated/getEventSuccessPresenceSummaryCallableResponse";
 import type {HeartbeatEventSuccessPresenceCallablePayload} from
   "../shared/generated/heartbeatEventSuccessPresenceCallablePayload";
 import type {HeartbeatEventSuccessPresenceCallableResponse} from
   "../shared/generated/heartbeatEventSuccessPresenceCallableResponse";
-import {
-  validateEventIdCallablePayload,
-} from "../shared/generated/validators/eventIdInput";
 import {
   validateHeartbeatEventSuccessPresenceCallablePayload,
 } from
   "../shared/generated/validators/heartbeatEventSuccessPresenceInput";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {
-  eventOrganizerRef,
-  isEventOrganizerManager,
-  requireEventOrganizer,
-} from "../shared/eventOrganizers";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {
-  EventSuccessRosterParticipant,
-  loadEventSuccessRoster,
-  loadEventSuccessRosterParticipant,
-} from "./eventSuccessRoster";
+import {loadEventSuccessRosterParticipant} from "./eventSuccessRoster";
+import {eventSuccessPresencePolicyCatalog} from "./presencePolicy";
 
 export type EventSuccessPresenceState =
   "present" | "idle" | "likelyDeparted";
@@ -45,58 +30,26 @@ interface EventSuccessPresenceDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
-  environment: NodeJS.ProcessEnv;
   checkRateLimit?: typeof defaultCheckRateLimit;
 }
-
-const DEFAULT_PRESENCE_POLICY: EventSuccessPresencePolicy = {
-  heartbeatIntervalSeconds: 30,
-  presentWindowSeconds: 90,
-  likelyDepartedAfterSeconds: 300,
-};
 
 const defaultDeps: EventSuccessPresenceDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   nowMillis: () => Date.now(),
-  environment: process.env,
   checkRateLimit: defaultCheckRateLimit,
 };
 
-/** Resolves bounded deployment configuration or the reviewed defaults. */
-export function eventSuccessPresencePolicy(
-  environment: NodeJS.ProcessEnv = process.env
-): EventSuccessPresencePolicy {
-  const candidate = {
-    heartbeatIntervalSeconds: boundedInteger(
-      environment.EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS,
-      10,
-      300,
-      DEFAULT_PRESENCE_POLICY.heartbeatIntervalSeconds
-    ),
-    presentWindowSeconds: boundedInteger(
-      environment.EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS,
-      30,
-      900,
-      DEFAULT_PRESENCE_POLICY.presentWindowSeconds
-    ),
-    likelyDepartedAfterSeconds: boundedInteger(
-      environment.EVENT_SUCCESS_PRESENCE_LIKELY_DEPARTED_SECONDS,
-      60,
-      3600,
-      DEFAULT_PRESENCE_POLICY.likelyDepartedAfterSeconds
-    ),
-  };
-  if (
-    candidate.heartbeatIntervalSeconds > candidate.presentWindowSeconds ||
-    candidate.presentWindowSeconds >= candidate.likelyDepartedAfterSeconds
-  ) {
-    return {...DEFAULT_PRESENCE_POLICY};
-  }
-  return candidate;
+/**
+ * The presence timing every surface shares: the heartbeat callable returns
+ * it, rotation generation and late placement apply it on the server clock,
+ * and the manager's phone applies the same catalog to its own clock.
+ */
+export function eventSuccessPresencePolicy(): EventSuccessPresencePolicy {
+  return {...eventSuccessPresencePolicyCatalog};
 }
 
-/** Derives liveness from the server clock; no stale state enum is persisted. */
+/** Derives liveness from a clock; no stale state enum is persisted. */
 export function deriveEventSuccessPresenceState(params: {
   heartbeatAtMillis: number;
   nowMillis: number;
@@ -191,148 +144,11 @@ export async function heartbeatEventSuccessPresenceHandler(
       updatedAt: now,
     });
   });
-  const policy = eventSuccessPresencePolicy(deps.environment);
+  const policy = eventSuccessPresencePolicy();
   return {
     presenceState: "present",
     serverTimeMillis: deps.nowMillis(),
     ...policy,
-  };
-}
-
-/** Returns a Host-only, server-clock-derived presence and late-arrival view. */
-export async function getEventSuccessPresenceSummaryHandler(
-  request: CallableRequest<unknown>,
-  deps: EventSuccessPresenceDeps = defaultDeps
-): Promise<GetEventSuccessPresenceSummaryCallableResponse> {
-  const hostUid = requireAuth(request);
-  const payload = validateCallableWithAjv<EventIdCallablePayload>(
-    request,
-    validateEventIdCallablePayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(
-    db,
-    hostUid,
-    "getEventSuccessPresenceSummary",
-    {maxRequests: 6, windowMs: 60 * 1000}
-  );
-  const [eventSnap, planSnap] = await Promise.all([
-    db.collection("events").doc(payload.eventId).get(),
-    db.collection("eventSuccessPlans").doc(payload.eventId).get(),
-  ]);
-  if (!eventSnap.exists) {
-    throw new HttpsError("not-found", "Event not found.");
-  }
-  if (!planSnap.exists) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Event-success setup has not been saved."
-    );
-  }
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const organizerSnap = await eventOrganizerRef(db, event).get();
-  const organizer = requireEventOrganizer(organizerSnap, event);
-  if (!isEventOrganizerManager(organizer, event, hostUid)) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only an organizer manager can review event presence."
-    );
-  }
-  const plan = planSnap.data()!;
-  const publishedRoundIndex = integerOr(
-    plan.publishedRotationRoundIndex,
-    -1
-  );
-  if (publishedRoundIndex >= 100) {
-    throw new HttpsError(
-      "failed-precondition",
-      "The rotation schedule has no later round to prepare."
-    );
-  }
-  const nextRoundIndex = publishedRoundIndex + 1;
-  const [roster, presenceSnap, draftSnap, resolutionSnap] = await Promise.all([
-    loadEventSuccessRoster(db, payload.eventId),
-    db.collection("eventSuccessPresence")
-      .where("eventId", "==", payload.eventId)
-      .limit(200)
-      .get(),
-    db.collection("eventSuccessAssignmentDrafts")
-      .where("eventId", "==", payload.eventId)
-      .limit(200)
-      .get(),
-    db.collection("eventSuccessLateArrivals")
-      .where("eventId", "==", payload.eventId)
-      .limit(200)
-      .get(),
-  ]);
-  const nowMillis = deps.nowMillis();
-  const policy = eventSuccessPresencePolicy(deps.environment);
-  const checkedInByUid = new Map(
-    roster
-      .filter((participant) => participant.status === "attended")
-      .map((participant) => [participant.uid, participant])
-  );
-  const entries = presenceSnap.docs.flatMap((doc) => {
-    const data = doc.data();
-    const participant = typeof data.uid === "string" ?
-      checkedInByUid.get(data.uid) : undefined;
-    const heartbeatAtMillis = timestampMillis(data.heartbeatAt);
-    if (
-      data.eventId !== payload.eventId ||
-      participant === undefined ||
-      heartbeatAtMillis === null
-    ) return [];
-    return [{
-      uid: participant.uid,
-      displayName: boundedDisplayName(participant),
-      presenceState: deriveEventSuccessPresenceState({
-        heartbeatAtMillis,
-        nowMillis,
-        policy,
-      }),
-      heartbeatAtMillis,
-    }];
-  }).sort((left, right) => left.uid.localeCompare(right.uid));
-  const draftedUids = new Set(draftSnap.docs.flatMap((doc) => {
-    const data = doc.data();
-    const assignment = recordValue(data.assignment);
-    return data.roundIndex === nextRoundIndex &&
-      data.baseAssignmentRevision === integerOr(
-        plan.assignmentDraftRevision,
-        0
-      ) &&
-      typeof assignment?.uid === "string" ? [assignment.uid] : [];
-  }));
-  const resolvedUids = new Set(resolutionSnap.docs.flatMap((doc) => {
-    const data = doc.data();
-    return data.targetRoundIndex === nextRoundIndex &&
-      typeof data.uid === "string" ? [data.uid] : [];
-  }));
-  const eventStartMillis = event.startTime.toMillis();
-  const lateArrivals = roster
-    .filter((participant) =>
-      participant.status === "attended" &&
-      participant.attendedAtMillis !== undefined &&
-      participant.attendedAtMillis > eventStartMillis &&
-      !draftedUids.has(participant.uid) &&
-      !resolvedUids.has(participant.uid)
-    )
-    .map((participant) => ({
-      uid: participant.uid,
-      displayName: boundedDisplayName(participant),
-      checkedInAtMillis: participant.attendedAtMillis!,
-    }))
-    .sort((left, right) =>
-      left.checkedInAtMillis - right.checkedInAtMillis ||
-      left.uid.localeCompare(right.uid)
-    );
-  return {
-    serverTimeMillis: nowMillis,
-    liveControlRevision: nonNegativeInteger(plan.liveControlRevision),
-    nextRoundIndex,
-    policy,
-    entries,
-    lateArrivals,
   };
 }
 
@@ -341,24 +157,8 @@ export const heartbeatEventSuccessPresence = onCall(
   (request) => heartbeatEventSuccessPresenceHandler(request)
 );
 
-export const getEventSuccessPresenceSummary = onCall(
-  appCheckCallableOptions,
-  (request) => getEventSuccessPresenceSummaryHandler(request)
-);
-
 export function eventSuccessPresenceId(eventId: string, uid: string): string {
   return `${eventId}_${uid}`;
-}
-
-function boundedInteger(
-  value: string | undefined,
-  minimum: number,
-  maximum: number,
-  fallback: number
-): number {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= minimum && parsed <= maximum ?
-    parsed : fallback;
 }
 
 function timestampMillis(value: unknown): number | null {
@@ -372,24 +172,4 @@ function timestampMillis(value: unknown): number | null {
     return Number.isFinite(millis) && millis >= 0 ? millis : null;
   }
   return null;
-}
-
-function boundedDisplayName(participant: EventSuccessRosterParticipant):
-  string {
-  const displayName = participant.displayName.trim() || "Guest";
-  return displayName.slice(0, 120);
-}
-
-function nonNegativeInteger(value: unknown): number {
-  return Number.isInteger(value) && (value as number) >= 0 ?
-    value as number : 0;
-}
-
-function integerOr(value: unknown, fallback: number): number {
-  return Number.isInteger(value) ? value as number : fallback;
-}
-
-function recordValue(value: unknown): Record<string, unknown> | null {
-  return value !== null && typeof value === "object" && !Array.isArray(value) ?
-    value as Record<string, unknown> : null;
 }

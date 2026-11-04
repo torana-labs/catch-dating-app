@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:flutter/services.dart';
 
 import 'event_assistance_preview_repositories.dart' show previewUnconfirmed;
@@ -24,13 +25,35 @@ class DeliveryPreviewLiveRepository
     implements EventAssistanceDeliveriesRepository {
   DeliveryPreviewLiveRepository(this.fixtures);
   final Map<String, Object?> fixtures;
+
   @override
-  Future<EventAssistanceDeliveriesPage> fetch(
+  AppClock get clock => const AppClock();
+
+  /// The fixture's actual delivery views, read when they were evaluated.
+  @override
+  Stream<EventAssistanceDeliveriesPage> watchPage(
     EventAssistanceDeliveryQuery query,
-  ) async => EventAssistanceDeliveriesPage.fromCallableData(
-    fixtures['uncertain'],
-    expectedQuery: query,
-  );
+  ) => Stream.value(pageFor(query));
+
+  EventAssistanceDeliveriesPage pageFor(EventAssistanceDeliveryQuery query) {
+    final views = [
+      for (final raw in (fixtures['uncertain']! as Map)['views']! as List)
+        (
+          id: (raw as Map)['id'] as String,
+          data: Map<String, Object?>.from(raw['data'] as Map),
+          evaluatedAtMillis: (raw['data'] as Map)['evaluatedAt'] as int,
+        ),
+    ];
+    return EventAssistanceDeliveriesPage.fromViews(
+      query: query,
+      views: views,
+      hasMore: false,
+      nowMillis: views
+          .map((view) => view.evaluatedAtMillis)
+          .reduce((a, b) => a > b ? a : b),
+    );
+  }
+
   @override
   Future<EventAssistanceDeliveryResult> apply(
     EventAssistanceDeliveryChange change,

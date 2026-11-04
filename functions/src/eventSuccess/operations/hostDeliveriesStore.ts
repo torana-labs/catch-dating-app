@@ -1,4 +1,3 @@
-import {FieldPath} from "firebase-admin/firestore";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {operationCollections} from "../../operations/collections";
@@ -6,20 +5,14 @@ import {operationContentHash} from "../../operations/durableActions";
 import {isOrganizerManager} from "../../shared/organizerHosts";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
-import type {EventAssistanceDeliveriesCallableResponse as ListResponse} from
-  "../../shared/generated/eventAssistanceDeliveriesCallableResponse";
 import type {EventAssistanceDeliveryCallableResponse as Response} from
   "../../shared/generated/eventAssistanceDeliveryCallableResponse";
 import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
-import {validateListEventAssistanceDeliveriesCallablePayload} from
-  "../../shared/generated/validators/listEventAssistanceDeliveriesInput";
 import {validateRepairEventAssistanceDeliveryCallablePayload} from
   "../../shared/generated/validators/repairEventAssistanceDeliveryInput";
-import {validateEventAssistanceDeliveriesCallableResponse} from
-  "../../shared/generated/validators/eventAssistanceDeliveriesOutput";
 import {validateEventAssistanceDeliveryCallableResponse} from
   "../../shared/generated/validators/eventAssistanceDeliveryOutput";
 import {validateEventAssistanceDeliveryRepairDocument} from
@@ -35,46 +28,14 @@ import {parseHostDelivery, projectHostDelivery} from "./hostDeliveryRecords";
 import {runAssistanceTransaction as transact} from "./transactionCallback";
 
 export const DELIVERY_REPAIRS = "eventAssistanceDeliveryRepairs";
-const pageSize = 50;
 
-/** Reviewed ownership only. This store never sends or fabricates receipts. */
+/**
+ * Reviewed ownership only. This store never sends or fabricates receipts;
+ * managers read deliveries through hostEventDeliveryViews.
+ */
 export class EventAssistanceDeliveriesStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
-
-  async list(actorUid: string, value: unknown): Promise<ListResponse> {
-    if (!validateListEventAssistanceDeliveriesCallablePayload(value)) {
-      throw new HttpsError("invalid-argument", "Invalid delivery scope.");
-    }
-    const input = structuredClone(value);
-    return this.db.runTransaction(async (tx) => {
-      const access = await this.access(tx, actorUid, input.context);
-      let query = this.db.collection(EVENT_ASSISTANCE_MESSAGES)
-        .where("intent.context.mode", "==", "live")
-        .where("intent.context.organizerId", "==", input.context.organizerId)
-        .where("intent.eventId", "==", input.context.eventId)
-        .orderBy(FieldPath.documentId()).limit(pageSize + 1);
-      if (input.cursor) query = query.startAfter(input.cursor);
-      const rows = await tx.get(query);
-      const readAt = this.now();
-      const messages = rows.docs.map((doc) =>
-        parseHostDelivery(doc.data(), doc.id, input.context, readAt));
-      const page = messages.slice(0, pageSize);
-      const facts = await Promise.all(page.map((message) =>
-        this.facts(tx, message)));
-      const now = this.now();
-      const deliveries = page.map((message, i) => projectHostDelivery(message,
-        access.event, facts[i].attendee, facts[i].guest, access.organizer,
-        facts[i].work, now));
-      const result: ListResponse = {context: input.context, serverTime: now,
-        coverage: "page", deliveries, nextCursor: messages.length > pageSize ?
-          page.at(-1)!.messageId : null};
-      if (!validateEventAssistanceDeliveriesCallableResponse(result)) {
-        throw invalidSource();
-      }
-      return result;
-    }, {readOnly: true});
-  }
 
   async repair(actorUid: string, value: unknown): Promise<Response> {
     if (!validateRepairEventAssistanceDeliveryCallablePayload(value) ||
@@ -175,7 +136,7 @@ export class EventAssistanceDeliveriesStore {
   }
 
   private async access(tx: Transaction, actorUid: string,
-    context: ListResponse["context"]) {
+    context: Response["context"]) {
     const data = (await tx.get(this.db.collection("organizers")
       .doc(context.organizerId))).data();
     if (!validateOrganizerDocument(data) ||

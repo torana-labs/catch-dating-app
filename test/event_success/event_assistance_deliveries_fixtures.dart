@@ -39,24 +39,54 @@ Map<String, Object?> deliveryRow({
   'actions': ['manualHandoff'],
   ...?patch,
 };
-Map<String, Object?> deliveryPageResponse({
+
+/// One `hostEventDeliveryViews` document holding [row], as the data layer
+/// hands it to the page. A row offering a handoff keeps it until its expiry
+/// unless [relevantUntil] says otherwise.
+AssistanceDeliveryViewDocument deliveryView(
+  Map<String, Object?> row, {
   EventAssistanceDeliveryQuery? query,
-  List<Object?>? rows,
-  String? nextCursor,
-  int serverTime = 2000,
-}) => {
-  'context': (query ?? deliveryQuery()).context,
-  'serverTime': serverTime,
-  'coverage': 'page',
-  'deliveries': rows ?? [deliveryRow()],
-  'nextCursor': nextCursor,
-};
+  int evaluatedAt = 2000,
+  int? relevantUntil,
+  String sourceCoverage = 'complete',
+}) {
+  final scope = query ?? deliveryQuery();
+  final actions = row['actions'];
+  return (
+    id: row['messageId']! as String,
+    data: {
+      'schemaVersion': 1,
+      'messageId': row['messageId'],
+      'eventId': scope.eventId,
+      'organizerId': scope.organizerId,
+      'createdAt': row['createdAt'],
+      'lifecycle': row['lifecycle'],
+      'revision': 1,
+      'sourceCoverage': sourceCoverage,
+      'incompleteSource': sourceCoverage == 'complete'
+          ? null
+          : 'eventAssistanceMessages',
+      'relevantUntilMillis': actions is List && actions.isNotEmpty
+          ? relevantUntil ?? row['expiresAt']
+          : null,
+      'view': row,
+    },
+    evaluatedAtMillis: evaluatedAt,
+  );
+}
+
 EventAssistanceDeliveriesPage deliveryPage({
   EventAssistanceDeliveryQuery? query,
-  List<Object?>? rows,
-}) => EventAssistanceDeliveriesPage.fromCallableData(
-  deliveryPageResponse(query: query, rows: rows),
-  expectedQuery: query ?? deliveryQuery(),
+  List<Map<String, Object?>>? rows,
+  bool hasMore = false,
+  int nowMillis = 2000,
+}) => EventAssistanceDeliveriesPage.fromViews(
+  query: query ?? deliveryQuery(),
+  views: [
+    for (final row in rows ?? [deliveryRow()]) deliveryView(row, query: query),
+  ],
+  hasMore: hasMore,
+  nowMillis: nowMillis,
 );
 EventAssistanceDeliveryChange deliveryChange({Map<String, Object?>? patch}) =>
     EventAssistanceDeliveryChange(

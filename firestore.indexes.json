@@ -1,6 +1,118 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventSuccessLateArrivals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventSuccessPresence",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostEventCaseViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostEventCaseViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostEventDeliveryViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostEventDeliveryViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "view.handling.kind",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "supplyIntakeRequests",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1797,6 +1909,50 @@
       ]
     },
     {
+      "collectionGroup": "eventAssistanceCases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "owner",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceCases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "owner",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceRuntimeConfigs",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1862,6 +2018,42 @@
         },
         {
           "fieldPath": "intent.workflow.kind",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "intent.context.mode",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "intent.context.organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "intent.context.mode",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "intent.eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
           "mode": "ASCENDING"
         }
       ]

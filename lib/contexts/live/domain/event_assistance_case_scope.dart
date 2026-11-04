@@ -36,7 +36,8 @@ final class EventAssistanceCaseScope {
   int get hashCode => Object.hash(organizerId, eventId, caseId);
 }
 
-/// One server page, never an event-wide count or a subscription.
+/// One page of an event's help requests for one status, never an event-wide
+/// count: the cursor is the last case id of the previous page.
 final class EventAssistanceCaseQuery {
   EventAssistanceCaseQuery({
     required this.organizerId,

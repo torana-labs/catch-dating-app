@@ -28,27 +28,6 @@ mixin _EventSuccessPresenceRepository on _EventSuccessRepositoryCore {
     ),
   );
 
-  Future<EventSuccessPresenceSummary> fetchPresenceSummary(String eventId) =>
-      withBackendErrorContext(
-        () async {
-          final functions = _functions;
-          if (functions == null) {
-            throw StateError('FirebaseFunctions is not configured.');
-          }
-          final response = await functions
-              .httpsCallable('getEventSuccessPresenceSummary')
-              .call(EventIdCallableRequest(eventId: eventId).toJson());
-          return EventSuccessPresenceSummary.fromJson(
-            Map<String, dynamic>.from(response.data as Map),
-          );
-        },
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'load event presence summary',
-          resource: 'eventSuccessPresence',
-        ),
-      );
-
   Future<EventSuccessLateArrivalResolution> resolveLateArrival({
     required String eventId,
     required String uid,

@@ -271,6 +271,13 @@ async function main() {
     "packages/platform/lib/schema_contracts/generated/organizer_provider_catalog.g.dart",
     renderDartOrganizerProviderCatalog(organizerProviderCatalog)
   );
+  const eventSuccessPresencePolicy = readContractJson(
+    "catalogs/event_success_presence_policy.json"
+  );
+  addTextOutput(
+    "packages/platform/lib/schema_contracts/generated/event_success_presence_policy.g.dart",
+    renderDartEventSuccessPresencePolicy(eventSuccessPresencePolicy)
+  );
   const organizerEntitlementSkuCatalog = readContractJson(
     "catalogs/organizer_entitlement_skus.json"
   );
@@ -372,6 +379,7 @@ async function main() {
       organizerFormTemplateCatalog,
       hostAttentionPolicyCatalog,
       organizerProviderCatalog,
+      eventSuccessPresencePolicy,
       organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
@@ -399,6 +407,7 @@ async function main() {
       organizerFormTemplateCatalog,
       hostAttentionPolicyCatalog,
       organizerProviderCatalog,
+      eventSuccessPresencePolicy,
       organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
@@ -1552,6 +1561,30 @@ ${rows}
 `;
 }
 
+function renderDartEventSuccessPresencePolicy(policy) {
+  const fields = ["heartbeatIntervalSeconds", "presentWindowSeconds",
+    "likelyDepartedAfterSeconds"];
+  for (const field of fields) {
+    if (!Number.isInteger(policy[field]) || policy[field] <= 0) {
+      throw new Error(`Presence policy ${field} must be a positive integer.`);
+    }
+  }
+  if (policy.heartbeatIntervalSeconds > policy.presentWindowSeconds ||
+      policy.presentWindowSeconds >= policy.likelyDepartedAfterSeconds) {
+    throw new Error("Presence policy windows must be ordered: heartbeat <= " +
+      "present < likely departed.");
+  }
+  return `${dartGeneratedHeader()}// Source: contracts/catalogs/event_success_presence_policy.json.
+
+/// Room presence timing the heartbeat callable, the server's rotation and
+/// late-placement checks and the manager's phone share.
+abstract final class EventSuccessPresencePolicyCatalog {
+${fields.map((field) => `  static const int ${field} = ${policy[field]};`)
+    .join("\n")}
+}
+`;
+}
+
 function renderDartEventSuccessMomentPresentations(catalog) {
   const moments = catalog.moments.map((moment) =>
     `  EventSuccessMomentPresentationContract(\n` +
@@ -2150,6 +2183,7 @@ function renderTsSchemaModules({
   organizerFormTemplateCatalog,
   hostAttentionPolicyCatalog,
   organizerProviderCatalog,
+  eventSuccessPresencePolicy,
   organizerEntitlementSkuCatalog,
   photoCatalog,
   profilePhotoPolicy,
@@ -2177,6 +2211,13 @@ function renderTsSchemaModules({
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
     ["organizerProviderCatalog", organizerProviderCatalog],
+    ["eventSuccessPresencePolicyCatalog", {
+      heartbeatIntervalSeconds:
+        eventSuccessPresencePolicy.heartbeatIntervalSeconds,
+      presentWindowSeconds: eventSuccessPresencePolicy.presentWindowSeconds,
+      likelyDepartedAfterSeconds:
+        eventSuccessPresencePolicy.likelyDepartedAfterSeconds,
+    }],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
@@ -2284,6 +2325,7 @@ function renderToolSchemaRegistry({
   organizerFormTemplateCatalog,
   hostAttentionPolicyCatalog,
   organizerProviderCatalog,
+  eventSuccessPresencePolicy,
   organizerEntitlementSkuCatalog,
   photoCatalog,
   profilePhotoPolicy,
@@ -2298,6 +2340,13 @@ function renderToolSchemaRegistry({
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
     ["organizerProviderCatalog", organizerProviderCatalog],
+    ["eventSuccessPresencePolicyCatalog", {
+      heartbeatIntervalSeconds:
+        eventSuccessPresencePolicy.heartbeatIntervalSeconds,
+      presentWindowSeconds: eventSuccessPresencePolicy.presentWindowSeconds,
+      likelyDepartedAfterSeconds:
+        eventSuccessPresencePolicy.likelyDepartedAfterSeconds,
+    }],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],

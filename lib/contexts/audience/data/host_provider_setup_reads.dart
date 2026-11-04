@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/audience/data/host_provider_repository.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/schema_contracts/generated/organizer_provider_catalog.g.dart';
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -53,7 +53,7 @@ class HostProviderSetupReads {
     if (!_documentId.hasMatch(organizerId) || !_documentId.hasMatch(eventId)) {
       throw ArgumentError('Organizer and event ids are required');
     }
-    return _combineLatest(
+    return combineLatest(
       _connections(organizerId),
       _mapping(organizerId, eventId),
       (connections, mapping) => HostProviderSetup(
@@ -189,73 +189,6 @@ int? _millis(Object? value) => switch (value) {
   final Timestamp timestamp => timestamp.millisecondsSinceEpoch,
   _ => throw const FormatException('Invalid provider mapping timestamp'),
 };
-
-/// Emits [combine] of the latest value of each listener once both have
-/// delivered, and again whenever either delivers. Errors pass through and
-/// neither listener is cancelled by them; pause, resume and cancel reach
-/// both.
-Stream<R> _combineLatest<A, B, R>(
-  Stream<A> first,
-  Stream<B> second,
-  R Function(A first, B second) combine,
-) {
-  late final StreamController<R> controller;
-  StreamSubscription<A>? firstSubscription;
-  StreamSubscription<B>? secondSubscription;
-  (A,)? latestFirst;
-  (B,)? latestSecond;
-  var openStreams = 2;
-
-  void emit() {
-    final a = latestFirst;
-    final b = latestSecond;
-    if (a == null || b == null) return;
-    try {
-      controller.add(combine(a.$1, b.$1));
-    } on Object catch (error, stackTrace) {
-      controller.addError(error, stackTrace);
-    }
-  }
-
-  void done() {
-    openStreams -= 1;
-    if (openStreams == 0) unawaited(controller.close());
-  }
-
-  controller = StreamController<R>(
-    onListen: () {
-      firstSubscription = first.listen(
-        (value) {
-          latestFirst = (value,);
-          emit();
-        },
-        onError: controller.addError,
-        onDone: done,
-      );
-      secondSubscription = second.listen(
-        (value) {
-          latestSecond = (value,);
-          emit();
-        },
-        onError: controller.addError,
-        onDone: done,
-      );
-    },
-    onPause: () {
-      firstSubscription?.pause();
-      secondSubscription?.pause();
-    },
-    onResume: () {
-      firstSubscription?.resume();
-      secondSubscription?.resume();
-    },
-    onCancel: () => Future.wait([
-      ?firstSubscription?.cancel(),
-      ?secondSubscription?.cancel(),
-    ]),
-  );
-  return controller.stream;
-}
 
 /// The door's provider setup read owner. It is a Firestore listener: it
 /// declares no cache tags or lifetime, and writes never invalidate it; the

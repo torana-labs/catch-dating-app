@@ -36,6 +36,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_presence_summary_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart'
     show EventSuccessSpatialPreview, EventSuccessSpatialReassign;
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
@@ -200,7 +201,13 @@ class _EventSuccessHostSectionState
     final AsyncValue<EventSuccessPresenceSummary?> presenceSummaryAsync =
         shouldLoadAssignments
         ? ref
-              .watch(watchEventSuccessPresenceSummaryProvider(event.id))
+              .watch(
+                eventSuccessPresenceSummaryProvider(
+                  organizerId: event.organizerId,
+                  eventId: event.id,
+                  eventStartMillis: event.startTime.millisecondsSinceEpoch,
+                ),
+              )
               .whenData((summary) => summary)
         : const AsyncData<EventSuccessPresenceSummary?>(null);
     final presenceSummaryState = catchAsyncStateFromAsyncValue(
@@ -632,7 +639,6 @@ class _EventSuccessHostSectionState
                     state.plan.liveControlRevision,
               ),
         );
-        ref.invalidate(watchEventSuccessPresenceSummaryProvider(event.id));
       },
       onPublishGuidedRotationRound: (roundIndex) =>
           _publishEventSuccessGuidedRotationRound(

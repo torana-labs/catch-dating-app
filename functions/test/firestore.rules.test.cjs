@@ -1685,6 +1685,153 @@ describe("firestore.rules", () => {
         .firestore(), "externalEventMappings", "eem_own")));
     });
 
+    it("lets managers list an event's presence and late-arrival placements", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const at = Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z"));
+      const heartbeat = (organizerId, eventId, uid) => ({eventId,
+        organizerId, uid, surface: "flutter", heartbeatAt: at, createdAt: at,
+        updatedAt: at});
+      const placement = (organizerId, eventId, uid) => ({eventId,
+        organizerId, uid, resolvedByUid: "host-1",
+        status: "heldForNextRound", targetRoundIndex: 2,
+        assignmentDraftRevision: 1, reason: "Held for the next round.",
+        createdAt: at, updatedAt: at});
+      await seed(["eventSuccessPresence", "e1_b"], heartbeat("org", "e1", "b"));
+      await seed(["eventSuccessPresence", "e1_a"], heartbeat("org", "e1", "a"));
+      await seed(["eventSuccessPresence", "e2_c"],
+        heartbeat("other", "e2", "c"));
+      await seed(["eventSuccessLateArrivals", "e1_a"],
+        placement("org", "e1", "a"));
+      await seed(["eventSuccessLateArrivals", "e2_c"],
+        placement("other", "e2", "c"));
+
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        // The live console's exact query shapes.
+        const presence = await assertSucceeds(getDocs(query(
+          collection(db, "eventSuccessPresence"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          orderBy(documentId()),
+          limit(200))));
+        assert.deepEqual(presence.docs.map((row) => row.id), ["e1_a", "e1_b"]);
+        const placements = await assertSucceeds(getDocs(query(
+          collection(db, "eventSuccessLateArrivals"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          orderBy(documentId()),
+          limit(200))));
+        assert.deepEqual(placements.docs.map((row) => row.id), ["e1_a"]);
+        for (const name of ["eventSuccessPresence", "eventSuccessLateArrivals"]) {
+          await assertFails(getDocs(query(collection(db, name),
+            where("eventId", "==", "e1"))));
+          await assertFails(getDocs(query(collection(db, name),
+            where("organizerId", "==", "other"),
+            where("eventId", "==", "e2"))));
+          await assertFails(getDocs(collection(db, name)));
+        }
+        await assertFails(getDoc(doc(db, "eventSuccessPresence", "e2_c")));
+        await assertFails(setDoc(doc(db, "eventSuccessPresence", "e1_z"),
+          heartbeat("org", "e1", "z")));
+        await assertFails(updateDoc(doc(db, "eventSuccessPresence", "e1_a"),
+          {heartbeatAt: at}));
+        await assertFails(deleteDoc(doc(db, "eventSuccessPresence", "e1_a")));
+        await assertFails(setDoc(doc(db, "eventSuccessLateArrivals", "e1_z"),
+          placement("org", "e1", "z")));
+      }
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDocs(query(
+        collection(authedDb("host-1"), "eventSuccessPresence"),
+        where("organizerId", "==", "org"),
+        where("eventId", "==", "e1"))));
+    });
+
+    it("lets managers list an event's help-request and delivery views", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "archived"],
+        managed({hostUserIds: ["manager"], archived: true}));
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const at = Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z"));
+      const caseView = (id, organizerId, status) => ({schemaVersion: 1,
+        caseId: id, eventId: "e1", organizerId, status, receivedAt: 1,
+        revision: 1, evaluatedAt: at, sourceCoverage: "complete",
+        incompleteSource: null, view: null});
+      const deliveryView = (id, organizerId) => ({schemaVersion: 1,
+        messageId: id, eventId: "e1", organizerId, createdAt: 1,
+        lifecycle: "active", revision: 1, evaluatedAt: at,
+        sourceCoverage: "complete", incompleteSource: null,
+        relevantUntilMillis: null, view: null});
+      await seed(["hostEventCaseViews", "case:b"], caseView("case:b", "org",
+        "open"));
+      await seed(["hostEventCaseViews", "case:a"], caseView("case:a", "org",
+        "open"));
+      await seed(["hostEventCaseViews", "case:r"], caseView("case:r", "org",
+        "resolved"));
+      await seed(["hostEventCaseViews", "case:x"], caseView("case:x", "other",
+        "open"));
+      await seed(["hostEventCaseViews", "case:old"],
+        caseView("case:old", "archived", "open"));
+      await seed(["hostEventDeliveryViews", "outbox:a"],
+        deliveryView("outbox:a", "org"));
+      await seed(["hostEventDeliveryViews", "outbox:x"],
+        deliveryView("outbox:x", "other"));
+
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        const cases = collection(db, "hostEventCaseViews");
+        // The help queue's exact query shape: one status, one page.
+        const open = await assertSucceeds(getDocs(query(cases,
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          where("status", "==", "open"),
+          orderBy(documentId()),
+          startAfter("case:0"),
+          limit(51))));
+        assert.deepEqual(open.docs.map((row) => row.id), ["case:a", "case:b"]);
+        const deliveries = await assertSucceeds(getDocs(query(
+          collection(db, "hostEventDeliveryViews"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          orderBy(documentId()),
+          limit(51))));
+        assert.deepEqual(deliveries.docs.map((row) => row.id), ["outbox:a"]);
+        await assertSucceeds(getDoc(doc(db, "hostEventCaseViews", "case:r")));
+        for (const name of ["hostEventCaseViews", "hostEventDeliveryViews"]) {
+          await assertFails(getDocs(query(collection(db, name),
+            where("eventId", "==", "e1"))));
+          await assertFails(getDocs(query(collection(db, name),
+            where("organizerId", "==", "other"),
+            where("eventId", "==", "e1"))));
+        }
+        await assertFails(getDoc(doc(db, "hostEventCaseViews", "case:x")));
+        await assertFails(getDoc(doc(db, "hostEventDeliveryViews",
+          "outbox:x")));
+        await assertFails(setDoc(doc(db, "hostEventCaseViews", "case:new"),
+          caseView("case:new", "org", "open")));
+        await assertFails(updateDoc(doc(db, "hostEventCaseViews", "case:a"),
+          {status: "resolved"}));
+        await assertFails(deleteDoc(doc(db, "hostEventDeliveryViews",
+          "outbox:a")));
+      }
+      // The retired callables refused no archived organizer, so neither do
+      // the views.
+      await assertSucceeds(getDoc(doc(authedDb("manager"),
+        "hostEventCaseViews", "case:old")));
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "hostEventCaseViews", "case:a")));
+      await seed(["deletedUsers", "manager"], {deletedAt: Timestamp.now()});
+      await assertFails(getDocs(query(
+        collection(authedDb("manager"), "hostEventCaseViews"),
+        where("organizerId", "==", "org"),
+        where("eventId", "==", "e1"),
+        where("status", "==", "open"))));
+    });
+
     it("keeps organizer entitlement state server-only", async () => {
       await seed(["organizerTeamMemberships", "organizer-1_manager-1"], {
         organizerId: "organizer-1",
@@ -5191,7 +5338,7 @@ describe("firestore.rules", () => {
         "eventAssignmentFeatureConsents")));
     });
 
-    it("keeps presence private and scopes late-arrival outcomes", async () => {
+    it("keeps presence manager-only and scopes late-arrival outcomes", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
@@ -5229,8 +5376,11 @@ describe("firestore.rules", () => {
         "event-1_runner-1",
       );
       await assertFails(getDoc(presenceRef("runner-1")));
-      await assertFails(getDoc(presenceRef("host-1")));
+      await assertSucceeds(getDoc(presenceRef("host-1")));
       await assertFails(setDoc(presenceRef("runner-1"), {
+        eventId: "event-1",
+      }));
+      await assertFails(setDoc(presenceRef("host-1"), {
         eventId: "event-1",
       }));
 
@@ -5245,8 +5395,14 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(resolutionRef("host-1"), {
         eventId: "event-1",
       }));
+      // A list must name the organizer whose managers it is for.
       await assertFails(getDocs(query(
         collection(authedDb("host-1"), "eventSuccessLateArrivals"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "eventSuccessLateArrivals"),
+        where("organizerId", "==", "club-1"),
         where("eventId", "==", "event-1"),
       )));
     });

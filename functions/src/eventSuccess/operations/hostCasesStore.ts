@@ -1,25 +1,18 @@
 import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
-import {FieldPath} from "firebase-admin/firestore";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {isOrganizerManager} from "../../shared/organizerHosts";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
-import type {EventAssistanceCasesCallableResponse as ListResponse} from
-  "../../shared/generated/eventAssistanceCasesCallableResponse";
 import type {EventAssistanceCaseCallableResponse as Response} from
   "../../shared/generated/eventAssistanceCaseCallableResponse";
 import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
-import {validateListEventAssistanceCasesCallablePayload} from
-  "../../shared/generated/validators/listEventAssistanceCasesInput";
 import {validateResolveEventAssistanceCaseCallablePayload} from
   "../../shared/generated/validators/resolveEventAssistanceCaseInput";
-import {validateEventAssistanceCasesCallableResponse} from
-  "../../shared/generated/validators/eventAssistanceCasesOutput";
 import {validateEventAssistanceCaseCallableResponse} from
   "../../shared/generated/validators/eventAssistanceCaseOutput";
 import {validateEventAssistanceCaseReceiptDocument} from
@@ -28,52 +21,18 @@ import {assertCommandContext, assertCommandRole} from "./commands";
 import {guestCollections} from "./guestRecords";
 import {invalidSource} from "./groupProgressSource";
 import {resolvePracticalCaseHandling} from "./practicalCaseHandling";
-import {HostCase, hostCaseBindingHash, parseHostCase, projectHostCase,
-  projectCaseManagerOptions} from
+import {HostCase, hostCaseBindingHash, parseHostCase, projectHostCase} from
   "./hostCaseRecords";
 
 export const CASE_RECEIPTS = "eventAssistanceCaseReceipts";
-const pageSize = 50;
 
-/** Practical guest requests. Safety ownership never crosses this boundary. */
+/**
+ * Practical guest request commands. Safety ownership never crosses this
+ * boundary; managers read requests through hostEventCaseViews.
+ */
 export class EventAssistanceCasesStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
-
-  async list(actorUid: string, value: unknown): Promise<ListResponse> {
-    if (!validateListEventAssistanceCasesCallablePayload(value)) {
-      throw new HttpsError("invalid-argument", "Invalid help request scope.");
-    }
-    const input = structuredClone(value);
-    return this.db.runTransaction(async (tx) => {
-      const {organizer, event} = await this.access(tx, actorUid, input.context);
-      let query = this.db.collection(guestCollections.cases)
-        .where("context.mode", "==", "live")
-        .where("context.organizerId", "==", input.context.organizerId)
-        .where("context.eventId", "==", input.context.eventId)
-        .where("owner", "==", "eventLead")
-        .where("status", "==", input.status)
-        .orderBy(FieldPath.documentId()).limit(pageSize + 1);
-      if (input.cursor) query = query.startAfter(input.cursor);
-      const snapshot = await tx.get(query);
-      const now = this.now();
-      const requests = snapshot.docs.map((doc) =>
-        parseHostCase(doc.data(), doc.id, input.context, now));
-      const page = requests.slice(0, pageSize);
-      const attendees = page.length ? await tx.getAll(...page.map((request) =>
-        this.db.collection("eventAttendees").doc(request.attendeeId))) : [];
-      const result: ListResponse = {context: input.context, serverTime: now,
-        coverage: "page", status: input.status,
-        managerOptions: projectCaseManagerOptions(organizer, actorUid),
-        cases: page.map((request, i) =>
-          projectHostCase(request, event, attendees[i], organizer)),
-        nextCursor: requests.length > pageSize ? page.at(-1)!.caseId : null};
-      if (!validateEventAssistanceCasesCallableResponse(result)) {
-        throw invalidSource();
-      }
-      return result;
-    }, {readOnly: true});
-  }
 
   async resolve(actorUid: string, value: unknown): Promise<Response> {
     if (!validateResolveEventAssistanceCaseCallablePayload(value) ||
@@ -153,7 +112,7 @@ export class EventAssistanceCasesStore {
   }
 
   private async access(tx: Transaction, actorUid: string,
-    context: ListResponse["context"]) {
+    context: Response["context"]) {
     const data = (await tx.get(this.db.collection("organizers")
       .doc(context.organizerId))).data();
     if (!validateOrganizerDocument(data) ||

@@ -101,83 +101,94 @@ void main() {
   );
 
   test(
-    'server pages are bounded, immutable and retain a usable continuation',
+    'listener pages are bounded, immutable and retain a usable continuation',
     () {
       final rows = List.generate(
         50,
         (i) => caseRow(caseId: 'case:${i.toString().padLeft(2, '0')}'),
       );
-      final page = EventAssistanceCasesPage.fromCallableData(
-        casesPageResponse(rows: rows, nextCursor: 'case:49'),
-        expectedQuery: caseQuery(),
-      );
+      final page = casesPage(rows: rows, hasMore: true);
       expect(page.cases, hasLength(50));
       expect(page.nextQuery, caseQuery(cursor: 'case:49'));
       expect(() => page.cases.clear(), throwsUnsupportedError);
       rows.clear();
       expect(page.cases, hasLength(50));
       expect(casesPage(rows: []).nextQuery, isNull);
+      expect(casesPage(rows: []).serverTime, 0);
+      expect(page.serverTime, 2000);
       final next = page.nextQuery!;
       expect(
-        EventAssistanceCasesPage.fromCallableData(
-          casesPageResponse(
-            query: next,
-            rows: [caseRow(caseId: 'case:50')],
-          ),
-          expectedQuery: next,
+        casesPage(
+          query: next,
+          rows: [caseRow(caseId: 'case:50')],
         ).cases.single.scope.caseId,
         'case:50',
       );
     },
   );
 
-  test(
-    'bad pagination, incomplete objects and foreign contexts fail visibly',
-    () {
-      final valid = casesPageResponse();
-      for (final response in [
-        null,
-        {},
-        {...valid, 'extra': true},
-        {...valid, 'context': caseQuery(eventId: 'foreign').context},
-        {
-          ...valid,
-          'context': {...caseQuery().context, 'mode': 'rehearsal'},
-        },
-        {...valid, 'coverage': 'complete'},
-        {...valid, 'status': 'resolved'},
-        {
-          ...valid,
-          'cases': List.generate(51, (i) => caseRow(caseId: 'case:$i')),
-        },
-        {
-          ...valid,
-          'cases': [caseRow(), caseRow()],
-        },
-        {
-          ...valid,
-          'cases': [caseRow(caseId: 'case:z'), caseRow(caseId: 'case:a')],
-        },
-        {...valid, 'nextCursor': 'case:one'},
-        {...valid, 'serverTime': 0.5},
-      ]) {
-        expect(
-          () => EventAssistanceCasesPage.fromCallableData(
-            response,
-            expectedQuery: caseQuery(),
-          ),
-          throwsFormatException,
-        );
-      }
-      expect(
-        () => EventAssistanceCasesPage.fromCallableData(
-          valid,
-          expectedQuery: caseQuery(cursor: 'case:one'),
-        ),
-        throwsFormatException,
+  test('bad pagination, incomplete views and foreign scopes fail visibly', () {
+    AssistanceCaseViewDocument view({
+      Map<String, Object?> data = const {},
+      Map<String, Object?> row = const {},
+      String? id,
+    }) {
+      final base = caseView({...caseRow(), ...row});
+      return (
+        id: id ?? base.id,
+        data: {...base.data, ...data},
+        evaluatedAtMillis: base.evaluatedAtMillis,
       );
-    },
-  );
+    }
+
+    EventAssistanceCasesPage page(
+      List<AssistanceCaseViewDocument> views, {
+      bool hasMore = false,
+      EventAssistanceCaseQuery? query,
+    }) => EventAssistanceCasesPage.fromViews(
+      query: query ?? caseQuery(),
+      views: views,
+      hasMore: hasMore,
+      managerOptions: null,
+    );
+    for (final views in [
+      [
+        view(data: {'eventId': 'foreign'}),
+      ],
+      [
+        view(data: {'organizerId': 'foreign'}),
+      ],
+      [
+        view(data: {'status': 'resolved'}),
+      ],
+      [
+        view(data: {'caseId': 'case:other'}),
+      ],
+      [view(id: 'case:other')],
+      [
+        view(data: {'sourceCoverage': 'invalidSource'}),
+      ],
+      [
+        view(data: {'view': null}),
+      ],
+      [view(), view()],
+      [
+        view(row: {'caseId': 'case:z'}, data: {'caseId': 'case:z'}),
+        view(row: {'caseId': 'case:a'}, data: {'caseId': 'case:a'}),
+      ],
+      List.generate(
+        51,
+        (i) => view(row: {'caseId': 'case:$i'}, data: {'caseId': 'case:$i'}),
+      ),
+    ]) {
+      expect(() => page(views), throwsFormatException);
+    }
+    expect(() => page([view()], hasMore: true), throwsFormatException);
+    expect(
+      () => page([view()], query: caseQuery(cursor: 'case:one')),
+      throwsFormatException,
+    );
+  });
 
   test(
     'malformed current and unavailable rows cannot acquire action authority',

@@ -15,6 +15,13 @@ class DeliveryUiLive extends Fake
     implements EventAssistanceDeliveriesRepository {
   String stage = 'uncertain';
   Object? readError;
+  final _listeners =
+      <
+        ({
+          EventAssistanceDeliveryQuery query,
+          StreamController<EventAssistanceDeliveriesPage> controller,
+        })
+      >[];
   final writes =
       <
         ({
@@ -22,15 +29,45 @@ class DeliveryUiLive extends Fake
           Completer<EventAssistanceDeliveryResult> result,
         })
       >[];
+
   @override
-  Future<EventAssistanceDeliveriesPage> fetch(
+  Stream<EventAssistanceDeliveriesPage> watchPage(
     EventAssistanceDeliveryQuery query,
-  ) async {
-    if (readError != null) throw readError!;
-    return EventAssistanceDeliveriesPage.fromCallableData(
-      deliveryQueueFixture(stage),
-      expectedQuery: query,
+  ) {
+    final controller = StreamController<EventAssistanceDeliveriesPage>();
+    final listener = (query: query, controller: controller);
+    _listeners.add(listener);
+    controller.onCancel = () {
+      _listeners.remove(listener);
+      unawaited(controller.close());
+    };
+    _deliver(listener);
+    return controller.stream;
+  }
+
+  void _deliver(
+    ({
+      EventAssistanceDeliveryQuery query,
+      StreamController<EventAssistanceDeliveriesPage> controller,
+    })
+    listener,
+  ) {
+    final error = readError;
+    if (error != null) {
+      listener.controller.addError(error);
+      return;
+    }
+    listener.controller.add(
+      deliveryQueuePageFor(deliveryQueueFixture(stage), listener.query),
     );
+  }
+
+  /// What the delivery view trigger does after a write: every open listener
+  /// receives the current stage.
+  void deliverToListeners() {
+    for (final listener in [..._listeners]) {
+      _deliver(listener);
+    }
   }
 
   @override

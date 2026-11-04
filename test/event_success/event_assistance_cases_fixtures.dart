@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_managers.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 
@@ -36,39 +37,61 @@ Map<String, Object?> caseRow({
   },
 };
 
-Map<String, Object?> casesPageResponse({
+/// One `hostEventCaseViews` document holding [row], as the data layer hands
+/// it to the page.
+AssistanceCaseViewDocument caseView(
+  Map<String, Object?> row, {
   EventAssistanceCaseQuery? query,
-  List<Object?>? rows,
-  String? nextCursor,
-  int serverTime = 2000,
-  String? managerActor,
+  int evaluatedAt = 2000,
+  String sourceCoverage = 'complete',
 }) {
   final scope = query ?? caseQuery();
-  return {
-    'context': scope.context,
-    'serverTime': serverTime,
-    'coverage': 'page',
-    'status': scope.status.name,
-    'cases': rows ?? [caseRow()],
-    'nextCursor': nextCursor,
-    if (managerActor != null)
-      'managerOptions': {
-        'actorUid': managerActor,
-        'managers': [
-          {'uid': 'host-1', 'displayName': 'Sam'},
-          {'uid': 'host-2', 'displayName': 'Priya'},
-        ],
-      },
-  };
+  return (
+    id: row['caseId']! as String,
+    data: {
+      'schemaVersion': 1,
+      'caseId': row['caseId'],
+      'eventId': scope.eventId,
+      'organizerId': scope.organizerId,
+      'status': row['status'],
+      'receivedAt': row['receivedAt'],
+      'revision': 1,
+      'sourceCoverage': sourceCoverage,
+      'incompleteSource': sourceCoverage == 'complete'
+          ? null
+          : 'eventAssistanceCases',
+      'view': row,
+    },
+    evaluatedAtMillis: evaluatedAt,
+  );
 }
+
+/// The handoff choices the fixture organizer gives [actorUid].
+AssistanceCaseManagerOptions caseManagerOptions(String actorUid) =>
+    AssistanceCaseManagerOptions.fromJson({
+      'actorUid': actorUid,
+      'managers': [
+        {'uid': 'host-1', 'displayName': 'Sam'},
+        {'uid': 'host-2', 'displayName': 'Priya'},
+      ],
+    });
 
 EventAssistanceCasesPage casesPage({
   String? managerActor,
   EventAssistanceCaseQuery? query,
-  List<Object?>? rows,
-}) => EventAssistanceCasesPage.fromCallableData(
-  casesPageResponse(query: query, rows: rows, managerActor: managerActor),
-  expectedQuery: query ?? caseQuery(),
+  List<Map<String, Object?>>? rows,
+  bool hasMore = false,
+  int evaluatedAt = 2000,
+}) => EventAssistanceCasesPage.fromViews(
+  query: query ?? caseQuery(),
+  views: [
+    for (final row in rows ?? [caseRow()])
+      caseView(row, query: query, evaluatedAt: evaluatedAt),
+  ],
+  hasMore: hasMore,
+  managerOptions: managerActor == null
+      ? null
+      : caseManagerOptions(managerActor),
 );
 
 EventAssistanceCaseChange caseChange({
