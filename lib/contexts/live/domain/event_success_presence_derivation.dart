@@ -61,7 +61,7 @@ EventSuccessPresenceSummary deriveEventSuccessPresenceSummary({
     );
   }
   final nextRoundIndex = plan.publishedRotationRoundIndex + 1;
-  final checkedIn = <String, ({String displayName, int checkedInAtMillis})>{};
+  final checkedIn = <String, ({String? displayName, int checkedInAtMillis})>{};
   for (final attendee in roster) {
     final uid = attendee.linkedUid;
     final checkedInAt = attendee.checkedInAt;
@@ -75,7 +75,7 @@ EventSuccessPresenceSummary deriveEventSuccessPresenceSummary({
     final known = checkedIn[uid];
     if (known != null && known.checkedInAtMillis <= millis) continue;
     checkedIn[uid] = (
-      displayName: _boundedDisplayName(attendee.displayName),
+      displayName: _usableDisplayName(attendee.displayName),
       checkedInAtMillis: millis,
     );
   }
@@ -128,8 +128,10 @@ EventSuccessPresenceSummary deriveEventSuccessPresenceSummary({
   );
 }
 
-String _boundedDisplayName(String value) {
+/// The roster name, trimmed and bounded, or null when it is blank: the
+/// domain names no one, and the screen substitutes its own copy.
+String? _usableDisplayName(String value) {
   final trimmed = value.trim();
-  final name = trimmed.isEmpty ? 'Guest' : trimmed;
-  return name.length > 120 ? name.substring(0, 120) : name;
+  if (trimmed.isEmpty) return null;
+  return trimmed.length > 120 ? trimmed.substring(0, 120) : trimmed;
 }

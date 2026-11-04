@@ -59,7 +59,10 @@ final class EventSuccessPresenceEntry {
   });
 
   final String uid;
-  final String displayName;
+
+  /// The roster's name for the guest, or null when it has no usable name;
+  /// the screen then names the guest in its own copy.
+  final String? displayName;
   final EventSuccessPresenceState state;
   final int heartbeatAtMillis;
 }
@@ -72,7 +75,10 @@ final class EventSuccessLateArrivalCandidate {
   });
 
   final String uid;
-  final String displayName;
+
+  /// The roster's name for the guest, or null when it has no usable name;
+  /// the screen then names the guest in its own copy.
+  final String? displayName;
   final int checkedInAtMillis;
 }
 

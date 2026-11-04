@@ -147,7 +147,8 @@ void main() {
       expect(result.nextRoundIndex, 1);
       expect(result.policy.heartbeatIntervalSeconds, 30);
       expect(result.entries.map((e) => e.uid), ['a', 'b']);
-      expect(result.entries.map((e) => e.displayName), ['Ari', 'Guest']);
+      // A blank roster name stays unnamed: the screen supplies the copy.
+      expect(result.entries.map((e) => e.displayName), ['Ari', null]);
       expect(result.entries.map((e) => e.state), [
         EventSuccessPresenceState.likelyDeparted,
         EventSuccessPresenceState.present,
