@@ -65,7 +65,7 @@ Widget eventProfileRevokePreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: CatchRouteScaffold(
         topBarBuilder: (_, _) =>
-            const CatchTopBar.route(title: 'My event profile'),
+            const CatchLegacyTopBar.route(title: 'My event profile'),
         body: CatchRouteBody.standardConstrained(
           child: EventProfileEditorSection(
             state: _state(canShare: false),
@@ -87,7 +87,7 @@ Widget eventProfileIdentityPreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: CatchRouteScaffold(
         topBarBuilder: (_, _) =>
-            const CatchTopBar.route(title: 'Event profile'),
+            const CatchLegacyTopBar.route(title: 'Event profile'),
         body: CatchRouteBody.standardConstrained(
           child: EventProfileIdentitySection(profile: _participant()),
         ),

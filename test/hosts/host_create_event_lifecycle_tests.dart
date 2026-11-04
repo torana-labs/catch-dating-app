@@ -135,7 +135,9 @@ void runHostCreateEventLifecycleTests() {
     await _pumpHostActionFrame(tester);
 
     expect(find.text('Event recap'), findsOneWidget);
-    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    final topBar = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(topBar.title, 'Event recap');
     expect(topBar.subtitle, hostManageEventTitle(event));
     expect(find.text('SETUP'), findsNothing);

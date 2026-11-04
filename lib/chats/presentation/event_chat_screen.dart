@@ -340,7 +340,7 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
       }
     });
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: current?.access.title ?? context.l10n.eventChatTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

@@ -50,7 +50,7 @@ class ProgramGuestsScreen extends ConsumerWidget {
       value: detailAsync,
       onRetry: () => ref.invalidate(organizerProgramDetailProvider(programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsGuestsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -64,7 +64,7 @@ class ProgramGuestsScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsGuestsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -86,7 +86,7 @@ class ProgramGuestsScreen extends ConsumerWidget {
         value: guestsAsync,
         onRetry: () => ref.invalidate(programGuestListProvider(programId)),
         loadingBuilder: (_) => CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: detail.program.title,
             subtitle: context.l10n.programsGuestsTitle,
             emphasis: scrolledUnder
@@ -101,7 +101,7 @@ class ProgramGuestsScreen extends ConsumerWidget {
           ),
         ),
         errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: detail.program.title,
             subtitle: context.l10n.programsGuestsTitle,
             emphasis: scrolledUnder
@@ -345,7 +345,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     final unaffiliated = guestsByHousehold[null] ?? const [];
 
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: widget.programTitle,
         subtitle: context.l10n.programsGuestsTitle,
         emphasis: scrolledUnder

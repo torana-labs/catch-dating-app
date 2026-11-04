@@ -52,7 +52,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
     final t = CatchTokens.of(context);
     final coordinates = _coordinates;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostsRoutePathBuilderTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.close,

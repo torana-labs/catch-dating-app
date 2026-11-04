@@ -45,7 +45,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
       widget.formId,
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostFormShare,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

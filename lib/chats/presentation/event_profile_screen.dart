@@ -111,7 +111,7 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
       child: AbsorbPointer(
         absorbing: busy,
         child: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: own
                 ? context.l10n.eventProfileMine
                 : context.l10n.eventProfileTitle,

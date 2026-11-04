@@ -117,7 +117,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
         ),
         selection: _flow is _SendHistory ? null : _flow,
         detailBuilder: (_) => CatchWorkspacePaneScaffold(
-          title: CatchTopBar.route(
+          title: CatchLegacyTopBar.route(
             title: context.l10n.hostMessagingWorkspaceSends,
             leading: CatchIconAction.toolbar(
               icon: CatchIcons.back,

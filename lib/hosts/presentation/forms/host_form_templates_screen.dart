@@ -34,7 +34,7 @@ class _HostFormTemplatesScreenState
     final templates = ref.watch(hostFormTemplatesProvider(widget.organizerId));
     final t = CatchTokens.of(context);
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostFormTemplatesTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

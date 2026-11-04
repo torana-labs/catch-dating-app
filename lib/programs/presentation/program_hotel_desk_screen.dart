@@ -95,7 +95,7 @@ class _ProgramHotelDeskScreenState
     String? title,
     required CatchRouteBody body,
   }) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: title ?? context.l10n.programsHotelTitle,
       subtitle: context.l10n.programsHotelSubtitle,
       emphasis: scrolledUnder

@@ -164,7 +164,7 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
         }
       },
       child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostTodayFocusScreenTitle,
           subtitle: organizer?.name,
           navigation: CatchTopBarNavigation(

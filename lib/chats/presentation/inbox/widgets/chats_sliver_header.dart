@@ -22,7 +22,7 @@ double chatsBrowseHeaderHeight({
   required bool hasHostFilter,
   required bool hasHeaderSubtitle,
 }) =>
-    CatchTopBar.primaryRail(
+    CatchLegacyTopBar.primaryRail(
       title: hasHeaderSubtitle
           ? context.l10n.hostInboxTitle
           : context.l10n.consumerChatsTitle,
@@ -109,7 +109,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
           ? l10n.hostSearchAttendeesAction
           : l10n.consumerSearchChatsAction,
     );
-    final topBar = CatchTopBar.primaryRail(
+    final topBar = CatchLegacyTopBar.primaryRail(
       title: title,
       subtitle: subtitle,
       search: search,

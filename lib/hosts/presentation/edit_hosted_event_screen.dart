@@ -280,7 +280,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     return PopScope(
       canPop: !mutation.isPending,
       child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
           navigation: CatchTopBarNavigation(
             mode: mutation.isPending
@@ -630,7 +630,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             ),
           ),
         ),
-        footer: CatchDock(
+        footer: CatchLegacyDock(
           child: CatchButton(
             key: EditHostedEventKeys.saveButton,
             label: screenState.footer.label,

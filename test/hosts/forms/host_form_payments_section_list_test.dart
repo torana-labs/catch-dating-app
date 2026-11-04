@@ -169,7 +169,8 @@ Future<void> _pump(
             child: child!,
           ),
           home: CatchRouteScaffold(
-            topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Payments'),
+            topBarBuilder: (_, _) =>
+                const CatchLegacyTopBar.route(title: 'Payments'),
             body: CatchRouteBody.fullBleed(
               child: detail != null
                   ? Builder(

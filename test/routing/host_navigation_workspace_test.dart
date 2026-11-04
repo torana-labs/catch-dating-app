@@ -428,7 +428,7 @@ void main() {
                     child: Column(
                       children: [
                         Text('Record'),
-                        CatchTopBar.route(
+                        CatchLegacyTopBar.route(
                           title: 'Record',
                           navigation: CatchTopBarNavigation(
                             mode: CatchTopBarNavigationMode.back,

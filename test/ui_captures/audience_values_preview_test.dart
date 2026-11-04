@@ -135,7 +135,7 @@ void main() {
               'textScale': textScale,
               'title': rect(
                 find.descendant(
-                  of: find.byType(CatchTopBar),
+                  of: find.byType(CatchLegacyTopBar),
                   matching: find.text('Audience'),
                 ),
               ),

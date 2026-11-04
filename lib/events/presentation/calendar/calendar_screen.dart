@@ -164,7 +164,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final t = CatchTokens.of(context);
     return CatchRouteScaffold(
       backgroundColor: t.bg,
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: _calendarMonthLabel(topBarSelectedDate),
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

@@ -1597,7 +1597,7 @@ class _FiltersBodyCapture extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar.route(
+      appBar: CatchLegacyTopBar.route(
         title: 'Filters',
         leading: CatchIconAction.toolbar(
           icon: CatchIcons.close,

@@ -23,7 +23,7 @@ void main() {
               width: 360,
               height: 600,
               child: CatchScaffold.workspace(
-                title: CatchTopBar.route(
+                title: CatchLegacyTopBar.route(
                   title: 'Edge-owned route',
                   navigation: CatchTopBarNavigation(
                     mode: CatchTopBarNavigationMode.none,
@@ -37,7 +37,7 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
-    final bar = tester.getRect(find.byType(CatchTopBar));
+    final bar = tester.getRect(find.byType(CatchLegacyTopBar));
     expect(bar.width, 360);
     expect(tester.getRect(find.byKey(bodyKey)).top, bar.bottom);
   });
@@ -81,7 +81,7 @@ void main() {
       expect(opened, isTrue);
       expect(
         tester.getRect(find.byType(CatchStepHeader)).bottom,
-        greaterThan(tester.getRect(find.byType(CatchTopBar)).bottom),
+        greaterThan(tester.getRect(find.byType(CatchLegacyTopBar)).bottom),
       );
       semantics.dispose();
       debugDefaultTargetPlatformOverride = null;
@@ -107,7 +107,7 @@ void main() {
                   textScaler: TextScaler.linear(scale),
                 ),
                 child: const CatchScaffold.workspace(
-                  title: CatchTopBar.route(
+                  title: CatchLegacyTopBar.route(
                     title: 'Event recap',
                     subtitle: 'Wednesday Evening Run',
                     navigation: CatchTopBarNavigation(
@@ -137,7 +137,7 @@ void main() {
             tester.getBottomLeft(find.text('Event recap')).dy,
             lessThan(tester.getTopLeft(find.text('Wednesday Evening Run')).dy),
           );
-          final barRect = tester.getRect(find.byType(CatchTopBar));
+          final barRect = tester.getRect(find.byType(CatchLegacyTopBar));
           final titleRect = tester.getRect(find.text('Event recap'));
           // Single-line titles don't reserve an empty second line at large text.
           expect(titleRect.top - barRect.top, lessThan(20));
@@ -165,7 +165,7 @@ void main() {
               textScaler: TextScaler.linear(2),
             ),
             child: CatchScaffold.workspace(
-              title: CatchTopBar.screen(
+              title: CatchLegacyTopBar.screen(
                 title: 'Customer communications',
                 search: CatchTopBarSearch(
                   expanded: true,

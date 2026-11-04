@@ -28,7 +28,7 @@ class ProgramAttentionScreen extends ConsumerWidget {
       value: attentionAsync,
       onRetry: () => ref.invalidate(programStaffAttentionProvider(programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsAttentionTitle,
           subtitle: context.l10n.programsAttentionSubtitle,
           emphasis: scrolledUnder
@@ -43,7 +43,7 @@ class ProgramAttentionScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsAttentionTitle,
           subtitle: context.l10n.programsAttentionSubtitle,
           emphasis: scrolledUnder
@@ -62,7 +62,7 @@ class ProgramAttentionScreen extends ConsumerWidget {
         ),
       ),
       builder: (context, feed) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsAttentionTitle,
           subtitle: context.l10n.programsAttentionSubtitle,
           emphasis: scrolledUnder

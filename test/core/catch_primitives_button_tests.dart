@@ -131,33 +131,35 @@ void _registerCatchPrimitivesButtonTests() {
     expect(buttonLabel.style?.color, CatchTokens.editorialWhite);
   });
 
-  testWidgets('CatchDock forwards activity accent to the primary button', (
-    tester,
-  ) async {
-    const accent = Color(0xFF116466);
+  testWidgets(
+    'CatchLegacyDock forwards activity accent to the primary button',
+    (tester) async {
+      const accent = Color(0xFF116466);
 
-    await tester.pumpWidget(
-      _wrap(
-        CatchDock.primary(
-          label: 'Join event',
-          onPressed: () {},
-          buttonAccentColor: accent,
-          buttonMode: CatchButtonMode.rounded,
+      await tester.pumpWidget(
+        _wrap(
+          CatchLegacyDock.primary(
+            label: 'Join event',
+            onPressed: () {},
+            buttonAccentColor: accent,
+            buttonMode: CatchButtonMode.rounded,
+          ),
         ),
-      ),
-    );
+      );
 
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchDock && widget.variant == CatchDockVariant.primary,
-      ),
-      findsOneWidget,
-    );
-    final button = tester.widget<CatchButton>(
-      find.widgetWithText(CatchButton, 'Join event'),
-    );
-    expect(button.accentColor, accent);
-    expect(button.mode, CatchButtonMode.rounded);
-  });
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLegacyDock &&
+              widget.variant == CatchDockVariant.primary,
+        ),
+        findsOneWidget,
+      );
+      final button = tester.widget<CatchButton>(
+        find.widgetWithText(CatchButton, 'Join event'),
+      );
+      expect(button.accentColor, accent);
+      expect(button.mode, CatchButtonMode.rounded);
+    },
+  );
 }

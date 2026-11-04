@@ -55,7 +55,7 @@ void main() {
                           CatchWorkspacePane(
                             id: 'events',
                             child: CatchWorkspacePaneScaffold(
-                              title: CatchTopBar.primaryRail(
+                              title: CatchLegacyTopBar.primaryRail(
                                 title: subtitle ? 'Today' : 'Events',
                                 subtitle: subtitle
                                     ? 'Wednesday, October 7, 2026'
@@ -86,11 +86,11 @@ void main() {
                               onBack: () => backCount++,
                               child: CatchWorkspacePaneScaffold(
                                 title: identity
-                                    ? const CatchTopBar.identity(
+                                    ? const CatchLegacyTopBar.identity(
                                         identityName: 'Program',
                                         identitySemanticLabel: 'Program',
                                       )
-                                    : const CatchTopBar.route(
+                                    : const CatchLegacyTopBar.route(
                                         title: 'Program',
                                         navigation: CatchTopBarNavigation(
                                           mode: CatchTopBarNavigationMode.back,
@@ -242,7 +242,7 @@ void main() {
                       CatchWorkspacePane(
                         id: id,
                         child: CatchWorkspacePaneScaffold(
-                          title: CatchTopBar.primaryRail(title: id),
+                          title: CatchLegacyTopBar.primaryRail(title: id),
                           actions: CatchPageTabBar<int>(
                             groupKey: ValueKey('$id-tabs'),
                             selected: 0,

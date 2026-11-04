@@ -69,7 +69,7 @@ class EventBookingDock extends StatelessWidget {
       children: [
         ?upsell,
         if (error != null) CatchBanner.error(message: error),
-        CatchDock.primary(
+        CatchLegacyDock.primary(
           label: label,
           onPressed: onPressed,
           leading: leadingContent,

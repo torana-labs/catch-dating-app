@@ -91,7 +91,7 @@ void main() {
       await pumpFeatureUi(tester);
       final action = find.byKey(const ValueKey('host-responses-import'));
       expect(
-        find.descendant(of: find.byType(CatchTopBar), matching: action),
+        find.descendant(of: find.byType(CatchLegacyTopBar), matching: action),
         findsOneWidget,
       );
       await tester.tap(action);

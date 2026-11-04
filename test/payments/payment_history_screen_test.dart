@@ -348,7 +348,7 @@ Material _topBarMaterial(WidgetTester tester) {
   return tester.widget<Material>(
     find
         .descendant(
-          of: find.byType(CatchTopBar),
+          of: find.byType(CatchLegacyTopBar),
           matching: find.byType(Material),
         )
         .first,

@@ -33,7 +33,7 @@ class ProgramWorkspaceScreen extends ConsumerWidget {
       value: detailAsync,
       onRetry: () => ref.invalidate(organizerProgramDetailProvider(programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsWorkspaceTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -47,7 +47,7 @@ class ProgramWorkspaceScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsWorkspaceTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -113,7 +113,7 @@ class _ProgramWorkspacePageBodyState
         : _functionsOn(selectedDay);
 
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.programsWorkspaceTitle,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

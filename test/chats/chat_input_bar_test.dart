@@ -26,7 +26,8 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDock && widget.variant == CatchDockVariant.utility,
+              widget is CatchLegacyDock &&
+              widget.variant == CatchDockVariant.utility,
         ),
         findsNothing,
       );

@@ -525,7 +525,7 @@ class HostResponsePrimaryAction extends StatelessWidget {
     if (application != null &&
         value.canReview &&
         application.reviewStatus != HostApplicationReviewStatus.approved) {
-      return CatchDock.pageAction(
+      return CatchLegacyDock.pageAction(
         buttonKey: const ValueKey('host-application-primary-action'),
         label: context.l10n.hostApplicationApprove,
         isLoading: saving,
@@ -535,14 +535,14 @@ class HostResponsePrimaryAction extends StatelessWidget {
       );
     }
     if (value.canOfferEvent && onOfferEvent != null) {
-      return CatchDock.pageAction(
+      return CatchLegacyDock.pageAction(
         buttonKey: const ValueKey('host-response-offer-event'),
         label: offerActionLabel ?? context.l10n.hostResponseOfferEvent,
         onPressed: busy ? null : onOfferEvent,
       );
     }
     if (contactId != null) {
-      return CatchDock.pageAction(
+      return CatchLegacyDock.pageAction(
         buttonKey: const ValueKey('host-application-open-person'),
         label: context.l10n.hostApplicationOpenPerson,
         onPressed: busy ? null : () => onOpenPerson(contactId),
@@ -554,7 +554,7 @@ class HostResponsePrimaryAction extends StatelessWidget {
         !response.response.conversionKinds.contains(
           HostFormConversionKind.crmContact,
         )) {
-      return CatchDock.pageAction(
+      return CatchLegacyDock.pageAction(
         buttonKey: const ValueKey('host-form-response-convert-crm-primary'),
         label: context.l10n.hostFormConvertCrm,
         isLoading: converting,

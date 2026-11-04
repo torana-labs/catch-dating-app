@@ -23,7 +23,7 @@ class HostFormPreviewScreen extends ConsumerWidget {
       hostFormEditorControllerProvider(organizerId, formId),
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostAudienceQuestionPreview,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

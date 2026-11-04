@@ -598,7 +598,7 @@ Future<void> pumpProfile(
           child: child!,
         ),
         home: CatchRouteScaffold(
-          topBarBuilder: (_, _) => const CatchTopBar.route(
+          topBarBuilder: (_, _) => const CatchLegacyTopBar.route(
             title: 'Event profile',
             navigation: CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,

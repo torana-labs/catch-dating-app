@@ -32,7 +32,7 @@ Widget scaledHeaderReservationStates(BuildContext context) =>
                   onChanged: (_) {},
                 );
                 final CatchScaledPreferredSize header = nested
-                    ? CatchTopBar.route(
+                    ? CatchLegacyTopBar.route(
                         title: 'Audience',
                         navigation: const CatchTopBarNavigation(
                           mode: CatchTopBarNavigationMode.none,

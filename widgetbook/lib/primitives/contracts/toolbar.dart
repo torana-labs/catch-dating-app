@@ -69,7 +69,7 @@ Widget catchToolbarButtonContractStates(BuildContext context) {
   );
 }
 
-Widget _selectorBar(BuildContext context) => CatchTopBar.screen(
+Widget _selectorBar(BuildContext context) => CatchLegacyTopBar.screen(
   title: 'Explore',
   leading: const _ToolbarSelectorPreview(),
   actions: [

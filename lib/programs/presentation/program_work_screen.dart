@@ -554,7 +554,7 @@ CatchRouteScaffold _routeScaffold({
   String? title,
   required CatchRouteBody body,
 }) => CatchRouteScaffold(
-  topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+  topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
     title: title ?? context.l10n.programsWorkShellTitle,
     subtitle: title == null ? null : context.l10n.programsWorkShellTitle,
     emphasis: scrolledUnder

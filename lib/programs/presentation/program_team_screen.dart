@@ -30,7 +30,7 @@ class ProgramTeamScreen extends ConsumerWidget {
       value: staffAsync,
       onRetry: () => ref.invalidate(programStaffListProvider(programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsTeamTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -44,7 +44,7 @@ class ProgramTeamScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsTeamTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -160,7 +160,7 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
 
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.programsTeamTitle,
       emphasis: scrolledUnder
           ? CatchTopBarEmphasis.divided

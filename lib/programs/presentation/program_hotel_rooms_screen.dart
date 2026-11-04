@@ -36,7 +36,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
       onRetry: () =>
           ref.invalidate(programHotelRoomsProvider(programId, hotelId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsRoomsTitle,
           subtitle: context.l10n.programsRoomsSubtitle,
           emphasis: scrolledUnder
@@ -51,7 +51,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsRoomsTitle,
           subtitle: context.l10n.programsRoomsSubtitle,
           emphasis: scrolledUnder
@@ -71,7 +71,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
         ),
       ),
       builder: (context, rooms) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: rooms.hotelName,
           subtitle: context.l10n.programsRoomsSubtitle,
           emphasis: scrolledUnder

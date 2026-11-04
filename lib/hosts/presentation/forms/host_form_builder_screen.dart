@@ -109,7 +109,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final settings = view == HostFormWorkspaceView.settings;
 
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: settings
             ? context.l10n.hostFormSettings
             : context.l10n.hostAudienceFormWorkspaceTitle,
@@ -600,7 +600,7 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final isLoading = current.operationInProgress;
-    return CatchDock.primary(
+    return CatchLegacyDock.primary(
       label: current.editor.form.status == HostFormLifecycleStatus.published
           ? context.l10n.hostFormReviewPublishChanges
           : context.l10n.hostFormReviewPublish,

@@ -164,7 +164,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
     final table = _table;
     final mapped = _mapped;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.programsImportTitle,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

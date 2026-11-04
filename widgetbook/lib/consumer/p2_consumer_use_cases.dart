@@ -266,7 +266,7 @@ class _FiltersBodyFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar.route(
+      appBar: CatchLegacyTopBar.route(
         title: 'Filters',
         actions: [
           CatchButton.text(label: 'Reset', onPressed: saving ? null : _noopTap),

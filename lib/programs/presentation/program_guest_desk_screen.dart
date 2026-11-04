@@ -26,7 +26,7 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
       value: accessAsync,
       onRetry: () => ref.invalidate(programWorkEntryProvider(programId, null)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsGuestsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -40,7 +40,7 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsGuestsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -64,7 +64,7 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
             access.hasDuty(ProgramStaffDuty.guestRelations, now: now);
         if (!canOpen) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title: access.title,
               subtitle: context.l10n.programsGuestsTitle,
               emphasis: scrolledUnder
@@ -88,7 +88,7 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
           value: guestsAsync,
           onRetry: () => ref.invalidate(programGuestListProvider(programId)),
           loadingBuilder: (_) => CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title: access.title,
               subtitle: context.l10n.programsGuestsTitle,
               emphasis: scrolledUnder
@@ -103,7 +103,7 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
             ),
           ),
           errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title: access.title,
               subtitle: context.l10n.programsGuestsTitle,
               emphasis: scrolledUnder

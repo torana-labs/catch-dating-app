@@ -13,7 +13,7 @@ class MessagingPermissionsScreen extends ConsumerWidget {
   const MessagingPermissionsScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.messagingPermissionsTitle,
       navigation: const CatchTopBarNavigation(
         mode: CatchTopBarNavigationMode.back,

@@ -450,7 +450,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: CatchRouteScaffold(
             topBarBuilder: (_, _) =>
-                const CatchTopBar.route(title: 'Participants'),
+                const CatchLegacyTopBar.route(title: 'Participants'),
             body: CatchRouteBody.standardConstrained(
               child: EventChatParticipantsRowList(
                 state: fixture(empty: true, more: true),

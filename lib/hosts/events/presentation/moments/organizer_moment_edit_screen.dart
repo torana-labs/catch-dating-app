@@ -153,7 +153,7 @@ class _OrganizerMomentEditScreenState
       canPop: !_busy,
       child: CatchRouteScaffold(
         resizeToAvoidBottomInset: true,
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: widget.initialMoment == null
               ? l.hostMomentsNew
               : l.hostMomentEdit,
@@ -165,7 +165,7 @@ class _OrganizerMomentEditScreenState
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
         ),
-        footer: CatchDock.primary(
+        footer: CatchLegacyDock.primary(
           label: l.hostMomentSave,
           buttonKey: const ValueKey('moment-save'),
           isLoading: _busy,

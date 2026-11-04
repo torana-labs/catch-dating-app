@@ -32,7 +32,7 @@ void main() {
         photo: photos.first,
       );
 
-      expect(find.byType(CatchTopBar), findsOneWidget);
+      expect(find.byType(CatchLegacyTopBar), findsOneWidget);
       expect(find.text(currentPrompt.displayPrompt), findsOneWidget);
 
       const fieldKey = ValueKey('profile-photo-prompt-field');

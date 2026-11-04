@@ -106,7 +106,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
     String? subtitle,
     required CatchRouteBody body,
   }) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.hostsEventOperatorTitle,
       subtitle: subtitle,
       emphasis: scrolledUnder

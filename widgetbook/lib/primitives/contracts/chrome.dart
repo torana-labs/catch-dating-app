@@ -10,12 +10,12 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTopBar,
+  type: CatchLegacyTopBar,
   path: '[Core primitives]/Navigation',
 )
 Widget catchTopBarContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchTopBar',
+    title: 'CatchLegacyTopBar',
     contractId: 'catch.top_bar',
     states: const [
       'compact',
@@ -36,13 +36,16 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'compact',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(title: 'Events', subtitle: 'Tonight nearby'),
+          child: CatchLegacyTopBar.route(
+            title: 'Events',
+            subtitle: 'Tonight nearby',
+          ),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'context',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Upcoming events',
             subtitle: 'Review requests and keep the room balanced.',
           ),
@@ -51,7 +54,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-leading',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Event details',
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
@@ -63,7 +66,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'outlined-actions',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Form builder',
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
@@ -85,7 +88,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-action-icon',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Chats',
             actions: [
               CatchIconAction.toolbar(
@@ -100,7 +103,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-action-text',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Preview',
             actions: [
               CatchButton.text(label: 'Done', onPressed: widgetbookNoop),
@@ -112,7 +115,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'with-search',
         description: 'Use the search icon to review the expanded search state.',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Clubs',
             search: CatchTopBarSearch(
               copy: catchSearchFieldCopy(context.l10n),
@@ -127,7 +130,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'conversation-title',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar.identity(
+          child: CatchLegacyTopBar.identity(
             identitySemanticLabel: context.l10n
                 .coreCatchTopBarLabelViewNameProfile(
                   name: 'Taylor from Sunday Social',
@@ -169,7 +172,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'surface',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Surface',
             tone: CatchTopBarTone.surface,
           ),
@@ -178,7 +181,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'divider',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar.route(
+          child: CatchLegacyTopBar.route(
             title: 'Divider',
             emphasis: CatchTopBarEmphasis.divided,
           ),
@@ -189,7 +192,8 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'root-title',
         child: WidgetbookContractTopBarFrame(
           child: Builder(
-            builder: (context) => CatchTopBar.screen(title: 'Your people'),
+            builder: (context) =>
+                CatchLegacyTopBar.screen(title: 'Your people'),
           ),
         ),
       ),
@@ -197,7 +201,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'root-subtitle-actions',
         child: WidgetbookContractTopBarFrame(
           child: Builder(
-            builder: (context) => CatchTopBar.screen(
+            builder: (context) => CatchLegacyTopBar.screen(
               title: 'Your people',
               subtitle: 'Keep your shared plans in view.',
               actions: [
@@ -215,7 +219,8 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'primary-rail',
         child: WidgetbookContractTopBarFrame(
           child: Builder(
-            builder: (context) => CatchTopBar.primaryRail(title: 'People'),
+            builder: (context) =>
+                CatchLegacyTopBar.primaryRail(title: 'People'),
           ),
         ),
       ),

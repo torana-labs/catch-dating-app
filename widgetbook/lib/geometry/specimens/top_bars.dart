@@ -10,7 +10,7 @@ import '../../support/geometry_preview.dart';
 
 @widgetbook.UseCase(
   name: 'Geometry matrix',
-  type: CatchTopBar,
+  type: CatchLegacyTopBar,
   path: '[Geometry system]',
 )
 Widget topBarGeometryMatrix(BuildContext context) {
@@ -27,7 +27,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
       _topBarSpecimen(
         context,
         label: 'Compact route',
-        child: CatchTopBar.route(
+        child: CatchLegacyTopBar.route(
           title: 'Event details',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -38,7 +38,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
       _topBarSpecimen(
         context,
         label: 'Large editorial',
-        child: const CatchTopBar.route(
+        child: const CatchLegacyTopBar.route(
           title: 'Upcoming events',
           subtitle: 'Review requests and keep the room balanced.',
         ),
@@ -46,7 +46,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
       _topBarSpecimen(
         context,
         label: 'Identity and overflow',
-        child: CatchTopBar.identity(
+        child: CatchLegacyTopBar.identity(
           identitySemanticLabel: context.l10n
               .coreCatchTopBarLabelViewNameProfile(
                 name: 'Taylor from Sunday Social',
@@ -77,7 +77,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
         label: 'Expanding search',
         description:
             'Use the search action to inspect the in-place width morph and title fade.',
-        child: CatchTopBar.route(
+        child: CatchLegacyTopBar.route(
           title: 'Explore',
           search: CatchTopBarSearch(
             copy: catchSearchFieldCopy(context.l10n),

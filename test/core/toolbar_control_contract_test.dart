@@ -49,7 +49,7 @@ void main() {
         debugDefaultTargetPlatformOverride = platform;
         await tester.pumpWidget(
           wrap(
-            CatchTopBar.screen(
+            CatchLegacyTopBar.screen(
               title: 'Messaging',
               actions: [
                 CatchIconAction.toolbar(
@@ -133,7 +133,7 @@ void main() {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       await tester.pumpWidget(
         wrap(
-          CatchTopBar.screen(
+          CatchLegacyTopBar.screen(
             title: 'Messaging',
             actions: [
               CatchIconAction.toolbar(
@@ -168,7 +168,7 @@ void main() {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       await tester.pumpWidget(
         wrap(
-          CatchTopBar.screen(
+          CatchLegacyTopBar.screen(
             title: 'Explore',
             leading: ExploreCityPicker(
               state: ExploreCityPickerState.from(
@@ -195,7 +195,7 @@ void main() {
           scale: 2,
         ),
       );
-      final barFinder = find.byType(CatchTopBar);
+      final barFinder = find.byType(CatchLegacyTopBar);
       final title = tester.getRect(find.text('Explore'));
       final selector = tester.getRect(find.byType(ExploreCityPicker));
       final search = tester.getRect(find.byType(CatchSearchField));
@@ -209,7 +209,7 @@ void main() {
       final context = tester.element(barFinder);
       expect(
         tester
-            .widget<CatchTopBar>(barFinder)
+            .widget<CatchLegacyTopBar>(barFinder)
             .preferredSizeFor(context, width: 390)
             .height,
         tester.getSize(barFinder).height,
@@ -278,7 +278,7 @@ void main() {
       try {
         await tester.pumpWidget(
           wrap(
-            const CatchTopBar.screen(
+            const CatchLegacyTopBar.screen(
               title: 'Messaging',
               search: CatchTopBarSearch(
                 copy: copy,
@@ -360,7 +360,9 @@ void main() {
       ErrorWidget.builder = (_) => const SizedBox.shrink();
       try {
         await tester.pumpWidget(
-          wrap(CatchTopBar.screen(title: 'Audience', actions: [entry.value])),
+          wrap(
+            CatchLegacyTopBar.screen(title: 'Audience', actions: [entry.value]),
+          ),
         );
         expect(
           tester.takeException().toString(),
