@@ -25,8 +25,8 @@ import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-import {maskDart} from "../check_library_shims.mjs";
-import {sortImportRuns} from "../rename_legacy_library_symbols.mjs";
+import {maskDart} from "../../check_library_shims.mjs";
+import {sortImportRuns} from "../../rename_legacy_library_symbols.mjs";
 
 /** The trees whose callers move to the legacy names; `*` is one folder. */
 export const renameRoots = [

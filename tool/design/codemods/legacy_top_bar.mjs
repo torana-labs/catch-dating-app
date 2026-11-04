@@ -4,12 +4,12 @@
 // code as CatchLegacyTopBar in catch_legacy_top_bar.dart, and this codemod moves
 // its callers there. Its enums (CatchTopBarNavigation, CatchTopBarTone,
 // CatchTopBarEmphasis, CatchTopBarSearch) keep their names: no system symbol
-// claims them. See legacy_rename.mjs for what it touches and leaves alone.
+// claims them. See lib/legacy_rename.mjs for what it touches and leaves alone.
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {repoRoot} from "../../lib/repo_paths.mjs";
-import {legacyCodemod} from "./legacy_rename.mjs";
+import {legacyCodemod} from "./lib/legacy_rename.mjs";
 
 const library = "packages/catch_ui";
 

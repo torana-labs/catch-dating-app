@@ -6,12 +6,12 @@
 // and primaryContent carry the catch line, footnote, accent and Cupertino
 // floating chrome, and pageAction draws borderless on the page background, none
 // of which the system API draws. CatchDockVariant keeps its name: no system
-// symbol claims it. See legacy_rename.mjs for what it touches and leaves alone.
+// symbol claims it. See lib/legacy_rename.mjs for what it touches and leaves alone.
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {repoRoot} from "../../lib/repo_paths.mjs";
-import {legacyCodemod} from "./legacy_rename.mjs";
+import {legacyCodemod} from "./lib/legacy_rename.mjs";
 
 const library = "packages/catch_ui";
 

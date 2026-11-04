@@ -5282,7 +5282,7 @@
             "tool/design/check_screen_top_bar_contracts.mjs",
             "tool/design/screen_top_bar_contracts.json"
           ],
-          "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchTopBar.screen, compact detail/edit/utility navigation uses CatchTopBar.route, and identity navigation uses CatchTopBar.identity. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract."
+          "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchLegacyTopBar.screen, compact detail/edit/utility navigation uses CatchLegacyTopBar.route, and identity navigation uses CatchLegacyTopBar.identity; a screen framed by CatchScreen takes a CatchTopBar variant and needs no entry. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract."
         }
       ],
       "ciRequirements": {
@@ -7081,6 +7081,59 @@
         "tool/design/rename_legacy_library_symbols.mjs",
         "tool/design/rename_legacy_library_symbols.test.mjs",
         "tool/design/check_library_shims.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "design:legacy-top-bar-rename",
+      "category": "design",
+      "path": "tool/design/codemods/legacy_top_bar.mjs",
+      "command": "node tool/design/codemods/legacy_top_bar.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "generator",
+      "description": "Moves the pre-redesign catch_ui top bar's callers (its route, screen, primaryRail, brand and identity recipes) from CatchTopBar to CatchLegacyTopBar, and the moved file's path, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture, now that CatchTopBar takes the system's six variants. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system top bar; CI runs only its tests.",
+      "checks": [
+        "node --check tool/design/codemods/legacy_top_bar.mjs",
+        "node --check tool/design/codemods/lib/legacy_rename.mjs",
+        "node --test tool/design/codemods/legacy_top_bar.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/design/codemods/legacy_top_bar.mjs",
+        "tool/design/codemods/legacy_top_bar.test.mjs",
+        "tool/design/codemods/lib/legacy_rename.mjs",
+        "tool/design/rename_legacy_library_symbols.mjs",
+        "tool/design/check_library_shims.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "design:legacy-dock-rename",
+      "category": "design",
+      "path": "tool/design/codemods/legacy_dock.mjs",
+      "command": "node tool/design/codemods/legacy_dock.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "generator",
+      "description": "Moves the pre-redesign catch_ui dock's callers (its utility, primary, pageAction and primaryContent recipes) from CatchDock to CatchLegacyDock, and the moved file's path, under the same trees as the top bar rename, now that CatchDock takes the system's placements. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system dock; CI runs only its tests.",
+      "checks": [
+        "node --check tool/design/codemods/legacy_dock.mjs",
+        "node --test tool/design/codemods/legacy_dock.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/design/codemods/legacy_dock.mjs",
+        "tool/design/codemods/legacy_dock.test.mjs",
+        "tool/design/codemods/lib/legacy_rename.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
