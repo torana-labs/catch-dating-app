@@ -19,9 +19,6 @@ Rises with the keyboard; hides on scroll down and returns on scroll up (app shel
 
 `catch.bottom_action`:
 - `CatchDock`
-- `CatchDock.primary`
-- `CatchDock.pageAction`
-- `CatchDock.primaryContent`
 <!-- generated:flutter:end -->
 
 ## Replaces

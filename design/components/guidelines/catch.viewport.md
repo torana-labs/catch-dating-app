@@ -24,6 +24,10 @@ Route transitions: push, modal sheet, crossfade between tabs.
 - `CatchViewport.scene`
 - `CatchViewport.sliverLane`
 - `CatchViewport.box`
+`catch.app_shell`:
+- `CatchAppShell`
+`catch.screen`:
+- `CatchScreen`
 <!-- generated:flutter:end -->
 
 ## Replaces

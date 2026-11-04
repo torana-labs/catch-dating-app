@@ -45,7 +45,7 @@ export const systemComponents = Object.freeze({
   PaneHeader: {symbol: "CatchWorkspaceHeader", records: ["catch.workspace_header"]},
   Navigation: {symbol: "CatchTabBar", records: ["catch.tab_bar"], readme: "Navigation"},
   Dock: {symbol: "CatchDock", records: ["catch.bottom_action"], readme: "Dock"},
-  AppShell: {symbol: "CatchViewport", records: ["catch.viewport"], readme: "AppShell"},
+  AppShell: {symbol: "CatchViewport", records: ["catch.viewport", "catch.app_shell", "catch.screen"], readme: "AppShell"},
   ScreenBody: {symbol: "CatchPageBody", records: ["catch.screen_body"], readme: "ScreenBody"},
   PaneLayout: {symbol: "CatchPaneLayout", records: ["catch.pane_layout"], readme: "PaneLayout"},
   EventCard: {symbol: "CatchEventCard", records: ["catch.event_card", "catch.cover_story"], readme: "EventCard"},
