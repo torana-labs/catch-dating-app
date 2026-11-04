@@ -314,10 +314,6 @@ class EventAssistanceLateJoinSettingEditor
     release?.call();
   }
 
-  void _refresh() {
-    ref.invalidate(eventAssistanceLateJoinSettingForAccountProvider);
-  }
-
   void _publish(LateJoinSettingForm form) {
     // Error/ready callbacks can act before the previous async stack unwinds.
     _inFlight = null;
@@ -338,7 +334,6 @@ class EventAssistanceLateJoinSettingEditor
       }
       result.requireChange(change, actorUid: form.review.account.uid);
       _clearPending();
-      _refresh();
       _publish(
         form._after(
           LateJoinSettingEditorPhase.saved,
@@ -362,10 +357,7 @@ class EventAssistanceLateJoinSettingEditor
               'invalid-argument',
               'callable-unavailable',
             }.contains(error.code);
-        if (definitive) {
-          _clearPending();
-          _refresh();
-        }
+        if (definitive) _clearPending();
         _publish(
           form._after(
             definitive

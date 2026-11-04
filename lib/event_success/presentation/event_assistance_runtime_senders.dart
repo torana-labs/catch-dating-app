@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_sender.dart';
@@ -16,6 +18,7 @@ final class AssistanceRuntimeSenderDirectory {
     required Map<AssistanceMessageRoute, String> cursors,
     required this.serverTime,
     this.loadingRoute,
+    this.loadingFirstPage = false,
     this.error,
     this.needsRefresh = false,
   }) : choices = List.unmodifiable(choices),
@@ -23,13 +26,24 @@ final class AssistanceRuntimeSenderDirectory {
   final AssistanceRuntimeSession review;
   final List<AssistanceRuntimeSenderChoice> choices;
   final Map<AssistanceMessageRoute, String> cursors;
+
+  /// The server time of the last sender page; the review's own time until
+  /// the first page arrives.
   final int serverTime;
   final AssistanceMessageRoute? loadingRoute;
+
+  /// The listened automation carries no sender choices: the first page of
+  /// every route is being read from the sender picker callable.
+  final bool loadingFirstPage;
   final Object? error;
   final bool needsRefresh;
   bool _current = true;
   bool get isCurrent =>
-      _current && review.isCurrent && !needsRefresh && loadingRoute == null;
+      _current &&
+      review.isCurrent &&
+      !needsRefresh &&
+      !loadingFirstPage &&
+      loadingRoute == null;
 
   List<AssistanceRuntimeSenderChoice> requireReview(
     AssistanceRuntimeSession expected,
@@ -55,19 +69,26 @@ class EventAssistanceRuntimeSenders extends _$EventAssistanceRuntimeSenders {
         identical(pageState.value, review) &&
         review.isCurrent;
     final setup = review.view.senderSetup;
+    final firstPage = current && setup == null;
     _active?._current = false;
     final directory = _active = AssistanceRuntimeSenderDirectory._(
       review,
       choices: current ? setup?.choices ?? [] : [],
       cursors: current ? setup?.nextCursors ?? {} : {},
       serverTime: review.view.serverTime,
-      needsRefresh: !current || setup == null,
+      loadingFirstPage: firstPage,
+      needsRefresh: !current,
       error: pageState.error,
     );
     ref.onDispose(() {
       _epoch++;
       _active?._current = false;
     });
+    if (firstPage) {
+      final epoch = _epoch;
+      // State cannot change while it is being built.
+      scheduleMicrotask(() => unawaited(_load(epoch, const {})));
+    }
     return directory;
   }
 
@@ -92,32 +113,48 @@ class EventAssistanceRuntimeSenders extends _$EventAssistanceRuntimeSenders {
         loadingRoute: route,
       ),
     );
+    await _load(epoch, {route: cursor});
+  }
+
+  /// Reads one page after [after]: the first page of every route when it is
+  /// empty, otherwise the next page of its one route.
+  Future<void> _load(
+    int epoch,
+    Map<AssistanceMessageRoute, String> after,
+  ) async {
+    if (!ref.mounted || epoch != _epoch) return;
+    final before = state;
+    final route = after.keys.singleOrNull;
     try {
+      requireRuntimeReviewAccount(ref, review.account);
       final page = await ref
           .read(eventAssistanceRuntimeCommandsProvider)
-          .fetchSenderPage(review.view.scope, cursors: {route: cursor});
+          .fetchSenderPage(review.view.scope, cursors: after);
       if (!ref.mounted || epoch != _epoch) return;
       requireRuntimeReviewAccount(ref, review.account);
       final base = review.view;
+      // Status and the configure window are evaluated by different clocks
+      // in the listened view and the callable; the reviewed automation is
+      // the same while its identity and revision are.
       if (!review.isCurrent ||
           page.scope != base.scope ||
           page.revision != base.revision ||
           page.sourceHash != base.sourceHash ||
           page.eventEnd != base.eventEnd ||
-          page.status != base.status ||
-          page.canConfigure != base.canConfigure ||
-          page.serverTime < before.serverTime ||
+          route != null && page.serverTime < before.serverTime ||
           page.senderSetup == null) {
         throw const ValidationException('Event settings changed. Reload them.');
       }
       final setup = page.senderSetup!;
-      setup.requireAdvancing({route: cursor});
+      setup.requireAdvancing(after);
       final merged = {
         for (final choice in before.choices)
           (choice.route, choice.senderId): choice,
       };
-      // Other channels in this response are first pages. Do not rewind them.
-      for (final choice in setup.choices.where((c) => c.route == route)) {
+      // A next page's other channels are first pages. Do not rewind them.
+      for (final choice in setup.choices.where(
+        (c) => route == null || c.route == route,
+      )) {
         if (choice.scope != base.scope) {
           throw const FormatException('Sender belongs to another event.');
         }
@@ -132,8 +169,12 @@ class EventAssistanceRuntimeSenders extends _$EventAssistanceRuntimeSenders {
         }
         merged[key] = choice;
       }
-      final cursors = {...before.cursors}..remove(route);
-      if (setup.nextCursors[route] case final next?) cursors[route] = next;
+      final cursors = route == null
+          ? {...setup.nextCursors}
+          : ({...before.cursors}..remove(route));
+      if (route != null) {
+        if (setup.nextCursors[route] case final next?) cursors[route] = next;
+      }
       _publish(
         AssistanceRuntimeSenderDirectory._(
           review,

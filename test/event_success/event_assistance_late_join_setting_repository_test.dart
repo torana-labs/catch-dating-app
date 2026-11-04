@@ -1,30 +1,63 @@
+import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_late_join_setting_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_assistance_guest_view_fixtures.dart';
 import 'event_assistance_late_join_setting_fixtures.dart';
 
 void main() {
   late SettingTestFunctions functions;
+  late FakeFirebaseFirestore firestore;
+  late GuestViewTestClock time;
   late EventAssistanceLateJoinSettingRepository repository;
   setUp(() {
     functions = SettingTestFunctions();
-    repository = EventAssistanceLateJoinSettingRepository(functions);
+    firestore = FakeFirebaseFirestore();
+    time = GuestViewTestClock(1000);
+    repository = EventAssistanceLateJoinSettingRepository(
+      functions,
+      firestore,
+      clock: time.clock,
+    );
   });
+  Future<void> seed(
+    Map<String, Object?> response, {
+    String groupId = 'event:whole',
+  }) => seedGuestView(
+    firestore,
+    EventAssistanceGuestViews.settings,
+    lateJoinSettingViewDoc(
+      response,
+      scope: settingScope(groupId: groupId),
+      evaluatedAt: 900,
+    ),
+  );
 
   test(
-    'read is limited to the requested live event and group workflow',
+    'each group workflow is its own manager listener and calls nothing',
     () async {
-      final view = await repository.fetch(settingScope());
-      expect(view.suggested, isNotNull);
-      expect(functions.calls.single.name, 'getEventAssistanceSetting');
-      expect(functions.calls.single.input, {
-        'context': settingScope().context,
-        'groupId': 'event:whole',
-        'workflowKind': 'lateJoin',
-      });
+      await seed(settingResponse());
+      await seed(
+        settingResponse(
+          groupId: 'easy',
+          status: 'configured',
+          origin: 'event',
+          effective: settingTemplate(),
+        ),
+        groupId: 'easy',
+      );
+      final whole = await repository.watch(settingScope()).first;
+      expect(whole.suggested, isNotNull);
+      expect(whole.serverTime, 1000);
+      final easy = await repository.watch(settingScope(groupId: 'easy')).first;
+      expect(easy.origin, AssistanceSettingOrigin.event);
+      expect(functions.calls, isEmpty);
+      time.now = 500;
+      expect((await repository.watch(settingScope()).first).serverTime, 900);
     },
   );
 
@@ -114,19 +147,11 @@ void main() {
       );
       expect(functions.calls, hasLength(1));
       functions.error = FirebaseFunctionsException(
-        code: 'permission-denied',
-        message: 'Denied',
-      );
-      await expectLater(
-        repository.fetch(settingScope()),
-        throwsA(isA<PermissionException>()),
-      );
-      functions.error = FirebaseFunctionsException(
         code: 'not-found',
         message: 'NOT_FOUND',
       );
       await expectLater(
-        repository.fetch(settingScope()),
+        repository.apply(change),
         throwsA(
           isA<BackendOperationException>().having(
             (e) => e.code,
@@ -139,17 +164,46 @@ void main() {
   );
 
   test(
-    'malformed, foreign and mutation responses cannot become read success',
+    'missing, invalid, malformed and foreign views cannot become read success',
     () async {
+      await expectLater(
+        repository.watch(settingScope()).first,
+        throwsA(
+          isA<BackendOperationException>().having(
+            (e) => e.code,
+            'code',
+            'live-view-missing',
+          ),
+        ),
+      );
+      final doc = lateJoinSettingViewDoc(
+        settingResponse(),
+        scope: settingScope(),
+        evaluatedAt: 900,
+      );
+      await seedGuestView(firestore, EventAssistanceGuestViews.settings, {
+        ...doc,
+        'sourceCoverage': 'invalidSource',
+        'incompleteSource': 'eventAssistanceSettings',
+      });
+      await expectLater(
+        repository.watch(settingScope()).first,
+        throwsA(
+          isA<BackendOperationException>().having(
+            (e) => e.code,
+            'code',
+            'live-view-invalid-source',
+          ),
+        ),
+      );
       for (final raw in [
-        null,
-        {},
-        settingResponse(groupId: 'foreign'),
-        settingResponse(outcome: 'applied', operationRevision: 0),
+        {...doc, 'view': <String, Object?>{}},
+        {...doc, 'groupId': 'foreign'},
+        {...doc, 'workflowKind': 'venueReadiness'},
       ]) {
-        functions.response = raw;
+        await seedGuestView(firestore, EventAssistanceGuestViews.settings, raw);
         await expectLater(
-          repository.fetch(settingScope()),
+          repository.watch(settingScope()).first,
           throwsA(isA<BackendOperationException>()),
         );
       }

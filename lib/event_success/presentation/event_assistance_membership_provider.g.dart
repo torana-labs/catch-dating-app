@@ -72,7 +72,7 @@ final class EventAssistanceMembershipProvider
 }
 
 String _$eventAssistanceMembershipHash() =>
-    r'b089c440cee73859bc0dbd984bc47b710876e866';
+    r'25455bbc1756c935b645b85d9dae64b58926c516';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 
@@ -137,20 +137,34 @@ abstract class _$EventAssistanceMembership
   }
 }
 
+/// The guest's membership for one sign-in period, as this manager reviews
+/// it. It is a Firestore listener: no cache tags or lifetime, and writes
+/// never invalidate it. Each delivery is a new session and retires the
+/// previous one.
+
 @ProviderFor(eventAssistanceMembershipForAccount)
 final eventAssistanceMembershipForAccountProvider =
     EventAssistanceMembershipForAccountFamily._();
+
+/// The guest's membership for one sign-in period, as this manager reviews
+/// it. It is a Firestore listener: no cache tags or lifetime, and writes
+/// never invalidate it. Each delivery is a new session and retires the
+/// previous one.
 
 final class EventAssistanceMembershipForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceMembershipSession>,
           EventAssistanceMembershipSession,
-          FutureOr<EventAssistanceMembershipSession>
+          Stream<EventAssistanceMembershipSession>
         >
     with
         $FutureModifier<EventAssistanceMembershipSession>,
-        $FutureProvider<EventAssistanceMembershipSession> {
+        $StreamProvider<EventAssistanceMembershipSession> {
+  /// The guest's membership for one sign-in period, as this manager reviews
+  /// it. It is a Firestore listener: no cache tags or lifetime, and writes
+  /// never invalidate it. Each delivery is a new session and retires the
+  /// previous one.
   EventAssistanceMembershipForAccountProvider._({
     required EventAssistanceMembershipForAccountFamily super.from,
     required (EventAssistanceGuestScope, {AuthenticatedSession account})
@@ -176,12 +190,12 @@ final class EventAssistanceMembershipForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceMembershipSession> $createElement(
+  $StreamProviderElement<EventAssistanceMembershipSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceMembershipSession> create(Ref ref) {
+  Stream<EventAssistanceMembershipSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceGuestScope, {AuthenticatedSession account});
@@ -205,12 +219,17 @@ final class EventAssistanceMembershipForAccountProvider
 }
 
 String _$eventAssistanceMembershipForAccountHash() =>
-    r'd5e07790644d1d31aae814d4b665a4a9adedb70c';
+    r'4a94cc908c7b88fd1ab4d0f615293a6930779bb5';
+
+/// The guest's membership for one sign-in period, as this manager reviews
+/// it. It is a Firestore listener: no cache tags or lifetime, and writes
+/// never invalidate it. Each delivery is a new session and retires the
+/// previous one.
 
 final class EventAssistanceMembershipForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceMembershipSession>,
+          Stream<EventAssistanceMembershipSession>,
           (EventAssistanceGuestScope, {AuthenticatedSession account})
         > {
   EventAssistanceMembershipForAccountFamily._()
@@ -221,6 +240,11 @@ final class EventAssistanceMembershipForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The guest's membership for one sign-in period, as this manager reviews
+  /// it. It is a Firestore listener: no cache tags or lifetime, and writes
+  /// never invalidate it. Each delivery is a new session and retires the
+  /// previous one.
 
   EventAssistanceMembershipForAccountProvider call(
     EventAssistanceGuestScope scope, {

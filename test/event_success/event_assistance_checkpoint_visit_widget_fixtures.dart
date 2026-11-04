@@ -64,6 +64,13 @@ class CheckpointVisitUiAccountability extends Fake
   CheckpointVisitUiAccountability(this.checkpoint);
   final CheckpointVisitUiLive checkpoint;
   final scopes = <EventAssistanceAccountabilityScope>[];
+  final _listeners =
+      <
+        (
+          EventAssistanceAccountabilityScope,
+          StreamController<EventAssistanceAccountabilityView>,
+        )
+      >[];
   final writes =
       <
         ({
@@ -71,17 +78,38 @@ class CheckpointVisitUiAccountability extends Fake
           Completer<EventAssistanceAccountabilityResult> result,
         })
       >[];
-  @override
-  Future<EventAssistanceAccountabilityView> fetch(
+  EventAssistanceAccountabilityView _view(
     EventAssistanceAccountabilityScope scope,
-  ) async {
+  ) => accountabilityView(
+    scope: scope,
+    reason: checkpoint.visitChanged ? 'visitChanged' : null,
+  );
+
+  @override
+  Stream<EventAssistanceAccountabilityView> watch(
+    EventAssistanceAccountabilityScope scope,
+  ) {
     scopes.add(scope);
     expect(scope.checkpoint, checkpointScope.checkpoint);
     expect(scope.attendeeId, 'b');
-    return accountabilityView(
-      scope: scope,
-      reason: checkpoint.visitChanged ? 'visitChanged' : null,
+    late final StreamController<EventAssistanceAccountabilityView> listener;
+    listener = StreamController(
+      onCancel: () {
+        _listeners.removeWhere((open) => identical(open.$2, listener));
+        return listener.close();
+      },
     );
+    _listeners.add((scope, listener));
+    listener.add(_view(scope));
+    return listener.stream;
+  }
+
+  /// Every open listener receives the current view, as the trigger
+  /// delivers a resolution.
+  void deliver() {
+    for (final (scope, listener) in [..._listeners]) {
+      listener.add(_view(scope));
+    }
   }
 
   @override
@@ -108,5 +136,6 @@ class CheckpointVisitUiAccountability extends Fake
     writes.last.result.complete(
       accountabilityResult(wire, scope: change.snapshot.scope),
     );
+    scheduleMicrotask(deliver);
   }
 }

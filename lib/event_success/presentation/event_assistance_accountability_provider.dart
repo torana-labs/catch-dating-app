@@ -7,9 +7,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_accountability_provider.g.dart';
 
-typedef AccountabilitySessionFuture =
-    Future<EventAssistanceAccountabilitySession>;
-
 final class EventAssistanceAccountabilitySession {
   EventAssistanceAccountabilitySession._(this.account, this.view);
   final AuthenticatedSession account;
@@ -73,43 +70,60 @@ class EventAssistanceAccountability extends _$EventAssistanceAccountability {
     return page;
   }
 
+  /// Restarts the listener only after it ended in an error; a healthy one
+  /// already delivers every change.
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    ref.invalidate(
-      eventAssistanceAccountabilityForAccountProvider(
-        scope,
-        account: switch (auth) {
-          AsyncData(:final value) => value,
-          AsyncError(:final error) => throw error,
-          AsyncLoading() => throw AssertionError(),
-        },
-      ),
-    );
+    final account = authState.value!;
+    if (ref
+        .read(
+          eventAssistanceAccountabilityForAccountProvider(
+            scope,
+            account: account,
+          ),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceAccountabilityForAccountProvider(
+          scope,
+          account: account,
+        ),
+      );
+    }
   }
 }
 
+/// The guest's visit review for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review.
 @Riverpod(retry: _noAccountabilityReadRetry)
-AccountabilitySessionFuture eventAssistanceAccountabilityForAccount(
+Stream<EventAssistanceAccountabilitySession>
+eventAssistanceAccountabilityForAccount(
   Ref ref,
   EventAssistanceAccountabilityScope scope, {
   required AuthenticatedSession account,
-}) async {
+}) {
   ref.watch(authenticatedSessionProvider);
   requireAccountabilityAccount(ref, account);
-  final view = await ref
+  EventAssistanceAccountabilitySession? latest;
+  ref.onDispose(() => latest?._current = false);
+  return ref
       .watch(eventAssistanceAccountabilityRepositoryProvider)
-      .fetch(scope);
-  requireAccountabilityAccount(ref, account);
-  if (view.scope != scope) {
-    throw const FormatException('Foreign accountability review.');
-  }
-  final session = EventAssistanceAccountabilitySession._(account, view);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watch(scope)
+      .map((view) {
+        requireAccountabilityAccount(ref, account);
+        if (view.scope != scope) {
+          throw const FormatException('Foreign accountability review.');
+        }
+        latest?._current = false;
+        return latest = EventAssistanceAccountabilitySession._(account, view);
+      });
 }
 
+// A listener error is shown with a retry; it is never retried silently.
 Duration? _noAccountabilityReadRetry(int count, Object error) => null;

@@ -165,6 +165,13 @@ class EventAssistanceAccountabilityController
         _inFlight != null) {
       return;
     }
+    ref
+        .read(
+          eventAssistanceAccountabilityProvider(
+            form.review.view.scope,
+          ).notifier,
+        )
+        .reload();
     _refresh();
     state = const AccountabilityIdle();
   }
@@ -283,8 +290,9 @@ class EventAssistanceAccountabilityController
     release?.call();
   }
 
+  /// The visit review is a listener that delivers every write; only the
+  /// host guest list is read again.
   void _refresh() {
-    ref.invalidate(eventAssistanceAccountabilityForAccountProvider);
     ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
   }
 

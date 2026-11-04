@@ -73,7 +73,7 @@ final class EventAssistanceAccountabilityProvider
 }
 
 String _$eventAssistanceAccountabilityHash() =>
-    r'91449c653ea2bcca87c493303abd71552db67750';
+    r'0e14d319b88967d168dd7afebeee2b3b49d4daaf';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 
@@ -139,20 +139,34 @@ abstract class _$EventAssistanceAccountability
   }
 }
 
+/// The guest's visit review for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review.
+
 @ProviderFor(eventAssistanceAccountabilityForAccount)
 final eventAssistanceAccountabilityForAccountProvider =
     EventAssistanceAccountabilityForAccountFamily._();
+
+/// The guest's visit review for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review.
 
 final class EventAssistanceAccountabilityForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceAccountabilitySession>,
           EventAssistanceAccountabilitySession,
-          FutureOr<EventAssistanceAccountabilitySession>
+          Stream<EventAssistanceAccountabilitySession>
         >
     with
         $FutureModifier<EventAssistanceAccountabilitySession>,
-        $FutureProvider<EventAssistanceAccountabilitySession> {
+        $StreamProvider<EventAssistanceAccountabilitySession> {
+  /// The guest's visit review for one sign-in period. It is a Firestore
+  /// listener: it declares no cache tags or lifetime and writes never
+  /// invalidate it. Each delivery is a new session and retires the previous
+  /// one, so a decision built on an older snapshot asks for a fresh review.
   EventAssistanceAccountabilityForAccountProvider._({
     required EventAssistanceAccountabilityForAccountFamily super.from,
     required (
@@ -181,12 +195,12 @@ final class EventAssistanceAccountabilityForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceAccountabilitySession> $createElement(
+  $StreamProviderElement<EventAssistanceAccountabilitySession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceAccountabilitySession> create(Ref ref) {
+  Stream<EventAssistanceAccountabilitySession> create(Ref ref) {
     final argument =
         this.argument
             as (
@@ -213,12 +227,17 @@ final class EventAssistanceAccountabilityForAccountProvider
 }
 
 String _$eventAssistanceAccountabilityForAccountHash() =>
-    r'6072be36f9587bee2fcdbc17d1dd05d1a70b990f';
+    r'fcfafb90113de5747b4c05fd8494a35ececd0ae4';
+
+/// The guest's visit review for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review.
 
 final class EventAssistanceAccountabilityForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceAccountabilitySession>,
+          Stream<EventAssistanceAccountabilitySession>,
           (EventAssistanceAccountabilityScope, {AuthenticatedSession account})
         > {
   EventAssistanceAccountabilityForAccountFamily._()
@@ -229,6 +248,11 @@ final class EventAssistanceAccountabilityForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The guest's visit review for one sign-in period. It is a Firestore
+  /// listener: it declares no cache tags or lifetime and writes never
+  /// invalidate it. Each delivery is a new session and retires the previous
+  /// one, so a decision built on an older snapshot asks for a fresh review.
 
   EventAssistanceAccountabilityForAccountProvider call(
     EventAssistanceAccountabilityScope scope, {

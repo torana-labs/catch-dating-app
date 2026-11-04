@@ -95,8 +95,7 @@ test("an event change re-evaluates every guest, setting and automation view",
 test("view ids are pinned: the phone derives the same ones", () => {
   const context = {mode: "live" as const, organizerId: "org-1",
     eventId: "event-1"};
-  // test/contexts/live/event_assistance_guest_view_identity_test.dart pins
-  // these.
+  // test/contexts/live/event_assistance_guest_views_test.dart pins these.
   assert.equal(membershipIdentity({context, attendeeId: "attendee-1"}),
     "membership:" +
     "c977039896305665999f971d428725fc1c1ff4eaf9368f56d7816f765ff8bdb8");

@@ -36,9 +36,13 @@ const previewUnconfirmed = NetworkException(
 class AssistancePreviewLiveRepository
     implements EventAssistanceAccountabilityRepository {
   @override
-  Future<EventAssistanceAccountabilityView> fetch(
+  Stream<EventAssistanceAccountabilityView> watch(
     EventAssistanceAccountabilityScope scope,
-  ) async => EventAssistanceAccountabilityResult.fromCallableData({
+  ) => Stream.value(_view(scope));
+
+  EventAssistanceAccountabilityView _view(
+    EventAssistanceAccountabilityScope scope,
+  ) => EventAssistanceAccountabilityResult.fromCallableData({
     'outcome': 'read',
     'operationRevision': null,
     'view': {
@@ -98,9 +102,12 @@ class AssistancePreviewMembershipRepository
   AssistancePreviewMembershipRepository(this.fixtures);
   final Map<String, Object?> fixtures;
   @override
-  Future<EventAssistanceMembershipView> fetch(
-    EventAssistanceGuestScope scope,
-  ) async {
+  Stream<EventAssistanceMembershipView> watch(
+    EventAssistanceGuestScope scope, {
+    required String actorUid,
+  }) => Stream.value(_view(scope));
+
+  EventAssistanceMembershipView _view(EventAssistanceGuestScope scope) {
     final snapshot = EventRehearsalBootstrap.fromCallableData(
       fixtures['manager'],
     );

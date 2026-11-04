@@ -70,7 +70,7 @@ final class EventAssistanceAccountabilityControllerProvider
 }
 
 String _$eventAssistanceAccountabilityControllerHash() =>
-    r'c710d466dd8a575ae1f57de4366e191ee4bcce0b';
+    r'7e2004e6aae46fe178779ce09678f27e94dac208';
 
 /// One guest owns one pending visit result across groups, checkpoints and sheet closure.
 

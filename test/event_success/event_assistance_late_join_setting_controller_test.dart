@@ -48,9 +48,14 @@ void main() {
 
   Future<void> complete(int index) async {
     final read = repository.reads[index];
-    read.result.complete(settingView(groupId: read.scope.groupId));
+    if (!read.result.isClosed) {
+      read.result.add(settingView(groupId: read.scope.groupId));
+    }
     await container.pump();
   }
+
+  /// A newer snapshot on the open listener, as a trigger write delivers it.
+  Future<void> deliver() => complete(repository.reads.length - 1);
 
   Future<LateJoinSettingSession> session() async {
     await signIn('host-1');
@@ -120,34 +125,32 @@ void main() {
     },
   );
 
-  test(
-    'event and group reads are isolated and explicit refresh fences older completion',
-    () async {
-      await signIn('host-1');
-      container.listen(
-        eventAssistanceLateJoinSettingProvider(
-          settingScope(groupId: 'pace:slow'),
-        ),
-        (_, _) {},
-      );
-      await container.pump();
-      await repository.waitForReads(2);
-      expect(repository.reads, hasLength(2));
-      container.read(provider.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(3);
-      expect(repository.reads, hasLength(3));
-      await complete(2);
-      final current = container.read(provider).requireValue;
-      await complete(0);
-      expect(container.read(provider).requireValue, same(current));
-      await complete(1);
-    },
-  );
+  test('event and group reads are isolated listeners; a reload keeps a healthy '
+      'one and each delivery retires the previous review', () async {
+    await signIn('host-1');
+    container.listen(
+      eventAssistanceLateJoinSettingProvider(
+        settingScope(groupId: 'pace:slow'),
+      ),
+      (_, _) {},
+    );
+    await container.pump();
+    await repository.waitForReads(2);
+    expect(repository.reads, hasLength(2));
+    await complete(0);
+    final current = container.read(provider).requireValue;
+    container.read(provider.notifier).reload();
+    await container.pump();
+    expect(repository.reads, hasLength(2));
+    await complete(0);
+    expect(current.isCurrent, isFalse);
+    expect(container.read(provider).requireValue.isCurrent, isTrue);
+    await complete(1);
+  });
 
   test('a repository cannot substitute another group review', () async {
     await signIn('host-1');
-    repository.reads.single.result.complete(settingView(groupId: 'pace:slow'));
+    repository.reads.single.result.add(settingView(groupId: 'pace:slow'));
     await container.pump();
     expect(container.read(provider).hasValue, isFalse);
     expect(container.read(provider).error, isA<FormatException>());
@@ -185,9 +188,13 @@ void main() {
       );
       expect(await notifier.submit(), same(receipt));
       expect(repository.writes, hasLength(1));
-      await repository.waitForReads(2);
-      expect(repository.reads, hasLength(2));
-      expect(container.read(provider).hasValue, isFalse);
+      await container.pump();
+      expect(
+        repository.reads,
+        hasLength(1),
+        reason: 'the trigger delivers the save to the open listener',
+      );
+      expect(container.read(provider).hasValue, isTrue);
     },
   );
 
@@ -290,8 +297,7 @@ void main() {
       addTearDown(sub.close);
       final notifier = container.read(editor.notifier)..open(review);
       notifier.select(const LateJoinDisabled());
-      container.read(provider.notifier).reload();
-      await container.pump();
+      await deliver();
       expect(review.isCurrent, isFalse);
       expect(
         (container.read(editor) as LateJoinSettingForm).canSubmit,
@@ -325,10 +331,7 @@ void main() {
       expect(container.read(eventAssistancePendingSettingsProvider), {
         review.view.scope,
       });
-      container.read(provider.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(2);
-      await complete(1);
+      await deliver();
       sub = container.listen(editor, (_, _) {});
       notifier.open(container.read(provider).requireValue);
       notifier.reload();
@@ -513,7 +516,7 @@ class _Repository extends Fake
       <
         ({
           EventAssistanceGroupScope scope,
-          Completer<LateJoinSettingView> result,
+          StreamController<LateJoinSettingView> result,
         })
       >[];
   final writes =
@@ -524,13 +527,14 @@ class _Repository extends Fake
         })
       >[];
   @override
-  Future<LateJoinSettingView> fetch(EventAssistanceGroupScope scope) {
-    final result = Completer<LateJoinSettingView>();
+  Stream<LateJoinSettingView> watch(EventAssistanceGroupScope scope) {
+    late final StreamController<LateJoinSettingView> result;
+    result = StreamController(onCancel: () => result.close());
     reads.add((scope: scope, result: result));
     final previous = _changed;
     _changed = Completer<void>();
     previous.complete();
-    return result.future;
+    return result.stream;
   }
 
   @override

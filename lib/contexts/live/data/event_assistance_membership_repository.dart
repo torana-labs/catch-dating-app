@@ -1,47 +1,59 @@
+import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_membership_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/transfer_event_assistance_group_callable_request.g.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_membership_repository.g.dart';
 
+/// A guest's group membership through a manager listener on
+/// `hostEventMembershipViews`; transfers stay commands.
 class EventAssistanceMembershipRepository {
-  const EventAssistanceMembershipRepository(this._functions);
+  const EventAssistanceMembershipRepository(
+    this._functions,
+    this._firestore, {
+    this._clock = const AppClock(),
+  });
   final FirebaseFunctions _functions;
+  final FirebaseFirestore _firestore;
 
-  Future<EventAssistanceMembershipView> fetch(
-    EventAssistanceGuestScope scope,
-  ) => withBackendErrorContext(
-    () async {
-      final response = await _functions
-          .httpsCallable('getEventAssistanceMembership')
-          .call<Object?>(
-            GetEventAssistanceMembershipCallableRequest(
-              context: scope.context,
-              attendeeId: scope.attendeeId,
-            ).toJson(),
-          );
-      final result = EventAssistanceMembershipResult.fromCallableData(
-        response.data,
-        expectedScope: scope,
-      );
-      if (result.outcome != AssistanceMembershipOutcome.read) {
-        throw const FormatException('Invalid membership read outcome.');
-      }
-      return result.view;
-    },
+  /// Applies time to the view on every delivered snapshot.
+  final AppClock _clock;
+
+  /// The membership as the manager [actorUid] reviews it: only managers can
+  /// listen, so every saved group is theirs to move the guest between.
+  Stream<EventAssistanceMembershipView> watch(
+    EventAssistanceGuestScope scope, {
+    required String actorUid,
+  }) => withBackendErrorStream(
+    () => _firestore
+        .collection(EventAssistanceGuestViews.memberships)
+        .doc(membershipViewId(scope))
+        .snapshots()
+        .map((snapshot) {
+          final data = snapshot.data();
+          return EventAssistanceMembershipResult.fromCallableData(
+            membershipReadResponse(
+              data,
+              scope: scope,
+              actorUid: actorUid,
+              now: guestViewNow(_clock.now(), data),
+            ),
+            expectedScope: scope,
+          ).view;
+        }),
     context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'load guest group membership',
-      resource: 'eventAssistanceMemberships',
+      service: BackendService.firestore,
+      action: 'watch guest group membership',
+      resource: EventAssistanceGuestViews.memberships,
     ),
-    mapper: mapMissingCallableAsUnavailable,
   );
 
   Future<EventAssistanceMembershipResult> apply(
@@ -75,4 +87,8 @@ class EventAssistanceMembershipRepository {
 @riverpod
 EventAssistanceMembershipRepository eventAssistanceMembershipRepository(
   Ref ref,
-) => EventAssistanceMembershipRepository(ref.watch(firebaseFunctionsProvider));
+) => EventAssistanceMembershipRepository(
+  ref.watch(firebaseFunctionsProvider),
+  ref.watch(firebaseFirestoreProvider),
+  clock: ref.watch(appClockProvider),
+);

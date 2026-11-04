@@ -70,43 +70,53 @@ class EventAssistanceMembership extends _$EventAssistanceMembership {
     return page;
   }
 
+  /// Restarts the listener only after it ended in an error; a healthy one
+  /// already delivers every change.
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    ref.invalidate(
-      eventAssistanceMembershipForAccountProvider(
-        scope,
-        account: switch (auth) {
-          AsyncData(:final value) => value,
-          AsyncError(:final error) => throw error,
-          AsyncLoading() => throw AssertionError(),
-        },
-      ),
-    );
+    final account = authState.value!;
+    if (ref
+        .read(
+          eventAssistanceMembershipForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceMembershipForAccountProvider(scope, account: account),
+      );
+    }
   }
 }
 
+/// The guest's membership for one sign-in period, as this manager reviews
+/// it. It is a Firestore listener: no cache tags or lifetime, and writes
+/// never invalidate it. Each delivery is a new session and retires the
+/// previous one.
 @Riverpod(retry: _noMembershipReadRetry)
-Future<EventAssistanceMembershipSession> eventAssistanceMembershipForAccount(
+Stream<EventAssistanceMembershipSession> eventAssistanceMembershipForAccount(
   Ref ref,
   EventAssistanceGuestScope scope, {
   required AuthenticatedSession account,
-}) async {
+}) {
   ref.watch(authenticatedSessionProvider);
   requireMembershipAccount(ref, account);
-  final view = await ref
+  EventAssistanceMembershipSession? latest;
+  ref.onDispose(() => latest?._current = false);
+  return ref
       .watch(eventAssistanceMembershipRepositoryProvider)
-      .fetch(scope);
-  requireMembershipAccount(ref, account);
-  if (view.scope != scope) {
-    throw const FormatException('Foreign membership review.');
-  }
-  final session = EventAssistanceMembershipSession._(account, view);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watch(scope, actorUid: account.uid)
+      .map((view) {
+        requireMembershipAccount(ref, account);
+        if (view.scope != scope) {
+          throw const FormatException('Foreign membership review.');
+        }
+        latest?._current = false;
+        return latest = EventAssistanceMembershipSession._(account, view);
+      });
 }
 
+// A listener error is shown with a retry; it is never retried silently.
 Duration? _noMembershipReadRetry(int count, Object error) => null;
