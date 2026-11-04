@@ -84,11 +84,21 @@ class _CatchScreenState extends State<CatchScreen> {
 
   bool _scrolled = false;
 
-  bool _handleScroll(ScrollNotification notification) {
-    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
+  /// Scrolling and metrics changes alike, so a restored or programmatic
+  /// offset marks the screen scrolled as a drag does.
+  bool _handleScroll(Notification notification) {
+    final (depth, metrics) = switch (notification) {
+      ScrollNotification(:final depth, :final metrics) => (depth, metrics),
+      ScrollMetricsNotification(:final depth, :final metrics) => (
+        depth,
+        metrics,
+      ),
+      _ => (-1, null),
+    };
+    if (depth != 0 || metrics == null || metrics.axis != Axis.vertical) {
       return false;
     }
-    final scrolled = notification.metrics.pixels > _scrolledAfter;
+    final scrolled = metrics.pixels > _scrolledAfter;
     if (scrolled != _scrolled) setState(() => _scrolled = scrolled);
     return false;
   }
@@ -126,7 +136,7 @@ class _CatchScreenState extends State<CatchScreen> {
                 child: SafeArea(
                   top: topBar == null,
                   bottom: false,
-                  child: NotificationListener<ScrollNotification>(
+                  child: NotificationListener<Notification>(
                     onNotification: _handleScroll,
                     child: body,
                   ),

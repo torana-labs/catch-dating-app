@@ -168,4 +168,21 @@ void main() {
       const Rect.fromLTWH(0, 0, 400, 800),
     );
   });
+
+  testWidgets('an offset the body starts at counts as scrolled', (
+    tester,
+  ) async {
+    final seen = <bool>[];
+    final controller = ScrollController(initialScrollOffset: 48);
+    addTearDown(controller.dispose);
+    await _pump(
+      tester,
+      PrimaryScrollController(
+        controller: controller,
+        child: CatchScreen(body: _ScrollProbe(seen)),
+      ),
+    );
+    await tester.pump();
+    expect(seen.last, isTrue);
+  });
 }
