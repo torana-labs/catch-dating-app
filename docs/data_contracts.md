@@ -2568,7 +2568,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use `listOrganizerCampaigns` and contact-detail callables |
 | Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
 | Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
-| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}`, `externalEventMappings/{mappingId}`, and `providerSyncRuns/{runId}` |
+| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
+| Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -2812,6 +2813,13 @@ authority (`isActiveHostSummaryManager`), and
 their evaluators and rules are described in
 [Progressive Event Setup Contracts](#progressive-event-setup-contracts) and
 [Event Dress Rehearsal Isolation Contract](#event-dress-rehearsal-isolation-contract).
+
+The door reads `hostProviderConnectionViews/{organizerId}`,
+`externalEventMappings/{mappingId}`, `hostEventRosterInsightViews/{eventId}`
+and `hostOrganizerSpendProjections/{organizerId}` under the same manager
+authority (`isHostSummaryManager`: the callables they replace refused no
+archived organizer); see
+[Provider Sync, Staff, And Offline Attendance](#provider-sync-staff-and-offline-attendance).
 
 `hostResponseSummaries/{summaryId}` stores one unified inbox entry per submitted
 response or standalone application. The key hashes the source kind and ID. A
@@ -4210,6 +4218,35 @@ cursor, counts, state and sanitized errors. The implemented Luma poller imports
 registration and provider check-in facts through the canonical attendee
 reconciler. It does not invent orders, refunds, revenue, referral coverage or
 webhook freshness that Luma has not supplied.
+
+The door reads provider setup through listeners. The provider catalog is the
+contract `contracts/catalogs/organizer_providers.json`, generated for Functions
+and as `organizer_provider_catalog.g.dart` for the Host app. Triggers write
+`hostProviderConnectionViews/{organizerId}`: the organizer's connection rows
+(at most 20; more is `overCap`) without `secretVersionResource`,
+`connectedByUid` or `lastErrorCode`. A current manager gets the view and the
+event's `externalEventMappings` document, whose id the app derives as `eem_` and
+the first 48 hex characters of sha256(eventId); a mapping holds no credential.
+A missing or incomplete view keeps the door in its error state. Connect and
+disconnect still return the setup response, but the door waits for the
+listeners to deliver the write instead of using it, and sync no longer rereads.
+
+The door's roster labels are written ahead of time to
+`hostEventRosterInsightViews/{eventId}`, one row per attendee (at most 1,000)
+with the retired callable's fields. Attendance labels use only events that
+ended before the event's start, and spend only completed, non-refunded Catch
+payments completed by then, so a view freezes 24 hours after its event ends.
+Catch spend is split from the rows: the payment trigger keeps per-account
+totals in the server-only `organizerSpendTotals/{organizerId}` (at most 4,000
+accounts; another account or an uncomputable amount makes them partial, and
+partial totals show no spend at all) and, in the same transaction,
+`hostOrganizerSpendProjections/{organizerId}`, which exposes only the
+top-quartile threshold per currency, never an account or a per-guest amount.
+The phone labels `top_catch_spender` where an amount with at least two paid
+orders reaches its currency's threshold; `member` is always stored and the
+phone hides it when it does not show membership. A missing view, or one
+recorded as `invalidSource`, shows the roster's unavailable state; check-in
+never depends on it.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
 `setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.

@@ -1,6 +1,19 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_fields.dart';
 
-enum HostRosterInsightCoverage { exact, partial }
+/// Whether the server's roster insight view could be read completely.
+enum HostRosterInsightCoverage {
+  /// Every attendee has a row built from complete history.
+  exact,
+
+  /// Some labels are still being prepared, or history was capped.
+  partial,
+
+  /// A source row failed validation; the rows are the last valid ones.
+  invalidSource,
+
+  /// The server has not written the event's view yet.
+  missing,
+}
 
 enum HostRosterSpendCoverage { catchPaymentsOnly, insufficientData }
 
@@ -95,6 +108,21 @@ class HostEventRosterInsight {
         ).map(HostRosterCatchSpend.fromMap).toList(growable: false),
       );
 
+  /// This row with its labels replaced; the stored facts stay as they are.
+  HostEventRosterInsight withSignals(Set<HostRosterInsightSignal> signals) =>
+      HostEventRosterInsight(
+        attendeeId: attendeeId,
+        contactId: contactId,
+        availability: availability,
+        signals: signals,
+        priorAttendedEventCount: priorAttendedEventCount,
+        priorExpectedEventCount: priorExpectedEventCount,
+        priorNoShowCount: priorNoShowCount,
+        lastAttendedAt: lastAttendedAt,
+        attendanceRate: attendanceRate,
+        catchSpend: catchSpend,
+      );
+
   final String attendeeId;
   final String? contactId;
   final HostRosterInsightAvailability availability;
@@ -118,39 +146,126 @@ class HostEventRosterInsights {
     required this.computedAt,
   });
 
-  factory HostEventRosterInsights.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'event roster insights');
+  /// No view yet: the server has not evaluated the event's roster.
+  const HostEventRosterInsights.missing(this.eventId)
+    : organizerId = null,
+      cutoffAt = null,
+      sourceCoverage = HostRosterInsightCoverage.missing,
+      spendCoverage = HostRosterSpendCoverage.insufficientData,
+      rows = const [],
+      computedAt = null;
+
+  /// Composes `hostEventRosterInsightViews/{eventId}` ([view], null when it
+  /// does not exist; its `evaluatedAt` as `evaluatedAtMillis`) with its
+  /// organizer's `hostOrganizerSpendProjections` document ([projection],
+  /// null when the organizer has no counted Catch payment yet). The phone adds `top_catch_spender` from the thresholds,
+  /// and drops `member` unless [includeHostMembership]. A view for another
+  /// event, or a projection for another organizer, is a [FormatException].
+  factory HostEventRosterInsights.fromViews({
+    required String eventId,
+    required Map<String, Object?>? view,
+    required Map<String, Object?>? projection,
+    bool includeHostMembership = true,
+  }) {
+    if (view == null) return HostEventRosterInsights.missing(eventId);
+    final organizerId = crmRequiredString(view, 'organizerId');
+    if (view['schemaVersion'] != 1 || view['eventId'] != eventId) {
+      throw const FormatException('Roster insight view changed identity.');
+    }
+    final thresholds = <String, int>{};
+    var spendCoverage = HostRosterSpendCoverage.catchPaymentsOnly;
+    if (projection != null) {
+      if (projection['schemaVersion'] != 1 ||
+          projection['organizerId'] != organizerId) {
+        throw const FormatException('Spend projection changed identity.');
+      }
+      spendCoverage = crmEnumByName(
+        HostRosterSpendCoverage.values,
+        crmRequiredString(projection, 'spendCoverage'),
+        'spendCoverage',
+      );
+      final byCurrency = crmRequiredMap(
+        projection['topQuartileThresholdByCurrency'],
+        'spend thresholds',
+      );
+      for (final MapEntry(:key, :value) in byCurrency.entries) {
+        if (key is! String || value is! num) {
+          throw const FormatException('Invalid spend threshold.');
+        }
+        thresholds[key] = value.toInt();
+      }
+    }
     return HostEventRosterInsights(
-      eventId: crmRequiredString(map, 'eventId'),
-      organizerId: crmRequiredString(map, 'organizerId'),
-      cutoffAt: crmRequiredDateTimeFromMillis(map, 'cutoffAtMillis'),
+      eventId: eventId,
+      organizerId: organizerId,
+      cutoffAt: crmRequiredDateTimeFromMillis(view, 'cutoffAtMillis'),
       sourceCoverage: crmEnumByName(
         HostRosterInsightCoverage.values,
-        crmRequiredString(map, 'sourceCoverage'),
+        crmRequiredString(view, 'sourceCoverage'),
         'sourceCoverage',
       ),
-      spendCoverage: crmEnumByName(
-        HostRosterSpendCoverage.values,
-        crmRequiredString(map, 'spendCoverage'),
-        'spendCoverage',
-      ),
-      rows: crmMapList(
-        map['rows'],
-        'event roster insight rows',
-      ).map(HostEventRosterInsight.fromMap).toList(growable: false),
-      computedAt: crmRequiredDateTimeFromMillis(map, 'computedAtMillis'),
+      spendCoverage: spendCoverage,
+      rows: [
+        for (final row in crmMapList(view['rows'], 'roster insight rows'))
+          _withPhoneSignals(
+            HostEventRosterInsight.fromMap(row),
+            thresholds:
+                spendCoverage == HostRosterSpendCoverage.catchPaymentsOnly
+                ? thresholds
+                : const {},
+            includeHostMembership: includeHostMembership,
+          ),
+      ],
+      computedAt: crmRequiredDateTimeFromMillis(view, 'evaluatedAtMillis'),
     );
   }
 
   final String eventId;
-  final String organizerId;
-  final DateTime cutoffAt;
+
+  /// Null while the view is [HostRosterInsightCoverage.missing].
+  final String? organizerId;
+
+  /// The event's start; labels use history from before it.
+  final DateTime? cutoffAt;
   final HostRosterInsightCoverage sourceCoverage;
   final HostRosterSpendCoverage spendCoverage;
   final List<HostEventRosterInsight> rows;
-  final DateTime computedAt;
+
+  /// When the server last evaluated the view.
+  final DateTime? computedAt;
 
   Map<String, HostEventRosterInsight> get byAttendeeId => {
     for (final row in rows) row.attendeeId: row,
   };
+}
+
+/// Adds `top_catch_spender` where a spend amount with at least two paid
+/// orders reaches its currency's top-quartile threshold (right after
+/// `known_catch_spender`, where the retired callable put it), and drops
+/// `member` unless the screen shows membership.
+HostEventRosterInsight _withPhoneSignals(
+  HostEventRosterInsight row, {
+  required Map<String, int> thresholds,
+  required bool includeHostMembership,
+}) {
+  final topSpender = row.catchSpend.any((amount) {
+    final threshold = thresholds[amount.currency];
+    return threshold != null &&
+        amount.paidOrderCount >= 2 &&
+        amount.amountMinor >= threshold;
+  });
+  if (!topSpender &&
+      (includeHostMembership ||
+          !row.signals.contains(HostRosterInsightSignal.member))) {
+    return row;
+  }
+  return row.withSignals({
+    for (final signal in row.signals)
+      if (includeHostMembership ||
+          signal != HostRosterInsightSignal.member) ...[
+        signal,
+        if (topSpender && signal == HostRosterInsightSignal.knownCatchSpender)
+          HostRosterInsightSignal.topCatchSpender,
+      ],
+  });
 }

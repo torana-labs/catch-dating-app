@@ -436,7 +436,7 @@ class _RosterScope extends StatelessWidget {
       ).overrideWith((ref) => Stream.value(_attendees)),
       hostEventRosterInsightsProvider(
         _previewEventId,
-      ).overrideWith((ref) async => _insights),
+      ).overrideWith((ref) => Stream.value(_insights)),
       watchPendingEventRuntimeClaimsProvider(
         _previewEventId,
       ).overrideWith((ref) => Stream.value([_claim])),

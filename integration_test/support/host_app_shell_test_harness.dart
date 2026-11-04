@@ -80,8 +80,9 @@ class HostShellBackend {
   final privateEvents = <String, Map<String, Object?>>{};
 
   /// Writes the organizer and, as the backend's evaluators do on that write,
-  /// its evaluated (empty) Today attention schedule and its event setup
-  /// defaults view. No rehearsal milestone: none has been completed.
+  /// its evaluated (empty) Today attention schedule, its event setup defaults
+  /// view and its (empty) provider connection view. No rehearsal milestone:
+  /// none has been completed.
   Future<void> seedOrganizer(Organizer organizer) async {
     await firestore
         .collection('organizers')
@@ -123,19 +124,43 @@ class HostShellBackend {
             'reviewedDefaultsHash': _journeyHash,
           },
         });
+    await firestore
+        .collection('hostProviderConnectionViews')
+        .doc(organizer.id)
+        .set({
+          'schemaVersion': 1,
+          'organizerId': organizer.id,
+          'revision': 1,
+          'evaluatedAt': Timestamp.now(),
+          'sourceCoverage': 'complete',
+          'incompleteSource': null,
+          'connections': const <Object?>[],
+        });
   }
 
-  /// Writes a published event as the backend's publication command leaves it;
-  /// `publicationState` is backend-owned and absent from [Event.toJson].
-  Future<void> seedPublishedEvent(Event event) {
-    _eventOrganizers[event.id] = event.organizerId;
-    return firestore.collection('events').doc(event.id).set({
+  /// Writes a published event as the backend's publication command leaves it
+  /// (`publicationState` is backend-owned and absent from [Event.toJson]),
+  /// and the roster label view its evaluator writes before any attendee.
+  Future<void> seedPublishedEvent(Event event) async {
+    await firestore.collection('events').doc(event.id).set({
       ...event.toJson(),
       'publicationState': 'published',
     });
+    await firestore
+        .collection('hostEventRosterInsightViews')
+        .doc(event.id)
+        .set({
+          'schemaVersion': 1,
+          'eventId': event.id,
+          'organizerId': event.organizerId,
+          'cutoffAtMillis': event.startTime.millisecondsSinceEpoch,
+          'revision': 1,
+          'evaluatedAt': Timestamp.now(),
+          'sourceCoverage': 'exact',
+          'incompleteSource': null,
+          'rows': const <Object?>[],
+        });
   }
-
-  final _eventOrganizers = <String, String>{};
 
   Future<void> seedAttendee(EventAttendee attendee) => firestore
       .collection('eventAttendees')
@@ -153,15 +178,6 @@ class HostShellBackend {
       'setEventAttendeeAttendance' => _setAttendance(request),
       'createOrganizer' => _createOrganizer(request),
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
-      'getEventRosterInsights' => {
-        'eventId': eventId,
-        'organizerId': _eventOrganizers[eventId],
-        'cutoffAtMillis': now,
-        'sourceCoverage': 'exact',
-        'spendCoverage': 'insufficientData',
-        'rows': const <Object?>[],
-        'computedAtMillis': now,
-      },
       'createEventVenueSession' => {
         'eventId': eventId,
         'venueSessionToken': 'host-journey-venue-session',

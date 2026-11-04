@@ -260,6 +260,17 @@ async function main() {
     "packages/platform/lib/schema_contracts/generated/host_attention_policies.g.dart",
     renderDartHostAttentionPolicies(hostAttentionPolicyCatalog)
   );
+  const organizerProviderCatalog = readContractJson(
+    "catalogs/organizer_providers.json"
+  );
+  assertOrganizerProviderCatalog(organizerProviderCatalog, bundleSchema(
+    path.join(contractRoot,
+      "callable_responses/organizer_provider_setup_response.schema.json")
+  ));
+  addTextOutput(
+    "packages/platform/lib/schema_contracts/generated/organizer_provider_catalog.g.dart",
+    renderDartOrganizerProviderCatalog(organizerProviderCatalog)
+  );
   const organizerEntitlementSkuCatalog = readContractJson(
     "catalogs/organizer_entitlement_skus.json"
   );
@@ -360,6 +371,7 @@ async function main() {
       personFieldCatalog,
       organizerFormTemplateCatalog,
       hostAttentionPolicyCatalog,
+      organizerProviderCatalog,
       organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
@@ -386,6 +398,7 @@ async function main() {
       personFieldCatalog,
       organizerFormTemplateCatalog,
       hostAttentionPolicyCatalog,
+      organizerProviderCatalog,
       organizerEntitlementSkuCatalog,
       photoCatalog,
       profilePhotoPolicy,
@@ -1444,6 +1457,101 @@ ${rows}
 `;
 }
 
+/**
+ * The provider catalog is the provider row the setup command responses
+ * return: it must satisfy that row's schema, one row per provider.
+ */
+function assertOrganizerProviderCatalog(catalog, responseSchema) {
+  const rows = responseSchema.properties.providers;
+  const row = rows.items;
+  const fail = (detail) => {
+    throw new Error(`Organizer provider catalog is invalid: ${detail}`);
+  };
+  if (catalog?.schemaVersion !== 1 || catalog?.kind !== "organizerProviders" ||
+      !Array.isArray(catalog.providers)) {
+    fail("identity");
+  }
+  if (catalog.providers.length < rows.minItems ||
+      catalog.providers.length > rows.maxItems) {
+    fail(`${catalog.providers.length} providers`);
+  }
+  const sameKeys = (value, keys) => value !== null &&
+    typeof value === "object" &&
+    JSON.stringify(Object.keys(value).sort()) ===
+      JSON.stringify([...keys].sort());
+  const seen = new Set();
+  for (const entry of catalog.providers) {
+    if (!sameKeys(entry, row.required)) fail(`fields of ${entry?.provider}`);
+    for (const [field, schema] of Object.entries(row.properties)) {
+      const value = entry[field];
+      if (schema.enum && !schema.enum.includes(value)) {
+        fail(`${entry.provider}.${field}`);
+      }
+      if (schema.type === "string" && (typeof value !== "string" ||
+          value.length < schema.minLength || value.length > schema.maxLength)) {
+        fail(`${entry.provider}.${field}`);
+      }
+      if (schema.type === "object" && (!sameKeys(value, schema.required) ||
+          Object.values(value).some((flag) => typeof flag !== "boolean"))) {
+        fail(`${entry.provider}.${field}`);
+      }
+    }
+    if (seen.has(entry.provider)) fail(`duplicate ${entry.provider}`);
+    seen.add(entry.provider);
+  }
+}
+
+/** The booking-provider catalog the Host app composes its setup from. */
+function renderDartOrganizerProviderCatalog(catalog) {
+  const capabilityKeys = Object.keys(catalog.providers[0].capabilities);
+  const rows = catalog.providers.map((entry) =>
+    "  OrganizerProviderCatalogContract(\n" +
+    `    provider: ${dartString(entry.provider)},\n` +
+    `    displayName: ${dartString(entry.displayName)},\n` +
+    `    adapterClass: ${dartString(entry.adapterClass)},\n` +
+    `    availability: ${dartString(entry.availability)},\n` +
+    `    importSupport: ${dartString(entry.importSupport)},\n` +
+    `    connectionMethod: ${dartString(entry.connectionMethod)},\n` +
+    "    capabilities: <String, bool>{\n" +
+    capabilityKeys.map((key) =>
+      `      ${dartString(key)}: ${entry.capabilities[key]},\n`).join("") +
+    "    },\n" +
+    `    requirement: ${dartString(entry.requirement)},\n` +
+    "  ),"
+  ).join("\n");
+  return `${dartGeneratedHeader()}// Source: contracts/catalogs/organizer_providers.json.
+
+/// One booking provider as Catch has verified it, in wire values.
+class OrganizerProviderCatalogContract {
+  const OrganizerProviderCatalogContract({
+    required this.provider,
+    required this.displayName,
+    required this.adapterClass,
+    required this.availability,
+    required this.importSupport,
+    required this.connectionMethod,
+    required this.capabilities,
+    required this.requirement,
+  });
+
+  final String provider;
+  final String displayName;
+  final String adapterClass;
+  final String availability;
+  final String importSupport;
+  final String connectionMethod;
+  final Map<String, bool> capabilities;
+  final String requirement;
+}
+
+/// Every provider, in display order.
+const List<OrganizerProviderCatalogContract> organizerProviderCatalog =
+    <OrganizerProviderCatalogContract>[
+${rows}
+];
+`;
+}
+
 function renderDartEventSuccessMomentPresentations(catalog) {
   const moments = catalog.moments.map((moment) =>
     `  EventSuccessMomentPresentationContract(\n` +
@@ -2041,6 +2149,7 @@ function renderTsSchemaModules({
   personFieldCatalog,
   organizerFormTemplateCatalog,
   hostAttentionPolicyCatalog,
+  organizerProviderCatalog,
   organizerEntitlementSkuCatalog,
   photoCatalog,
   profilePhotoPolicy,
@@ -2067,6 +2176,7 @@ function renderTsSchemaModules({
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
+    ["organizerProviderCatalog", organizerProviderCatalog],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
@@ -2173,6 +2283,7 @@ function renderToolSchemaRegistry({
   personFieldCatalog,
   organizerFormTemplateCatalog,
   hostAttentionPolicyCatalog,
+  organizerProviderCatalog,
   organizerEntitlementSkuCatalog,
   photoCatalog,
   profilePhotoPolicy,
@@ -2186,6 +2297,7 @@ function renderToolSchemaRegistry({
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
     ["hostAttentionPolicyCatalog", hostAttentionPolicyCatalog],
+    ["organizerProviderCatalog", organizerProviderCatalog],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],

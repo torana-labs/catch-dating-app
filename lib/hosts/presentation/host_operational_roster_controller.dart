@@ -157,13 +157,6 @@ class HostOperationalRosterController {
       .read(eventAttendeeRepositoryProvider)
       .createRosterHandoff(eventId: eventId);
 
-  Future<HostProviderSetup> getProviderSetup({
-    required String organizerId,
-    required String eventId,
-  }) => _ref
-      .read(hostProviderRepositoryProvider)
-      .getSetup(organizerId: organizerId, eventId: eventId);
-
   Future<HostProviderEventChoices> listLumaEvents({
     required String organizerId,
     required String eventId,
@@ -176,19 +169,24 @@ class HostOperationalRosterController {
         apiKey: apiKey,
       );
 
+  /// Connects the event and completes once the door's listeners deliver the
+  /// connection, so the door never rereads after the write.
   Future<HostProviderSetup> connectLuma({
     required String organizerId,
     required String eventId,
     required String externalEventId,
     required String apiKey,
-  }) => _ref
-      .read(hostProviderRepositoryProvider)
-      .connectLuma(
-        organizerId: organizerId,
-        eventId: eventId,
-        externalEventId: externalEventId,
-        apiKey: apiKey,
-      );
+  }) async {
+    final providers = _ref.read(hostProviderRepositoryProvider);
+    final receipt = await providers.connectLuma(
+      organizerId: organizerId,
+      eventId: eventId,
+      externalEventId: externalEventId,
+      apiKey: apiKey,
+    );
+    await providers.untilReflected(receipt);
+    return receipt;
+  }
 
   Future<HostProviderSyncResult> syncProvider({
     required String organizerId,
@@ -202,15 +200,20 @@ class HostOperationalRosterController {
         clientOperationId: clientOperationId,
       );
 
+  /// Disconnects the event and completes once the door's listeners deliver
+  /// the disconnection.
   Future<HostProviderSetup> disconnectProvider({
     required String organizerId,
     required String eventId,
     required String connectionId,
-  }) => _ref
-      .read(hostProviderRepositoryProvider)
-      .disconnect(
-        organizerId: organizerId,
-        eventId: eventId,
-        connectionId: connectionId,
-      );
+  }) async {
+    final providers = _ref.read(hostProviderRepositoryProvider);
+    final receipt = await providers.disconnect(
+      organizerId: organizerId,
+      eventId: eventId,
+      connectionId: connectionId,
+    );
+    await providers.untilReflected(receipt);
+    return receipt;
+  }
 }

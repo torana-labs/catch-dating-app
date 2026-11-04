@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_spend_totals.schema.json",
+  "title": "OrganizerSpendTotalsDocument",
+  "description": "Server-only, never client-readable running totals of completed, non-sign-up-failed Catch payments for one organizer's events, per linked account and currency, at their retained amount. The payment trigger resolves the organizer through the payment's event and applies the change between a payment's old and new contribution in one transaction, with hostOrganizerSpendProjections; the backfill rebuilds both from a paged scan of the organizer's events and their payments. Per account it also keeps the earliest and latest completion it has counted (bounds that only widen), so a roster view whose cutoff falls inside them recomputes that account's spend from its payments.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerSpendTotals",
+  "x-firestore-path": "organizerSpendTotals/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host organizer spend evaluator (hostReadModels roster insight payment trigger and backfill)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "byUid",
+    "uidCount",
+    "uncomputablePaymentCount",
+    "accountCapReached",
+    "coverage",
+    "appliedChangeIds",
+    "revision",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "byUid": {
+      "type": "object",
+      "maxProperties": 4000,
+      "additionalProperties": {"$ref": "#/definitions/accountTotals"},
+      "description": "Keyed by the paying account's uid. At most 4,000 accounts keep the document well under Firestore's 1 MiB limit; another account makes coverage partial and is not added.",
+      "x-catch-ownership": "server-only"
+    },
+    "uidCount": {"type": "integer", "minimum": 0, "maximum": 4000, "x-catch-ownership": "server-only"},
+    "uncomputablePaymentCount": {"type": "integer", "minimum": 0, "maximum": 1000000, "description": "Counted payments whose retained amount cannot be computed (an invalid amount or refund authority). Any makes coverage partial.", "x-catch-ownership": "server-only"},
+    "coverage": {"enum": ["exact", "partial"], "description": "partial once an account could not be added or a payment's amount could not be computed.", "x-catch-ownership": "server-only"},
+    "accountCapReached": {"type": "boolean", "description": "Whether an account was left out because byUid was full. Only a rebuild clears it.", "x-catch-ownership": "server-only"},
+    "appliedChangeIds": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {"type": "string", "minLength": 1, "maxLength": 200},
+      "description": "The most recent payment trigger event ids applied, newest last, so a redelivered trigger event is not counted twice.",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"}
+  },
+  "definitions": {
+    "accountTotals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["byCurrency", "firstCompletedAtMillis", "lastCompletedAtMillis"],
+      "properties": {
+        "byCurrency": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 12,
+          "propertyNames": {"pattern": "^[A-Z]{3}$"},
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["amountMinor", "paidOrderCount"],
+            "properties": {
+              "amountMinor": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+              "paidOrderCount": {"type": "integer", "minimum": 1, "maximum": 1000000}
+            }
+          }
+        },
+        "firstCompletedAtMillis": {"type": "integer", "minimum": 0},
+        "lastCompletedAtMillis": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

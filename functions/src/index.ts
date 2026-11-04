@@ -248,7 +248,6 @@ export {createOrganizerPost} from "./organizers/organizerPosts";
 export {dispatchPendingOrganizerFollowerUpdates} from
   "./organizers/organizerPostDelivery";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
-export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
   createOrganizerContact,
   createOrganizerContactNote,
@@ -387,7 +386,6 @@ export {
 export {
   connectOrganizerLumaProvider,
   disconnectOrganizerProvider,
-  getOrganizerProviderSetup,
   listOrganizerLumaEvents,
   syncOrganizerProviderEvent,
 } from "./organizers/organizerProviderSetup";
@@ -1062,6 +1060,13 @@ export {onHostEventSetupViewEventChanged,
 export {onHostEventSetupDefaultViewDefaultsChanged,
   onHostEventSetupDefaultViewOrganizerChanged} from
   "./hostReadModels/eventSetupDefaultViewTriggers";
+export {onHostProviderConnectionViewConnectionChanged,
+  onHostProviderConnectionViewOrganizerChanged} from
+  "./hostReadModels/providerConnectionViewTriggers";
+export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
+  onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
+  onHostRosterInsightTraitsChanged, onHostRosterInsightPaymentChanged} from
+  "./hostReadModels/rosterInsightViewTriggers";
 
 export {manageEventApprovalNotifications} from
   "./events/approvalNotifications/preferences";

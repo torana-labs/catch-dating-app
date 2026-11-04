@@ -16,8 +16,6 @@ import type {
   OrganizerProviderConnectionDocument,
   ProviderSyncRunDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import type {GetOrganizerProviderSetupCallablePayload} from
-  "../shared/generated/getOrganizerProviderSetupCallablePayload";
 import type {ListOrganizerLumaEventsCallablePayload} from
   "../shared/generated/listOrganizerLumaEventsCallablePayload";
 import type {ListOrganizerLumaEventsCallableResponse} from
@@ -37,10 +35,6 @@ import {
 } from
   "../shared/generated/validators/disconnectOrganizerProviderInput";
 import {
-  validateGetOrganizerProviderSetupCallablePayload,
-} from
-  "../shared/generated/validators/getOrganizerProviderSetupInput";
-import {
   validateListOrganizerLumaEventsCallablePayload,
 } from "../shared/generated/validators/listOrganizerLumaEventsInput";
 import {
@@ -50,7 +44,6 @@ import {
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
-import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
@@ -106,27 +99,6 @@ const fieldAuthority: ExternalEventMappingDocument["fieldAuthority"] = {
 };
 
 const syncRunRetentionMillis = 30 * 24 * 60 * 60 * 1000;
-
-export async function getOrganizerProviderSetupHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerProviderSetupDeps = defaultDeps,
-): Promise<OrganizerProviderSetupCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    GetOrganizerProviderSetupCallablePayload
-  >(
-    request,
-    validateGetOrganizerProviderSetupCallablePayload,
-    normalizePayload,
-  );
-  const db = deps.firestore();
-  checkInstanceRateLimit(actorUid, "getOrganizerProviderSetup", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  await requireScopedEvent(db, data.organizerId, data.eventId);
-  return providerSetupResponse(db, data.organizerId, data.eventId);
-}
 
 export async function connectOrganizerLumaProviderHandler(
   request: CallableRequest<unknown>,
@@ -1055,10 +1027,6 @@ const providerCallableLimits = {
   maxInstances: 10,
   concurrency: 10,
 };
-export const getOrganizerProviderSetup = onCall(
-  appCheckCallableOptionsWithLimits(providerCallableLimits),
-  (request) => getOrganizerProviderSetupHandler(request),
-);
 export const connectOrganizerLumaProvider = onCall(
   appCheckCallableOptionsWithLimits(providerCallableLimits),
   (request) => connectOrganizerLumaProviderHandler(request),
