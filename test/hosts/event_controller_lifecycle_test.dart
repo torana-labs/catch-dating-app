@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
@@ -31,6 +32,8 @@ void main() {
         expect(probe.otherLoading(), isFalse);
         probe.gate.complete();
         await loading;
+        // The listener delivers after the gate opens.
+        await pumpEventQueue();
         expect(probe.loaded(), isTrue);
       },
     );
@@ -52,6 +55,7 @@ void main() {
         expect(probe.actorAvailable(), isFalse);
         probe.gate.complete();
         await loading;
+        await pumpEventQueue();
         expect(probe.loaded(), isFalse);
         await probe.load();
         expect(probe.readCount(), 1);
@@ -116,16 +120,32 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
     preferencesHash: hash,
     reviewedDefaultsHash: hash,
   );
+  // Each editor's own read is gated; the others it listens to answer at once.
+  Stream<T> gated<T>(bool isGated, T value) async* {
+    if (isGated) await read();
+    yield value;
+  }
+
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => accounts ?? Stream.value('host')),
+      privateEventSetupViewProvider(
+        organizerId: 'org1',
+        eventId: 'event1',
+      ).overrideWith(
+        (ref) => gated(
+          kind == _Kind.privatePreferences || kind == _Kind.publication,
+          PrivateEventSetupView.complete(publicationEvent()),
+        ),
+      ),
+      managerEventSetupDefaultsViewProvider('org1').overrideWith(
+        (ref) => gated(
+          kind == _Kind.defaults,
+          ManagerEventSetupDefaultsView.complete(defaults),
+        ),
+      ),
       privateEventPreferencesDependenciesProvider.overrideWithValue(
         PrivateEventPreferencesDependencies(
-          readEvent: ({required organizerId, required eventId}) async {
-            await read();
-            return publicationEvent();
-          },
-          readDefaults: (_) async => defaults,
           write: (_) async => throw StateError('Unexpected write'),
         ),
       ),
@@ -144,25 +164,16 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
               preferences: null,
             );
           },
-          readDefaults: (_) async => defaults,
           write: (_) async => throw StateError('Unexpected write'),
         ),
       ),
       eventPublicationDependenciesProvider.overrideWithValue(
         EventPublicationDependencies(
-          read: ({required organizerId, required eventId}) async {
-            await read();
-            return publicationEvent();
-          },
           write: (_) async => throw StateError('Unexpected write'),
         ),
       ),
       hostManagerEventSetupDefaultsDependenciesProvider.overrideWithValue(
         HostManagerEventSetupDefaultsDependencies(
-          read: (_) async {
-            await read();
-            return defaults;
-          },
           write: (_) async => throw StateError('Unexpected write'),
         ),
       ),

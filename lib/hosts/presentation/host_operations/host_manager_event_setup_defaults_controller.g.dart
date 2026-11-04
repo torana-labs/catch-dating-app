@@ -58,7 +58,7 @@ final class HostManagerEventSetupDefaultsDependenciesProvider
 }
 
 String _$hostManagerEventSetupDefaultsDependenciesHash() =>
-    r'2a8828e24f182e0c275ef0679f3acd585fd333a3';
+    r'6aa526f724a5782dd451a10dc14301986c24d5c4';
 
 @ProviderFor(HostManagerEventSetupDefaultsController)
 final hostManagerEventSetupDefaultsControllerProvider =
@@ -120,7 +120,7 @@ final class HostManagerEventSetupDefaultsControllerProvider
 }
 
 String _$hostManagerEventSetupDefaultsControllerHash() =>
-    r'8c6b8f6553a31b612602e07b43f6e16a6f29916d';
+    r'20aecc20641c2e930e8eb2c9f949a7af9aaee0a5';
 
 final class HostManagerEventSetupDefaultsControllerFamily extends $Family
     with

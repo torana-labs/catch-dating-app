@@ -50,10 +50,12 @@ HostTodayRoadmapEvidence hostTodayRoadmap(
   );
 }
 
-/// A failed or unavailable summary stays unknown in the roadmap. Completion is
-/// read from rehearsal's durable milestone, never inferred from opening a route.
+/// A failed or unavailable read stays unknown in the roadmap. Completion is
+/// rehearsal's durable milestone document, never inferred from opening a
+/// route. It is a Firestore listener read owner: no cache tags or lifetime,
+/// and the write that completes a rehearsal reaches it without invalidation.
 @riverpod
-Future<bool> hostTodayRehearsalCompletion(
+Stream<bool> hostTodayRehearsalCompletion(
   Ref ref,
   HostTodayPreferenceScope scope,
 ) {
@@ -72,7 +74,7 @@ Future<bool> hostTodayRehearsalCompletion(
   }
   return ref
       .watch(eventRehearsalRepositoryProvider)
-      .hasCompletedRehearsal(scope.organizerId);
+      .watchRehearsalCompletion(scope.organizerId);
 }
 
 HostTodayRoadmapEvidence buildHostTodayRoadmapEvidence({

@@ -55,7 +55,7 @@ final class EventRehearsalRepositoryProvider
 }
 
 String _$eventRehearsalRepositoryHash() =>
-    r'a608e90cbb94f9a54644dfde311244510359a7e7';
+    r'b69333f410559dc0104d267df17bb04cb088b3ed';
 
 @ProviderFor(eventRehearsalAssistanceCommands)
 final eventRehearsalAssistanceCommandsProvider =

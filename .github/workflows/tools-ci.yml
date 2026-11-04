@@ -168,9 +168,12 @@ jobs:
             /.github/actions/load-toolchain/action.yml
           persist-credentials: false
 
+      # fetch-depth 0 pulls the whole history and every branch; GitHub's
+      # fetch ran past five minutes twice on 4 Nov 2026 for a contract PR
+      # whose affected view is the full repository. Fifteen still catches a hang.
       - name: Checkout full affected repository
         if: ${{ needs.preflight.outputs.repository_view != 'index' }}
-        timeout-minutes: 5
+        timeout-minutes: 15
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
@@ -261,11 +264,14 @@ jobs:
     needs: preflight
     if: ${{ needs.preflight.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.preflight.outputs.tool_mode == 'full' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 8
 
     steps:
+      # GitHub's fetch can take minutes on a bad night (4 Nov 2026: two
+      # checkouts of a one-commit sparse tree ran past two minutes). The
+      # timeout catches hangs, not slow fetches.
       - name: Checkout fast deterministic gate closure
-        timeout-minutes: 2
+        timeout-minutes: 5
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 1

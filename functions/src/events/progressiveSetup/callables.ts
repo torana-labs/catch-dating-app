@@ -10,14 +10,11 @@ import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
-import {checkInstanceRateLimit} from "../../shared/instanceRateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {validateCreatePrivateEventSetupCallablePayload} from
   "../../shared/generated/validators/createPrivateEventSetupInput";
 import {validateUpdatePrivateEventBasicsCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventBasicsInput";
-import {validateGetPrivateEventSetupCallablePayload} from
-  "../../shared/generated/validators/getPrivateEventSetupInput";
 import {
   createPrivateEventSetup as createSetup,
   updatePrivateEventBasics as updateBasics,
@@ -27,8 +24,6 @@ import {updatePrivateEventPreferences as updatePreferences} from
   "./preferences";
 import {validateUpdatePrivateEventPreferencesCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventPreferencesInput";
-import {getPrivateEventSetup as readSetup} from "./readModel";
-
 import {assertPrivateEventBasicsEditable} from "./commitments";
 import {listPrivateEventSetups as listSetups} from "./listPrivateEventSetups";
 import {validateListPrivateEventSetupsCallablePayload} from
@@ -102,26 +97,10 @@ export async function updatePrivateEventBasicsHandler(
   return updateBasics({actorUid, command, deps: deps.service(db)});
 }
 
-/** Returns only a manager-authorized whitelist of saved setup fields. */
-export async function getPrivateEventSetupHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const actorUid = requireAuth(request);
-  const command = validateCallableWithAjv(request,
-    validateGetPrivateEventSetupCallablePayload);
-  const db = deps.firestore();
-  checkInstanceRateLimit(actorUid, "getPrivateEventSetup", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  return readSetup({actorUid, command, db});
-}
-
 export const createPrivateEventSetup = onCall(appCheckCallableOptions,
   (request) => createPrivateEventSetupHandler(request));
 export const updatePrivateEventBasics = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventBasicsHandler(request));
-export const getPrivateEventSetup = onCall(appCheckCallableOptions,
-  (request) => getPrivateEventSetupHandler(request));
 
 /** Saves a reviewed event-local settings snapshot in private storage. */
 export async function updatePrivateEventPreferencesHandler(

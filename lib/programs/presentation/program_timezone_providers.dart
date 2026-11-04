@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
 import 'package:catch_kernel/city_catalog.dart';
-import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_timezone_providers.g.dart';
@@ -20,13 +19,16 @@ class ProgramTimezoneSuggestion {
   final Object? defaultsError;
 }
 
+/// The organizer defaults from their listener read owner. A view the server
+/// has not written yet or cannot trust is a typed error, so the suggestion
+/// reports it instead of inventing a default.
 @riverpod
 Future<ManagerEventSetupDefaults> programTimezoneDefaults(
   Ref ref,
   String organizerId,
-) => ManagerEventSetupDefaultsRepository(
-  ref.watch(firebaseFunctionsProvider),
-).get(organizerId);
+) async => (await ref.watch(
+  managerEventSetupDefaultsViewProvider(organizerId).future,
+)).requireDefaults();
 
 /// Resolves suggestions once per account/organizer scope. A failed private
 /// defaults read remains explicit even when a city/device suggestion is usable.

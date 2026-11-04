@@ -1,112 +1,177 @@
 import {Timestamp} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
-import {eventPublicationReadiness} from "./publicationReadiness";
-import {HttpsError} from "firebase-functions/v2/https";
-import type {PrivateEventSetupCallableResponse} from
-  "../../shared/generated/privateEventSetupCallableResponse";
-import {validateGetPrivateEventSetupCallablePayload} from
-  "../../shared/generated/validators/getPrivateEventSetupInput";
-import {validatePrivateEventSetupCallableResponse} from
-  "../../shared/generated/validators/privateEventSetupOutput";
-import {eventPolicyFromEvent} from "../eventPolicy";
-import type {EventDocument} from
+import {validateOrganizerDocument} from
+  "../../shared/generated/validators/organizerDocument";
+import type {EventDocument, HostEventSetupViewDocument, OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
+import {eventPolicyFromEvent} from "../eventPolicy";
 import {isEventPolicyTerms} from "../configuredEvent";
+import {eventPublicationReadiness} from "./publicationReadiness";
 import {projectEventPreferences} from "./preferences";
-import {authorizeSetupManager} from "./service";
-import {canEditPrivateEventBasics} from "./commitments";
 
-/** Reads a manager projection without decoding a fully configured event. */
-export async function getPrivateEventSetup(params: {
-  actorUid: string;
-  command: unknown;
-  db: FirebaseFirestore.Firestore;
-  nowMillis?: () => number;
-}): Promise<PrivateEventSetupCallableResponse> {
-  const {actorUid, db} = params;
-  if (!actorUid) throw new HttpsError("unauthenticated", "Sign in first.");
-  const command = params.command;
-  if (!validateGetPrivateEventSetupCallablePayload(command)) {
-    throw new HttpsError("invalid-argument", "Invalid event setup request.");
+export type PrivateEventSetupSummary =
+  NonNullable<HostEventSetupViewDocument["summary"]>;
+
+/** The source documents one setup view is evaluated from. */
+export type EventSetupViewSource = "events" | "eventSetupPreferences" |
+  "organizers";
+
+/**
+ * A source document that cannot produce a manager projection. The evaluator
+ * records it on the view instead of throwing, so a trigger never retries
+ * forever on data only a new write can fix.
+ */
+export class EventSetupSourceInvalidError extends Error {
+  constructor(readonly source: EventSetupViewSource, readonly detail: string) {
+    super(`Event setup source ${source} is invalid: ${detail}`);
+    this.name = "EventSetupSourceInvalidError";
   }
-  return db.runTransaction(async (tx) => {
-    const [organizer, deleted, eventSnap, preferencesSnap] = await Promise.all([
-      tx.get(db.collection("organizers").doc(command.organizerId)),
-      tx.get(db.collection("deletedUsers").doc(actorUid)),
-      tx.get(db.collection("events").doc(command.eventId)),
-      tx.get(db.collection("eventSetupPreferences").doc(command.eventId)),
-    ]);
-    const manager = authorizeSetupManager(organizer, deleted, actorUid);
-    const event = eventSnap.data();
-    if (!event || event.organizerId !== command.organizerId) {
-      throw new HttpsError("not-found", "Event not found.");
+}
+
+const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
+const localDatePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+const localTimePattern = /^[0-9]{2}:[0-9]{2}$/;
+
+const invalidEvent = (detail: string) =>
+  new EventSetupSourceInvalidError("events", detail);
+
+/**
+ * The manager projection of one event, as the retired getPrivateEventSetup
+ * callable returned it, except that publication readiness leaves time to the
+ * phone: every requirement is checked as if the event started one millisecond
+ * from now. Pure; the caller reads the sources in one transaction. Actor
+ * checks (deleted account, manager authority, active organizer) are not part
+ * of the projection: rules carry them on every read.
+ */
+export function projectPrivateEventSetupSummary(params: {
+  eventId: string;
+  event: Record<string, unknown>;
+  organizer: Record<string, unknown> | undefined;
+  preferences: FirebaseFirestore.DocumentData | undefined;
+  canEditBasics: boolean;
+}): PrivateEventSetupSummary {
+  const {eventId, canEditBasics} = params;
+  const event = params.event as Record<string, any>; // eslint-disable-line
+  const organizerId = event.organizerId;
+  if (typeof organizerId !== "string" || !documentIdPattern.test(organizerId)) {
+    throw invalidEvent("organizerId is not a document id");
+  }
+  if (event.publicationState !== "private" &&
+      (event.publicationState !== "published" ||
+        !validateEventDocument(event))) {
+    throw invalidEvent("publication state needs review");
+  }
+  const setupRevision = event.setupRevision;
+  if (!Number.isSafeInteger(setupRevision) || setupRevision < 1) {
+    throw invalidEvent("setupRevision is not a positive integer");
+  }
+  const startTimeMillis = event.startTime?.toMillis?.();
+  if (!Number.isSafeInteger(startTimeMillis)) {
+    throw invalidEvent("startTime is missing");
+  }
+  const endTimeMillis = event.endTime?.toMillis?.() ?? null;
+  if (event.endTime !== undefined &&
+      (!Number.isSafeInteger(endTimeMillis) ||
+        endTimeMillis <= startTimeMillis)) {
+    throw invalidEvent("duration is invalid");
+  }
+  if (typeof event.name !== "string" || event.name.length < 1 ||
+      event.name.length > 120 ||
+      typeof event.eventCityId !== "string" ||
+      !documentIdPattern.test(event.eventCityId) ||
+      typeof event.eventMarketId !== "string" ||
+      !documentIdPattern.test(event.eventMarketId) ||
+      typeof event.eventLocalDate !== "string" ||
+      !localDatePattern.test(event.eventLocalDate) ||
+      typeof event.eventLocalStartTime !== "string" ||
+      !localTimePattern.test(event.eventLocalStartTime) ||
+      typeof event.eventTimezone !== "string" ||
+      event.eventTimezone.length < 1 || event.eventTimezone.length > 100 ||
+      !["active", "cancelled"].includes(event.status) ||
+      typeof event.setupDefaults !== "object" || event.setupDefaults === null) {
+    throw invalidEvent("basics are incomplete");
+  }
+  if (params.organizer === undefined) {
+    throw new EventSetupSourceInvalidError("organizers", "missing");
+  }
+  if (!validateOrganizerDocument(params.organizer)) {
+    throw new EventSetupSourceInvalidError("organizers",
+      "fails the organizer contract");
+  }
+  const organizer = params.organizer as unknown as OrganizerDocument;
+  let eventPreferences: PrivateEventSetupSummary["eventPreferences"];
+  try {
+    eventPreferences = projectEventPreferences(params.preferences,
+      organizerId, eventId) as PrivateEventSetupSummary["eventPreferences"];
+  } catch (error) {
+    if (error instanceof HttpsError && error.code === "failed-precondition") {
+      throw new EventSetupSourceInvalidError("eventSetupPreferences",
+        error.message);
     }
-    if (event.publicationState !== "private" &&
-        (event.publicationState !== "published" ||
-          !validateEventDocument(event))) {
-      throw new HttpsError("failed-precondition",
-        "Event publication state needs review.");
-    }
-    const endTimeMillis = event.endTime?.toMillis?.() ?? null;
-    if (event.endTime !== undefined &&
-        (!Number.isSafeInteger(endTimeMillis) ||
-          endTimeMillis <= event.startTime?.toMillis?.())) {
-      throw new HttpsError("failed-precondition", "Event duration is invalid.");
-    }
-    const canEditBasics = await canEditPrivateEventBasics({tx, db,
-      eventId: command.eventId, event});
-    const result: unknown = {
-      eventId: command.eventId,
-      organizerId: command.organizerId,
-      setupRevision: event.setupRevision,
-      canEditBasics,
-      canChangeCity: canEditBasics && event.meetingLocation === undefined &&
-        event.meetingPoint === undefined && event.sourceVenueId === undefined,
-      eventDetails: {
-        endTimeMillis,
-        venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
-        meetingLocation: event.meetingLocation ?? null,
-        description: event.description ?? null,
-        itinerary: event.itinerary ?? [],
-        eventPhotos: event.eventPhotos ?? [],
-        distanceKm: event.distanceKm ?? null,
-        pace: event.pace ?? null,
-        admissionTerms: isEventPolicyTerms(event as EventDocument) ? {
-          capacityLimit: event.capacityLimit, priceInPaise: event.priceInPaise,
-          currency: event.currency ?? "INR",
-          cancellationPolicyId: eventPolicyFromEvent(event as EventDocument)
-            .cancellation.policyId,
-        } : null,
-        sourceVenueId: event.sourceVenueId ?? null,
-        eventFormat: event.eventFormat ?? null,
-      },
-      eventPreferences: projectEventPreferences(preferencesSnap.data(),
-        command.organizerId, command.eventId),
-      name: event.name,
-      city: {cityId: event.eventCityId, marketId: event.eventMarketId},
-      localDate: event.eventLocalDate,
-      localStartTime: event.eventLocalStartTime,
-      timezone: event.eventTimezone,
-      startTimeMillis: event.startTime?.toMillis?.(),
-      publicationState: event.publicationState,
-      publicationReadiness: eventPublicationReadiness({
-        event: event as EventDocument, organizer: manager,
-        nowMillis: (params.nowMillis ?? Date.now)(),
-        timestampFromMillis: Timestamp.fromMillis}),
-      status: event.status,
-      setupDefaults: event.setupDefaults,
-      detailsConfigured: event.endTime !== undefined ||
-        event.meetingLocation !== undefined ||
-        event.meetingPoint !== undefined ||
-        event.eventFormat !== undefined ||
-        event.eventSuccessPlanId !== undefined ||
-        event.description !== undefined || event.capacityLimit !== undefined,
-    };
-    if (!validatePrivateEventSetupCallableResponse(result)) {
-      throw new HttpsError("failed-precondition",
-        "Event setup is incomplete or invalid. Contact support.");
-    }
-    return result as PrivateEventSetupCallableResponse;
-  });
+    throw error;
+  }
+  return {
+    eventId,
+    organizerId,
+    setupRevision,
+    name: event.name,
+    city: {cityId: event.eventCityId, marketId: event.eventMarketId},
+    localDate: event.eventLocalDate,
+    localStartTime: event.eventLocalStartTime,
+    timezone: event.eventTimezone,
+    startTimeMillis,
+    publicationState: event.publicationState,
+    status: event.status,
+    setupDefaults: event.setupDefaults,
+    detailsConfigured: event.endTime !== undefined ||
+      event.meetingLocation !== undefined ||
+      event.meetingPoint !== undefined ||
+      event.eventFormat !== undefined ||
+      event.eventSuccessPlanId !== undefined ||
+      event.description !== undefined || event.capacityLimit !== undefined,
+    eventPreferences,
+    eventDetails: {
+      endTimeMillis,
+      venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
+      meetingLocation: event.meetingLocation ?? null,
+      description: event.description ?? null,
+      itinerary: event.itinerary ?? [],
+      eventPhotos: event.eventPhotos ?? [],
+      distanceKm: event.distanceKm ?? null,
+      pace: event.pace ?? null,
+      admissionTerms: isEventPolicyTerms(event as EventDocument) ? {
+        capacityLimit: event.capacityLimit, priceInPaise: event.priceInPaise,
+        currency: event.currency ?? "INR",
+        cancellationPolicyId: eventPolicyFromEvent(event as EventDocument)
+          .cancellation.policyId,
+      } : null,
+      sourceVenueId: event.sourceVenueId ?? null,
+      eventFormat: event.eventFormat ?? null,
+    },
+    canEditBasics,
+    canChangeCity: canEditBasics && event.meetingLocation === undefined &&
+      event.meetingPoint === undefined && event.sourceVenueId === undefined,
+    publicationReadiness: readinessWhenFuture(event as EventDocument,
+      organizer, startTimeMillis),
+  };
+}
+
+/**
+ * Every requirement except time: the readiness the event would have if it
+ * started one millisecond from now. The phone applies the clock.
+ */
+function readinessWhenFuture(event: EventDocument,
+  organizer: OrganizerDocument, startTimeMillis: number
+): PrivateEventSetupSummary["publicationReadiness"] {
+  const readiness = eventPublicationReadiness({event, organizer,
+    nowMillis: startTimeMillis - 1,
+    timestampFromMillis: Timestamp.fromMillis});
+  return {
+    canPublishWhenFuture: readiness.canPublish,
+    missing: readiness.missing.filter((requirement) =>
+      requirement !== "futureActive") as NonNullable<
+        PrivateEventSetupSummary["publicationReadiness"]>["missing"],
+  };
 }

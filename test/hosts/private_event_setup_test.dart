@@ -1,6 +1,10 @@
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// The setup view's summary parser, at a fixed clock.
+PrivateEventBasicSummary _summaryFromView(Map<String, Object?> summary) =>
+    PrivateEventBasicSummary.fromFirestore(summary, now: DateTime(2026));
+
 void main() {
   const city = EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai');
 
@@ -181,7 +185,7 @@ void main() {
       },
       'eventPreferences': null,
     };
-    final summary = PrivateEventBasicSummary.fromResponse(response);
+    final summary = _summaryFromView(response);
     expect(summary.eventId, 'event-1');
     expect(summary.setupRevision, 3);
     expect(summary.city.cityId, 'in-mh-mumbai');
@@ -191,7 +195,7 @@ void main() {
     expect(summary.eventDetails.endTimeMillis, isNull);
     expect(summary.eventDetails.venueName, isNull);
     expect(
-      PrivateEventBasicSummary.fromResponse({
+      _summaryFromView({
         ...response,
         'publicationState': 'published',
         'canEditBasics': false,
@@ -200,28 +204,25 @@ void main() {
       'published',
     );
     expect(
-      () => PrivateEventBasicSummary.fromResponse({
+      () => _summaryFromView({
         ...response,
         'eventDetails': {'endTimeMillis': 1},
       }),
       throwsFormatException,
     );
     expect(
-      () => PrivateEventBasicSummary.fromResponse({
-        ...response,
-        'publicationState': 'published',
-      }),
+      () => _summaryFromView({...response, 'publicationState': 'published'}),
       throwsFormatException,
     );
     expect(
-      () => PrivateEventBasicSummary.fromResponse({
+      () => _summaryFromView({
         ...response,
         'city': {'cityId': 'in-mh-mumbai', 'marketId': ''},
       }),
       throwsFormatException,
     );
     expect(
-      PrivateEventBasicSummary.fromResponse({
+      _summaryFromView({
         ...response,
         'status': 'cancelled',
         'canEditBasics': false,
@@ -231,13 +232,10 @@ void main() {
     );
     for (final flag in ['canEditBasics', 'canChangeCity']) {
       final withoutFlag = {...response}..remove(flag);
-      expect(
-        () => PrivateEventBasicSummary.fromResponse(withoutFlag),
-        throwsFormatException,
-      );
+      expect(() => _summaryFromView(withoutFlag), throwsFormatException);
     }
     expect(
-      () => PrivateEventBasicSummary.fromResponse({
+      () => _summaryFromView({
         ...response,
         'canEditBasics': false,
         'canChangeCity': true,

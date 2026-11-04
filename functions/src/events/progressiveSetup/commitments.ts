@@ -6,7 +6,7 @@ import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
 const eventIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 
 /** Existing downstream records that make a basics move unsafe. */
-const commitmentCollections = [
+export const commitmentCollections = [
   "eventAttendees",
   "eventAttendeeImports",
   "eventParticipations",
@@ -28,6 +28,33 @@ export async function assertPrivateEventBasicsEditable(params: {
   event: Record<string, unknown>;
 }): Promise<void> {
   const {tx, db, eventId, event} = params;
+  assertPrivateEventBasicsShape(eventId, event);
+
+  // Every query is an equality on the canonical eventId field and reads at
+  // most one document. No lifecycle-status filter can hide prior commitments.
+  for (const collection of commitmentCollections) {
+    const witness = await tx.get(commitmentWitnessQuery(db, collection,
+      eventId));
+    if (!witness.empty) {
+      throw new HttpsError("failed-precondition",
+        "This event has roster, offer or payment commitments.");
+    }
+  }
+}
+
+/** One witness query: any row of any lifecycle status is a commitment. */
+export function commitmentWitnessQuery(db: FirebaseFirestore.Firestore,
+  collection: typeof commitmentCollections[number], eventId: string
+): FirebaseFirestore.Query {
+  return db.collection(collection).where("eventId", "==", eventId).limit(1);
+}
+
+/**
+ * The event-only half of the basics guard: an uncommitted, unpublished,
+ * active private setup with a sane duration. Throws failed-precondition.
+ */
+function assertPrivateEventBasicsShape(eventId: string,
+  event: Record<string, unknown>): void {
   if (!eventIdPattern.test(eventId) ||
       !validateEventDocument(event) ||
       event.publicationState !== "private" ||
@@ -55,25 +82,16 @@ export async function assertPrivateEventBasicsEditable(params: {
         "Review event duration before editing basics.");
     }
   }
-
-  // Every query is an equality on the canonical eventId field and reads at
-  // most one document. No lifecycle-status filter can hide prior commitments.
-  for (const collection of commitmentCollections) {
-    const witness = await tx.get(db.collection(collection)
-      .where("eventId", "==", eventId).limit(1));
-    if (!witness.empty) {
-      throw new HttpsError("failed-precondition",
-        "This event has roster, offer or payment commitments.");
-    }
-  }
 }
 
-/** Same transaction-bound authority for edit controls and mutation guards. */
-export async function canEditPrivateEventBasics(
-  params: Parameters<typeof assertPrivateEventBasicsEditable>[0]
-): Promise<boolean> {
+/**
+ * Whether the event alone still allows a basics edit. A caller that answers
+ * true reads the commitment witnesses next, in the same transaction.
+ */
+export function privateEventBasicsShapeEditable(eventId: string,
+  event: Record<string, unknown>): boolean {
   try {
-    await assertPrivateEventBasicsEditable(params);
+    assertPrivateEventBasicsShape(eventId, event);
     return true;
   } catch (error) {
     if (error instanceof HttpsError && error.code === "failed-precondition") {
@@ -81,4 +99,15 @@ export async function canEditPrivateEventBasics(
     }
     throw error;
   }
+}
+
+/**
+ * Whether any commitment witness exists, read through the caller's
+ * transaction. The same seven queries as the mutation guard.
+ */
+export async function hasEventCommitment(tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore, eventId: string): Promise<boolean> {
+  const witnesses = await Promise.all(commitmentCollections.map(
+    (collection) => tx.get(commitmentWitnessQuery(db, collection, eventId))));
+  return witnesses.some((witness) => !witness.empty);
 }

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_model_follower.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -13,18 +14,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_publication_controller.freezed.dart';
 part 'event_publication_controller.g.dart';
 
+/// Commands and services. The event is read through its listener read owner,
+/// `privateEventSetupViewProvider`.
 class EventPublicationDependencies {
   const EventPublicationDependencies({
-    required this.read,
     required this.write,
     this.currentUserId,
     this.journal = const EventPublicationJournal(),
   });
-  final Future<PrivateEventBasicSummary> Function({
-    required String organizerId,
-    required String eventId,
-  })
-  read;
   final Future<EventPublicationReceipt> Function(EventPublicationRequest) write;
   final String? Function()? currentUserId;
   final EventPublicationJournal journal;
@@ -34,7 +31,6 @@ class EventPublicationDependencies {
 EventPublicationDependencies eventPublicationDependencies(Ref ref) {
   final functions = ref.watch(firebaseFunctionsProvider);
   return EventPublicationDependencies(
-    read: PrivateEventSetupRepository(functions).get,
     write: EventPublicationRepository(functions).set,
     currentUserId: () => ref.read(uidProvider).asData?.value,
   );
@@ -63,9 +59,18 @@ abstract class EventPublicationState with _$EventPublicationState {
 
 @riverpod
 class EventPublicationController extends _$EventPublicationController {
+  late ReadModelFollower<PrivateEventSetupView> _eventView;
+  bool _journalLoaded = false;
+
   @override
   EventPublicationState build(EventEditorScope scope) {
     ref.watch(eventPublicationDependenciesProvider);
+    _eventView = ReadModelFollower(
+      onValue: _onEventView,
+      onError: _onListenerError,
+      reject: (view) => privateEventSetupViewMismatch(view, scope),
+    );
+    ref.onDispose(() => _eventView.close());
     ref.listen(uidProvider, (_, next) {
       if (next.asData?.value != scope.userId) invalidateActor();
     });
@@ -78,11 +83,6 @@ class EventPublicationController extends _$EventPublicationController {
   String get _organizerId => scope.organizerId;
   String get _eventId => scope.eventId;
 
-  Future<PrivateEventBasicSummary> Function({
-    required String organizerId,
-    required String eventId,
-  })
-  get _read => _dependencies.read;
   Future<EventPublicationReceipt> Function(EventPublicationRequest)
   get _write => _dependencies.write;
   EventPublicationJournal get _journal => _dependencies.journal;
@@ -97,6 +97,7 @@ class EventPublicationController extends _$EventPublicationController {
   }
 
   void invalidateActor() {
+    _eventView.close();
     if (ref.mounted) {
       state = state.copyWith(actorAvailable: false, event: null, receipt: null);
     }
@@ -121,36 +122,77 @@ class EventPublicationController extends _$EventPublicationController {
   set _saving(bool value) => _update((s) => s.copyWith(saving: value));
   bool get _canPublish => _actorAvailable && state.canPublish;
   bool get _canUnpublish => _actorAvailable && state.canUnpublish;
-  Future<void> _readCurrent() async {
-    if (!_actorAvailable) return;
-    _event = null;
-    final current = await _read(organizerId: _organizerId, eventId: _eventId);
-    if (!_actorAvailable) return;
-    if (current.eventId != _eventId || current.organizerId != _organizerId) {
-      throw const FormatException('Publication read changed identity');
-    }
-    _event = current;
-  }
 
+  /// Listens to the event (before the journal read) and stays loading until
+  /// it has delivered. A missing view keeps loading; an invalid one is a
+  /// typed error.
   Future<void> load() async {
     if (!_actorAvailable || _loading || _saving) return;
+    _journalLoaded = false;
     _loading = true;
     _event = null;
     _error = null;
+    _followEvent();
     try {
       _pending = await _journal.load(
         userId: _userId,
         organizerId: _organizerId,
         eventId: _eventId,
       );
-      if (!_actorAvailable) return;
-      await _readCurrent();
-      if (!_actorAvailable) return;
     } catch (cause) {
       if (_actorAvailable) _error = cause;
     } finally {
+      _journalLoaded = true;
+      _settleLoading();
+    }
+    // Returns once every listener has answered, loaded or not.
+    await _eventView.firstDelivery;
+  }
+
+  void _followEvent() => _eventView.follow(
+    ref,
+    privateEventSetupViewProvider(organizerId: _organizerId, eventId: _eventId),
+  );
+
+  void _onEventView(PrivateEventSetupView view) {
+    if (!_actorAvailable) return;
+    if (view.sourceCoverage == PrivateEventSetupCoverage.invalidSource) {
+      _onListenerError(
+        PrivateEventSetupViewUnavailable(
+          view.sourceCoverage,
+          source: view.incompleteSource,
+        ),
+      );
+      return;
+    }
+    if (view.isComplete) _event = view.summary;
+    _settleLoading();
+  }
+
+  void _onListenerError(Object error) {
+    if (!_actorAvailable) return;
+    _event = null;
+    _error = error;
+    if (_journalLoaded) _loading = false;
+  }
+
+  void _settleLoading() {
+    if (!ref.mounted) return;
+    if (_loading && _journalLoaded && (_event != null || state.error != null)) {
       _loading = false;
     }
+  }
+
+  /// No reread after a command: wait until the listener delivers [revision].
+  Future<void> _reflecting(int revision) async {
+    if (!_eventView.following) _followEvent();
+    await _eventView.until(
+      (view) =>
+          view.reflects(revision) ||
+          view.sourceCoverage == PrivateEventSetupCoverage.invalidSource,
+    );
+    if (!_actorAvailable) return;
+    _eventView.latest?.requireSummary();
   }
 
   Future<void> changeTo(String publicationState) async {
@@ -214,9 +256,8 @@ class EventPublicationController extends _$EventPublicationController {
       if (_actorAvailable && isDefinitivePublicationRejection(cause, request)) {
         await _journal.clear(userId: _userId, request: request);
         if (!_actorAvailable) return;
+        // The listener already holds the current visibility.
         _pending = null;
-        await _readCurrent();
-        if (!_actorAvailable) return;
       }
       rethrow;
     }
@@ -234,7 +275,6 @@ class EventPublicationController extends _$EventPublicationController {
     _pending = null;
     _receipt = result;
     if (!_actorAvailable) return;
-    await _readCurrent();
-    if (!_actorAvailable) return;
+    await _reflecting(result.setupRevision);
   }
 }

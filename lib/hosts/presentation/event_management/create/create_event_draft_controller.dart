@@ -60,12 +60,13 @@ class CreateEventDraftController extends _$CreateEventDraftController {
     PrivateEventBasicsUpdateRequest request,
   ) => ref.read(privateEventSetupTimelineRepositoryProvider).update(request);
 
-  Future<PrivateEventBasicSummary> getPrivateEventSetup({
+  /// The saved event as the server's setup view, updated while listened to.
+  Stream<PrivateEventSetupView> watchPrivateEventSetup({
     required String organizerId,
     required String eventId,
   }) => ref
       .read(privateEventSetupTimelineRepositoryProvider)
-      .get(organizerId: organizerId, eventId: eventId);
+      .watch(organizerId: organizerId, eventId: eventId);
 
   Future<PrivateEventBasicsUpdateRequest?> loadPendingBasicsUpdate({
     required String organizerId,

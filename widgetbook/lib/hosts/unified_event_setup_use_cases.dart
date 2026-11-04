@@ -253,11 +253,21 @@ Widget _privateEventDetailsPreview(
           child: ProviderScope(
             overrides: [
               uidProvider.overrideWith((ref) => Stream.value(scope.userId)),
+              privateEventSetupViewProvider(
+                organizerId: scope.organizerId,
+                eventId: scope.eventId,
+              ).overrideWith(
+                (ref) => Stream.value(PrivateEventSetupView.complete(event)),
+              ),
+              managerEventSetupDefaultsViewProvider(
+                scope.organizerId,
+              ).overrideWith(
+                (ref) => Stream.value(
+                  ManagerEventSetupDefaultsView.complete(defaults),
+                ),
+              ),
               privateEventDetailsDependenciesProvider.overrideWithValue(
                 PrivateEventDetailsDependencies(
-                  readEvent: ({required organizerId, required eventId}) async =>
-                      event,
-                  readDefaults: (_) async => defaults,
                   write: (_) async =>
                       throw StateError('Preview does not submit details'),
                 ),

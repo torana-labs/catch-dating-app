@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_models.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_view.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -6,13 +8,23 @@ import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 export 'private_event_setup_models.dart';
+export 'private_event_setup_view.dart';
+export 'read_models/host_event_setup_view_reads.dart'
+    show privateEventSetupViewProvider;
 
 // firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:DESCENDING, __name__:DESCENDING)
 class PrivateEventSetupRepository {
-  const PrivateEventSetupRepository(this._functions, {this.summaries});
+  const PrivateEventSetupRepository(
+    this._functions, {
+    this.summaries,
+    this.views,
+  });
 
   final HostEventSummaryReads? summaries;
+
+  /// The manager listener on `hostEventSetupViews`; reads need it.
+  final HostEventSetupViewReads? views;
 
   final FirebaseFunctions _functions;
 
@@ -68,31 +80,29 @@ class PrivateEventSetupRepository {
     );
   }
 
-  Future<PrivateEventBasicSummary> get({
+  /// The event as the server last evaluated it for the setup steps, updated
+  /// while it is listened to.
+  Stream<PrivateEventSetupView> watch({
     required String organizerId,
     required String eventId,
   }) {
-    if (organizerId.trim().isEmpty || eventId.trim().isEmpty) {
-      throw ArgumentError('Organizer and event ids are required');
+    final reads = views;
+    if (reads == null) {
+      throw StateError('Private event setup reads need the setup view.');
     }
-    return withBackendErrorContext(
-      () async {
-        final response = await _functions
-            .httpsCallable('getPrivateEventSetup')
-            .call<Object?>({'organizerId': organizerId, 'eventId': eventId});
-        final summary = PrivateEventBasicSummary.fromResponse(response.data);
-        if (summary.organizerId != organizerId || summary.eventId != eventId) {
-          throw const FormatException('Private event read changed identity');
-        }
-        return summary;
-      },
-      context: const BackendErrorContext(
-        service: BackendService.functions,
-        action: 'read private event setup',
-        resource: 'getPrivateEventSetup',
-      ),
-    );
+    return reads.watch(organizerId: organizerId, eventId: eventId);
   }
+
+  /// The first complete view that reflects [atLeastRevision]: a missing view
+  /// just after create is awaited, an invalid one is a typed error.
+  Future<PrivateEventBasicSummary> firstComplete({
+    required String organizerId,
+    required String eventId,
+    int atLeastRevision = 1,
+  }) => firstCompleteSetupView(
+    watch(organizerId: organizerId, eventId: eventId),
+    atLeastRevision: atLeastRevision,
+  );
 
   /// Manager inventory for basics-only private events that cannot be decoded
   /// through the public rich Event model or a device-local draft list.

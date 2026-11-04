@@ -313,9 +313,11 @@ void _registerHostOperationsTeamFailuresTests() {
           watchHostPaymentAccountsProvider(
             _hostUid,
           ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
+          managerEventSetupDefaultsViewProvider.overrideWith(
+            (ref, _) => const Stream.empty(),
+          ),
           hostManagerEventSetupDefaultsDependenciesProvider.overrideWithValue(
             HostManagerEventSetupDefaultsDependencies(
-              read: (_) => Completer<ManagerEventSetupDefaults>().future,
               write: (_) => throw UnimplementedError(),
             ),
           ),

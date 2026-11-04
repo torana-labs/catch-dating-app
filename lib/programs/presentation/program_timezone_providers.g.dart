@@ -8,9 +8,16 @@ part of 'program_timezone_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// The organizer defaults from their listener read owner. A view the server
+/// has not written yet or cannot trust is a typed error, so the suggestion
+/// reports it instead of inventing a default.
 
 @ProviderFor(programTimezoneDefaults)
 final programTimezoneDefaultsProvider = ProgramTimezoneDefaultsFamily._();
+
+/// The organizer defaults from their listener read owner. A view the server
+/// has not written yet or cannot trust is a typed error, so the suggestion
+/// reports it instead of inventing a default.
 
 final class ProgramTimezoneDefaultsProvider
     extends
@@ -22,6 +29,9 @@ final class ProgramTimezoneDefaultsProvider
     with
         $FutureModifier<ManagerEventSetupDefaults>,
         $FutureProvider<ManagerEventSetupDefaults> {
+  /// The organizer defaults from their listener read owner. A view the server
+  /// has not written yet or cannot trust is a typed error, so the suggestion
+  /// reports it instead of inventing a default.
   ProgramTimezoneDefaultsProvider._({
     required ProgramTimezoneDefaultsFamily super.from,
     required String super.argument,
@@ -68,7 +78,11 @@ final class ProgramTimezoneDefaultsProvider
 }
 
 String _$programTimezoneDefaultsHash() =>
-    r'6cf90942d03841e7f86897614c292f25a475d4c2';
+    r'52de12a83847ec0d08223f924a1821ce027b733b';
+
+/// The organizer defaults from their listener read owner. A view the server
+/// has not written yet or cannot trust is a typed error, so the suggestion
+/// reports it instead of inventing a default.
 
 final class ProgramTimezoneDefaultsFamily extends $Family
     with
@@ -81,6 +95,10 @@ final class ProgramTimezoneDefaultsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The organizer defaults from their listener read owner. A view the server
+  /// has not written yet or cannot trust is a typed error, so the suggestion
+  /// reports it instead of inventing a default.
 
   ProgramTimezoneDefaultsProvider call(String organizerId) =>
       ProgramTimezoneDefaultsProvider._(argument: organizerId, from: this);

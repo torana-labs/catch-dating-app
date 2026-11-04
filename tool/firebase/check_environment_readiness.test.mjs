@@ -752,22 +752,30 @@ test("Deploy backend checks readiness before any mutation", () => {
   const block = (name) => deployJob.slice(step(name), deployJob.indexOf("\n      - ", step(name)));
   const order = ["Skip a commit older than the deployed one", "Authenticate to Google Cloud",
     "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
-    "Choose the Functions to deploy", "Check this environment is ready", "Deploy Firestore indexes",
+    "Choose the Functions to deploy", "Check the platform is serving before touching it", "Check this environment is ready", "Deploy Firestore indexes",
     "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
     "Verify the active rules match this commit", "Record the deployed commit"].map(step);
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
   assert.match(block("Check this environment is ready"), /check_environment_readiness\.mjs/u);
   for (const name of ["Authenticate to Google Cloud", "Materialize Functions parameters from this environment's variables",
-    "Check this environment is ready", "Retire named Functions", "Deploy Functions",
-    "Check callable access and Functions parity"]) {
+    "Check the platform is serving before touching it"]) {
     assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' \}\}/u,
       `${name} is skipped for a commit older than the deployed one`);
+  }
+  // A platform that is not serving (a closed billing account) defers every
+  // mutation and the record, so the next run deploys the whole delta.
+  assert.match(block("Check the platform is serving before touching it"),
+    /check_platform_availability\.mjs --env "\$DEPLOY_ENVIRONMENT" --callable adminListEventDirectory --gcloud-probe/u);
+  for (const name of ["Check this environment is ready", "Retire named Functions", "Deploy Functions",
+    "Check callable access and Functions parity"]) {
+    assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' \}\}/u,
+      `${name} is skipped for a commit older than the deployed one and while the platform is not serving`);
   }
   // A named run deploys those Functions only and leaves the record alone.
   for (const name of ["Deploy Firestore indexes", "Deploy Firestore and Storage rules",
     "Verify the active rules match this commit", "Record the deployed commit"]) {
     assert.match(block(name),
-      /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
+      /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
   }
 });
 

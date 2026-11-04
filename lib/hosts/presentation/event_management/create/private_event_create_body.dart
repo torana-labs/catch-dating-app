@@ -12,8 +12,10 @@ typedef UpdatePrivateEventBasics =
       PrivateEventBasicsUpdateRequest request,
     );
 
+/// The saved event's setup view; the screen uses its first complete value
+/// that reflects the revision it is waiting for.
 typedef ReadPrivateEventBasics =
-    Future<PrivateEventBasicSummary> Function({
+    Stream<PrivateEventSetupView> Function({
       required String organizerId,
       required String eventId,
     });
@@ -66,7 +68,12 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _editingPublication = false;
     });
     if (event == null && _receipt != null) {
-      unawaited(_loadSavedEvent(savedEventId: _receipt!.eventId));
+      unawaited(
+        _loadSavedEvent(
+          savedEventId: _receipt!.eventId,
+          atLeastRevision: _receipt!.setupRevision,
+        ),
+      );
     }
   }
 
@@ -270,7 +277,10 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     }
   }
 
-  Future<void> _loadSavedEvent({String? savedEventId}) async {
+  Future<void> _loadSavedEvent({
+    String? savedEventId,
+    int atLeastRevision = 1,
+  }) async {
     final eventId = savedEventId ?? widget.initialSavedEventId!;
     _mutateScreenState(() {
       _loadingSavedEvent = true;
@@ -278,11 +288,15 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     });
     try {
       final controller = ref.read(createEventDraftControllerProvider.notifier);
-      final summary =
-          await (widget.readSaved ?? controller.getPrivateEventSetup)(
-            organizerId: widget.organizer.id,
-            eventId: eventId,
-          );
+      // A view the server has not written yet is awaited; an invalid one is
+      // a typed error the read-error state shows.
+      final summary = await firstCompleteSetupView(
+        (widget.readSaved ?? controller.watchPrivateEventSetup)(
+          organizerId: widget.organizer.id,
+          eventId: eventId,
+        ),
+        atLeastRevision: atLeastRevision,
+      );
       if (!mounted) {
         return;
       }
@@ -476,9 +490,12 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         _loadingSavedEvent = true;
       });
       // Replay receipts contain the revision of the original command, which
-      // may now be older than the canonical event. Read the manager projection
-      // before enabling any further edit or presenting its setup actions.
-      await _loadSavedEvent(savedEventId: receipt.eventId);
+      // may now be older than the canonical event. Wait for the setup view
+      // that reflects it before enabling any further edit or setup action.
+      await _loadSavedEvent(
+        savedEventId: receipt.eventId,
+        atLeastRevision: receipt.setupRevision,
+      );
       if (!mounted || _readError != null) {
         return;
       }
@@ -579,7 +596,10 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted) {
         return;
       }
-      await _loadSavedEvent(savedEventId: receipt.eventId);
+      await _loadSavedEvent(
+        savedEventId: receipt.eventId,
+        atLeastRevision: updated.setupRevision,
+      );
       if (!mounted || _readError != null) {
         return;
       }
