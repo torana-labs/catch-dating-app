@@ -236,7 +236,7 @@ class _CatchIconActionState extends State<CatchIconAction> {
           widget.borderRadius != null ||
           widget.foregroundColor != null) {
         throw FlutterError(
-          'App-bar controls own their 44-point outline and paint. Use CatchIconAction.toolbar or a canonical counted action; configure contrast on CatchTopBar.',
+          'App-bar controls own their 44-point outline and paint. Use CatchIconAction.toolbar or a canonical counted action; configure contrast on CatchLegacyTopBar.',
         );
       }
       return true;

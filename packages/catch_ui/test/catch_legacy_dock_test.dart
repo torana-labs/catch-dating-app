@@ -15,7 +15,7 @@ void main() {
             _frame(
               platform: platform,
               scale: scale,
-              child: CatchDock.primary(
+              child: CatchLegacyDock.primary(
                 label: 'Save',
                 onPressed: () => pressed++,
               ),
@@ -58,7 +58,7 @@ void main() {
       const bodyKey = ValueKey('utility-body');
       await tester.pumpWidget(
         _frame(
-          child: CatchDock(
+          child: CatchLegacyDock(
             includeSafeArea: safeArea,
             child: const SizedBox(key: bodyKey, height: 40),
           ),
@@ -78,7 +78,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _frame(
-        child: CatchDock.primaryContent(
+        child: CatchLegacyDock.primaryContent(
           label: 'Next',
           leading: const Text('Step 2'),
           onPressed: () {},
@@ -109,7 +109,7 @@ void main() {
     var pressed = 0;
     await tester.pumpWidget(
       _frame(
-        child: CatchDock.primary(
+        child: CatchLegacyDock.primary(
           label: 'Save',
           isLoading: true,
           onPressed: () => pressed++,

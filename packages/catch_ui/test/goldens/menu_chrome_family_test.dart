@@ -20,7 +20,7 @@ void main() {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 24,
             children: [
-              CatchTopBar.route(
+              CatchLegacyTopBar.route(
                 title: 'People',
                 navigation: const CatchTopBarNavigation(
                   mode: CatchTopBarNavigationMode.none,

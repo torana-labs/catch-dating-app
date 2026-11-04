@@ -1,6 +1,6 @@
-part of 'catch_top_bar.dart';
+part of 'catch_legacy_top_bar.dart';
 
-extension _WorkspaceTopBarGeometry on CatchTopBar {
+extension _WorkspaceTopBarGeometry on CatchLegacyTopBar {
   bool _workspace(BuildContext context) =>
       CatchWorkspacePaneScope.isSinglePaneOf(context) != null;
 

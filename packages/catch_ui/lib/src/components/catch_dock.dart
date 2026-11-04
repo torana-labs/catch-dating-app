@@ -1,328 +1,251 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
-import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
-import 'package:catch_ui/src/foundations/catch_icons.dart';
-import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_divider.dart';
-import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_text_input.dart';
 import 'package:flutter/material.dart';
 
-enum CatchDockVariant { utility, primary, primaryContent, pageAction }
+/// Where the dock sits. `auto` is a bar fixed to the bottom on compact and
+/// medium windows and a floating card on expanded ones; `pane` is the
+/// decision bar at the foot of a detail pane.
+enum CatchDockPlacement { auto, bar, card, pane }
 
-typedef _PrimaryAction = ({
-  String label,
-  VoidCallback? onPressed,
-  Widget? leading,
-  Key? buttonKey,
-  bool isLoading,
-  Color? buttonAccentColor,
-  CatchButtonMode buttonMode,
-  String? catchLine,
-  Color? catchLineAccent,
-  String? footnote,
-  double bottomPadding,
-});
+/// One dock action.
+@immutable
+class CatchDockAction {
+  const CatchDockAction({
+    required this.label,
+    this.onPressed,
+    this.icon,
+    this.loading = false,
+  });
 
-/// Persistent control surface with utility and primary-action recipes.
+  final String label;
+
+  /// Null disables the action.
+  final VoidCallback? onPressed;
+
+  /// A leading icon.
+  final IconData? icon;
+  final bool loading;
+}
+
+/// The one-line note above a pane dock's actions ("Why? Only your team sees
+/// this").
+@immutable
+class CatchDockNote {
+  const CatchDockNote({
+    required this.label,
+    required this.controller,
+    this.placeholder,
+    this.onChanged,
+  });
+
+  final String label;
+  final String? placeholder;
+
+  /// Owned by the caller, so the note survives rebuilds.
+  final TextEditingController controller;
+  final ValueChanged<String>? onChanged;
+}
+
+/// The bottom action bar: one primary action, with a secondary action or a
+/// summary beside it, in the system's four placements.
 ///
-/// Utilities retain anchored chrome. [CatchDock.primary] selects
-/// floating Cupertino or anchored Material chrome. The [CatchDock.primaryContent]
-/// recipe reuses the action body when its caller already owns the surface.
+/// A bar or a card puts the summary (a price, a date, a count) or the quiet
+/// secondary action first and lets the large primary fill the rest. A pane
+/// dock puts the note field above a row of what comes next (or the summary)
+/// and the actions: the refusing action as a quiet danger button, the
+/// secondary, then the primary. Inside a CatchScreen the dock sits below the
+/// body, so the body never runs under it.
 class CatchDock extends StatelessWidget {
   const CatchDock({
     super.key,
-    required Widget this.child,
-    this.padding = const EdgeInsets.fromLTRB(
-      CatchSpacing.s4,
-      CatchSpacing.s3,
-      CatchSpacing.s4,
-      CatchSpacing.s3,
-    ),
-    this.includeSafeArea = true,
-  }) : variant = CatchDockVariant.utility,
-       _primary = null,
-       backgroundColor = null,
-       dividerColor = null;
+    required this.primary,
+    this.secondary,
+    this.summary,
+    this.placement = CatchDockPlacement.auto,
+    this.danger,
+    this.note,
+    this.next,
+  });
 
-  const CatchDock.primary({
-    super.key,
-    required String label,
-    required VoidCallback? onPressed,
-    Widget? leading,
-    Key? buttonKey,
-    bool isLoading = false,
-    this.backgroundColor,
-    this.dividerColor,
-    Color? buttonAccentColor,
-    CatchButtonMode buttonMode = CatchButtonMode.pill,
-    String? catchLine,
-    Color? catchLineAccent,
-    String? footnote,
-  }) : variant = CatchDockVariant.primary,
-       child = null,
-       padding = EdgeInsets.zero,
-       includeSafeArea = true,
-       _primary = (
-         label: label,
-         onPressed: onPressed,
-         leading: leading,
-         buttonKey: buttonKey,
-         isLoading: isLoading,
-         buttonAccentColor: buttonAccentColor,
-         buttonMode: buttonMode,
-         catchLine: catchLine,
-         catchLineAccent: catchLineAccent,
-         footnote: footnote,
-         bottomPadding: CatchSpacing.s3,
-       );
+  final CatchDockAction primary;
+  final CatchDockAction? secondary;
 
-  /// One persistent page action without a floating card or perimeter.
-  /// The scaffold reserves its actual height, including the safe area, and
-  /// positions snackbars above it so feedback never blocks the next action.
-  const CatchDock.pageAction({
-    super.key,
-    required String label,
-    required VoidCallback? onPressed,
-    Key? buttonKey,
-    bool isLoading = false,
-  }) : variant = CatchDockVariant.pageAction,
-       child = null,
-       padding = EdgeInsets.zero,
-       includeSafeArea = true,
-       backgroundColor = null,
-       dividerColor = null,
-       _primary = (
-         label: label,
-         onPressed: onPressed,
-         leading: null,
-         buttonKey: buttonKey,
-         isLoading: isLoading,
-         buttonAccentColor: null,
-         buttonMode: CatchButtonMode.pill,
-         catchLine: null,
-         catchLineAccent: null,
-         footnote: null,
-         bottomPadding: CatchSpacing.s3,
-       );
+  /// Before the primary: a price, a date, a count. It replaces the secondary
+  /// action in a bar or a card.
+  final Widget? summary;
+  final CatchDockPlacement placement;
 
-  const CatchDock.primaryContent({
-    super.key,
-    required String label,
-    required VoidCallback? onPressed,
-    Widget? leading,
-    Key? buttonKey,
-    bool isLoading = false,
-    Color? buttonAccentColor,
-    CatchButtonMode buttonMode = CatchButtonMode.pill,
-    String? catchLine,
-    Color? catchLineAccent,
-    String? footnote,
-    double bottomPadding = CatchSpacing.s3,
-  }) : variant = CatchDockVariant.primaryContent,
-       child = null,
-       padding = EdgeInsets.zero,
-       includeSafeArea = false,
-       backgroundColor = null,
-       dividerColor = null,
-       _primary = (
-         label: label,
-         onPressed: onPressed,
-         leading: leading,
-         buttonKey: buttonKey,
-         isLoading: isLoading,
-         buttonAccentColor: buttonAccentColor,
-         buttonMode: buttonMode,
-         catchLine: catchLine,
-         catchLineAccent: catchLineAccent,
-         footnote: footnote,
-         bottomPadding: bottomPadding,
-       );
+  /// `pane` only: the refusing action (Reject, Decline).
+  final CatchDockAction? danger;
 
-  final CatchDockVariant variant;
-  final Widget? child;
-  final EdgeInsetsGeometry padding;
-  final bool includeSafeArea;
-  final Color? backgroundColor;
-  final Color? dividerColor;
-  final _PrimaryAction? _primary;
+  /// `pane` only: the note field above the actions.
+  final CatchDockNote? note;
 
-  CatchButtonMode get buttonMode =>
-      _primary?.buttonMode ?? CatchButtonMode.pill;
+  /// `pane` only: what happens after the decision ("Then: Harbor Social · 3
+  /// left"), in place of the summary.
+  final Widget? next;
+
+  /// [placement] resolved against the CatchRoot size class.
+  CatchDockPlacement placementOf(BuildContext context) =>
+      placement != CatchDockPlacement.auto
+      ? placement
+      : CatchRootScope.sizeClassOf(context) == CatchWindowSize.expanded
+      ? CatchDockPlacement.card
+      : CatchDockPlacement.bar;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final action = _primary;
-    final floating =
-        variant == CatchDockVariant.primary &&
-        prefersCupertinoControls(platform: Theme.of(context).platform);
-    final bottomPadding =
-        (action?.bottomPadding ?? 0) +
-        (variant == CatchDockVariant.primary && !floating
-            ? MediaQuery.paddingOf(context).bottom
-            : 0);
+    final tokens = CatchTokens.of(context);
+    final place = placementOf(context);
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final gutter = switch (CatchRootScope.sizeClassOf(context)) {
+      CatchWindowSize.compact => GeneratedCatchLayoutTokens.gutterCompact,
+      CatchWindowSize.medium => GeneratedCatchLayoutTokens.gutterMedium,
+      CatchWindowSize.expanded => GeneratedCatchLayoutTokens.gutterExpanded,
+    };
+    final hairline = Border(top: BorderSide(color: tokens.line));
+    final secondary = this.secondary;
+    final danger = this.danger;
+    final note = this.note;
+    final lead = place == CatchDockPlacement.pane ? next ?? summary : summary;
 
-    // The dock's own text must not take a screen's content away at large text
-    // sizes: past a fifth of the screen height, it scrolls.
-    final textBound = BoxConstraints(
-      maxHeight: MediaQuery.sizeOf(context).height / 5,
-    );
-
-    final body = action == null
-        ? Padding(padding: padding, child: child)
-        : Column(
+    if (place == CatchDockPlacement.pane) {
+      return DecoratedBox(
+        key: const ValueKey<String>('catch_dock.pane'),
+        decoration: BoxDecoration(color: tokens.ground, border: hairline),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            CatchSpacing.s6,
+            CatchSpacing.s4,
+            CatchSpacing.s6,
+            safeBottom + CatchSpacing.s4,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
+            spacing: CatchSpacing.s3,
             children: [
-              if (action.catchLine != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s4,
-                    CatchSpacing.s2,
-                    CatchSpacing.s4,
-                    CatchSpacing.s0,
-                  ),
-                  child: ConstrainedBox(
-                    constraints: textBound,
-                    child: SingleChildScrollView(
-                      primary: false,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            CatchIcons.spark,
-                            size: CatchIconSize.xs,
-                            color: action.catchLineAccent ?? t.ink2,
-                          ),
-                          const SizedBox(width: CatchSpacing.micro6),
-                          Flexible(
-                            child: Text(
-                              action.catchLine!.toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: CatchTextStyles.monoLabel(
-                                context,
-                                color: t.ink2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              if (note != null)
+                CatchTextInput(
+                  controller: note.controller,
+                  onChanged: note.onChanged,
+                  decoration: InputDecoration(
+                    labelText: note.label,
+                    hintText: note.placeholder,
                   ),
                 ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  variant == CatchDockVariant.pageAction
-                      ? CatchSpacing.screenPx
-                      : CatchSpacing.s4,
-                  CatchSpacing.s3,
-                  variant == CatchDockVariant.pageAction
-                      ? CatchSpacing.screenPx
-                      : CatchSpacing.s4,
-                  bottomPadding,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        if (action.leading != null) ...[
-                          action.leading!,
-                          gapW14,
-                        ],
-                        Expanded(
-                          child: CatchButton(
-                            key: action.buttonKey,
-                            label: action.label,
-                            onPressed: action.onPressed,
-                            size: CatchButtonSize.lg,
-                            status: action.isLoading
-                                ? CatchButtonStatus.loading
-                                : CatchButtonStatus.idle,
-                            fullWidth: true,
-                            mode: action.buttonMode,
-                            accentColor: action.buttonAccentColor,
-                          ),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchSpacing.s3,
+                runSpacing: CatchSpacing.s3,
+                children: [
+                  ?lead,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: CatchSpacing.s2,
+                    children: [
+                      if (danger != null)
+                        CatchButton(
+                          label: danger.label,
+                          onPressed: danger.onPressed,
+                          variant: CatchButtonVariant.quiet,
+                          size: CatchButtonSize.md,
+                          foregroundColor: tokens.deepCoral,
                         ),
-                      ],
-                    ),
-                    if (action.footnote != null) ...[
-                      const SizedBox(height: CatchSpacing.s2),
-                      ConstrainedBox(
-                        constraints: textBound,
-                        child: SingleChildScrollView(
-                          primary: false,
-                          child: Text(
-                            action.footnote!,
-                            textAlign: TextAlign.center,
-                            style: CatchTextStyles.monoLabelS(
-                              context,
-                              color: t.ink3,
-                            ),
-                          ),
+                      if (secondary != null)
+                        CatchButton(
+                          label: secondary.label,
+                          onPressed: secondary.onPressed,
+                          variant: CatchButtonVariant.secondary,
+                          size: CatchButtonSize.md,
                         ),
+                      CatchButton(
+                        label: primary.label,
+                        onPressed: primary.onPressed,
+                        size: CatchButtonSize.md,
+                        status: primary.loading
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        leading: primary.icon == null
+                            ? null
+                            : Icon(primary.icon),
                       ),
                     ],
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
-          );
-    if (variant == CatchDockVariant.primaryContent) return body;
-
-    if (variant == CatchDockVariant.pageAction) {
-      return ColoredBox(
-        key: const ValueKey('catch_bottom_action.page_action'),
-        color: t.bg,
-        child: SafeArea(top: false, child: body),
-      );
-    }
-    final radius = floating ? BorderRadius.circular(CatchRadius.lg) : null;
-    final dock = DecoratedBox(
-      key: action == null
-          ? null
-          : ValueKey(
-              floating
-                  ? 'catch_bottom_action.floating_chrome'
-                  : 'catch_bottom_action.anchored_chrome',
-            ),
-      decoration: BoxDecoration(
-        color: backgroundColor ?? t.surface,
-        border: floating
-            ? Border.all(color: dividerColor ?? t.line)
-            : action == null
-            ? Border(top: BorderSide(color: t.line))
-            : null,
-        borderRadius: radius,
-        boxShadow: floating ? CatchElevation.raised : null,
-      ),
-      child: floating
-          ? ClipRRect(borderRadius: radius!, child: body)
-          : action == null
-          ? body
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CatchDivider.section(color: dividerColor),
-                body,
-              ],
-            ),
-    );
-    if (floating) {
-      return SafeArea(
-        top: false,
-        minimum: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenPx,
-          CatchSpacing.s0,
-          CatchSpacing.screenPx,
-          CatchSpacing.s2,
+          ),
         ),
-        child: dock,
       );
     }
-    return action == null && includeSafeArea
-        ? SafeArea(top: false, child: dock)
-        : dock;
+
+    final card = place == CatchDockPlacement.card;
+    final first = lead != null
+        ? Padding(
+            padding: const EdgeInsetsDirectional.only(end: CatchSpacing.s2),
+            child: lead,
+          )
+        : secondary == null
+        ? null
+        : CatchButton(
+            label: secondary.label,
+            onPressed: secondary.onPressed,
+            variant: CatchButtonVariant.quiet,
+            size: CatchButtonSize.lg,
+          );
+    final primaryButton = CatchButton(
+      label: primary.label,
+      onPressed: primary.onPressed,
+      size: CatchButtonSize.lg,
+      fullWidth: true,
+      status: primary.loading
+          ? CatchButtonStatus.loading
+          : CatchButtonStatus.idle,
+      leading: primary.icon == null ? null : Icon(primary.icon),
+    );
+    if (card) {
+      return Padding(
+        key: const ValueKey<String>('catch_dock.card'),
+        padding: EdgeInsets.fromLTRB(
+          gutter,
+          CatchSpacing.s3,
+          gutter,
+          safeBottom + CatchSpacing.s4,
+        ),
+        child: CatchSurface(
+          block: CatchSurfaceBlock.floating,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            spacing: CatchSpacing.micro10,
+            children: [?first, primaryButton],
+          ),
+        ),
+      );
+    }
+    return DecoratedBox(
+      key: const ValueKey<String>('catch_dock.bar'),
+      decoration: BoxDecoration(color: tokens.ground, border: hairline),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          gutter,
+          CatchSpacing.s3,
+          gutter,
+          safeBottom + CatchSpacing.s2,
+        ),
+        child: Row(
+          spacing: CatchSpacing.micro10,
+          children: [
+            if (first != null) Flexible(child: first),
+            Expanded(child: primaryButton),
+          ],
+        ),
+      ),
+    );
   }
 }
