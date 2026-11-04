@@ -69,7 +69,7 @@ final class EventAssistanceDeliveriesProvider
 }
 
 String _$eventAssistanceDeliveriesHash() =>
-    r'71a752e6fcdc57c90fdff7f54f42f743bdf87527';
+    r'45b8f8152daf61d1915c027b97a72437a81db7a6';
 
 final class EventAssistanceDeliveriesFamily extends $Family
     with
@@ -128,20 +128,31 @@ abstract class _$EventAssistanceDeliveries
   }
 }
 
+/// The delivery page read owner. It is a Firestore listener: it declares no
+/// cache tags or lifetime, and commands never invalidate it; the delivery
+/// view triggers deliver their result.
+
 @ProviderFor(eventAssistanceDeliveriesForAccount)
 final eventAssistanceDeliveriesForAccountProvider =
     EventAssistanceDeliveriesForAccountFamily._();
+
+/// The delivery page read owner. It is a Firestore listener: it declares no
+/// cache tags or lifetime, and commands never invalidate it; the delivery
+/// view triggers deliver their result.
 
 final class EventAssistanceDeliveriesForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceDeliveriesSession>,
           EventAssistanceDeliveriesSession,
-          FutureOr<EventAssistanceDeliveriesSession>
+          Stream<EventAssistanceDeliveriesSession>
         >
     with
         $FutureModifier<EventAssistanceDeliveriesSession>,
-        $FutureProvider<EventAssistanceDeliveriesSession> {
+        $StreamProvider<EventAssistanceDeliveriesSession> {
+  /// The delivery page read owner. It is a Firestore listener: it declares no
+  /// cache tags or lifetime, and commands never invalidate it; the delivery
+  /// view triggers deliver their result.
   EventAssistanceDeliveriesForAccountProvider._({
     required EventAssistanceDeliveriesForAccountFamily super.from,
     required (EventAssistanceDeliveryQuery, {EventAssistanceAccount account})
@@ -167,12 +178,12 @@ final class EventAssistanceDeliveriesForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceDeliveriesSession> $createElement(
+  $StreamProviderElement<EventAssistanceDeliveriesSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceDeliveriesSession> create(Ref ref) {
+  Stream<EventAssistanceDeliveriesSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceDeliveryQuery, {EventAssistanceAccount account});
@@ -196,12 +207,16 @@ final class EventAssistanceDeliveriesForAccountProvider
 }
 
 String _$eventAssistanceDeliveriesForAccountHash() =>
-    r'2b425aea3b56990c96b26afdf31347e14e3c5936';
+    r'81324c5249300811dde7a2f7e35b0c23db297fff';
+
+/// The delivery page read owner. It is a Firestore listener: it declares no
+/// cache tags or lifetime, and commands never invalidate it; the delivery
+/// view triggers deliver their result.
 
 final class EventAssistanceDeliveriesForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceDeliveriesSession>,
+          Stream<EventAssistanceDeliveriesSession>,
           (EventAssistanceDeliveryQuery, {EventAssistanceAccount account})
         > {
   EventAssistanceDeliveriesForAccountFamily._()
@@ -212,6 +227,10 @@ final class EventAssistanceDeliveriesForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The delivery page read owner. It is a Firestore listener: it declares no
+  /// cache tags or lifetime, and commands never invalidate it; the delivery
+  /// view triggers deliver their result.
 
   EventAssistanceDeliveriesForAccountProvider call(
     EventAssistanceDeliveryQuery query, {

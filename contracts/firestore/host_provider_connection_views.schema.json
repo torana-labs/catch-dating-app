@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_provider_connection_views.schema.json",
+  "title": "HostProviderConnectionViewDocument",
+  "description": "Server-owned manager projection of one organizer's booking-provider connections, written ahead of time by triggers on organizerProviderConnections and on the organizer's creation and deletion. connections holds what the retired getOrganizerProviderSetup callable returned for them, in document id order: never the credential reference, the connecting user or the last error code. At most 20 rows; more records sourceCoverage overCap with the first 20. A connection that fails validation records invalidSource and keeps the previous rows. Neither throws. Deleted when the organizer is deleted. Managers get it under rules; authority comes from the organizer document, never from the view.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostProviderConnectionViews",
+  "x-firestore-path": "hostProviderConnectionViews/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host provider connection evaluator (hostReadModels provider connection view triggers)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "connections"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "Increases by one with every committed evaluation that changed the document.", "x-catch-ownership": "server-only"},
+    "evaluatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "sourceCoverage": {"enum": ["complete", "overCap", "invalidSource"], "description": "Whether the last evaluation read every connection validly. overCap: more than 20 connections, the first 20 kept. invalidSource: a connection failed validation, the previous rows kept.", "x-catch-ownership": "server-only"},
+    "incompleteSource": {"type": ["string", "null"], "minLength": 1, "maxLength": 80, "description": "organizerProviderConnections when coverage is not complete, otherwise null.", "x-catch-ownership": "server-only"},
+    "connections": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {"$ref": "../shared/host_provider_setup_common.schema.json#/definitions/connectionRow"},
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -55,7 +55,7 @@ final class HostContactsRepositoryProvider
 }
 
 String _$hostContactsRepositoryHash() =>
-    r'3c229b63abbd38fdc9eadd0a74285e6b65f73841';
+    r'8e2caba6ee48733cd6b923371b620dadc5a9f56c';
 
 @ProviderFor(hostCrmSummary)
 final hostCrmSummaryProvider = HostCrmSummaryFamily._();
@@ -132,19 +132,30 @@ final class HostCrmSummaryFamily extends $Family
   String toString() => r'hostCrmSummaryProvider';
 }
 
+/// The door's roster label read owner. It is a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it; the
+/// attendee writes the door makes reach it through the server's triggers.
+
 @ProviderFor(hostEventRosterInsights)
 final hostEventRosterInsightsProvider = HostEventRosterInsightsFamily._();
+
+/// The door's roster label read owner. It is a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it; the
+/// attendee writes the door makes reach it through the server's triggers.
 
 final class HostEventRosterInsightsProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostEventRosterInsights>,
           HostEventRosterInsights,
-          FutureOr<HostEventRosterInsights>
+          Stream<HostEventRosterInsights>
         >
     with
         $FutureModifier<HostEventRosterInsights>,
-        $FutureProvider<HostEventRosterInsights> {
+        $StreamProvider<HostEventRosterInsights> {
+  /// The door's roster label read owner. It is a Firestore listener: it
+  /// declares no cache tags or lifetime, and writes never invalidate it; the
+  /// attendee writes the door makes reach it through the server's triggers.
   HostEventRosterInsightsProvider._({
     required HostEventRosterInsightsFamily super.from,
     required String super.argument,
@@ -168,12 +179,12 @@ final class HostEventRosterInsightsProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostEventRosterInsights> $createElement(
+  $StreamProviderElement<HostEventRosterInsights> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostEventRosterInsights> create(Ref ref) {
+  Stream<HostEventRosterInsights> create(Ref ref) {
     final argument = this.argument as String;
     return hostEventRosterInsights(ref, argument);
   }
@@ -191,10 +202,14 @@ final class HostEventRosterInsightsProvider
 }
 
 String _$hostEventRosterInsightsHash() =>
-    r'9ba8b0247c817f689b9abde6ed163e20418dcb9a';
+    r'3c26d5fd3bae89424278d1b8dfb41d1dc91140ac';
+
+/// The door's roster label read owner. It is a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it; the
+/// attendee writes the door makes reach it through the server's triggers.
 
 final class HostEventRosterInsightsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostEventRosterInsights>, String> {
+    with $FunctionalFamilyOverride<Stream<HostEventRosterInsights>, String> {
   HostEventRosterInsightsFamily._()
     : super(
         retry: null,
@@ -203,6 +218,10 @@ final class HostEventRosterInsightsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The door's roster label read owner. It is a Firestore listener: it
+  /// declares no cache tags or lifetime, and writes never invalidate it; the
+  /// attendee writes the door makes reach it through the server's triggers.
 
   HostEventRosterInsightsProvider call(String eventId) =>
       HostEventRosterInsightsProvider._(argument: eventId, from: this);

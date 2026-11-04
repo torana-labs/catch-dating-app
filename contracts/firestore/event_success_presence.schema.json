@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_presence.schema.json",
   "title": "EventSuccessPresenceDocument",
-  "description": "Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt and deployment policy rather than persisted.",
+  "description": "Server-owned liveness heartbeat stored at eventSuccessPresence/{eventId_uid}; presence state is derived from heartbeatAt, a clock and contracts/catalogs/event_success_presence_policy.json rather than persisted.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSuccessPresence",

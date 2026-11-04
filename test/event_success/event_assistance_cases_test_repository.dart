@@ -6,6 +6,16 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scop
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// One listener the test drives: [complete] delivers a page, [completeError]
+/// ends it in an error.
+final class TestPageFeed<T> {
+  final _controller = StreamController<T>();
+  bool get isListened => _controller.hasListener;
+  Stream<T> get stream => _controller.stream;
+  void complete(T page) => _controller.add(page);
+  void completeError(Object error) => _controller.addError(error);
+}
+
 class CasesTestRepository extends Fake
     implements EventAssistanceCasesRepository {
   Completer<void> _changed = Completer<void>();
@@ -13,7 +23,8 @@ class CasesTestRepository extends Fake
       <
         ({
           EventAssistanceCaseQuery query,
-          Completer<EventAssistanceCasesPage> result,
+          String actorUid,
+          TestPageFeed<EventAssistanceCasesPage> result,
         })
       >[];
   final writes =
@@ -25,11 +36,14 @@ class CasesTestRepository extends Fake
       >[];
 
   @override
-  Future<EventAssistanceCasesPage> fetch(EventAssistanceCaseQuery query) {
-    final result = Completer<EventAssistanceCasesPage>();
-    reads.add((query: query, result: result));
+  Stream<EventAssistanceCasesPage> watchPage(
+    EventAssistanceCaseQuery query, {
+    required String actorUid,
+  }) {
+    final result = TestPageFeed<EventAssistanceCasesPage>();
+    reads.add((query: query, actorUid: actorUid, result: result));
     _notify();
-    return result.future;
+    return result.stream;
   }
 
   @override

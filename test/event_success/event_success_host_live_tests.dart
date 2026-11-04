@@ -296,7 +296,6 @@ void _registerEventSuccessHostLiveTests() {
                 waitlistedIds: [],
               ),
               presenceSummary: const EventSuccessPresenceSummary(
-                serverTimeMillis: 10,
                 liveControlRevision: 4,
                 nextRoundIndex: 1,
                 policy: EventSuccessPresencePolicy(
@@ -308,6 +307,13 @@ void _registerEventSuccessHostLiveTests() {
                   EventSuccessPresenceEntry(
                     uid: 'guest-1',
                     displayName: 'Ari',
+                    state: EventSuccessPresenceState.likelyDeparted,
+                    heartbeatAtMillis: 1,
+                  ),
+                  // A roster row with no usable name.
+                  EventSuccessPresenceEntry(
+                    uid: 'guest-2',
+                    displayName: null,
                     state: EventSuccessPresenceState.likelyDeparted,
                     heartbeatAtMillis: 1,
                   ),
@@ -329,12 +335,12 @@ void _registerEventSuccessHostLiveTests() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.textContaining('1 guests may have left'), findsOneWidget);
+    expect(find.textContaining('2 guests may have left'), findsOneWidget);
     expect(
       find.textContaining('Published rounds stay unchanged'),
       findsOneWidget,
     );
-    expect(find.text('Ari'), findsOneWidget);
+    expect(find.text('Ari, Guest details unavailable'), findsOneWidget);
     expect(find.text('Mina'), findsOneWidget);
 
     await tester.tap(find.text('Regenerate next round'));

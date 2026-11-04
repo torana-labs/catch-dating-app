@@ -632,30 +632,39 @@ void main() {
   });
 
   test('parses event-relative roster labels without private profile data', () {
-    final insights = HostEventRosterInsights.fromCallableData({
-      'eventId': 'event-1',
-      'organizerId': 'organizer-1',
-      'cutoffAtMillis': 1786500000000,
-      'sourceCoverage': 'exact',
-      'spendCoverage': 'catchPaymentsOnly',
-      'rows': [
-        {
-          'attendeeId': 'attendee-1',
-          'contactId': 'contact-1',
-          'availability': 'ready',
-          'signals': ['returning', 'top_catch_spender'],
-          'priorAttendedEventCount': 3,
-          'priorExpectedEventCount': 4,
-          'priorNoShowCount': 1,
-          'lastAttendedAtMillis': 1780000000000,
-          'attendanceRate': 0.75,
-          'catchSpend': [
-            {'currency': 'INR', 'amountMinor': 600000, 'paidOrderCount': 3},
-          ],
-        },
-      ],
-      'computedAtMillis': 1786500001000,
-    });
+    final insights = HostEventRosterInsights.fromViews(
+      eventId: 'event-1',
+      view: {
+        'schemaVersion': 1,
+        'eventId': 'event-1',
+        'organizerId': 'organizer-1',
+        'cutoffAtMillis': 1786500000000,
+        'evaluatedAtMillis': 1786500001000,
+        'sourceCoverage': 'exact',
+        'rows': [
+          {
+            'attendeeId': 'attendee-1',
+            'contactId': 'contact-1',
+            'availability': 'ready',
+            'signals': ['returning', 'known_catch_spender'],
+            'priorAttendedEventCount': 3,
+            'priorExpectedEventCount': 4,
+            'priorNoShowCount': 1,
+            'lastAttendedAtMillis': 1780000000000,
+            'attendanceRate': 0.75,
+            'catchSpend': [
+              {'currency': 'INR', 'amountMinor': 600000, 'paidOrderCount': 3},
+            ],
+          },
+        ],
+      },
+      projection: {
+        'schemaVersion': 1,
+        'organizerId': 'organizer-1',
+        'topQuartileThresholdByCurrency': {'INR': 500000},
+        'spendCoverage': 'catchPaymentsOnly',
+      },
+    );
 
     final row = insights.rows.single;
     expect(row.signals, contains(HostRosterInsightSignal.returning));

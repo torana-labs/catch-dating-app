@@ -45,7 +45,6 @@ interface EventSuccessLateArrivalDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
-  environment: NodeJS.ProcessEnv;
   checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
@@ -53,7 +52,6 @@ const defaultDeps: EventSuccessLateArrivalDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   nowMillis: () => Date.now(),
-  environment: process.env,
   checkRateLimit: defaultCheckRateLimit,
 };
 
@@ -330,7 +328,7 @@ export async function resolveEventSuccessLateArrivalHandler(
     .doc(`${payload.eventId}_${payload.uid}`);
   const now = deps.serverTimestamp();
   const nowMillis = deps.nowMillis();
-  const policy = eventSuccessPresencePolicy(deps.environment);
+  const policy = eventSuccessPresencePolicy();
 
   return db.runTransaction(async (transaction) => {
     const [planSnap, draftSnap, presenceSnap, currentResolutionSnap] =

@@ -54,6 +54,15 @@ test("provider identifiers are deterministic and independently scoped", () => {
   );
 });
 
+test("the mapping id matches the vector the Host app computes", () => {
+  // test/contexts/audience/host_provider_setup_reads_test.dart pins the same
+  // vectors: the phone listens to externalEventMappings/{this id}.
+  assert.equal(externalEventMappingId("event-1"),
+    "eem_ce36863f51b6baf9d16397ffb3e9af506b284a816f72d487");
+  assert.equal(externalEventMappingId("evt_9f2c1a"),
+    "eem_79da0b148e3e4b3651f4e3da90ba5b5463b849ddf8fe5273");
+});
+
 test("maps Luma registration states without inventing bookings", () => {
   assert.equal(lumaOperationalStatus("approved"), "registered");
   assert.equal(lumaOperationalStatus("session"), "registered");

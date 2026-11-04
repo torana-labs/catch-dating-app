@@ -26,6 +26,9 @@ void main() {
     caseQuery().scopeFor('case:one'),
   );
 
+  /// The same request after another manager's change reached its view.
+  Map<String, Object?> changedRow() => {...caseRow(), 'sourceHash': 'c' * 64};
+
   Future<EventAssistanceCaseReview> finishRead() async {
     repository.reads.last.result.complete(casesPage());
     await container.pump();
@@ -78,10 +81,15 @@ void main() {
       expect(container.read(eventAssistancePendingCasesProvider), {
         review.request.scope,
       });
-      container.read(queue.notifier).reload();
+      // The listener delivers a newer evaluation of the same request.
+      repository.reads.last.result.complete(
+        casesPage(rows: [changedRow()], evaluatedAt: 2500),
+      );
       await container.pump();
-      await repository.waitForReads(2);
-      final next = await finishRead();
+      final session = container.read(queue).requireValue;
+      final next = session.review(
+        session.page.cases.single as AssistanceOpenHostCase,
+      );
       expect(review.isCurrent, isFalse);
       container.listen(owner, (_, _) {});
       expect(container.read(owner.notifier), same(editor));
@@ -103,9 +111,6 @@ void main() {
   test('pending discovery survives an empty open queue', () async {
     await fail();
     subscription.close();
-    container.read(queue.notifier).reload();
-    await container.pump();
-    await repository.waitForReads(2);
     repository.reads.last.result.complete(casesPage(rows: []));
     await container.pump();
     expect(container.read(queue).requireValue.page.cases, isEmpty);
@@ -123,9 +128,6 @@ void main() {
     expect(container.read(eventAssistancePendingCasesProvider), isEmpty);
   });
   test('settling one case preserves discovery and retry for another', () async {
-    container.read(queue.notifier).reload();
-    await container.pump();
-    await repository.waitForReads(2);
     repository.reads.last.result.complete(
       casesPage(
         rows: [
@@ -175,9 +177,11 @@ void main() {
     await retry;
     expect(container.read(eventAssistancePendingCasesProvider), isEmpty);
   });
-  test('an unsubmitted draft cannot act after its page is retired', () async {
+  test('an unsubmitted draft cannot act after its request changes', () async {
     editor.select(const AssistanceCaseDecision.resolve());
-    container.read(queue.notifier).reload();
+    repository.reads.last.result.complete(
+      casesPage(rows: [changedRow()], evaluatedAt: 2500),
+    );
     await container.pump();
     expect(review.isCurrent, isFalse);
     expect(form().canSubmit, isFalse);

@@ -389,12 +389,24 @@ and contain a revisioned handling state. The schema preserves historical
 records without those fields as an explicit legacy variant; the Host reader
 cannot invent their missing source binding or authorize their mutation.
 
-`listEventAssistanceCases` provides a manager-only, bounded page of practical
-requests, with stale identity redaction and no event-wide completeness claim.
-Optional current-source guest names and manager choice snapshots are shared with
-rehearsal help projections. Source-changed and legacy rows can expose only a null
-name. Manager options bind the caller and contain at most 42 distinct canonical
-managers; every assignment rechecks current authority. Native parsers reject duplicate/missing-caller
+Managers read practical requests through `hostEventCaseViews/{caseId}`
+(`contracts/firestore/host_event_case_views.schema.json`), one server-only view
+per live case owned by the event lead, written ahead of time by triggers on
+`eventAssistanceCases`, `eventAttendees`, `events` and `organizers`
+(`functions/src/hostReadModels/eventCaseViewStore.ts`). Each evaluation runs in
+one transaction that rereads the case, its organizer, its event and its attendee
+row and writes only a changed view; a safety-owned, rehearsal or deleted case has
+no view, and a source that fails validation records `sourceCoverage:
+invalidSource` and keeps the previous row. `view` is the row the retired
+`listEventAssistanceCases` callable returned, with stale identity redaction; the
+phone lists one status a page at a time (organizer, event, status, ordered by
+case id, 50 rows) and fails the page on an incomplete view rather than hiding a
+request. Optional current-source guest names are shared with rehearsal help
+projections. Source-changed and legacy rows can expose only a null name. The
+handoff choices are built on the phone from the organizer document with the
+server's rule (owner, primary host and host ids, named from the host profiles);
+they bind the caller, contain at most 42 distinct canonical managers, and every
+assignment rechecks current authority. Native parsers reject duplicate/missing-caller
 choices and a rehearsal name that differs from its actor. Guest-name changes alter
 the reviewed source hash, independently of the immutable retry binding.
 `resolveEventAssistanceCase` owns resolution, decline and manager handoff. The
@@ -468,10 +480,23 @@ organizer blocks; `purgeRetainedSafetyRecords` deletes them when due.
 ### Event Assistance Delivery Review
 
 `event_assistance_delivery_review.schema.json` owns the closed Host delivery
-page, reviewed repair input, ownership projection and immutable repair receipt.
-Both callables require organizer management access. List coverage is page-local;
-delivery evidence and coordinator completion remain independent. Missing or
-replaced guest sources redact attendee identity and prohibit new commands.
+row, reviewed repair input, ownership projection and immutable repair receipt.
+Managers read rows through `hostEventDeliveryViews/{messageId}`
+(`contracts/firestore/host_event_delivery_views.schema.json`), one server-only
+view per live message, written ahead of time by triggers on
+`eventAssistanceMessages`, `eventAssistanceGuests`, `eventAttendees`, `events`,
+`operationWorkItems`, `operationRuns` and `organizers`
+(`functions/src/hostReadModels/eventDeliveryViewStore.ts`). Each evaluation
+rereads the message, organizer, event, attendee, guest and, for automatic
+delivery, its run and work item in one transaction and evaluates the row at the
+transaction's time. Time enters the row only through manual handoff:
+`relevantUntilMillis` is the message's expiry, or the event's end when the live
+window closes there first, and the phone treats the action as gone once its
+clock reaches it, so no sweep runs. The phone pages an event's views (organizer,
+event, ordered by message id, 50 rows) and fails the page on an incomplete view.
+Delivery evidence and coordinator completion remain independent. Missing or
+replaced guest sources redact attendee identity and prohibit new commands. The
+repair callable requires organizer management access.
 
 `repairEventAssistanceDelivery` currently supports only the typed command's
 `manualHandoff` action. Its expected message revision and complete review hash
@@ -1572,18 +1597,25 @@ deployment configuration, not a persisted plan constant.
 
 ### Event Success Presence And Late-Arrival Boundary
 
-`contracts/firestore/event_success_presence.schema.json` owns the server-only
+`contracts/firestore/event_success_presence.schema.json` owns the server-written
 heartbeat record at `eventSuccessPresence/{eventId_uid}`. The document stores
 event/organizer/attendee identity, runtime surface, and server timestamps; it
 does not persist a presence enum. `present`, `idle`, and `likelyDeparted` are
-derived from the Functions server clock and the bounded deployment policy.
-Direct clients cannot read or write presence documents.
+derived from `heartbeatAt` and a clock with the windows in
+`contracts/catalogs/event_success_presence_policy.json` (a 30-second heartbeat,
+a 90-second present window, a 300-second likely-departed threshold), which the
+generator emits to Functions and Dart. Rotation generation and late placement
+derive on the server clock. A current manager of the organizer lists an event's
+heartbeats under rules and the live console derives on the app clock, re-evaluated
+at the heartbeat interval; attendees cannot read presence and only the heartbeat
+callable writes it. Its response carries the policy to Flutter and web.
+Unmonitored attendees remain eligible; absence of a heartbeat is not departure
+evidence.
 
-The heartbeat request/response schemas and Host summary response under
-`contracts/callables/` and `contracts/callable_responses/` carry the active
-policy into Flutter and web. Defaults are a 30-second heartbeat, a 90-second
-present window, and a 300-second likely-departed threshold. Unmonitored
-attendees remain eligible; absence of a heartbeat is not departure evidence.
+The console's late-arrival candidates are checked-in guests on the operational
+roster (an `eventAttendees` row linked to the guest's account) who checked in
+after the event started and are neither in the next round's current draft nor
+placed for it.
 
 `contracts/firestore/event_success_late_arrivals.schema.json` owns the
 deterministic Host resolution at `eventSuccessLateArrivals/{eventId_uid}`.
@@ -1592,8 +1624,8 @@ live revision. The transaction can change only the unpublished next-round
 assignment draft, increments its draft revision when changed, and records a
 bounded attendee-visible reason. It never writes
 `eventSuccessAssignments/{eventId_moduleId_uid}`. Rules allow only the subject
-attendee or event Host to get a resolution; collection queries and direct
-writes are denied.
+attendee or event Host to get a resolution, and a current organizer manager to
+list an event's resolutions; direct writes are denied.
 
 ### Event Success Conversation Graph Boundary
 
@@ -2568,7 +2600,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use `listOrganizerCampaigns` and contact-detail callables |
 | Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
 | Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
-| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}`, `externalEventMappings/{mappingId}`, and `providerSyncRuns/{runId}` |
+| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
+| Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -2803,7 +2836,13 @@ a coordinated UI patch; mutation and membership-preview authority stay callable.
 The Today attention queue reads `organizerAttentionItems` and
 `organizerAttentionSchedules/{organizerId}` under the same manager authority;
 the evaluator that writes them ahead of time is described in
-[Host Today Attention Contract](#host-today-attention-contract).
+[Host Today Attention Contract](#host-today-attention-contract). The live
+console lists `hostEventCaseViews` and `hostEventDeliveryViews` by organizer
+and event under the same authority, and `eventSuccessPresence` and
+`eventSuccessLateArrivals` by organizer and event; see
+[Event Assistance Practical Requests](#event-assistance-practical-requests),
+[Event Assistance Delivery Review](#event-assistance-delivery-review) and
+[Event Success Presence And Late-Arrival Boundary](#event-success-presence-and-late-arrival-boundary).
 
 The create flow reads `hostEventSetupViews/{eventId}` and
 `hostEventSetupDefaultViews/{organizerId}` under the active-organizer manager
@@ -2812,6 +2851,13 @@ authority (`isActiveHostSummaryManager`), and
 their evaluators and rules are described in
 [Progressive Event Setup Contracts](#progressive-event-setup-contracts) and
 [Event Dress Rehearsal Isolation Contract](#event-dress-rehearsal-isolation-contract).
+
+The door reads `hostProviderConnectionViews/{organizerId}`,
+`externalEventMappings/{mappingId}`, `hostEventRosterInsightViews/{eventId}`
+and `hostOrganizerSpendProjections/{organizerId}` under the same manager
+authority (`isHostSummaryManager`: the callables they replace refused no
+archived organizer); see
+[Provider Sync, Staff, And Offline Attendance](#provider-sync-staff-and-offline-attendance).
 
 `hostResponseSummaries/{summaryId}` stores one unified inbox entry per submitted
 response or standalone application. The key hashes the source kind and ID. A
@@ -4210,6 +4256,35 @@ cursor, counts, state and sanitized errors. The implemented Luma poller imports
 registration and provider check-in facts through the canonical attendee
 reconciler. It does not invent orders, refunds, revenue, referral coverage or
 webhook freshness that Luma has not supplied.
+
+The door reads provider setup through listeners. The provider catalog is the
+contract `contracts/catalogs/organizer_providers.json`, generated for Functions
+and as `organizer_provider_catalog.g.dart` for the Host app. Triggers write
+`hostProviderConnectionViews/{organizerId}`: the organizer's connection rows
+(at most 20; more is `overCap`) without `secretVersionResource`,
+`connectedByUid` or `lastErrorCode`. A current manager gets the view and the
+event's `externalEventMappings` document, whose id the app derives as `eem_` and
+the first 48 hex characters of sha256(eventId); a mapping holds no credential.
+A missing or incomplete view keeps the door in its error state. Connect and
+disconnect still return the setup response, but the door waits for the
+listeners to deliver the write instead of using it, and sync no longer rereads.
+
+The door's roster labels are written ahead of time to
+`hostEventRosterInsightViews/{eventId}`, one row per attendee (at most 1,000)
+with the retired callable's fields. Attendance labels use only events that
+ended before the event's start, and spend only completed, non-refunded Catch
+payments completed by then, so a view freezes 24 hours after its event ends.
+Catch spend is split from the rows: the payment trigger keeps per-account
+totals in the server-only `organizerSpendTotals/{organizerId}` (at most 4,000
+accounts; another account or an uncomputable amount makes them partial, and
+partial totals show no spend at all) and, in the same transaction,
+`hostOrganizerSpendProjections/{organizerId}`, which exposes only the
+top-quartile threshold per currency, never an account or a per-guest amount.
+The phone labels `top_catch_spender` where an amount with at least two paid
+orders reaches its currency's threshold; `member` is always stored and the
+phone hides it when it does not show membership. A missing view, or one
+recorded as `invalidSource`, shows the roster's unavailable state; check-in
+never depends on it.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
 `setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.

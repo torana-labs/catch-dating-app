@@ -164,10 +164,13 @@ void main() {
           expect(find.text('Handoff needs confirmation'), findsNothing);
           if (practice) {
             rehearsal.snapshot = practiceDeliveryQueue('delivered');
+            await tap(find.text('Reload messages'));
           } else {
+            // The receipt reaches the open listener through the view trigger.
             live.stage = 'delivered';
+            live.deliverToListeners();
+            await pumpFeatureUi(tester);
           }
-          await tap(find.text('Reload messages'));
           await tap(find.byKey(ValueKey('delivery.message.$id')));
           expect(find.text('Delivered'), findsWidgets);
           expect(find.byKey(const ValueKey('delivery.takeOver')), findsNothing);

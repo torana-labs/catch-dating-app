@@ -6,6 +6,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_assistance_cases_test_repository.dart' show TestPageFeed;
+
+export 'event_assistance_cases_test_repository.dart' show TestPageFeed;
+
 class DeliveriesTestRepository extends Fake
     implements EventAssistanceDeliveriesRepository {
   Completer<void> _changed = Completer<void>();
@@ -13,7 +17,7 @@ class DeliveriesTestRepository extends Fake
       <
         ({
           EventAssistanceDeliveryQuery query,
-          Completer<EventAssistanceDeliveriesPage> result,
+          TestPageFeed<EventAssistanceDeliveriesPage> result,
         })
       >[];
   final writes =
@@ -25,13 +29,13 @@ class DeliveriesTestRepository extends Fake
       >[];
 
   @override
-  Future<EventAssistanceDeliveriesPage> fetch(
+  Stream<EventAssistanceDeliveriesPage> watchPage(
     EventAssistanceDeliveryQuery query,
   ) {
-    final result = Completer<EventAssistanceDeliveriesPage>();
+    final result = TestPageFeed<EventAssistanceDeliveriesPage>();
     reads.add((query: query, result: result));
     _notify();
-    return result.future;
+    return result.stream;
   }
 
   @override

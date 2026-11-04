@@ -2,13 +2,14 @@ import type {DocumentSnapshot} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
-import type {EventAssistanceDeliveriesCallableResponse as Response} from
-  "../../shared/generated/eventAssistanceDeliveriesCallableResponse";
+import type {EventAssistanceDeliveryCallableResponse as Response} from
+  "../../shared/generated/eventAssistanceDeliveryCallableResponse";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
 import {isOrganizerManager} from "../../shared/organizerHosts";
 import {guestIdentity, guestSourceFactsFromSnapshots, parseGuest,
   messageWindowOpen, guestCanReceiveMessage} from "./guestRecords";
+import type {GuestSourceFacts} from "./guestRecords";
 import {invalidSource} from "./groupProgressSource";
 import {sameMessageContext} from "./messagingPolicy";
 import {MessageRecord, parseMessageRecord} from "./messageOutbox";
@@ -19,7 +20,7 @@ import {hostDeliveryStatus, manualDeliveryActions} from
 
 export {hostDeliveryStatus} from "./deliveryReviewPolicy";
 
-export type HostDeliveryView = Response["deliveries"][number];
+export type HostDeliveryView = Response["view"];
 export type DeliveryCoordination = ReturnType<typeof readDeliveryWorkRecords>;
 
 export function parseHostDelivery(value: unknown, id: string,
@@ -93,4 +94,38 @@ export function projectHostDelivery(message: MessageRecord,
         guest.intention.kind !== "notComing"));
   return {...common, availability: "current", attendeeId: intent.attendeeId,
     actions: manualDeliveryActions(message, relevant, ownerCurrent)};
+}
+
+/**
+ * The instant from which a current message's manual handoff no longer applies
+ * without any source write: its expiry, or the earlier of its expiry and the
+ * event's end when messageWindowOpen closes at that end. The window of an
+ * eventCancelled notice does not depend on time, and the windows of
+ * eventFinished and followUp notices open at the event's end, which their
+ * producers have already passed when they create them.
+ */
+export function deliveryActionsUntil(intent: MessageRecord["intent"],
+  source: GuestSourceFacts): number {
+  return windowClosesAtEventEnd(intent) ?
+    Math.min(intent.expiresAt, source.eventEnd) : intent.expiresAt;
+}
+
+function windowClosesAtEventEnd(intent: MessageRecord["intent"]): boolean {
+  if (intent.kind === "joiningUpdate") return true;
+  switch (intent.noticeKind) {
+  case "joiningInstructions":
+  case "planChanged":
+  case "guestRequirement":
+  case "assignmentChanged":
+  case "participationCheck":
+    return true;
+  case "eventCancelled":
+  case "eventFinished":
+  case "followUp":
+    return false;
+  default: {
+    const unhandled: never = intent.noticeKind;
+    throw new Error("Unhandled event notice purpose: " + unhandled);
+  }
+  }
 }

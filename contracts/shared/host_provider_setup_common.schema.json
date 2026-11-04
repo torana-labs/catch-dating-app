@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/host_provider_setup_common.schema.json",
+  "title": "HostProviderSetupCommon",
+  "description": "Shared shapes for booking-provider setup: one catalog row, and one organizer connection row with its credential reference, connecting user and last error removed. The provider setup command responses and the hostProviderConnectionViews read model both carry them.",
+  "type": "object",
+  "definitions": {
+    "connectionCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventList", "rosterIdentity", "registrationStatus", "providerCheckIn", "orderAmount", "refundStatus", "referralCode", "webhooks", "writeBookings"],
+      "properties": {
+        "eventList": {"type": "boolean"},
+        "rosterIdentity": {"type": "boolean"},
+        "registrationStatus": {"type": "boolean"},
+        "providerCheckIn": {"type": "boolean"},
+        "orderAmount": {"type": "boolean"},
+        "refundStatus": {"type": "boolean"},
+        "referralCode": {"type": "boolean"},
+        "webhooks": {"type": "boolean"},
+        "writeBookings": {"type": "boolean"}
+      }
+    },
+    "catalogEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "displayName", "adapterClass", "availability", "importSupport", "connectionMethod", "capabilities", "requirement"],
+      "properties": {
+        "provider": {"type": "string", "enum": ["generic", "luma", "eventbrite", "partiful", "posh", "bookmyshow", "district", "sortmyscene", "airbnb"]},
+        "displayName": {"type": "string", "minLength": 1, "maxLength": 80},
+        "adapterClass": {"type": "string", "enum": ["A", "C", "D", "E", "unclassified"]},
+        "availability": {"type": "string", "enum": ["available", "exportOnly", "configurationRequired", "partnerAccessRequired", "sampleRequired", "manualOnly"]},
+        "importSupport": {"type": "string", "enum": ["verified", "generic", "sampleRequired"]},
+        "connectionMethod": {"type": "string", "enum": ["apiKey", "oauth", "partner", "none"]},
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fileImport", "eventList", "rosterIdentity", "registrationStatus", "providerCheckIn", "orderAmount", "refundStatus", "referralCode", "webhooks", "writeBookings"],
+          "properties": {
+            "fileImport": {"type": "boolean"},
+            "eventList": {"type": "boolean"},
+            "rosterIdentity": {"type": "boolean"},
+            "registrationStatus": {"type": "boolean"},
+            "providerCheckIn": {"type": "boolean"},
+            "orderAmount": {"type": "boolean"},
+            "refundStatus": {"type": "boolean"},
+            "referralCode": {"type": "boolean"},
+            "webhooks": {"type": "boolean"},
+            "writeBookings": {"type": "boolean"}
+          }
+        },
+        "requirement": {"type": "string", "minLength": 1, "maxLength": 240}
+      }
+    },
+    "connectionRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One organizerProviderConnections document as a manager may see it: never secretVersionResource, connectedByUid or lastErrorCode.",
+      "required": ["connectionId", "provider", "status", "externalAccountId", "externalAccountName", "syncMode", "capabilities", "revision", "lastHealthSyncAtMillis", "lastSuccessfulSyncAtMillis"],
+      "properties": {
+        "connectionId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "provider": {"const": "luma"},
+        "status": {"type": "string", "enum": ["active", "degraded", "credentialRevoked", "disconnected"]},
+        "externalAccountId": {"type": "string"},
+        "externalAccountName": {"type": "string"},
+        "syncMode": {"const": "manualPoll"},
+        "capabilities": {"$ref": "#/definitions/connectionCapabilities"},
+        "revision": {"type": "integer", "minimum": 1},
+        "lastHealthSyncAtMillis": {"type": ["integer", "null"]},
+        "lastSuccessfulSyncAtMillis": {"type": ["integer", "null"]}
+      }
+    }
+  }
+}

@@ -1,35 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callable_responses/get_event_roster_insights_response.schema.json",
-  "title": "GetEventRosterInsightsCallableResponse",
-  "description": "Manager-only, event-relative attendance and Catch-payment labels for an operational roster. Private Event Success, dating, feedback, and safety data are excluded.",
+  "$id": "https://catch.app/contracts/shared/host_roster_insight_common.schema.json",
+  "title": "HostRosterInsightCommon",
+  "description": "Shared shapes for the door's roster insights: one manager-only, event-relative attendance and Catch-payment row per attendee. Private Event Success, dating, feedback and safety data are excluded.",
   "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "eventId",
-    "organizerId",
-    "cutoffAtMillis",
-    "sourceCoverage",
-    "spendCoverage",
-    "rows",
-    "computedAtMillis"
-  ],
-  "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "cutoffAtMillis": {"type": "integer", "minimum": 0},
-    "sourceCoverage": {"type": "string", "enum": ["exact", "partial"]},
-    "spendCoverage": {"type": "string", "enum": ["catchPaymentsOnly", "insufficientData"]},
-    "rows": {
-      "type": "array",
-      "maxItems": 1000,
-      "items": {"$ref": "#/definitions/row"}
-    },
-    "computedAtMillis": {"type": "integer", "minimum": 0}
-  },
   "definitions": {
-    "signal": {
+    "storedSignal": {
       "type": "string",
+      "description": "A label the server stores on a row. top_catch_spender is never stored: the phone adds it from hostOrganizerSpendProjections. member is always stored; the phone hides it when it does not show membership.",
       "enum": [
         "first_time",
         "returning",
@@ -40,7 +18,6 @@
         "advocate",
         "high_impact_advocate",
         "known_catch_spender",
-        "top_catch_spender",
         "member"
       ]
     },
@@ -70,10 +47,10 @@
         "catchSpend"
       ],
       "properties": {
-        "attendeeId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "attendeeId": {"$ref": "event_common.schema.json#/definitions/documentId"},
         "contactId": {
           "anyOf": [
-            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"$ref": "event_common.schema.json#/definitions/documentId"},
             {"type": "null"}
           ]
         },
@@ -84,8 +61,8 @@
         "signals": {
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 11,
-          "items": {"$ref": "#/definitions/signal"}
+          "maxItems": 10,
+          "items": {"$ref": "#/definitions/storedSignal"}
         },
         "priorAttendedEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "priorExpectedEventCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
@@ -95,6 +72,7 @@
         "catchSpend": {
           "type": "array",
           "maxItems": 12,
+          "description": "Completed, non-refunded Catch payments for this organizer's events by the contact's linked account, at or before the view's cutoff, one entry per currency.",
           "items": {"$ref": "#/definitions/spendAmount"}
         }
       }

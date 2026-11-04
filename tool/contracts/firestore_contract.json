@@ -1217,6 +1217,146 @@
       ]
     },
     {
+      "id": "hostProviderConnectionViews",
+      "path": "hostProviderConnectionViews/{organizerId}",
+      "rulesMatch": "/hostProviderConnectionViews/{organizerId}",
+      "typescriptInterface": "HostProviderConnectionViewDocument",
+      "dartModel": "lib/contexts/audience/data/host_provider_setup_reads.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host provider connection evaluator: hostReadModels provider connection view triggers",
+      "read": "current organizer managers get their organizer's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it and deleted with the organizer",
+      "exportedFunctions": [
+        "onHostProviderConnectionViewConnectionChanged",
+        "onHostProviderConnectionViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "Rows never carry secretVersionResource, connectedByUid or lastErrorCode. More than 20 connections records overCap with the first 20; an invalid connection records invalidSource and keeps the previous rows. Either means the door must not claim a complete setup."
+      ]
+    },
+    {
+      "id": "hostEventRosterInsightViews",
+      "path": "hostEventRosterInsightViews/{eventId}",
+      "rulesMatch": "/hostEventRosterInsightViews/{eventId}",
+      "typescriptInterface": "HostEventRosterInsightViewDocument",
+      "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host roster insight evaluator: hostReadModels roster insight view triggers",
+      "read": "current organizer managers get their event's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it, frozen a day after the event ends, deleted with the event or its organizer",
+      "exportedFunctions": [
+        "onHostRosterInsightEventChanged",
+        "onHostRosterInsightAttendeeChanged",
+        "onHostRosterInsightEdgeChanged",
+        "onHostRosterInsightContactChanged",
+        "onHostRosterInsightTraitsChanged",
+        "onHostRosterInsightPaymentChanged"
+      ],
+      "migrationNotes": [
+        "Rows are the retired getEventRosterInsights rows except that top_catch_spender is left to the phone (from hostOrganizerSpendProjections) and member is always stored.",
+        "Labels use history from before the event's start, so a view is frozen 24 hours after the event ends (its start when it has no end)."
+      ]
+    },
+    {
+      "id": "hostOrganizerSpendProjections",
+      "path": "hostOrganizerSpendProjections/{organizerId}",
+      "rulesMatch": "/hostOrganizerSpendProjections/{organizerId}",
+      "typescriptInterface": "HostOrganizerSpendProjectionDocument",
+      "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host organizer spend evaluator: hostReadModels roster insight payment trigger and backfill",
+      "read": "current organizer managers get their organizer's document; nobody lists the collection",
+      "write": "server only; written in the same transaction as organizerSpendTotals when the thresholds change",
+      "exportedFunctions": [
+        "onHostRosterInsightPaymentChanged"
+      ],
+      "migrationNotes": [
+        "Thresholds only, never an account or a per-guest amount. A missing document means the organizer has no counted Catch payment yet."
+      ]
+    },
+    {
+      "id": "organizerSpendTotals",
+      "path": "organizerSpendTotals/{organizerId}",
+      "rulesMatch": "/organizerSpendTotals/{organizerId}",
+      "typescriptInterface": "OrganizerSpendTotalsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host organizer spend evaluator: hostReadModels roster insight payment trigger and backfill",
+      "read": "server only; never client-readable",
+      "write": "server only; one transaction per payment change, idempotent by trigger event id",
+      "exportedFunctions": [
+        "onHostRosterInsightPaymentChanged"
+      ],
+      "migrationNotes": [
+        "At most 4,000 accounts keep the document under Firestore's 1 MiB limit; another account, or an uncomputable amount, makes coverage partial until a rebuild."
+      ]
+    },
+    {
+      "id": "hostEventCaseViews",
+      "path": "hostEventCaseViews/{caseId}",
+      "rulesMatch": "/hostEventCaseViews/{caseId}",
+      "typescriptInterface": "HostEventCaseViewDocument",
+      "dartModel": "lib/contexts/live/domain/event_assistance_cases_page.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers list an event's help-request and delivery views"
+      ],
+      "owner": "Host event case view evaluator: hostReadModels event case view triggers",
+      "read": "current organizer managers list an event's views for one status (organizerId, eventId and status, ordered by document id); authority comes from the organizer document",
+      "write": "server only; one view per live case owned by the event lead, deleted when the case is missing, safety-owned or rehearsal, or its organizer or event is gone",
+      "exportedFunctions": [
+        "onHostEventCaseViewCaseChanged",
+        "onHostEventCaseViewAttendeeChanged",
+        "onHostEventCaseViewEventChanged",
+        "onHostEventCaseViewOrganizerChanged",
+        "resolveEventAssistanceCase"
+      ],
+      "migrationNotes": [
+        "view is the row the retired listEventAssistanceCases callable returned; the handoff choices are built on the phone from the organizer document.",
+        "sourceCoverage invalidSource keeps the previous view and names incompleteSource; the phone fails the page rather than hiding a request."
+      ]
+    },
+    {
+      "id": "hostEventDeliveryViews",
+      "path": "hostEventDeliveryViews/{messageId}",
+      "rulesMatch": "/hostEventDeliveryViews/{messageId}",
+      "typescriptInterface": "HostEventDeliveryViewDocument",
+      "dartModel": "lib/contexts/live/domain/event_assistance_deliveries_page.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers list an event's help-request and delivery views"
+      ],
+      "owner": "Host event delivery view evaluator: hostReadModels event delivery view triggers",
+      "read": "current organizer managers list an event's views (organizerId and eventId, ordered by document id); authority comes from the organizer document",
+      "write": "server only; one view per live message, deleted when the message is missing or not live, or its organizer or event is gone",
+      "exportedFunctions": [
+        "onHostEventDeliveryViewMessageChanged",
+        "onHostEventDeliveryViewGuestChanged",
+        "onHostEventDeliveryViewAttendeeChanged",
+        "onHostEventDeliveryViewEventChanged",
+        "onHostEventDeliveryViewWorkItemChanged",
+        "onHostEventDeliveryViewRunChanged",
+        "onHostEventDeliveryViewOrganizerChanged",
+        "repairEventAssistanceDelivery"
+      ],
+      "migrationNotes": [
+        "view is the row the retired listEventAssistanceDeliveries callable returned, evaluated at evaluatedAt; relevantUntilMillis is when its manual handoff lapses, which the phone applies on its own clock, so no sweep runs.",
+        "sourceCoverage invalidSource keeps the previous view and names incompleteSource; the phone fails the page rather than hiding a message."
+      ]
+    },
+    {
       "id": "organizerEntitlements",
       "path": "organizerEntitlements/{organizerId}",
       "rulesMatch": "/organizerEntitlements/{organizerId}",
@@ -1612,14 +1752,14 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer booking-provider connection callables",
-      "read": "server only; manager setup projection is callable-owned",
+      "read": "server only; managers read the manager-safe projection in hostProviderConnectionViews",
       "write": "server only; credentials remain in Secret Manager",
       "exportedFunctions": [
         "connectOrganizerLumaProvider",
         "disconnectOrganizerProvider",
-        "getOrganizerProviderSetup",
         "listOrganizerLumaEvents",
-        "syncOrganizerProviderEvent"
+        "syncOrganizerProviderEvent",
+        "onHostProviderConnectionViewConnectionChanged"
       ],
       "migrationNotes": [
         "Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."
@@ -1633,16 +1773,19 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "external event provider mapping and reconciliation callables",
-      "read": "server only; manager setup projection is callable-owned",
+      "read": "current organizer managers get their event's mapping by its derived id under rules (an event without one reads as missing); nobody lists the collection",
       "write": "server only",
       "exportedFunctions": [
         "connectOrganizerLumaProvider",
         "disconnectOrganizerProvider",
-        "getOrganizerProviderSetup",
         "syncOrganizerProviderEvent"
       ],
       "migrationNotes": [
-        "One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation."
+        "One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation.",
+        "The document holds no credential; the Host app derives its id (eem_ + the first 48 hex characters of sha256(eventId)) and listens to it."
+      ],
+      "rulesTestNames": [
+        "lets managers get their own event's provider mapping only"
       ]
     },
     {
@@ -1763,14 +1906,13 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "Event Success attendee heartbeat callable",
-      "read": "server only; Hosts receive a derived callable summary",
+      "read": "current organizer managers get or list an event's heartbeats (organizerId and eventId); attendees never read them",
       "write": "server only",
       "exportedFunctions": [
-        "heartbeatEventSuccessPresence",
-        "getEventSuccessPresenceSummary"
+        "heartbeatEventSuccessPresence"
       ],
       "migrationNotes": [
-        "Presence state is derived from heartbeatAt with deployment-configured windows; it is never persisted as a stale enum."
+        "Presence state is derived from heartbeatAt and a clock with the windows in contracts/catalogs/event_success_presence_policy.json, on the server for rotations and late placement and on the manager's phone for the live console; it is never persisted as a stale enum."
       ]
     },
     {
@@ -1799,7 +1941,7 @@
       "dartModel": "lib/contexts/live/domain/event_success_presence.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "Event Success Host late-arrival callable",
-      "read": "attendee own deterministic eventId_uid document or authorized event Host; no list",
+      "read": "attendee own deterministic eventId_uid document or authorized event Host; current organizer managers list an event's placements (organizerId and eventId)",
       "write": "server only",
       "exportedFunctions": [
         "resolveEventSuccessLateArrival"
@@ -2193,7 +2335,8 @@
       "write": "server only",
       "exportedFunctions": [
         "createRazorpayOrder",
-        "verifyRazorpayPayment"
+        "verifyRazorpayPayment",
+        "onHostRosterInsightPaymentChanged"
       ]
     },
     {
@@ -2899,8 +3042,8 @@
       "exportedFunctions": [
         "getEventAssistanceGuestView",
         "submitEventAssistanceGuestChoice",
-        "listEventAssistanceCases",
-        "resolveEventAssistanceCase"
+        "resolveEventAssistanceCase",
+        "onHostEventCaseViewCaseChanged"
       ]
     },
     {
@@ -3011,8 +3154,8 @@
         "Intent and bounded attempts are private. Provider activation and guest response endpoints are separate integration work."
       ],
       "exportedFunctions": [
-        "listEventAssistanceDeliveries",
-        "repairEventAssistanceDelivery"
+        "repairEventAssistanceDelivery",
+        "onHostEventDeliveryViewMessageChanged"
       ]
     },
     {

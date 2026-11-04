@@ -212,7 +212,6 @@ test("late insertion patches only an unpublished draft", async () => {
     serverTimestamp: () => serverTimestamp as unknown as
       FirebaseFirestore.FieldValue,
     nowMillis: () => 10_000,
-    environment: {},
   });
 
   assert.equal(result.status, "insertedIntoOpenPair");

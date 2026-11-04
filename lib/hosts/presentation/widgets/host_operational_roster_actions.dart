@@ -10,33 +10,54 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
         provider != ExternalBookingProvider.catchPlatform;
   }
 
-  Future<void> _loadProviderSetup({bool force = false}) async {
-    if (!force && _providerSetup != null) return;
-    _setLocalState(() => _providerSetup = const AsyncLoading());
-    try {
-      final setup = await ref
-          .read(hostOperationalRosterControllerProvider)
-          .getProviderSetup(
-            organizerId: widget.organizerId,
-            eventId: widget.eventId,
-          );
-      if (mounted) _setLocalState(() => _providerSetup = AsyncData(setup));
-    } catch (error, stackTrace) {
-      app_ops.logAppError(
-        error,
-        stackTrace: stackTrace,
-        context: const app_ops.AppErrorContext(
-          operation: app_ops.AppOperation.ui,
-          action: 'load organizer booking provider setup',
-          resource: 'host_provider_setup',
-        ),
-        logError: ref.read(errorLoggerProvider),
-      );
-      if (mounted) {
-        _setLocalState(() => _providerSetup = AsyncError(error, stackTrace));
-      }
+  /// Starts the provider setup listener the first time the field opens.
+  void _openProviderSetup() {
+    if (!_providerSetupRequested) {
+      _setLocalState(() => _providerSetupRequested = true);
     }
   }
+
+  /// The provider setup listener, once requested. A setup whose connection
+  /// view is missing or incomplete shows the boundary's error state.
+  AsyncValue<HostProviderSetup>? _watchProviderSetup() {
+    if (!_providerSetupRequested || !_showsProviderSource) return null;
+    final provider = hostProviderSetupProvider(
+      widget.organizerId,
+      widget.eventId,
+    );
+    ref.listen(provider, (previous, next) {
+      if (next case AsyncError(
+        :final error,
+        :final stackTrace,
+      ) when previous is! AsyncError) {
+        app_ops.logAppError(
+          error,
+          stackTrace: stackTrace,
+          context: const app_ops.AppErrorContext(
+            operation: app_ops.AppOperation.ui,
+            action: 'load organizer booking provider setup',
+            resource: 'host_provider_setup',
+          ),
+          logError: ref.read(errorLoggerProvider),
+        );
+      }
+    });
+    return switch (ref.watch(provider)) {
+      AsyncData(:final value)
+          when value.sourceCoverage != HostProviderSetupCoverage.complete =>
+        AsyncError(
+          HostProviderSetupUnavailable(value.sourceCoverage),
+          StackTrace.current,
+        ),
+      final setup => setup,
+    };
+  }
+
+  /// Restarts the provider setup listener from the error state, which shows
+  /// for a failed listener and for a connection view that is not complete.
+  void _retryProviderSetup() => ref.invalidate(
+    hostProviderSetupProvider(widget.organizerId, widget.eventId),
+  );
 
   Future<void> _connectLuma() async {
     final input = await showCatchBottomSheet<HostLumaConnectionInput>(
@@ -53,7 +74,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       _mutationError = null;
     });
     try {
-      final setup = await ref
+      await ref
           .read(hostOperationalRosterControllerProvider)
           .connectLuma(
             organizerId: widget.organizerId,
@@ -62,7 +83,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             apiKey: input.apiKey,
           );
       if (!mounted) return;
-      _setLocalState(() => _providerSetup = AsyncData(setup));
       showCatchNotice(
         context,
         context.l10n.hostsOperationalRosterProviderConnected,
@@ -92,8 +112,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
           );
       _providerSyncOperationId = null;
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
-      await _loadProviderSetup(force: true);
       if (!mounted) return;
       showCatchNotice(
         context,
@@ -111,7 +129,11 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
   }
 
   Future<void> _disconnectProvider() async {
-    final connection = _providerSetup?.asData?.value.mappedConnection;
+    final connection = ref
+        .read(hostProviderSetupProvider(widget.organizerId, widget.eventId))
+        .asData
+        ?.value
+        .mappedConnection;
     if (connection == null || _providerMutationPending) return;
     final confirmed = await showCatchConfirmDialog(
       copy: catchDialogCopy(context.l10n),
@@ -127,14 +149,13 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       _mutationError = null;
     });
     try {
-      final next = await ref
+      await ref
           .read(hostOperationalRosterControllerProvider)
           .disconnectProvider(
             organizerId: widget.organizerId,
             eventId: widget.eventId,
             connectionId: connection.connectionId,
           );
-      if (mounted) _setLocalState(() => _providerSetup = AsyncData(next));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
@@ -296,7 +317,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     required HostRosterIntakeReview applied,
   }) async {
     ref.invalidate(watchEventAttendeesProvider(eventId));
-    ref.invalidate(hostEventRosterInsightsProvider(eventId));
     await _showAppliedRosterReceipt(eventId: eventId, review: applied);
     await _rosterIntakeJournal.clear(
       userId: accountId,
@@ -436,7 +456,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             attendeeId: attendeeId,
           );
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
       showCatchNotice(
         context,
@@ -482,7 +501,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
           );
       if (!sameScope() || !mounted) return;
       ref.invalidate(watchEventAttendeesProvider(eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(eventId));
       if (result.errors.isEmpty) {
         showCatchNotice(
           context,
@@ -546,7 +564,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
           );
       if (mounted) _setLocalState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
@@ -573,7 +590,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       if (!mounted) return;
       _setLocalState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
-      ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     }

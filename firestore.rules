@@ -1369,6 +1369,29 @@ service cloud.firestore {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
+    // The door's manager projections, written ahead of time by the provider
+    // connection and roster insight evaluators. The callables they replace
+    // authorized any current manager (requireOrganizerManager), so these use
+    // isHostSummaryManager, not the active-organizer variant. A roster view
+    // the server has not written yet reads as missing.
+    match /hostProviderConnectionViews/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+    match /hostEventRosterInsightViews/{eventId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // Top-quartile spend thresholds only: never an account or an amount per
+    // guest. The per-account totals behind them stay server-only.
+    match /hostOrganizerSpendProjections/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+    match /organizerSpendTotals/{organizerId} {
+      allow read, write: if false;
+    }
 
     // Organizer Audience/CRM projections contain restricted operational PII,
     // identity candidates, and business traits. All client access is through
@@ -1423,6 +1446,19 @@ service cloud.firestore {
     match /organizerAttentionSchedules/{organizerId} {
       allow get: if isHostSummaryManager(organizerId);
       allow list, write: if false;
+    }
+
+    // Live console help-request and delivery views, one per practical case
+    // or live message, written ahead of time by the view triggers. A current
+    // manager of the row's organizer lists an event's rows; authority comes
+    // from the organizer document, never from the view.
+    match /hostEventCaseViews/{caseId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventDeliveryViews/{messageId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     // Entitlement grants and meters are billing state. Only admin-authorized
@@ -1641,8 +1677,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // An event's booking-provider mapping holds no credential. A current
+    // manager of its organizer gets it by its derived id (eem_ + sha256 of
+    // the event id); an event without a mapping reads as missing. Nobody
+    // lists mappings, and only the provider commands write them.
     match /externalEventMappings/{mappingId} {
-      allow read, write: if false;
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
     }
 
     match /providerSyncRuns/{runId} {
@@ -2841,8 +2883,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // A current manager of the organizer listens to an event's heartbeats and
+    // derives present, idle or likely departed on the phone from heartbeatAt
+    // and its own clock. Only the heartbeat callable writes.
     match /eventSuccessPresence/{presenceId} {
-      allow read, write: if false;
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     match /eventLivePositions/{positionId} {
@@ -2867,7 +2913,10 @@ service cloud.firestore {
             )
           )
         );
-      allow list, write: if false;
+      // The live console lists an event's placements to keep placed guests
+      // out of its late-arrival candidates.
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     match /eventSuccessUnitOutcomes/{eventId} {

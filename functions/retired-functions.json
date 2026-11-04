@@ -3,7 +3,12 @@
   "adminListOrganizerClaimRequests",
   "adminListOrganizerListingReviews",
   "getEventRehearsalSummary",
+  "getEventRosterInsights",
+  "getEventSuccessPresenceSummary",
   "getOrganizerEventSetupDefaults",
+  "getOrganizerProviderSetup",
   "getPrivateEventSetup",
+  "listEventAssistanceCases",
+  "listEventAssistanceDeliveries",
   "listOrganizerAttentionItems"
 ]

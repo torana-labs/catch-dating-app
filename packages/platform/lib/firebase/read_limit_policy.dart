@@ -52,4 +52,16 @@ abstract final class ReadLimitPolicy {
   /// `functions/src/organizers/organizerAttention.ts`): it never keeps more
   /// open rows, and records an over-cap schedule instead.
   static const int hostAttentionQueue = 400;
+
+  /// Room presence heartbeats, or late-arrival placements, for one live
+  /// event. This is the server's per-event read (`limit(200)` in
+  /// `functions/src/eventSuccess/presence.ts` and `lateArrivals.ts`), which
+  /// rotation generation and late placement already rely on.
+  static const int eventSuccessPresence = 200;
+
+  /// One page of a live event's help requests or message deliveries: the
+  /// page the retired listEventAssistanceCases and listEventAssistanceDeliveries
+  /// callables served. A listener reads one row more to know a next page
+  /// exists.
+  static const int hostLiveReviewPage = 50;
 }

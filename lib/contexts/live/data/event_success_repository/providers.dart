@@ -51,37 +51,6 @@ Stream<void> maintainEventSuccessPresence(Ref ref, String eventId) async* {
 }
 
 @riverpod
-Stream<EventSuccessPresenceSummary> watchEventSuccessPresenceSummary(
-  Ref ref,
-  String eventId,
-) async* {
-  var disposed = false;
-  Timer? timer;
-  Completer<void>? waiting;
-  ref.onDispose(() {
-    disposed = true;
-    timer?.cancel();
-    if (waiting case final completer? when !completer.isCompleted) {
-      completer.complete();
-    }
-  });
-  Future<void> wait(Duration duration) {
-    waiting = Completer<void>();
-    timer = Timer(duration, waiting!.complete);
-    return waiting!.future;
-  }
-
-  while (!disposed) {
-    final summary = await ref
-        .read(eventSuccessRepositoryProvider)
-        .fetchPresenceSummary(eventId);
-    if (disposed) return;
-    yield summary;
-    await wait(Duration(seconds: summary.policy.heartbeatIntervalSeconds));
-  }
-}
-
-@riverpod
 Stream<EventSuccessLateArrivalResolution?>
 watchUserEventSuccessLateArrivalResolution(
   Ref ref, {

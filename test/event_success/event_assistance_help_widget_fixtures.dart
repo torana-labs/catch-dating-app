@@ -16,6 +16,14 @@ class HelpUiLive extends Fake implements EventAssistanceCasesRepository {
   String stage = 'initial';
   Map<String, Object?>? pageOverride;
   Object? readError;
+  final _listeners =
+      <
+        ({
+          EventAssistanceCaseQuery query,
+          String actorUid,
+          StreamController<EventAssistanceCasesPage> controller,
+        })
+      >[];
   final writes =
       <
         ({
@@ -23,15 +31,51 @@ class HelpUiLive extends Fake implements EventAssistanceCasesRepository {
           Completer<EventAssistanceCaseResult> result,
         })
       >[];
+
   @override
-  Future<EventAssistanceCasesPage> fetch(EventAssistanceCaseQuery query) async {
-    if (readError != null) {
-      throw readError!;
+  Stream<EventAssistanceCasesPage> watchPage(
+    EventAssistanceCaseQuery query, {
+    required String actorUid,
+  }) {
+    final controller = StreamController<EventAssistanceCasesPage>();
+    final listener = (query: query, actorUid: actorUid, controller: controller);
+    _listeners.add(listener);
+    controller.onCancel = () {
+      _listeners.remove(listener);
+      unawaited(controller.close());
+    };
+    _deliver(listener);
+    return controller.stream;
+  }
+
+  void _deliver(
+    ({
+      EventAssistanceCaseQuery query,
+      String actorUid,
+      StreamController<EventAssistanceCasesPage> controller,
+    })
+    listener,
+  ) {
+    final error = readError;
+    if (error != null) {
+      listener.controller.addError(error);
+      return;
     }
-    final raw = pageOverride ?? helpQueueFixture(stage);
-    if (raw['status'] != query.status.name) raw['cases'] = [];
-    raw['status'] = query.status.name;
-    return EventAssistanceCasesPage.fromCallableData(raw, expectedQuery: query);
+    listener.controller.add(
+      helpQueuePageFor(
+        pageOverride ?? helpQueueFixture(stage),
+        listener.query,
+        actorUid: listener.actorUid,
+      ),
+    );
+  }
+
+  /// What the case view trigger does after a command: every open listener
+  /// receives the current stage.
+  void deliverToListeners() {
+    for (final listener in [..._listeners]) {
+      _deliver(listener);
+    }
   }
 
   @override
@@ -53,6 +97,7 @@ class HelpUiLive extends Fake implements EventAssistanceCasesRepository {
         expectedChange: write.change,
       ),
     );
+    deliverToListeners();
   }
 }
 

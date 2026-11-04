@@ -63,27 +63,35 @@ void main() {
 class _Pages extends Fake implements EventAssistanceDeliveriesRepository {
   final reads = <EventAssistanceDeliveryQuery>[];
   @override
-  Future<EventAssistanceDeliveriesPage> fetch(
+  Stream<EventAssistanceDeliveriesPage> watchPage(
     EventAssistanceDeliveryQuery query,
-  ) async {
+  ) {
     reads.add(query);
-    final raw = deliveryQueueFixture('initial');
-    final row = (raw['deliveries'] as List).first as Map;
+    final view = deliveryQueueViews(deliveryQueueFixture('initial')).first;
+    final row = view.data['view']! as Map;
     final first = query.cursor == null;
-    raw['deliveries'] = [
-      for (var i = first ? 1 : 51; i <= (first ? 50 : 51); i++)
-        {
-          ...row,
-          'messageId': 'outbox:${i.toRadixString(16).padLeft(64, '0')}',
-          'displayName': 'Guest ${i.toString().padLeft(3, '0')}',
-        },
-    ];
-    raw['nextCursor'] = first
-        ? 'outbox:${50.toRadixString(16).padLeft(64, '0')}'
-        : null;
-    return EventAssistanceDeliveriesPage.fromCallableData(
-      raw,
-      expectedQuery: query,
+    return Stream.value(
+      EventAssistanceDeliveriesPage.fromViews(
+        query: query,
+        views: [
+          for (var i = first ? 1 : 51; i <= (first ? 50 : 51); i++)
+            (
+              id: 'outbox:${i.toRadixString(16).padLeft(64, '0')}',
+              data: {
+                ...view.data,
+                'messageId': 'outbox:${i.toRadixString(16).padLeft(64, '0')}',
+                'view': {
+                  ...row,
+                  'messageId': 'outbox:${i.toRadixString(16).padLeft(64, '0')}',
+                  'displayName': 'Guest ${i.toString().padLeft(3, '0')}',
+                },
+              },
+              evaluatedAtMillis: view.evaluatedAtMillis,
+            ),
+        ],
+        hasMore: first,
+        nowMillis: view.evaluatedAtMillis,
+      ),
     );
   }
 }

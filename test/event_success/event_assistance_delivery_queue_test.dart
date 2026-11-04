@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
@@ -47,22 +46,23 @@ void main() {
     'older omissions remain unknown and stale guests cannot expose names',
     () {
       final raw = deliveryQueueFixture('replaced');
-      for (final row in raw['deliveries'] as List) {
-        (row as Map).remove('displayName');
+      final rows = [
+        for (final view in raw['views']! as List)
+          ((view as Map)['data']! as Map)['view']! as Map,
+      ];
+      for (final row in rows) {
+        row.remove('displayName');
       }
       expect(
-        EventAssistanceDeliveriesPage.fromCallableData(
+        deliveryQueuePageFor(
           raw,
-          expectedQuery: deliveryQueueQuery(),
+          deliveryQueueQuery(),
         ).deliveries.first.evidence.displayName,
         isNull,
       );
-      ((raw['deliveries'] as List).first as Map)['displayName'] = 'Old guest';
+      rows.first['displayName'] = 'Old guest';
       expect(
-        () => EventAssistanceDeliveriesPage.fromCallableData(
-          raw,
-          expectedQuery: deliveryQueueQuery(),
-        ),
+        () => deliveryQueuePageFor(raw, deliveryQueueQuery()),
         throwsFormatException,
       );
       final practice = deliveryQueueFixture('uncertain', practice: true);

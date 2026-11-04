@@ -59,4 +59,4 @@ final class EventAssistanceDeliveriesRepositoryProvider
 }
 
 String _$eventAssistanceDeliveriesRepositoryHash() =>
-    r'9768ff4f5b4fa8090d18d55f7885d958c3f97e83';
+    r'84288ecab02b9bb082b3d6fedea4d2ab4288961b';

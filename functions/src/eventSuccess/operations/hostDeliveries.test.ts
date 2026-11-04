@@ -1,7 +1,6 @@
 import {getEmulatorFirestore} from "../../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
 import test from "node:test";
-import {readFileSync, writeFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
@@ -9,13 +8,15 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {operationCollections} from "../../operations/collections";
 import type {RepairEventAssistanceDeliveryCallablePayload as Command} from
   "../../shared/generated/repairEventAssistanceDeliveryCallablePayload";
-import {validateEventAssistanceDeliveriesCallableResponse} from
-  "../../shared/generated/validators/eventAssistanceDeliveriesOutput";
+import {validateEventAssistanceDeliveryCallableResponse} from
+  "../../shared/generated/validators/eventAssistanceDeliveryOutput";
 import {DELIVERY_REPAIRS, EventAssistanceDeliveriesStore} from
   "./hostDeliveriesStore";
-import {listEventAssistanceDeliveriesHandler,
-  repairEventAssistanceDeliveryHandler} from "./hostDeliveriesHandlers";
+import {repairEventAssistanceDeliveryHandler} from "./hostDeliveriesHandlers";
 import {hostDeliveryStatus} from "./hostDeliveryRecords";
+import type {HostDeliveryView} from "./hostDeliveryRecords";
+import {eventDeliveryViewsCollection, reconcileEventDeliveryView} from
+  "../../hostReadModels/eventDeliveryViewStore";
 import {guestCollections, guestIdentity} from "./guestRecords";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {MessageRecord, newMessageRecord} from "./messageOutbox";
@@ -31,8 +32,24 @@ async function harness(db?: Firestore,
   const published = await h.publishReady();
   const delivery = await h.delivery(published);
   const store = new EventAssistanceDeliveriesStore(h.db, () => h.clock.now);
-  const input = {context: h.context, cursor: null};
-  const list = () => store.list(manager, input);
+  const deps = {now: () => Timestamp.fromMillis(h.clock.now)};
+  /** What a manager's listener sees: every delivery view re-evaluated. */
+  const list = async () => {
+    const rows = await h.db.collection(EVENT_ASSISTANCE_MESSAGES)
+      .where("intent.eventId", "==", h.context.eventId).get();
+    for (const doc of rows.docs) {
+      await reconcileEventDeliveryView(h.db, doc.id, deps);
+    }
+    const views = (await h.db.collection(eventDeliveryViewsCollection)
+      .where("eventId", "==", h.context.eventId).get()).docs
+      .map((doc) => doc.data())
+      .sort((a, b) => a.messageId < b.messageId ? -1 : 1);
+    return {views, deliveries: views.map((view) =>
+      view.view as HostDeliveryView)};
+  };
+  /** Source documents, without the derived views the review reads. */
+  const sources = () => h.fake.entries().filter(([path]) =>
+    !path.startsWith(eventDeliveryViewsCollection + "/"));
   const view = async () => (await list()).deliveries.find((m) =>
     m.messageId === published.messageId)!;
   const command = async (): Promise<Command> => {
@@ -52,16 +69,15 @@ async function harness(db?: Firestore,
       attemptId: attempt.attemptId, providerEventId: randomUUID(),
       receivedAt: h.clock.now, state});
   };
-  return {...h, published, delivery, reviewStore: store, input, list, view,
-    command, record, path, receipt};
+  return {...h, published, delivery, reviewStore: store, deps, list, sources,
+    view, command, record, path, receipt};
 }
 
 test("delivery review separates evidence, coordination and host ownership",
   async () => {
     const h = await harness();
-    const before = h.fake.entries();
+    const before = h.sources();
     const result = await h.list();
-    assert.equal(result.coverage, "page");
     assert.equal(result.deliveries.length, 2);
     const row = await h.view();
     assert.equal(row.availability, "current");
@@ -80,29 +96,21 @@ test("delivery review separates evidence, coordination and host ownership",
       "sourceGeneration", "episodeId", "responseUrl", "templateDocumentId"]) {
       assert.ok(!JSON.stringify(result).includes(hidden), hidden);
     }
-    assert.deepEqual(h.fake.entries(), before);
+    assert.deepEqual(h.sources(), before);
   });
 
-test("review pagination is bounded and covers recorded messages exactly once",
-  async () => {
-    const h = await harness();
-    for (let i = 0; i < 51; i++) {
-      const message = newMessageRecord({...h.intent,
-        intentId: "page-" + i}, h.clock.now);
-      await h.write(EVENT_ASSISTANCE_MESSAGES + "/" + message.messageId,
-        message);
-    }
-    const a = await h.list();
-    const b = await h.reviewStore.list(manager, {...h.input,
-      cursor: a.nextCursor});
-    assert.equal(a.deliveries.length, 50);
-    assert.ok(a.nextCursor);
-    assert.equal(b.deliveries.length, 3);
-    assert.equal(b.nextCursor, null);
-    const ids = [...a.deliveries, ...b.deliveries].map((m) => m.messageId);
-    assert.deepEqual(ids, [...new Set(ids)].sort());
-    assert.ok(!("total" in a));
-  });
+test("every recorded live message has its own view", async () => {
+  const h = await harness();
+  for (let i = 0; i < 51; i++) {
+    const message = newMessageRecord({...h.intent,
+      intentId: "page-" + i}, h.clock.now);
+    await h.write(EVENT_ASSISTANCE_MESSAGES + "/" + message.messageId,
+      message);
+  }
+  const ids = (await h.list()).deliveries.map((m) => m.messageId);
+  assert.equal(ids.length, 53);
+  assert.deepEqual(ids, [...new Set(ids)].sort());
+});
 
 test("handoff fences reservations and permits while preserving the message",
   async () => {
@@ -187,12 +195,9 @@ test("manager authority precedes event and delivery reads including replays",
     for (const uid of [h.actor.uid, "checkin-staff", "other-host"]) {
       const reads: string[] = [];
       h.fake.beforeRead = (path) => reads.push(path);
-      await assert.rejects(h.reviewStore.list(uid, h.input),
-        {code: "permission-denied"});
       await assert.rejects(h.reviewStore.repair(uid, command),
         {code: "permission-denied"});
-      assert.deepEqual(reads,
-        Array(2).fill("organizers/" + h.context.organizerId));
+      assert.deepEqual(reads, ["organizers/" + h.context.organizerId]);
     }
   });
 
@@ -279,16 +284,21 @@ test("resolved, expired and declined arrivals offer no manual action",
     }
   });
 
-test("malformed matching sources and missing coordinators fail visibly",
+test("malformed matching sources and missing coordinators are recorded",
   async () => {
     const h = await harness();
+    const coverage = async () => (await h.list()).views.find((view) =>
+      view.messageId === h.published.messageId)!;
     const attendee = (await h.read(h.attendeePath))!;
     await h.write(h.attendeePath, {...attendee, status: "made-up"});
-    await assert.rejects(h.list());
+    assert.equal((await coverage()).sourceCoverage, "invalidSource");
+    assert.equal((await coverage()).incompleteSource, "eventAttendees");
     await h.write(h.attendeePath, attendee);
+    assert.equal((await coverage()).sourceCoverage, "complete");
     const ids = deliveryWorkIds(h.published.messageId);
     h.fake.remove(operationCollections.workItems + "/" + ids.workItemId);
-    await assert.rejects(h.list());
+    assert.equal((await coverage()).incompleteSource,
+      operationCollections.workItems);
   });
 
 test("unsupported recovery operations and foreign messages cannot mutate",
@@ -330,20 +340,19 @@ test("conflicting and pending evidence is never summarized as failure",
       state: {kind: "revoked", at: h.clock.now,
         providerMessageId: "revoked-id", evidenceId: "confirmed-revocation"}}]};
     assert.equal(hostDeliveryStatus(revoked), "revoked");
-    const result = await h.list();
-    const row = result.deliveries[0];
+    const row = (await h.list()).deliveries[0];
     for (const patch of [{providerMessageId: "leak"},
       {availability: "sourceChanged", attendeeId: h.scope.attendeeId},
       {actions: ["retryDefiniteFailure"]}]) {
-      assert.equal(validateEventAssistanceDeliveriesCallableResponse({
-        ...result, deliveries: [{...row, ...patch}]}), false);
+      assert.equal(validateEventAssistanceDeliveryCallableResponse({
+        outcome: "applied", context: h.context, serverTime: h.clock.now,
+        operationRevision: row.revision, view: {...row, ...patch}}), false);
     }
   });
 
 test("delivery handlers authenticate and rate-limit before accessing stores",
   async () => {
-    for (const handler of [listEventAssistanceDeliveriesHandler,
-      repairEventAssistanceDeliveryHandler]) {
+    for (const handler of [repairEventAssistanceDeliveryHandler]) {
       let calls = 0;
       const deps = {db: () => ({}) as Firestore,
         rateLimit: async () => {
@@ -436,40 +445,3 @@ test("a slow source read cannot extend the manual action window", async () => {
     {code: "failed-precondition"});
   assert.equal((await h.record()).handoff, undefined);
 });
-
-
-test("native delivery fixture preserves named guests and uncertain evidence",
-  async () => {
-    const h = await harness(undefined,
-      "00000000-0000-0000-0000-000000000456");
-    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
-      displayName: "Alex Morgan"});
-    const initial = await h.list();
-    const original = await h.command();
-    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
-      displayName: "New name"});
-    await assert.rejects(h.reviewStore.repair(manager, original),
-      {code: "aborted"});
-    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
-      displayName: "Alex Morgan"});
-    await h.delivery.claim();
-    const uncertain = await h.list();
-    const command = {...await h.command(), command: {
-      ...original.command, operationId: "native-handoff"}};
-    const handedOff = await h.reviewStore.repair(manager, command);
-    h.clock.now += 1000;
-    await h.receipt({kind: "delivered", at: h.clock.now,
-      providerMessageId: "wamid.native"});
-    const delivered = await h.list();
-    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
-      createdAt: Timestamp.fromMillis(h.clock.now)});
-    const replaced = await h.list();
-    assert.ok(replaced.deliveries.every((r) => r.displayName === null));
-    const samples = {initial, uncertain, command, handedOff, delivered,
-      replaced};
-    const path = "../test/event_success/fixtures/delivery_queue.json";
-    if (process.env.UPDATE_DELIVERY_QUEUE_FIXTURE === "1") {
-      writeFileSync(path, JSON.stringify(samples, null, 2) + "\n");
-    }
-    assert.deepEqual(JSON.parse(readFileSync(path, "utf8")), samples);
-  });

@@ -37,7 +37,8 @@ final class EventAssistanceDeliveryScope {
   int get hashCode => Object.hash(organizerId, eventId, messageId);
 }
 
-/// One bounded page of recorded messages, with no event-wide completeness claim.
+/// One bounded page of recorded messages, with no event-wide completeness
+/// claim: the cursor is the last message id of the previous page.
 final class EventAssistanceDeliveryQuery {
   EventAssistanceDeliveryQuery({
     required this.organizerId,
