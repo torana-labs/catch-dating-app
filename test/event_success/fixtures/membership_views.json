@@ -1,0 +1,596 @@
+{
+  "scope": {
+    "organizerId": "o-00000000-0000-0000-0000-000000000124",
+    "eventId": "e-00000000-0000-0000-0000-000000000124"
+  },
+  "states": {
+    "noEpisode": {
+      "actorUid": "host-1",
+      "now": 1000000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:de67032db132a1c74b5d5c5b0d3ed1f1f4b60ebd8d88498ae80f1e80fbb85ef7",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-no-episode",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-no-episode",
+          "sourceHash": "eb51d1430fa0fb8f4f649ee07063faf2780ffd656a43c4a7f4d201f1793edc97",
+          "revision": 0,
+          "episodeId": null,
+          "participationRevision": 0,
+          "freshness": "uninitialized",
+          "ready": false,
+          "accepted": null,
+          "transfer": null,
+          "transferState": "none",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": []
+        },
+        "receivers": [],
+        "revision": 1
+      },
+      "expected": {
+        "actions": [],
+        "ready": false,
+        "transferState": "none"
+      }
+    },
+    "ready": {
+      "actorUid": "host-1",
+      "now": 1000000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:e4c5c428991b2d029e2dcb6ab36eed84e92dfee2d46e0096f3e7d368f54fcb39",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+          "sourceHash": "f179acf355ffc925dbdfc1061faf3ba338397907d612890876e840e6b1369afd",
+          "revision": 0,
+          "episodeId": "episode:b45d6ce0c15f1eaa1f3f14fee3a5154eaab32bc6f9e320360e7e0be56279c2bb",
+          "participationRevision": 0,
+          "freshness": "uninitialized",
+          "ready": true,
+          "accepted": null,
+          "transfer": null,
+          "transferState": "none",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": [
+            "place",
+            "propose"
+          ]
+        },
+        "receivers": [
+          {
+            "operatorId": "host-1",
+            "displayName": "Subrath",
+            "groups": [
+              {
+                "groupId": "easy",
+                "validUntil": 9007199254740991
+              },
+              {
+                "groupId": "fast",
+                "validUntil": 9007199254740991
+              }
+            ]
+          },
+          {
+            "operatorId": "pacer",
+            "displayName": "Crew",
+            "groups": [
+              {
+                "groupId": "fast",
+                "validUntil": 1500000
+              }
+            ]
+          }
+        ],
+        "revision": 1
+      },
+      "expected": {
+        "actions": [
+          "place",
+          "propose"
+        ],
+        "ready": true,
+        "transferState": "none"
+      }
+    },
+    "notReady": {
+      "actorUid": "host-1",
+      "now": 3000000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:e4c5c428991b2d029e2dcb6ab36eed84e92dfee2d46e0096f3e7d368f54fcb39",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+          "sourceHash": "f179acf355ffc925dbdfc1061faf3ba338397907d612890876e840e6b1369afd",
+          "revision": 0,
+          "episodeId": "episode:b45d6ce0c15f1eaa1f3f14fee3a5154eaab32bc6f9e320360e7e0be56279c2bb",
+          "participationRevision": 0,
+          "freshness": "uninitialized",
+          "ready": true,
+          "accepted": null,
+          "transfer": null,
+          "transferState": "none",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": [
+            "place",
+            "propose"
+          ]
+        },
+        "receivers": [
+          {
+            "operatorId": "host-1",
+            "displayName": "Subrath",
+            "groups": [
+              {
+                "groupId": "easy",
+                "validUntil": 9007199254740991
+              },
+              {
+                "groupId": "fast",
+                "validUntil": 9007199254740991
+              }
+            ]
+          },
+          {
+            "operatorId": "pacer",
+            "displayName": "Crew",
+            "groups": [
+              {
+                "groupId": "fast",
+                "validUntil": 1500000
+              }
+            ]
+          }
+        ],
+        "revision": 1
+      },
+      "expected": {
+        "actions": [],
+        "ready": false,
+        "transferState": "none"
+      }
+    },
+    "accepted": {
+      "actorUid": "host-1",
+      "now": 1000000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:e4c5c428991b2d029e2dcb6ab36eed84e92dfee2d46e0096f3e7d368f54fcb39",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+          "sourceHash": "f179acf355ffc925dbdfc1061faf3ba338397907d612890876e840e6b1369afd",
+          "revision": 1,
+          "episodeId": "episode:b45d6ce0c15f1eaa1f3f14fee3a5154eaab32bc6f9e320360e7e0be56279c2bb",
+          "participationRevision": 0,
+          "freshness": "current",
+          "ready": true,
+          "accepted": {
+            "groupId": "easy",
+            "groupSourceHash": "189c2e67efee11d4d677cfaca66b5781b715bb3f84bc64e5a3f209cb4743cd45",
+            "responsibleOperatorId": "host-1",
+            "acceptedAt": 1000000
+          },
+          "transfer": null,
+          "transferState": "none",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": [
+            "propose",
+            "leave"
+          ]
+        },
+        "receivers": [
+          {
+            "operatorId": "host-1",
+            "displayName": "Subrath",
+            "groups": [
+              {
+                "groupId": "easy",
+                "validUntil": 9007199254740991
+              },
+              {
+                "groupId": "fast",
+                "validUntil": 9007199254740991
+              }
+            ]
+          },
+          {
+            "operatorId": "pacer",
+            "displayName": "Crew",
+            "groups": [
+              {
+                "groupId": "fast",
+                "validUntil": 1500000
+              }
+            ]
+          }
+        ],
+        "revision": 2
+      },
+      "expected": {
+        "actions": [
+          "propose",
+          "leave"
+        ],
+        "ready": true,
+        "transferState": "none"
+      }
+    },
+    "pendingToActor": {
+      "actorUid": "host-1",
+      "now": 1000000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:e4c5c428991b2d029e2dcb6ab36eed84e92dfee2d46e0096f3e7d368f54fcb39",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+          "sourceHash": "f179acf355ffc925dbdfc1061faf3ba338397907d612890876e840e6b1369afd",
+          "revision": 2,
+          "episodeId": "episode:b45d6ce0c15f1eaa1f3f14fee3a5154eaab32bc6f9e320360e7e0be56279c2bb",
+          "participationRevision": 0,
+          "freshness": "current",
+          "ready": true,
+          "accepted": {
+            "groupId": "easy",
+            "groupSourceHash": "189c2e67efee11d4d677cfaca66b5781b715bb3f84bc64e5a3f209cb4743cd45",
+            "responsibleOperatorId": "host-1",
+            "acceptedAt": 1000000
+          },
+          "transfer": {
+            "transferId": "transfer:104402bd702b7a604e3f0a4e04cf5b8357cf554d1ac3b2c73757c74dd1c9ab63",
+            "from": "easy",
+            "to": "fast",
+            "targetSourceHash": "131a2c8314c5b9ad2a2c1bb509b649d314ec2401c170b0d24c5c783fb941a6d8",
+            "receivingOperatorId": "host-1",
+            "requestedBy": "host-1",
+            "requestedAt": 1000000,
+            "expiresAt": 1010000,
+            "status": "pending",
+            "resolvedAt": null,
+            "resolvedBy": null
+          },
+          "transferState": "expired",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": [
+            "propose",
+            "cancel",
+            "leave"
+          ]
+        },
+        "receivers": [
+          {
+            "operatorId": "host-1",
+            "displayName": "Subrath",
+            "groups": [
+              {
+                "groupId": "easy",
+                "validUntil": 9007199254740991
+              },
+              {
+                "groupId": "fast",
+                "validUntil": 9007199254740991
+              }
+            ]
+          },
+          {
+            "operatorId": "pacer",
+            "displayName": "Crew",
+            "groups": [
+              {
+                "groupId": "fast",
+                "validUntil": 1500000
+              }
+            ]
+          }
+        ],
+        "revision": 3
+      },
+      "expected": {
+        "actions": [
+          "accept",
+          "reject",
+          "cancel",
+          "leave"
+        ],
+        "ready": true,
+        "transferState": "pending"
+      }
+    },
+    "pendingToOther": {
+      "actorUid": "host-1",
+      "now": 1000000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:e4c5c428991b2d029e2dcb6ab36eed84e92dfee2d46e0096f3e7d368f54fcb39",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+          "sourceHash": "f179acf355ffc925dbdfc1061faf3ba338397907d612890876e840e6b1369afd",
+          "revision": 4,
+          "episodeId": "episode:b45d6ce0c15f1eaa1f3f14fee3a5154eaab32bc6f9e320360e7e0be56279c2bb",
+          "participationRevision": 0,
+          "freshness": "current",
+          "ready": true,
+          "accepted": {
+            "groupId": "easy",
+            "groupSourceHash": "189c2e67efee11d4d677cfaca66b5781b715bb3f84bc64e5a3f209cb4743cd45",
+            "responsibleOperatorId": "host-1",
+            "acceptedAt": 1000000
+          },
+          "transfer": {
+            "transferId": "transfer:87323662fd740571ea0077e982de9a6ef4dcd1e4eab0797332762c4a9b24a696",
+            "from": "easy",
+            "to": "fast",
+            "targetSourceHash": "131a2c8314c5b9ad2a2c1bb509b649d314ec2401c170b0d24c5c783fb941a6d8",
+            "receivingOperatorId": "pacer",
+            "requestedBy": "host-1",
+            "requestedAt": 1000000,
+            "expiresAt": 1010000,
+            "status": "pending",
+            "resolvedAt": null,
+            "resolvedBy": null
+          },
+          "transferState": "expired",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": [
+            "propose",
+            "cancel",
+            "leave"
+          ]
+        },
+        "receivers": [
+          {
+            "operatorId": "host-1",
+            "displayName": "Subrath",
+            "groups": [
+              {
+                "groupId": "easy",
+                "validUntil": 9007199254740991
+              },
+              {
+                "groupId": "fast",
+                "validUntil": 9007199254740991
+              }
+            ]
+          },
+          {
+            "operatorId": "pacer",
+            "displayName": "Crew",
+            "groups": [
+              {
+                "groupId": "fast",
+                "validUntil": 1500000
+              }
+            ]
+          }
+        ],
+        "revision": 4
+      },
+      "expected": {
+        "actions": [
+          "cancel",
+          "leave"
+        ],
+        "ready": true,
+        "transferState": "pending"
+      }
+    },
+    "expiredTransfer": {
+      "actorUid": "host-1",
+      "now": 1010000,
+      "doc": {
+        "schemaVersion": 1,
+        "membershipId": "membership:e4c5c428991b2d029e2dcb6ab36eed84e92dfee2d46e0096f3e7d368f54fcb39",
+        "eventId": "e-00000000-0000-0000-0000-000000000124",
+        "organizerId": "o-00000000-0000-0000-0000-000000000124",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+        "eventEndAtMillis": 3000000,
+        "sourceCoverage": "complete",
+        "incompleteSource": null,
+        "view": {
+          "context": {
+            "mode": "live",
+            "organizerId": "o-00000000-0000-0000-0000-000000000124",
+            "eventId": "e-00000000-0000-0000-0000-000000000124"
+          },
+          "attendeeId": "a-00000000-0000-0000-0000-000000000124",
+          "sourceHash": "f179acf355ffc925dbdfc1061faf3ba338397907d612890876e840e6b1369afd",
+          "revision": 4,
+          "episodeId": "episode:b45d6ce0c15f1eaa1f3f14fee3a5154eaab32bc6f9e320360e7e0be56279c2bb",
+          "participationRevision": 0,
+          "freshness": "current",
+          "ready": true,
+          "accepted": {
+            "groupId": "easy",
+            "groupSourceHash": "189c2e67efee11d4d677cfaca66b5781b715bb3f84bc64e5a3f209cb4743cd45",
+            "responsibleOperatorId": "host-1",
+            "acceptedAt": 1000000
+          },
+          "transfer": {
+            "transferId": "transfer:87323662fd740571ea0077e982de9a6ef4dcd1e4eab0797332762c4a9b24a696",
+            "from": "easy",
+            "to": "fast",
+            "targetSourceHash": "131a2c8314c5b9ad2a2c1bb509b649d314ec2401c170b0d24c5c783fb941a6d8",
+            "receivingOperatorId": "pacer",
+            "requestedBy": "host-1",
+            "requestedAt": 1000000,
+            "expiresAt": 1010000,
+            "status": "pending",
+            "resolvedAt": null,
+            "resolvedBy": null
+          },
+          "transferState": "expired",
+          "groups": [
+            {
+              "groupId": "easy",
+              "label": "easy"
+            },
+            {
+              "groupId": "fast",
+              "label": "fast"
+            }
+          ],
+          "actions": [
+            "propose",
+            "cancel",
+            "leave"
+          ]
+        },
+        "receivers": [
+          {
+            "operatorId": "host-1",
+            "displayName": "Subrath",
+            "groups": [
+              {
+                "groupId": "easy",
+                "validUntil": 9007199254740991
+              },
+              {
+                "groupId": "fast",
+                "validUntil": 9007199254740991
+              }
+            ]
+          },
+          {
+            "operatorId": "pacer",
+            "displayName": "Crew",
+            "groups": [
+              {
+                "groupId": "fast",
+                "validUntil": 1500000
+              }
+            ]
+          }
+        ],
+        "revision": 4
+      },
+      "expected": {
+        "actions": [
+          "propose",
+          "cancel",
+          "leave"
+        ],
+        "ready": true,
+        "transferState": "expired"
+      }
+    }
+  }
+}

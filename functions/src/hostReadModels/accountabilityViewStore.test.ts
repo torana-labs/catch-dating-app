@@ -12,7 +12,7 @@ import {guestCollections, guestIdentity} from
 import {accountabilityViewId, reconcileAccountabilityView} from
   "./accountabilityViewStore";
 import {accountabilityViewsCollection} from "./guestViewSupport";
-import {allowDeletes, documentsOf, viewDeps} from "./guestViewTestFixtures";
+import {allowDeletes, documentsOf, viewDeps} from "./movementViewTestFixtures";
 
 const validate = contractValidator("HostEventAccountabilityViewDocument");
 type Data = Record<string, unknown>;

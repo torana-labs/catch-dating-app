@@ -5,22 +5,25 @@ import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
 import {validateEventAttendeeDocument} from
   "../shared/generated/validators/eventAttendeeDocument";
-import {membershipIdentity, membershipReady, readMembership} from
+import {membershipIdentity, membershipReady} from
   "../eventSuccess/operations/membershipReader";
 import {membershipResponse} from
   "../eventSuccess/operations/membershipTransitions";
 import {readMembershipReceiverCandidates} from
   "../eventSuccess/operations/membershipReceivers";
-import {guestViewActor, GuestViewOutcome} from "./accountabilityViewStore";
 import {
-  defaultGuestViewDeps,
-  GuestSourceInvalidError,
-  GuestViewDeps,
   isAssistanceDocumentId,
-  membershipViewsCollection,
+  MovementSourceInvalidError,
   operableEvent,
   parsing,
   planViewWrite,
+} from "./movementViewSupport";
+import {
+  defaultGuestViewDeps,
+  GuestViewDeps,
+  membershipViewsCollection,
+  GuestViewOutcome,
+  readManagerMembership,
 } from "./guestViewSupport";
 
 type View = NonNullable<ViewDocument["view"]>;
@@ -77,10 +80,10 @@ export async function reconcileMembershipView(
     try {
       const read = await parsing(!validateEventDocument(event) ? "events" :
         !validateEventAttendeeDocument(attendee) ? "eventAttendees" :
-          "eventAssistanceMemberships", () => readMembership(db, tx,
-        {context, attendeeId}, guestViewActor, () => now));
+          "eventAssistanceMemberships", () => readManagerMembership(db, tx,
+        {context, attendeeId}, now));
       // Only managers read the view: authority is the manager's.
-      const state = {...read, manager: true, staff: null};
+      const state = read;
       const beforeEnd = {...state, now: endAtMillis - 1};
       receivers = membershipReady(beforeEnd) ?
         await parsing("eventStaffGrants", () =>
@@ -94,7 +97,7 @@ export async function reconcileMembershipView(
       void _review;
       view = rest;
     } catch (error) {
-      if (!(error instanceof GuestSourceInvalidError)) throw error;
+      if (!(error instanceof MovementSourceInvalidError)) throw error;
       for (const doc of stale) tx.delete(doc.ref);
       const plan = planViewWrite(previous, {schemaVersion: 1 as const,
         ...keys, sourceCoverage: "invalidSource" as const,

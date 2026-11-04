@@ -19,7 +19,7 @@ import {
   runtimeViewsCollection,
   settingViewsCollection,
 } from "./guestViewSupport";
-import {allowDeletes, documentsOf, viewDeps} from "./guestViewTestFixtures";
+import {allowDeletes, documentsOf, viewDeps} from "./movementViewTestFixtures";
 
 const empty: GuestViewTargets = {attendeesOf: [], guests: [],
   membershipsOf: [], organizers: [], settings: [], runtimes: []};

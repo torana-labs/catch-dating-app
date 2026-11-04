@@ -3,11 +3,11 @@ import {reconcileAccountabilityView} from "./accountabilityViewStore";
 import {reconcileMembershipView} from "./membershipViewStore";
 import {reconcileSettingViews} from "./settingViewStore";
 import {reconcileRuntimeView} from "./runtimeViewStore";
+import {operableEvent} from "./movementViewSupport";
 import {
   defaultGuestViewDeps,
   GuestViewDeps,
   maxEventAttendees,
-  operableEvent,
 } from "./guestViewSupport";
 
 export const guestViewModels = ["accountability-views", "membership-views",

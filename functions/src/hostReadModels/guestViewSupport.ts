@@ -1,9 +1,18 @@
-import {isDeepStrictEqual} from "node:util";
-import * as admin from "firebase-admin";
-import {HttpsError} from "firebase-functions/v2/https";
-import type {EventDocument} from "../shared/generated/eventDocument";
-import {timestampEvidence} from
-  "../eventSuccess/operations/groupProgressSource";
+import type {OrganizerDocument} from
+  "../shared/generated/firestoreAdminTypes";
+import {validateOrganizerDocument} from
+  "../shared/generated/validators/organizerDocument";
+import {guestCollections, guestIdentity} from
+  "../eventSuccess/operations/guestRecords";
+import {invalidSource} from "../eventSuccess/operations/groupProgressSource";
+import {
+  MEMBERSHIPS,
+  membershipIdentity,
+  membershipSourceState,
+  MembershipState,
+} from "../eventSuccess/operations/membershipReader";
+import {defaultMovementViewDeps, LiveContext, MovementViewDeps} from
+  "./movementViewSupport";
 
 export const accountabilityViewsCollection = "hostEventAccountabilityViews";
 export const membershipViewsCollection = "hostEventMembershipViews";
@@ -13,133 +22,53 @@ export const runtimeViewsCollection = "hostEventRuntimeViews";
 export const consoleSettingKinds = ["lateJoin"] as const;
 /** More attendees than this in one event is outside the guest views' bound. */
 export const maxEventAttendees = 1000;
-const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/;
-
-/** Ids the assistance records accept; any other row has no view. */
-export function isAssistanceDocumentId(id: string): boolean {
-  return documentIdPattern.test(id);
-}
-
-export interface GuestViewDeps {
-  now: () => FirebaseFirestore.Timestamp;
-}
-
-export const defaultGuestViewDeps: GuestViewDeps = {
-  now: () => admin.firestore.Timestamp.now(),
-};
-
-export type LiveContext = {mode: "live"; organizerId: string; eventId: string};
 
 /**
- * The live context of an event the live console can operate: it exists, has
- * an assistance format, an end and an organizer id usable in a document id.
- * Anything else has no guest or settings views.
+ * The guest and settings view evaluators read the clock as the movement
+ * view evaluators do; operableEvent, configuredGroupIds, parsing,
+ * planViewWrite, isAssistanceDocumentId and the invalid-source error come
+ * from movementViewSupport.
  */
-export function operableEvent(eventId: string,
-  event: FirebaseFirestore.DocumentData | undefined):
-  {context: LiveContext; endAtMillis: number} | null {
-  if (!event || !event.eventFormat || !documentIdPattern.test(eventId) ||
-      typeof event.organizerId !== "string" ||
-      !documentIdPattern.test(event.organizerId)) return null;
-  let endAtMillis: number;
-  try {
-    const end = timestampEvidence(event.endTime);
-    endAtMillis = Math.floor(end._seconds * 1000 + end._nanoseconds / 1e6);
-  } catch {
-    return null;
-  }
-  if (!Number.isSafeInteger(endAtMillis) || endAtMillis < 1) return null;
-  return {context: {mode: "live", organizerId: event.organizerId, eventId},
-    endAtMillis};
-}
+export type GuestViewDeps = MovementViewDeps;
+export const defaultGuestViewDeps: GuestViewDeps = defaultMovementViewDeps;
 
-/** The groups a route plan configures, the whole event first. */
-export function configuredGroupIds(event: Pick<EventDocument, "eventFormat">):
-  string[] {
-  const route = event.eventFormat?.activityDetails?.routePlan;
-  const paceGroups = route?.groupStrategy === "paceGroups" ?
-    (route.paceGroups ?? []).map((group) => group.id) : [];
-  return ["event:whole", ...new Set(paceGroups.filter((id) =>
-    id !== "event:whole"))];
-}
-
-/** A source document that failed validation, named by its collection. */
-export class GuestSourceInvalidError extends Error {
-  constructor(readonly source: string, readonly detail: string) {
-    super(`${source}: ${detail}`);
-    this.name = "GuestSourceInvalidError";
-  }
-}
+export type GuestViewOutcome =
+  | {kind: "removed"; existed: boolean}
+  | {kind: "unchanged"; revision: number}
+  | {kind: "complete"; revision: number}
+  | {kind: "invalidSource"; source: string; detail: string;
+    written: boolean};
 
 /**
- * Runs one parsing stage of an evaluation. The operations readers report an
- * invalid or unconfigured source as a failed-precondition (or, for guest
- * rows, not-found) HttpsError; those become a GuestSourceInvalidError
- * naming [source]. Any other error is a transport or programming failure and
- * propagates, so the trigger retries.
+ * The actor the guest views read membership as. The views carry no actor:
+ * authority is a manager's, and the phone derives the signed-in manager's
+ * actions.
  */
-export async function parsing<T>(source: string,
-  read: () => T | Promise<T>): Promise<T> {
-  try {
-    return await read();
-  } catch (error) {
-    if (error instanceof GuestSourceInvalidError) throw error;
-    if (error instanceof HttpsError && (error.code === "failed-precondition" ||
-        error.code === "not-found")) {
-      throw new GuestSourceInvalidError(source, error.message);
-    }
-    if (error instanceof Error &&
-        error.message === "Invalid assistance document id") {
-      throw new GuestSourceInvalidError(source, error.message);
-    }
-    throw error;
-  }
-}
-
-/** What every view records about its last evaluation. */
-export interface EvaluationFields {
-  revision: number;
-  evaluatedAt: FirebaseFirestore.Timestamp;
-  sourceCoverage: "complete" | "invalidSource";
-  incompleteSource: string | null;
-}
+export const guestViewActor = "host-read-model";
 
 /**
- * Plans one view write with no-op avoidance: [next] is everything except
- * revision and evaluatedAt. An unchanged document is not written; a changed
- * one gets revision + 1 and evaluatedAt now. Firestore does not keep map key
- * order, so documents are compared structurally.
+ * One guest's membership facts as a manager reads them: the six source
+ * documents through membershipSourceState, and the organizer, whose
+ * managers can receive the guest. No staff grant is read.
  */
-export function planViewWrite<D extends EvaluationFields>(
-  previous: D | null, next: Omit<D, "revision" | "evaluatedAt">,
-  now: FirebaseFirestore.Timestamp
-): {unchanged: true; revision: number} |
-  {unchanged: false; revision: number; document: D} {
-  const previousRevision = positiveInteger(previous?.revision) ?? 0;
-  if (previous !== null) {
-    const {revision: _revision, evaluatedAt: _evaluatedAt, ...rest} =
-      previous;
-    void _revision;
-    void _evaluatedAt;
-    if (isDeepStrictEqual(normalized(rest), normalized(next))) {
-      return {unchanged: true, revision: previousRevision};
-    }
-  }
-  const revision = previousRevision + 1;
-  return {unchanged: false, revision,
-    document: {...next, revision, evaluatedAt: now} as unknown as D};
-}
-
-/** Firestore drops undefined fields; compare what a read would return. */
-function normalized(value: unknown): unknown {
-  return JSON.parse(JSON.stringify(value));
-}
-
-export function positiveInteger(value: unknown): number | null {
-  return Number.isSafeInteger(value) && (value as number) > 0 ?
-    value as number : null;
-}
-
-export function millisOf(stamp: FirebaseFirestore.Timestamp): number {
-  return stamp.toMillis();
+export async function readManagerMembership(db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  scope: {context: LiveContext; attendeeId: string},
+  now: number): Promise<MembershipState> {
+  const {context, attendeeId} = scope;
+  const [eventSnap, attendeeSnap, organizerSnap, planSnap, guestSnap,
+    memberSnap] = await tx.getAll(
+    db.collection("events").doc(context.eventId),
+    db.collection("eventAttendees").doc(attendeeId),
+    db.collection("organizers").doc(context.organizerId),
+    db.collection("eventSuccessPlans").doc(context.eventId),
+    db.collection(guestCollections.guests)
+      .doc(guestIdentity(context, attendeeId)),
+    db.collection(MEMBERSHIPS).doc(membershipIdentity(scope)));
+  const organizer = organizerSnap.data();
+  if (!validateOrganizerDocument(organizer)) throw invalidSource();
+  const state = membershipSourceState({scope, eventSnap, attendeeSnap,
+    planSnap, guestSnap, memberSnap, now});
+  return {...state, actorUid: guestViewActor, manager: true, staff: null,
+    organizer: organizer as unknown as OrganizerDocument};
 }

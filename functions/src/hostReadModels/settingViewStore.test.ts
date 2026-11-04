@@ -12,7 +12,7 @@ import {EventAssistanceSettingsStore} from
 import {reconcileSettingViews} from "./settingViewStore";
 import {settingViewsCollection} from "./guestViewSupport";
 import {allowDeletes, documentsOf, viewDeps, withoutServerTime} from
-  "./guestViewTestFixtures";
+  "./movementViewTestFixtures";
 
 const validate = contractValidator("HostEventAssistanceSettingViewDocument");
 type Data = Record<string, unknown>;

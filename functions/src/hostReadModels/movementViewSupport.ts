@@ -12,6 +12,11 @@ export const checkpointViewsCollection = "hostEventCheckpointViews";
 export const checkpointViewFreezeMillis = 24 * 60 * 60 * 1000;
 const documentIdPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/;
 
+/** Ids the assistance records accept; any other row has no view. */
+export function isAssistanceDocumentId(id: string): boolean {
+  return documentIdPattern.test(id);
+}
+
 export interface MovementViewDeps {
   now: () => FirebaseFirestore.Timestamp;
 }

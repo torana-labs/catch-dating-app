@@ -9,7 +9,7 @@ import {
   runtimeViewsCollection,
   settingViewsCollection,
 } from "./guestViewSupport";
-import {allowDeletes, documentsOf, viewDeps} from "./guestViewTestFixtures";
+import {allowDeletes, documentsOf, viewDeps} from "./movementViewTestFixtures";
 
 test("backfill counts without apply and evaluates the organizer's open " +
   "events with apply", async () => {

@@ -7,15 +7,17 @@ import {runtimeConfigId, runtimeConfigSource} from
   "../eventSuccess/operations/runtimeConfigRecords";
 import {readRuntimeConfigState, runtimeView} from
   "../eventSuccess/operations/runtimeConfigStore";
-import type {GuestViewOutcome} from "./accountabilityViewStore";
 import {
-  defaultGuestViewDeps,
-  GuestSourceInvalidError,
-  GuestViewDeps,
+  MovementSourceInvalidError,
   operableEvent,
   parsing,
   planViewWrite,
+} from "./movementViewSupport";
+import {
+  defaultGuestViewDeps,
+  GuestViewDeps,
   runtimeViewsCollection,
+  GuestViewOutcome,
 } from "./guestViewSupport";
 
 /**
@@ -59,7 +61,7 @@ export async function reconcileRuntimeView(
     let closed: boolean;
     try {
       if (!validateOrganizerDocument(organizerSnap.data())) {
-        throw new GuestSourceInvalidError("organizers",
+        throw new MovementSourceInvalidError("organizers",
           "The organizer fails its contract.");
       }
       const state = await parsing("eventAssistanceRuntimeConfigs", () =>
@@ -70,7 +72,7 @@ export async function reconcileRuntimeView(
       closed = source.closed;
       view = runtimeView({...state, source, now: endAtMillis - 1});
     } catch (error) {
-      if (!(error instanceof GuestSourceInvalidError)) throw error;
+      if (!(error instanceof MovementSourceInvalidError)) throw error;
       const plan = planViewWrite(previous, {schemaVersion: 1 as const,
         ...keys, closed: previous?.closed ?? true,
         sourceCoverage: "invalidSource" as const,

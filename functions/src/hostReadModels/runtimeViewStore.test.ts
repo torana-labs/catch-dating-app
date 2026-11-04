@@ -12,7 +12,7 @@ import {start} from "../eventSuccess/operations/whatsappTestHarness";
 import {reconcileRuntimeView} from "./runtimeViewStore";
 import {runtimeViewsCollection} from "./guestViewSupport";
 import {allowDeletes, documentsOf, viewDeps, withoutServerTime} from
-  "./guestViewTestFixtures";
+  "./movementViewTestFixtures";
 
 const validate = contractValidator("HostEventRuntimeViewDocument");
 const end = start + 3_600_000;

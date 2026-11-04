@@ -6,33 +6,22 @@ import {validateEventDocument} from
 import {validateEventAttendeeDocument} from
   "../shared/generated/validators/eventAttendeeDocument";
 import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
-import {readMembership} from "../eventSuccess/operations/membershipReader";
 import {accountabilityState} from
-  "../eventSuccess/operations/accountabilityStore";
+  "../eventSuccess/operations/accountabilityProjection";
 import {
-  accountabilityViewsCollection,
-  defaultGuestViewDeps,
-  GuestSourceInvalidError,
-  GuestViewDeps,
   isAssistanceDocumentId,
+  MovementSourceInvalidError,
   operableEvent,
   parsing,
   planViewWrite,
+} from "./movementViewSupport";
+import {
+  accountabilityViewsCollection,
+  defaultGuestViewDeps,
+  GuestViewDeps,
+  GuestViewOutcome,
+  readManagerMembership,
 } from "./guestViewSupport";
-
-export type GuestViewOutcome =
-  | {kind: "removed"; existed: boolean}
-  | {kind: "unchanged"; revision: number}
-  | {kind: "complete"; revision: number}
-  | {kind: "invalidSource"; source: string; detail: string;
-    written: boolean};
-
-/**
- * The actor the guest views read membership as. No grant exists for it: the
- * membership view sets manager authority itself, and accountability reads no
- * actor at all.
- */
-export const guestViewActor = "host-read-model";
 
 export function accountabilityViewId(eventId: string, attendeeId: string) {
   return `${eventId}_${attendeeId}`;
@@ -80,12 +69,12 @@ export async function reconcileAccountabilityView(
     try {
       const member = await parsing(!validateEventDocument(event) ? "events" :
         !validateEventAttendeeDocument(attendee) ? "eventAttendees" :
-          "eventAssistanceGuests", () => readMembership(db, tx,
-        {context, attendeeId}, guestViewActor, () => now));
+          "eventAssistanceGuests", () => readManagerMembership(db, tx,
+        {context, attendeeId}, now));
       view = accountabilityState({scope: {context, groupId: "event:whole",
         attendeeId}, member, checkpoint: null});
     } catch (error) {
-      if (!(error instanceof GuestSourceInvalidError)) throw error;
+      if (!(error instanceof MovementSourceInvalidError)) throw error;
       const plan = planViewWrite(previous, {schemaVersion: 1 as const,
         ...keys, sourceCoverage: "invalidSource" as const,
         incompleteSource: error.source, view: previous?.view ?? null},

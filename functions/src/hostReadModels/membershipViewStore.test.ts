@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {readFileSync, writeFileSync} from "node:fs";
 import {contractValidator} from "../shared/contractTestValidators";
 import {departureRosterHarness} from
   "../eventSuccess/operations/departureRosterTestFixtures";
@@ -12,7 +13,7 @@ import {handoverReview} from
 import {reconcileMembershipView} from "./membershipViewStore";
 import {membershipViewsCollection} from "./guestViewSupport";
 import {allowDeletes, documentsOf, viewDeps, withoutServerTime} from
-  "./guestViewTestFixtures";
+  "./movementViewTestFixtures";
 
 const validate = contractValidator("HostEventMembershipViewDocument");
 const end = 3_000_000;
@@ -78,4 +79,71 @@ test("gone attendees and events lose their view; invalid rows keep it",
     h.fake.remove("events/" + h.scope.context.eventId);
     assert.deepEqual(await h.reconcile(), {kind: "removed", existed: true});
     assert.equal(h.doc(), undefined);
+  });
+
+test("native membership fixtures hold actual views and the manager's actions",
+  async () => {
+    const h = await departureRosterHarness(undefined,
+      "00000000-0000-0000-0000-000000000124");
+    allowDeletes(h.fake);
+    await h.groups();
+    await h.grant("pacer", "fast", "pacer", 1_500_000);
+    const {context} = h.scope;
+    const start = h.clock.now;
+    const states: Record<string, unknown> = {};
+    const stage = async (name: string, attendeeId: string, now: number) => {
+      await reconcileMembershipView(h.db, context.eventId, attendeeId,
+        viewDeps(h.clock));
+      const stored = documentsOf(h.fake, membershipViewsCollection)
+        .get(membershipIdentity({context, attendeeId}))!;
+      const {evaluatedAt: _evaluatedAt, ...doc} = stored;
+      void _evaluatedAt;
+      const at = h.clock.now;
+      h.clock.now = now;
+      const view = (await h.membership.get(manager, {context, attendeeId}))
+        .view;
+      h.clock.now = at;
+      states[name] = {actorUid: manager, now, doc, expected: {
+        actions: view.actions, ready: view.ready,
+        transferState: view.transferState}};
+    };
+    const decide = async (operationId: string, decision: object) => {
+      const view = (await h.membership.get(manager,
+        {context, attendeeId: h.attendeeId})).view;
+      await h.membership.transfer(manager, {expectedSourceHash:
+        view.sourceHash, command: {kind: "transferGroup", context,
+        eventId: context.eventId, operationId, payload: {
+          attendeeId: h.attendeeId, episodeId: view.episodeId,
+          expectedMembershipRevision: view.revision,
+          expectedParticipationRevision: view.participationRevision,
+          decision}}});
+      return (await h.membership.get(manager,
+        {context, attendeeId: h.attendeeId})).view;
+    };
+    const unplaced = "a-no-episode";
+    await h.put("eventAttendees/" + unplaced, {...h.attendee});
+    await stage("noEpisode", unplaced, start);
+    await stage("ready", h.attendeeId, start);
+    await stage("notReady", h.attendeeId, end);
+    await decide("fixture-place", {kind: "place", groupId: "easy"});
+    await stage("accepted", h.attendeeId, start);
+    const toActor = await decide("fixture-propose-actor", {kind: "propose",
+      from: "easy", to: "fast", receivingOperatorId: manager,
+      expiresAtMillis: start + 10_000});
+    await stage("pendingToActor", h.attendeeId, start);
+    await decide("fixture-cancel", {kind: "cancel",
+      transferId: toActor.transfer!.transferId});
+    await decide("fixture-propose-other", {kind: "propose", from: "easy",
+      to: "fast", receivingOperatorId: "pacer",
+      expiresAtMillis: start + 10_000});
+    await stage("pendingToOther", h.attendeeId, start);
+    await stage("expiredTransfer", h.attendeeId, start + 10_000);
+    const samples = {scope: {organizerId: context.organizerId,
+      eventId: context.eventId}, states};
+    const file = "../test/event_success/fixtures/membership_views.json";
+    if (process.env.UPDATE_MEMBERSHIP_VIEW_FIXTURE === "1") {
+      writeFileSync(file, JSON.stringify(samples, null, 2) + "\n");
+    }
+    assert.deepEqual(JSON.parse(readFileSync(file, "utf8")),
+      JSON.parse(JSON.stringify(samples)));
   });
