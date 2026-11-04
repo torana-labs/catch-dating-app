@@ -1,6 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/get_event_assistance_checkpoint_payload.schema.json",
-  "title": "GetEventAssistanceCheckpointCallablePayload",
-  "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/ReadInput"
-}

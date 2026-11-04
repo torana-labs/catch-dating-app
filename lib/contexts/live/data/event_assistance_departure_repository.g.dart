@@ -59,4 +59,4 @@ final class EventAssistanceDepartureRepositoryProvider
 }
 
 String _$eventAssistanceDepartureRepositoryHash() =>
-    r'b7a46bf95ddc2c8e82bf211a6988eb4bd2b80e69';
+    r'adbe97230e97c965d8ff98dc9edef941285583d1';

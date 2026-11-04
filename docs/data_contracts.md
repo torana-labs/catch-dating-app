@@ -1035,12 +1035,13 @@ view, including after a later departure; changed reuse fails. These records
 have no TTL: command deduplication must survive the executable event lifetime,
 and terminal retention/cleanup must be defined before activation.
 
-`getEventAssistanceGroupProgress`, `confirmEventAssistanceDeparture` and
-`changeEventAssistanceRoute` are Auth/App-Check-protected and rate-limited.
-Canonical organizer management is
+`confirmEventAssistanceDeparture` and `changeEventAssistanceRoute` are
+Auth/App-Check-protected and rate-limited. Canonical organizer management is
 checked inside the transaction that reads event/plan/source state and writes
-the result. The read response exposes only saved destination choices and
-progress, without roster data. Confirmation requires matching source and
+the result. Their response view exposes only saved destination choices and
+progress, without roster data; managers read the same view through
+`hostEventGroupProgressViews` (see
+[Live Console Movement Views](#live-console-movement-views)). Confirmation requires matching source and
 progress revisions, a current destination, an open event and a live runtime.
 Route recovery requires a current manager, an existing confirmed departure, a
 different opaque alternative and an explicit decision ID. It updates operating
@@ -1074,19 +1075,14 @@ exempted from indexing. No client can read or write the roster collection.
 It has no TTL: checkpoint reconciliation and the retention policy must preserve
 the original departure evidence before any terminal cleanup is introduced.
 
-`listEventAssistanceDepartureRosters` discovers recorded rosters for one current
-group under scoped read authority. Its read-only transaction queries the canonical
-progress identity in descending departure revision, with a fixed ten-row page and
-one validated overflow witness. The exclusive `beforeRevision` cursor cannot hide
-a later departure or duplicate a row across older pages. Each row exposes original
-departure time, roster size, source availability and saved checkpoint report counts.
-It exposes no guest identities, contact fields or inferred current obligations; the
-original requested deadline is historical, and report detail must reload current
-owner, closeout and visit evidence. Source changes retain history while withholding
-a current destination label. Access is checked before the query and expiry is
-rechecked after report reads. Invalid roster/report identity, hashes, ordering or
-revision bounds fail the page. Removed groups remain unavailable under the current
-group-duty boundary; this read does not widen staff authority.
+Departure history is read through `hostEventDepartureViews`, one view per
+recorded roster (see [Live Console Movement Views](#live-console-movement-views)).
+Each row exposes original departure time, roster size, source availability and
+saved checkpoint report counts. It exposes no guest identities, contact fields or
+inferred current obligations; the original requested deadline is historical, and
+report detail reads the checkpoint view's current owner, closeout and visit
+evidence. Source changes retain history while withholding a current destination
+label.
 
 `eventAssistanceCheckpoints/{reportId}` records the current checkpoint report for
 an execution context, group, departure revision and checkpoint ID. The typed
@@ -1106,11 +1102,13 @@ without names remain parseable and cannot invent a named UI identity.
 request hash and full original report. Its ID binds context, group and operation ID.
 Reusing an ID with different content fails; an exact retry returns the original
 revision and latest view. Reports for earlier legs remain independent of subsequent
-progress. The two Auth/App-Check/rate-limited callables require a current scoped
-checkpoint duty or organizer management and recheck expiry after transaction reads.
+progress. The Auth/App-Check/rate-limited `recordEventAssistanceCheckpoint`
+requires a current scoped checkpoint duty or organizer management and rechecks
+expiry after transaction reads; managers read the checkpoint through
+`hostEventCheckpointViews`.
 They do not require automatic assistance or an open runtime to settle outstanding
 reports. New observations still require the same physical visit and source setup.
-The checkpoint read view also projects the optional request's waiting, overdue,
+The checkpoint view also projects the optional request's waiting, overdue,
 discrepancy, complete or source-unavailable state and current owner availability.
 Time and owner availability do not alter the report's reviewed evidence hash.
 Complete original observations survive later source changes; partial corrections
@@ -1164,6 +1162,62 @@ publisher must supply fresh source-derived guidance before an existing link
 can show a changed destination. No additional guidance collection or schema
 was introduced.
 
+
+### Live Console Movement Views
+
+The live console's movement reads are manager projections written ahead of
+time by the movement view evaluator (`hostReadModels/movementViewTriggers.ts`)
+and read through Firestore listeners under `isHostSummaryManager` of the
+document's `organizerId`. Only an organizer's managers use these reads: the
+group-lead role exists for the commands, which check its duty per group, so
+the actor-specific parts of the retired read responses (the actor, departure
+authority, read expiry) are manager constants on the phone. A group-lead read
+surface, if one is built, reads through the commands or a later rules design
+with duties stored per group. The retired callables refused no archived or
+inactive organizer, so neither do the views. Every view records `revision`,
+`evaluatedAt`, `sourceCoverage` (`complete` or `invalidSource`) and
+`incompleteSource`; an invalid source keeps the previous projection and never
+throws, and the phone shows the unavailable state for it or for a view not
+written yet. Time enters only as instants the views store; the phone applies
+the app clock, never earlier than `evaluatedAt`.
+
+`hostEventGroupProgressViews/{progressId}` holds, for each configured group of
+an event with an `eventFormat` and an `endTime` (`event:whole` and each pace
+group), what `getEventAssistanceGroupProgress` returned for a manager without
+`serverTime`. `eventOpen` is evaluated one millisecond before
+`eventEndAtMillis`, so the phone ANDs it, and the guidance it gates, with the
+app clock. Triggers: the event (status, times, format, organizer, meeting
+place, itinerary), its event success plan (status) and the group's progress
+row. Views of groups that leave the route plan, or of a deleted event, are
+deleted. The phone gets one view by its id.
+
+`hostEventDepartureViews/{rosterId}` holds one departure history row per
+recorded roster. `label` and `sourceState` follow the group's current source,
+so an event or plan change re-evaluates the event's rosters; the checkpoint
+summary follows the roster's report. The phone pages a group's rows with
+`organizerId`, `progressId` and `progressRevision` descending (ten rows plus
+one to find the next page) and takes the current revision from the group's
+progress view.
+
+`hostEventCheckpointViews/{checkpointViewId}` holds, for each roster whose
+destination is an itinerary stop or group checkpoint, what
+`getEventAssistanceCheckpoint` returned for a manager without `serverTime`.
+`reporterOptions` keeps the reporters and the assignment hash; the phone adds
+the actor and the thirty-minute choice window. The request's waiting or overdue
+state compares `request.dueAt`, owner availability compares
+`ownerValidUntilMillis`, and each reporter is listed while its `validUntil` is
+after both the clock and the due time; the phone re-derives all three.
+Dispositions compare the clock only to check that saved instants are not in the
+future. `accountability` carries each roster member's accountability view for
+the checkpoint scope, the hash `resolveEventAssistanceAccountability` fences
+on. `memberAttendeeIds` lets an attendee, guest or membership write find the
+views it can change. Triggers also cover the report, the request work item,
+the event's staff grants and the organizer's managers. A view is frozen 24
+hours after its event ends.
+
+Backfill per organizer over events that have not ended:
+`functions/scripts/backfill-host-read-models.cjs --model group-progress-views`,
+`departure-views` or `checkpoint-views`, with `--apply` to write.
 ### Event Service Outbox Contract
 
 `eventAssistanceOperationalNoticeQuotas/{quotaId}` and
@@ -2851,6 +2905,10 @@ authority (`isActiveHostSummaryManager`), and
 their evaluators and rules are described in
 [Progressive Event Setup Contracts](#progressive-event-setup-contracts) and
 [Event Dress Rehearsal Isolation Contract](#event-dress-rehearsal-isolation-contract).
+The live console reads `hostEventGroupProgressViews`, `hostEventDepartureViews`
+and `hostEventCheckpointViews` under the plain manager authority
+(`isHostSummaryManager`); see
+[Live Console Movement Views](#live-console-movement-views).
 
 The door reads `hostProviderConnectionViews/{organizerId}`,
 `externalEventMappings/{mappingId}`, `hostEventRosterInsightViews/{eventId}`

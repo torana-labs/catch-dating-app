@@ -117,7 +117,7 @@ final class EventAssistanceDepartureProvider
 }
 
 String _$eventAssistanceDepartureHash() =>
-    r'2884cfcbb098cb0562b9608022eb11dd06cbbfdf';
+    r'559c14e604e241bf8f4f586106451bccda84c582';
 
 final class EventAssistanceDepartureFamily extends $Family
     with
@@ -174,20 +174,37 @@ abstract class _$EventAssistanceDeparture
   }
 }
 
+/// The group's departure view for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review
+/// instead of being replaced in the background.
+
 @ProviderFor(eventAssistanceDepartureForAccount)
 final eventAssistanceDepartureForAccountProvider =
     EventAssistanceDepartureForAccountFamily._();
+
+/// The group's departure view for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review
+/// instead of being replaced in the background.
 
 final class EventAssistanceDepartureForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventDepartureSession>,
           EventDepartureSession,
-          FutureOr<EventDepartureSession>
+          Stream<EventDepartureSession>
         >
     with
         $FutureModifier<EventDepartureSession>,
-        $FutureProvider<EventDepartureSession> {
+        $StreamProvider<EventDepartureSession> {
+  /// The group's departure view for one sign-in period. It is a Firestore
+  /// listener: it declares no cache tags or lifetime and writes never
+  /// invalidate it. Each delivery is a new session and retires the previous
+  /// one, so a decision built on an older snapshot asks for a fresh review
+  /// instead of being replaced in the background.
   EventAssistanceDepartureForAccountProvider._({
     required EventAssistanceDepartureForAccountFamily super.from,
     required (EventAssistanceGroupScope, {EventDepartureAccount account})
@@ -213,12 +230,12 @@ final class EventAssistanceDepartureForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventDepartureSession> $createElement(
+  $StreamProviderElement<EventDepartureSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventDepartureSession> create(Ref ref) {
+  Stream<EventDepartureSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceGroupScope, {EventDepartureAccount account});
@@ -242,12 +259,18 @@ final class EventAssistanceDepartureForAccountProvider
 }
 
 String _$eventAssistanceDepartureForAccountHash() =>
-    r'bc3ab78f53e1c1bab08615ac030baa7bf18589bf';
+    r'e7a3fdae2cbf49942dc8d108993ba5af52f75cce';
+
+/// The group's departure view for one sign-in period. It is a Firestore
+/// listener: it declares no cache tags or lifetime and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one, so a decision built on an older snapshot asks for a fresh review
+/// instead of being replaced in the background.
 
 final class EventAssistanceDepartureForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventDepartureSession>,
+          Stream<EventDepartureSession>,
           (EventAssistanceGroupScope, {EventDepartureAccount account})
         > {
   EventAssistanceDepartureForAccountFamily._()
@@ -258,6 +281,12 @@ final class EventAssistanceDepartureForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The group's departure view for one sign-in period. It is a Firestore
+  /// listener: it declares no cache tags or lifetime and writes never
+  /// invalidate it. Each delivery is a new session and retires the previous
+  /// one, so a decision built on an older snapshot asks for a fresh review
+  /// instead of being replaced in the background.
 
   EventAssistanceDepartureForAccountProvider call(
     EventAssistanceGroupScope scope, {

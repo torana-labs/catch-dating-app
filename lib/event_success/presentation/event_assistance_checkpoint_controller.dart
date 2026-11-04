@@ -282,10 +282,19 @@ class EventAssistanceCheckpointController
     release?.call();
   }
 
+  /// The checkpoint view is a listener that delivers every write; it is
+  /// restarted only after it ended in an error.
   void _refresh() {
-    ref.invalidate(
-      eventAssistanceCheckpointForAccountProvider(scope, account: _account!),
-    );
+    final account = _account!;
+    if (ref
+        .read(
+          eventAssistanceCheckpointForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceCheckpointForAccountProvider(scope, account: account),
+      );
+    }
   }
 
   void _publish(CheckpointForm form) {
@@ -308,7 +317,6 @@ class EventAssistanceCheckpointController
       }
       change.requireResult(result);
       _clearPending();
-      _refresh();
       _publish(
         form._after(CheckpointPhase.saved, change: change, result: result),
       );
@@ -328,10 +336,7 @@ class EventAssistanceCheckpointController
               'invalid-argument',
               'callable-unavailable',
             }.contains(error.code);
-        if (definitive) {
-          _clearPending();
-          _refresh();
-        }
+        if (definitive) _clearPending();
         _publish(
           form._after(
             definitive

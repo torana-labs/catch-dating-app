@@ -82,25 +82,25 @@ void main() {
   );
 
   test(
-    'reload wins over delayed reads and failures require explicit retry',
+    'reload keeps a healthy listener; a failure needs an explicit retry',
     () async {
       await signIn(historyActor);
+      repository.completeRead(0);
+      await container.pump();
       container.read(provider.notifier).reload();
       await container.pump();
-      await repository.waitForReads(2);
-      repository.reads[1].pending.completeError(
+      expect(repository.reads.length, 1);
+      repository.reads[0].pending.addError(
         const NetworkException('unavailable', 'Offline'),
       );
       await container.pump();
-      repository.completeRead(0);
-      await container.pump();
       expect(container.read(provider).error, isA<NetworkException>());
       expect(retries, isEmpty);
-      expect(repository.reads.length, 2);
+      expect(repository.reads.length, 1);
       container.read(provider.notifier).reload();
       await container.pump();
-      await repository.waitForReads(3);
-      repository.completeRead(2);
+      await repository.waitForReads(2);
+      repository.completeRead(1);
       await container.pump();
       expect(container.read(provider).requireValue.page.rosters.length, 2);
     },

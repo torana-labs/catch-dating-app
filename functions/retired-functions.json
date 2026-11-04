@@ -2,6 +2,8 @@
   "adminListListingEventImports",
   "adminListOrganizerClaimRequests",
   "adminListOrganizerListingReviews",
+  "getEventAssistanceCheckpoint",
+  "getEventAssistanceGroupProgress",
   "getEventRehearsalSummary",
   "getEventRosterInsights",
   "getEventSuccessPresenceSummary",
@@ -10,5 +12,6 @@
   "getPrivateEventSetup",
   "listEventAssistanceCases",
   "listEventAssistanceDeliveries",
+  "listEventAssistanceDepartureRosters",
   "listOrganizerAttentionItems"
 ]

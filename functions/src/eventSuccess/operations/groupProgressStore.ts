@@ -10,8 +10,6 @@ import {validateConfirmEventAssistanceDepartureCallablePayload} from
   "../../shared/generated/validators/confirmEventAssistanceDepartureInput";
 import {validateChangeEventAssistanceRouteCallablePayload} from
   "../../shared/generated/validators/changeEventAssistanceRouteInput";
-import {validateGetEventAssistanceGroupProgressCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceGroupProgressInput";
 import {validateEventAssistanceGroupProgressCallableResponse} from
   "../../shared/generated/validators/eventAssistanceGroupProgressOutput";
 import type {EventAssistanceGroupProgressDocument as Progress} from
@@ -45,12 +43,16 @@ export class EventGroupProgressStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateGetEventAssistanceGroupProgressCallablePayload(input)) {
-      throw new HttpsError("invalid-argument", "Invalid group progress scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventGroupProgressViews, and the command suites use it as their
+   * oracle for what a command returns.
+   */
+  async get(actorUid: string,
+    scope: {context: ProgressContext; groupId: string}): Promise<Response> {
     return transact(this.db, async (tx) => {
-      const state = await this.read(tx, actorUid, input.context, input.groupId);
+      const state = await this.read(tx, actorUid, scope.context,
+        scope.groupId);
       return response("read", state);
     });
   }

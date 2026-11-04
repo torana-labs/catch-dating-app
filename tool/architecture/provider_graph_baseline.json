@@ -10,7 +10,7 @@
     "CACHE-POLICY-001": 0,
     "CACHE-ACCOUNT-001": 0,
     "CACHE-KEY-001": 0,
-    "CACHE-INVALIDATE-001": 114,
+    "CACHE-INVALIDATE-001": 113,
     "CACHE-LISTENER-001": 9,
     "KEEPALIVE-MANUAL-001": 5
   },
@@ -45,12 +45,6 @@
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
       "symbol": "_HostEventRehearsalStartScreenState._chooseSource",
       "detail": "refresh:eventRehearsalSourcePlanProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/event_success/presentation/event_assistance_departure_controller.dart",
-      "symbol": "eventAssistanceDepartureControllerProvider",
-      "detail": "invalidate:eventAssistanceDepartureForAccountProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",

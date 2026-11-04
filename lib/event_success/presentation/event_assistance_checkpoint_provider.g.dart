@@ -72,7 +72,7 @@ final class EventAssistanceCheckpointProvider
 }
 
 String _$eventAssistanceCheckpointHash() =>
-    r'd41fc8811b7ae8bb62c9d4cad059d3f688025b48';
+    r'2b8ff4abb1d12ba2607a55f66d1167fc88e4835e';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 
@@ -138,20 +138,31 @@ abstract class _$EventAssistanceCheckpoint
   }
 }
 
+/// The checkpoint view for one sign-in period. It is a Firestore listener:
+/// no cache tags or lifetime, and writes never invalidate it. Each delivery
+/// is a new session and retires the previous one.
+
 @ProviderFor(eventAssistanceCheckpointForAccount)
 final eventAssistanceCheckpointForAccountProvider =
     EventAssistanceCheckpointForAccountFamily._();
+
+/// The checkpoint view for one sign-in period. It is a Firestore listener:
+/// no cache tags or lifetime, and writes never invalidate it. Each delivery
+/// is a new session and retires the previous one.
 
 final class EventAssistanceCheckpointForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceCheckpointSession>,
           EventAssistanceCheckpointSession,
-          FutureOr<EventAssistanceCheckpointSession>
+          Stream<EventAssistanceCheckpointSession>
         >
     with
         $FutureModifier<EventAssistanceCheckpointSession>,
-        $FutureProvider<EventAssistanceCheckpointSession> {
+        $StreamProvider<EventAssistanceCheckpointSession> {
+  /// The checkpoint view for one sign-in period. It is a Firestore listener:
+  /// no cache tags or lifetime, and writes never invalidate it. Each delivery
+  /// is a new session and retires the previous one.
   EventAssistanceCheckpointForAccountProvider._({
     required EventAssistanceCheckpointForAccountFamily super.from,
     required (EventAssistanceCheckpointScope, {AuthenticatedSession account})
@@ -177,12 +188,12 @@ final class EventAssistanceCheckpointForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceCheckpointSession> $createElement(
+  $StreamProviderElement<EventAssistanceCheckpointSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceCheckpointSession> create(Ref ref) {
+  Stream<EventAssistanceCheckpointSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceCheckpointScope, {AuthenticatedSession account});
@@ -206,12 +217,16 @@ final class EventAssistanceCheckpointForAccountProvider
 }
 
 String _$eventAssistanceCheckpointForAccountHash() =>
-    r'1215dc40bff55ee7385e2dcd48fca65a2b122f9a';
+    r'37075dd0693a02a3c5a7a58ad3bfd0b4774ba752';
+
+/// The checkpoint view for one sign-in period. It is a Firestore listener:
+/// no cache tags or lifetime, and writes never invalidate it. Each delivery
+/// is a new session and retires the previous one.
 
 final class EventAssistanceCheckpointForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceCheckpointSession>,
+          Stream<EventAssistanceCheckpointSession>,
           (EventAssistanceCheckpointScope, {AuthenticatedSession account})
         > {
   EventAssistanceCheckpointForAccountFamily._()
@@ -222,6 +237,10 @@ final class EventAssistanceCheckpointForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The checkpoint view for one sign-in period. It is a Firestore listener:
+  /// no cache tags or lifetime, and writes never invalidate it. Each delivery
+  /// is a new session and retires the previous one.
 
   EventAssistanceCheckpointForAccountProvider call(
     EventAssistanceCheckpointScope scope, {

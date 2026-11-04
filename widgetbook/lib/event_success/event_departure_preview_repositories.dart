@@ -67,12 +67,12 @@ class DeparturePreviewLiveRepository
   DeparturePreviewLiveRepository(this.practice);
   final DeparturePreviewPracticeRepository practice;
   @override
-  Future<EventAssistanceGroupProgressView> fetch(
+  Stream<EventAssistanceGroupProgressView> watch(
     EventAssistanceGroupScope scope, {
     required String actorUid,
-  }) async {
+  }) async* {
     final sample = practice.snapshot.movementReview!;
-    return EventAssistanceGroupProgressResult.fromCallableData(
+    yield EventAssistanceGroupProgressResult.fromCallableData(
       {
         'outcome': 'read',
         'operationRevision': null,

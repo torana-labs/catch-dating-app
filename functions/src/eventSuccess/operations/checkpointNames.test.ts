@@ -7,7 +7,8 @@ import {departureRosterHarness} from "./departureRosterTestFixtures";
 import {progressFixtureManager as manager} from "./groupProgressTestFixtures";
 import {EventCheckpointStore} from "./checkpointStore";
 import type {Response} from "./checkpointRecords";
-import {EventDepartureHistoryStore} from "./departureHistoryStore";
+import {historyPageFromViews} from
+  "../../hostReadModels/movementViewTestFixtures";
 
 async function harness(id?: string) {
   const h = await departureRosterHarness(undefined, id);
@@ -83,18 +84,19 @@ test("renaming a registration invalidates a stale human review", async () => {
 test("native checkpoint fixture carries server-verified display names",
   async () => {
     const h = await harness("checkpoint-native");
-    const history = new EventDepartureHistoryStore(h.db, () => h.clock.now);
-    const historyScope = {context: h.scope.context, groupId: h.scope.groupId};
+    // History pages are assembled from the departure views, as the phone does.
+    const history = () => historyPageFromViews(h.fake,
+      {context: h.scope.context, groupId: h.scope.groupId}, manager, h.clock);
     const initial = await h.readCheckpoint();
-    const historyInitial = await history.list(manager, historyScope);
+    const historyInitial = await history();
     h.clock.now++;
     const partial = await h.store.record(manager,
       command(initial.view, [h.attendeeId]));
-    const historyPartial = await history.list(manager, historyScope);
+    const historyPartial = await history();
     h.clock.now++;
     const corrected = await h.store.record(manager,
       command(partial.view, [], "Selected the wrong guest."));
-    const historyCorrected = await history.list(manager, historyScope);
+    const historyCorrected = await history();
     const samples = {initial, partial, corrected,
       historyInitial, historyPartial, historyCorrected};
     const path = "../test/event_success/fixtures/checkpoint_reviews.json";

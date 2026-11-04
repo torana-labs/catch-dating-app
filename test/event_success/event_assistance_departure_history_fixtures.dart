@@ -37,6 +37,7 @@ EventAssistanceDepartureHistoryPage historyPage({
   expectedActorUid: actorUid,
 );
 
+/// Each `watch` is one page listener; the test delivers its snapshots.
 final class HistorySessionRepository extends Fake
     implements EventAssistanceDepartureHistoryRepository {
   final reads =
@@ -44,22 +45,23 @@ final class HistorySessionRepository extends Fake
         ({
           EventAssistanceDepartureHistoryQuery query,
           String actorUid,
-          Completer<EventAssistanceDepartureHistoryPage> pending,
+          StreamController<EventAssistanceDepartureHistoryPage> pending,
         })
       >[];
   Completer<void> _changed = Completer<void>();
 
   @override
-  Future<EventAssistanceDepartureHistoryPage> fetch(
+  Stream<EventAssistanceDepartureHistoryPage> watch(
     EventAssistanceDepartureHistoryQuery query, {
     required String actorUid,
   }) {
-    final pending = Completer<EventAssistanceDepartureHistoryPage>();
+    late final StreamController<EventAssistanceDepartureHistoryPage> pending;
+    pending = StreamController(onCancel: () => pending.close());
     reads.add((query: query, actorUid: actorUid, pending: pending));
     final change = _changed;
     _changed = Completer<void>();
     change.complete();
-    return pending.future;
+    return pending.stream;
   }
 
   Future<void> waitForReads(int count) async {
@@ -84,7 +86,8 @@ final class HistorySessionRepository extends Fake
           )
           .toList();
     }
-    read.pending.complete(
+    if (read.pending.isClosed) return;
+    read.pending.add(
       historyPage(response: response, query: read.query, actorUid: actor),
     );
   }

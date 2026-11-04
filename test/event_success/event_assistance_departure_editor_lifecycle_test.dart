@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_editor.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,15 +15,12 @@ void main() {
   });
   tearDown(() => h.dispose());
 
+  // The listener delivers a newer snapshot; no read is issued.
   Future<void> refresh() async {
-    final index = h.repository.reads.length;
-    h.container
-        .read(eventAssistanceDepartureProvider(departureScope()).notifier)
-        .reload();
+    final reads = h.repository.reads.length;
+    h.repository.deliver();
     await h.container.pump();
-    await h.repository.waitForReads(index + 1);
-    h.repository.completeRead(index);
-    await h.container.pump();
+    expect(h.repository.reads, hasLength(reads));
   }
 
   test('reentrant submitting notification shares the same future', () async {
