@@ -1463,6 +1463,16 @@ glyphs in use. The generator's `--check` mode fails when:
 
 Every role draws at one stroke weight, the family's default.
 
+To take a new release of the family, keep both frameworks on it in one
+change. Dependabot opens the `lucide-react` bump by itself (its own
+`icon-family` group, so the other weekly updates land without it); on that
+branch run `node tool/design/vendor_icon_font.mjs`, which copies the font and
+codepoints out of `lucide-static` at the version `package-lock.json` resolves
+(`family.flutter.fontSource` names the package and files), records the version
+and the font's hash in the catalog, and regenerates both icon layers. Commit
+the result on the same branch; `--check` then passes and the bump can merge.
+`--version <x.y.z>` vendors a specific release and `--dry-run` only reports.
+
 `CatchIcon` (`catch.icon`, T1) draws one role in both frameworks:
 `CatchIcon(CatchIcons.back, size: CatchIconSize.md, tone: CatchIconTone.muted)`
 in Flutter, `<CatchIcon icon="back" size="md" tone="muted" />` in React. It
