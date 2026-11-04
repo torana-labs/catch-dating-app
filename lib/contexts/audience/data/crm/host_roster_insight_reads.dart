@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/contexts/audience/data/listener_streams.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/streams/dependent_listeners.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Manager listeners behind the door's roster labels: the event's
