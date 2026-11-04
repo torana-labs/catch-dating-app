@@ -426,22 +426,50 @@ HostEventOffer _existingOffer({
 );
 
 class _RouteFunctions extends Fake implements FirebaseFunctions {
-  Future<void>? configurationGate;
   @override
   HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
-      _RouteCallable(name, configurationGate);
+      _RouteCallable(name);
+}
+
+/// The offer settings listeners, answering once [gate] completes.
+class _GatedConfigurationReads extends EventOfferConfigurationReads {
+  _GatedConfigurationReads() : super(FakeFirebaseFirestore());
+  Future<void>? gate;
+
+  @override
+  Stream<EventOfferConfiguration> watch({
+    required String organizerId,
+    required String eventId,
+  }) async* {
+    await gate;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    yield EventOfferConfiguration(
+      organizerId: organizerId,
+      eventId: eventId,
+      eventSourceRevision: 1,
+      startsAtMillis: 2100000000000,
+      nowMillis: now,
+      suggestedExpiresAtMillis: now + 3600000,
+      preferencesRevision: 1,
+      preferences: const PrivateEventPreferencesSnapshot(
+        revision: 1,
+        intents: PrivateEventPreferenceIntents(),
+        resolvedValues: {},
+        paymentTerms: {
+          'preferredCollection': 'manualInstructions',
+          'expectedAmountMinor': 50000,
+          'currency': 'INR',
+        },
+      ),
+    );
+  }
 }
 
 class _RouteCallable extends Fake implements HttpsCallable {
-  _RouteCallable(this.name, this.configurationGate);
+  _RouteCallable(this.name);
   final String name;
-  final Future<void>? configurationGate;
   @override
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
-    if (name == 'getEventOfferConfiguration' && configurationGate != null) {
-      await configurationGate;
-    }
-    final now = DateTime.now().millisecondsSinceEpoch;
     final Object data = switch (name) {
       'listOfferEventTargets' => {
         'events': [
@@ -455,19 +483,6 @@ class _RouteCallable extends Fake implements HttpsCallable {
           },
         ],
         'nextCursor': null,
-      },
-      'getEventOfferConfiguration' => {
-        'organizerId': 'org',
-        'eventId': 'event-one',
-        'eventSourceRevision': 1,
-        'startsAtMillis': 2100000000000,
-        'nowMillis': now,
-        'paymentTerms': {
-          'preferredCollection': 'manualInstructions',
-          'expectedAmountMinor': 50000,
-          'currency': 'INR',
-        },
-        'suggestedExpiresAtMillis': now + 3600000,
       },
       'listEventOffers' => {'items': <Object>[], 'nextCursor': null},
       _ => throw StateError('Unexpected callable: $name'),

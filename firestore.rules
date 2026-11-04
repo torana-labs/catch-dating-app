@@ -1196,8 +1196,14 @@ service cloud.firestore {
     match /eventOfferConfigurationReceipts/{receiptId} {
       allow read, write: if false;
     }
+    // An event's reviewed settings and payment terms. A current manager of
+    // the event's organizer gets them for the offer settings screen; a
+    // document not saved yet reads as missing. The configure and preferences
+    // commands write them.
     match /eventSetupPreferences/{eventId} {
-      allow read, write: if false;
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
     }
     match /eventSetupReceipts/{receiptId} {
       allow read, write: if false;

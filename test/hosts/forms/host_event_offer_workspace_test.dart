@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
@@ -27,6 +30,7 @@ import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.da
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,6 +56,7 @@ void main() {
     final accounts = StreamController<String?>();
     final storage = MemoryCommandJournalStorage();
     final functions = _RouteFunctions();
+    final configurations = _GatedConfigurationReads();
     addTearDown(accounts.close);
     addTearDown(storage.close);
     await tester.pumpWidget(
@@ -60,6 +65,9 @@ void main() {
           uidProvider.overrideWith((ref) => accounts.stream),
           firebaseAuthProvider.overrideWithValue(auth),
           firebaseFunctionsProvider.overrideWithValue(functions),
+          eventOfferConfigurationReadsProvider.overrideWithValue(
+            configurations,
+          ),
           commandJournalStorageProvider.overrideWithValue(() async => storage),
           hostFormResponseDetailProvider(
             organizerId: 'org',
@@ -100,7 +108,7 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.text(preview), findsNothing);
     final delayedConfiguration = Completer<void>();
-    functions.configurationGate = delayedConfiguration.future;
+    configurations.gate = delayedConfiguration.future;
     await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
     await pumpFeatureUi(tester);
     expect(
