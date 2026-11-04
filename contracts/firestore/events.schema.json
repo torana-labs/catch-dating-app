@@ -28,14 +28,23 @@
     "cancellationReason",
     "genderCounts",
     "cohortCounts",
-    "waitlistedCohortCounts"
+    "waitlistedCohortCounts",
+    "publicationState",
+    "setupRevision",
+    "name",
+    "eventCityId",
+    "eventMarketId",
+    "eventLocalDate",
+    "eventLocalStartTime",
+    "eventTimezone",
+    "setupDefaults"
   ],
   "properties": {
     "name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 120,
-      "description": "Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.",
+      "description": "Organizer-authored event name.",
       "x-catch-ownership": "callable-owned"
     },
     "organizerId": {
@@ -378,13 +387,13 @@
     },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
-      "description": "Server creation time of a progressively configured event.",
+      "description": "Server creation time, when the event's creator records it.",
       "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned",
-      "description": "Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it."
+      "description": "Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates."
     },
     "planChangeRevision": {
       "type": "integer",
@@ -399,14 +408,15 @@
         "private",
         "published"
       ],
-      "description": "Explicit publication boundary. Legacy absent values require full rich event data; new progressive events must declare their state.",
+      "description": "Explicit publication boundary: a private event is still being set up by its managers; a published event carries the full rich event data.",
       "x-catch-ownership": "callable-owned"
     },
     "setupRevision": {
       "type": "integer",
       "minimum": 1,
       "maximum": 2147483647,
-      "x-catch-ownership": "callable-owned"
+      "x-catch-ownership": "callable-owned",
+      "description": "Counts every setup change to the event in either publication state. An event created published starts at 1. Offer settings and admissions use it as the event's source revision."
     },
     "eventCityId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
@@ -487,15 +497,6 @@
       },
       "then": {
         "required": [
-          "organizerId",
-          "name",
-          "eventCityId",
-          "eventMarketId",
-          "eventLocalDate",
-          "eventLocalStartTime",
-          "eventTimezone",
-          "setupDefaults",
-          "setupRevision",
           "publicRegistrationEnabled"
         ],
         "properties": {
@@ -543,26 +544,6 @@
           "discoveryManualApprovalRequired",
           "discoveryMinAge",
           "discoveryMaxAge"
-        ]
-      }
-    },
-    {
-      "if": {
-        "required": [
-          "setupRevision"
-        ]
-      },
-      "then": {
-        "required": [
-          "publicationState",
-          "organizerId",
-          "name",
-          "eventCityId",
-          "eventMarketId",
-          "eventLocalDate",
-          "eventLocalStartTime",
-          "eventTimezone",
-          "setupDefaults"
         ]
       }
     },

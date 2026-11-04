@@ -26,6 +26,8 @@ function fixture() {
     "events/event-1": {
       organizerId: "org-1",
       status: "active",
+      publicationState: "published",
+      setupRevision: 1,
       photoUrl: null,
       eventPhotos: [],
       name: "Saved event",
@@ -79,6 +81,8 @@ test("media and receipt commit without schedule edits", async () => {
   assert.equal(saved.capacityLimit, 20);
   assert.equal(saved.photoUrl, h.photos[0].url);
   assert.deepEqual(saved.eventPhotos, h.photos);
+  // Attaching the gallery is a setup change like any rich edit.
+  assert.equal(saved.setupRevision, 2);
   assert.deepEqual(h.store.getDoc("organizerEventScheduleLocks/untouched"), {
     eventId: "event-1",
   });
@@ -213,8 +217,9 @@ test("receipt creation failure rolls back its gallery mutation", async () => {
 
 for (const patch of [
   {status: "cancelled"},
-  {setupRevision: 1},
   {publicationState: "private"},
+  {setupRevision: 0},
+  {setupRevision: 1.5},
 ]) {
   test(`lifecycle fence: ${JSON.stringify(patch)}`, async () => {
     const h = fixture();

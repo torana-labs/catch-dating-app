@@ -159,3 +159,75 @@ export function localStartMillis(
   }
   return matching[0];
 }
+
+/**
+ * The civil date and whole-minute time of an instant in a timezone. An
+ * instant that is not a whole minute, or that names an ambiguous or missing
+ * local time, is rejected so the private editor can reopen it unchanged.
+ */
+export function localDateTimeAt(
+  startTimeMillis: number,
+  timezone: string
+): {localDate: string; localStartTime: string} {
+  let parts: Record<string, string>;
+  try {
+    parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", {
+      timeZone: timezone, calendar: "gregory", hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit",
+      minute: "2-digit",
+    }).formatToParts(startTimeMillis).map((part) => [part.type, part.value]));
+  } catch {
+    throw new HttpsError("failed-precondition", "Invalid event timezone.");
+  }
+  const localDate = `${parts.year}-${parts.month}-${parts.day}`;
+  const localStartTime = `${parts.hour}:${parts.minute}`;
+  if (localStartMillis(localDate, localStartTime, timezone) !==
+      startTimeMillis) {
+    throw new HttpsError("invalid-argument",
+      "Choose a whole-minute start time.");
+  }
+  return {localDate, localStartTime};
+}
+
+/**
+ * The basics of an event created already published, from its name, its start
+ * and its organizer's setup defaults: the organizer's city and market, the
+ * organizer's timezone when one is saved (else the organizer market's), and
+ * the local start in that timezone. The defaults resolve through the same
+ * resolver as the private first save, so `setupDefaults` reads the same.
+ */
+export function publishedEventBasics(input: {
+  name: string;
+  startTimeMillis: number;
+  defaults: OrganizerSetupDefaults;
+}): NormalizedPrivateEventBasics {
+  const name = input.name?.trim();
+  if (!name || name.length > 120) {
+    throw new HttpsError("invalid-argument", "Enter an event name.");
+  }
+  const city = input.defaults.city;
+  const market = city ? marketForIdOrAlias(city.marketId) : null;
+  if (!city || !market) {
+    throw new HttpsError("failed-precondition",
+      "The organizer's city is unavailable.");
+  }
+  const resolved = resolveProgressiveSetupDefaults({
+    city: {mode: "inherit"},
+    timezone: input.defaults.timezone ? {mode: "inherit"} :
+      {mode: "set", value: market.timeZone},
+    organizer: input.defaults,
+  });
+  const timezone = resolved.timezone.value as string;
+  const {localDate, localStartTime} =
+    localDateTimeAt(input.startTimeMillis, timezone);
+  return {
+    name,
+    eventCityId: city.cityId,
+    eventMarketId: city.marketId,
+    eventLocalDate: localDate,
+    eventLocalStartTime: localStartTime,
+    eventTimezone: timezone,
+    startTimeMillis: input.startTimeMillis,
+    setupDefaults: resolved,
+  };
+}
