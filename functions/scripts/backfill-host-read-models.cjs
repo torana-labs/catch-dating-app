@@ -20,12 +20,20 @@ const {backfillEventSetupViews} =
 const {backfillEventSetupDefaultView} =
   require("../lib/hostReadModels/eventSetupDefaultViewStore");
 
+const {backfillProviderConnectionView} =
+  require("../lib/hostReadModels/providerConnectionViewStore");
+
+const {backfillRosterInsights} =
+  require("../lib/hostReadModels/rosterInsightViewStore");
+
 // Read models every environment rebuilds under the clean-schema mandate:
 // the client reads them unconditionally, so they have no activation marker.
 const evaluatedModels = {
   "attention": backfillOrganizerAttention,
   "event-setup": backfillEventSetupViews,
   "event-setup-defaults": backfillEventSetupDefaultView,
+  "provider-connections": backfillProviderConnectionView,
+  "roster-insights": backfillRosterInsights,
 };
 
 async function main(argv = process.argv.slice(2)) {
@@ -47,7 +55,8 @@ async function main(argv = process.argv.slice(2)) {
   if (!["contacts", "forms", "events", "groups", "responses",
     ...Object.keys(evaluatedModels)].includes(model)) {
     throw new Error("Use --model contacts, forms, events, groups, responses, " +
-      "attention, event-setup or event-setup-defaults.");
+      "attention, event-setup, event-setup-defaults, provider-connections " +
+      "or roster-insights.");
   }
   const apply = args.get("--apply") === true;
   if (model in evaluatedModels && args.has("--activate")) {

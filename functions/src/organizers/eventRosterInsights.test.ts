@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type {CallableRequest} from "firebase-functions/v2/https";
-import {HttpsError} from "firebase-functions/v2/https";
 import {
   catchSpendProjection,
   eventRelativeAttendanceInsight,
-  getEventRosterInsightsHandler,
   paymentSpendContribution,
   shouldExposeAttendanceInsight,
   topQuartileSpend,
@@ -30,36 +27,6 @@ function timestamp(millis: number): FirebaseFirestore.Timestamp {
 
 const day = 24 * 60 * 60 * 1000;
 const cutoff = 200 * day;
-
-class FakeSnapshot {
-  constructor(
-    readonly id: string,
-    private readonly value: Record<string, unknown> | undefined
-  ) {}
-
-  get exists(): boolean {
-    return this.value !== undefined;
-  }
-
-  data(): Record<string, unknown> | undefined {
-    return this.value;
-  }
-}
-
-class FakeFirestore {
-  constructor(private readonly docs: Record<
-    string,
-    Record<string, unknown> | undefined
-  >) {}
-
-  collection(path: string) {
-    return {
-      doc: (id: string) => ({
-        get: async () => new FakeSnapshot(id, this.docs[`${path}/${id}`]),
-      }),
-    };
-  }
-}
 
 function edge(overrides: Partial<OrganizerContactEventEdgeDocument> = {}):
 OrganizerContactEventEdgeDocument {
@@ -263,37 +230,6 @@ test("single imported identities stay unlabeled", () => {
     sourceCount: 4,
   }), false);
 });
-
-test("the callable denies organizer staff without management authority",
-  async () => {
-    const firestore = new FakeFirestore({
-      "events/event-1": {
-        organizerId: "organizer-1",
-        startTime: timestamp(cutoff),
-      },
-      "organizers/organizer-1": {
-        hostUserId: "owner-1",
-        ownerUserId: "owner-1",
-        hostUserIds: ["owner-1"],
-        hostProfiles: [],
-      },
-    });
-
-    await assert.rejects(
-      getEventRosterInsightsHandler({
-        auth: {uid: "operator-1", token: {}} as CallableRequest["auth"],
-        data: {eventId: "event-1"},
-        rawRequest: {headers: {}} as CallableRequest["rawRequest"],
-      } as CallableRequest<unknown>, {
-        firestore: () =>
-          firestore as unknown as FirebaseFirestore.Firestore,
-        checkRateLimit: async () => undefined,
-        timestamp: () => timestamp(cutoff),
-      }),
-      (error) => error instanceof HttpsError &&
-        error.code === "permission-denied"
-    );
-  });
 
 test("paid members are badged even before attendance history", () => {
   const row = {attendeeId: "attendee-1", contactId: "contact-1",

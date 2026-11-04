@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import type {CallableRequest} from "firebase-functions/v2/https";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
-import {getEventRosterInsightsHandler} from
-  "../organizers/eventRosterInsights";
 import {contractValidator} from "../shared/contractTestValidators";
 import {applyPaymentSpendChange} from "./organizerSpendStore";
 import {
@@ -143,38 +140,6 @@ test("one row per attendee, event-relative, with member stored", async () => {
   assert.equal(byAttendee.get(attendeeId(3))!.availability,
     "projectionPending");
 });
-
-test("rows match the retired callable's, except top spender and member",
-  async () => {
-    const docs = rosterDocs();
-    // Two more paying accounts so the callable labels a top spender.
-    docs["payments/p3"] = payment("p3", {userId: "user-2", amount: 100,
-      amountMinor: 100});
-    docs["payments/p4"] = payment("p4", {userId: "user-2", amount: 100,
-      amountMinor: 100, eventId: "past-2"});
-    const db = await withTotals(new AudienceTestStore(docs));
-    await reconcileRosterInsightView(db.asFirestore(), "event-1", clock());
-    const callable = await getEventRosterInsightsHandler({
-      auth: {uid: "owner-1", token: {}} as CallableRequest["auth"],
-      data: {eventId: "event-1", includeHostMembership: true},
-      rawRequest: {headers: {}} as CallableRequest["rawRequest"],
-    } as CallableRequest<unknown>, {
-      firestore: () => db.asFirestore(),
-      checkRateLimit: async () => undefined,
-      timestamp: () => at(nowMillis),
-    });
-    const stored = rows(db);
-    assert.equal(callable.rows.length, stored.size);
-    let topSpenders = 0;
-    for (const row of callable.rows) {
-      if (row.signals.includes("top_catch_spender")) topSpenders++;
-      assert.deepEqual(stored.get(row.attendeeId), {...row,
-        signals: row.signals.filter((signal) =>
-          signal !== "top_catch_spender")});
-    }
-    assert.equal(topSpenders, 1);
-    assert.equal(callable.sourceCoverage, view(db)!.sourceCoverage);
-  });
 
 test("an unchanged evaluation writes nothing; a check-in elsewhere does",
   async () => {

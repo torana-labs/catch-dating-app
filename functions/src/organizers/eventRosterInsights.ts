@@ -1,64 +1,17 @@
 import {retainedNativePaymentAmount} from "../payments/paymentAmounts";
-import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from
-  "firebase-functions/v2/https";
-import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptionsWithLimits} from
-  "../shared/callableOptions";
-import type {GetEventRosterInsightsCallablePayload} from
-  "../shared/generated/getEventRosterInsightsCallablePayload";
-import type {GetEventRosterInsightsCallableResponse} from
-  "../shared/generated/getEventRosterInsightsCallableResponse";
 import type {
-  EventAttendeeDocument,
-  EventDocument,
   HostEventRosterInsightViewDocument,
   OrganizerContactDocument,
   OrganizerContactEventEdgeDocument,
   OrganizerContactTraitDocument,
   PaymentDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {
-  validateGetEventRosterInsightsCallablePayload,
-} from "../shared/generated/validators/getEventRosterInsightsInput";
-import {requireOrganizerManager} from
-  "../shared/organizerManagerAuthority";
-import {checkRateLimit} from "../shared/rateLimit";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 
-const maxRosterDocuments = 1000;
-const maxOrganizerEvents = 1000;
-const maxContactEventEdges = 10000;
-const maxPaymentDocuments = 10000;
-const firestoreInLimit = 30;
 const dayMillis = 24 * 60 * 60 * 1000;
 
 /** One stored roster row: never top_catch_spender, which the phone adds. */
 export type InsightRow = HostEventRosterInsightViewDocument["rows"][number];
 export type InsightSignal = InsightRow["signals"][number];
-type LegacyInsightRow = GetEventRosterInsightsCallableResponse["rows"][number];
-
-interface EventRosterInsightsDeps {
-  firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: typeof checkRateLimit;
-  timestamp: () => FirebaseFirestore.Timestamp;
-}
-
-const defaultDeps: EventRosterInsightsDeps = {
-  firestore: () => admin.firestore(),
-  checkRateLimit,
-  timestamp: () => admin.firestore.Timestamp.now(),
-};
-
-interface AttendeeRow {
-  id: string;
-  data: EventAttendeeDocument;
-}
-
-interface EdgeRow {
-  id: string;
-  data: OrganizerContactEventEdgeDocument;
-}
 
 export interface ContactRow {
   id: string;
@@ -260,95 +213,6 @@ export function catchSpendProjection(
   return {byUid, topUidsByCurrency: topQuartileSpend(byUid).topUidsByCurrency};
 }
 
-/** Builds manager-only event-relative roster insights. */
-export async function getEventRosterInsightsHandler(
-  request: CallableRequest<unknown>,
-  deps: EventRosterInsightsDeps = defaultDeps
-): Promise<GetEventRosterInsightsCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<GetEventRosterInsightsCallablePayload>(
-    request,
-    validateGetEventRosterInsightsCallablePayload,
-    normalizePayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getEventRosterInsights", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  const eventSnap = await db.collection("events").doc(data.eventId).get();
-  if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const organizerId = event.organizerId;
-  await requireOrganizerManager({db, organizerId, actorUid});
-
-  const attendeeSnap = await db.collection("eventAttendees")
-    .where("eventId", "==", data.eventId)
-    .limit(maxRosterDocuments + 1)
-    .get();
-  const attendees: AttendeeRow[] = attendeeSnap.docs
-    .slice(0, maxRosterDocuments)
-    .map((doc) => ({
-      id: doc.id,
-      data: doc.data() as EventAttendeeDocument,
-    }));
-  const currentEdges = attendees.length === 0 ? [] : await db.getAll(
-    ...attendees.map((attendee) =>
-      db.collection("organizerContactEventEdges").doc(attendee.id)
-    )
-  );
-  const currentEdgeByAttendeeId = new Map(currentEdges
-    .filter((snap) => snap.exists)
-    .map((snap) => [
-      snap.id,
-      snap.data() as OrganizerContactEventEdgeDocument,
-    ]));
-  const contactIds = [...new Set([...currentEdgeByAttendeeId.values()]
-    .map((edge) => edge.contactId))];
-  const [contacts, traits, historyResult, organizerEvents] = await Promise.all([
-    getContactRows(db, contactIds),
-    getTraits(db, contactIds),
-    getHistoricalEdges(db, contactIds),
-    getOrganizerEvents(db, organizerId),
-  ]);
-  const paymentResult = await getOrganizerPayments(
-    db,
-    organizerEvents.rows.map((row) => row.id)
-  );
-  const cutoffAtMillis = event.startTime.toMillis();
-  const spend = paymentResult.truncated || organizerEvents.truncated ? null :
-    catchSpendProjection(paymentResult.rows, cutoffAtMillis);
-  const rows = attendees.map((attendee) => {
-    const edge = currentEdgeByAttendeeId.get(attendee.id);
-    const row = buildInsightRow({
-      attendeeId: attendee.id,
-      currentEdge: edge,
-      contacts,
-      traits,
-      history: historyResult.byContactId,
-      catchSpendFor: (uid) => spend?.byUid.get(uid) ?? [],
-      cutoffAtMillis,
-    });
-    const linkedUid = edge === undefined ? null :
-      contacts.get(edge.contactId)?.data.linkedUid ?? null;
-    return withLegacyTopSpenderSignal(data.includeHostMembership ?
-      withMemberSignal(row, traits, contacts) : row, linkedUid, spend);
-  });
-  const projectionPending = rows.some((row) =>
-    row.availability === "projectionPending"
-  );
-  return {
-    eventId: data.eventId,
-    organizerId,
-    cutoffAtMillis,
-    sourceCoverage: attendeeSnap.size > maxRosterDocuments ||
-      historyResult.truncated || projectionPending ?
-      "partial" : "exact",
-    spendCoverage: spend === null ? "insufficientData" : "catchPaymentsOnly",
-    rows,
-    computedAtMillis: deps.timestamp().toMillis(),
-  };
-}
-
 /**
  * One attendee's stored row: availability, event-relative attendance before
  * the cutoff, trait labels and Catch spend for the contact's linked account.
@@ -412,22 +276,6 @@ export function buildInsightRow(params: {
   };
 }
 
-/** The retired callable's label, from a cutoff-bounded spend projection. */
-function withLegacyTopSpenderSignal(
-  row: InsightRow,
-  linkedUid: string | null,
-  spend: CatchSpendProjection | null
-): LegacyInsightRow {
-  if (linkedUid === null || spend === null || !row.catchSpend.some((amount) =>
-    spend.topUidsByCurrency.get(amount.currency)?.has(linkedUid))) {
-    return row;
-  }
-  const signals: LegacyInsightRow["signals"] = [...row.signals];
-  signals.splice(signals.indexOf("known_catch_spender") + 1, 0,
-    "top_catch_spender");
-  return {...row, signals};
-}
-
 export function unavailableRow(
   attendeeId: string,
   availability: InsightRow["availability"],
@@ -446,141 +294,6 @@ export function unavailableRow(
     catchSpend: [],
   };
 }
-
-async function getContactRows(
-  db: FirebaseFirestore.Firestore,
-  contactIds: string[]
-): Promise<Map<string, ContactRow>> {
-  const snaps = contactIds.length === 0 ? [] : await db.getAll(
-    ...contactIds.map((contactId) =>
-      db.collection("organizerContacts").doc(contactId)
-    )
-  );
-  return new Map(snaps.filter((snap) => snap.exists).map((snap) => [
-    snap.id,
-    {id: snap.id, data: snap.data() as OrganizerContactDocument},
-  ]));
-}
-
-async function getTraits(
-  db: FirebaseFirestore.Firestore,
-  contactIds: string[]
-): Promise<Map<string, OrganizerContactTraitDocument>> {
-  const snaps = contactIds.length === 0 ? [] : await db.getAll(
-    ...contactIds.map((contactId) =>
-      db.collection("organizerContactTraits").doc(contactId)
-    )
-  );
-  return new Map(snaps.filter((snap) => snap.exists).map((snap) => [
-    snap.id,
-    snap.data() as OrganizerContactTraitDocument,
-  ]));
-}
-
-async function getHistoricalEdges(
-  db: FirebaseFirestore.Firestore,
-  contactIds: string[]
-): Promise<{
-  byContactId: Map<string, OrganizerContactEventEdgeDocument[]>;
-  truncated: boolean;
-}> {
-  const rows: EdgeRow[] = [];
-  let truncated = false;
-  for (const ids of chunks(contactIds)) {
-    if (rows.length >= maxContactEventEdges) {
-      truncated = true;
-      break;
-    }
-    const snap = await db.collection("organizerContactEventEdges")
-      .where("contactId", "in", ids)
-      .limit(maxContactEventEdges - rows.length + 1)
-      .get();
-    const remaining = maxContactEventEdges - rows.length;
-    rows.push(...snap.docs.slice(0, remaining).map((doc): EdgeRow => ({
-      id: doc.id,
-      data: doc.data() as OrganizerContactEventEdgeDocument,
-    })));
-    if (snap.size > remaining) truncated = true;
-  }
-  const byContactId = new Map<string, OrganizerContactEventEdgeDocument[]>();
-  for (const row of rows) {
-    const values = byContactId.get(row.data.contactId) ?? [];
-    values.push(row.data);
-    byContactId.set(row.data.contactId, values);
-  }
-  return {byContactId, truncated};
-}
-
-async function getOrganizerEvents(
-  db: FirebaseFirestore.Firestore,
-  organizerId: string
-): Promise<{rows: Array<{id: string}>; truncated: boolean}> {
-  const [canonical, compatibility] = await Promise.all([
-    db.collection("events").where("organizerId", "==", organizerId)
-      .limit(maxOrganizerEvents + 1).get(),
-    db.collection("events").where("organizerId", "==", organizerId)
-      .limit(maxOrganizerEvents + 1).get(),
-  ]);
-  const rows = new Map<string, {id: string}>();
-  for (const snap of [canonical, compatibility]) {
-    for (const doc of snap.docs.slice(0, maxOrganizerEvents)) {
-      rows.set(doc.id, {id: doc.id});
-    }
-  }
-  return {
-    rows: [...rows.values()].slice(0, maxOrganizerEvents),
-    truncated: canonical.size > maxOrganizerEvents ||
-      compatibility.size > maxOrganizerEvents ||
-      rows.size > maxOrganizerEvents,
-  };
-}
-
-async function getOrganizerPayments(
-  db: FirebaseFirestore.Firestore,
-  eventIds: string[]
-): Promise<{rows: PaymentDocument[]; truncated: boolean}> {
-  const rows: PaymentDocument[] = [];
-  let truncated = false;
-  for (const ids of chunks(eventIds)) {
-    if (rows.length >= maxPaymentDocuments) {
-      truncated = true;
-      break;
-    }
-    const snap = await db.collection("payments")
-      .where("eventId", "in", ids)
-      .limit(maxPaymentDocuments - rows.length + 1)
-      .get();
-    const remaining = maxPaymentDocuments - rows.length;
-    rows.push(...snap.docs.slice(0, remaining)
-      .map((doc) => doc.data() as PaymentDocument));
-    if (snap.size > remaining) truncated = true;
-  }
-  return {rows, truncated};
-}
-
-function chunks<T>(values: T[]): T[][] {
-  const result: T[][] = [];
-  for (let index = 0; index < values.length; index += firestoreInLimit) {
-    result.push(values.slice(index, index + firestoreInLimit));
-  }
-  return result;
-}
-
-function normalizePayload(data: unknown): unknown {
-  if (typeof data !== "object" || data === null || Array.isArray(data)) {
-    return data;
-  }
-  const normalized = {...data} as Record<string, unknown>;
-  if (typeof normalized.eventId === "string") {
-    normalized.eventId = normalized.eventId.trim();
-  }
-  return normalized;
-}
-
-export const getEventRosterInsights = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
-  (request) => getEventRosterInsightsHandler(request)
-);
 
 /**
  * Paid members are badged at check-in even before they have enough history

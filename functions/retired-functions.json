@@ -3,7 +3,9 @@
   "adminListOrganizerClaimRequests",
   "adminListOrganizerListingReviews",
   "getEventRehearsalSummary",
+  "getEventRosterInsights",
   "getOrganizerEventSetupDefaults",
+  "getOrganizerProviderSetup",
   "getPrivateEventSetup",
   "listOrganizerAttentionItems"
 ]
