@@ -21,7 +21,6 @@ import {evaluateLateJoin} from "./lateJoin";
 import {
   changeEventAssistanceRouteHandler,
   confirmEventAssistanceDepartureHandler,
-  getEventAssistanceGroupProgressHandler,
 } from "./groupProgressHandlers";
 
 const now = Date.parse("2026-09-07T12:00:00Z");
@@ -362,17 +361,14 @@ test("receipt reads cannot extend the event window or reverse the clock",
 
 test("callable handlers authenticate and rate-limit before store access",
   async () => {
-    for (const handler of [getEventAssistanceGroupProgressHandler,
-      confirmEventAssistanceDepartureHandler,
+    for (const handler of [confirmEventAssistanceDepartureHandler,
       changeEventAssistanceRouteHandler]) {
       const calls: string[] = [];
       const deps = {db: () => ({}) as Firestore,
         rateLimit: async () => {
           calls.push("limit");
         },
-        store: () => ({get: async () => {
-          calls.push("read"); return {} as Response;
-        }, confirmDeparture: async () => {
+        store: () => ({confirmDeparture: async () => {
           calls.push("confirm"); return {} as Response;
         }, changeRoute: async () => {
           calls.push("route"); return {} as Response;

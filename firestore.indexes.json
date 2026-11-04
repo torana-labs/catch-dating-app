@@ -3539,6 +3539,24 @@
       ]
     },
     {
+      "collectionGroup": "hostEventDepartureViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "progressId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "progressRevision",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "organizerApplications",
       "queryScope": "COLLECTION",
       "fields": [

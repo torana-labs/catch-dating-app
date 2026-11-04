@@ -2,8 +2,6 @@ import {readCheckpointReporters} from "./checkpointReporters";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
-import {validateGetEventAssistanceCheckpointCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceCheckpointInput";
 import {validateRecordEventAssistanceCheckpointCallablePayload} from
   "../../shared/generated/validators/recordEventAssistanceCheckpointInput";
 import {validateEventAssistanceCheckpointReceiptDocument} from
@@ -24,12 +22,13 @@ export class EventCheckpointStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateGetEventAssistanceCheckpointCallablePayload(input)) {
-      throw new HttpsError("invalid-argument", "Invalid checkpoint scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventCheckpointViews, and the command suites use it as their oracle.
+   */
+  async get(actorUid: string, scope: Scope): Promise<Response> {
     return runAssistanceTransaction(this.db, async (tx) => {
-      const s = await this.read(tx, actorUid, input);
+      const s = await this.read(tx, actorUid, scope);
       const reporterOptions = s.access.role === "eventLead" ?
         await readCheckpointReporters(this.db, tx, s, actorUid, this.clock) :
         null;
@@ -51,12 +50,10 @@ export class EventCheckpointStore {
     } catch {
       throw new HttpsError("invalid-argument", "Checkpoint context mismatch.");
     }
+    // The command schema already bounds every field of this scope.
     const scope: Scope = {context, groupId: payload.groupId,
       checkpointId: payload.checkpointId,
       progressRevision: payload.expectedProgressRevision};
-    if (!validateGetEventAssistanceCheckpointCallablePayload(scope)) {
-      throw new HttpsError("invalid-argument", "Choose a recorded departure.");
-    }
     const requestHash = operationContentHash([actorUid, input]);
     const receiptId = "checkpoint-action:" + operationContentHash([
       context, payload.groupId, command.operationId]);

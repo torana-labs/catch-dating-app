@@ -132,11 +132,8 @@ export {getEventRcsPreference, setEventRcsPreference} from
   "./eventSuccess/operations/rcsPreferenceHandlers";
 export {getEventAssistanceSetting, setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
-export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture,
-  changeEventAssistanceRoute} from
+export {confirmEventAssistanceDeparture, changeEventAssistanceRoute} from
   "./eventSuccess/operations/groupProgressHandlers";
-export {listEventAssistanceDepartureRosters} from
-  "./eventSuccess/operations/departureHistoryHandlers";
 export {onEventAssistanceRcsCallbackCreated} from
   "./eventSuccess/operations/rcsWebhookProcessing";
 export {eventAssistanceRcsWebhook} from
@@ -731,7 +728,7 @@ export {reassignEventAssistanceCheckpointReporter} from
   "./eventSuccess/operations/checkpointReporterHandlers";
 export {setEventAssistanceCheckpointCloseout} from
   "./eventSuccess/operations/checkpointCloseoutHandlers";
-export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
+export {recordEventAssistanceCheckpoint} from
   "./eventSuccess/operations/checkpointHandlers";
 
 export {getEventRcsWithdrawal, withdrawEventRcs} from
@@ -1072,6 +1069,13 @@ export {onHostEventDeliveryViewMessageChanged,
   onHostEventDeliveryViewEventChanged, onHostEventDeliveryViewWorkItemChanged,
   onHostEventDeliveryViewRunChanged, onHostEventDeliveryViewOrganizerChanged}
   from "./hostReadModels/eventDeliveryViewTriggers";
+export {onHostMovementViewEventChanged, onHostMovementViewPlanChanged,
+  onHostMovementViewProgressChanged, onHostMovementViewRosterChanged,
+  onHostMovementViewCheckpointChanged, onHostMovementViewAttendeeChanged,
+  onHostMovementViewGuestChanged, onHostMovementViewMembershipChanged,
+  onHostMovementViewWorkItemChanged, onHostMovementViewStaffGrantChanged,
+  onHostMovementViewOrganizerChanged} from
+  "./hostReadModels/movementViewTriggers";
 
 export {manageEventApprovalNotifications} from
   "./events/approvalNotifications/preferences";

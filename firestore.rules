@@ -1447,6 +1447,27 @@ service cloud.firestore {
       allow get: if isHostSummaryManager(organizerId);
       allow list, write: if false;
     }
+    // The live console's movement views, written ahead of time by the
+    // movement view evaluator. Only an organizer's managers use the live
+    // console's reads (a group lead acts through the commands, which check
+    // its duty), and the callables these views replace did not refuse an
+    // archived or inactive organizer. A view the server has not written yet
+    // reads as missing; a missing document reveals nothing.
+    match /hostEventGroupProgressViews/{progressId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventDepartureViews/{rosterId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventCheckpointViews/{checkpointViewId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
 
     // Live console help-request and delivery views, one per practical case
     // or live message, written ahead of time by the view triggers. A current

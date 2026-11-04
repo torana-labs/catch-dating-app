@@ -8,8 +8,7 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
 import {EventCheckpointStore} from "./checkpointStore";
-import {getEventAssistanceCheckpointHandler,
-  recordEventAssistanceCheckpointHandler} from "./checkpointHandlers";
+import {recordEventAssistanceCheckpointHandler} from "./checkpointHandlers";
 import {CHECKPOINTS, CHECKPOINT_RECEIPTS, checkpointIdentity, Response} from
   "./checkpointRecords";
 import {DEPARTURE_ROSTERS} from "./departureRosterSource";
@@ -404,14 +403,11 @@ test("reporting preserves the full 1,000-member scope",
 
 test("callables authenticate, limit and reject invalid or rehearsal requests",
   async () => {
-    for (const handler of [getEventAssistanceCheckpointHandler,
-      recordEventAssistanceCheckpointHandler]) {
+    for (const handler of [recordEventAssistanceCheckpointHandler]) {
       const calls: string[] = [];
       const deps = {db: () => ({}) as Firestore, rateLimit: async () => {
         calls.push("limit");
-      }, store: () => ({get: async () => {
-        calls.push("get"); return {} as Response;
-      }, record: async () => {
+      }, store: () => ({record: async () => {
         calls.push("record"); return {} as Response;
       }})};
       await assert.rejects(handler({data: {}} as CallableRequest, deps),

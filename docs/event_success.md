@@ -1394,9 +1394,11 @@ independent. Removing prior observations requires an explanation. Rehearsal
 departure, route-decision and checkpoint persistence call these rules inside the
 rehearsal-only parent transaction. They grant no live authority.
 
-`getEventAssistanceGroupProgress`, `confirmEventAssistanceDeparture` and
-`changeEventAssistanceRoute` provide the live movement command boundary for
-the typed workflow. The read projects
+`confirmEventAssistanceDeparture` and `changeEventAssistanceRoute` provide the
+live movement command boundary for the typed workflow; managers read movement
+through the `hostEventGroupProgressViews`, `hostEventDepartureViews` and
+`hostEventCheckpointViews` listeners (data contracts, Live Console Movement
+Views). The group view projects
 destinations from canonical meeting location, itinerary stops with locations,
 and configured pace groups with a saved route path. `event:whole` is the
 whole-event scope; saved pace-group IDs cannot collide with that namespace.
@@ -1573,9 +1575,8 @@ No live automation or provider boundary is activated by this change.
 
 ### Checkpoint observations
 
-The typed `listEventAssistanceDepartureRosters` read and account-scoped native
-history query preserve access to each original recorded departure after later
-movement. The ten-row page returns only counts, historical report status and
+The departure views and the account-scoped native history listener preserve
+access to each original recorded departure after later movement. The ten-row page returns only counts, historical report status and
 original request deadline, with an exclusive revision cursor. It distinguishes
 omitted rosters, explicitly empty rosters, fixed destinations and legacy records.
 Current source labels are withheld after setup changes. The scoped checkpoint
@@ -1607,8 +1608,8 @@ historical navigation, exact retry after reopening, corrections and unavailable 
 Isolated Widgetbook previews mount the real controls without Firebase; registration
 in the shared generated Widgetbook index awaits release of its active file claim.
 
-`getEventAssistanceCheckpoint` and `recordEventAssistanceCheckpoint` operate on
-one checkpoint and one explicitly recorded departure revision. Each new departure
+The checkpoint view and `recordEventAssistanceCheckpoint` operate on one
+checkpoint and one explicitly recorded departure revision. Each new departure
 roster pins the actual confirmed destination. A legacy roster without that fact
 is distinguished from a confirmed empty roster; neither a schedule nor the latest
 group position is used to invent the earlier destination. Whole-event itinerary

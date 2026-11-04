@@ -1357,6 +1357,98 @@
       ]
     },
     {
+      "id": "hostEventGroupProgressViews",
+      "path": "hostEventGroupProgressViews/{progressId}",
+      "rulesMatch": "/hostEventGroupProgressViews/{progressId}",
+      "typescriptInterface": "HostEventGroupProgressViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live movement views and nothing else"
+      ],
+      "owner": "Live movement view evaluator: hostReadModels movement view triggers",
+      "read": "current organizer managers get and list their own organizer's views (the live console gets one group's view by id)",
+      "write": "server only; one per configured group of an event with an eventFormat and an endTime, deleted with the group or the event",
+      "exportedFunctions": [
+        "onHostMovementViewEventChanged",
+        "onHostMovementViewPlanChanged",
+        "onHostMovementViewProgressChanged",
+        "onHostMovementViewRosterChanged",
+        "onHostMovementViewCheckpointChanged",
+        "onHostMovementViewAttendeeChanged",
+        "onHostMovementViewGuestChanged",
+        "onHostMovementViewMembershipChanged",
+        "onHostMovementViewWorkItemChanged",
+        "onHostMovementViewStaffGrantChanged",
+        "onHostMovementViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "eventOpen is evaluated one millisecond before eventEndAtMillis; the phone ANDs it, and the guidance it gates, with the app clock.",
+        "A missing document or sourceCoverage invalidSource with its incompleteSource means the phone shows the unavailable state."
+      ]
+    },
+    {
+      "id": "hostEventDepartureViews",
+      "path": "hostEventDepartureViews/{rosterId}",
+      "rulesMatch": "/hostEventDepartureViews/{rosterId}",
+      "typescriptInterface": "HostEventDepartureViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live movement views and nothing else"
+      ],
+      "owner": "Live movement view evaluator: hostReadModels movement view triggers",
+      "read": "current organizer managers get and list their own organizer's views (the history pages by organizerId, progressId and progressRevision descending)",
+      "write": "server only; one per recorded departure roster, deleted with the roster, its event or its group",
+      "exportedFunctions": [
+        "onHostMovementViewEventChanged",
+        "onHostMovementViewPlanChanged",
+        "onHostMovementViewProgressChanged",
+        "onHostMovementViewRosterChanged",
+        "onHostMovementViewCheckpointChanged",
+        "onHostMovementViewAttendeeChanged",
+        "onHostMovementViewGuestChanged",
+        "onHostMovementViewMembershipChanged",
+        "onHostMovementViewWorkItemChanged",
+        "onHostMovementViewStaffGrantChanged",
+        "onHostMovementViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "label and sourceState follow the group's current source, so an event or plan change re-evaluates the event's rosters."
+      ]
+    },
+    {
+      "id": "hostEventCheckpointViews",
+      "path": "hostEventCheckpointViews/{checkpointViewId}",
+      "rulesMatch": "/hostEventCheckpointViews/{checkpointViewId}",
+      "typescriptInterface": "HostEventCheckpointViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live movement views and nothing else"
+      ],
+      "owner": "Live movement view evaluator: hostReadModels movement view triggers",
+      "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+      "write": "server only; one per roster whose destination is a checkpoint, frozen 24 hours after the event ends",
+      "exportedFunctions": [
+        "onHostMovementViewEventChanged",
+        "onHostMovementViewPlanChanged",
+        "onHostMovementViewProgressChanged",
+        "onHostMovementViewRosterChanged",
+        "onHostMovementViewCheckpointChanged",
+        "onHostMovementViewAttendeeChanged",
+        "onHostMovementViewGuestChanged",
+        "onHostMovementViewMembershipChanged",
+        "onHostMovementViewWorkItemChanged",
+        "onHostMovementViewStaffGrantChanged",
+        "onHostMovementViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "request.state, request.ownerAvailability and the reporter choices follow the app clock through request.dueAt, ownerValidUntilMillis and each reporter's validUntil.",
+        "accountability carries each member's checkpoint-scoped accountability view; the resolve command fences on its sourceHash."
+      ]
+    },
+    {
       "id": "organizerEntitlements",
       "path": "organizerEntitlements/{organizerId}",
       "rulesMatch": "/organizerEntitlements/{organizerId}",
@@ -2981,10 +3073,8 @@
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
-        "getEventAssistanceGroupProgress",
         "confirmEventAssistanceDeparture",
-        "changeEventAssistanceRoute",
-        "listEventAssistanceDepartureRosters"
+        "changeEventAssistanceRoute"
       ]
     },
     {
@@ -3831,8 +3921,6 @@
       "exportedFunctions": [
         "getEventAssistanceDepartureRoster",
         "confirmEventAssistanceDeparture",
-        "listEventAssistanceDepartureRosters",
-        "getEventAssistanceCheckpoint",
         "recordEventAssistanceCheckpoint"
       ]
     },
@@ -3845,9 +3933,7 @@
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
-        "getEventAssistanceCheckpoint",
-        "recordEventAssistanceCheckpoint",
-        "listEventAssistanceDepartureRosters"
+        "recordEventAssistanceCheckpoint"
       ]
     },
     {

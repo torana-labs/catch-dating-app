@@ -32,6 +32,9 @@ const {backfillEventCaseViews} =
 const {backfillEventDeliveryViews} =
   require("../lib/hostReadModels/eventDeliveryViewStore");
 
+const {backfillMovementViews, movementViewModels} =
+  require("../lib/hostReadModels/movementViewBackfill");
+
 // Read models every environment rebuilds under the clean-schema mandate:
 // the client reads them unconditionally, so they have no activation marker.
 const evaluatedModels = {
@@ -60,14 +63,16 @@ async function main(argv = process.argv.slice(2)) {
     throw new Error("Provide explicit --project and --organizer identifiers.");
   }
   const model = args.get("--model") ?? "contacts";
+  const movement = movementViewModels.includes(model);
   if (!["contacts", "forms", "events", "groups", "responses",
-    ...Object.keys(evaluatedModels)].includes(model)) {
+    ...Object.keys(evaluatedModels), ...movementViewModels].includes(model)) {
     throw new Error("Use --model contacts, forms, events, groups, responses, " +
       "attention, event-setup, event-setup-defaults, provider-connections, " +
-      "roster-insights, case-views or delivery-views.");
+      "roster-insights, case-views, delivery-views, " +
+      movementViewModels.join(", ") + ".");
   }
   const apply = args.get("--apply") === true;
-  if (model in evaluatedModels && args.has("--activate")) {
+  if ((model in evaluatedModels || movement) && args.has("--activate")) {
     throw new Error(`The ${model} model has no activation; omit --activate.`);
   }
   if (args.has("--activate") && !apply) {
@@ -78,6 +83,15 @@ async function main(argv = process.argv.slice(2)) {
     const db = app.firestore();
     if (model in evaluatedModels) {
       const report = await evaluatedModels[model](db, organizerId, apply);
+      console.log(JSON.stringify({projectId, organizerId, model, apply,
+        ...report}));
+      return;
+    }
+    // The live console's movement views: the organizer's events that have
+    // not ended, and their departure rosters.
+    if (movement) {
+      const report = await backfillMovementViews(db, organizerId, model,
+        apply);
       console.log(JSON.stringify({projectId, organizerId, model, apply,
         ...report}));
       return;

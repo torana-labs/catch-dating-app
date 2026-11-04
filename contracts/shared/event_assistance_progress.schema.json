@@ -198,25 +198,6 @@
         }
       }
     },
-    "ReadInput": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context",
-        "groupId"
-      ],
-      "properties": {
-        "context": {
-          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-        },
-        "groupId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        }
-      }
-    },
     "ConfirmInput": {
       "type": "object",
       "additionalProperties": false,
