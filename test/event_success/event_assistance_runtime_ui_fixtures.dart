@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
@@ -25,18 +26,33 @@ EventAssistanceRuntimeScope runtimeUiScope() {
   );
 }
 
-AssistanceRuntimeView runtimeUiView(String name, {bool noSenders = false}) {
+Map<String, Object?> _runtimeUiWire(String name, {bool noSenders = false}) {
   final view = (runtimeUiFixture(name)['view']! as Map).cast<String, Object?>();
   if (noSenders) view['senderSetup'] = {'choices': [], 'nextCursors': {}};
-  return AssistanceRuntimeView.fromJson(view, expectedScope: runtimeUiScope());
+  return view;
 }
 
+AssistanceRuntimeView runtimeUiView(String name, {bool noSenders = false}) =>
+    AssistanceRuntimeView.fromJson(
+      _runtimeUiWire(name, noSenders: noSenders),
+      expectedScope: runtimeUiScope(),
+    );
+
 /// Actual backend read fixtures; writes script lost replies and matching receipts.
+/// The listener delivers the automation without senders, and the picker page
+/// carries them, as the live view and the callable do.
 class RuntimeUiRepository extends Fake
     implements EventAssistanceRuntimeRepository {
   RuntimeUiRepository({String stage = 'initial', bool noSenders = false})
-    : view = runtimeUiView(stage, noSenders: noSenders);
-  AssistanceRuntimeView view;
+    : _wire = _runtimeUiWire(stage, noSenders: noSenders);
+  Map<String, Object?> _wire;
+  AssistanceRuntimeView get view =>
+      AssistanceRuntimeView.fromJson(_wire, expectedScope: runtimeUiScope());
+  final _listeners = <StreamController<AssistanceRuntimeView>>[];
+  AssistanceRuntimeView get _listened => AssistanceRuntimeView.fromJson(
+    {..._wire}..remove('senderSetup'),
+    expectedScope: runtimeUiScope(),
+  );
   final writes =
       <
         ({
@@ -45,9 +61,24 @@ class RuntimeUiRepository extends Fake
         })
       >[];
   @override
-  Future<AssistanceRuntimeView> fetch(
-    EventAssistanceRuntimeScope scope,
-  ) async => view;
+  Stream<AssistanceRuntimeView> watch(EventAssistanceRuntimeScope scope) {
+    late final StreamController<AssistanceRuntimeView> listener;
+    listener = StreamController(
+      onCancel: () {
+        _listeners.remove(listener);
+        return listener.close();
+      },
+    );
+    _listeners.add(listener);
+    listener.add(_listened);
+    return listener.stream;
+  }
+
+  @override
+  Future<AssistanceRuntimeView> fetchSenderPage(
+    EventAssistanceRuntimeScope scope, {
+    required Map<AssistanceMessageRoute, String> cursors,
+  }) async => view;
   @override
   Future<AssistanceRuntimeResult> apply(AssistanceRuntimeChange change) {
     final result = Completer<AssistanceRuntimeResult>();
@@ -81,7 +112,10 @@ class RuntimeUiRepository extends Fake
       expectedScope: view.scope,
       expectedChange: change,
     );
-    view = result.view;
+    _wire = {...raw, 'senderSetup': _wire['senderSetup']};
     pending.result.complete(result);
+    for (final listener in [..._listeners]) {
+      listener.add(_listened);
+    }
   }
 }

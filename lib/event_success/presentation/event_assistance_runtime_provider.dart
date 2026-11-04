@@ -67,36 +67,56 @@ class EventAssistanceRuntime extends _$EventAssistanceRuntime {
     );
   }
 
+  /// Restarts the listener only after it ended in an error; a healthy one
+  /// already delivers every change.
   void reload() {
     final account = ref.read(eventAssistanceAccountProvider);
     if (account.isLoading || account.hasError || account.asData == null) return;
-    ref.invalidate(
-      eventAssistanceRuntimeForAccountProvider(
-        query,
-        account: account.requireValue,
-      ),
-    );
+    if (ref
+        .read(
+          eventAssistanceRuntimeForAccountProvider(
+            query,
+            account: account.requireValue,
+          ),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceRuntimeForAccountProvider(
+          query,
+          account: account.requireValue,
+        ),
+      );
+    }
   }
 }
 
+/// The event's automation for one sign-in period, without sender choices.
+/// It is a Firestore listener: no cache tags or lifetime, and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one.
 @Riverpod(retry: _noRuntimeReadRetry)
-Future<AssistanceRuntimeSession> eventAssistanceRuntimeForAccount(
+Stream<AssistanceRuntimeSession> eventAssistanceRuntimeForAccount(
   Ref ref,
   EventAssistanceRuntimeScope query, {
   required EventAssistanceAccount account,
-}) async {
+}) {
   ref.watch(eventAssistanceAccountProvider);
   requireRuntimeReviewAccount(ref, account);
-  final page = await ref
-      .watch(eventAssistanceRuntimeRepositoryProvider)
-      .fetch(query);
-  requireRuntimeReviewAccount(ref, account);
-  if (page.scope != query) {
-    throw const FormatException('Automation settings belong to another event.');
-  }
-  final session = AssistanceRuntimeSession._(account, page);
-  ref.onDispose(() => session._current = false);
-  return session;
+  AssistanceRuntimeSession? latest;
+  ref.onDispose(() => latest?._current = false);
+  return ref.watch(eventAssistanceRuntimeRepositoryProvider).watch(query).map((
+    page,
+  ) {
+    requireRuntimeReviewAccount(ref, account);
+    if (page.scope != query) {
+      throw const FormatException(
+        'Automation settings belong to another event.',
+      );
+    }
+    latest?._current = false;
+    return latest = AssistanceRuntimeSession._(account, page);
+  });
 }
 
+// A listener error is shown with a retry; it is never retried silently.
 Duration? _noRuntimeReadRetry(int retryCount, Object error) => null;

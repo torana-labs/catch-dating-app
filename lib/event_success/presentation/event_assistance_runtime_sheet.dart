@@ -54,6 +54,8 @@ class EventAssistanceRuntimeSheet extends ConsumerWidget {
       } else {
         ref.read(pageProvider.notifier).reload();
       }
+      // Sender choices come from the picker callable, not the listener.
+      ref.invalidate(eventAssistanceRuntimeSendersProvider);
     }
 
     return PopScope(
@@ -118,6 +120,10 @@ class EventAssistanceRuntimeSheet extends ConsumerWidget {
                   final pending =
                       phase == EventAssistanceRuntimePhase.submitting ||
                       phase == EventAssistanceRuntimePhase.retryRequired;
+                  if (directory.loadingFirstPage &&
+                      phase == EventAssistanceRuntimePhase.ready) {
+                    return const CatchLoadingIndicator();
+                  }
                   return EventAssistanceRuntimeSection(
                     reviewIdentity: review,
                     view: view,

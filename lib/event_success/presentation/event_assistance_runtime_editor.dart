@@ -307,10 +307,6 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
     release?.call();
   }
 
-  void _refresh() {
-    ref.invalidate(eventAssistanceRuntimeForAccountProvider);
-  }
-
   void _publish(AssistanceRuntimeForm form) {
     // Error/ready callbacks can act before the previous async stack unwinds.
     _inFlight = null;
@@ -331,7 +327,6 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
       }
       result.requireChange(change, actorUid: form.review.account.uid);
       _clearPending();
-      _refresh();
       _publish(
         form._after(
           AssistanceRuntimeEditorPhase.saved,
@@ -355,10 +350,7 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
               'invalid-argument',
               'callable-unavailable',
             }.contains(error.code);
-        if (definitive) {
-          _clearPending();
-          _refresh();
-        }
+        if (definitive) _clearPending();
         _publish(
           form._after(
             definitive

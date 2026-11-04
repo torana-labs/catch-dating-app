@@ -136,12 +136,8 @@ export class EventAssistanceRuntimeConfigStore {
 
   private async read(tx: Transaction, actorUid: string,
     context: RuntimeContext) {
-    const id = runtimeConfigId(context);
-    const [eventSnap, planSnap, organizerSnap, recordSnap] = await tx.getAll(
-      this.db.collection("events").doc(context.eventId),
-      this.db.collection("eventSuccessPlans").doc(context.eventId),
-      this.db.collection("organizers").doc(context.organizerId),
-      this.db.collection(RUNTIME_CONFIGS).doc(id));
+    const organizerSnap = await tx.get(this.db.collection("organizers")
+      .doc(context.organizerId));
     const organizer = organizerSnap.data();
     if (!validateOrganizerDocument(organizer)) throw invalidSource();
     if (!isOrganizerManager(organizer as unknown as OrganizerDocument,
@@ -149,29 +145,45 @@ export class EventAssistanceRuntimeConfigStore {
       throw new HttpsError("permission-denied",
         "Only organizer managers can configure event automation.");
     }
-    const now = this.clock();
-    const source = runtimeConfigSource(context, eventSnap, planSnap, now);
-    const record = recordSnap.exists ?
-      parseRuntimeConfig(recordSnap.data(), context, now) : null;
-    return {context, source, record, now};
+    return readRuntimeConfigState(this.db, tx, context, this.clock);
   }
 }
 
-type State = {
+/** The event, plan and saved automation; callers authorize separately. */
+export async function readRuntimeConfigState(db: Firestore, tx: Transaction,
+  context: RuntimeContext, clock: () => number): Promise<RuntimeState> {
+  const [eventSnap, planSnap, recordSnap] = await tx.getAll(
+    db.collection("events").doc(context.eventId),
+    db.collection("eventSuccessPlans").doc(context.eventId),
+    db.collection(RUNTIME_CONFIGS).doc(runtimeConfigId(context)));
+  const now = clock();
+  const source = runtimeConfigSource(context, eventSnap, planSnap, now);
+  const record = recordSnap.exists ?
+    parseRuntimeConfig(recordSnap.data(), context, now) : null;
+  return {context, source, record, now};
+}
+
+export type RuntimeState = {
   context: RuntimeContext; now: number;
   source: ReturnType<typeof runtimeConfigSource>;
   record: ReturnType<typeof parseRuntimeConfig> | null;
 };
+type State = RuntimeState;
+
+/** The automation as a manager reviews it at the state's time. */
+export function runtimeView(state: State):
+  Omit<Response["view"], "serverTime" | "senderSetup"> {
+  return {context: state.context, sourceHash: state.source.hash,
+    revision: state.record?.revision ?? 0, runtime: state.record,
+    status: runtimeConfigStatus(state.record, state.source, state.now),
+    canConfigure: !state.source.closed && state.now < state.source.eventEnd,
+    eventEnd: state.source.eventEnd};
+}
 function response(outcome: Response["outcome"], state: State,
   operationRevision: number | null = null,
   senderSetup?: Response["view"]["senderSetup"]): Response {
   const value: Response = {outcome, operationRevision, view: {
-    context: state.context, serverTime: state.now,
-    sourceHash: state.source.hash, revision: state.record?.revision ?? 0,
-    runtime: state.record,
-    status: runtimeConfigStatus(state.record, state.source, state.now),
-    canConfigure: !state.source.closed && state.now < state.source.eventEnd,
-    eventEnd: state.source.eventEnd,
+    ...runtimeView(state), serverTime: state.now,
     ...(senderSetup ? {senderSetup} : {})}};
   if (!validateEventAssistanceRuntimeConfigCallableResponse(value)) {
     throw invalidSource();

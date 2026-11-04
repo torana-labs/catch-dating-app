@@ -35,6 +35,9 @@ const {backfillEventDeliveryViews} =
 const {backfillMovementViews, movementViewModels} =
   require("../lib/hostReadModels/movementViewBackfill");
 
+const {backfillGuestViews, guestViewModels} =
+  require("../lib/hostReadModels/guestViewBackfill");
+
 // Read models every environment rebuilds under the clean-schema mandate:
 // the client reads them unconditionally, so they have no activation marker.
 const evaluatedModels = {
@@ -64,15 +67,18 @@ async function main(argv = process.argv.slice(2)) {
   }
   const model = args.get("--model") ?? "contacts";
   const movement = movementViewModels.includes(model);
+  const guest = guestViewModels.includes(model);
   if (!["contacts", "forms", "events", "groups", "responses",
-    ...Object.keys(evaluatedModels), ...movementViewModels].includes(model)) {
+    ...Object.keys(evaluatedModels), ...movementViewModels,
+    ...guestViewModels].includes(model)) {
     throw new Error("Use --model contacts, forms, events, groups, responses, " +
       "attention, event-setup, event-setup-defaults, provider-connections, " +
       "roster-insights, case-views, delivery-views, " +
-      movementViewModels.join(", ") + ".");
+      [...movementViewModels, ...guestViewModels].join(", ") + ".");
   }
   const apply = args.get("--apply") === true;
-  if ((model in evaluatedModels || movement) && args.has("--activate")) {
+  if ((model in evaluatedModels || movement || guest) &&
+      args.has("--activate")) {
     throw new Error(`The ${model} model has no activation; omit --activate.`);
   }
   if (args.has("--activate") && !apply) {
@@ -92,6 +98,14 @@ async function main(argv = process.argv.slice(2)) {
     if (movement) {
       const report = await backfillMovementViews(db, organizerId, model,
         apply);
+      console.log(JSON.stringify({projectId, organizerId, model, apply,
+        ...report}));
+      return;
+    }
+    // The live console's guest and settings views: the organizer's events
+    // that have not ended, and for the guest models their attendees.
+    if (guest) {
+      const report = await backfillGuestViews(db, organizerId, model, apply);
       console.log(JSON.stringify({projectId, organizerId, model, apply,
         ...report}));
       return;

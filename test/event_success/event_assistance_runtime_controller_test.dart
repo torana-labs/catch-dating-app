@@ -47,7 +47,9 @@ void main() {
 
   Future<void> complete(int index) async {
     final read = repository.reads[index];
-    read.result.complete(runtimeView(eventId: read.scope.eventId));
+    if (!read.result.isClosed) {
+      read.result.add(runtimeView(eventId: read.scope.eventId));
+    }
     await container.pump();
   }
 
@@ -118,28 +120,26 @@ void main() {
     },
   );
 
-  test(
-    'event reads are isolated and explicit refresh fences older completion',
-    () async {
-      await signIn('host-1');
-      container.listen(
-        eventAssistanceRuntimeProvider(runtimeScope(eventId: 'event-2')),
-        (_, _) {},
-      );
-      await container.pump();
-      await repository.waitForReads(2);
-      expect(repository.reads, hasLength(2));
-      container.read(provider.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(3);
-      expect(repository.reads, hasLength(3));
-      await complete(2);
-      final current = container.read(provider).requireValue;
-      await complete(0);
-      expect(container.read(provider).requireValue, same(current));
-      await complete(1);
-    },
-  );
+  test('event reads are isolated listeners; a reload keeps a healthy one and '
+      'each delivery retires the previous review', () async {
+    await signIn('host-1');
+    container.listen(
+      eventAssistanceRuntimeProvider(runtimeScope(eventId: 'event-2')),
+      (_, _) {},
+    );
+    await container.pump();
+    await repository.waitForReads(2);
+    expect(repository.reads, hasLength(2));
+    await complete(0);
+    final current = container.read(provider).requireValue;
+    container.read(provider.notifier).reload();
+    await container.pump();
+    expect(repository.reads, hasLength(2));
+    await complete(0);
+    expect(current.isCurrent, isFalse);
+    expect(container.read(provider).requireValue.isCurrent, isTrue);
+    await complete(1);
+  });
 
   test(
     'configuration requires an explicit choice; duplicate saves share one frozen request',
@@ -175,9 +175,13 @@ void main() {
       );
       expect(await notifier.submit(), same(receipt));
       expect(repository.writes, hasLength(1));
-      await repository.waitForReads(2);
-      expect(repository.reads, hasLength(2));
-      expect(container.read(provider).hasValue, isFalse);
+      await container.pump();
+      expect(
+        repository.reads,
+        hasLength(1),
+        reason: 'the trigger delivers the save to the open listener',
+      );
+      expect(container.read(provider).hasValue, isTrue);
     },
   );
 
@@ -275,8 +279,7 @@ void main() {
       addTearDown(sub.close);
       final notifier = container.read(editor.notifier)..open(review);
       notifier.select(const AssistanceRuntimePause());
-      container.read(provider.notifier).reload();
-      await container.pump();
+      await complete(0);
       expect(review.isCurrent, isFalse);
       expect(
         (container.read(editor) as AssistanceRuntimeForm).canSubmit,
@@ -305,10 +308,7 @@ void main() {
         const NetworkException('unavailable', 'Lost reply'),
       );
       await failure;
-      container.read(provider.notifier).reload();
-      await container.pump();
-      await repository.waitForReads(2);
-      await complete(1);
+      await complete(0);
       sub = container.listen(editor, (_, _) {});
       notifier.open(container.read(provider).requireValue);
       notifier.reload();
@@ -481,7 +481,7 @@ class _Repository extends Fake implements EventAssistanceRuntimeRepository {
       <
         ({
           EventAssistanceRuntimeScope scope,
-          Completer<AssistanceRuntimeView> result,
+          StreamController<AssistanceRuntimeView> result,
         })
       >[];
   final writes =
@@ -492,13 +492,14 @@ class _Repository extends Fake implements EventAssistanceRuntimeRepository {
         })
       >[];
   @override
-  Future<AssistanceRuntimeView> fetch(EventAssistanceRuntimeScope scope) {
-    final result = Completer<AssistanceRuntimeView>();
+  Stream<AssistanceRuntimeView> watch(EventAssistanceRuntimeScope scope) {
+    late final StreamController<AssistanceRuntimeView> result;
+    result = StreamController(onCancel: () => result.close());
     reads.add((scope: scope, result: result));
     final previous = _changed;
     _changed = Completer<void>();
     previous.complete();
-    return result.future;
+    return result.stream;
   }
 
   @override

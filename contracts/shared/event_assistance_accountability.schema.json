@@ -3,35 +3,6 @@
   "$id": "https://catch.app/contracts/shared/event_assistance_accountability.schema.json",
   "title": "EventAssistanceAccountabilityContracts",
   "definitions": {
-    "ReadInput": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context",
-        "groupId",
-        "attendeeId"
-      ],
-      "properties": {
-        "context": {
-          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-        },
-        "groupId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        },
-        "attendeeId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        },
-        "checkpoint": {
-          "$ref": "#/definitions/CheckpointScope"
-        }
-      }
-    },
     "WriteInput": {
       "type": "object",
       "additionalProperties": false,

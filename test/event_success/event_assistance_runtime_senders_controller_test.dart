@@ -44,6 +44,17 @@ AssistanceRuntimeView _page({
   );
 }
 
+/// The automation as its listener delivers it: no sender choices.
+AssistanceRuntimeView _listened() {
+  final f = fixtures.fixture();
+  final view = ((f['initial']! as Map)['view']! as Map).cast<String, Object?>()
+    ..remove('senderSetup');
+  return AssistanceRuntimeView.fromJson(
+    view,
+    expectedScope: fixtures.fixtureScope(f),
+  );
+}
+
 void main() {
   late _Repository repository;
   late StreamController<String?> auth;
@@ -52,6 +63,11 @@ void main() {
   final scope = fixtures.readFixture(fixtures.fixture()).scope;
   final pageProvider = eventAssistanceRuntimeProvider(scope);
   const rcs = AssistanceMessageRoute.catchEventRcs;
+  AssistanceRuntimeSenderDirectory directory() =>
+      container.read(eventAssistanceRuntimeSendersProvider(review));
+  Future<void> more() => container
+      .read(eventAssistanceRuntimeSendersProvider(review).notifier)
+      .loadMore(rcs);
   setUp(() async {
     repository = _Repository();
     auth = StreamController.broadcast();
@@ -78,16 +94,31 @@ void main() {
     await container.pump();
     review = await loaded.future.timeout(const Duration(seconds: 10));
     container.listen(eventAssistanceRuntimeSendersProvider(review), (_, _) {});
+    expect(directory().loadingFirstPage, isTrue);
+    expect(directory().isCurrent, isFalse);
+    await container.pump();
+    expect(repository.cursors.single, isEmpty);
+    repository.pages.single.complete(_page());
+    await container.pump();
+    await container.pump();
+    repository.pages.clear();
+    repository.cursors.clear();
   });
   tearDown(() async {
     container.dispose();
     await auth.close();
   });
-  AssistanceRuntimeSenderDirectory directory() =>
-      container.read(eventAssistanceRuntimeSendersProvider(review));
-  Future<void> more() => container
-      .read(eventAssistanceRuntimeSendersProvider(review).notifier)
-      .loadMore(rcs);
+
+  test(
+    'the listened automation reads its first sender page from the picker',
+    () {
+      expect(review.view.senderSetup, isNull);
+      expect(directory().loadingFirstPage, isFalse);
+      expect(directory().isCurrent, isTrue);
+      expect(directory().choices, hasLength(3));
+      expect(directory().cursors, {rcs: 'page-1'});
+    },
+  );
 
   test(
     'explicit pages merge only their channel and become reviewed commands',
@@ -139,7 +170,7 @@ void main() {
       if (fault == 'permission') {
         repository.pages.single.completeError(StateError('Read denied'));
       } else {
-        final originalId = review.view.senderSetup!.choices
+        final originalId = old.choices
             .singleWhere((c) => c.route == rcs)
             .senderId;
         repository.pages.single.complete(
@@ -174,14 +205,14 @@ void main() {
     expect(directory().choices, hasLength(3));
     expect(directory().cursors[rcs], 'page-2');
   });
-  for (final transition in ['refresh', 'signOut', 'sameUidReturn']) {
+  for (final transition in ['delivery', 'signOut', 'sameUidReturn']) {
     test(
       '$transition retires the directory and ignores delayed pages',
       () async {
         final old = directory();
         final load = more();
-        if (transition == 'refresh') {
-          container.read(pageProvider.notifier).reload();
+        if (transition == 'delivery') {
+          repository.listeners.last.add(_listened());
         } else {
           auth.add(null);
         }
@@ -205,10 +236,16 @@ void main() {
 class _Repository extends Fake implements EventAssistanceRuntimeRepository {
   final pages = <Completer<AssistanceRuntimeView>>[];
   final cursors = <Map<AssistanceMessageRoute, String>>[];
+  final listeners = <StreamController<AssistanceRuntimeView>>[];
   @override
-  Future<AssistanceRuntimeView> fetch(
-    EventAssistanceRuntimeScope scope,
-  ) async => _page();
+  Stream<AssistanceRuntimeView> watch(EventAssistanceRuntimeScope scope) {
+    late final StreamController<AssistanceRuntimeView> listener;
+    listener = StreamController(onCancel: () => listener.close());
+    listeners.add(listener);
+    listener.add(_listened());
+    return listener.stream;
+  }
+
   @override
   Future<AssistanceRuntimeView> fetchSenderPage(
     EventAssistanceRuntimeScope scope, {

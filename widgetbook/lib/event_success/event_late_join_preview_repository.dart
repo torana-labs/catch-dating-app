@@ -32,8 +32,8 @@ class LateJoinPreviewRepository
     expectedScope: scope,
   );
   @override
-  Future<LateJoinSettingView> fetch(EventAssistanceGroupScope scope) async =>
-      view;
+  Stream<LateJoinSettingView> watch(EventAssistanceGroupScope scope) =>
+      Stream.value(view);
   @override
   Future<LateJoinSettingResult> apply(LateJoinSettingChange change) async =>
       throw const NetworkException(

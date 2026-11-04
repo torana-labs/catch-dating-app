@@ -1,33 +1,71 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_accountability_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_assistance_accountability_fixtures.dart';
+import 'event_assistance_guest_view_fixtures.dart';
 
 void main() {
   late _Functions functions;
+  late FakeFirebaseFirestore firestore;
+  late GuestViewTestClock time;
   late EventAssistanceAccountabilityRepository repository;
   setUp(() {
     functions = _Functions();
-    repository = EventAssistanceAccountabilityRepository(functions);
+    firestore = FakeFirebaseFirestore();
+    time = GuestViewTestClock(1000);
+    repository = EventAssistanceAccountabilityRepository(
+      functions,
+      firestore,
+      clock: time.clock,
+    );
   });
+  Future<void> seed(
+    Map<String, Object?> response, {
+    EventAssistanceAccountabilityScope? scope,
+    int evaluatedAt = 900,
+  }) {
+    final selected = scope ?? accountabilityScope;
+    return selected.checkpoint == null
+        ? seedGuestView(
+            firestore,
+            EventAssistanceGuestViews.accountability,
+            accountabilityViewDoc(
+              response,
+              scope: selected,
+              evaluatedAt: evaluatedAt,
+            ),
+          )
+        : seedGuestView(
+            firestore,
+            EventAssistanceMovementViews.checkpoints,
+            checkpointAccountabilityViewDoc(
+              response,
+              scope: selected,
+              evaluatedAt: evaluatedAt,
+            ),
+          );
+  }
+
   test(
-    'reads use the typed live visit request without changing attendance',
+    'the event-wide review is a manager listener and calls nothing',
     () async {
-      functions.response = accountabilityWire();
-      final view = await repository.fetch(accountabilityScope);
+      await seed(accountabilityWire());
+      final view = await repository.watch(accountabilityScope).first;
       expect(view.disposition, AssistanceVisitDisposition.unresolved);
-      expect(functions.calls.single.name, 'getEventAssistanceAccountability');
-      expect(functions.calls.single.input, {
-        'context': accountabilityScope.group.context,
-        'groupId': accountabilityScope.group.groupId,
-        'attendeeId': accountabilityScope.attendeeId,
-      });
+      expect(view.serverTime, 1000);
+      expect(view.canResolve, isTrue);
+      expect(functions.calls, isEmpty);
+      time.now = 500;
       expect(
-        functions.calls.single.input.toString(),
-        isNot(contains('checkedIn')),
+        (await repository.watch(accountabilityScope).first).serverTime,
+        900,
+        reason: 'a device clock behind the server reads at the evaluation',
       );
     },
   );
@@ -58,48 +96,79 @@ void main() {
       expect(functions.calls.last.input, functions.calls.first.input);
     },
   );
+  test('missing, invalid and foreign views and unconfirmed mutation responses '
+      'are visible errors', () async {
+    await expectLater(
+      repository.watch(accountabilityScope).first,
+      throwsA(
+        isA<BackendOperationException>().having(
+          (e) => e.code,
+          'code',
+          'live-view-missing',
+        ),
+      ),
+    );
+    final doc = accountabilityViewDoc(
+      accountabilityWire(),
+      scope: accountabilityScope,
+      evaluatedAt: 900,
+    );
+    await seedGuestView(firestore, EventAssistanceGuestViews.accountability, {
+      ...doc,
+      'sourceCoverage': 'invalidSource',
+      'incompleteSource': 'eventAttendees',
+    });
+    await expectLater(
+      repository.watch(accountabilityScope).first,
+      throwsA(
+        isA<BackendOperationException>().having(
+          (e) => e.code,
+          'code',
+          'live-view-invalid-source',
+        ),
+      ),
+    );
+    await seedGuestView(firestore, EventAssistanceGuestViews.accountability, {
+      ...doc,
+      'attendeeId': 'other-guest',
+    });
+    await expectLater(
+      repository.watch(accountabilityScope).first,
+      throwsA(isA<BackendOperationException>()),
+    );
+    final change = accountabilityChange();
+    final wire = accountabilityAppliedWire(change);
+    (wire['view']! as Map)['disposition'] = 'departed';
+    functions.response = wire;
+    await expectLater(
+      repository.apply(change),
+      throwsA(isA<BackendOperationException>()),
+    );
+  });
   test(
-    'foreign reads and unconfirmed mutation responses are visible backend errors',
+    'a departure member review reads the departure checkpoint view and its '
+    'context survives the write without becoming an arrival report',
     () async {
-      functions.response = accountabilityWire()
-        ..['view'] = {
-          ...(accountabilityWire()['view']! as Map),
-          'attendeeId': 'other-guest',
-        };
-      await expectLater(
-        repository.fetch(accountabilityScope),
-        throwsA(isA<BackendOperationException>()),
-      );
-      final change = accountabilityChange();
-      final wire = accountabilityAppliedWire(change);
-      (wire['view']! as Map)['disposition'] = 'departed';
-      functions.response = wire;
-      await expectLater(
-        repository.apply(change),
-        throwsA(isA<BackendOperationException>()),
-      );
-    },
-  );
-  test(
-    'checkpoint context survives both review and write without becoming an arrival report',
-    () async {
-      functions.response = accountabilityWire(
+      await seed(
+        accountabilityWire(
+          scope: checkpointAccountabilityScope,
+          episodeId: null,
+        ),
         scope: checkpointAccountabilityScope,
-        episodeId: null,
       );
-      final view = await repository.fetch(checkpointAccountabilityScope);
+      final view = await repository.watch(checkpointAccountabilityScope).first;
+      expect(view.scope, checkpointAccountabilityScope);
+      expect(functions.calls, isEmpty);
       final change = accountabilityChange(
         view: view,
         disposition: AssistanceVisitDisposition.unresolved,
       );
       functions.response = accountabilityAppliedWire(change);
       await repository.apply(change);
-      for (final call in functions.calls) {
-        expect(
-          (call.input! as Map)['checkpoint'],
-          checkpointAccountabilityScope.checkpoint!.toJson(),
-        );
-      }
+      expect(
+        (functions.calls.single.input! as Map)['checkpoint'],
+        checkpointAccountabilityScope.checkpoint!.toJson(),
+      );
       expect(functions.calls.last.name, 'resolveEventAssistanceAccountability');
       expect(
         ((functions.calls.last.input! as Map)['command']! as Map)['payload'],
@@ -112,19 +181,29 @@ void main() {
     },
   );
 
-  for (final code in ['not-found', 'permission-denied', 'unavailable']) {
-    test('$code never becomes a resolved visit', () async {
-      functions.error = FirebaseFunctionsException(
-        code: code,
-        message: 'Unavailable',
-      );
-      await expectLater(
-        repository.fetch(accountabilityScope),
-        throwsA(isA<AppException>()),
-      );
-      expect(functions.calls.length, 1);
+  test('a guest missing from the departure has no member review', () async {
+    final doc = checkpointAccountabilityViewDoc(
+      accountabilityWire(scope: checkpointAccountabilityScope),
+      scope: checkpointAccountabilityScope,
+      evaluatedAt: 900,
+    );
+    await seedGuestView(firestore, EventAssistanceMovementViews.checkpoints, {
+      ...doc,
+      'accountability': [
+        {'attendeeId': 'other-guest', 'view': null},
+      ],
     });
-  }
+    await expectLater(
+      repository.watch(checkpointAccountabilityScope).first,
+      throwsA(
+        isA<BackendOperationException>().having(
+          (e) => e.code,
+          'code',
+          'live-view-missing',
+        ),
+      ),
+    );
+  });
 }
 
 class _Functions extends Fake implements FirebaseFunctions {

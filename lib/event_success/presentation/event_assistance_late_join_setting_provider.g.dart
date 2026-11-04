@@ -67,7 +67,7 @@ final class EventAssistanceLateJoinSettingProvider
 }
 
 String _$eventAssistanceLateJoinSettingHash() =>
-    r'3c6ca871d10465776720b04842d9f1480d007d09';
+    r'd0e9254ad89bfbdd2647ae2ac2591c84b6c2b7da';
 
 final class EventAssistanceLateJoinSettingFamily extends $Family
     with
@@ -125,20 +125,31 @@ abstract class _$EventAssistanceLateJoinSetting
   }
 }
 
+/// The group's late-join setting for one sign-in period. It is a Firestore
+/// listener: no cache tags or lifetime, and writes never invalidate it. Each
+/// delivery is a new session and retires the previous one.
+
 @ProviderFor(eventAssistanceLateJoinSettingForAccount)
 final eventAssistanceLateJoinSettingForAccountProvider =
     EventAssistanceLateJoinSettingForAccountFamily._();
+
+/// The group's late-join setting for one sign-in period. It is a Firestore
+/// listener: no cache tags or lifetime, and writes never invalidate it. Each
+/// delivery is a new session and retires the previous one.
 
 final class EventAssistanceLateJoinSettingForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<LateJoinSettingSession>,
           LateJoinSettingSession,
-          FutureOr<LateJoinSettingSession>
+          Stream<LateJoinSettingSession>
         >
     with
         $FutureModifier<LateJoinSettingSession>,
-        $FutureProvider<LateJoinSettingSession> {
+        $StreamProvider<LateJoinSettingSession> {
+  /// The group's late-join setting for one sign-in period. It is a Firestore
+  /// listener: no cache tags or lifetime, and writes never invalidate it. Each
+  /// delivery is a new session and retires the previous one.
   EventAssistanceLateJoinSettingForAccountProvider._({
     required EventAssistanceLateJoinSettingForAccountFamily super.from,
     required (EventAssistanceGroupScope, {EventAssistanceAccount account})
@@ -164,12 +175,12 @@ final class EventAssistanceLateJoinSettingForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<LateJoinSettingSession> $createElement(
+  $StreamProviderElement<LateJoinSettingSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<LateJoinSettingSession> create(Ref ref) {
+  Stream<LateJoinSettingSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceGroupScope, {EventAssistanceAccount account});
@@ -193,12 +204,16 @@ final class EventAssistanceLateJoinSettingForAccountProvider
 }
 
 String _$eventAssistanceLateJoinSettingForAccountHash() =>
-    r'04b0769c715d6ea4b94a4bc72fe2c197498de2a1';
+    r'6df3e1b77f15cb3f1bd4c100b569ec338bb095a8';
+
+/// The group's late-join setting for one sign-in period. It is a Firestore
+/// listener: no cache tags or lifetime, and writes never invalidate it. Each
+/// delivery is a new session and retires the previous one.
 
 final class EventAssistanceLateJoinSettingForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<LateJoinSettingSession>,
+          Stream<LateJoinSettingSession>,
           (EventAssistanceGroupScope, {EventAssistanceAccount account})
         > {
   EventAssistanceLateJoinSettingForAccountFamily._()
@@ -209,6 +224,10 @@ final class EventAssistanceLateJoinSettingForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The group's late-join setting for one sign-in period. It is a Firestore
+  /// listener: no cache tags or lifetime, and writes never invalidate it. Each
+  /// delivery is a new session and retires the previous one.
 
   EventAssistanceLateJoinSettingForAccountProvider call(
     EventAssistanceGroupScope query, {

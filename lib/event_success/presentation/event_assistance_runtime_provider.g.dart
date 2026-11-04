@@ -65,7 +65,7 @@ final class EventAssistanceRuntimeProvider
 }
 
 String _$eventAssistanceRuntimeHash() =>
-    r'f8b0d49963f171cf6000ff4c227551e6ba6a4f3f';
+    r'a9ee4e2e44e36025ea4aea6ec825db48d0fad5dd';
 
 final class EventAssistanceRuntimeFamily extends $Family
     with
@@ -122,20 +122,34 @@ abstract class _$EventAssistanceRuntime
   }
 }
 
+/// The event's automation for one sign-in period, without sender choices.
+/// It is a Firestore listener: no cache tags or lifetime, and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one.
+
 @ProviderFor(eventAssistanceRuntimeForAccount)
 final eventAssistanceRuntimeForAccountProvider =
     EventAssistanceRuntimeForAccountFamily._();
+
+/// The event's automation for one sign-in period, without sender choices.
+/// It is a Firestore listener: no cache tags or lifetime, and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one.
 
 final class EventAssistanceRuntimeForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<AssistanceRuntimeSession>,
           AssistanceRuntimeSession,
-          FutureOr<AssistanceRuntimeSession>
+          Stream<AssistanceRuntimeSession>
         >
     with
         $FutureModifier<AssistanceRuntimeSession>,
-        $FutureProvider<AssistanceRuntimeSession> {
+        $StreamProvider<AssistanceRuntimeSession> {
+  /// The event's automation for one sign-in period, without sender choices.
+  /// It is a Firestore listener: no cache tags or lifetime, and writes never
+  /// invalidate it. Each delivery is a new session and retires the previous
+  /// one.
   EventAssistanceRuntimeForAccountProvider._({
     required EventAssistanceRuntimeForAccountFamily super.from,
     required (EventAssistanceRuntimeScope, {EventAssistanceAccount account})
@@ -160,12 +174,12 @@ final class EventAssistanceRuntimeForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<AssistanceRuntimeSession> $createElement(
+  $StreamProviderElement<AssistanceRuntimeSession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<AssistanceRuntimeSession> create(Ref ref) {
+  Stream<AssistanceRuntimeSession> create(Ref ref) {
     final argument =
         this.argument
             as (EventAssistanceRuntimeScope, {EventAssistanceAccount account});
@@ -189,12 +203,17 @@ final class EventAssistanceRuntimeForAccountProvider
 }
 
 String _$eventAssistanceRuntimeForAccountHash() =>
-    r'6071754a3a0aa0cf713d5bf0496645696c3d0189';
+    r'96105593f23d19bb1316e22fa99c24d2bf75a91c';
+
+/// The event's automation for one sign-in period, without sender choices.
+/// It is a Firestore listener: no cache tags or lifetime, and writes never
+/// invalidate it. Each delivery is a new session and retires the previous
+/// one.
 
 final class EventAssistanceRuntimeForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<AssistanceRuntimeSession>,
+          Stream<AssistanceRuntimeSession>,
           (EventAssistanceRuntimeScope, {EventAssistanceAccount account})
         > {
   EventAssistanceRuntimeForAccountFamily._()
@@ -205,6 +224,11 @@ final class EventAssistanceRuntimeForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The event's automation for one sign-in period, without sender choices.
+  /// It is a Firestore listener: no cache tags or lifetime, and writes never
+  /// invalidate it. Each delivery is a new session and retires the previous
+  /// one.
 
   EventAssistanceRuntimeForAccountProvider call(
     EventAssistanceRuntimeScope query, {

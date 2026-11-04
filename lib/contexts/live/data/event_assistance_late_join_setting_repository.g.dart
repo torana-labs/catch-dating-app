@@ -58,7 +58,7 @@ final class EventAssistanceLateJoinSettingRepositoryProvider
 }
 
 String _$eventAssistanceLateJoinSettingRepositoryHash() =>
-    r'ac4dc663e31ef4af82d131c584be277cad0ced90';
+    r'295000b717ebd6adbf18dd7a6920f62531852bdd';
 
 @ProviderFor(eventAssistanceLateJoinSettingCommands)
 final eventAssistanceLateJoinSettingCommandsProvider =

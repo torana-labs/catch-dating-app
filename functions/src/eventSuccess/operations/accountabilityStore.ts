@@ -2,15 +2,9 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
-import {accountabilityResolutionFields, currentAccountabilityResolution} from
-  "../accountability";
-import {eventSuccessPrimitivesFor} from "../formatPrimitives";
+import {accountabilityResolutionFields} from "../accountability";
 import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
-import type {GetEventAssistanceAccountabilityCallablePayload as Scope} from
-  "../../shared/generated/getEventAssistanceAccountabilityCallablePayload";
-import {validateGetEventAssistanceAccountabilityCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceAccountabilityInput";
 import {validateResolveEventAssistanceAccountabilityCallablePayload} from
   "../../shared/generated/validators/resolveEventAssistanceAccountabilityInput";
 import {validateEventAssistanceAccountabilityCallableResponse} from
@@ -21,11 +15,19 @@ import {validateEventAssistanceAccountabilityReceiptDocument} from
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
 import {assertCommandContext, assertCommandRole} from "./commands";
-import {currentGuest, guestIdentity} from "./guestRecords";
-import {invalidSource, timestampEvidence} from "./groupProgressSource";
+import {guestIdentity} from "./guestRecords";
+import {invalidSource} from "./groupProgressSource";
 import {requireGroupPermission, denied} from "./groupStaffAuthority";
 import {readMembership, currentMembership} from "./membershipReader";
-import {readAccountabilityCheckpoint} from "./accountabilityCheckpoint";
+import {AccountabilityScope as Scope, readAccountabilityCheckpoint} from
+  "./accountabilityCheckpoint";
+import {
+  accountabilityAvailability,
+  accountabilityCheckInHash,
+  accountabilityEpisodeId,
+  accountabilitySourceHash,
+  accountabilityState,
+} from "./accountabilityProjection";
 import {runAssistanceTransaction} from "./transactionCallback";
 
 export const ACCOUNTABILITY_RECEIPTS = "eventAssistanceAccountabilityReceipts";
@@ -35,12 +37,15 @@ export class EventAccountabilityStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateGetEventAssistanceAccountabilityCallablePayload(input)) {
-      throw new HttpsError("invalid-argument", "Invalid accountability scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventAccountabilityViews (and, for a departure, the member entries
+   * of hostEventCheckpointViews); the suites use it as the oracle for what
+   * resolve checks.
+   */
+  async get(actorUid: string, scope: Scope): Promise<Response> {
     return runAssistanceTransaction(this.db, async (tx) =>
-      response("read", await this.read(tx, actorUid, input)));
+      response("read", await this.read(tx, actorUid, scope)));
   }
 
   async resolve(actorUid: string, input: unknown): Promise<Response> {
@@ -84,8 +89,9 @@ export class EventAccountabilityStore {
             receipt.sourceGeneration !== state.member.source.sourceGeneration ||
             receipt.attendeeGeneration !==
               state.member.source.attendeeGeneration ||
-            receipt.checkInHash !== checkInHash(state) ||
-            receipt.episodeId !== episodeId(state) ||
+            receipt.checkInHash !==
+              accountabilityCheckInHash(state.member.attendee) ||
+            receipt.episodeId !== accountabilityEpisodeId(state.member) ||
             operationContentHash(receipt.checkpoint ?? null) !==
               operationContentHash(state.checkpoint?.proof ?? null) ||
             receipt.disposition !== payload.disposition ||
@@ -94,12 +100,14 @@ export class EventAccountabilityStore {
         }
         return response("replayed", state, receipt.revision);
       }
-      if (availability(state).kind !== "ready") {
+      if (accountabilityAvailability(state).kind !== "ready") {
         throw new HttpsError("failed-precondition",
           "This guest's current check-in cannot be resolved here.");
       }
-      if (input.expectedSourceHash !== sourceHash(state) ||
-          payload.episodeId !== episodeId(state)) throw conflict();
+      if (input.expectedSourceHash !== accountabilitySourceHash(state) ||
+          payload.episodeId !== accountabilityEpisodeId(state.member)) {
+        throw conflict();
+      }
       const fields = accountabilityResolutionFields(state.member.attendee,
         payload.disposition, actorUid, Timestamp.fromMillis(now));
       const attendee = {...state.member.attendee, ...fields};
@@ -107,7 +115,8 @@ export class EventAccountabilityStore {
       const saved = {receiptId, guestId, requestHash,
         sourceGeneration: state.member.source.sourceGeneration,
         attendeeGeneration: state.member.source.attendeeGeneration,
-        checkInHash: checkInHash(state), episodeId: episodeId(state),
+        checkInHash: accountabilityCheckInHash(state.member.attendee),
+        episodeId: accountabilityEpisodeId(state.member),
         revision: fields.accountabilityRevision,
         disposition: payload.disposition, createdAt: now,
         ...(state.checkpoint?.proof ?
@@ -152,47 +161,10 @@ type State = {
     access: Awaited<ReturnType<typeof requireGroupPermission>>;
     checkpoint: Awaited<ReturnType<typeof readAccountabilityCheckpoint>>;
 };
-function checkInHash(s: State) {
-  const a = s.member.attendee;
-  return operationContentHash([a.status, a.attendanceRevision ?? 0,
-    a.checkedInAt ? timestampEvidence(a.checkedInAt) : null]);
-}
-function sourceHash(s: State) {
-  const a = s.member.attendee;
-  const membership = s.member.membership;
-  const facts = [s.scope, s.member.sourceHash,
-    s.member.event.eventFormat, episodeId(s),
-    s.scope.groupId === "event:whole" || !membership ? null :
-      [membership.episodeId, membership.sourceGeneration,
-        membership.attendeeGeneration, membership.accepted],
-    checkInHash(s), a.accountabilityRevision ?? 0,
-    a.accountabilityResolution ?? null,
-    a.accountabilityResolvedForCheckInAt ?
-      timestampEvidence(a.accountabilityResolvedForCheckInAt) : null,
-    a.accountabilityResolvedAt ?
-      timestampEvidence(a.accountabilityResolvedAt) : null,
-    a.accountabilityResolvedBy ?? null];
-  return operationContentHash(s.checkpoint ? [...facts, {
-    proof: s.checkpoint.proof,
-    availability: s.checkpoint.availability}] : facts);
-}
-function availability(s: State): Response["view"]["availability"] {
-  if (s.checkpoint) return s.checkpoint.availability;
-  const m = s.member;
-  const reason = eventSuccessPrimitivesFor(m.event.eventFormat)
-    .accountability !== "sweep" ? "notApplicable" :
-    m.attendee.status !== "checkedIn" || !m.attendee.checkedInAt ?
-      "notCheckedIn" : null;
-  return reason ? {kind: "unavailable", reason} : {kind: "ready"};
-}
 function response(outcome: Response["outcome"], s: State,
   operationRevision: number | null = null): Response {
   const value: Response = {outcome, operationRevision, view: {
-    ...s.scope, serverTime: s.member.now, sourceHash: sourceHash(s),
-    revision: s.member.attendee.accountabilityRevision ?? 0,
-    episodeId: episodeId(s),
-    disposition: currentAccountabilityResolution(s.member.attendee) ??
-      "unresolved", availability: availability(s)}};
+    ...s.scope, serverTime: s.member.now, ...accountabilityState(s)}};
   if (!validateEventAssistanceAccountabilityCallableResponse(value)) {
     throw invalidSource();
   }
@@ -201,9 +173,4 @@ function response(outcome: Response["outcome"], s: State,
 function conflict() {
   return new HttpsError("aborted",
     "Accountability changed. Refresh this guest and retry.");
-}
-
-function episodeId(s: State): string | null {
-  const guest = s.member.guest;
-  return guest && currentGuest(guest, s.member.source) ? guest.episodeId : null;
 }

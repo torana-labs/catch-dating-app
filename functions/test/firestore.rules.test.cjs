@@ -1931,6 +1931,71 @@ describe("firestore.rules", () => {
         "hostEventCheckpointViews", "checkpoint:own")));
     });
 
+    it("lets managers read live guest and settings views and nothing else",
+      async () => {
+        const managed = (overrides = {}) =>
+          organizer({status: "active", archived: false, ...overrides});
+        await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+        // The retired reads refused no archived organizer; nor do the views.
+        await seed(["organizers", "archived"], managed({archived: true,
+          status: "archived", hostUserId: "archived-host"}));
+        await seed(["organizers", "other"],
+          managed({hostUserId: "other-host"}));
+        const view = (organizerId, extra = {}) => ({schemaVersion: 1,
+          eventId: "event-1", organizerId, revision: 1,
+          evaluatedAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+          sourceCoverage: "complete", incompleteSource: null, view: null,
+          ...extra});
+        const collections = {
+          hostEventAccountabilityViews: (id) => ({accountabilityViewId: id,
+            attendeeId: "guest-1"}),
+          hostEventMembershipViews: (id) => ({membershipId: id,
+            attendeeId: "guest-1", eventEndAtMillis: 1, receivers: []}),
+          hostEventAssistanceSettingViews: (id) => ({settingId: id,
+            groupId: "event:whole", workflowKind: "lateJoin",
+            eventEndAtMillis: 1}),
+          hostEventRuntimeViews: (id) => ({runtimeId: id,
+            eventEndAtMillis: 1, closed: false}),
+        };
+        for (const [name, fields] of Object.entries(collections)) {
+          await seed([name, "own"], view("org", fields("own")));
+          await seed([name, "foreign"], view("other", fields("foreign")));
+          await seed([name, "archived"],
+            view("archived", fields("archived")));
+        }
+
+        for (const uid of ["host-1", "manager"]) {
+          const db = authedDb(uid);
+          for (const [name, fields] of Object.entries(collections)) {
+            await assertSucceeds(getDoc(doc(db, name, "own")));
+            await assertFails(getDoc(doc(db, name, "foreign")));
+            await assertFails(getDocs(query(collection(db, name),
+              where("organizerId", "==", "org"))));
+            await assertFails(getDocs(collection(db, name)));
+            await assertFails(setDoc(doc(db, name, `client-${uid}`),
+              view("org", fields(`client-${uid}`))));
+            await assertFails(updateDoc(doc(db, name, "own"), {revision: 9}));
+            await assertFails(deleteDoc(doc(db, name, "own")));
+          }
+        }
+        for (const name of Object.keys(collections)) {
+          await assertSucceeds(getDoc(doc(authedDb("archived-host"), name,
+            "archived")));
+          // Not written yet: any signed-in user reads it as missing, and a
+          // signed-out one cannot.
+          const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+            name, "not-written")));
+          assert.equal(missing.exists(), false);
+          await assertFails(getDoc(doc(
+            testEnv.unauthenticatedContext().firestore(), name,
+            "not-written")));
+          await assertFails(getDoc(doc(authedDb("stranger"), name, "own")));
+        }
+        await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+        await assertFails(getDoc(doc(authedDb("host-1"),
+          "hostEventMembershipViews", "own")));
+      });
+
     it("keeps organizer entitlement state server-only", async () => {
       await seed(["organizerTeamMemberships", "organizer-1_manager-1"], {
         organizerId: "organizer-1",

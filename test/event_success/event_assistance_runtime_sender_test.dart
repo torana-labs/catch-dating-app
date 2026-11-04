@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_r
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_sender.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -177,7 +178,10 @@ void main() {
     () async {
       final f = fixture();
       final functions = RuntimeTestFunctions()..response = f['initial'];
-      final repository = EventAssistanceRuntimeRepository(functions);
+      final repository = EventAssistanceRuntimeRepository(
+        functions,
+        FakeFirebaseFirestore(),
+      );
       final cursors = {AssistanceMessageRoute.catchEventRcs: 'page-1'};
       await repository.fetchSenderPage(fixtureScope(f), cursors: cursors);
       expect(functions.calls.single.input, {

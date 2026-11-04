@@ -46,9 +46,9 @@ class LateJoinUiRepository extends Fake
         })
       >[];
   @override
-  Future<LateJoinSettingView> fetch(EventAssistanceGroupScope scope) async {
+  Stream<LateJoinSettingView> watch(EventAssistanceGroupScope scope) {
     expect(scope, lateJoinUiScope());
-    return lateJoinUiView(stage);
+    return Stream.value(lateJoinUiView(stage));
   }
 
   @override

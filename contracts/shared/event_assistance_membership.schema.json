@@ -3,25 +3,6 @@
   "$id": "https://catch.app/contracts/shared/event_assistance_membership.schema.json",
   "title": "EventAssistanceMembershipContracts",
   "definitions": {
-    "ReadInput": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context",
-        "attendeeId"
-      ],
-      "properties": {
-        "context": {
-          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-        },
-        "attendeeId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        }
-      }
-    },
     "WriteInput": {
       "type": "object",
       "additionalProperties": false,

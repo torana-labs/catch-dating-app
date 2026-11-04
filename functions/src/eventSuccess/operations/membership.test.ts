@@ -23,8 +23,7 @@ import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {EventParticipationStore} from "./participationStore";
 import {guestIdentity, guestCollections} from "./guestRecords";
 import {eventStaffGrantId} from "../../shared/eventOperatorAuthority";
-import {getEventAssistanceMembershipHandler,
-  transferEventAssistanceGroupHandler} from "./membershipHandlers";
+import {transferEventAssistanceGroupHandler} from "./membershipHandlers";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "./groupProgressTestFixtures";
 
@@ -416,21 +415,13 @@ test("membership callables authenticate and rate-limit before using the store",
     const deps = {db: () => h.db, rateLimit: async () => {
       calls.push("limit");
     },
-    store: () => ({get: async () => {
-      calls.push("get");
-      return h.store.get(manager, h.scope);
-    },
-    transfer: async () => {
+    store: () => ({transfer: async () => {
       calls.push("transfer");
       return place(h);
     }})};
-    await assert.rejects(getEventAssistanceMembershipHandler(
-      {data: h.scope} as CallableRequest, deps), {code: "unauthenticated"});
+    await assert.rejects(transferEventAssistanceGroupHandler(
+      {data: {}} as CallableRequest, deps), {code: "unauthenticated"});
     assert.deepEqual(calls, []);
-    await getEventAssistanceMembershipHandler({data: h.scope,
-      auth: {uid: manager}} as CallableRequest, deps);
-    assert.deepEqual(calls, ["limit", "get"]);
-    calls.length = 0;
     await transferEventAssistanceGroupHandler({data: {},
       auth: {uid: manager}} as CallableRequest, deps);
     assert.deepEqual(calls, ["limit", "transfer"]);

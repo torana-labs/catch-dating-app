@@ -15,8 +15,7 @@ import {
   settingId, suggestedTemplate, Template,
 } from "./policySettings";
 import {EventAssistanceSettingsStore} from "./policySettingsStore";
-import {getEventAssistanceSettingHandler, setEventAssistanceSettingHandler} from
-  "./policySettingsHandlers";
+import {setEventAssistanceSettingHandler} from "./policySettingsHandlers";
 import type {EventAssistanceSettingCallableResponse as Response} from
   "../../shared/generated/eventAssistanceSettingCallableResponse";
 
@@ -215,17 +214,13 @@ test("templates bind to concrete subjects without inventing a destination",
 
 test("settings callables authenticate and rate-limit before store access",
   async () => {
-    for (const handler of [getEventAssistanceSettingHandler,
-      setEventAssistanceSettingHandler]) {
+    for (const handler of [setEventAssistanceSettingHandler]) {
       const calls: string[] = [];
       const deps = {db: () => ({}) as Firestore,
         rateLimit: async () => {
           calls.push("limit");
         },
-        store: () => ({get: async () => {
-          calls.push("get"); return {} as Response;
-        },
-        set: async () => {
+        store: () => ({set: async () => {
           calls.push("set"); return {} as Response;
         }})};
       await assert.rejects(handler({data: {}} as CallableRequest, deps),

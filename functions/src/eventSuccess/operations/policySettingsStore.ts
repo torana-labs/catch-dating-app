@@ -11,8 +11,6 @@ import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
 import {validateEventAssistanceSettingReceiptDocument} from
   "../../shared/generated/validators/eventAssistanceSettingReceiptDocument";
-import {validateGetEventAssistanceSettingCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceSettingInput";
 import {validateSetEventAssistanceSettingCallablePayload} from
   "../../shared/generated/validators/setEventAssistanceSettingInput";
 import {validateEventAssistanceSettingCallableResponse} from
@@ -33,13 +31,16 @@ export class EventAssistanceSettingsStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateGetEventAssistanceSettingCallablePayload(input)) {
-      throw new HttpsError("invalid-argument",
-        "Invalid assistance setting scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventAssistanceSettingViews; the suites use it as the oracle for
+   * what a save checks. An unknown workflow kind fails the response
+   * contract.
+   */
+  async get(actorUid: string, scope: Omit<SettingScope, "workflowKind"> &
+    {workflowKind: string}): Promise<Response> {
     return transact(this.db, async (tx) =>
-      response("read", await this.read(tx, actorUid, input)));
+      response("read", await this.read(tx, actorUid, scope as SettingScope)));
   }
 
   async set(actorUid: string, input: unknown): Promise<Response> {
@@ -156,19 +157,29 @@ type State = {
   source: ReturnType<typeof settingSource>;
   parentSource: ReturnType<typeof settingSource>;
 };
+/**
+ * The setting as a manager reviews it: own and inherited preference, the
+ * resolved status and the current setup. It reads no clock, so the live
+ * console's view stores it as is.
+ */
+export function settingView(state: State):
+  Omit<Response["view"], "serverTime"> &
+  {setup: NonNullable<Response["view"]["setup"]>} {
+  const {scope, own, source} = state;
+  const {selected, template, status} = resolveSetting(state);
+  return {...scope, sourceHash: source.hash,
+    ownRevision: own?.revision ?? 0, own,
+    origin: !selected ? "none" : selected.groupId === "event:whole" ?
+      "event" : "group", status,
+    effective: status === "configured" || status === "disabled" ?
+      template : null,
+    suggested: suggestedTemplate(scope.workflowKind),
+    setup: {eventEnd: source.endAt, destinations: source.destinations}};
+}
 function response(outcome: Response["outcome"], state: State,
   operationRevision: number | null = null): Response {
-  const {scope, own, now, source} = state;
-  const {selected, template, status} = resolveSetting(state);
   const value: Response = {outcome, operationRevision,
-    view: {...scope, serverTime: now, sourceHash: source.hash,
-      ownRevision: own?.revision ?? 0, own,
-      origin: !selected ? "none" : selected.groupId === "event:whole" ?
-        "event" : "group", status,
-      effective: status === "configured" || status === "disabled" ?
-        template : null,
-      suggested: suggestedTemplate(scope.workflowKind),
-      setup: {eventEnd: source.endAt, destinations: source.destinations}}};
+    view: {...settingView(state), serverTime: state.now}};
   if (!validateEventAssistanceSettingCallableResponse(value)) {
     throw invalidSource();
   }

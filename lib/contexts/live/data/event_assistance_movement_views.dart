@@ -1,10 +1,9 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
-import 'package:catch_platform/errors/app_exception.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// The live console's movement views (`hostEventGroupProgressViews`,
 /// `hostEventDepartureViews`, `hostEventCheckpointViews`), turned back into
@@ -12,7 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 ///
 /// Only managers read these views, so the actor-specific parts of the retired
 /// responses are manager constants here. Time enters only as instants the
-/// views store; [movementViewNow] applies the app clock, never earlier than
+/// views store; [liveViewNow] applies the app clock, never earlier than
 /// the server's own evaluation.
 abstract final class EventAssistanceMovementViews {
   static const groupProgress = 'hostEventGroupProgressViews';
@@ -27,64 +26,9 @@ const assistanceNoExpiry = 9007199254740991;
 /// checkpoint read granted it.
 const checkpointReporterChoiceWindow = 1800000;
 
-/// A view the server has not written yet, or no longer writes.
-BackendOperationException liveViewMissing(
-  String resource,
-) => BackendOperationException(
-  code: 'live-view-missing',
-  message:
-      'Event operating information is unavailable. Refresh the event setup.',
-  context: BackendErrorContext(
-    service: BackendService.firestore,
-    action: 'watch live movement',
-    resource: resource,
-  ),
-  retryable: true,
-);
-
-/// A view whose last evaluation read a source that failed validation.
-BackendOperationException liveViewInvalidSource(
-  String resource,
-) => BackendOperationException(
-  code: 'live-view-invalid-source',
-  message:
-      'Event operating information is unavailable. Refresh the event setup.',
-  context: BackendErrorContext(
-    service: BackendService.firestore,
-    action: 'watch live movement',
-    resource: resource,
-  ),
-);
-
-/// The app clock, but never before any server evaluation it is compared
-/// with: a view cannot have been evaluated in the future.
-int movementViewNow(DateTime clock, Iterable<Map<String, Object?>?> views) {
-  var now = clock.millisecondsSinceEpoch;
-  for (final view in views) {
-    final evaluatedAt = view?['evaluatedAt'];
-    if (evaluatedAt is Timestamp) {
-      now = math.max(now, evaluatedAt.millisecondsSinceEpoch);
-    }
-  }
-  return now;
-}
-
-/// The nearest of [instants] after [now], when the view must be read again
-/// because a field it derives from the clock changes then; null when none is
-/// ahead.
-DateTime? nextMovementViewRebuild(Iterable<Object?> instants, int now) {
-  int? next;
-  for (final instant in instants) {
-    if (instant is int && instant > now && (next == null || instant < next)) {
-      next = instant;
-    }
-  }
-  return next == null ? null : DateTime.fromMillisecondsSinceEpoch(next);
-}
-
 /// When the group view's openness and guidance next change: its event end.
 DateTime? groupProgressNextRebuild(Map<String, Object?>? data, int now) =>
-    nextMovementViewRebuild([data?['eventEndAtMillis']], now);
+    nextLiveViewRebuild([data?['eventEndAtMillis']], now);
 
 /// When the checkpoint view next changes on the clock: the request falls
 /// due, the owner's authority ends, a reporter's authority ends, or the
@@ -95,7 +39,7 @@ DateTime? checkpointNextRebuild(Map<String, Object?>? data, int now) {
   final request = view['request'];
   final options = view['reporterOptions'];
   final reporters = options is Map ? options['reporters'] : null;
-  return nextMovementViewRebuild([
+  return nextLiveViewRebuild([
     if (request is Map) request['dueAt'],
     if (request is Map) data!['ownerValidUntilMillis'],
     if (reporters is List)

@@ -130,7 +130,7 @@ export {listEventRcsPreferences} from
   "./eventSuccess/operations/rcsPreferenceOptionsHandlers";
 export {getEventRcsPreference, setEventRcsPreference} from
   "./eventSuccess/operations/rcsPreferenceHandlers";
-export {getEventAssistanceSetting, setEventAssistanceSetting} from
+export {setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
 export {confirmEventAssistanceDeparture, changeEventAssistanceRoute} from
   "./eventSuccess/operations/groupProgressHandlers";
@@ -711,14 +711,13 @@ export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
 export {getEventAttendanceDisposition, recordEventNoShow} from
   "./events/attendanceDispositionHandlers";
 export {getEventAttendanceReport} from "./events/attendanceReportHandlers";
-export {getEventAssistanceAccountability,
-  resolveEventAssistanceAccountability} from
+export {resolveEventAssistanceAccountability} from
   "./eventSuccess/operations/accountabilityHandlers";
 
 export {getEventAssistanceGroupStaff, setEventAssistanceGroupStaff} from
   "./eventSuccess/operations/groupStaffHandlers";
 
-export {getEventAssistanceMembership, transferEventAssistanceGroup} from
+export {transferEventAssistanceGroup} from
   "./eventSuccess/operations/membershipHandlers";
 
 export {getEventAssistanceDepartureRoster} from
@@ -1031,6 +1030,12 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from
   "./hostReadModels/triggers";
+export {onHostGuestViewEventChanged, onHostGuestViewPlanChanged,
+  onHostGuestViewAttendeeChanged, onHostGuestViewGuestChanged,
+  onHostGuestViewMembershipChanged, onHostGuestViewOrganizerChanged,
+  onHostGuestViewStaffGrantChanged, onHostGuestViewSettingChanged,
+  onHostGuestViewRuntimeChanged} from
+  "./hostReadModels/guestViewTriggers";
 export {onOrganizerAttentionOrganizerChanged,
   onOrganizerAttentionEventChanged, onOrganizerAttentionParticipationChanged,
   onOrganizerAttentionAssistanceCaseChanged,

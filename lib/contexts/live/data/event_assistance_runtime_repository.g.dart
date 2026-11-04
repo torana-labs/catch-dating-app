@@ -58,7 +58,7 @@ final class EventAssistanceRuntimeRepositoryProvider
 }
 
 String _$eventAssistanceRuntimeRepositoryHash() =>
-    r'0042e3f1273be97d7d547ce6de9c7f3b61a52b22';
+    r'69fe24884e430bd75ee9d08d408a6ba86b45b825';
 
 @ProviderFor(eventAssistanceRuntimeCommands)
 final eventAssistanceRuntimeCommandsProvider =

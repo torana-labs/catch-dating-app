@@ -902,7 +902,6 @@
         "registerPublicEvent",
         "onEventParticipationRosterProjected",
         "onOrganizerContactEventEdgeInviteAttributed",
-        "getEventAssistanceAccountability",
         "resolveEventAssistanceAccountability"
       ],
       "migrationNotes": [
@@ -1446,6 +1445,122 @@
       "migrationNotes": [
         "request.state, request.ownerAvailability and the reporter choices follow the app clock through request.dueAt, ownerValidUntilMillis and each reporter's validUntil.",
         "accountability carries each member's checkpoint-scoped accountability view; the resolve command fences on its sourceHash."
+      ]
+    },
+    {
+      "id": "hostEventAccountabilityViews",
+      "path": "hostEventAccountabilityViews/{accountabilityViewId}",
+      "rulesMatch": "/hostEventAccountabilityViews/{accountabilityViewId}",
+      "typescriptInterface": "HostEventAccountabilityViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live guest and settings views and nothing else"
+      ],
+      "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+      "read": "current organizer managers get their own organizer's views by id ({eventId}_{attendeeId}); nobody lists the collection",
+      "write": "server only; one per attendee of an event whose format has the sweep primitive, deleted with the attendee, the event or the sweep",
+      "exportedFunctions": [
+        "onHostGuestViewEventChanged",
+        "onHostGuestViewPlanChanged",
+        "onHostGuestViewAttendeeChanged",
+        "onHostGuestViewGuestChanged",
+        "onHostGuestViewMembershipChanged",
+        "onHostGuestViewOrganizerChanged",
+        "onHostGuestViewStaffGrantChanged",
+        "onHostGuestViewSettingChanged",
+        "onHostGuestViewRuntimeChanged"
+      ],
+      "migrationNotes": [
+        "The checkpoint-scoped accountability lives on hostEventCheckpointViews; this view is the event-wide sweep review.",
+        "A missing document or sourceCoverage invalidSource with its incompleteSource means the phone shows the unavailable state."
+      ]
+    },
+    {
+      "id": "hostEventMembershipViews",
+      "path": "hostEventMembershipViews/{membershipId}",
+      "rulesMatch": "/hostEventMembershipViews/{membershipId}",
+      "typescriptInterface": "HostEventMembershipViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live guest and settings views and nothing else"
+      ],
+      "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+      "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+      "write": "server only; one per attendee of an event with an eventFormat and an endTime, deleted with the attendee or the event",
+      "exportedFunctions": [
+        "onHostGuestViewEventChanged",
+        "onHostGuestViewPlanChanged",
+        "onHostGuestViewAttendeeChanged",
+        "onHostGuestViewGuestChanged",
+        "onHostGuestViewMembershipChanged",
+        "onHostGuestViewOrganizerChanged",
+        "onHostGuestViewStaffGrantChanged",
+        "onHostGuestViewSettingChanged",
+        "onHostGuestViewRuntimeChanged"
+      ],
+      "migrationNotes": [
+        "ready is evaluated one millisecond before eventEndAtMillis; the phone ANDs it with the app clock, re-derives a pending transfer's state from transfer.expiresAt and the actions for the signed-in manager.",
+        "receivers keep their uncapped authority instants; the phone caps them to the handover review it opens (thirty minutes, at most the event end)."
+      ]
+    },
+    {
+      "id": "hostEventAssistanceSettingViews",
+      "path": "hostEventAssistanceSettingViews/{settingId}",
+      "rulesMatch": "/hostEventAssistanceSettingViews/{settingId}",
+      "typescriptInterface": "HostEventAssistanceSettingViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live guest and settings views and nothing else"
+      ],
+      "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+      "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+      "write": "server only; one per configured group (event:whole included) and console workflow kind (late join) of an event with an eventFormat and an endTime, deleted with the group or the event",
+      "exportedFunctions": [
+        "onHostGuestViewEventChanged",
+        "onHostGuestViewPlanChanged",
+        "onHostGuestViewAttendeeChanged",
+        "onHostGuestViewGuestChanged",
+        "onHostGuestViewMembershipChanged",
+        "onHostGuestViewOrganizerChanged",
+        "onHostGuestViewStaffGrantChanged",
+        "onHostGuestViewSettingChanged",
+        "onHostGuestViewRuntimeChanged"
+      ],
+      "migrationNotes": [
+        "A group's view inherits the event:whole setting of the same kind; a change to that setting re-evaluates the event's views.",
+        "The view reads no clock; serverTime is the phone's read instant."
+      ]
+    },
+    {
+      "id": "hostEventRuntimeViews",
+      "path": "hostEventRuntimeViews/{runtimeId}",
+      "rulesMatch": "/hostEventRuntimeViews/{runtimeId}",
+      "typescriptInterface": "HostEventRuntimeViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers read live guest and settings views and nothing else"
+      ],
+      "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+      "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+      "write": "server only; one per event with an eventFormat and an endTime, deleted with the event",
+      "exportedFunctions": [
+        "onHostGuestViewEventChanged",
+        "onHostGuestViewPlanChanged",
+        "onHostGuestViewAttendeeChanged",
+        "onHostGuestViewGuestChanged",
+        "onHostGuestViewMembershipChanged",
+        "onHostGuestViewOrganizerChanged",
+        "onHostGuestViewStaffGrantChanged",
+        "onHostGuestViewSettingChanged",
+        "onHostGuestViewRuntimeChanged"
+      ],
+      "migrationNotes": [
+        "status and canConfigure are evaluated one millisecond before eventEndAtMillis and closed is the event's own closure; the phone closes the automation at the end and expires a configured window by the app clock.",
+        "The sender picker stays on getEventAssistanceRuntimeConfig with senderCursors; the view carries no senderSetup."
       ]
     },
     {
@@ -2734,9 +2849,7 @@
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
-        "getEventAssistanceMembership",
         "transferEventAssistanceGroup",
-        "getEventAssistanceAccountability",
         "resolveEventAssistanceAccountability"
       ]
     },
@@ -2749,7 +2862,6 @@
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
-        "getEventAssistanceMembership",
         "transferEventAssistanceGroup"
       ]
     },
@@ -3060,7 +3172,6 @@
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
-        "getEventAssistanceSetting",
         "setEventAssistanceSetting"
       ]
     },
@@ -3090,7 +3201,6 @@
         "getEventAssistanceParticipation",
         "setEventAssistanceParticipation",
         "submitEventAssistanceGuestChoice",
-        "getEventAssistanceAccountability",
         "resolveEventAssistanceAccountability",
         "getEventAssistanceHostGuests"
       ]

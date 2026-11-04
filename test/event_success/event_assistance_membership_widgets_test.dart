@@ -206,11 +206,12 @@ class _LiveRepository extends Fake
         })
       >[];
   @override
-  Future<EventAssistanceMembershipView> fetch(
-    EventAssistanceGuestScope scope,
-  ) async {
+  Stream<EventAssistanceMembershipView> watch(
+    EventAssistanceGuestScope scope, {
+    required String actorUid,
+  }) {
     expect(scope, membershipScope);
-    return membershipView();
+    return Stream.value(membershipView());
   }
 
   @override

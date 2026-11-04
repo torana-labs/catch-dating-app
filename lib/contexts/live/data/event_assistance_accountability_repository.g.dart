@@ -58,4 +58,4 @@ final class EventAssistanceAccountabilityRepositoryProvider
 }
 
 String _$eventAssistanceAccountabilityRepositoryHash() =>
-    r'6729286728d75dcd830ff51b13ad9b16c3710594';
+    r'e11b6d227eaf6f198b5b98134b2b35e07608ffb3';

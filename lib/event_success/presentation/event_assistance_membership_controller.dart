@@ -274,10 +274,19 @@ class EventAssistanceMembershipController
     release?.call();
   }
 
+  /// The membership view is a listener that delivers every write; it is
+  /// restarted only after it ended in an error. The host guest list is read
+  /// again.
   void _refresh(AuthenticatedSession account) {
-    ref.invalidate(
-      eventAssistanceMembershipForAccountProvider(scope, account: account),
-    );
+    if (ref
+        .read(
+          eventAssistanceMembershipForAccountProvider(scope, account: account),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceMembershipForAccountProvider(scope, account: account),
+      );
+    }
     ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
   }
 

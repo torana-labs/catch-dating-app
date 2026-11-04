@@ -146,10 +146,12 @@ class RuntimePreviewRepository implements EventAssistanceRuntimeRepository {
     );
   }
   late final AssistanceRuntimeView view;
+
+  /// Previews carry the sender choices on the automation itself, so the
+  /// picker never pages.
   @override
-  Future<AssistanceRuntimeView> fetch(
-    EventAssistanceRuntimeScope scope,
-  ) async => view;
+  Stream<AssistanceRuntimeView> watch(EventAssistanceRuntimeScope scope) =>
+      Stream.value(view);
   @override
   Future<AssistanceRuntimeView> fetchSenderPage(
     EventAssistanceRuntimeScope scope, {

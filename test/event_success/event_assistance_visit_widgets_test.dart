@@ -207,9 +207,9 @@ class _LiveRepository extends Fake
         })
       >[];
   @override
-  Future<EventAssistanceAccountabilityView> fetch(
+  Stream<EventAssistanceAccountabilityView> watch(
     EventAssistanceAccountabilityScope scope,
-  ) async => accountabilityView(scope: scope);
+  ) => Stream.value(accountabilityView(scope: scope));
   @override
   Future<EventAssistanceAccountabilityResult> apply(
     EventAssistanceAccountabilityChange change,

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
@@ -89,7 +90,7 @@ class EventAssistanceCheckpointRepository {
                   .map((snapshot) => snapshot.data()),
               clock: _clock,
               build: (data, clock) {
-                final now = movementViewNow(clock, [data]);
+                final now = liveViewNow(clock, [data]);
                 final result = EventAssistanceCheckpointResult.fromCallableData(
                   checkpointReadResponse(
                     data,

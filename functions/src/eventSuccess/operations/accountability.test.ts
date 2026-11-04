@@ -13,8 +13,8 @@ import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
 import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPTS} from
   "./accountabilityStore";
-import {getEventAssistanceAccountabilityHandler,
-  resolveEventAssistanceAccountabilityHandler} from "./accountabilityHandlers";
+import {resolveEventAssistanceAccountabilityHandler} from
+  "./accountabilityHandlers";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "./groupProgressTestFixtures";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
@@ -293,17 +293,13 @@ test("foreign command contexts and rehearsal effects cannot reach live records",
 
 test("accountability handlers authenticate and rate-limit before store access",
   async () => {
-    for (const handler of [getEventAssistanceAccountabilityHandler,
-      resolveEventAssistanceAccountabilityHandler]) {
+    for (const handler of [resolveEventAssistanceAccountabilityHandler]) {
       const calls: string[] = [];
       const deps = {db: () => ({}) as Firestore,
         rateLimit: async () => {
           calls.push("limit");
         },
         store: () => ({
-          get: async () => {
-            calls.push("get"); return {} as Response;
-          },
           resolve: async () => {
             calls.push("resolve"); return {} as Response;
           },

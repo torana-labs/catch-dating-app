@@ -1,26 +1,114 @@
+import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_assistance_guest_view_fixtures.dart';
 import 'event_assistance_runtime_fixtures.dart';
 
 void main() {
   late RuntimeTestFunctions functions;
+  late FakeFirebaseFirestore firestore;
+  late GuestViewTestClock time;
   late EventAssistanceRuntimeRepository repository;
   setUp(() {
     functions = RuntimeTestFunctions();
-    repository = EventAssistanceRuntimeRepository(functions);
+    firestore = FakeFirebaseFirestore();
+    time = GuestViewTestClock(1000);
+    repository = EventAssistanceRuntimeRepository(
+      functions,
+      firestore,
+      clock: time.clock,
+    );
+  });
+  Future<void> seed(Map<String, Object?> response, {bool closed = false}) =>
+      seedGuestView(
+        firestore,
+        EventAssistanceGuestViews.runtimes,
+        runtimeViewDoc(
+          response,
+          scope: runtimeScope(),
+          evaluatedAt: 900,
+          closed: closed,
+        ),
+      );
+  Future<AssistanceRuntimeView> first() =>
+      repository.watch(runtimeScope()).first;
+  final configured = runtimeResponse(
+    revision: 1,
+    status: 'configured',
+    runtime: runtimeRecord(),
+  );
+
+  test(
+    'the automation is a manager listener; only sender pages call',
+    () async {
+      await seed(runtimeResponse());
+      final view = await first();
+      expect(view.status, AssistanceRuntimeStatus.unconfigured);
+      expect(view.senderSetup, isNull);
+      expect(functions.calls, isEmpty);
+      functions.response = runtimeResponse()
+        ..['view'] = {
+          ...(runtimeResponse()['view']! as Map),
+          'senderSetup': {'choices': [], 'nextCursors': {}},
+        };
+      final page = await repository.fetchSenderPage(
+        runtimeScope(),
+        cursors: const {},
+      );
+      expect(page.senderSetup!.choices, isEmpty);
+      expect(functions.calls.single.name, 'getEventAssistanceRuntimeConfig');
+      expect(functions.calls.single.input, {
+        'context': runtimeScope().context,
+        'senderCursors': <String, Object?>{},
+      });
+    },
+  );
+
+  test('a configured window expires by the app clock', () async {
+    await seed(configured);
+    expect((await first()).status, AssistanceRuntimeStatus.configured);
+    time.now = 9000;
+    final expired = await first();
+    expect(expired.status, AssistanceRuntimeStatus.expired);
+    expect(expired.canConfigure, isTrue);
   });
 
-  test('read requests only the selected live event configuration', () async {
-    expect(
-      (await repository.fetch(runtimeScope())).status,
-      AssistanceRuntimeStatus.unconfigured,
+  test("the event end and the event's own closure stop configuring", () async {
+    await seed(configured);
+    time.now = 10000;
+    final ended = await first();
+    expect(ended.status, AssistanceRuntimeStatus.eventClosed);
+    expect(ended.canConfigure, isFalse);
+    time.now = 1000;
+    await seed(
+      runtimeResponse(
+        revision: 1,
+        status: 'eventClosed',
+        canConfigure: false,
+        runtime: runtimeRecord(),
+      ),
+      closed: true,
     );
-    expect(functions.calls.single.name, 'getEventAssistanceRuntimeConfig');
-    expect(functions.calls.single.input, {'context': runtimeScope().context});
+    expect((await first()).status, AssistanceRuntimeStatus.eventClosed);
+    await seed(
+      runtimeResponse(
+        revision: 1,
+        status: 'paused',
+        runtime: runtimeRecord(
+          paused: true,
+          configuration: runtimeConfiguration(),
+        ),
+      ),
+      closed: true,
+    );
+    final paused = await first();
+    expect(paused.status, AssistanceRuntimeStatus.paused);
+    expect(paused.canConfigure, isFalse);
   });
 
   test(
@@ -136,19 +224,11 @@ void main() {
       );
       expect(functions.calls, hasLength(1));
       functions.error = FirebaseFunctionsException(
-        code: 'permission-denied',
-        message: 'Denied',
-      );
-      await expectLater(
-        repository.fetch(runtimeScope()),
-        throwsA(isA<PermissionException>()),
-      );
-      functions.error = FirebaseFunctionsException(
         code: 'not-found',
         message: 'NOT_FOUND',
       );
       await expectLater(
-        repository.fetch(runtimeScope()),
+        repository.fetchSenderPage(runtimeScope(), cursors: const {}),
         throwsA(
           isA<BackendOperationException>().having(
             (e) => e.code,
@@ -161,19 +241,53 @@ void main() {
   );
 
   test(
-    'foreign, malformed and write responses fail the read boundary',
+    'missing, invalid, foreign and malformed views fail the read boundary',
     () async {
-      for (final response in [
-        null,
-        {},
-        runtimeResponse(eventId: 'foreign'),
-        runtimeResponse(outcome: 'applied', operationRevision: 0),
+      await expectLater(
+        first(),
+        throwsA(
+          isA<BackendOperationException>().having(
+            (e) => e.code,
+            'code',
+            'live-view-missing',
+          ),
+        ),
+      );
+      final doc = runtimeViewDoc(
+        configured,
+        scope: runtimeScope(),
+        evaluatedAt: 900,
+      );
+      await seedGuestView(firestore, EventAssistanceGuestViews.runtimes, {
+        ...doc,
+        'sourceCoverage': 'invalidSource',
+        'incompleteSource': 'organizers',
+      });
+      await expectLater(
+        first(),
+        throwsA(
+          isA<BackendOperationException>().having(
+            (e) => e.code,
+            'code',
+            'live-view-invalid-source',
+          ),
+        ),
+      );
+      final view = doc['view']! as Map<String, Object?>;
+      final runtime = view['runtime']! as Map<String, Object?>;
+      for (final raw in [
+        {...doc, 'eventId': 'foreign'},
+        {...doc, 'view': <String, Object?>{}},
+        {
+          ...doc,
+          'view': {
+            ...view,
+            'runtime': {...runtime, 'configuration': null},
+          },
+        },
       ]) {
-        functions.response = response;
-        await expectLater(
-          repository.fetch(runtimeScope()),
-          throwsA(isA<BackendOperationException>()),
-        );
+        await seedGuestView(firestore, EventAssistanceGuestViews.runtimes, raw);
+        await expectLater(first(), throwsA(isA<BackendOperationException>()));
       }
     },
   );

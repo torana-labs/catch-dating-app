@@ -915,7 +915,8 @@ policy implementation version. Runtime `EventAssistancePolicy` instances retain
 their correlated event/guest/group/resource/unit scopes. Catalog checks enforce
 complete template coverage and configuration/authority constraint parity.
 
-`getEventAssistanceSetting` and `setEventAssistanceSetting` expose manager-owned
+`setEventAssistanceSetting` and the `hostEventAssistanceSettingViews` listener
+(data contracts, Live Console Guest and Settings Views) expose manager-owned
 settings for one event/group/workflow. Groups inherit the event default unless
 they have an override; `inherit` resets an override and `disabled` suppresses
 that workflow. A configured template can also retain its configuration with a
@@ -1180,8 +1181,9 @@ publication result does not assert provider submission or delivery.
 
 ### Event automation permission
 
-`getEventAssistanceRuntimeConfig` and `setEventAssistanceRuntimeConfig` give
-organizer managers a single event-scoped late-join execution configuration.
+`setEventAssistanceRuntimeConfig` and the `hostEventRuntimeViews` listener give
+organizer managers a single event-scoped late-join execution configuration;
+`getEventAssistanceRuntimeConfig` pages the sender choices.
 This complements the 46 typed policy settings: policy defines the allowed
 behavior, while runtime configuration selects ordered sender routes, explicit
 response deadline, retry policy, optional later joining choices, work expiry
@@ -1910,8 +1912,9 @@ Native setup screen mounting and delegated live controls remain integration work
 
 ### Typed accountability commands
 
-`getEventAssistanceAccountability` and
-`resolveEventAssistanceAccountability` bind the typed
+`resolveEventAssistanceAccountability`, reviewed through the
+`hostEventAccountabilityViews` listener (or a departure's checkpoint view),
+binds the typed
 `resolveAccountability` command to the existing attendee visit result.
 Both this command and `setEventSuccessAccountabilityResolution` use the same
 writer fields and monotonic `accountabilityRevision`; clearing advances that
@@ -2091,7 +2094,7 @@ or help effect. Whole-event venue and itinerary directions need no subgroup.
 A new accepted group requires a reviewed matching plan and a saved departure for
 that group. The private movement binding complements accepted-membership proof.
 
-`getEventAssistanceMembership` and `transferEventAssistanceGroup` own one
+`transferEventAssistanceGroup` and the `hostEventMembershipViews` listener own one
 accepted moving-group membership per guest, independently of physical attendance,
 social allocation, seating, joining intent and message consent. Memberships apply
 to saved pace groups; whole-event guidance does not require hosts to assign every

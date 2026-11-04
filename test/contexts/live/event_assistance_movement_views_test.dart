@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,14 +14,14 @@ void main() {
   test('the app clock never runs before the server evaluation', () {
     final evaluated = Timestamp.fromMillisecondsSinceEpoch(5000);
     expect(
-      movementViewNow(DateTime.fromMillisecondsSinceEpoch(10), [
+      liveViewNow(DateTime.fromMillisecondsSinceEpoch(10), [
         {'evaluatedAt': evaluated},
         null,
       ]),
       5000,
     );
     expect(
-      movementViewNow(DateTime.fromMillisecondsSinceEpoch(9000), [
+      liveViewNow(DateTime.fromMillisecondsSinceEpoch(9000), [
         {'evaluatedAt': evaluated},
       ]),
       9000,
@@ -105,11 +106,8 @@ void main() {
   test('views are read again at the nearest instant the clock is compared '
       'with, and never for a past one', () {
     DateTime at(int millis) => DateTime.fromMillisecondsSinceEpoch(millis);
-    expect(
-      nextMovementViewRebuild([5000, null, 3000, 'x', 900], 1000),
-      at(3000),
-    );
-    expect(nextMovementViewRebuild([900, 1000], 1000), isNull);
+    expect(nextLiveViewRebuild([5000, null, 3000, 'x', 900], 1000), at(3000));
+    expect(nextLiveViewRebuild([900, 1000], 1000), isNull);
     expect(
       groupProgressNextRebuild({'eventEndAtMillis': 8000}, 1000),
       at(8000),

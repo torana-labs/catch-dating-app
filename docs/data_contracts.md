@@ -1218,6 +1218,57 @@ hours after its event ends.
 Backfill per organizer over events that have not ended:
 `functions/scripts/backfill-host-read-models.cjs --model group-progress-views`,
 `departure-views` or `checkpoint-views`, with `--apply` to write.
+
+### Live Console Guest and Settings Views
+
+The live console's guest and settings reads follow the same rules as the
+movement views: manager projections written ahead of time, here by the guest
+view evaluator (`hostReadModels/guestViewTriggers.ts`), read through Firestore
+listeners under `isHostSummaryManager` of the document's `organizerId`, by id
+only. The replaced callables refused no archived or inactive organizer, so
+neither do the views. Only managers read them, so the actor-specific parts of
+the retired responses are the signed-in manager's on the phone. Every view
+records `revision`, `evaluatedAt`, `sourceCoverage` and `incompleteSource`; an
+invalid source keeps the previous projection, and the phone shows the
+unavailable state for it or for a view not written yet. Time enters only as
+instants; the phone applies the app clock, never earlier than `evaluatedAt`.
+
+`hostEventAccountabilityViews/{eventId}_{attendeeId}` holds, for each attendee
+of an event whose format has the sweep primitive, the event-wide accountability
+view (`{context, groupId: "event:whole", attendeeId}`) that
+`resolveEventAssistanceAccountability` fences on, without `serverTime`. A
+review of a recorded departure reads the member's entry on
+`hostEventCheckpointViews` instead. The view is deleted when the attendee or
+the event is gone or the format loses the sweep.
+
+`hostEventMembershipViews/{membershipId}` holds each attendee's membership
+view for a manager, evaluated one millisecond before `eventEndAtMillis`, and
+`receivers`: every operator who could receive the guest, each group with the
+instant their transfer authority ends (no expiry for a manager). The phone
+ANDs `ready` with the clock before the end, re-derives a pending transfer's
+state from `transfer.expiresAt`, derives the actions for the signed-in manager
+(only the receiving operator may accept or reject), and offers the receivers
+for the thirty-minute handover review it opens, capped at the event end.
+Staff grant writes re-evaluate the event's open views.
+
+`hostEventAssistanceSettingViews/{settingId}` holds one setting view per
+configured group (`event:whole` included) and workflow kind the console reads
+(late join), without `serverTime`. A group view inherits the `event:whole`
+setting of the same kind, so a change to that setting re-evaluates the
+event's views. The view reads no clock.
+
+`hostEventRuntimeViews/{runtimeId}` holds the event's late-join automation:
+`status` and `canConfigure` evaluated one millisecond before
+`eventEndAtMillis`, and `closed`, the event's own closure (cancelled or a
+completed plan). The phone closes the automation at the end and expires a
+configured window at `runtime.configuration.expiresAt`. The view carries no
+sender choices: the picker pages through `getEventAssistanceRuntimeConfig`
+with `senderCursors`, which stays for that use.
+
+Backfill per organizer over events that have not ended:
+`functions/scripts/backfill-host-read-models.cjs --model accountability-views`,
+`membership-views`, `setting-views` or `runtime-views`, with `--apply` to
+write.
 ### Event Service Outbox Contract
 
 `eventAssistanceOperationalNoticeQuotas/{quotaId}` and
@@ -2909,6 +2960,10 @@ The live console reads `hostEventGroupProgressViews`, `hostEventDepartureViews`
 and `hostEventCheckpointViews` under the plain manager authority
 (`isHostSummaryManager`); see
 [Live Console Movement Views](#live-console-movement-views).
+It reads `hostEventAccountabilityViews`, `hostEventMembershipViews`,
+`hostEventAssistanceSettingViews` and `hostEventRuntimeViews` under the same
+plain manager authority; see
+[Live Console Guest and Settings Views](#live-console-guest-and-settings-views).
 
 The door reads `hostProviderConnectionViews/{organizerId}`,
 `externalEventMappings/{mappingId}`, `hostEventRosterInsightViews/{eventId}`

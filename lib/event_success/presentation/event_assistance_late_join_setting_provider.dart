@@ -69,38 +69,56 @@ class EventAssistanceLateJoinSetting extends _$EventAssistanceLateJoinSetting {
     );
   }
 
+  /// Restarts the listener only after it ended in an error; a healthy one
+  /// already delivers every change.
   void reload() {
     final account = ref.read(eventAssistanceAccountProvider);
     if (account.isLoading || account.hasError || account.asData == null) return;
-    ref.invalidate(
-      eventAssistanceLateJoinSettingForAccountProvider(
-        query,
-        account: account.requireValue,
-      ),
-    );
+    if (ref
+        .read(
+          eventAssistanceLateJoinSettingForAccountProvider(
+            query,
+            account: account.requireValue,
+          ),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceLateJoinSettingForAccountProvider(
+          query,
+          account: account.requireValue,
+        ),
+      );
+    }
   }
 }
 
+/// The group's late-join setting for one sign-in period. It is a Firestore
+/// listener: no cache tags or lifetime, and writes never invalidate it. Each
+/// delivery is a new session and retires the previous one.
 @Riverpod(retry: _noSettingReadRetry)
-Future<LateJoinSettingSession> eventAssistanceLateJoinSettingForAccount(
+Stream<LateJoinSettingSession> eventAssistanceLateJoinSettingForAccount(
   Ref ref,
   EventAssistanceGroupScope query, {
   required EventAssistanceAccount account,
-}) async {
+}) {
   ref.watch(eventAssistanceAccountProvider);
   requireSettingReviewAccount(ref, account);
-  final page = await ref
+  LateJoinSettingSession? latest;
+  ref.onDispose(() => latest?._current = false);
+  return ref
       .watch(eventAssistanceLateJoinSettingRepositoryProvider)
-      .fetch(query);
-  requireSettingReviewAccount(ref, account);
-  if (page.scope != query) {
-    throw const FormatException(
-      'Late arrival settings do not match this scope.',
-    );
-  }
-  final session = LateJoinSettingSession._(account, page);
-  ref.onDispose(() => session._current = false);
-  return session;
+      .watch(query)
+      .map((page) {
+        requireSettingReviewAccount(ref, account);
+        if (page.scope != query) {
+          throw const FormatException(
+            'Late arrival settings do not match this scope.',
+          );
+        }
+        latest?._current = false;
+        return latest = LateJoinSettingSession._(account, page);
+      });
 }
 
+// A listener error is shown with a retry; it is never retried silently.
 Duration? _noSettingReadRetry(int retryCount, Object error) => null;
