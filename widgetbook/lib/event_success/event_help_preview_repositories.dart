@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_cases_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_managers.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
@@ -23,13 +24,48 @@ Future<List<Map<String, Object?>>> loadHelpPreviewFixtures() =>
 class HelpPreviewLiveRepository implements EventAssistanceCasesRepository {
   HelpPreviewLiveRepository(this.fixtures);
   final Map<String, Object?> fixtures;
+
+  /// The fixture's actual case views, as the listener would deliver them.
   @override
-  Future<EventAssistanceCasesPage> fetch(
-    EventAssistanceCaseQuery query,
-  ) async => EventAssistanceCasesPage.fromCallableData(
-    fixtures[query.status == AssistanceCaseStatus.open ? 'initial' : 'handled'],
-    expectedQuery: query,
-  );
+  Stream<EventAssistanceCasesPage> watchPage(
+    EventAssistanceCaseQuery query, {
+    required String actorUid,
+  }) => Stream.value(pageFor(query, actorUid: actorUid));
+
+  EventAssistanceCasesPage pageFor(
+    EventAssistanceCaseQuery query, {
+    String actorUid = 'host-1',
+  }) {
+    final stage =
+        fixtures[query.status == AssistanceCaseStatus.open
+                ? 'initial'
+                : 'handled']!
+            as Map;
+    final organizer = stage['organizer']! as Map;
+    return EventAssistanceCasesPage.fromViews(
+      query: query,
+      views: [
+        for (final raw in stage['views']! as List)
+          (
+            id: (raw as Map)['id'] as String,
+            data: Map<String, Object?>.from(raw['data'] as Map),
+            evaluatedAtMillis: (raw['data'] as Map)['evaluatedAt'] as int,
+          ),
+      ],
+      hasMore: false,
+      managerOptions: AssistanceCaseManagerOptions.fromJson({
+        'actorUid': actorUid,
+        'managers': [
+          for (final profile in organizer['hostProfiles'] as List)
+            {
+              'uid': (profile as Map)['uid'],
+              'displayName': profile['displayName'],
+            },
+        ],
+      }),
+    );
+  }
+
   @override
   Future<EventAssistanceCaseResult> apply(
     EventAssistanceCaseChange change,

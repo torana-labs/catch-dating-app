@@ -1,12 +1,16 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_history_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_assistance_departure_fixtures.dart';
 import 'event_assistance_departure_history_fixtures.dart';
-import 'event_assistance_participation_fixtures.dart';
+import 'event_assistance_movement_view_fixtures.dart';
 
 void main() {
   test(
@@ -113,41 +117,133 @@ void main() {
     );
   });
 
-  test(
-    'repository reads typed scoped pages without automatic retries',
-    () async {
-      final functions = ParticipationTestFunctions()
-        ..response = historyResponse();
-      final repository = EventAssistanceDepartureHistoryRepository(functions);
-      final query = historyQuery(beforeRevision: 4);
-      final page = await repository.fetch(query, actorUid: historyActor);
-      expect(page.query, query);
-      expect(
-        functions.calls.single.name,
-        'listEventAssistanceDepartureRosters',
+  group('repository', () {
+    late FakeFirebaseFirestore firestore;
+    late EventAssistanceDepartureHistoryRepository repository;
+    final group = historyQuery().group;
+    setUp(() {
+      firestore = FakeFirebaseFirestore();
+      repository = EventAssistanceDepartureHistoryRepository(
+        firestore,
+        clock: AppClock.custom(
+          () => DateTime.fromMillisecondsSinceEpoch(2000000),
+        ),
       );
-      expect(functions.calls.single.input, {
-        'context': query.group.context,
-        'groupId': query.group.groupId,
-        'beforeRevision': 4,
-      });
-      for (final code in ['not-found', 'permission-denied', 'unavailable']) {
-        functions.error = FirebaseFunctionsException(
-          code: code,
-          message: code == 'not-found' ? 'NOT_FOUND' : code,
+    });
+    Future<void> seedGroup(int revision) => firestore
+        .collection(EventAssistanceMovementViews.groupProgress)
+        .doc(groupProgressViewId(group))
+        .set(
+          groupProgressViewDoc(
+            departureResponse(scope: group)
+              ..['view'] = {
+                ...(departureResponse(scope: group)['view']! as Map),
+                'revision': revision,
+              },
+            scope: group,
+            evaluatedAt: 1500000,
+            endAt: 3000000,
+          ),
         );
-        await expectLater(
-          repository.fetch(query, actorUid: historyActor),
-          throwsA(isA<AppException>()),
-        );
+    Future<void> seedRow(Map<String, Object?> row) {
+      final doc = departureViewDoc(row, scope: group, evaluatedAt: 1500000);
+      return firestore
+          .collection(EventAssistanceMovementViews.departures)
+          .doc(doc['rosterId']! as String)
+          .set(doc);
+    }
+
+    Map<String, Object?> unrecorded(int revision) => {
+      'progressRevision': revision,
+      'confirmedAt': 1000000 + revision,
+      'destination': null,
+      'label': null,
+      'sourceState': 'destinationNotRecorded',
+      'rosterSize': 0,
+      'checkpoint': null,
+    };
+
+    test('listens to the group view and its newest departure views', () async {
+      await seedGroup(3);
+      for (final row in historyResponse()['rosters']! as List) {
+        await seedRow((row as Map).cast<String, Object?>());
       }
-      expect(functions.calls.length, 4);
-      functions.error = null;
-      functions.response = {...historyResponse(), 'actorUid': 'foreign'};
+      final page = await repository
+          .watch(historyQuery(), actorUid: historyActor)
+          .first;
+      expect(page.rosters.map((r) => r.progressRevision), [3, 2]);
+      expect(page.progressRevision, 3);
+      expect(page.validUntil, assistanceNoExpiry);
+      expect(page.nextBeforeRevision, isNull);
+      expect(page.rosters.last.checkpoint!.scope.checkpointId, 'one');
+    });
+
+    test('pages by revision with one extra row for the next page', () async {
+      await seedGroup(12);
+      for (var revision = 1; revision <= 12; revision++) {
+        await seedRow(unrecorded(revision));
+      }
+      final first = await repository
+          .watch(historyQuery(), actorUid: historyActor)
+          .first;
+      expect(first.rosters.map((r) => r.progressRevision), [
+        12,
+        11,
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        3,
+      ]);
+      expect(first.nextBeforeRevision, 3);
+      final next = await repository
+          .watch(historyQuery(beforeRevision: 3), actorUid: historyActor)
+          .first;
+      expect(next.rosters.map((r) => r.progressRevision), [2, 1]);
+      expect(next.nextBeforeRevision, isNull);
+    });
+
+    test('a departure ahead of its group view raises the revision', () async {
+      await seedGroup(1);
+      await seedRow(unrecorded(2));
+      final page = await repository
+          .watch(historyQuery(), actorUid: historyActor)
+          .first;
+      expect(page.progressRevision, 2);
+    });
+
+    test('a missing group view or an invalid row is an error', () async {
+      await seedRow(unrecorded(1));
       await expectLater(
-        repository.fetch(query, actorUid: historyActor),
-        throwsA(isA<BackendOperationException>()),
+        repository.watch(historyQuery(), actorUid: historyActor).first,
+        throwsA(
+          isA<BackendOperationException>().having(
+            (e) => e.code,
+            'code',
+            'live-view-missing',
+          ),
+        ),
       );
-    },
-  );
+      await seedGroup(1);
+      final rows = await firestore
+          .collection(EventAssistanceMovementViews.departures)
+          .get();
+      await rows.docs.single.reference.update({
+        'sourceCoverage': 'invalidSource',
+      });
+      await expectLater(
+        repository.watch(historyQuery(), actorUid: historyActor).first,
+        throwsA(
+          isA<BackendOperationException>().having(
+            (e) => e.code,
+            'code',
+            'live-view-invalid-source',
+          ),
+        ),
+      );
+    });
+  });
 }

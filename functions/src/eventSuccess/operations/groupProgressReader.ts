@@ -1,5 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import type {Firestore, Transaction} from "firebase-admin/firestore";
+import type {DocumentSnapshot, Firestore, Transaction} from
+  "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
@@ -17,6 +18,34 @@ import {
 
 export const GROUP_PROGRESS = "eventAssistanceGroupProgress";
 
+/** Event and plan exactly as the progress readers accept them. */
+export function parseGroupProgressEvent(context: ProgressContext,
+  eventSnap: DocumentSnapshot, planSnap: DocumentSnapshot) {
+  const event = eventSnap.data();
+  const plan = planSnap.data() ?? null;
+  if (!validateEventDocument(event) ||
+      event.organizerId !== context.organizerId ||
+      (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
+        plan.eventId !== context.eventId ||
+        (plan.organizerId) !== context.organizerId))) {
+    throw invalidSource();
+  }
+  return {event, plan};
+}
+
+/** A saved progress row is trusted only when it matches its own scope. */
+export function parseGroupProgress(value: unknown, progressId: string,
+  groupId: string, now: number) {
+  if (value === undefined) return null;
+  if (!validateEventAssistanceGroupProgressDocument(value) ||
+      value.progressId !== progressId || value.groupId !== groupId ||
+      progressIdentity(value.context, value.groupId) !== progressId ||
+      value.confirmedAt > now || value.updatedAt > now ||
+      value.createdAt > value.confirmedAt ||
+      value.confirmedAt !== value.updatedAt) throw invalidSource();
+  return value;
+}
+
 /** Trusted reader. Client callers must separately authorize scope. */
 export async function readGroupProgressState(db: Firestore, tx: Transaction,
   context: ProgressContext, groupId: string, clock: () => number) {
@@ -28,24 +57,11 @@ export async function readGroupProgressState(db: Firestore, tx: Transaction,
     db.collection("events").doc(context.eventId),
     db.collection("eventSuccessPlans").doc(context.eventId),
     db.collection(GROUP_PROGRESS).doc(progressId));
-  const event = eventSnap.data();
-  const plan = planSnap.data() ?? null;
-  if (!validateEventDocument(event) ||
-      event.organizerId !== context.organizerId ||
-      (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
-        plan.eventId !== context.eventId ||
-        (plan.organizerId) !== context.organizerId))) {
-    throw invalidSource();
-  }
-  const progress = progressSnap.data() ?? null;
+  const {event, plan} = parseGroupProgressEvent(context, eventSnap, planSnap);
   const now = clock();
-  if (!Number.isSafeInteger(now) || now < 0 || (progress !== null &&
-      (!validateEventAssistanceGroupProgressDocument(progress) ||
-        progress.progressId !== progressId || progress.groupId !== groupId ||
-        progressIdentity(progress.context, progress.groupId) !== progressId ||
-        progress.confirmedAt > now || progress.updatedAt > now ||
-        progress.createdAt > progress.confirmedAt ||
-        progress.confirmedAt !== progress.updatedAt))) throw invalidSource();
+  if (!Number.isSafeInteger(now) || now < 0) throw invalidSource();
+  const progress = parseGroupProgress(progressSnap.data(), progressId,
+    groupId, now);
   const source = groupProgressSource({context, groupId, event, plan,
     eventGeneration: eventSnap.createTime,
     planGeneration: planSnap.createTime, now});

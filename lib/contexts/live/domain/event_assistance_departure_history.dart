@@ -4,6 +4,9 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
 
+/// Rows in one departure history page; one more is read to find the next.
+const departureHistoryPageSize = 10;
+
 final class EventAssistanceDepartureHistoryQuery {
   EventAssistanceDepartureHistoryQuery(this.group, {this.beforeRevision}) {
     if (beforeRevision != null && assistanceInteger(beforeRevision) < 1) {
@@ -204,7 +207,7 @@ final class EventAssistanceDepartureHistoryPage {
         actor != expectedActorUid ||
         until <= now ||
         rows is! List ||
-        rows.length > 10) {
+        rows.length > departureHistoryPageSize) {
       throw const FormatException('Invalid departure history page.');
     }
     final parsed = rows
@@ -225,7 +228,8 @@ final class EventAssistanceDepartureHistoryPage {
       previousTime = row.confirmedAt;
     }
     if (next != null &&
-        (parsed.length != 10 || next != parsed.last.progressRevision)) {
+        (parsed.length != departureHistoryPageSize ||
+            next != parsed.last.progressRevision)) {
       throw const FormatException('Invalid departure history continuation.');
     }
     return EventAssistanceDepartureHistoryPage._(

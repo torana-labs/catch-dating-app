@@ -109,15 +109,20 @@ void main() {
       final result = await first;
       await second;
       await container.pump();
-      await repository.waitForReads(2);
       expect(form().phase, AssistanceCaseEditorPhase.saved);
       expect(form().result, same(result));
       expect(form().canSubmit, isFalse);
       expect(
-        container.read(queue).hasValue,
-        isFalse,
-        reason: 'a refreshed queue cannot render an old open request',
+        repository.reads,
+        hasLength(1),
+        reason: 'the listener delivers the change; nothing rereads',
       );
+      // The case view trigger's evaluation reaches the open listener.
+      repository.reads.single.result.complete(
+        casesPage(rows: [], evaluatedAt: 3500),
+      );
+      await container.pump();
+      expect(container.read(queue).requireValue.page.cases, isEmpty);
       expect(await editor.submit(), same(result));
       expect(repository.writes, hasLength(1));
     },
@@ -278,17 +283,14 @@ void main() {
       write.result.complete(caseResult(write.change));
       expect((await pending).outcome, AssistanceCaseChangeOutcome.applied);
       await container.pump();
-      await repository.waitForReads(2);
+      expect(repository.reads, hasLength(1));
       expect(repository.writes, hasLength(1));
     },
   );
 
   test('a new page review replaces only an unsubmitted draft', () async {
     editor.select(AssistanceCaseDecision.transfer('host-2'));
-    container.read(queue.notifier).reload();
-    await container.pump();
-    await repository.waitForReads(2);
-    repository.reads.last.result.complete(casesPage());
+    repository.reads.last.result.complete(casesPage(evaluatedAt: 2500));
     await container.pump();
     final nextSession = container.read(queue).requireValue;
     final nextReview = nextSession.review(

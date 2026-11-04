@@ -1317,6 +1317,16 @@ service cloud.firestore {
         && isOrganizerHostData(get(
           /databases/$(database)/documents/organizers/$(organizerId)).data);
     }
+    // A summary manager of an organizer that is active and not archived.
+    // Reads that the setup commands' authority gated on an active organizer
+    // stop when it is archived or deactivated.
+    function isActiveHostSummaryManager(organizerId) {
+      return isHostSummaryManager(organizerId)
+        && get(/databases/$(database)/documents/organizers/$(
+          organizerId)).data.status == 'active'
+        && !get(/databases/$(database)/documents/organizers/$(
+          organizerId)).data.archived;
+    }
     match /hostDirectorySummaries/{organizerId} {
       // A missing migration marker is readable as missing by its manager.
       allow get: if isHostSummaryManager(organizerId);
@@ -1328,12 +1338,20 @@ service cloud.firestore {
       allow write: if false;
     }
     match /hostEventSummaries/{eventId} {
-      allow get, list: if isHostSummaryManager(resource.data.organizerId)
-        && get(/databases/$(database)/documents/organizers/$(
-          resource.data.organizerId)).data.status == 'active'
-        && !get(/databases/$(database)/documents/organizers/$(
-          resource.data.organizerId)).data.archived;
+      allow get, list: if isActiveHostSummaryManager(resource.data.organizerId);
       allow write: if false;
+    }
+    // The create flow's manager projections, written ahead of time by the
+    // setup view and setup defaults evaluators. A view the server has not
+    // written yet (just after create) reads as missing.
+    match /hostEventSetupViews/{eventId} {
+      allow get: if (resource == null && isAuthed())
+        || isActiveHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    match /hostEventSetupDefaultViews/{organizerId} {
+      allow get: if isActiveHostSummaryManager(organizerId);
+      allow list, write: if false;
     }
     match /hostGroupSummaries/{audienceId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
@@ -1350,6 +1368,29 @@ service cloud.firestore {
     match /hostContactSummaries/{contactId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
+    }
+    // The door's manager projections, written ahead of time by the provider
+    // connection and roster insight evaluators. The callables they replace
+    // authorized any current manager (requireOrganizerManager), so these use
+    // isHostSummaryManager, not the active-organizer variant. A roster view
+    // the server has not written yet reads as missing.
+    match /hostProviderConnectionViews/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+    match /hostEventRosterInsightViews/{eventId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // Top-quartile spend thresholds only: never an account or an amount per
+    // guest. The per-account totals behind them stay server-only.
+    match /hostOrganizerSpendProjections/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+    match /organizerSpendTotals/{organizerId} {
+      allow read, write: if false;
     }
 
     // Organizer Audience/CRM projections contain restricted operational PII,
@@ -1405,6 +1446,40 @@ service cloud.firestore {
     match /organizerAttentionSchedules/{organizerId} {
       allow get: if isHostSummaryManager(organizerId);
       allow list, write: if false;
+    }
+    // The live console's movement views, written ahead of time by the
+    // movement view evaluator. Only an organizer's managers use the live
+    // console's reads (a group lead acts through the commands, which check
+    // its duty), and the callables these views replace did not refuse an
+    // archived or inactive organizer. A view the server has not written yet
+    // reads as missing; a missing document reveals nothing.
+    match /hostEventGroupProgressViews/{progressId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventDepartureViews/{rosterId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventCheckpointViews/{checkpointViewId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+
+    // Live console help-request and delivery views, one per practical case
+    // or live message, written ahead of time by the view triggers. A current
+    // manager of the row's organizer lists an event's rows; authority comes
+    // from the organizer document, never from the view.
+    match /hostEventCaseViews/{caseId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostEventDeliveryViews/{messageId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     // Entitlement grants and meters are billing state. Only admin-authorized
@@ -1623,8 +1698,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // An event's booking-provider mapping holds no credential. A current
+    // manager of its organizer gets it by its derived id (eem_ + sha256 of
+    // the event id); an event without a mapping reads as missing. Nobody
+    // lists mappings, and only the provider commands write them.
     match /externalEventMappings/{mappingId} {
-      allow read, write: if false;
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
     }
 
     match /providerSyncRuns/{runId} {
@@ -1938,8 +2019,11 @@ service cloud.firestore {
     // Dress rehearsal is a separate callable-only product domain. Hosts and
     // anonymous guests receive bounded projections from Functions; no client
     // can use rehearsal state as a path into live event or attendee data.
+    // The one exception is an organizer's completion milestone, which its
+    // current managers get (a missing document is "not yet").
     match /eventRehearsalMilestones/{organizerId} {
-      allow read, write: if false;
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
     }
 
     match /eventRehearsals/{sessionId} {
@@ -2820,8 +2904,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // A current manager of the organizer listens to an event's heartbeats and
+    // derives present, idle or likely departed on the phone from heartbeatAt
+    // and its own clock. Only the heartbeat callable writes.
     match /eventSuccessPresence/{presenceId} {
-      allow read, write: if false;
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     match /eventLivePositions/{positionId} {
@@ -2846,7 +2934,10 @@ service cloud.firestore {
             )
           )
         );
-      allow list, write: if false;
+      // The live console lists an event's placements to keep placed guests
+      // out of its late-arrival candidates.
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     match /eventSuccessUnitOutcomes/{eventId} {

@@ -45,9 +45,13 @@ EventAssistanceCheckpointResult checkpointUiResult(String name) =>
       expectedScope: checkpointUiScope,
     );
 
+/// Listeners deliver the current sample at once; [confirm] stands in for the
+/// triggers and delivers the saved report to every open listener.
 class CheckpointUiLive extends Fake
     implements EventAssistanceCheckpointRepository {
   String sample = 'initial';
+  final _views = <StreamController<EventAssistanceCheckpointView>>[];
+  final changes = StreamController<void>.broadcast();
   final writes =
       <
         ({
@@ -56,11 +60,15 @@ class CheckpointUiLive extends Fake
         })
       >[];
   @override
-  Future<EventAssistanceCheckpointView> fetch(
-    EventAssistanceCheckpointScope scope,
-  ) async {
+  Stream<EventAssistanceCheckpointView> watch(
+    EventAssistanceCheckpointScope scope, {
+    required String actorUid,
+  }) {
     expect(scope, checkpointUiScope);
-    return checkpointUiResult(sample).view;
+    final controller = StreamController<EventAssistanceCheckpointView>()
+      ..add(checkpointUiResult(sample).view);
+    _views.add(controller);
+    return controller.stream;
   }
 
   @override
@@ -75,6 +83,10 @@ class CheckpointUiLive extends Fake
   void confirm() {
     sample = 'partial';
     writes.last.result.complete(checkpointUiResult(sample));
+    for (final view in _views) {
+      view.add(checkpointUiResult(sample).view);
+    }
+    changes.add(null);
   }
 }
 
@@ -82,17 +94,28 @@ class CheckpointUiHistory extends Fake
     implements EventAssistanceDepartureHistoryRepository {
   CheckpointUiHistory(this.live);
   final CheckpointUiLive live;
-  @override
-  Future<EventAssistanceDepartureHistoryPage> fetch(
-    EventAssistanceDepartureHistoryQuery query, {
-    required String actorUid,
-  }) async => EventAssistanceDepartureHistoryPage.fromCallableData(
+
+  EventAssistanceDepartureHistoryPage _page(
+    EventAssistanceDepartureHistoryQuery query,
+    String actorUid,
+  ) => EventAssistanceDepartureHistoryPage.fromCallableData(
     checkpointUiSample(
       live.sample == 'initial' ? 'historyInitial' : 'historyPartial',
     ),
     expectedQuery: query,
     expectedActorUid: actorUid,
   );
+
+  @override
+  Stream<EventAssistanceDepartureHistoryPage> watch(
+    EventAssistanceDepartureHistoryQuery query, {
+    required String actorUid,
+  }) async* {
+    yield _page(query, actorUid);
+    await for (final _ in live.changes.stream) {
+      yield _page(query, actorUid);
+    }
+  }
 }
 
 class CheckpointUiPractice extends Fake implements EventRehearsalRepository {

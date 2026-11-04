@@ -128,16 +128,31 @@ void main() {
     },
   );
 
-  test('explicit reload wins over an older completion', () async {
-    await signIn('host-1');
-    container.read(provider.notifier).reload();
-    await container.pump();
-    await repository.waitForReads(2);
-    await complete(1);
-    final latest = container.read(provider).requireValue;
-    await complete(0);
-    expect(identical(container.read(provider).requireValue, latest), isTrue);
-  });
+  test(
+    'a healthy listener is never restarted; a newer page replaces the session',
+    () async {
+      await signIn('host-1');
+      await complete(0);
+      final first = container.read(provider).requireValue;
+      expect(first.isCurrent, isTrue);
+      container.read(provider.notifier).reload();
+      await container.pump();
+      expect(repository.reads, hasLength(1));
+      repository.reads.single.result.complete(
+        casesPage(rows: [caseRow(revision: 1)], evaluatedAt: 2500),
+      );
+      await container.pump();
+      final latest = container.read(provider).requireValue;
+      expect(identical(latest, first), isFalse);
+      expect(latest.isCurrent, isTrue);
+      expect(first.isCurrent, isFalse);
+      expect((latest.page.cases.single as AssistanceOpenHostCase).revision, 1);
+      expect(
+        () => first.review(first.page.cases.single as AssistanceOpenHostCase),
+        throwsArgumentError,
+      );
+    },
+  );
 
   test(
     'read errors persist until explicit reload, without automatic retries',

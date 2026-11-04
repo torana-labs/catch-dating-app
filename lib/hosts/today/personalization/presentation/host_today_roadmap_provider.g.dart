@@ -96,21 +96,27 @@ final class HostTodayRoadmapFamily extends $Family
   String toString() => r'hostTodayRoadmapProvider';
 }
 
-/// A failed or unavailable summary stays unknown in the roadmap. Completion is
-/// read from rehearsal's durable milestone, never inferred from opening a route.
+/// A failed or unavailable read stays unknown in the roadmap. Completion is
+/// rehearsal's durable milestone document, never inferred from opening a
+/// route. It is a Firestore listener read owner: no cache tags or lifetime,
+/// and the write that completes a rehearsal reaches it without invalidation.
 
 @ProviderFor(hostTodayRehearsalCompletion)
 final hostTodayRehearsalCompletionProvider =
     HostTodayRehearsalCompletionFamily._();
 
-/// A failed or unavailable summary stays unknown in the roadmap. Completion is
-/// read from rehearsal's durable milestone, never inferred from opening a route.
+/// A failed or unavailable read stays unknown in the roadmap. Completion is
+/// rehearsal's durable milestone document, never inferred from opening a
+/// route. It is a Firestore listener read owner: no cache tags or lifetime,
+/// and the write that completes a rehearsal reaches it without invalidation.
 
 final class HostTodayRehearsalCompletionProvider
-    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
-    with $FutureModifier<bool>, $FutureProvider<bool> {
-  /// A failed or unavailable summary stays unknown in the roadmap. Completion is
-  /// read from rehearsal's durable milestone, never inferred from opening a route.
+    extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
+    with $FutureModifier<bool>, $StreamProvider<bool> {
+  /// A failed or unavailable read stays unknown in the roadmap. Completion is
+  /// rehearsal's durable milestone document, never inferred from opening a
+  /// route. It is a Firestore listener read owner: no cache tags or lifetime,
+  /// and the write that completes a rehearsal reaches it without invalidation.
   HostTodayRehearsalCompletionProvider._({
     required HostTodayRehearsalCompletionFamily super.from,
     required HostTodayPreferenceScope super.argument,
@@ -134,11 +140,11 @@ final class HostTodayRehearsalCompletionProvider
 
   @$internal
   @override
-  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $StreamProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
 
   @override
-  FutureOr<bool> create(Ref ref) {
+  Stream<bool> create(Ref ref) {
     final argument = this.argument as HostTodayPreferenceScope;
     return hostTodayRehearsalCompletion(ref, argument);
   }
@@ -156,13 +162,15 @@ final class HostTodayRehearsalCompletionProvider
 }
 
 String _$hostTodayRehearsalCompletionHash() =>
-    r'2bc86494fe769de0728cba7ad7872bb9c4400669';
+    r'2384f074e0f8406ee446c9e6c6f796bc5f946bad';
 
-/// A failed or unavailable summary stays unknown in the roadmap. Completion is
-/// read from rehearsal's durable milestone, never inferred from opening a route.
+/// A failed or unavailable read stays unknown in the roadmap. Completion is
+/// rehearsal's durable milestone document, never inferred from opening a
+/// route. It is a Firestore listener read owner: no cache tags or lifetime,
+/// and the write that completes a rehearsal reaches it without invalidation.
 
 final class HostTodayRehearsalCompletionFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<bool>, HostTodayPreferenceScope> {
+    with $FunctionalFamilyOverride<Stream<bool>, HostTodayPreferenceScope> {
   HostTodayRehearsalCompletionFamily._()
     : super(
         retry: null,
@@ -172,8 +180,10 @@ final class HostTodayRehearsalCompletionFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// A failed or unavailable summary stays unknown in the roadmap. Completion is
-  /// read from rehearsal's durable milestone, never inferred from opening a route.
+  /// A failed or unavailable read stays unknown in the roadmap. Completion is
+  /// rehearsal's durable milestone document, never inferred from opening a
+  /// route. It is a Firestore listener read owner: no cache tags or lifetime,
+  /// and the write that completes a rehearsal reaches it without invalidation.
 
   HostTodayRehearsalCompletionProvider call(HostTodayPreferenceScope scope) =>
       HostTodayRehearsalCompletionProvider._(argument: scope, from: this);

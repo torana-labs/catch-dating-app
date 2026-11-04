@@ -1455,6 +1455,482 @@ describe("firestore.rules", () => {
         "organizerAttentionSchedules", "fresh"), schedule("fresh")));
     });
 
+    describe("create flow setup reads", () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      const evaluatedAt = Timestamp.fromDate(
+        new Date("2026-09-01T10:00:00.000Z"));
+      async function seedOrganizers() {
+        await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+        await seed(["organizers", "fresh"], managed());
+        await seed(["organizers", "other"],
+          managed({hostUserId: "other-host"}));
+      }
+      async function assertGetOnly(collectionName, ownId, foreignId,
+        document) {
+        for (const uid of ["host-1", "manager"]) {
+          const db = authedDb(uid);
+          const own = await assertSucceeds(getDoc(doc(db, collectionName,
+            ownId)));
+          assert.equal(own.exists(), true);
+          await assertFails(getDoc(doc(db, collectionName, foreignId)));
+          await assertFails(getDocs(collection(db, collectionName)));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "org"))));
+          await assertFails(setDoc(doc(db, collectionName, ownId), document));
+          await assertFails(updateDoc(doc(db, collectionName, ownId),
+            {revision: 9}));
+          await assertFails(deleteDoc(doc(db, collectionName, ownId)));
+          await assertFails(setDoc(doc(db, collectionName, "forged"),
+            document));
+        }
+        await assertFails(getDoc(doc(authedDb("other-host"), collectionName,
+          ownId)));
+        await assertFails(getDoc(doc(testEnv.unauthenticatedContext()
+          .firestore(), collectionName, ownId)));
+      }
+      async function assertDeletedUserDenied(collectionName, ownId) {
+        await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+        await assertFails(getDoc(doc(authedDb("host-1"), collectionName,
+          ownId)));
+      }
+      async function assertArchivedDenied(collectionName, ownId) {
+        await assertSucceeds(getDoc(doc(authedDb("host-1"), collectionName,
+          ownId)));
+        await seed(["organizers", "org"], managed({hostUserIds: ["manager"],
+          status: "archived", archived: true}));
+        await assertFails(getDoc(doc(authedDb("host-1"), collectionName,
+          ownId)));
+        await seed(["organizers", "org"], managed({hostUserIds: ["manager"],
+          status: "inactive"}));
+        await assertFails(getDoc(doc(authedDb("manager"), collectionName,
+          ownId)));
+      }
+
+      it("lets active managers get their event setup views and nothing else", async () => {
+        await seedOrganizers();
+        const view = (organizerId, eventId) => ({schemaVersion: 1, eventId,
+          organizerId, setupRevision: 2, revision: 1, evaluatedAt,
+          sourceCoverage: "complete", incompleteSource: null, summary: null});
+        await seed(["hostEventSetupViews", "own"], view("org", "own"));
+        await seed(["hostEventSetupViews", "foreign"],
+          view("other", "foreign"));
+        await assertGetOnly("hostEventSetupViews", "own", "foreign",
+          view("org", "own"));
+        // Not written yet, just after create: it reads as missing.
+        const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+          "hostEventSetupViews", "just-created")));
+        assert.equal(missing.exists(), false);
+        await assertArchivedDenied("hostEventSetupViews", "own");
+        await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+        await assertDeletedUserDenied("hostEventSetupViews", "own");
+      });
+
+      it("lets active managers get their setup defaults view and nothing else", async () => {
+        await seedOrganizers();
+        const view = (organizerId) => ({schemaVersion: 1, organizerId,
+          revision: 1, evaluatedAt, sourceCoverage: "complete",
+          incompleteSource: null, view: null});
+        await seed(["hostEventSetupDefaultViews", "org"], view("org"));
+        await seed(["hostEventSetupDefaultViews", "other"], view("other"));
+        await assertGetOnly("hostEventSetupDefaultViews", "org", "other",
+          view("org"));
+        const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+          "hostEventSetupDefaultViews", "fresh")));
+        assert.equal(missing.exists(), false);
+        await assertArchivedDenied("hostEventSetupDefaultViews", "org");
+        await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+        await assertDeletedUserDenied("hostEventSetupDefaultViews", "org");
+      });
+
+      it("lets managers get their rehearsal milestone and nothing else", async () => {
+        await seedOrganizers();
+        const milestone = (organizerId) => ({organizerId,
+          completedAt: evaluatedAt});
+        await seed(["eventRehearsalMilestones", "org"], milestone("org"));
+        await seed(["eventRehearsalMilestones", "other"], milestone("other"));
+        await assertGetOnly("eventRehearsalMilestones", "org", "other",
+          milestone("org"));
+        // Not completed yet: the manager reads it as missing.
+        const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+          "eventRehearsalMilestones", "fresh")));
+        assert.equal(missing.exists(), false);
+        await assertDeletedUserDenied("eventRehearsalMilestones", "org");
+      });
+    });
+
+    it("lets managers get their door read models and nothing else", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "fresh"], managed());
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const evaluatedAt = Timestamp.fromDate(new Date("2026-09-01T10:00:00Z"));
+      const byOrganizer = {
+        hostProviderConnectionViews: (organizerId) => ({schemaVersion: 1,
+          organizerId, revision: 1, evaluatedAt, sourceCoverage: "complete",
+          incompleteSource: null, connections: []}),
+        hostOrganizerSpendProjections: (organizerId) => ({schemaVersion: 1,
+          organizerId, topQuartileThresholdByCurrency: {INR: 5000},
+          spendCoverage: "catchPaymentsOnly", revision: 1, evaluatedAt}),
+      };
+      for (const [name, view] of Object.entries(byOrganizer)) {
+        await seed([name, "org"], view("org"));
+        await seed([name, "other"], view("other"));
+        for (const uid of ["host-1", "manager"]) {
+          const db = authedDb(uid);
+          const own = await assertSucceeds(getDoc(doc(db, name, "org")));
+          assert.equal(own.exists(), true);
+          await assertFails(getDoc(doc(db, name, "other")));
+          await assertFails(getDocs(collection(db, name)));
+          await assertFails(getDocs(query(collection(db, name),
+            where("organizerId", "==", "org"))));
+          await assertFails(setDoc(doc(db, name, "org"), view("org")));
+          await assertFails(updateDoc(doc(db, name, "org"), {revision: 2}));
+          await assertFails(deleteDoc(doc(db, name, "org")));
+        }
+        // Not written yet: the manager reads it as missing.
+        const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+          name, "fresh")));
+        assert.equal(missing.exists(), false);
+        await assertFails(getDoc(doc(authedDb("operator-1"), name, "org")));
+        await assertFails(getDoc(doc(testEnv.unauthenticatedContext()
+          .firestore(), name, "org")));
+      }
+
+      const rosterView = (organizerId) => ({schemaVersion: 1,
+        eventId: `event-${organizerId}`, organizerId, cutoffAtMillis: 1,
+        revision: 1, evaluatedAt, sourceCoverage: "exact",
+        incompleteSource: null, rows: []});
+      await seed(["hostEventRosterInsightViews", "event-org"], rosterView("org"));
+      await seed(["hostEventRosterInsightViews", "event-other"],
+        rosterView("other"));
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        await assertSucceeds(getDoc(doc(db, "hostEventRosterInsightViews",
+          "event-org")));
+        await assertFails(getDoc(doc(db, "hostEventRosterInsightViews",
+          "event-other")));
+        await assertFails(getDocs(query(collection(db,
+          "hostEventRosterInsightViews"), where("organizerId", "==", "org"))));
+        await assertFails(setDoc(doc(db, "hostEventRosterInsightViews",
+          "event-org"), rosterView("org")));
+        await assertFails(deleteDoc(doc(db, "hostEventRosterInsightViews",
+          "event-org")));
+      }
+      const unwritten = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "hostEventRosterInsightViews", "event-new")));
+      assert.equal(unwritten.exists(), false);
+
+      // The per-account totals behind the thresholds are never readable.
+      await seed(["organizerSpendTotals", "org"], {organizerId: "org",
+        byUid: {"runner-1": {byCurrency: {INR: {amountMinor: 9000,
+          paidOrderCount: 2}}}}});
+      for (const uid of ["host-1", "manager", "runner-1"]) {
+        await assertFails(getDoc(doc(authedDb(uid), "organizerSpendTotals",
+          "org")));
+        await assertFails(setDoc(doc(authedDb(uid), "organizerSpendTotals",
+          "org"), {organizerId: "org"}));
+      }
+
+      // The callables these replace refused no archived organizer.
+      await seed(["organizers", "org"], managed({status: "archived",
+        archived: true, hostUserIds: ["manager"]}));
+      await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "hostProviderConnectionViews", "org")));
+      await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "hostEventRosterInsightViews", "event-org")));
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      for (const [name, id] of [["hostProviderConnectionViews", "org"],
+        ["hostOrganizerSpendProjections", "org"],
+        ["hostEventRosterInsightViews", "event-org"]]) {
+        await assertFails(getDoc(doc(authedDb("host-1"), name, id)));
+      }
+    });
+
+    it("lets managers get their own event's provider mapping only", async () => {
+      await seed(["organizers", "org"], organizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], organizer({hostUserId: "other-host"}));
+      const mapping = (organizerId, eventId) => ({organizerId, eventId,
+        connectionId: "opc_1", provider: "luma", externalEventId: "evt-1",
+        status: "active", revision: 1, createdByUid: "host-1",
+        lastSyncStatus: "never", lastSyncRunId: null});
+      await seed(["externalEventMappings", "eem_own"], mapping("org", "own"));
+      await seed(["externalEventMappings", "eem_foreign"],
+        mapping("other", "foreign"));
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        const own = await assertSucceeds(getDoc(doc(db,
+          "externalEventMappings", "eem_own")));
+        assert.equal(own.data().connectionId, "opc_1");
+        await assertFails(getDoc(doc(db, "externalEventMappings",
+          "eem_foreign")));
+        await assertFails(getDocs(collection(db, "externalEventMappings")));
+        await assertFails(getDocs(query(collection(db,
+          "externalEventMappings"), where("organizerId", "==", "org"))));
+        await assertFails(setDoc(doc(db, "externalEventMappings", "eem_own"),
+          mapping("org", "own")));
+        await assertFails(updateDoc(doc(db, "externalEventMappings",
+          "eem_own"), {status: "disconnected"}));
+        await assertFails(deleteDoc(doc(db, "externalEventMappings",
+          "eem_own")));
+      }
+      // An event without a mapping reads as missing.
+      const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+        "externalEventMappings", "eem_none")));
+      assert.equal(missing.exists(), false);
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "externalEventMappings", "eem_own")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext()
+        .firestore(), "externalEventMappings", "eem_own")));
+    });
+
+    it("lets managers list an event's presence and late-arrival placements", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const at = Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z"));
+      const heartbeat = (organizerId, eventId, uid) => ({eventId,
+        organizerId, uid, surface: "flutter", heartbeatAt: at, createdAt: at,
+        updatedAt: at});
+      const placement = (organizerId, eventId, uid) => ({eventId,
+        organizerId, uid, resolvedByUid: "host-1",
+        status: "heldForNextRound", targetRoundIndex: 2,
+        assignmentDraftRevision: 1, reason: "Held for the next round.",
+        createdAt: at, updatedAt: at});
+      await seed(["eventSuccessPresence", "e1_b"], heartbeat("org", "e1", "b"));
+      await seed(["eventSuccessPresence", "e1_a"], heartbeat("org", "e1", "a"));
+      await seed(["eventSuccessPresence", "e2_c"],
+        heartbeat("other", "e2", "c"));
+      await seed(["eventSuccessLateArrivals", "e1_a"],
+        placement("org", "e1", "a"));
+      await seed(["eventSuccessLateArrivals", "e2_c"],
+        placement("other", "e2", "c"));
+
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        // The live console's exact query shapes.
+        const presence = await assertSucceeds(getDocs(query(
+          collection(db, "eventSuccessPresence"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          orderBy(documentId()),
+          limit(200))));
+        assert.deepEqual(presence.docs.map((row) => row.id), ["e1_a", "e1_b"]);
+        const placements = await assertSucceeds(getDocs(query(
+          collection(db, "eventSuccessLateArrivals"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          orderBy(documentId()),
+          limit(200))));
+        assert.deepEqual(placements.docs.map((row) => row.id), ["e1_a"]);
+        for (const name of ["eventSuccessPresence", "eventSuccessLateArrivals"]) {
+          await assertFails(getDocs(query(collection(db, name),
+            where("eventId", "==", "e1"))));
+          await assertFails(getDocs(query(collection(db, name),
+            where("organizerId", "==", "other"),
+            where("eventId", "==", "e2"))));
+          await assertFails(getDocs(collection(db, name)));
+        }
+        await assertFails(getDoc(doc(db, "eventSuccessPresence", "e2_c")));
+        await assertFails(setDoc(doc(db, "eventSuccessPresence", "e1_z"),
+          heartbeat("org", "e1", "z")));
+        await assertFails(updateDoc(doc(db, "eventSuccessPresence", "e1_a"),
+          {heartbeatAt: at}));
+        await assertFails(deleteDoc(doc(db, "eventSuccessPresence", "e1_a")));
+        await assertFails(setDoc(doc(db, "eventSuccessLateArrivals", "e1_z"),
+          placement("org", "e1", "z")));
+      }
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDocs(query(
+        collection(authedDb("host-1"), "eventSuccessPresence"),
+        where("organizerId", "==", "org"),
+        where("eventId", "==", "e1"))));
+    });
+
+    it("lets managers list an event's help-request and delivery views", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      await seed(["organizers", "archived"],
+        managed({hostUserIds: ["manager"], archived: true}));
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const at = Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z"));
+      const caseView = (id, organizerId, status) => ({schemaVersion: 1,
+        caseId: id, eventId: "e1", organizerId, status, receivedAt: 1,
+        revision: 1, evaluatedAt: at, sourceCoverage: "complete",
+        incompleteSource: null, view: null});
+      const deliveryView = (id, organizerId) => ({schemaVersion: 1,
+        messageId: id, eventId: "e1", organizerId, createdAt: 1,
+        lifecycle: "active", revision: 1, evaluatedAt: at,
+        sourceCoverage: "complete", incompleteSource: null,
+        relevantUntilMillis: null, view: null});
+      await seed(["hostEventCaseViews", "case:b"], caseView("case:b", "org",
+        "open"));
+      await seed(["hostEventCaseViews", "case:a"], caseView("case:a", "org",
+        "open"));
+      await seed(["hostEventCaseViews", "case:r"], caseView("case:r", "org",
+        "resolved"));
+      await seed(["hostEventCaseViews", "case:x"], caseView("case:x", "other",
+        "open"));
+      await seed(["hostEventCaseViews", "case:old"],
+        caseView("case:old", "archived", "open"));
+      await seed(["hostEventDeliveryViews", "outbox:a"],
+        deliveryView("outbox:a", "org"));
+      await seed(["hostEventDeliveryViews", "outbox:x"],
+        deliveryView("outbox:x", "other"));
+
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        const cases = collection(db, "hostEventCaseViews");
+        // The help queue's exact query shape: one status, one page.
+        const open = await assertSucceeds(getDocs(query(cases,
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          where("status", "==", "open"),
+          orderBy(documentId()),
+          startAfter("case:0"),
+          limit(51))));
+        assert.deepEqual(open.docs.map((row) => row.id), ["case:a", "case:b"]);
+        const deliveries = await assertSucceeds(getDocs(query(
+          collection(db, "hostEventDeliveryViews"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "e1"),
+          orderBy(documentId()),
+          limit(51))));
+        assert.deepEqual(deliveries.docs.map((row) => row.id), ["outbox:a"]);
+        await assertSucceeds(getDoc(doc(db, "hostEventCaseViews", "case:r")));
+        for (const name of ["hostEventCaseViews", "hostEventDeliveryViews"]) {
+          await assertFails(getDocs(query(collection(db, name),
+            where("eventId", "==", "e1"))));
+          await assertFails(getDocs(query(collection(db, name),
+            where("organizerId", "==", "other"),
+            where("eventId", "==", "e1"))));
+        }
+        await assertFails(getDoc(doc(db, "hostEventCaseViews", "case:x")));
+        await assertFails(getDoc(doc(db, "hostEventDeliveryViews",
+          "outbox:x")));
+        await assertFails(setDoc(doc(db, "hostEventCaseViews", "case:new"),
+          caseView("case:new", "org", "open")));
+        await assertFails(updateDoc(doc(db, "hostEventCaseViews", "case:a"),
+          {status: "resolved"}));
+        await assertFails(deleteDoc(doc(db, "hostEventDeliveryViews",
+          "outbox:a")));
+      }
+      // The retired callables refused no archived organizer, so neither do
+      // the views.
+      await assertSucceeds(getDoc(doc(authedDb("manager"),
+        "hostEventCaseViews", "case:old")));
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "hostEventCaseViews", "case:a")));
+      await seed(["deletedUsers", "manager"], {deletedAt: Timestamp.now()});
+      await assertFails(getDocs(query(
+        collection(authedDb("manager"), "hostEventCaseViews"),
+        where("organizerId", "==", "org"),
+        where("eventId", "==", "e1"),
+        where("status", "==", "open"))));
+    });
+
+    it("lets managers read live movement views and nothing else", async () => {
+      const managed = (overrides = {}) =>
+        organizer({status: "active", archived: false, ...overrides});
+      await seed(["organizers", "org"], managed({hostUserIds: ["manager"]}));
+      // The retired reads refused no archived organizer; nor do the views.
+      await seed(["organizers", "archived"], managed({archived: true,
+        status: "archived", hostUserId: "archived-host"}));
+      await seed(["organizers", "other"], managed({hostUserId: "other-host"}));
+      const progressId = "progress:" + "a".repeat(64);
+      const view = (organizerId, extra = {}) => ({schemaVersion: 1,
+        eventId: "event-1", organizerId, groupId: "event:whole", revision: 1,
+        evaluatedAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
+        sourceCoverage: "complete", incompleteSource: null, view: null,
+        ...extra});
+      await seed(["hostEventGroupProgressViews", progressId],
+        view("org", {progressId, eventEndAtMillis: 1}));
+      await seed(["hostEventGroupProgressViews", "progress:foreign"],
+        view("other", {progressId: "progress:foreign", eventEndAtMillis: 1}));
+      await seed(["hostEventGroupProgressViews", "progress:archived"],
+        view("archived", {progressId: "progress:archived",
+          eventEndAtMillis: 1}));
+      for (const revision of [1, 2, 3]) {
+        await seed(["hostEventDepartureViews", `roster-${revision}`],
+          view("org", {rosterId: `roster-${revision}`, progressId,
+            progressRevision: revision, confirmedAt: revision}));
+      }
+      await seed(["hostEventDepartureViews", "roster-foreign"],
+        view("other", {rosterId: "roster-foreign", progressId,
+          progressRevision: 9, confirmedAt: 9}));
+      await seed(["hostEventCheckpointViews", "checkpoint:own"],
+        view("org", {checkpointViewId: "checkpoint:own"}));
+      await seed(["hostEventCheckpointViews", "checkpoint:foreign"],
+        view("other", {checkpointViewId: "checkpoint:foreign"}));
+
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        await assertSucceeds(getDoc(doc(db, "hostEventGroupProgressViews",
+          progressId)));
+        await assertSucceeds(getDocs(query(
+          collection(db, "hostEventGroupProgressViews"),
+          where("organizerId", "==", "org"),
+          where("eventId", "==", "event-1"))));
+        await assertFails(getDoc(doc(db, "hostEventGroupProgressViews",
+          "progress:foreign")));
+        await assertFails(getDocs(collection(db,
+          "hostEventGroupProgressViews")));
+        // The departure history's exact query shape.
+        const page = await assertSucceeds(getDocs(query(
+          collection(db, "hostEventDepartureViews"),
+          where("organizerId", "==", "org"),
+          where("progressId", "==", progressId),
+          where("progressRevision", "<", 3),
+          orderBy("progressRevision", "desc"),
+          limit(11))));
+        assert.deepEqual(page.docs.map((row) => row.id),
+          ["roster-2", "roster-1"]);
+        await assertFails(getDocs(query(
+          collection(db, "hostEventDepartureViews"),
+          where("progressId", "==", progressId))));
+        await assertFails(getDoc(doc(db, "hostEventDepartureViews",
+          "roster-foreign")));
+        await assertSucceeds(getDoc(doc(db, "hostEventCheckpointViews",
+          "checkpoint:own")));
+        await assertFails(getDocs(query(
+          collection(db, "hostEventCheckpointViews"),
+          where("organizerId", "==", "org"))));
+        await assertFails(getDoc(doc(db, "hostEventCheckpointViews",
+          "checkpoint:foreign")));
+        for (const [name, id] of [
+          ["hostEventGroupProgressViews", progressId],
+          ["hostEventDepartureViews", "roster-1"],
+          ["hostEventCheckpointViews", "checkpoint:own"],
+        ]) {
+          await assertFails(setDoc(doc(db, name, `client-${uid}`),
+            view("org")));
+          await assertFails(updateDoc(doc(db, name, id), {revision: 9}));
+          await assertFails(deleteDoc(doc(db, name, id)));
+        }
+      }
+      await assertSucceeds(getDoc(doc(authedDb("archived-host"),
+        "hostEventGroupProgressViews", "progress:archived")));
+      // Not written yet: any signed-in user reads it as missing, and a
+      // signed-out one cannot.
+      for (const name of ["hostEventGroupProgressViews",
+        "hostEventCheckpointViews"]) {
+        const missing = await assertSucceeds(getDoc(doc(authedDb("host-1"),
+          name, "not-written-yet")));
+        assert.equal(missing.exists(), false);
+        await assertFails(getDoc(doc(
+          testEnv.unauthenticatedContext().firestore(), name,
+          "not-written-yet")));
+      }
+      await assertFails(getDoc(doc(authedDb("other-host"),
+        "hostEventGroupProgressViews", progressId)));
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(authedDb("host-1"),
+        "hostEventCheckpointViews", "checkpoint:own")));
+    });
+
     it("keeps organizer entitlement state server-only", async () => {
       await seed(["organizerTeamMemberships", "organizer-1_manager-1"], {
         organizerId: "organizer-1",
@@ -2589,7 +3065,6 @@ describe("firestore.rules", () => {
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],
         ["organizerManualSendTasks", "task-1"],
-        ["externalEventMappings", "mapping-1"],
         ["providerSyncRuns", "sync-1"],
         ["organizerApplicationForms", "form-1"],
         ["organizerApplicationFormVersions", "version-1"],
@@ -4962,7 +5437,7 @@ describe("firestore.rules", () => {
         "eventAssignmentFeatureConsents")));
     });
 
-    it("keeps presence private and scopes late-arrival outcomes", async () => {
+    it("keeps presence manager-only and scopes late-arrival outcomes", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
@@ -5000,8 +5475,11 @@ describe("firestore.rules", () => {
         "event-1_runner-1",
       );
       await assertFails(getDoc(presenceRef("runner-1")));
-      await assertFails(getDoc(presenceRef("host-1")));
+      await assertSucceeds(getDoc(presenceRef("host-1")));
       await assertFails(setDoc(presenceRef("runner-1"), {
+        eventId: "event-1",
+      }));
+      await assertFails(setDoc(presenceRef("host-1"), {
         eventId: "event-1",
       }));
 
@@ -5016,8 +5494,14 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(resolutionRef("host-1"), {
         eventId: "event-1",
       }));
+      // A list must name the organizer whose managers it is for.
       await assertFails(getDocs(query(
         collection(authedDb("host-1"), "eventSuccessLateArrivals"),
+        where("eventId", "==", "event-1"),
+      )));
+      await assertFails(getDocs(query(
+        collection(authedDb("runner-1"), "eventSuccessLateArrivals"),
+        where("organizerId", "==", "club-1"),
         where("eventId", "==", "event-1"),
       )));
     });
@@ -5383,7 +5867,6 @@ describe("firestore.rules", () => {
 
     it("keeps all dress rehearsal collections callable-only", async () => {
       const collections = [
-        "eventRehearsalMilestones",
         "eventRehearsals",
         "eventRehearsalActors",
         "eventRehearsalActions",

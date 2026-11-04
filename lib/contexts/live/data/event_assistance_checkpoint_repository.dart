@@ -1,21 +1,37 @@
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_checkpoint_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_checkpoint_repository.g.dart';
 
+/// One departure's checkpoint through a manager listener on
+/// `hostEventCheckpointViews`; recording, reassignment and closeout stay
+/// commands.
 class EventAssistanceCheckpointRepository {
-  const EventAssistanceCheckpointRepository(this._functions);
+  const EventAssistanceCheckpointRepository(
+    this._functions,
+    this._firestore, {
+    this._clock = const AppClock(),
+  });
   final FirebaseFunctions _functions;
+  final FirebaseFirestore _firestore;
+
+  /// Applies time to the view on every delivered snapshot and again when
+  /// the request falls due, an authority ends or the choice window closes.
+  final AppClock _clock;
 
   Future<EventAssistanceCheckpointResult> manageRequest(
     EventAssistanceCheckpointRequestChange change,
@@ -55,36 +71,49 @@ class EventAssistanceCheckpointRepository {
     mapper: mapMissingCallableAsUnavailable,
   );
 
-  Future<EventAssistanceCheckpointView> fetch(
-    EventAssistanceCheckpointScope scope,
-  ) => withBackendErrorContext(
-    () async {
-      final response = await _functions
-          .httpsCallable('getEventAssistanceCheckpoint')
-          .call<Object?>(
-            GetEventAssistanceCheckpointCallableRequest(
-              context: scope.group.context,
-              groupId: scope.group.groupId,
-              checkpointId: scope.checkpointId,
-              progressRevision: scope.progressRevision,
-            ).toJson(),
-          );
-      final result = EventAssistanceCheckpointResult.fromCallableData(
-        response.data,
-        expectedScope: scope,
-      );
-      if (result.outcome != AssistanceCheckpointOutcome.read) {
-        throw const FormatException('Invalid checkpoint read outcome.');
-      }
-      return result.view;
-    },
+  /// The checkpoint as a manager reads it, with the manager's reporter
+  /// choices when the original request is still outstanding.
+  Stream<EventAssistanceCheckpointView> watch(
+    EventAssistanceCheckpointScope scope, {
+    required String actorUid,
+  }) => withBackendErrorStream(
+    () =>
+        clockedListener<
+              Map<String, Object?>?,
+              ({EventAssistanceCheckpointView view, DateTime? next})
+            >(
+              _firestore
+                  .collection(EventAssistanceMovementViews.checkpoints)
+                  .doc(checkpointViewId(scope))
+                  .snapshots()
+                  .map((snapshot) => snapshot.data()),
+              clock: _clock,
+              build: (data, clock) {
+                final now = movementViewNow(clock, [data]);
+                final result = EventAssistanceCheckpointResult.fromCallableData(
+                  checkpointReadResponse(
+                    data,
+                    scope: scope,
+                    actorUid: actorUid,
+                    now: now,
+                  ),
+                  expectedScope: scope,
+                );
+                return (
+                  view: result.view,
+                  next: checkpointNextRebuild(data, now),
+                );
+              },
+              nextRebuildAt: (built) => built.next,
+            )
+            .map((built) => built.view),
     context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'review checkpoint arrivals',
-      resource: 'eventAssistanceCheckpoints',
+      service: BackendService.firestore,
+      action: 'watch checkpoint arrivals',
+      resource: EventAssistanceMovementViews.checkpoints,
     ),
-    mapper: mapMissingCallableAsUnavailable,
   );
+
   Future<EventAssistanceCheckpointResult> apply(
     EventAssistanceCheckpointChange change,
   ) => withBackendErrorContext(
@@ -116,4 +145,8 @@ class EventAssistanceCheckpointRepository {
 @riverpod
 EventAssistanceCheckpointRepository eventAssistanceCheckpointRepository(
   Ref ref,
-) => EventAssistanceCheckpointRepository(ref.watch(firebaseFunctionsProvider));
+) => EventAssistanceCheckpointRepository(
+  ref.watch(firebaseFunctionsProvider),
+  ref.watch(firebaseFirestoreProvider),
+  clock: ref.watch(appClockProvider),
+);

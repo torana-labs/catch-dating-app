@@ -9,21 +9,10 @@ interface Dependencies {
   db: typeof getFirestore;
   rateLimit: typeof checkRateLimit;
   store: (db: ReturnType<typeof getFirestore>) =>
-    Pick<EventAssistanceCasesStore, "list" | "resolve">;
+    Pick<EventAssistanceCasesStore, "resolve">;
 }
 const defaults: Dependencies = {db: getFirestore, rateLimit: checkRateLimit,
   store: (db) => new EventAssistanceCasesStore(db)};
-
-export async function listEventAssistanceCasesHandler(
-  request: CallableRequest<unknown>, deps: Dependencies = defaults
-) {
-  const uid = requireAuth(request);
-  const db = deps.db();
-  await deps.rateLimit(db, uid, "listEventAssistanceCases", {
-    maxRequests: 30, windowMs: 60_000,
-  });
-  return deps.store(db).list(uid, request.data);
-}
 
 export async function resolveEventAssistanceCaseHandler(
   request: CallableRequest<unknown>, deps: Dependencies = defaults
@@ -36,7 +25,5 @@ export async function resolveEventAssistanceCaseHandler(
   return deps.store(db).resolve(uid, request.data);
 }
 
-export const listEventAssistanceCases = onCall(appCheckCallableOptions,
-  (request) => listEventAssistanceCasesHandler(request));
 export const resolveEventAssistanceCase = onCall(appCheckCallableOptions,
   (request) => resolveEventAssistanceCaseHandler(request));

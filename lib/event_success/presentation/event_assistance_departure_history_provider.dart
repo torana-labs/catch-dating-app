@@ -51,42 +51,54 @@ class EventAssistanceDepartureHistory
     return result;
   }
 
+  /// Restarts the listeners only after they ended in an error.
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     if (!authState.isSettledData || authState.value == null) {
       return;
     }
-    ref.invalidate(
-      eventAssistanceDepartureHistoryForAccountProvider(
-        query,
-        account: switch (auth) {
-          AsyncData(:final value) => value,
-          AsyncError(:final error) => throw error,
-          AsyncLoading() => throw AssertionError(),
-        },
-      ),
-    );
+    final account = authState.value!;
+    if (ref
+        .read(
+          eventAssistanceDepartureHistoryForAccountProvider(
+            query,
+            account: account,
+          ),
+        )
+        .hasError) {
+      ref.invalidate(
+        eventAssistanceDepartureHistoryForAccountProvider(
+          query,
+          account: account,
+        ),
+      );
+    }
   }
 }
 
+/// One history page for one sign-in period: Firestore listeners on the
+/// group's view and the page of departure views. No cache tags or lifetime;
+/// writes never invalidate it.
 @Riverpod(retry: _noHistoryReadRetry)
-Future<EventAssistanceDepartureHistorySession>
+Stream<EventAssistanceDepartureHistorySession>
 eventAssistanceDepartureHistoryForAccount(
   Ref ref,
   EventAssistanceDepartureHistoryQuery query, {
   required AuthenticatedSession account,
-}) async {
+}) {
   ref.watch(authenticatedSessionProvider);
   requireCheckpointAccount(ref, account);
-  final page = await ref
+  return ref
       .watch(eventAssistanceDepartureHistoryRepositoryProvider)
-      .fetch(query, actorUid: account.uid);
-  requireCheckpointAccount(ref, account);
-  if (page.query != query || page.actorUid != account.uid) {
-    throw const FormatException('Foreign departure history page.');
-  }
-  return EventAssistanceDepartureHistorySession._(account, page);
+      .watch(query, actorUid: account.uid)
+      .map((page) {
+        requireCheckpointAccount(ref, account);
+        if (page.query != query || page.actorUid != account.uid) {
+          throw const FormatException('Foreign departure history page.');
+        }
+        return EventAssistanceDepartureHistorySession._(account, page);
+      });
 }
 
 Duration? _noHistoryReadRetry(int count, Object error) => null;

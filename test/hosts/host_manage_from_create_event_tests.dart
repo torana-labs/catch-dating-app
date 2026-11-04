@@ -134,14 +134,16 @@ void _registerHostManageFromCreateEventTests() {
             event.id,
           ).overrideWith((ref) => Stream.value(operationalAttendees)),
           hostEventRosterInsightsProvider(event.id).overrideWith(
-            (ref) async => HostEventRosterInsights(
-              eventId: event.id,
-              organizerId: event.organizerId,
-              cutoffAt: event.startTime,
-              sourceCoverage: HostRosterInsightCoverage.exact,
-              spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
-              rows: const <HostEventRosterInsight>[],
-              computedAt: now,
+            (ref) => Stream.value(
+              HostEventRosterInsights(
+                eventId: event.id,
+                organizerId: event.organizerId,
+                cutoffAt: event.startTime,
+                sourceCoverage: HostRosterInsightCoverage.exact,
+                spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+                rows: const <HostEventRosterInsight>[],
+                computedAt: now,
+              ),
             ),
           ),
           publicProfileRepositoryProvider.overrideWith((ref) => publicProfiles),

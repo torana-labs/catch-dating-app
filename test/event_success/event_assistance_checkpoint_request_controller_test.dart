@@ -102,17 +102,21 @@ void main() {
     );
   }
 
-  test('explicit reload retires an unsubmitted request review', () async {
-    final session = await review();
-    final actions = editor(session)..select(reassignReporter);
-    actions.reload();
-    expect(container.read(command), isA<CheckpointRequestIdle>());
-    await settleReview();
-    expect(session.isCurrent, isFalse);
-    actions.open(container.read(query).requireValue);
-    expect(form().change, isNull);
-    expect(repository.writes, isEmpty);
-  });
+  test(
+    'explicit reload retires an unsubmitted choice; listeners stay',
+    () async {
+      final session = await review();
+      final actions = editor(session)..select(reassignReporter);
+      actions.reload();
+      expect(container.read(command), isA<CheckpointRequestIdle>());
+      await settleReview();
+      expect(repository.reads, 1);
+      expect(permissions.reads, 1);
+      actions.open(container.read(query).requireValue);
+      expect(form().change, isNull);
+      expect(repository.writes, isEmpty);
+    },
+  );
 
   test('rate limiting preserves an earlier uncertain request', () async {
     final actions = editor(await review())..select(reassignReporter);
@@ -145,13 +149,13 @@ void main() {
       expect(form().error, isA<FormatException>());
       expect(form().change, isNull);
       actions.select(reassignReporter);
-      container.read(query.notifier).reload();
+      permissions.deliver();
       await settleReview();
       expect(session.isCurrent, isFalse);
       await expectLater(actions.submit(), throwsA(isA<ValidationException>()));
       expect(repository.writes, isEmpty);
-      expect(repository.reads, 2);
-      expect(permissions.reads, 2);
+      expect(repository.reads, 1);
+      expect(permissions.reads, 1);
     },
   );
   for (final decision in <CheckpointRequestDecision>[
@@ -160,7 +164,7 @@ void main() {
     ReopenCheckpointRequest('Review again'),
   ]) {
     test(
-      '${decision.runtimeType} deduplicates, verifies success and refreshes the shared report',
+      '${decision.runtimeType} deduplicates, verifies success and leaves the report to the listener',
       () async {
         if (decision is ReopenCheckpointRequest) {
           repository.wire = checkpointClosedWire();
@@ -187,8 +191,8 @@ void main() {
         expect(form().phase, CheckpointRequestPhase.saved);
         expect(await actions.submit(), same(result));
         expect(repository.writes.length, 1);
-        expect(repository.reads, 2);
-        expect(permissions.reads, 2);
+        expect(repository.reads, 1);
+        expect(permissions.reads, 1);
         expect(
           EventAssistanceCheckpointRequestController.mutationKey(session),
           (scope: checkpointScope, account: session.account),
@@ -209,7 +213,7 @@ void main() {
       subscription.close();
       await container.pump();
       expect(container.exists(command), isTrue);
-      container.read(query.notifier).reload();
+      repository.deliver();
       await settleReview();
       container.listen(command, (_, _) {});
       final reopened = container.read(command.notifier)
@@ -279,6 +283,7 @@ void main() {
           ),
         ),
       );
+      repository.deliver();
       await settleReview();
       expect(form().phase, CheckpointRequestPhase.refreshRequired);
       await expectLater(actions.retry(), throwsA(isA<ValidationException>()));
@@ -356,29 +361,35 @@ void main() {
     },
   );
   test(
-    'checkpoint refresh retires management review while shared arrival reads remain available',
+    'a checkpoint delivery retires the management review; arrivals stay shared',
     () async {
       final session = await review();
       final shared = eventAssistanceCheckpointProvider(checkpointScope);
       container.listen(shared, (_, _) {});
       expect(container.read(shared).hasValue, isTrue);
-      repository.pending = Completer<EventAssistanceCheckpointView>();
-      container.read(shared.notifier).reload();
-      await container.pump();
-      expect(session.isCurrent, isFalse);
-      expect(container.read(query).isLoading, isTrue);
-      repository.pending!.complete(checkpointResult(requestReadyWire()).view);
+      repository.deliver();
       await settleReview();
+      expect(session.isCurrent, isFalse);
       expect(container.read(query).hasValue, isTrue);
-      expect(repository.reads, 2);
+      expect(container.read(shared).hasValue, isTrue);
+      expect(repository.reads, 1);
     },
   );
 }
 
+/// Each `watch` is one listener that delivers the current wire at once (or
+/// waits for [pending]); [deliver] sends a newer snapshot to every listener.
 class _Repository extends Fake implements EventAssistanceCheckpointRepository {
   Map<String, Object?> wire = requestReadyWire();
   int reads = 0;
   Completer<EventAssistanceCheckpointView>? pending;
+  final _listeners =
+      <
+        ({
+          EventAssistanceCheckpointScope scope,
+          StreamController<EventAssistanceCheckpointView> controller,
+        })
+      >[];
   final writes =
       <
         ({
@@ -388,13 +399,34 @@ class _Repository extends Fake implements EventAssistanceCheckpointRepository {
         })
       >[];
   @override
-  Future<EventAssistanceCheckpointView> fetch(
-    EventAssistanceCheckpointScope scope,
-  ) async {
+  Stream<EventAssistanceCheckpointView> watch(
+    EventAssistanceCheckpointScope scope, {
+    required String actorUid,
+  }) {
     reads++;
-    return pending != null
-        ? pending!.future
-        : checkpointResult(wire, scope: scope).view;
+    late final StreamController<EventAssistanceCheckpointView> controller;
+    controller = StreamController(onCancel: () => controller.close());
+    _listeners.add((scope: scope, controller: controller));
+    final waiting = pending;
+    if (waiting != null) {
+      waiting.future.then(
+        (view) => controller.isClosed ? null : controller.add(view),
+        onError: (Object error) =>
+            controller.isClosed ? null : controller.addError(error),
+      );
+    } else {
+      controller.add(checkpointResult(wire, scope: scope).view);
+    }
+    return controller.stream;
+  }
+
+  void deliver() {
+    for (final listener in _listeners) {
+      if (listener.controller.isClosed) continue;
+      listener.controller.add(
+        checkpointResult(wire, scope: listener.scope).view,
+      );
+    }
   }
 
   @override
@@ -407,25 +439,58 @@ class _Repository extends Fake implements EventAssistanceCheckpointRepository {
   }
 }
 
+/// The group's view, as the manager's authority for the request review.
 class _Permissions extends Fake implements EventAssistanceDepartureRepository {
   final started = Completer<void>();
   int reads = 0;
   bool observerOnly = false;
   String? actorOverride;
   Completer<EventAssistanceGroupProgressView>? pending;
+  final _listeners =
+      <
+        ({
+          EventAssistanceGroupScope scope,
+          String actorUid,
+          StreamController<EventAssistanceGroupProgressView> controller,
+        })
+      >[];
+
+  EventAssistanceGroupProgressView _view(
+    EventAssistanceGroupScope scope,
+    String actorUid,
+  ) => checkpointOperator(
+    actorUid: actorOverride ?? actorUid,
+    authority: observerOnly ? 'readOnly' : 'canConfirm',
+    scope: scope,
+  );
+
   @override
-  Future<EventAssistanceGroupProgressView> fetch(
+  Stream<EventAssistanceGroupProgressView> watch(
     EventAssistanceGroupScope scope, {
     required String actorUid,
-  }) async {
+  }) {
     reads++;
     if (!started.isCompleted) started.complete();
-    return pending != null
-        ? pending!.future
-        : checkpointOperator(
-            actorUid: actorOverride ?? actorUid,
-            authority: observerOnly ? 'readOnly' : 'canConfirm',
-            scope: scope,
-          );
+    late final StreamController<EventAssistanceGroupProgressView> controller;
+    controller = StreamController(onCancel: () => controller.close());
+    _listeners.add((scope: scope, actorUid: actorUid, controller: controller));
+    final waiting = pending;
+    if (waiting != null) {
+      waiting.future.then(
+        (view) => controller.isClosed ? null : controller.add(view),
+        onError: (Object error) =>
+            controller.isClosed ? null : controller.addError(error),
+      );
+    } else {
+      controller.add(_view(scope, actorUid));
+    }
+    return controller.stream;
+  }
+
+  void deliver() {
+    for (final listener in _listeners) {
+      if (listener.controller.isClosed) continue;
+      listener.controller.add(_view(listener.scope, listener.actorUid));
+    }
   }
 }

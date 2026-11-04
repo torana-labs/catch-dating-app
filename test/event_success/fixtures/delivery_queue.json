@@ -5,60 +5,89 @@
       "organizerId": "o-00000000-0000-0000-0000-000000000456",
       "eventId": "e-00000000-0000-0000-0000-000000000456"
     },
-    "serverTime": 1788782400000,
-    "coverage": "page",
-    "deliveries": [
+    "views": [
       {
-        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
-        "revision": 0,
-        "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
-        "displayName": "Alex Morgan",
-        "createdAt": 1788782400000,
-        "expiresAt": 1788784200000,
-        "lifecycle": "active",
-        "deliveryStatus": "notSubmitted",
-        "purpose": "joiningUpdate",
-        "attempts": [],
-        "coordination": {
-          "kind": "untracked"
-        },
-        "handling": {
-          "kind": "automatic"
-        },
-        "availability": "current",
-        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
-        "actions": [
-          "manualHandoff"
-        ]
+        "id": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": 1788784200000,
+          "view": {
+            "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+            "revision": 0,
+            "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
+            "displayName": "Alex Morgan",
+            "createdAt": 1788782400000,
+            "expiresAt": 1788784200000,
+            "lifecycle": "active",
+            "deliveryStatus": "notSubmitted",
+            "purpose": "joiningUpdate",
+            "attempts": [],
+            "coordination": {
+              "kind": "untracked"
+            },
+            "handling": {
+              "kind": "automatic"
+            },
+            "availability": "current",
+            "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+            "actions": [
+              "manualHandoff"
+            ]
+          },
+          "revision": 1,
+          "evaluatedAt": 1788782400000
+        }
       },
       {
-        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
-        "revision": 0,
-        "reviewHash": "4068b470ab88ab679dd8211e1bfef6af282813efc688c510fb7d722152f4c682",
-        "displayName": "Alex Morgan",
-        "createdAt": 1788782400000,
-        "expiresAt": 1788786000000,
-        "lifecycle": "active",
-        "deliveryStatus": "notSubmitted",
-        "purpose": "joiningUpdate",
-        "attempts": [],
-        "coordination": {
-          "kind": "tracked",
-          "phase": "queued",
-          "reason": null,
-          "dueAt": 1788782400000
-        },
-        "handling": {
-          "kind": "automatic"
-        },
-        "availability": "current",
-        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
-        "actions": [
-          "manualHandoff"
-        ]
+        "id": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": 1788786000000,
+          "view": {
+            "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+            "revision": 0,
+            "reviewHash": "4068b470ab88ab679dd8211e1bfef6af282813efc688c510fb7d722152f4c682",
+            "displayName": "Alex Morgan",
+            "createdAt": 1788782400000,
+            "expiresAt": 1788786000000,
+            "lifecycle": "active",
+            "deliveryStatus": "notSubmitted",
+            "purpose": "joiningUpdate",
+            "attempts": [],
+            "coordination": {
+              "kind": "tracked",
+              "phase": "queued",
+              "reason": null,
+              "dueAt": 1788782400000
+            },
+            "handling": {
+              "kind": "automatic"
+            },
+            "availability": "current",
+            "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+            "actions": [
+              "manualHandoff"
+            ]
+          },
+          "revision": 1,
+          "evaluatedAt": 1788782400000
+        }
       }
-    ],
-    "nextCursor": null
+    ]
   },
   "uncertain": {
     "context": {
@@ -66,66 +95,95 @@
       "organizerId": "o-00000000-0000-0000-0000-000000000456",
       "eventId": "e-00000000-0000-0000-0000-000000000456"
     },
-    "serverTime": 1788782400000,
-    "coverage": "page",
-    "deliveries": [
+    "views": [
       {
-        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
-        "revision": 0,
-        "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
-        "displayName": "Alex Morgan",
-        "createdAt": 1788782400000,
-        "expiresAt": 1788784200000,
-        "lifecycle": "active",
-        "deliveryStatus": "notSubmitted",
-        "purpose": "joiningUpdate",
-        "attempts": [],
-        "coordination": {
-          "kind": "untracked"
-        },
-        "handling": {
-          "kind": "automatic"
-        },
-        "availability": "current",
-        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
-        "actions": [
-          "manualHandoff"
-        ]
+        "id": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": 1788784200000,
+          "view": {
+            "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+            "revision": 0,
+            "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
+            "displayName": "Alex Morgan",
+            "createdAt": 1788782400000,
+            "expiresAt": 1788784200000,
+            "lifecycle": "active",
+            "deliveryStatus": "notSubmitted",
+            "purpose": "joiningUpdate",
+            "attempts": [],
+            "coordination": {
+              "kind": "untracked"
+            },
+            "handling": {
+              "kind": "automatic"
+            },
+            "availability": "current",
+            "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+            "actions": [
+              "manualHandoff"
+            ]
+          },
+          "revision": 1,
+          "evaluatedAt": 1788782400000
+        }
       },
       {
-        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
-        "revision": 2,
-        "reviewHash": "ee813e46b3467490c2af54fee376958d1d6436187a396945fb4a39b78a1c4b4f",
-        "displayName": "Alex Morgan",
-        "createdAt": 1788782400000,
-        "expiresAt": 1788786000000,
-        "lifecycle": "active",
-        "deliveryStatus": "unknown",
-        "purpose": "joiningUpdate",
-        "attempts": [
-          {
-            "channel": "whatsapp",
-            "state": "unknown",
-            "at": 1788782400000
-          }
-        ],
-        "coordination": {
-          "kind": "tracked",
-          "phase": "queued",
-          "reason": null,
-          "dueAt": 1788782400000
-        },
-        "handling": {
-          "kind": "automatic"
-        },
-        "availability": "current",
-        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
-        "actions": [
-          "manualHandoff"
-        ]
+        "id": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": 1788786000000,
+          "view": {
+            "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+            "revision": 2,
+            "reviewHash": "ee813e46b3467490c2af54fee376958d1d6436187a396945fb4a39b78a1c4b4f",
+            "displayName": "Alex Morgan",
+            "createdAt": 1788782400000,
+            "expiresAt": 1788786000000,
+            "lifecycle": "active",
+            "deliveryStatus": "unknown",
+            "purpose": "joiningUpdate",
+            "attempts": [
+              {
+                "channel": "whatsapp",
+                "state": "unknown",
+                "at": 1788782400000
+              }
+            ],
+            "coordination": {
+              "kind": "tracked",
+              "phase": "queued",
+              "reason": null,
+              "dueAt": 1788782400000
+            },
+            "handling": {
+              "kind": "automatic"
+            },
+            "availability": "current",
+            "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+            "actions": [
+              "manualHandoff"
+            ]
+          },
+          "revision": 2,
+          "evaluatedAt": 1788782401000
+        }
       }
-    ],
-    "nextCursor": null
+    ]
   },
   "command": {
     "expectedMessageRevision": 2,
@@ -152,12 +210,12 @@
       "organizerId": "o-00000000-0000-0000-0000-000000000456",
       "eventId": "e-00000000-0000-0000-0000-000000000456"
     },
-    "serverTime": 1788782400000,
+    "serverTime": 1788782401000,
     "operationRevision": 3,
     "view": {
       "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
       "revision": 3,
-      "reviewHash": "279f0a9269ae26cbdebafb8a4134b074bfc85604b36dcca197c8fc09c38b9aa1",
+      "reviewHash": "4fb53db21a235d681cf6246614ac4038f919324df0a4fdd42c26aa04ac3c1255",
       "displayName": "Alex Morgan",
       "createdAt": 1788782400000,
       "expiresAt": 1788786000000,
@@ -180,7 +238,7 @@
       "handling": {
         "kind": "manual",
         "actorUid": "host-1",
-        "at": 1788782400000,
+        "at": 1788782401000,
         "authority": "current"
       },
       "availability": "current",
@@ -194,67 +252,96 @@
       "organizerId": "o-00000000-0000-0000-0000-000000000456",
       "eventId": "e-00000000-0000-0000-0000-000000000456"
     },
-    "serverTime": 1788782401000,
-    "coverage": "page",
-    "deliveries": [
+    "views": [
       {
-        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
-        "revision": 0,
-        "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
-        "displayName": "Alex Morgan",
-        "createdAt": 1788782400000,
-        "expiresAt": 1788784200000,
-        "lifecycle": "active",
-        "deliveryStatus": "notSubmitted",
-        "purpose": "joiningUpdate",
-        "attempts": [],
-        "coordination": {
-          "kind": "untracked"
-        },
-        "handling": {
-          "kind": "automatic"
-        },
-        "availability": "current",
-        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
-        "actions": [
-          "manualHandoff"
-        ]
+        "id": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": 1788784200000,
+          "view": {
+            "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+            "revision": 0,
+            "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
+            "displayName": "Alex Morgan",
+            "createdAt": 1788782400000,
+            "expiresAt": 1788784200000,
+            "lifecycle": "active",
+            "deliveryStatus": "notSubmitted",
+            "purpose": "joiningUpdate",
+            "attempts": [],
+            "coordination": {
+              "kind": "untracked"
+            },
+            "handling": {
+              "kind": "automatic"
+            },
+            "availability": "current",
+            "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+            "actions": [
+              "manualHandoff"
+            ]
+          },
+          "revision": 1,
+          "evaluatedAt": 1788782400000
+        }
       },
       {
-        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
-        "revision": 4,
-        "reviewHash": "69cb052548a25bd6b19f6b0fb9325a502931d05261da0a60b5a281a98a6d38a2",
-        "displayName": "Alex Morgan",
-        "createdAt": 1788782400000,
-        "expiresAt": 1788786000000,
-        "lifecycle": "active",
-        "deliveryStatus": "delivered",
-        "purpose": "joiningUpdate",
-        "attempts": [
-          {
-            "channel": "whatsapp",
-            "state": "delivered",
-            "at": 1788782401000
-          }
-        ],
-        "coordination": {
-          "kind": "tracked",
-          "phase": "queued",
-          "reason": null,
-          "dueAt": 1788782400000
-        },
-        "handling": {
-          "kind": "manual",
-          "actorUid": "host-1",
-          "at": 1788782400000,
-          "authority": "current"
-        },
-        "availability": "current",
-        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
-        "actions": []
+        "id": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": null,
+          "view": {
+            "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+            "revision": 4,
+            "reviewHash": "f0fcc1d4880fc7b76504495acbd58e6b09f17336b885412180ae9a4716623945",
+            "displayName": "Alex Morgan",
+            "createdAt": 1788782400000,
+            "expiresAt": 1788786000000,
+            "lifecycle": "active",
+            "deliveryStatus": "delivered",
+            "purpose": "joiningUpdate",
+            "attempts": [
+              {
+                "channel": "whatsapp",
+                "state": "delivered",
+                "at": 1788782402000
+              }
+            ],
+            "coordination": {
+              "kind": "tracked",
+              "phase": "queued",
+              "reason": null,
+              "dueAt": 1788782400000
+            },
+            "handling": {
+              "kind": "manual",
+              "actorUid": "host-1",
+              "at": 1788782401000,
+              "authority": "current"
+            },
+            "availability": "current",
+            "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+            "actions": []
+          },
+          "revision": 3,
+          "evaluatedAt": 1788782403000
+        }
       }
-    ],
-    "nextCursor": null
+    ]
   },
   "replaced": {
     "context": {
@@ -262,64 +349,93 @@
       "organizerId": "o-00000000-0000-0000-0000-000000000456",
       "eventId": "e-00000000-0000-0000-0000-000000000456"
     },
-    "serverTime": 1788782401000,
-    "coverage": "page",
-    "deliveries": [
+    "views": [
       {
-        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
-        "revision": 0,
-        "reviewHash": "95db4ec250a45d1585915ac1361da2a07befa4f7875325565a10dce18fef2f00",
-        "displayName": null,
-        "createdAt": 1788782400000,
-        "expiresAt": 1788784200000,
-        "lifecycle": "active",
-        "deliveryStatus": "notSubmitted",
-        "purpose": "joiningUpdate",
-        "attempts": [],
-        "coordination": {
-          "kind": "untracked"
-        },
-        "handling": {
-          "kind": "automatic"
-        },
-        "availability": "sourceChanged",
-        "attendeeId": null,
-        "actions": []
+        "id": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": null,
+          "view": {
+            "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+            "revision": 0,
+            "reviewHash": "dd5d738f3404c61d7689b61639e029bc9869ac4f448952897687563d9cde8b68",
+            "displayName": null,
+            "createdAt": 1788782400000,
+            "expiresAt": 1788784200000,
+            "lifecycle": "active",
+            "deliveryStatus": "notSubmitted",
+            "purpose": "joiningUpdate",
+            "attempts": [],
+            "coordination": {
+              "kind": "untracked"
+            },
+            "handling": {
+              "kind": "automatic"
+            },
+            "availability": "sourceChanged",
+            "attendeeId": null,
+            "actions": []
+          },
+          "revision": 2,
+          "evaluatedAt": 1788782404000
+        }
       },
       {
-        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
-        "revision": 4,
-        "reviewHash": "cb613e07302a626d30eb51990fd64feb19ccf51675766440359e7f035bebc197",
-        "displayName": null,
-        "createdAt": 1788782400000,
-        "expiresAt": 1788786000000,
-        "lifecycle": "active",
-        "deliveryStatus": "delivered",
-        "purpose": "joiningUpdate",
-        "attempts": [
-          {
-            "channel": "whatsapp",
-            "state": "delivered",
-            "at": 1788782401000
-          }
-        ],
-        "coordination": {
-          "kind": "tracked",
-          "phase": "queued",
-          "reason": null,
-          "dueAt": 1788782400000
-        },
-        "handling": {
-          "kind": "manual",
-          "actorUid": "host-1",
-          "at": 1788782400000,
-          "authority": "current"
-        },
-        "availability": "sourceChanged",
-        "attendeeId": null,
-        "actions": []
+        "id": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "data": {
+          "schemaVersion": 1,
+          "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+          "eventId": "e-00000000-0000-0000-0000-000000000456",
+          "organizerId": "o-00000000-0000-0000-0000-000000000456",
+          "createdAt": 1788782400000,
+          "lifecycle": "active",
+          "sourceCoverage": "complete",
+          "incompleteSource": null,
+          "relevantUntilMillis": null,
+          "view": {
+            "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+            "revision": 4,
+            "reviewHash": "865724b99d04b06e32fd17a9c8c5c622aadc5287c63872650fecae8af9836107",
+            "displayName": null,
+            "createdAt": 1788782400000,
+            "expiresAt": 1788786000000,
+            "lifecycle": "active",
+            "deliveryStatus": "delivered",
+            "purpose": "joiningUpdate",
+            "attempts": [
+              {
+                "channel": "whatsapp",
+                "state": "delivered",
+                "at": 1788782402000
+              }
+            ],
+            "coordination": {
+              "kind": "tracked",
+              "phase": "queued",
+              "reason": null,
+              "dueAt": 1788782400000
+            },
+            "handling": {
+              "kind": "manual",
+              "actorUid": "host-1",
+              "at": 1788782401000,
+              "authority": "current"
+            },
+            "availability": "sourceChanged",
+            "attendeeId": null,
+            "actions": []
+          },
+          "revision": 4,
+          "evaluatedAt": 1788782404000
+        }
       }
-    ],
-    "nextCursor": null
+    ]
   }
 }

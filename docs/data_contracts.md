@@ -389,12 +389,24 @@ and contain a revisioned handling state. The schema preserves historical
 records without those fields as an explicit legacy variant; the Host reader
 cannot invent their missing source binding or authorize their mutation.
 
-`listEventAssistanceCases` provides a manager-only, bounded page of practical
-requests, with stale identity redaction and no event-wide completeness claim.
-Optional current-source guest names and manager choice snapshots are shared with
-rehearsal help projections. Source-changed and legacy rows can expose only a null
-name. Manager options bind the caller and contain at most 42 distinct canonical
-managers; every assignment rechecks current authority. Native parsers reject duplicate/missing-caller
+Managers read practical requests through `hostEventCaseViews/{caseId}`
+(`contracts/firestore/host_event_case_views.schema.json`), one server-only view
+per live case owned by the event lead, written ahead of time by triggers on
+`eventAssistanceCases`, `eventAttendees`, `events` and `organizers`
+(`functions/src/hostReadModels/eventCaseViewStore.ts`). Each evaluation runs in
+one transaction that rereads the case, its organizer, its event and its attendee
+row and writes only a changed view; a safety-owned, rehearsal or deleted case has
+no view, and a source that fails validation records `sourceCoverage:
+invalidSource` and keeps the previous row. `view` is the row the retired
+`listEventAssistanceCases` callable returned, with stale identity redaction; the
+phone lists one status a page at a time (organizer, event, status, ordered by
+case id, 50 rows) and fails the page on an incomplete view rather than hiding a
+request. Optional current-source guest names are shared with rehearsal help
+projections. Source-changed and legacy rows can expose only a null name. The
+handoff choices are built on the phone from the organizer document with the
+server's rule (owner, primary host and host ids, named from the host profiles);
+they bind the caller, contain at most 42 distinct canonical managers, and every
+assignment rechecks current authority. Native parsers reject duplicate/missing-caller
 choices and a rehearsal name that differs from its actor. Guest-name changes alter
 the reviewed source hash, independently of the immutable retry binding.
 `resolveEventAssistanceCase` owns resolution, decline and manager handoff. The
@@ -468,10 +480,23 @@ organizer blocks; `purgeRetainedSafetyRecords` deletes them when due.
 ### Event Assistance Delivery Review
 
 `event_assistance_delivery_review.schema.json` owns the closed Host delivery
-page, reviewed repair input, ownership projection and immutable repair receipt.
-Both callables require organizer management access. List coverage is page-local;
-delivery evidence and coordinator completion remain independent. Missing or
-replaced guest sources redact attendee identity and prohibit new commands.
+row, reviewed repair input, ownership projection and immutable repair receipt.
+Managers read rows through `hostEventDeliveryViews/{messageId}`
+(`contracts/firestore/host_event_delivery_views.schema.json`), one server-only
+view per live message, written ahead of time by triggers on
+`eventAssistanceMessages`, `eventAssistanceGuests`, `eventAttendees`, `events`,
+`operationWorkItems`, `operationRuns` and `organizers`
+(`functions/src/hostReadModels/eventDeliveryViewStore.ts`). Each evaluation
+rereads the message, organizer, event, attendee, guest and, for automatic
+delivery, its run and work item in one transaction and evaluates the row at the
+transaction's time. Time enters the row only through manual handoff:
+`relevantUntilMillis` is the message's expiry, or the event's end when the live
+window closes there first, and the phone treats the action as gone once its
+clock reaches it, so no sweep runs. The phone pages an event's views (organizer,
+event, ordered by message id, 50 rows) and fails the page on an incomplete view.
+Delivery evidence and coordinator completion remain independent. Missing or
+replaced guest sources redact attendee identity and prohibit new commands. The
+repair callable requires organizer management access.
 
 `repairEventAssistanceDelivery` currently supports only the typed command's
 `manualHandoff` action. Its expected message revision and complete review hash
@@ -1010,12 +1035,13 @@ view, including after a later departure; changed reuse fails. These records
 have no TTL: command deduplication must survive the executable event lifetime,
 and terminal retention/cleanup must be defined before activation.
 
-`getEventAssistanceGroupProgress`, `confirmEventAssistanceDeparture` and
-`changeEventAssistanceRoute` are Auth/App-Check-protected and rate-limited.
-Canonical organizer management is
+`confirmEventAssistanceDeparture` and `changeEventAssistanceRoute` are
+Auth/App-Check-protected and rate-limited. Canonical organizer management is
 checked inside the transaction that reads event/plan/source state and writes
-the result. The read response exposes only saved destination choices and
-progress, without roster data. Confirmation requires matching source and
+the result. Their response view exposes only saved destination choices and
+progress, without roster data; managers read the same view through
+`hostEventGroupProgressViews` (see
+[Live Console Movement Views](#live-console-movement-views)). Confirmation requires matching source and
 progress revisions, a current destination, an open event and a live runtime.
 Route recovery requires a current manager, an existing confirmed departure, a
 different opaque alternative and an explicit decision ID. It updates operating
@@ -1049,19 +1075,14 @@ exempted from indexing. No client can read or write the roster collection.
 It has no TTL: checkpoint reconciliation and the retention policy must preserve
 the original departure evidence before any terminal cleanup is introduced.
 
-`listEventAssistanceDepartureRosters` discovers recorded rosters for one current
-group under scoped read authority. Its read-only transaction queries the canonical
-progress identity in descending departure revision, with a fixed ten-row page and
-one validated overflow witness. The exclusive `beforeRevision` cursor cannot hide
-a later departure or duplicate a row across older pages. Each row exposes original
-departure time, roster size, source availability and saved checkpoint report counts.
-It exposes no guest identities, contact fields or inferred current obligations; the
-original requested deadline is historical, and report detail must reload current
-owner, closeout and visit evidence. Source changes retain history while withholding
-a current destination label. Access is checked before the query and expiry is
-rechecked after report reads. Invalid roster/report identity, hashes, ordering or
-revision bounds fail the page. Removed groups remain unavailable under the current
-group-duty boundary; this read does not widen staff authority.
+Departure history is read through `hostEventDepartureViews`, one view per
+recorded roster (see [Live Console Movement Views](#live-console-movement-views)).
+Each row exposes original departure time, roster size, source availability and
+saved checkpoint report counts. It exposes no guest identities, contact fields or
+inferred current obligations; the original requested deadline is historical, and
+report detail reads the checkpoint view's current owner, closeout and visit
+evidence. Source changes retain history while withholding a current destination
+label.
 
 `eventAssistanceCheckpoints/{reportId}` records the current checkpoint report for
 an execution context, group, departure revision and checkpoint ID. The typed
@@ -1081,11 +1102,13 @@ without names remain parseable and cannot invent a named UI identity.
 request hash and full original report. Its ID binds context, group and operation ID.
 Reusing an ID with different content fails; an exact retry returns the original
 revision and latest view. Reports for earlier legs remain independent of subsequent
-progress. The two Auth/App-Check/rate-limited callables require a current scoped
-checkpoint duty or organizer management and recheck expiry after transaction reads.
+progress. The Auth/App-Check/rate-limited `recordEventAssistanceCheckpoint`
+requires a current scoped checkpoint duty or organizer management and rechecks
+expiry after transaction reads; managers read the checkpoint through
+`hostEventCheckpointViews`.
 They do not require automatic assistance or an open runtime to settle outstanding
 reports. New observations still require the same physical visit and source setup.
-The checkpoint read view also projects the optional request's waiting, overdue,
+The checkpoint view also projects the optional request's waiting, overdue,
 discrepancy, complete or source-unavailable state and current owner availability.
 Time and owner availability do not alter the report's reviewed evidence hash.
 Complete original observations survive later source changes; partial corrections
@@ -1139,6 +1162,62 @@ publisher must supply fresh source-derived guidance before an existing link
 can show a changed destination. No additional guidance collection or schema
 was introduced.
 
+
+### Live Console Movement Views
+
+The live console's movement reads are manager projections written ahead of
+time by the movement view evaluator (`hostReadModels/movementViewTriggers.ts`)
+and read through Firestore listeners under `isHostSummaryManager` of the
+document's `organizerId`. Only an organizer's managers use these reads: the
+group-lead role exists for the commands, which check its duty per group, so
+the actor-specific parts of the retired read responses (the actor, departure
+authority, read expiry) are manager constants on the phone. A group-lead read
+surface, if one is built, reads through the commands or a later rules design
+with duties stored per group. The retired callables refused no archived or
+inactive organizer, so neither do the views. Every view records `revision`,
+`evaluatedAt`, `sourceCoverage` (`complete` or `invalidSource`) and
+`incompleteSource`; an invalid source keeps the previous projection and never
+throws, and the phone shows the unavailable state for it or for a view not
+written yet. Time enters only as instants the views store; the phone applies
+the app clock, never earlier than `evaluatedAt`.
+
+`hostEventGroupProgressViews/{progressId}` holds, for each configured group of
+an event with an `eventFormat` and an `endTime` (`event:whole` and each pace
+group), what `getEventAssistanceGroupProgress` returned for a manager without
+`serverTime`. `eventOpen` is evaluated one millisecond before
+`eventEndAtMillis`, so the phone ANDs it, and the guidance it gates, with the
+app clock. Triggers: the event (status, times, format, organizer, meeting
+place, itinerary), its event success plan (status) and the group's progress
+row. Views of groups that leave the route plan, or of a deleted event, are
+deleted. The phone gets one view by its id.
+
+`hostEventDepartureViews/{rosterId}` holds one departure history row per
+recorded roster. `label` and `sourceState` follow the group's current source,
+so an event or plan change re-evaluates the event's rosters; the checkpoint
+summary follows the roster's report. The phone pages a group's rows with
+`organizerId`, `progressId` and `progressRevision` descending (ten rows plus
+one to find the next page) and takes the current revision from the group's
+progress view.
+
+`hostEventCheckpointViews/{checkpointViewId}` holds, for each roster whose
+destination is an itinerary stop or group checkpoint, what
+`getEventAssistanceCheckpoint` returned for a manager without `serverTime`.
+`reporterOptions` keeps the reporters and the assignment hash; the phone adds
+the actor and the thirty-minute choice window. The request's waiting or overdue
+state compares `request.dueAt`, owner availability compares
+`ownerValidUntilMillis`, and each reporter is listed while its `validUntil` is
+after both the clock and the due time; the phone re-derives all three.
+Dispositions compare the clock only to check that saved instants are not in the
+future. `accountability` carries each roster member's accountability view for
+the checkpoint scope, the hash `resolveEventAssistanceAccountability` fences
+on. `memberAttendeeIds` lets an attendee, guest or membership write find the
+views it can change. Triggers also cover the report, the request work item,
+the event's staff grants and the organizer's managers. A view is frozen 24
+hours after its event ends.
+
+Backfill per organizer over events that have not ended:
+`functions/scripts/backfill-host-read-models.cjs --model group-progress-views`,
+`departure-views` or `checkpoint-views`, with `--apply` to write.
 ### Event Service Outbox Contract
 
 `eventAssistanceOperationalNoticeQuotas/{quotaId}` and
@@ -1304,7 +1383,7 @@ server-only collections:
 
 | Collection | Purpose | Limits and authority |
 |---|---|---|
-| `eventRehearsalMilestones/{organizerId}` | Durable completed-rehearsal evidence | Server-only; stamped atomically with successful completion and unaffected by session reset, fork or expiry |
+| `eventRehearsalMilestones/{organizerId}` | Durable completed-rehearsal evidence | Server-written; stamped atomically with successful completion and unaffected by session reset, fork or expiry. Current organizer managers get it under rules; the Host listens to it for completion |
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
 | `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, visit-bound accountability, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags, keep-apart ids and synthetic required-data completion | At most 50 actors; required-data state stores canonical field identifiers, revisions and virtual-time prompt status without profile values. No participant UID, phone, email, booking, payment, match, chat, or production attendee id. A resolving Host UID is private audit evidence only. |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
@@ -1332,15 +1411,18 @@ that snapshot without reading the live roster. Public guest projections replace
 copied names with synthetic labels. Custom setup strips production layout IDs
 and arbitrary activity metadata before persistence. No rehearsal handler may
 write a production collection. Firestore rules deny every direct client read and write to these
-collections; App-Check-protected callables own all Host access.
+collections, except that a current organizer manager may get the organizer's
+`eventRehearsalMilestones` document; App-Check-protected callables own all other
+Host access.
 
-`getEventRehearsalSummary` rechecks organizer-manager authority and returns only
-`hasCompletedRehearsal`. Missing evidence returns false; failed authorization,
-transport, or malformed evidence remains an error. A bounded one-session query
-recognizes legacy completion while the session is retained, but cannot reconstruct
-completions that expired before durable evidence was introduced. The summary
-never writes completion; the existing revision- and action-ID-fenced completion
-transaction is its only writer.
+Rehearsal completion is the milestone document itself. Host Today listens to
+`eventRehearsalMilestones/{organizerId}`: an existing document whose
+`organizerId` matches means completed, a missing one means not yet, and a denied
+or failed read stays unknown rather than false. There is no fallback to retained
+completed sessions: under the pre-launch clean-schema mandate every environment
+is reseeded, so the milestone is the only evidence. The existing revision- and
+action-ID-fenced completion transaction is the milestone's only writer, and the
+listener delivers it without an invalidation.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and
 guest actions carry a bounded client action id, exact replays return the same
@@ -1569,18 +1651,25 @@ deployment configuration, not a persisted plan constant.
 
 ### Event Success Presence And Late-Arrival Boundary
 
-`contracts/firestore/event_success_presence.schema.json` owns the server-only
+`contracts/firestore/event_success_presence.schema.json` owns the server-written
 heartbeat record at `eventSuccessPresence/{eventId_uid}`. The document stores
 event/organizer/attendee identity, runtime surface, and server timestamps; it
 does not persist a presence enum. `present`, `idle`, and `likelyDeparted` are
-derived from the Functions server clock and the bounded deployment policy.
-Direct clients cannot read or write presence documents.
+derived from `heartbeatAt` and a clock with the windows in
+`contracts/catalogs/event_success_presence_policy.json` (a 30-second heartbeat,
+a 90-second present window, a 300-second likely-departed threshold), which the
+generator emits to Functions and Dart. Rotation generation and late placement
+derive on the server clock. A current manager of the organizer lists an event's
+heartbeats under rules and the live console derives on the app clock, re-evaluated
+at the heartbeat interval; attendees cannot read presence and only the heartbeat
+callable writes it. Its response carries the policy to Flutter and web.
+Unmonitored attendees remain eligible; absence of a heartbeat is not departure
+evidence.
 
-The heartbeat request/response schemas and Host summary response under
-`contracts/callables/` and `contracts/callable_responses/` carry the active
-policy into Flutter and web. Defaults are a 30-second heartbeat, a 90-second
-present window, and a 300-second likely-departed threshold. Unmonitored
-attendees remain eligible; absence of a heartbeat is not departure evidence.
+The console's late-arrival candidates are checked-in guests on the operational
+roster (an `eventAttendees` row linked to the guest's account) who checked in
+after the event started and are neither in the next round's current draft nor
+placed for it.
 
 `contracts/firestore/event_success_late_arrivals.schema.json` owns the
 deterministic Host resolution at `eventSuccessLateArrivals/{eventId_uid}`.
@@ -1589,8 +1678,8 @@ live revision. The transaction can change only the unpublished next-round
 assignment draft, increments its draft revision when changed, and records a
 bounded attendee-visible reason. It never writes
 `eventSuccessAssignments/{eventId_moduleId_uid}`. Rules allow only the subject
-attendee or event Host to get a resolution; collection queries and direct
-writes are denied.
+attendee or event Host to get a resolution, and a current organizer manager to
+list an event's resolutions; direct writes are denied.
 
 ### Event Success Conversation Graph Boundary
 
@@ -2053,8 +2142,8 @@ The contract layer owns:
 ### Progressive Event Setup Contracts
 
 The progressive wizard uses `createPrivateEventSetup`,
-`updatePrivateEventBasics`, `getPrivateEventSetup`, and
-`listPrivateEventSetups` payload contracts. The manager inventory defaults to
+`updatePrivateEventBasics` and `listPrivateEventSetups` payload contracts, and
+reads each event through its manager setup view (below). The manager inventory defaults to
 upcoming active events and accepts explicit `past` or `cancelled` scopes. History
 is ordered newest first; pages are bounded to 50 and cursors bind the organizer,
 scope, first-page clock and timestamp/document-ID position for at most 24 hours.
@@ -2103,6 +2192,47 @@ writes changes existing offer payment snapshots or guest admission state.
 Create/edit accept explicit city and timezone decisions, a stable request ID,
 and a reviewed defaults hash when inheriting organizer values. Edit also
 requires the current setup revision. Unknown authority fields are rejected.
+
+The setup steps (Basics on resume, Details, Preferences, Publication) read
+`hostEventSetupViews/{eventId}`
+(`contracts/firestore/host_event_setup_views.schema.json`), written ahead of
+time by the setup view evaluator: triggers on the event, its
+`eventSetupPreferences`, its organizer and the seven commitment collections
+(`eventAttendees`, `eventAttendeeImports`, `eventParticipations`,
+`eventWaitlistOffers`, `organizerEventOffers`, `payments`,
+`razorpayPendingOrders`) reread every source in one transaction and write the
+document only when the projection changed. Its `summary` is the manager
+projection the retired `getPrivateEventSetup` callable returned, including
+`canEditBasics` from the same commitment guard the basics commands use. One
+rule differs: publication readiness leaves time to the phone. The server checks
+every requirement as if the event started one millisecond from now and stores
+`publicationReadiness: {canPublishWhenFuture, missing}` without `futureActive`;
+the phone sets `futureActive` (status active and start after the app clock's
+now), `canPublish = canPublishWhenFuture && futureActive`, and puts
+`futureActive` first in `missing` when it is false. A published event carries no
+publish action. Because nothing else depends on time, the view needs no sweep.
+A source that fails validation (a published event failing the event contract, an
+invalid duration or basics, preferences failing their projection, an organizer
+failing its contract or missing) records `sourceCoverage: invalidSource` with
+`incompleteSource`, keeps the previous summary and logs an error instead of
+retrying; a step treats it as a typed error. A view is written for every event
+that carries a `setupRevision` and deleted when the event is deleted or loses
+it. Current managers of an active, unarchived organizer get it under rules, and a
+view not written yet (just after create) reads as missing, which keeps the step
+loading. Steps listen through one read owner per event; after a save they do not
+reread, they leave saving when the listener delivers a revision at or above the
+receipt's.
+
+The organizer's defaults projection is
+`hostEventSetupDefaultViews/{organizerId}`
+(`contracts/firestore/host_event_setup_default_views.schema.json`), written by
+triggers on the organizer and its `organizerEventSetupDefaults` document. It
+holds what the retired `getOrganizerEventSetupDefaults` callable returned,
+hashes included: the defaults update command and the first-save basics stay
+fenced by `reviewedDefaultsHash`, which rules cannot compute and a client must not
+recompute. Invalid sources are recorded as for the setup view. Current managers of
+an active organizer get it; the defaults update command still returns its
+committed projection.
 
 `setEventPublication` is the separate revision-fenced visibility command for
 progressive events. Publishing validates the complete rich event contract,
@@ -2524,7 +2654,8 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use `listOrganizerCampaigns` and contact-detail callables |
 | Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
 | Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
-| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}`, `externalEventMappings/{mappingId}`, and `providerSyncRuns/{runId}` |
+| External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
+| Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -2743,7 +2874,8 @@ The same read boundary applies to `hostFormSummaries/{formId}` and
 `hostEventSummaries/{eventId}`. Forms contain the existing list DTO, not the
 editable draft definition. Event summaries cover only unpublished inventory;
 published Events already use SDK reads. Unpublished Event rules additionally
-require a currently active, unarchived organizer.
+require a currently active, unarchived organizer (the shared
+`isActiveHostSummaryManager` rule helper).
 
 `hostGroupSummaries/{audienceId}` contains name, lifecycle, revision, group kind
 and preview metadata. Predicates and up to 2500 selected contact IDs are kept in
@@ -2758,7 +2890,32 @@ a coordinated UI patch; mutation and membership-preview authority stay callable.
 The Today attention queue reads `organizerAttentionItems` and
 `organizerAttentionSchedules/{organizerId}` under the same manager authority;
 the evaluator that writes them ahead of time is described in
-[Host Today Attention Contract](#host-today-attention-contract).
+[Host Today Attention Contract](#host-today-attention-contract). The live
+console lists `hostEventCaseViews` and `hostEventDeliveryViews` by organizer
+and event under the same authority, and `eventSuccessPresence` and
+`eventSuccessLateArrivals` by organizer and event; see
+[Event Assistance Practical Requests](#event-assistance-practical-requests),
+[Event Assistance Delivery Review](#event-assistance-delivery-review) and
+[Event Success Presence And Late-Arrival Boundary](#event-success-presence-and-late-arrival-boundary).
+
+The create flow reads `hostEventSetupViews/{eventId}` and
+`hostEventSetupDefaultViews/{organizerId}` under the active-organizer manager
+authority (`isActiveHostSummaryManager`), and
+`eventRehearsalMilestones/{organizerId}` under the plain manager authority;
+their evaluators and rules are described in
+[Progressive Event Setup Contracts](#progressive-event-setup-contracts) and
+[Event Dress Rehearsal Isolation Contract](#event-dress-rehearsal-isolation-contract).
+The live console reads `hostEventGroupProgressViews`, `hostEventDepartureViews`
+and `hostEventCheckpointViews` under the plain manager authority
+(`isHostSummaryManager`); see
+[Live Console Movement Views](#live-console-movement-views).
+
+The door reads `hostProviderConnectionViews/{organizerId}`,
+`externalEventMappings/{mappingId}`, `hostEventRosterInsightViews/{eventId}`
+and `hostOrganizerSpendProjections/{organizerId}` under the same manager
+authority (`isHostSummaryManager`: the callables they replace refused no
+archived organizer); see
+[Provider Sync, Staff, And Offline Attendance](#provider-sync-staff-and-offline-attendance).
 
 `hostResponseSummaries/{summaryId}` stores one unified inbox entry per submitted
 response or standalone application. The key hashes the source kind and ID. A
@@ -4157,6 +4314,35 @@ cursor, counts, state and sanitized errors. The implemented Luma poller imports
 registration and provider check-in facts through the canonical attendee
 reconciler. It does not invent orders, refunds, revenue, referral coverage or
 webhook freshness that Luma has not supplied.
+
+The door reads provider setup through listeners. The provider catalog is the
+contract `contracts/catalogs/organizer_providers.json`, generated for Functions
+and as `organizer_provider_catalog.g.dart` for the Host app. Triggers write
+`hostProviderConnectionViews/{organizerId}`: the organizer's connection rows
+(at most 20; more is `overCap`) without `secretVersionResource`,
+`connectedByUid` or `lastErrorCode`. A current manager gets the view and the
+event's `externalEventMappings` document, whose id the app derives as `eem_` and
+the first 48 hex characters of sha256(eventId); a mapping holds no credential.
+A missing or incomplete view keeps the door in its error state. Connect and
+disconnect still return the setup response, but the door waits for the
+listeners to deliver the write instead of using it, and sync no longer rereads.
+
+The door's roster labels are written ahead of time to
+`hostEventRosterInsightViews/{eventId}`, one row per attendee (at most 1,000)
+with the retired callable's fields. Attendance labels use only events that
+ended before the event's start, and spend only completed, non-refunded Catch
+payments completed by then, so a view freezes 24 hours after its event ends.
+Catch spend is split from the rows: the payment trigger keeps per-account
+totals in the server-only `organizerSpendTotals/{organizerId}` (at most 4,000
+accounts; another account or an uncomputable amount makes them partial, and
+partial totals show no spend at all) and, in the same transaction,
+`hostOrganizerSpendProjections/{organizerId}`, which exposes only the
+top-quartile threshold per currency, never an account or a per-guest amount.
+The phone labels `top_catch_spender` where an amount with at least two paid
+orders reaches its currency's threshold; `member` is always stored and the
+phone hides it when it does not show membership. A missing view, or one
+recorded as `invalidSource`, shows the roster's unavailable state; check-in
+never depends on it.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
 `setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.

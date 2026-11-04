@@ -1,10 +1,11 @@
+import type {DocumentSnapshot} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventAssistanceCheckpointDocument as Report} from
   "../../shared/generated/eventAssistanceCheckpointDocument";
 import type {EventAssistanceDepartureRosterDocument as Roster} from
   "../../shared/generated/eventAssistanceDepartureRosterDocument";
-import type {GetEventAssistanceCheckpointCallablePayload as Scope} from
-  "../../shared/generated/getEventAssistanceCheckpointCallablePayload";
+import type {EventAssistanceCheckpointWork} from
+  "../../shared/generated/eventAssistanceCheckpointWork";
 import type {EventAssistanceCheckpointCallableResponse as Response} from
   "../../shared/generated/eventAssistanceCheckpointCallableResponse";
 import {validateEventAssistanceCheckpointDocument} from
@@ -22,7 +23,9 @@ import type {CheckpointWorkRecords} from "./checkpointWorkRecords";
 import {checkpointCloseoutState, checkpointCloseoutView} from
   "./checkpointCloseoutPolicy";
 
-export type {Scope, Report, Roster, Response};
+/** One saved departure's checkpoint, as the work and receipts name it. */
+export type Scope = EventAssistanceCheckpointWork["scope"];
+export type {Report, Roster, Response};
 export const CHECKPOINTS = "eventAssistanceCheckpoints";
 export const CHECKPOINT_RECEIPTS = "eventAssistanceCheckpointReceipts";
 export type ProgressState = Awaited<ReturnType<typeof readGroupProgressState>>;
@@ -37,6 +40,8 @@ export interface CheckpointState {
   dispositions?: {attendeeId: string; disposition: CheckpointDisposition}[];
   ownerValidUntil: number;
   requestWork?: CheckpointWorkRecords | null;
+  /** The roster members' attendee rows, when the reader loaded them. */
+  attendees?: Map<string, DocumentSnapshot>;
   now: number;
 }
 export function checkpointIdentity(scope: Scope) {

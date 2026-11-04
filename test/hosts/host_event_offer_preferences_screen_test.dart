@@ -120,6 +120,10 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => accounts.stream),
+          managerEventSetupDefaultsViewProvider.overrideWith(
+            (ref, organizerId) =>
+                Stream.error(StateError('Fixture read unavailable')),
+          ),
           eventOfferPreferencesDependenciesProvider.overrideWithValue(
             EventOfferPreferencesDependencies(
               readConfiguration:
@@ -127,8 +131,6 @@ void main() {
                     bindings.add('$uid/$organizerId/$eventId');
                     throw StateError('Fixture read unavailable');
                   },
-              readDefaults: (_) async =>
-                  throw StateError('Fixture read unavailable'),
               write: (_) async => throw StateError('No save'),
             ),
           ),

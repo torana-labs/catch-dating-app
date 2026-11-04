@@ -132,11 +132,8 @@ export {getEventRcsPreference, setEventRcsPreference} from
   "./eventSuccess/operations/rcsPreferenceHandlers";
 export {getEventAssistanceSetting, setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
-export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture,
-  changeEventAssistanceRoute} from
+export {confirmEventAssistanceDeparture, changeEventAssistanceRoute} from
   "./eventSuccess/operations/groupProgressHandlers";
-export {listEventAssistanceDepartureRosters} from
-  "./eventSuccess/operations/departureHistoryHandlers";
 export {onEventAssistanceRcsCallbackCreated} from
   "./eventSuccess/operations/rcsWebhookProcessing";
 export {eventAssistanceRcsWebhook} from
@@ -174,7 +171,6 @@ export {
   getEventAssistanceGuestView,
   submitEventAssistanceGuestChoice,
 } from "./eventSuccess/operations/guestHandlers";
-export {getEventRehearsalSummary} from "./eventRehearsal/summary";
 export {
   completeEventRehearsal,
   controlEventRehearsal,
@@ -249,7 +245,6 @@ export {createOrganizerPost} from "./organizers/organizerPosts";
 export {dispatchPendingOrganizerFollowerUpdates} from
   "./organizers/organizerPostDelivery";
 export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
-export {getEventRosterInsights} from "./organizers/eventRosterInsights";
 export {
   createOrganizerContact,
   createOrganizerContactNote,
@@ -388,7 +383,6 @@ export {
 export {
   connectOrganizerLumaProvider,
   disconnectOrganizerProvider,
-  getOrganizerProviderSetup,
   listOrganizerLumaEvents,
   syncOrganizerProviderEvent,
 } from "./organizers/organizerProviderSetup";
@@ -448,10 +442,7 @@ export {
 } from "./eventSuccess/liveControl";
 export {setEventSuccessAccountabilityResolution} from
   "./eventSuccess/accountability";
-export {
-  getEventSuccessPresenceSummary,
-  heartbeatEventSuccessPresence,
-} from "./eventSuccess/presence";
+export {heartbeatEventSuccessPresence} from "./eventSuccess/presence";
 export {resolveEventSuccessLateArrival} from
   "./eventSuccess/lateArrivals";
 export {recordEventSuccessUnitOutcomes} from
@@ -709,9 +700,9 @@ export {
   recordOrganizerAnalyticsEvent,
 } from "./analytics/organizerAnalyticsEvents";
 
-export {listEventAssistanceCases, resolveEventAssistanceCase} from
+export {resolveEventAssistanceCase} from
   "./eventSuccess/operations/hostCasesHandlers";
-export {listEventAssistanceDeliveries, repairEventAssistanceDelivery} from
+export {repairEventAssistanceDelivery} from
   "./eventSuccess/operations/hostDeliveriesHandlers";
 export {getEventAssistanceHostGuests} from
   "./eventSuccess/operations/hostGuestsHandlers";
@@ -737,7 +728,7 @@ export {reassignEventAssistanceCheckpointReporter} from
   "./eventSuccess/operations/checkpointReporterHandlers";
 export {setEventAssistanceCheckpointCloseout} from
   "./eventSuccess/operations/checkpointCloseoutHandlers";
-export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
+export {recordEventAssistanceCheckpoint} from
   "./eventSuccess/operations/checkpointHandlers";
 
 export {getEventRcsWithdrawal, withdrawEventRcs} from
@@ -867,7 +858,7 @@ export {getProgramStakeholderCounts} from
   "./programs/stakeholderCountsView";
 
 export {
-  createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
+  createPrivateEventSetup, updatePrivateEventBasics,
   updatePrivateEventPreferences, listPrivateEventSetups,
   updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
   reconcilePrivateEventSeats,
@@ -875,7 +866,7 @@ export {
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
 
-export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+export {updateOrganizerEventSetupDefaults}
   from "./organizers/eventSetupDefaults/callables";
 
 export {
@@ -1051,6 +1042,40 @@ export {onOrganizerAttentionOrganizerChanged,
   onOrganizerAttentionMomentSendChanged, onOrganizerAttentionEventOfferChanged,
   onOrganizerAttentionPaymentAccountChanged, sweepOrganizerAttention} from
   "./hostReadModels/attentionTriggers";
+export {onHostEventSetupViewEventChanged,
+  onHostEventSetupViewPreferencesChanged, onHostEventSetupViewOrganizerChanged,
+  onHostEventSetupViewAttendeeChanged,
+  onHostEventSetupViewAttendeeImportChanged,
+  onHostEventSetupViewParticipationChanged,
+  onHostEventSetupViewWaitlistOfferChanged,
+  onHostEventSetupViewEventOfferChanged, onHostEventSetupViewPaymentChanged,
+  onHostEventSetupViewPendingOrderChanged} from
+  "./hostReadModels/eventSetupViewTriggers";
+export {onHostEventSetupDefaultViewDefaultsChanged,
+  onHostEventSetupDefaultViewOrganizerChanged} from
+  "./hostReadModels/eventSetupDefaultViewTriggers";
+export {onHostProviderConnectionViewConnectionChanged,
+  onHostProviderConnectionViewOrganizerChanged} from
+  "./hostReadModels/providerConnectionViewTriggers";
+export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
+  onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
+  onHostRosterInsightTraitsChanged, onHostRosterInsightPaymentChanged} from
+  "./hostReadModels/rosterInsightViewTriggers";
+export {onHostEventCaseViewCaseChanged, onHostEventCaseViewAttendeeChanged,
+  onHostEventCaseViewEventChanged, onHostEventCaseViewOrganizerChanged} from
+  "./hostReadModels/eventCaseViewTriggers";
+export {onHostEventDeliveryViewMessageChanged,
+  onHostEventDeliveryViewGuestChanged, onHostEventDeliveryViewAttendeeChanged,
+  onHostEventDeliveryViewEventChanged, onHostEventDeliveryViewWorkItemChanged,
+  onHostEventDeliveryViewRunChanged, onHostEventDeliveryViewOrganizerChanged}
+  from "./hostReadModels/eventDeliveryViewTriggers";
+export {onHostMovementViewEventChanged, onHostMovementViewPlanChanged,
+  onHostMovementViewProgressChanged, onHostMovementViewRosterChanged,
+  onHostMovementViewCheckpointChanged, onHostMovementViewAttendeeChanged,
+  onHostMovementViewGuestChanged, onHostMovementViewMembershipChanged,
+  onHostMovementViewWorkItemChanged, onHostMovementViewStaffGrantChanged,
+  onHostMovementViewOrganizerChanged} from
+  "./hostReadModels/movementViewTriggers";
 
 export {manageEventApprovalNotifications} from
   "./events/approvalNotifications/preferences";

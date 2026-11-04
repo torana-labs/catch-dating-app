@@ -96,6 +96,10 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
   EventAssistanceCaseChange? _pending;
   void Function()? _releasePending;
 
+  /// The reviewed state the server definitively refused. A review of it stays
+  /// refused until the listener delivers a different evaluation.
+  ({int revision, String sourceHash})? _refused;
+
   @override
   AssistanceCaseEditorState build(EventAssistanceCaseScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
@@ -137,11 +141,14 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
     final page = ref.read(
       eventAssistanceCasesProvider(review.session.page.query),
     );
+    final refused = _refused;
     if (review.request.scope != scope ||
         page.isLoading ||
         page.hasError ||
         !review.isCurrent ||
-        !identical(page.asData?.value, review.session)) {
+        (refused != null &&
+            refused.revision == review.request.revision &&
+            refused.sourceHash == review.request.sourceHash)) {
       throw const ValidationException('Reload the current help request.');
     }
   }
@@ -312,10 +319,6 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
     release?.call();
   }
 
-  void _refresh() {
-    ref.invalidate(eventAssistanceCasesForAccountProvider);
-  }
-
   void _publish(AssistanceCaseForm form) {
     // Error/ready callbacks can act before the previous async stack unwinds.
     _inFlight = null;
@@ -336,7 +339,6 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
       }
       result.requireChange(change);
       _clearPending();
-      _refresh();
       _publish(
         form._after(
           AssistanceCaseEditorPhase.saved,
@@ -362,7 +364,10 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
             }.contains(error.code);
         if (definitive) {
           _clearPending();
-          _refresh();
+          _refused = (
+            revision: change.snapshot.revision,
+            sourceHash: change.snapshot.sourceHash,
+          );
         }
         _publish(
           form._after(

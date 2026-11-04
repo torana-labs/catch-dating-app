@@ -73,7 +73,7 @@ final class EventAssistanceDepartureHistoryProvider
 }
 
 String _$eventAssistanceDepartureHistoryHash() =>
-    r'ff25f184712a28a223cba1226c670bfa3aec1a5a';
+    r'dd8d28fe1187d578d21068f2fdb9431daab0b1bd';
 
 /// Account-scoped pages never render a previous sign-in's history on refresh.
 
@@ -139,20 +139,31 @@ abstract class _$EventAssistanceDepartureHistory
   }
 }
 
+/// One history page for one sign-in period: Firestore listeners on the
+/// group's view and the page of departure views. No cache tags or lifetime;
+/// writes never invalidate it.
+
 @ProviderFor(eventAssistanceDepartureHistoryForAccount)
 final eventAssistanceDepartureHistoryForAccountProvider =
     EventAssistanceDepartureHistoryForAccountFamily._();
+
+/// One history page for one sign-in period: Firestore listeners on the
+/// group's view and the page of departure views. No cache tags or lifetime;
+/// writes never invalidate it.
 
 final class EventAssistanceDepartureHistoryForAccountProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventAssistanceDepartureHistorySession>,
           EventAssistanceDepartureHistorySession,
-          FutureOr<EventAssistanceDepartureHistorySession>
+          Stream<EventAssistanceDepartureHistorySession>
         >
     with
         $FutureModifier<EventAssistanceDepartureHistorySession>,
-        $FutureProvider<EventAssistanceDepartureHistorySession> {
+        $StreamProvider<EventAssistanceDepartureHistorySession> {
+  /// One history page for one sign-in period: Firestore listeners on the
+  /// group's view and the page of departure views. No cache tags or lifetime;
+  /// writes never invalidate it.
   EventAssistanceDepartureHistoryForAccountProvider._({
     required EventAssistanceDepartureHistoryForAccountFamily super.from,
     required (
@@ -181,12 +192,12 @@ final class EventAssistanceDepartureHistoryForAccountProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventAssistanceDepartureHistorySession> $createElement(
+  $StreamProviderElement<EventAssistanceDepartureHistorySession> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventAssistanceDepartureHistorySession> create(Ref ref) {
+  Stream<EventAssistanceDepartureHistorySession> create(Ref ref) {
     final argument =
         this.argument
             as (
@@ -213,12 +224,16 @@ final class EventAssistanceDepartureHistoryForAccountProvider
 }
 
 String _$eventAssistanceDepartureHistoryForAccountHash() =>
-    r'5e537880adea46e4de9d6b9133b96e423fccb92c';
+    r'8aed24fbcf10de2460f54730e6739a7b4af8251b';
+
+/// One history page for one sign-in period: Firestore listeners on the
+/// group's view and the page of departure views. No cache tags or lifetime;
+/// writes never invalidate it.
 
 final class EventAssistanceDepartureHistoryForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<EventAssistanceDepartureHistorySession>,
+          Stream<EventAssistanceDepartureHistorySession>,
           (EventAssistanceDepartureHistoryQuery, {AuthenticatedSession account})
         > {
   EventAssistanceDepartureHistoryForAccountFamily._()
@@ -229,6 +244,10 @@ final class EventAssistanceDepartureHistoryForAccountFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// One history page for one sign-in period: Firestore listeners on the
+  /// group's view and the page of departure views. No cache tags or lifetime;
+  /// writes never invalidate it.
 
   EventAssistanceDepartureHistoryForAccountProvider call(
     EventAssistanceDepartureHistoryQuery query, {

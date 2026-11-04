@@ -94,6 +94,10 @@ class EventAssistanceDeliveryController
   EventAssistanceDeliveryChange? _pending;
   void Function()? _releasePending;
 
+  /// The reviewed state the server definitively refused. A review of it stays
+  /// refused until the listener delivers a different evaluation.
+  ({int revision, String reviewHash})? _refused;
+
   @override
   AssistanceDeliveryEditorState build(EventAssistanceDeliveryScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
@@ -136,10 +140,13 @@ class EventAssistanceDeliveryController
     final page = ref.read(
       eventAssistanceDeliveriesProvider(review.session.page.query),
     );
+    final refused = _refused;
     if (page.isLoading ||
         page.hasError ||
         !review.isCurrent ||
-        !identical(page.asData?.value, review.session)) {
+        (refused != null &&
+            refused.revision == review.delivery.revision &&
+            refused.reviewHash == review.delivery.reviewHash)) {
       throw const ValidationException('Reload the current delivery review.');
     }
   }
@@ -297,7 +304,6 @@ class EventAssistanceDeliveryController
       }
       result.requireChange(change);
       _clearPending();
-      ref.invalidate(eventAssistanceDeliveriesForAccountProvider);
       _publish(
         form._after(
           AssistanceDeliveryPhase.saved,
@@ -323,7 +329,10 @@ class EventAssistanceDeliveryController
             }.contains(error.code);
         if (definitive) {
           _clearPending();
-          ref.invalidate(eventAssistanceDeliveriesForAccountProvider);
+          _refused = (
+            revision: change.snapshot.revision,
+            reviewHash: change.snapshot.reviewHash,
+          );
         }
         _publish(
           form._after(

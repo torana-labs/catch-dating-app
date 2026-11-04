@@ -1,50 +1,79 @@
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_departure_roster_callable_request.g.dart';
-import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_group_progress_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_departure_repository.g.dart';
 
-/// Live callables only. No direct progress, attendance or messaging writes.
+/// The group's progress through a manager listener on
+/// `hostEventGroupProgressViews`; roster review and departure confirmation
+/// stay commands. No direct progress, attendance or messaging writes.
 class EventAssistanceDepartureRepository {
-  const EventAssistanceDepartureRepository(this._functions);
+  const EventAssistanceDepartureRepository(
+    this._functions,
+    this._firestore, {
+    this._clock = const AppClock(),
+  });
   final FirebaseFunctions _functions;
+  final FirebaseFirestore _firestore;
 
-  Future<EventAssistanceGroupProgressView> fetch(
+  /// Applies time to the view on every delivered snapshot and again when
+  /// the event ends.
+  final AppClock _clock;
+
+  /// The group's view as a manager reads it. Only managers can listen, so
+  /// the departure authority is the manager's (canConfirm, any reporter).
+  Stream<EventAssistanceGroupProgressView> watch(
     EventAssistanceGroupScope scope, {
     required String actorUid,
-  }) => withBackendErrorContext(
-    () async {
-      final response = await _functions
-          .httpsCallable('getEventAssistanceGroupProgress')
-          .call<Object?>(
-            GetEventAssistanceGroupProgressCallableRequest(
-              context: scope.context,
-              groupId: scope.groupId,
-            ).toJson(),
-          );
-      final result = EventAssistanceGroupProgressResult.fromCallableData(
-        response.data,
-        expectedScope: scope,
-        expectedActorUid: actorUid,
-      );
-      if (result.outcome != AssistanceProgressOutcome.read) {
-        throw const FormatException('Invalid departure read outcome.');
-      }
-      return result.view;
-    },
+  }) => withBackendErrorStream(
+    () =>
+        clockedListener<
+              Map<String, Object?>?,
+              ({EventAssistanceGroupProgressView view, DateTime? next})
+            >(
+              _firestore
+                  .collection(EventAssistanceMovementViews.groupProgress)
+                  .doc(groupProgressViewId(scope))
+                  .snapshots()
+                  .map((snapshot) => snapshot.data()),
+              clock: _clock,
+              build: (data, clock) {
+                final now = movementViewNow(clock, [data]);
+                final result =
+                    EventAssistanceGroupProgressResult.fromCallableData(
+                      groupProgressReadResponse(
+                        data,
+                        scope: scope,
+                        actorUid: actorUid,
+                        now: now,
+                      ),
+                      expectedScope: scope,
+                      expectedActorUid: actorUid,
+                    );
+                return (
+                  view: result.view,
+                  next: groupProgressNextRebuild(data, now),
+                );
+              },
+              nextRebuildAt: (built) => built.next,
+            )
+            .map((built) => built.view),
     context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'load group departure',
-      resource: 'eventAssistanceGroupProgress',
+      service: BackendService.firestore,
+      action: 'watch group departure',
+      resource: EventAssistanceMovementViews.groupProgress,
     ),
-    mapper: mapMissingCallableAsUnavailable,
   );
 
   Future<EventAssistanceDepartureRosterReview> reviewRoster(
@@ -107,4 +136,8 @@ class EventAssistanceDepartureRepository {
 @riverpod
 EventAssistanceDepartureRepository eventAssistanceDepartureRepository(
   Ref ref,
-) => EventAssistanceDepartureRepository(ref.watch(firebaseFunctionsProvider));
+) => EventAssistanceDepartureRepository(
+  ref.watch(firebaseFunctionsProvider),
+  ref.watch(firebaseFirestoreProvider),
+  clock: ref.watch(appClockProvider),
+);

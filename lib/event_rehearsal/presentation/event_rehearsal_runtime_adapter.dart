@@ -15,6 +15,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.d
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence_policy.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
@@ -228,11 +229,11 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
   ];
   final virtualNowMillis = virtualNow.millisecondsSinceEpoch;
   final presence = EventSuccessPresenceSummary(
-    serverTimeMillis: virtualNowMillis,
     liveControlRevision: session.runtimeRevision,
     nextRoundIndex: session.activeStepIndex + 1,
-    policy: const EventSuccessPresencePolicy(
-      heartbeatIntervalSeconds: 30,
+    policy: EventSuccessPresencePolicy(
+      heartbeatIntervalSeconds:
+          eventSuccessPresencePolicy.heartbeatIntervalSeconds,
       presentWindowSeconds: 90,
       likelyDepartedAfterSeconds: 180,
     ),

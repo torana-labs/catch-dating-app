@@ -86,12 +86,7 @@ class EventAssistanceDepartureController
         .confirm(action.change);
     requireDepartureAccount(ref, action.session.account);
     action.change.requireResult(result);
-    ref.invalidate(
-      eventAssistanceDepartureForAccountProvider(
-        action.session.view.scope,
-        account: action.session.account,
-      ),
-    );
+    // The group's view is a listener; the trigger delivers this departure.
     ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
     return result;
   }

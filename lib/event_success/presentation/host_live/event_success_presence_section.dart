@@ -60,7 +60,13 @@ class EventSuccessPresenceSection extends StatelessWidget {
             ),
             gapH4,
             CatchLegacyText(
-              likelyDeparted.map((entry) => entry.displayName).join(', '),
+              likelyDeparted
+                  .map(
+                    (entry) =>
+                        entry.displayName ??
+                        context.l10n.eventAssistanceHelpUnknownGuest,
+                  )
+                  .join(', '),
               variant: CatchLegacyTextVariant.supporting,
             ),
             gapH10,
@@ -89,7 +95,8 @@ class EventSuccessPresenceSection extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CatchLegacyText(
-                        candidate.displayName,
+                        candidate.displayName ??
+                            context.l10n.eventAssistanceHelpUnknownGuest,
                         variant: CatchLegacyTextVariant.sectionTitle,
                         color: CatchTokens.of(context).ink,
                       ),

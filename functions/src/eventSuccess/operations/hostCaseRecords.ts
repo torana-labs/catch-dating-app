@@ -2,8 +2,8 @@ import type {DocumentSnapshot} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventAssistanceCaseDocument as Case} from
   "../../shared/generated/eventAssistanceCaseDocument";
-import type {EventAssistanceCasesCallableResponse as Response} from
-  "../../shared/generated/eventAssistanceCasesCallableResponse";
+import type {EventAssistanceCaseCallableResponse as CaseResponse} from
+  "../../shared/generated/eventAssistanceCaseCallableResponse";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {validateEventAssistanceCaseDocument} from
@@ -18,11 +18,11 @@ import {sameMessageContext} from "./messagingPolicy";
 
 export type HostCase = Extract<Case, {owner: "eventLead"}>;
 export type ManagedHostCase = Extract<HostCase, {handling: unknown}>;
-export type HostCaseView = Response["cases"][number];
+export type HostCaseView = CaseResponse["view"];
 
 /** Validate persisted identity before projecting or accepting a command. */
 export function parseHostCase(value: unknown, id: string,
-  context: Response["context"], now: number): HostCase {
+  context: CaseResponse["context"], now: number): HostCase {
   if (!validateEventAssistanceCaseDocument(value) ||
       value.owner !== "eventLead" || value.caseId !== id ||
       value.caseId !== "case:" + operationContentHash(value.responseId) ||
@@ -93,9 +93,19 @@ export function projectHostCase(value: HostCase, event: DocumentSnapshot,
 }
 
 
-/** Current organizer managers only; selected identity is rechecked on write. */
+/** A manager snapshot; the server rechecks access for every assignment. */
+export interface CaseManagerOptions {
+  actorUid: string;
+  managers: Array<{uid: string; displayName: string | null}>;
+}
+
+/**
+ * Current organizer managers only; selected identity is rechecked on write.
+ * Practice runs return it; the live console builds the same list on the
+ * phone from the organizer document.
+ */
 export function projectCaseManagerOptions(organizer: OrganizerDocument,
-  actorUid: string): Response["managerOptions"] {
+  actorUid: string): CaseManagerOptions {
   if (!isOrganizerManager(organizer, actorUid)) throw invalidSource();
   const profiles = organizerHostProfiles(organizer);
   const managers = organizerManagerUserIds(organizer).map((uid) => ({uid,

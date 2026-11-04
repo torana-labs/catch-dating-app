@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_crm_callable.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_roster_insight_reads.dart';
 import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
@@ -30,9 +31,16 @@ part 'host_contacts_repository.g.dart';
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, row.segmentIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, manualTagIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
 class HostContactsRepository {
-  const HostContactsRepository(this._functions, {this.summaries});
+  const HostContactsRepository(
+    this._functions, {
+    this.summaries,
+    this.rosterInsights,
+  });
 
   final HostContactSummaryReads? summaries;
+
+  /// The door's roster label listeners; reads need them.
+  final HostRosterInsightReads? rosterInsights;
 
   final FirebaseFunctions _functions;
 
@@ -50,17 +58,15 @@ class HostContactsRepository {
     );
   }
 
-  Future<HostEventRosterInsights> getEventRosterInsights(String eventId) =>
-      callHostCrm(
-        _functions,
-        name: 'getEventRosterInsights',
-        payload: GetEventRosterInsightsCallableRequest(
-          eventId: eventId,
-          includeHostMembership: true,
-        ).toJson(),
-        action: 'load event roster customer labels',
-        parse: HostEventRosterInsights.fromCallableData,
-      );
+  /// The event's roster labels as the server last evaluated them, with the
+  /// member label shown, updated while it is listened to.
+  Stream<HostEventRosterInsights> watchEventRosterInsights(String eventId) {
+    final reads = rosterInsights;
+    if (reads == null) {
+      throw StateError('Roster labels need the roster insight listeners.');
+    }
+    return reads.watch(eventId);
+  }
 
   Future<HostAudiencePage> listContacts(
     String organizerId, {
@@ -403,6 +409,9 @@ HostContactsRepository hostContactsRepository(Ref ref) {
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),
+    rosterInsights: HostRosterInsightReads(
+      ref.watch(firebaseFirestoreProvider),
+    ),
   );
 }
 
@@ -410,11 +419,15 @@ HostContactsRepository hostContactsRepository(Ref ref) {
 Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) =>
     ref.watch(hostContactsRepositoryProvider).getSummary(organizerId);
 
+/// The door's roster label read owner. It is a Firestore listener: it
+/// declares no cache tags or lifetime, and writes never invalidate it; the
+/// attendee writes the door makes reach it through the server's triggers.
 @riverpod
-Future<HostEventRosterInsights> hostEventRosterInsights(
+Stream<HostEventRosterInsights> hostEventRosterInsights(
   Ref ref,
   String eventId,
-) => ref.watch(hostContactsRepositoryProvider).getEventRosterInsights(eventId);
+) =>
+    ref.watch(hostContactsRepositoryProvider).watchEventRosterInsights(eventId);
 
 @riverpod
 Future<HostAudiencePage> hostAudience(

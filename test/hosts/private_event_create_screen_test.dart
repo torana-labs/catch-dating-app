@@ -24,6 +24,18 @@ import '../organizers/organizers_test_helpers.dart';
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 
+/// The screen's saved-event read as a setup view stream over [read].
+ReadPrivateEventBasics viewsOf(
+  Future<PrivateEventBasicSummary> Function({
+    required String organizerId,
+    required String eventId,
+  })
+  read,
+) =>
+    ({required organizerId, required eventId}) => Stream.fromFuture(
+      read(organizerId: organizerId, eventId: eventId),
+    ).map(PrivateEventSetupView.complete);
+
 void main() {
   setUpAll(loadCatchTestFonts);
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -85,8 +97,9 @@ void main() {
                   setupRevision: 1,
                   replayed: false,
                 ),
-            readSaved: ({required organizerId, required eventId}) =>
-                read.future,
+            readSaved: viewsOf(
+              ({required organizerId, required eventId}) => read.future,
+            ),
             onSaved: (receipt) => saved.add(receipt.eventId),
           ),
         ),
@@ -154,29 +167,33 @@ void main() {
               organizer: buildOrganizer(),
               promptForDraftsOnStart: false,
               initialSavedEventId: 'history-1',
-              readSaved: ({required organizerId, required eventId}) async =>
-                  PrivateEventBasicSummary(
-                    eventId: eventId,
-                    organizerId: organizerId,
-                    setupRevision: 1,
-                    name: 'Previous mixer',
-                    city: const EventSetupCity(
-                      cityId: 'in-mh-mumbai',
-                      marketId: 'in-mh-mumbai',
-                    ),
-                    localDate:
-                        '${date.year}-${date.month.toString().padLeft(2, '0')}-'
-                        '${date.day.toString().padLeft(2, '0')}',
-                    localStartTime: '19:00',
-                    timezone: 'Asia/Kolkata',
-                    startTimeMillis: date.millisecondsSinceEpoch,
-                    status: status,
-                    setupDefaults: const {},
-                    detailsConfigured: false,
-                    eventPreferences: null,
-                    canEditBasics: status == 'active',
-                    canChangeCity: status == 'active',
+              readSaved: viewsOf(
+                ({
+                  required organizerId,
+                  required eventId,
+                }) async => PrivateEventBasicSummary(
+                  eventId: eventId,
+                  organizerId: organizerId,
+                  setupRevision: 1,
+                  name: 'Previous mixer',
+                  city: const EventSetupCity(
+                    cityId: 'in-mh-mumbai',
+                    marketId: 'in-mh-mumbai',
                   ),
+                  localDate:
+                      '${date.year}-${date.month.toString().padLeft(2, '0')}-'
+                      '${date.day.toString().padLeft(2, '0')}',
+                  localStartTime: '19:00',
+                  timezone: 'Asia/Kolkata',
+                  startTimeMillis: date.millisecondsSinceEpoch,
+                  status: status,
+                  setupDefaults: const {},
+                  detailsConfigured: false,
+                  eventPreferences: null,
+                  canEditBasics: status == 'active',
+                  canChangeCity: status == 'active',
+                ),
+              ),
             ),
           ),
         ),
@@ -294,27 +311,29 @@ void main() {
                     replayed: false,
                   );
                 },
-            readSaved: ({required organizerId, required eventId}) async =>
-                PrivateEventBasicSummary(
-                  eventId: eventId,
-                  organizerId: organizerId,
-                  setupRevision: 1,
-                  name: 'Saturday mixer',
-                  city: const EventSetupCity(
-                    cityId: 'in-mh-mumbai',
-                    marketId: 'in-mh-mumbai',
+            readSaved: viewsOf(
+              ({required organizerId, required eventId}) async =>
+                  PrivateEventBasicSummary(
+                    eventId: eventId,
+                    organizerId: organizerId,
+                    setupRevision: 1,
+                    name: 'Saturday mixer',
+                    city: const EventSetupCity(
+                      cityId: 'in-mh-mumbai',
+                      marketId: 'in-mh-mumbai',
+                    ),
+                    localDate: localDate,
+                    localStartTime: '19:00',
+                    timezone: 'Asia/Kolkata',
+                    startTimeMillis: date.millisecondsSinceEpoch,
+                    status: 'active',
+                    setupDefaults: const {},
+                    detailsConfigured: false,
+                    eventPreferences: null,
+                    canEditBasics: true,
+                    canChangeCity: true,
                   ),
-                  localDate: localDate,
-                  localStartTime: '19:00',
-                  timezone: 'Asia/Kolkata',
-                  startTimeMillis: date.millisecondsSinceEpoch,
-                  status: 'active',
-                  setupDefaults: const {},
-                  detailsConfigured: false,
-                  eventPreferences: null,
-                  canEditBasics: true,
-                  canChangeCity: true,
-                ),
+            ),
           ),
         ),
       ),
@@ -384,27 +403,29 @@ void main() {
                     replayed: false,
                   );
                 },
-            readSaved: ({required organizerId, required eventId}) async =>
-                PrivateEventBasicSummary(
-                  eventId: eventId,
-                  organizerId: organizerId,
-                  setupRevision: 3,
-                  name: 'Server-confirmed Saturday mixer',
-                  city: const EventSetupCity(
-                    cityId: 'in-mh-mumbai',
-                    marketId: 'in-mh-mumbai',
+            readSaved: viewsOf(
+              ({required organizerId, required eventId}) async =>
+                  PrivateEventBasicSummary(
+                    eventId: eventId,
+                    organizerId: organizerId,
+                    setupRevision: 3,
+                    name: 'Server-confirmed Saturday mixer',
+                    city: const EventSetupCity(
+                      cityId: 'in-mh-mumbai',
+                      marketId: 'in-mh-mumbai',
+                    ),
+                    localDate: localDate,
+                    localStartTime: '19:00',
+                    timezone: 'Asia/Kolkata',
+                    startTimeMillis: date.millisecondsSinceEpoch,
+                    status: 'active',
+                    setupDefaults: const {},
+                    detailsConfigured: false,
+                    eventPreferences: null,
+                    canEditBasics: true,
+                    canChangeCity: true,
                   ),
-                  localDate: localDate,
-                  localStartTime: '19:00',
-                  timezone: 'Asia/Kolkata',
-                  startTimeMillis: date.millisecondsSinceEpoch,
-                  status: 'active',
-                  setupDefaults: const {},
-                  detailsConfigured: false,
-                  eventPreferences: null,
-                  canEditBasics: true,
-                  canChangeCity: true,
-                ),
+            ),
           ),
         ),
       ),
@@ -463,27 +484,29 @@ void main() {
           organizer: buildOrganizer(),
           initialDraft: draft,
           create: create,
-          readSaved: ({required organizerId, required eventId}) async =>
-              PrivateEventBasicSummary(
-                eventId: eventId,
-                organizerId: organizerId,
-                setupRevision: draft.eventCreateReceiptRevision ?? 1,
-                name: 'Saturday mixer',
-                city: const EventSetupCity(
-                  cityId: 'in-mh-mumbai',
-                  marketId: 'in-mh-mumbai',
+          readSaved: viewsOf(
+            ({required organizerId, required eventId}) async =>
+                PrivateEventBasicSummary(
+                  eventId: eventId,
+                  organizerId: organizerId,
+                  setupRevision: draft.eventCreateReceiptRevision ?? 1,
+                  name: 'Saturday mixer',
+                  city: const EventSetupCity(
+                    cityId: 'in-mh-mumbai',
+                    marketId: 'in-mh-mumbai',
+                  ),
+                  localDate: localDate,
+                  localStartTime: '19:00',
+                  timezone: 'Asia/Kolkata',
+                  startTimeMillis: date.millisecondsSinceEpoch,
+                  status: 'active',
+                  setupDefaults: const {},
+                  detailsConfigured: false,
+                  eventPreferences: null,
+                  canEditBasics: true,
+                  canChangeCity: true,
                 ),
-                localDate: localDate,
-                localStartTime: '19:00',
-                timezone: 'Asia/Kolkata',
-                startTimeMillis: date.millisecondsSinceEpoch,
-                status: 'active',
-                setupDefaults: const {},
-                detailsConfigured: false,
-                eventPreferences: null,
-                canEditBasics: true,
-                canChangeCity: true,
-              ),
+          ),
         ),
       ),
     );
@@ -586,7 +609,7 @@ void main() {
         '${date.day.toString().padLeft(2, '0')}';
     var canonicalName = 'Saturday mixer';
     var canonicalRevision = 2;
-    PrivateEventBasicSummary read() => PrivateEventBasicSummary.fromResponse({
+    PrivateEventBasicSummary read() => PrivateEventBasicSummary.fromFirestore({
       'eventId': 'event-1',
       'organizerId': 'club-1',
       'setupRevision': canonicalRevision,
@@ -608,7 +631,7 @@ void main() {
         'sourceVenueId': null,
         'eventFormat': null,
       },
-    });
+    }, now: DateTime.now());
     final attempted = <PrivateEventBasicsUpdateRequest>[];
     var createCalls = 0;
     var updateCalls = 0;
@@ -624,11 +647,11 @@ void main() {
         home: PrivateEventCreateScreen(
           organizer: buildOrganizer(),
           initialSavedEventId: 'event-1',
-          readSaved: ({required organizerId, required eventId}) async {
+          readSaved: viewsOf(({required organizerId, required eventId}) async {
             expect(organizerId, 'club-1');
             expect(eventId, 'event-1');
             return read();
-          },
+          }),
           create:
               ({
                 required organizerId,
@@ -726,7 +749,10 @@ void main() {
           home: PrivateEventCreateScreen(
             organizer: buildOrganizer(),
             initialSavedEventId: 'event-1',
-            readSaved: ({required organizerId, required eventId}) async {
+            readSaved: viewsOf(({
+              required organizerId,
+              required eventId,
+            }) async {
               reads++;
               if (reads == 1) throw StateError('manager read unavailable');
               return PrivateEventBasicSummary(
@@ -748,7 +774,7 @@ void main() {
                 eventPreferences: null,
                 canEditBasics: true,
               );
-            },
+            }),
           ),
         ),
       ),

@@ -1,0 +1,262 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_checkpoint_views.schema.json",
+  "title": "HostEventCheckpointViewDocument",
+  "description": "Server-owned manager projection of one checkpoint of one recorded departure (one per roster whose destination is an itinerary stop or a group checkpoint) for the live console's checkpoint and checkpoint request sheets, written ahead of time by triggers on the roster, its report, its request work item, the roster members' attendee, guest and membership rows, the event's staff grants, the organizer's managers, and the event and event success plan. view is what the retired getEventAssistanceCheckpoint callable returned for a manager, without serverTime; reporterOptions keeps the reporters and the assignment hash, and the phone supplies the actor and the choice window. Time enters only as instants: request.state is awaitingReport or overdue by request.dueAt, request.ownerAvailability compares ownerValidUntilMillis with the app clock, and each reporter is listed while its validUntil is after both the app clock and the due time; the phone re-derives all three. accountability carries, for each roster member, the accountability view for the checkpoint scope (the hash the resolve command fences on). Frozen once the event ended 24 hours ago. A source that fails validation records sourceCoverage invalidSource with incompleteSource and keeps the previous view.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventCheckpointViews",
+  "x-firestore-path": "hostEventCheckpointViews/{checkpointViewId}",
+  "x-document-id-field": "checkpointViewId",
+  "x-owner": "Live movement view evaluator (hostReadModels movement view triggers)",
+  "required": [
+    "schemaVersion",
+    "checkpointViewId",
+    "eventId",
+    "organizerId",
+    "groupId",
+    "progressRevision",
+    "checkpointId",
+    "rosterId",
+    "memberAttendeeIds",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "eventEndAtMillis",
+    "ownerValidUntilMillis",
+    "view",
+    "accountability"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "checkpointViewId": {
+      "type": "string",
+      "pattern": "^checkpoint:[a-f0-9]{64}$",
+      "description": "checkpointIdentity(scope), the id the checkpoint report uses.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The event's organizer; rules key on it.",
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/groupId",
+      "x-catch-ownership": "server-only"
+    },
+    "progressRevision": {
+      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/progressRevision",
+      "x-catch-ownership": "server-only"
+    },
+    "checkpointId": {
+      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/checkpointId",
+      "x-catch-ownership": "server-only"
+    },
+    "rosterId": {
+      "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Roster/properties/rosterId",
+      "x-catch-ownership": "server-only"
+    },
+    "memberAttendeeIds": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Member/properties/attendeeId"
+      },
+      "description": "The roster's attendee ids, so a write to one attendee finds the checkpoint views it can change.",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation that changed the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the last changing evaluation committed. The phone treats it as a lower bound for the current time.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "invalidSource"
+      ],
+      "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.",
+      "x-catch-ownership": "server-only"
+    },
+    "incompleteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The collection whose document failed validation (eventAssistanceDepartureRosters, events, eventSuccessPlans, eventAssistanceGroupProgress, eventAssistanceCheckpoints, eventAttendees, operationWorkItems, organizers or eventStaffGrants), or null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventEndAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The event's end; the view is frozen 24 hours after it.",
+      "x-catch-ownership": "server-only"
+    },
+    "ownerValidUntilMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "When the request's responsible reporter loses recordCheckpoint access (0 when they have none, or there is no request).",
+      "x-catch-ownership": "server-only"
+    },
+    "view": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision",
+            "sourceHash",
+            "revision",
+            "report",
+            "availability",
+            "request",
+            "assignment",
+            "closeout",
+            "reporterOptions"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/context"
+            },
+            "groupId": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/groupId"
+            },
+            "checkpointId": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/checkpointId"
+            },
+            "progressRevision": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/progressRevision"
+            },
+            "sourceHash": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/sourceHash"
+            },
+            "revision": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/revision"
+            },
+            "report": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/report"
+            },
+            "availability": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/availability"
+            },
+            "request": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/request"
+            },
+            "assignment": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/assignment"
+            },
+            "closeout": {
+              "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/View/properties/closeout"
+            },
+            "reporterOptions": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "sourceHash",
+                    "reporters"
+                  ],
+                  "properties": {
+                    "sourceHash": {
+                      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/ReporterOptions/properties/sourceHash"
+                    },
+                    "reporters": {
+                      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/ReporterOptions/properties/reporters"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The reporters who could take over the original request and the assignment hash; the phone adds the actor and the choice window."
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The manager projection; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    },
+    "accountability": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attendeeId",
+          "view"
+        ],
+        "properties": {
+          "attendeeId": {
+            "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/Member/properties/attendeeId"
+          },
+          "view": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sourceHash",
+                  "revision",
+                  "episodeId",
+                  "disposition",
+                  "availability"
+                ],
+                "properties": {
+                  "sourceHash": {
+                    "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/sourceHash"
+                  },
+                  "revision": {
+                    "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/revision"
+                  },
+                  "episodeId": {
+                    "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/episodeId"
+                  },
+                  "disposition": {
+                    "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/disposition"
+                  },
+                  "availability": {
+                    "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/availability"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The accountability view for {context, groupId, attendeeId, checkpoint}; null when the member's own sources fail validation."
+          }
+        }
+      },
+      "description": "One entry per roster member, in roster order: what the resolve command checks against for this checkpoint scope.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

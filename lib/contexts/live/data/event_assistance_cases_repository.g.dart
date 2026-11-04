@@ -58,7 +58,7 @@ final class EventAssistanceCasesRepositoryProvider
 }
 
 String _$eventAssistanceCasesRepositoryHash() =>
-    r'7f79c5b29479fd46e5f8b19c1b502054cb79303f';
+    r'6815cb85e646e9fd5ded82e39e5d9b2b51524e29';
 
 @ProviderFor(eventAssistanceCaseCommands)
 final eventAssistanceCaseCommandsProvider =

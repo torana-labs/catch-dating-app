@@ -24,7 +24,6 @@
   "lib/eventSuccess/operations/participation.test.js",
   "lib/eventSuccess/operations/accountability.test.js",
   "lib/eventSuccess/operations/departureRoster.test.js",
-  "lib/eventSuccess/operations/departureHistory.test.js",
   "lib/eventSuccess/operations/checkpoint.test.js",
   "lib/eventSuccess/operations/checkpointRequest.test.js",
   "lib/eventSuccess/operations/checkpointWork.test.js",

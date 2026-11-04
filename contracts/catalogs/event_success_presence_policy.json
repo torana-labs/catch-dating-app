@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "kind": "eventSuccessPresencePolicy",
+  "description": "Room presence timing. Attendee devices heartbeat every heartbeatIntervalSeconds; a manager's phone derives present (heartbeat no older than presentWindowSeconds), idle, or likelyDeparted (older than likelyDepartedAfterSeconds) from each eventSuccessPresence heartbeatAt and the app clock. The heartbeat callable, rotation generation and late placement read the same values.",
+  "heartbeatIntervalSeconds": 30,
+  "presentWindowSeconds": 90,
+  "likelyDepartedAfterSeconds": 300
+}
