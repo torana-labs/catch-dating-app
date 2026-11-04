@@ -857,14 +857,14 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
     fastJob,
     /if: \$\{\{ needs\.preflight\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.preflight\.outputs\.tool_mode == 'full' \}\}/u,
   );
-  assert.match(fastJob, /timeout-minutes: 3/u);
+  assert.match(fastJob, /timeout-minutes: 8/u);
 
   const checkout = namedStep(
     fastJob,
     "Checkout fast deterministic gate closure",
   );
   assert.deepEqual(literalSparsePaths(checkout), fastGateCheckoutClosure);
-  assert.match(checkout, /timeout-minutes: 2/u);
+  assert.match(checkout, /timeout-minutes: 5/u);
   assert.match(checkout, /fetch-depth: 1/u);
   assert.match(checkout, /sparse-checkout-cone-mode: false/u);
   assert.match(fastJob, /uses: actions\/setup-node@[0-9a-f]{40} # v6/u);
@@ -1039,7 +1039,7 @@ test("tools materialize only the closure required by each repository view", () =
     fullCheckout,
     /if: \$\{\{ needs\.preflight\.outputs\.repository_view != 'index' \}\}/u,
   );
-  assert.match(fullCheckout, /timeout-minutes: 5/u);
+  assert.match(fullCheckout, /timeout-minutes: 15/u);
   assert.match(fullCheckout, /fetch-depth: 0/u);
   assert.doesNotMatch(fullCheckout, /sparse-checkout/u);
 

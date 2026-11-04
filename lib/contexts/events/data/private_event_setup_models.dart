@@ -320,22 +320,48 @@ class EventPublicationReadiness {
     'distancePace',
     'contract',
   };
-  factory EventPublicationReadiness.fromResponse(Object? raw) {
+
+  /// Applies time to the server's readiness: the setup view checks every
+  /// requirement except time as if the event started a millisecond from now.
+  /// futureActive is an active event starting after [now]; publishing needs
+  /// it and every other requirement. A published event has no publish action.
+  factory EventPublicationReadiness.fromView(
+    Object? raw, {
+    required String publicationState,
+    required String status,
+    required int startTimeMillis,
+    required DateTime now,
+  }) {
     if (raw is! Map ||
         raw.length != 2 ||
-        raw['canPublish'] is! bool ||
+        raw['canPublishWhenFuture'] is! bool ||
         raw['missing'] is! List) {
       throw const FormatException('Invalid publication readiness');
     }
+    final whenFuture = raw['canPublishWhenFuture'] as bool;
     final items = raw['missing'] as List;
-    if (items.any((value) => !requirements.contains(value)) ||
+    if (items.any(
+          (value) => value == 'futureActive' || !requirements.contains(value),
+        ) ||
         items.toSet().length != items.length ||
-        (raw['canPublish'] == true && items.isNotEmpty)) {
+        (whenFuture && items.isNotEmpty)) {
       throw const FormatException('Invalid publication requirements');
     }
+    final missing = items.cast<String>();
+    if (publicationState == 'published') {
+      return EventPublicationReadiness(
+        canPublish: false,
+        missing: List<String>.unmodifiable(missing),
+      );
+    }
+    final futureActive =
+        status == 'active' && startTimeMillis > now.millisecondsSinceEpoch;
     return EventPublicationReadiness(
-      canPublish: raw['canPublish'] as bool,
-      missing: List<String>.unmodifiable(items.cast<String>()),
+      canPublish: whenFuture && futureActive,
+      missing: List<String>.unmodifiable([
+        if (!futureActive) 'futureActive',
+        ...missing,
+      ]),
     );
   }
 }
@@ -384,11 +410,16 @@ class PrivateEventBasicSummary {
   final bool canEditBasics;
   final bool canChangeCity;
 
-  factory PrivateEventBasicSummary.fromResponse(Object? response) {
-    if (response is! Map) {
+  /// Parses the `summary` of a `hostEventSetupViews` document, applying
+  /// [now] to its publication readiness.
+  factory PrivateEventBasicSummary.fromFirestore(
+    Object? summary, {
+    required DateTime now,
+  }) {
+    if (summary is! Map) {
       throw const FormatException('Invalid private event summary');
     }
-    final data = Map<String, Object?>.from(response);
+    final data = Map<String, Object?>.from(summary);
     final rawCity = data['city'];
     if (rawCity is! Map) {
       throw const FormatException('Invalid private event city');
@@ -460,8 +491,12 @@ class PrivateEventBasicSummary {
       publicationState: data['publicationState'] as String,
       publicationReadiness: data['publicationReadiness'] == null
           ? null
-          : EventPublicationReadiness.fromResponse(
+          : EventPublicationReadiness.fromView(
               data['publicationReadiness'],
+              publicationState: data['publicationState'] as String,
+              status: status,
+              startTimeMillis: startTimeMillis,
+              now: now,
             ),
       setupDefaults: Map<String, Object?>.from(setupDefaults),
       detailsConfigured: detailsConfigured,
@@ -477,7 +512,8 @@ class PrivateEventBasicSummary {
   }
 }
 
-/// Callable timestamps are serialized maps; journals preserve that wire shape.
+/// Journals keep timestamps as serialized maps; the setup view delivers
+/// Firestore timestamps, which [UploadedPhoto.fromJson] reads directly.
 UploadedPhoto privateEventPhotoFromJson(Map<String, dynamic> json) {
   DateTime timestamp(Map<dynamic, dynamic> value) {
     final seconds = value['_seconds'];

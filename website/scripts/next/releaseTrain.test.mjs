@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
-import {APPROVAL_ENVIRONMENT, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewRunTitle, selectDispatchedRun,
+import {APPROVAL_ENVIRONMENT, PREVIEW_WORKFLOW, planDecision, previewDispatch, previewOutcome, previewRunTitle, selectDispatchedRun,
   websiteChangedBetween} from "./releaseTrain.mjs";
 
 const mainSha = "a".repeat(40);
@@ -157,9 +159,42 @@ test("the train workflow gates production on the protected environment and never
   // ancestors, so a skipped validate skipped the gate and the promotion and
   // the train passed having released nothing (run 41092948800). Every job
   // after a conditional one states its own condition on what it needs.
-  assert.match(job("approve"), /\n {4}if: \$\{\{ !cancelled\(\) && needs\.preview\.result == 'success' \}\}\n/u);
-  assert.match(job("promote"), /\n {4}if: \$\{\{ !cancelled\(\) && needs\.preview\.result == 'success' && needs\.approve\.result == 'success' \}\}\n/u);
+  // A deferred preview (the project was not serving) is a success that
+  // published nothing, so the gate and the promotion both skip it.
+  assert.match(job("approve"), /\n {4}if: \$\{\{ !cancelled\(\) && needs\.preview\.result == 'success' && needs\.preview\.outputs\.deferred != 'true' \}\}\n/u);
+  assert.match(job("promote"), /needs\.preview\.outputs\.deferred != 'true'/u);
+  assert.match(job("preview"), /deferred: \$\{\{ steps\.preview\.outputs\.deferred \}\}/u);
+  assert.match(job("promote"), /\n {4}if: \$\{\{ !cancelled\(\) && needs\.preview\.result == 'success' && needs\.approve\.result == 'success' && needs\.preview\.outputs\.deferred != 'true' \}\}\n/u);
   for (const name of ["validate", "preview", "approve", "promote"]) {
     assert.match(job(name), /\n {4}if: \$\{\{ /u, `${name} needs a condition of its own`);
   }
 });
+
+test("a preview run's artifact is either a channel or a deferral marker, and the marker wins", (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-preview-outcome-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(directory, "channel.json"), JSON.stringify({url: "https://catch-dating-app-64e51--next-candidate-abc123.web.app"}));
+  assert.deepEqual(previewOutcome(directory), {deferred: false, url: "https://catch-dating-app-64e51--next-candidate-abc123.web.app"});
+  fs.writeFileSync(path.join(directory, "deferred.json"), JSON.stringify({deferred: true, reason: "billing", detail: "requires billing to be enabled"}));
+  assert.deepEqual(previewOutcome(directory), {deferred: true, reason: "billing", detail: "requires billing to be enabled"});
+  fs.rmSync(path.join(directory, "channel.json"));
+  assert.deepEqual(previewOutcome(directory), {deferred: true, reason: "billing", detail: "requires billing to be enabled"});
+  fs.writeFileSync(path.join(directory, "deferred.json"), JSON.stringify({deferred: false}));
+  assert.throws(() => previewOutcome(directory), /says deferred/u);
+});
+
+test("the preview workflow defers the push and the channel when the project is not serving", () => {
+  const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-preview.yml", import.meta.url), "utf8");
+  const probe = workflow.indexOf("id: platform");
+  const push = workflow.indexOf("Push the tested image and deploy a bounded preview runtime");
+  assert.ok(probe >= 0 && probe < push, "the probe runs before anything is pushed");
+  assert.match(workflow, /check_platform_availability\.mjs --project catch-dating-app-64e51\n\s+--callable adminListEventDirectory --gcloud-probe --deferred-marker build\/next-preview\/deferred\.json/u);
+  for (const name of ["Push the tested image and deploy a bounded preview runtime", "Publish only the expiring Hosting preview channel",
+    "Verify the actual Hosting channel and public request path"]) {
+    const at = workflow.indexOf(`name: ${name}`);
+    const step = workflow.slice(at, workflow.indexOf("\n      - ", at));
+    assert.match(step, /if: \$\{\{ steps\.platform\.outputs\.available != 'false' \}\}/u, name);
+  }
+  assert.match(workflow, /build\/next-preview\/deferred\.json\n\s+if-no-files-found: warn/u, "the marker travels with the serving artifact");
+});
+

@@ -1045,7 +1045,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -1102,7 +1104,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -1282,7 +1286,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -1350,7 +1357,9 @@
       "role": "finder",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -1825,7 +1834,10 @@
       "role": "gate",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -2209,7 +2221,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -2235,7 +2249,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -2418,7 +2434,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -2545,7 +2563,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -2584,7 +2605,10 @@
       "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "functions-npm"]
+        "setup": [
+          "node",
+          "functions-npm"
+        ]
       },
       "impactPaths": [
         "tool/contracts/check_firestore_contract.test.mjs",
@@ -2787,7 +2811,10 @@
       "role": "generator",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -2809,7 +2836,9 @@
       "role": "generator",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -2831,7 +2860,9 @@
       "role": "generator",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -3087,7 +3118,9 @@
       "role": "generator",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -3109,7 +3142,9 @@
       "role": "generator",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -3239,6 +3274,32 @@
         "tool/firebase/function_binding_intent.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
         ".github/workflows/_backend-deploy.yml"
+      ]
+    },
+    {
+      "id": "firebase:platform-availability",
+      "category": "firebase",
+      "path": "tool/firebase/check_platform_availability.mjs",
+      "command": "node tool/firebase/check_platform_availability.mjs --project catchdates-dev --callable adminListEventDirectory",
+      "safety": "local-with-optional-remote-readonly",
+      "status": "active",
+      "description": "Says whether the Firebase/GCP platform behind an environment is serving (an unauthenticated callable probe and a metadata-only gcloud listing) so deploy and release runs defer with a warning, and record nothing, while a closed billing account stops Cloud Run instead of failing on the commit.",
+      "checks": [
+        "node --check tool/firebase/check_platform_availability.mjs",
+        "node --test tool/firebase/check_platform_availability.test.mjs"
+      ],
+      "role": "gate",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/check_platform_availability.test.mjs",
+        ".github/workflows/_backend-deploy.yml",
+        ".github/workflows/_web-hosting-build.yml",
+        ".github/workflows/website-next-preview.yml"
       ]
     },
     {
@@ -3984,7 +4045,10 @@
       "role": "generator",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -4688,7 +4752,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -4716,7 +4782,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -4743,7 +4811,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -4780,7 +4850,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -4806,7 +4879,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -4843,7 +4918,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -4881,7 +4958,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5106,7 +5185,9 @@
       "role": "finder",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5128,7 +5209,9 @@
       "role": "gate",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5204,7 +5287,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5217,7 +5302,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "command": "node tool/design/check_screen_gutters.mjs --summary",
       "safety": "local",
@@ -5301,7 +5388,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5328,7 +5417,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5340,7 +5431,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "command": "node tool/design/check_rail_contracts.mjs --summary",
       "safety": "local",
@@ -5550,7 +5643,9 @@
       "baseline": "tool/audit/fn_readme_inventory_baseline.json",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -5575,7 +5670,10 @@
       "baseline": "tool/audit/unused_code_baseline.json",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -5672,7 +5770,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -5708,7 +5809,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -5983,7 +6087,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -6009,7 +6116,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -6035,7 +6145,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -6141,7 +6254,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -6167,7 +6282,10 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -6401,7 +6519,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "command": "node tool/design/check_terminal_padding.mjs --check",
       "safety": "local",
@@ -6451,7 +6571,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       }
     },
     {
@@ -6871,6 +6993,34 @@
           "instruction": "Features name semantic icon roles from the shared catalog. Keep the vendored Flutter font and React icon family at the catalogued version, with exactly one role per activity kind. Existing direct family references and legacy CatchIcons aliases may only decrease; record each reduction rather than increasing an allowance. The catalog owns glyph selection, so changing a family does not require feature code to select glyphs."
         }
       ]
+    },
+    {
+      "id": "design:icon-font-vendoring",
+      "category": "design",
+      "path": "tool/design/vendor_icon_font.mjs",
+      "command": "node tool/design/vendor_icon_font.mjs --dry-run",
+      "safety": "local-write-explicit",
+      "status": "active",
+      "description": "Vendors the icon family's Flutter font and codepoints from its static npm package at the version package-lock.json resolves for the React package, pins the version and font hash in the icon-role catalog, and regenerates both icon layers; run it on a lucide-react bump so design:icon-catalog passes.",
+      "checks": [
+        "node --check tool/design/vendor_icon_font.mjs",
+        "node --test tool/design/vendor_icon_font.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/design/vendor_icon_font.test.mjs",
+        "tool/design/generate_icon_catalog.mjs",
+        "design/tokens/catch.icons.json",
+        "design/tokens/catch.icons.schema.json",
+        "package-lock.json",
+        "packages/catch_ui/assets/fonts/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "operator"
     },
     {
       "id": "design:icon-family-usage",

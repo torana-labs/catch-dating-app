@@ -203,11 +203,16 @@ void main() {
     );
     await controller.load();
     expect(controller.canEdit, isTrue);
+    // The listener reports the revoked access; nothing stale stays editable.
     denied = true;
-    await controller.load();
+    await controller.eventFeed.refresh();
+    await pumpEventQueue();
     expect(controller.event, isNull);
-    expect(controller.defaults, isNull);
     expect(controller.canEdit, isFalse);
+    // Retrying restarts only the failed listener.
+    denied = false;
+    await controller.load();
+    expect(controller.canEdit, isTrue);
     controller.dispose();
   });
 
@@ -242,8 +247,7 @@ void main() {
         await controller.save(request('request-1').intents);
         expect(controller.hasPending, kind != 'exact');
         if (kind == 'exact') {
-          expect(controller.event, isNull);
-          await controller.load();
+          // The listeners already hold the current event: no reload.
           expect(controller.canEdit, isTrue);
           expect(controller.hasPending, isFalse);
         }

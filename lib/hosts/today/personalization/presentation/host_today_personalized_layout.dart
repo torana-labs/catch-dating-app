@@ -73,10 +73,10 @@ class _HostTodayPersonalizedLayoutState
     if (!mounted) return;
     final isToday = _isTodayRoute;
     if (isToday && !_wasTodayRoute && _hasCurrentAccount) {
-      // CRM summaries are callable snapshots; unlike organizer and payment
-      // streams they need a refresh after work in another feature.
+      // CRM summaries are callable snapshots; unlike organizer, payment and
+      // rehearsal milestone listeners they need a refresh after work in
+      // another feature.
       ref.invalidate(hostCrmSummaryProvider(widget.scope.organizerId));
-      ref.invalidate(hostTodayRehearsalCompletionProvider(widget.scope));
     }
     _wasTodayRoute = isToday;
     setState(() {});
@@ -249,16 +249,12 @@ class _HostTodayPersonalizedLayoutState
             queryParameters: {'organizerId': organizerId, 'view': 'people'},
           );
         case HostTodaySuggestedAction.startDressRehearsal:
+          // The milestone listener delivers a completed rehearsal.
           await context.pushNamed<void>(
             Routes.hostEventRehearsalStartScreen.name,
             pathParameters: {'organizerId': organizerId},
             queryParameters: const {'source': 'custom'},
           );
-          if (mounted &&
-              _hasCurrentAccount &&
-              widget.scope.organizerId == organizerId) {
-            ref.invalidate(hostTodayRehearsalCompletionProvider(widget.scope));
-          }
         case HostTodaySuggestedAction.openOrganizerPage:
           context.goNamed(
             Routes.hostOrganizerScreen.name,

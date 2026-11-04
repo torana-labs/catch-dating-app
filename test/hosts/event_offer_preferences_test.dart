@@ -181,7 +181,8 @@ void main() {
     denied = true;
     await controller.load();
     expect(controller.configuration, isNull);
-    expect(controller.defaults, isNull);
+    // The defaults come from their listener, which still answers.
+    expect(controller.defaults, isNotNull);
     expect(controller.canEdit, isFalse);
     controller.dispose();
   });

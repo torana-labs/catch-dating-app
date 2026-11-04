@@ -14,6 +14,20 @@ const {backfillResponseSummaries, activateResponseSummaries} =
 const {backfillOrganizerAttention} =
   require("../lib/hostReadModels/attentionStore");
 
+const {backfillEventSetupViews} =
+  require("../lib/hostReadModels/eventSetupViewStore");
+
+const {backfillEventSetupDefaultView} =
+  require("../lib/hostReadModels/eventSetupDefaultViewStore");
+
+// Read models every environment rebuilds under the clean-schema mandate:
+// the client reads them unconditionally, so they have no activation marker.
+const evaluatedModels = {
+  "attention": backfillOrganizerAttention,
+  "event-setup": backfillEventSetupViews,
+  "event-setup-defaults": backfillEventSetupDefaultView,
+};
+
 async function main(argv = process.argv.slice(2)) {
   const args = new Map();
   for (let index = 0; index < argv.length; index++) {
@@ -30,16 +44,14 @@ async function main(argv = process.argv.slice(2)) {
     throw new Error("Provide explicit --project and --organizer identifiers.");
   }
   const model = args.get("--model") ?? "contacts";
-  if (!["contacts", "forms", "events", "groups", "responses", "attention"]
-    .includes(model)) {
-    throw new Error(
-      "Use --model contacts, forms, events, groups, responses or attention.");
+  if (!["contacts", "forms", "events", "groups", "responses",
+    ...Object.keys(evaluatedModels)].includes(model)) {
+    throw new Error("Use --model contacts, forms, events, groups, responses, " +
+      "attention, event-setup or event-setup-defaults.");
   }
   const apply = args.get("--apply") === true;
-  // Every environment is reseeded under the clean-schema mandate, so the
-  // attention listener has no cutover marker to activate.
-  if (model === "attention" && args.has("--activate")) {
-    throw new Error("The attention model has no activation; omit --activate.");
+  if (model in evaluatedModels && args.has("--activate")) {
+    throw new Error(`The ${model} model has no activation; omit --activate.`);
   }
   if (args.has("--activate") && !apply) {
     throw new Error("Activation requires --apply and successful parity.");
@@ -47,8 +59,8 @@ async function main(argv = process.argv.slice(2)) {
   const app = admin.initializeApp({projectId});
   try {
     const db = app.firestore();
-    if (model === "attention") {
-      const report = await backfillOrganizerAttention(db, organizerId, apply);
+    if (model in evaluatedModels) {
+      const report = await evaluatedModels[model](db, organizerId, apply);
       console.log(JSON.stringify({projectId, organizerId, model, apply,
         ...report}));
       return;

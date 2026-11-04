@@ -100,6 +100,7 @@ jobs:
     outputs:
       preview_run_id: ${{ steps.preview.outputs.preview_run_id }}
       preview_url: ${{ steps.preview.outputs.preview_url }}
+      deferred: ${{ steps.preview.outputs.deferred }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -121,7 +122,7 @@ jobs:
     # Without its own condition a job inherits success() over every ancestor,
     # so the skipped validate job (the usual case) skipped the gate and the
     # promotion, and the train passed having released nothing (run 41092948800).
-    if: ${{ !cancelled() && needs.preview.result == 'success' }}
+    if: ${{ !cancelled() && needs.preview.result == 'success' && needs.preview.outputs.deferred != 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     # The prod environment is the release gate: a required reviewer on it
@@ -140,7 +141,7 @@ jobs:
   promote:
     name: Promote the approved preview
     needs: [plan, preview, approve]
-    if: ${{ !cancelled() && needs.preview.result == 'success' && needs.approve.result == 'success' }}
+    if: ${{ !cancelled() && needs.preview.result == 'success' && needs.approve.result == 'success' && needs.preview.outputs.deferred != 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:

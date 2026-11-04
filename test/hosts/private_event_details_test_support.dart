@@ -8,6 +8,12 @@ import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_controller_test_support.dart';
+import 'support/read_model_feeds.dart';
+
+typedef ReadPrivateEventForDetails = ReadPrivateEventForPreferences;
+typedef ReadDefaultsForPrivateDetails = ReadManagerEventSetupDefaults;
+
 /// Test-only seed access; production changes immutable state through commands.
 class _SeededDetailsController extends PrivateEventDetailsController {
   PrivateEventDetailsState readSnapshot() => state;
@@ -15,9 +21,16 @@ class _SeededDetailsController extends PrivateEventDetailsController {
 }
 
 class TestPrivateEventDetailsController {
-  TestPrivateEventDetailsController._(this._notifier, this.container);
+  TestPrivateEventDetailsController._(
+    this._notifier,
+    this.container,
+    this.eventFeed,
+    this.defaultsFeed,
+  );
   final _SeededDetailsController _notifier;
   final ProviderContainer container;
+  final SetupViewFeed eventFeed;
+  final ReadModelFeed<ManagerEventSetupDefaultsView> defaultsFeed;
   PrivateEventDetailsController get notifier => _notifier;
   PrivateEventDetailsScope get scope => _notifier.scope;
   PrivateEventDetailsState get state => _notifier.readSnapshot();
@@ -73,17 +86,30 @@ TestPrivateEventDetailsController createDetailsController({
   final notifier = _SeededDetailsController();
   final scope = (userId: userId, organizerId: organizerId, eventId: eventId);
   final provider = privateEventDetailsControllerProvider(scope);
+  final eventFeed = setupViewFeed(
+    readEvent,
+    organizerId: organizerId,
+    eventId: eventId,
+  );
+  final defaultsFeed = defaultsViewFeed(readDefaults, organizerId);
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(userId)),
+      privateEventSetupViewProvider(
+        organizerId: organizerId,
+        eventId: eventId,
+      ).overrideWith((ref) => eventFeed.stream),
+      managerEventSetupDefaultsViewProvider(
+        organizerId,
+      ).overrideWith((ref) => defaultsFeed.stream),
       privateEventDetailsDependenciesProvider.overrideWithValue(
         PrivateEventDetailsDependencies(
-          readEvent: readEvent,
-          readDefaults: readDefaults,
-          write: write,
+          write: refreshingAfter(write, [eventFeed]),
           journal: journal,
           currentUserId: currentUserId,
-          reconcile: reconcile,
+          reconcile: reconcile == null
+              ? null
+              : refreshingAfter(reconcile, [eventFeed]),
           pickAndUploadPhotos: pickAndUploadPhotos == null
               ? null
               : (_, position) => pickAndUploadPhotos(position),
@@ -92,7 +118,12 @@ TestPrivateEventDetailsController createDetailsController({
       provider.overrideWith(() => notifier),
     ],
   );
-  final controller = TestPrivateEventDetailsController._(notifier, container);
+  final controller = TestPrivateEventDetailsController._(
+    notifier,
+    container,
+    eventFeed,
+    defaultsFeed,
+  );
   container.listen(provider, (_, _) {});
   container.read(provider.notifier);
   addTearDown(container.dispose);

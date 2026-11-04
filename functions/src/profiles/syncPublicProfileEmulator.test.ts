@@ -9,8 +9,10 @@ import {deleteApp, initializeApp} from "firebase-admin/app";
 import {syncOrganizerHostProfile} from "./syncPublicProfile";
 import {addOrganizerManagerHandler, removeOrganizerManagerHandler,
   transferOrganizerOwnershipHandler} from "../organizers/manageOrganizerTeam";
-import {getOrganizerEventSetupDefaultsHandler} from
-  "../organizers/eventSetupDefaults/callables";
+import {getManagerEventSetupDefaults} from
+  "../organizers/eventSetupDefaults/service";
+import {eventSetupDefaultsDependencies} from
+  "../organizers/eventSetupDefaults/dependencies";
 import {isOrganizerManager} from "../shared/organizerHosts";
 
 // Load the browser rules client at runtime, as the existing CJS rules tests do;
@@ -80,9 +82,10 @@ test("removal and transfer fence stale sync and callable/rules access",
     const deps = {firestore: () => db, checkRateLimit: async () => undefined};
     const request = (uid: string, target: string) => ({auth: {uid},
       data: {organizerId, uid: target}} as never);
-    const view = (uid: string) => getOrganizerEventSetupDefaultsHandler({
-      auth: {uid}, data: {organizerId},
-    } as never, deps);
+    // The authorized defaults read probes current manager authority.
+    const view = (uid: string) => getManagerEventSetupDefaults({
+      actorUid: uid, organizerId, deps: eventSetupDefaultsDependencies(db),
+    });
     const directRead = (uid: string) => getDoc(doc(
       env.authenticatedContext(uid).firestore(), venueRef.path));
     const seed = async () => {

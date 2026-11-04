@@ -116,7 +116,7 @@ void main() {
             uidProvider.overrideWithValue(const AsyncData('cohost')),
             hostTodayRehearsalCompletionProvider(
               cohostScope,
-            ).overrideWith((ref) async => false),
+            ).overrideWith((ref) => Stream.value(false)),
             hostOperableOrganizersProvider(
               'cohost',
             ).overrideWithValue(AsyncData([organizer])),
@@ -153,7 +153,7 @@ void main() {
             uidProvider.overrideWith((ref) => identity.stream),
             hostTodayRehearsalCompletionProvider(
               scope,
-            ).overrideWith((ref) async => false),
+            ).overrideWith((ref) => Stream.value(false)),
             hostOperableOrganizersProvider(
               'owner',
             ).overrideWithValue(AsyncData([organizer])),
@@ -219,12 +219,11 @@ void main() {
             watchHostPaymentAccountsProvider(
               'owner',
             ).overrideWith((ref) => Stream.value([])),
-            hostTodayRehearsalCompletionProvider(scope).overrideWith((
-              ref,
-            ) async {
-              if (result == null) throw StateError('Summary unavailable');
-              return result;
-            }),
+            hostTodayRehearsalCompletionProvider(scope).overrideWith(
+              (ref) => result == null
+                  ? Stream.error(StateError('Milestone unavailable'))
+                  : Stream.value(result),
+            ),
           ],
         );
         container.listen(hostTodayRoadmapProvider(scope), (_, _) {});

@@ -15,7 +15,11 @@ updates:
       day: "wednesday"
       time: "05:30"
       timezone: "Asia/Kolkata"
-    open-pull-requests-limit: 1
+    # One compatible-updates PR, plus the icon family's own PR when Lucide
+    # releases: that bump also has to vendor the Flutter font (see
+    # docs/app_architecture.md, Icon Roles), so it is kept apart and never
+    # holds the other updates back.
+    open-pull-requests-limit: 2
     # Wait 7 days before proposing a new release, so a hijacked publish is
     # usually caught upstream first. Security updates are not delayed.
     cooldown:
@@ -25,10 +29,21 @@ updates:
         applies-to: "security-updates"
         patterns:
           - "*"
+      # design:icon-catalog fails until the vendored font matches lucide-react;
+      # run `node tool/design/vendor_icon_font.mjs` on this PR's branch.
+      icon-family:
+        applies-to: "version-updates"
+        patterns:
+          - "lucide-react"
+        update-types:
+          - "minor"
+          - "patch"
       compatible-version-updates:
         applies-to: "version-updates"
         patterns:
           - "*"
+        exclude-patterns:
+          - "lucide-react"
         update-types:
           - "minor"
           - "patch"
