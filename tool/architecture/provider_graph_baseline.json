@@ -539,20 +539,8 @@
     {
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
-      "symbol": "_HostTodayPersonalizedLayoutState._onRouteChanged",
-      "detail": "invalidate:hostTodayRehearsalCompletionProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
       "symbol": "_HostTodayPersonalizedLayoutState._openAction",
       "detail": "invalidate:hostCrmSummaryProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
-      "symbol": "_HostTodayPersonalizedLayoutState._openAction",
-      "detail": "invalidate:hostTodayRehearsalCompletionProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",

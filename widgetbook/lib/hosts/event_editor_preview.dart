@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
@@ -28,11 +29,17 @@ Widget eventPreferencesPreview(
   overrides: [
     uidProvider.overrideWith((ref) => Stream.value(previewEventScope.userId)),
     if (state.published) ...[
+      managerEventSetupDefaultsViewProvider(
+        previewEventScope.organizerId,
+      ).overrideWith(
+        (ref) => Stream.value(
+          ManagerEventSetupDefaultsView.complete(state.defaults!),
+        ),
+      ),
       eventOfferPreferencesDependenciesProvider.overrideWithValue(
         EventOfferPreferencesDependencies(
           readConfiguration: ({required organizerId, required eventId}) async =>
               state.configuration!,
-          readDefaults: (_) async => state.defaults!,
           write: (_) async =>
               throw StateError('Preview does not submit settings'),
         ),
@@ -41,11 +48,21 @@ Widget eventPreferencesPreview(
         previewEventScope,
       ).overrideWith(() => _PublishedPreferencesPreview(state)),
     ] else ...[
+      privateEventSetupViewProvider(
+        organizerId: previewEventScope.organizerId,
+        eventId: previewEventScope.eventId,
+      ).overrideWith(
+        (ref) => Stream.value(PrivateEventSetupView.complete(state.event!)),
+      ),
+      managerEventSetupDefaultsViewProvider(
+        previewEventScope.organizerId,
+      ).overrideWith(
+        (ref) => Stream.value(
+          ManagerEventSetupDefaultsView.complete(state.defaults!),
+        ),
+      ),
       privateEventPreferencesDependenciesProvider.overrideWithValue(
         PrivateEventPreferencesDependencies(
-          readEvent: ({required organizerId, required eventId}) async =>
-              state.event!,
-          readDefaults: (_) async => state.defaults!,
           write: (_) async =>
               throw StateError('Preview does not submit settings'),
         ),
@@ -91,9 +108,14 @@ Widget eventPublicationPreview(
 }) => ProviderScope(
   overrides: [
     uidProvider.overrideWith((ref) => Stream.value(previewEventScope.userId)),
+    privateEventSetupViewProvider(
+      organizerId: previewEventScope.organizerId,
+      eventId: previewEventScope.eventId,
+    ).overrideWith(
+      (ref) => Stream.value(PrivateEventSetupView.complete(event)),
+    ),
     eventPublicationDependenciesProvider.overrideWithValue(
       EventPublicationDependencies(
-        read: ({required organizerId, required eventId}) async => event,
         write: (_) async =>
             throw StateError('Preview does not change publication'),
       ),

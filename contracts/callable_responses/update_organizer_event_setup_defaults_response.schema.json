@@ -16,7 +16,7 @@
       "maximum": 1000000000
     },
     "current": {
-      "$ref": "organizer_event_setup_defaults_response.schema.json"
+      "$ref": "../shared/host_event_setup_common.schema.json#/definitions/managerEventSetupDefaults"
     },
     "replayed": {
       "type": "boolean"

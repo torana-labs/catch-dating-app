@@ -3,7 +3,6 @@ import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   createPrivateEventSetupHandler,
-  getPrivateEventSetupHandler,
   listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
   updatePrivateEventDetailsHandler, setEventPublicationHandler,
   reconcilePrivateEventSeatsHandler,
@@ -38,7 +37,7 @@ test("callable auth and payload validation precede rate or database access",
     };
     for (const handler of [createPrivateEventSetupHandler,
       updatePrivateEventBasicsHandler,
-      updatePrivateEventPreferencesHandler, getPrivateEventSetupHandler,
+      updatePrivateEventPreferencesHandler,
       listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
       updatePrivateEventDetailsHandler, setEventPublicationHandler,
       reconcilePrivateEventSeatsHandler]) {

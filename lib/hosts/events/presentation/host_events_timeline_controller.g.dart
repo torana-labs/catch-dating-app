@@ -57,7 +57,7 @@ final class PrivateEventSetupTimelineRepositoryProvider
 }
 
 String _$privateEventSetupTimelineRepositoryHash() =>
-    r'e729f2bbf842f1b1530f7e57a4de4a6c6acaf36f';
+    r'6625bdf327ae68ea78e5fabd4fe31880721d8719';
 
 @ProviderFor(HostEventsTimelineController)
 final hostEventsTimelineControllerProvider =

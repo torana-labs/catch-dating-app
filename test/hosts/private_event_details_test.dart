@@ -416,11 +416,17 @@ void main() {
     );
     await controller.load();
     expect(controller.canEdit, isTrue);
+    // The listener reports the revoked access; nothing stale stays editable.
     denied = true;
-    await controller.load();
+    await controller.eventFeed.refresh();
+    await pumpEventQueue();
     expect(controller.event, isNull);
-    expect(controller.defaults, isNull);
     expect(controller.canEdit, isFalse);
+    expect(controller.error, isA<StateError>());
+    // Retrying restarts only the failed listener.
+    denied = false;
+    await controller.load();
+    expect(controller.canEdit, isTrue);
     controller.dispose();
   });
 
@@ -488,9 +494,11 @@ void main() {
       expect(controller.canEdit, isFalse);
       expect(controller.error, isA<FormatException>());
 
+      // The server rewrites the view: the event is cancelled.
       saved = false;
       cancelled = true;
-      await controller.load();
+      await controller.eventFeed.refresh();
+      await pumpEventQueue();
       expect(controller.canEdit, isFalse);
       await controller.save(
         const PrivateEventDetailsPatch(
@@ -499,7 +507,8 @@ void main() {
       );
       expect(saved, isFalse);
       cancelled = false;
-      await controller.load();
+      await controller.eventFeed.refresh();
+      await pumpEventQueue();
       expect(controller.canEdit, isTrue);
       currentUid = 'host-2';
       await controller.save(

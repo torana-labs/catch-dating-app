@@ -79,8 +79,9 @@ class HostShellBackend {
   /// them. Reads project these records the way the backend does.
   final privateEvents = <String, Map<String, Object?>>{};
 
-  /// Writes the organizer and, as the backend's attention evaluator does on
-  /// that write, its evaluated (empty) Today attention schedule.
+  /// Writes the organizer and, as the backend's evaluators do on that write,
+  /// its evaluated (empty) Today attention schedule and its event setup
+  /// defaults view. No rehearsal milestone: none has been completed.
   Future<void> seedOrganizer(Organizer organizer) async {
     await firestore
         .collection('organizers')
@@ -99,6 +100,28 @@ class HostShellBackend {
           'sourceCoverage': 'complete',
           'incompleteSource': null,
           'openItemCount': 0,
+        });
+    await firestore
+        .collection('hostEventSetupDefaultViews')
+        .doc(organizer.id)
+        .set({
+          'schemaVersion': 1,
+          'organizerId': organizer.id,
+          'revision': 1,
+          'evaluatedAt': Timestamp.now(),
+          'sourceCoverage': 'complete',
+          'incompleteSource': null,
+          'view': {
+            'organizerId': organizer.id,
+            'city': _journeyCity,
+            'timezone': null,
+            'organizerDefaultsRevision': null,
+            'basicsReviewedHash': _journeyHash,
+            'preferencesRevision': 0,
+            'preferences': const <String, Object?>{},
+            'preferencesHash': _journeyHash,
+            'reviewedDefaultsHash': _journeyHash,
+          },
         });
   }
 
@@ -146,9 +169,6 @@ class HostShellBackend {
         'refreshAfterMillis': now + const Duration(minutes: 5).inMilliseconds,
       },
       'createPrivateEventSetup' => _createPrivateEvent(request),
-      'getPrivateEventSetup' => _privateEventSummary(
-        request['eventId']! as String,
-      ),
       'listPrivateEventSetups' => {
         'events': [
           if (request['scope'] != 'past')
@@ -157,18 +177,6 @@ class HostShellBackend {
         ],
         'nextCursor': null,
       },
-      'getOrganizerEventSetupDefaults' => {
-        'organizerId': organizerId,
-        'city': _journeyCity,
-        'timezone': null,
-        'organizerDefaultsRevision': null,
-        'basicsReviewedHash': _journeyHash,
-        'preferencesRevision': 0,
-        'preferences': const <String, Object?>{},
-        'preferencesHash': _journeyHash,
-        'reviewedDefaultsHash': _journeyHash,
-      },
-      'getEventRehearsalSummary' => {'hasCompletedRehearsal': false},
       'listOrganizerPrograms' => {'programs': const <Object?>[]},
       'listOrganizerForms' => {
         'organizerId': organizerId,
@@ -261,12 +269,30 @@ class HostShellBackend {
     };
   }
 
-  Map<String, Object?> _createPrivateEvent(Map<String, Object?> request) {
+  /// Stores the setup and, as the backend's setup view trigger does, writes
+  /// the event's `hostEventSetupViews` document the steps listen to.
+  Future<Map<String, Object?>> _createPrivateEvent(
+    Map<String, Object?> request,
+  ) async {
     final eventId = 'host-journey-event-${privateEvents.length + 1}';
     privateEvents[eventId] = {
       'organizerId': request['organizerId'],
       'basics': Map<String, Object?>.from(request['basics']! as Map),
     };
+    await firestore.collection('hostEventSetupViews').doc(eventId).set({
+      'schemaVersion': 1,
+      'eventId': eventId,
+      'organizerId': request['organizerId'],
+      'setupRevision': 1,
+      'revision': 1,
+      'evaluatedAt': Timestamp.now(),
+      'sourceCoverage': 'complete',
+      'incompleteSource': null,
+      'summary': {
+        ..._privateEventSummary(eventId),
+        'publicationReadiness': null,
+      },
+    });
     return {'eventId': eventId, 'setupRevision': 1, 'replayed': false};
   }
 

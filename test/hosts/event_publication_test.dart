@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'event_controller_test_support.dart';
+import 'support/read_model_feeds.dart';
 
 PrivateEventBasicSummary publicationEvent({
   int revision = 2,
@@ -48,24 +49,31 @@ void main() {
       for (final outcome in ['new', 'replay', 'wrong-identity', 'failure']) {
         SharedPreferences.setMockInitialValues({});
         final analytics = _PublicationAnalytics();
+        var current = publicationEvent();
+        final feed = ReadModelFeed(
+          () => PrivateEventSetupView.complete(current),
+        );
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('host1')),
             appAnalyticsProvider.overrideWith((ref) => analytics),
+            privateEventSetupViewProvider(
+              organizerId: 'org1',
+              eventId: 'event1',
+            ).overrideWith((ref) => feed.stream),
             eventPublicationDependenciesProvider.overrideWithValue(
               EventPublicationDependencies(
-                read: ({required organizerId, required eventId}) async =>
-                    publicationEvent(),
                 currentUserId: () => 'host1',
-                write: (_) async {
+                write: refreshingAfter((_) async {
                   if (outcome == 'failure') throw StateError('unavailable');
+                  current = publicationEvent(revision: 3, state: 'published');
                   return EventPublicationReceipt(
                     eventId: outcome == 'wrong-identity' ? 'foreign' : 'event1',
                     setupRevision: 3,
                     publicationState: 'published',
                     replayed: outcome == 'replay',
                   );
-                },
+                }, [feed]),
               ),
             ),
           ],
@@ -219,8 +227,10 @@ void main() {
       await controller.load();
       await controller.changeTo('published');
       expect(writes, 0);
+      // The server rewrites the view once every requirement is met.
       ready = true;
-      await controller.load();
+      await controller.eventFeed.refresh();
+      await pumpEventQueue();
       await controller.changeTo('published');
       expect(controller.pending, isNotNull);
       expect(controller.error, isA<FormatException>());
@@ -293,13 +303,48 @@ void main() {
       }),
       throwsFormatException,
     );
+    EventPublicationReadiness readiness(
+      Map<String, Object?> raw, {
+      String state = 'private',
+      int start = 1900000000000,
+    }) => EventPublicationReadiness.fromView(
+      raw,
+      publicationState: state,
+      status: 'active',
+      startTimeMillis: start,
+      now: DateTime.fromMillisecondsSinceEpoch(1800000000000),
+    );
     expect(
-      () => EventPublicationReadiness.fromResponse({
-        'canPublish': true,
+      () => readiness({
+        'canPublishWhenFuture': true,
         'missing': ['venue'],
       }),
       throwsFormatException,
     );
+    // Time is the phone's: the server never lists futureActive.
+    expect(
+      () => readiness({
+        'canPublishWhenFuture': false,
+        'missing': ['futureActive'],
+      }),
+      throwsFormatException,
+    );
+    final future = readiness({'canPublishWhenFuture': true, 'missing': []});
+    expect(future.canPublish, isTrue);
+    expect(future.missing, isEmpty);
+    final started = readiness({
+      'canPublishWhenFuture': true,
+      'missing': [],
+    }, start: 1700000000000);
+    expect(started.canPublish, isFalse);
+    expect(started.missing, ['futureActive']);
+    final published = readiness(
+      {'canPublishWhenFuture': false, 'missing': []},
+      state: 'published',
+      start: 1700000000000,
+    );
+    expect(published.canPublish, isFalse);
+    expect(published.missing, isEmpty);
   });
 }
 
