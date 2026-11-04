@@ -50,6 +50,53 @@ const courtsideForm: OrganizerPublishingFormState = {
 };
 
 describe("organizerPublishingHelpers", () => {
+  const incompletePublished = {...courtsideForm, publishStatus: "published" as const,
+    description: "", area: "", sourceConfidence: "seedOnly" as const,
+    verificationStatus: "unverified" as const};
+
+  it("allows an audited ordinary correction without repairing untouched published gaps", () => {
+    const edited = {...incompletePublished, instagramHandle: "courtside", reviewNote: "Corrected handle"};
+    expect(validateOrganizerPublishingForm(edited, {original: incompletePublished, requireReviewNote: true}))
+      .toEqual([]);
+    expect(validateOrganizerPublishingForm(edited, {original: incompletePublished, publishing: true})
+      .map((issue) => issue.id)).toEqual(expect.arrayContaining([
+      "description", "area", "headline", "summary", "source-confidence", "verification",
+    ]));
+  });
+
+  it("still rejects clearing changed required fields and invalid content or routes", () => {
+    const original = {...incompletePublished, description: "Existing description", area: "Bandra"};
+    const issues = validateOrganizerPublishingForm({...original, description: " ", area: "",
+      email: "bad", imageUrl: "javascript:bad", canonicalPath: "/organizers/wrong/"}, {original});
+    expect(issues.map((issue) => issue.id)).toEqual(expect.arrayContaining([
+      "description", "area", "email-shape", "image-url", "route-slug",
+    ]));
+  });
+
+  it.each(["draft", "qa", "suppressed", "removed"] as const)(
+    "keeps full save requirements for a %s publication transition", (status) => {
+      for (const [original, form] of [
+        [incompletePublished, {...incompletePublished, publishStatus: status}],
+        [{...incompletePublished, publishStatus: status}, incompletePublished],
+      ]) {
+        expect(validateOrganizerPublishingForm(form, {original}).map((issue) => issue.id))
+          .toEqual(expect.arrayContaining(["description", "area"]));
+      }
+    }
+  );
+
+  it("sends only the correction and audit note, leaving provenance and publication untouched", () => {
+    const organizer = {...sampleOrganizerDetails.afterfly!, description: "", area: "",
+      provenance: {...sampleOrganizerDetails.afterfly!.provenance,
+        sourceConfidence: null, verificationStatus: null}};
+    const original = formFromOrganizerProfile(organizer);
+    expect(buildOrganizerSavePayload(organizer, original).fields).toEqual({});
+    expect(buildOrganizerSavePayload(organizer, {...original, email: "new@example.com",
+      reviewNote: "  Corrected contact  "})).toEqual({
+      organizerId: organizer.organizerId, reviewNote: "Corrected contact", fields: {email: "new@example.com"},
+    });
+  });
+
   it("updates the governed market projection as one choice", () => {
     const updated = updateOrganizerLaunchMarket(
       {

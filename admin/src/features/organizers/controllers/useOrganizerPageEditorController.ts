@@ -80,9 +80,10 @@ export function useOrganizerPageEditorController(
   }, [detail.error, onError]);
 
   const diffRows = useMemo(() => diffOrganizerProfile(organizer, form), [form, organizer]);
+  const original = useMemo(() => organizer ? formFromOrganizerProfile(organizer) : undefined, [organizer]);
   const issues = useMemo(
-    () => validateOrganizerPublishingForm(form, {requireReviewNote: diffRows.length > 0}),
-    [diffRows.length, form]
+    () => validateOrganizerPublishingForm(form, {original, requireReviewNote: diffRows.length > 0}),
+    [diffRows.length, form, original]
   );
   const publishIssues = useMemo(
     () => validateOrganizerPublishingForm(form, {publishing: true, requireReviewNote: true}),
@@ -97,7 +98,7 @@ export function useOrganizerPageEditorController(
     if (!organizer || !form) return false;
     const payload = buildOrganizerSavePayload(organizer, form);
     if (Object.keys(payload.fields).length === 0) return true;
-    const blockers = validateOrganizerPublishingForm(form, {requireReviewNote: true});
+    const blockers = validateOrganizerPublishingForm(form, {original, requireReviewNote: true});
     if (hasBlockingIssues(blockers)) {
       onError(blockers.find((issue) => issue.severity === "blocker")?.detail ?? "Fix what's listed before saving.");
       return false;
@@ -116,7 +117,7 @@ export function useOrganizerPageEditorController(
     } finally {
       endOperation(operation);
     }
-  }, [beginOperation, endOperation, form, onError, onNotice, organizer, refresh, saveMutation]);
+  }, [beginOperation, endOperation, form, onError, onNotice, organizer, original, refresh, saveMutation]);
 
   const saveAndPublish = useCallback(async () => {
     if (!organizer || !form) return false;

@@ -175,19 +175,19 @@ function PictureRow({title, value, onChange}: {title: string; value: string; onC
 
 /** The form: who they are, how to reach them, where the page shows, and why it changed. */
 function OrganizerPageEditorForm({editor}: {editor: OrganizerPageEditorController}): ReactNode {
-  const {form, setForm, organizer, publishIssues} = editor;
+  const {form, setForm, organizer, issues} = editor;
   if (!form || !organizer) {
     return <CatchLegacyText as="p" color="ink2" variant="bodyM">Loading the organizer</CatchLegacyText>;
   }
   const update = <K extends keyof OrganizerPublishingFormState>(key: K, value: OrganizerPublishingFormState[K]) =>
     setForm({...form, [key]: value});
-  const errorOf = (targetId: string) => publishIssues.find((issue) => issue.targetId === targetId)?.detail;
+  const errorOf = (targetId: string) => issues.find((issue) => issue.targetId === targetId)?.detail;
   return (
     <CatchGap size="majorSection">
       <CatchSection dividers="none" title="Who they are">
         <CatchGap size="section">
           <AdminFieldGrid columns={2}>
-            <CatchField onChanged={(value) => update("name", value)} recipe="input" title="Name" value={form.name} />
+            <CatchField errorText={errorOf("organizer-name")} onChanged={(value) => update("name", value)} recipe="input" title="Name" value={form.name} />
             <CatchField
               onChanged={(value) => update("organizerType", (value ?? "") as OrganizerType)}
               recipe="select"
@@ -204,6 +204,7 @@ function OrganizerPageEditorForm({editor}: {editor: OrganizerPageEditorControlle
           />
           <AdminFieldGrid columns={2}>
             <CatchField
+              errorText={errorOf("organizer-area")}
               helperText="Only an area we have checked."
               onChanged={(value) => update("area", value)}
               recipe="input"
@@ -219,7 +220,7 @@ function OrganizerPageEditorForm({editor}: {editor: OrganizerPageEditorControlle
             />
           </AdminFieldGrid>
           <CatchField onChanged={(value) => update("headline", value)} recipe="input" title="Headline" value={form.headline} />
-          <CatchField maxLines={4} onChanged={(value) => update("description", value)} recipe="input" title="About" value={form.description} />
+          <CatchField errorText={errorOf("organizer-description")} maxLines={4} onChanged={(value) => update("description", value)} recipe="input" title="About" value={form.description} />
           <CatchField maxLines={3} onChanged={(value) => update("summary", value)} recipe="input" title="Short summary" value={form.summary} />
           <CatchField
             helperText="Separate with commas. Shown as tags."
@@ -240,7 +241,7 @@ function OrganizerPageEditorForm({editor}: {editor: OrganizerPageEditorControlle
       <CatchSection dividers="none" note="Shown on the page only once they have claimed it" title="How to reach them">
         <CatchGap size="section">
           <CatchField onChanged={(value) => update("instagramHandle", value)} recipe="input" title="Instagram" value={form.instagramHandle} />
-          <CatchField onChanged={(value) => update("email", value)} recipe="input" title="Email" value={form.email} />
+          <CatchField errorText={errorOf("organizer-email")} onChanged={(value) => update("email", value)} recipe="input" title="Email" value={form.email} />
           <CatchField keyboardType="phone" onChanged={(value) => update("phoneNumber", value)} recipe="input" title="Phone" value={form.phoneNumber} />
         </CatchGap>
       </CatchSection>
@@ -300,6 +301,7 @@ function OrganizerPageEditorForm({editor}: {editor: OrganizerPageEditorControlle
           />
           <CatchField onChanged={(value) => update("sourceSummary", value)} recipe="input" title="Where this came from" value={form.sourceSummary} />
           <CatchField
+            errorText={errorOf("organizer-review-note")}
             helperText="Kept in History. The organizer never sees it."
             maxLines={2}
             onChanged={(value) => update("reviewNote", value)}
@@ -327,7 +329,7 @@ function OrganizerPageEditorSide({editor}: {editor: OrganizerPageEditorControlle
         {saveBlockers.map((issue) => (
           <CatchIndexRow key={issue.id} subtitle={issue.detail} title={issue.label} titleMaxLines={2} titleVariant="bodyM" />
         ))}
-        {publishOnly.length === 0 ? <CatchIndexRow title="Ready to publish" titleVariant="bodyM" /> : null}
+        {!publishIssues.some((issue) => issue.severity === "blocker") ? <CatchIndexRow title="Ready to publish" titleVariant="bodyM" /> : null}
         {publishOnly.map((issue) => (
           <CatchIndexRow key={issue.id} subtitle={`Before publishing: ${issue.detail}`} title={issue.label} titleMaxLines={2} titleVariant="bodyM" />
         ))}
