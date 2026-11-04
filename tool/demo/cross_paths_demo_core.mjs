@@ -90,6 +90,9 @@ export function loadCrossPathsDemoHelpers() {
     const discovery = requireFromFunctions(
       "./lib/events/eventDiscoveryProjection.js"
     );
+    const basics = requireFromFunctions(
+      "./lib/events/progressiveSetup/basics.js"
+    );
     return {
       crossPathsShowcaseRuleVersion:
         showcase.crossPathsShowcaseRuleVersion,
@@ -98,6 +101,7 @@ export function loadCrossPathsDemoHelpers() {
         showcase.evaluateCrossPathsShowcaseReadiness,
       isReciprocallyEligible: relationship.isReciprocallyEligible,
       eventDiscoveryProjection: discovery.eventDiscoveryProjection,
+      publishedEventBasics: basics.publishedEventBasics,
     };
   } catch (error) {
     throw new Error(
@@ -596,14 +600,33 @@ function buildDedicatedCrossPathsEventDocs({
   helpers,
 }) {
   const eventId = `${seedPrefix}_cross_paths_demo_event`;
-  const startTime = new Date(now.getTime() + 30 * 60 * 60 * 1000);
+  const startTime = new Date(
+    Math.floor((now.getTime() + 30 * 60 * 60 * 1000) / 60_000) * 60_000
+  );
   const endTime = new Date(startTime.getTime() + 90 * 60 * 1000);
   const people = [viewer, ...candidates];
   const source = cloneFirestoreValue(sourceEvent.data);
   const sourcePolicy = source.eventPolicy ?? {};
   const sourceAdmission = sourcePolicy.admission ?? {};
+  // A new event created published at its own start, in the source's city.
+  const basics = helpers.publishedEventBasics({
+    name: source.name,
+    startTimeMillis: startTime.getTime(),
+    defaults: {
+      city: {cityId: source.eventCityId, marketId: source.eventMarketId},
+    },
+  });
   const event = {
     ...source,
+    name: basics.name,
+    publicationState: "published",
+    setupRevision: 1,
+    eventCityId: basics.eventCityId,
+    eventMarketId: basics.eventMarketId,
+    eventLocalDate: basics.eventLocalDate,
+    eventLocalStartTime: basics.eventLocalStartTime,
+    eventTimezone: basics.eventTimezone,
+    setupDefaults: basics.setupDefaults,
     synthetic: true,
     seedPrefix,
     scenario: "cross-paths",

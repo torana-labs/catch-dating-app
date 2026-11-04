@@ -136,14 +136,14 @@ function code(error: unknown, expected: string) {
   return error instanceof HttpsError && error.code === expected;
 }
 
-test("one owner list includes private, published and rich legacy events",
+test("one owner list includes private and published events alike",
   async () => {
     const store = setup();
     store.rows.set("events/a", privateEvent(NOW + 1_000));
     store.rows.set("events/b", {...richEvent(NOW + 2_000),
       publicationState: "published"});
     store.rows.set("events/c", {...richEvent(NOW + 3_000),
-      name: undefined});
+      setupRevision: 6});
     store.rows.set("events/foreign", {...richEvent(NOW + 4_000),
       organizerId: "other"});
     store.rows.set("events/past", privateEvent(NOW - 1_000));
@@ -155,9 +155,9 @@ test("one owner list includes private, published and rich legacy events",
       ["a", "b", "c"]);
     assert.deepEqual(result.events.map((row) => row.publicationState),
       ["private", "published", "published"]);
-    assert.equal(result.events[2].name, null);
-    assert.equal(result.events[2].timezone, null);
-    assert.equal(result.events[2].setupRevision, null);
+    assert.equal(result.events[2].name, "Sunrise Social 5K");
+    assert.equal(result.events[2].timezone, "Asia/Kolkata");
+    assert.equal(result.events[2].setupRevision, 6);
     assert.deepEqual(Object.keys(result.events[0]).sort(), ["eventId",
       "name", "publicationState", "setupRevision", "startTimeMillis",
       "timezone"]);

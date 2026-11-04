@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {Timestamp} from "firebase-admin/firestore";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
 import {eventPaymentTermsFromPreferences} from
   "../events/eventSetupPreferences/resolve";
@@ -68,9 +67,10 @@ function fixture(conversionStatus: "completed" | "pending" = "completed",
     [`eventSetupPreferences/${eventId}`]: {organizerId, eventId,
       revision: 1, paymentTerms: eventPaymentTermsFromPreferences(
         preferences, 1), preferences},
-    [`events/${eventId}`]: {organizerId, status: "active", startTime: time(
-      now + 3_600_000)},
-  }, {[`events/${eventId}`]: new Timestamp(1_800_000_000, 123_456_000)});
+    [`events/${eventId}`]: {organizerId, status: "active",
+      publicationState: "published", setupRevision: 1,
+      startTime: time(now + 3_600_000)},
+  });
 }
 
 test("actual adapter maps reviewed registration and buffers all writes",
@@ -97,23 +97,23 @@ test("actual adapter maps reviewed registration and buffers all writes",
     assert.deepEqual(replay, receipt);
   });
 
-test("legacy snapshot update invalidates an already reviewed offer plan",
+test("a setup change invalidates an already reviewed offer plan",
   async () => {
     const store = fixture();
     const repository = new FirestoreEventOfferRepository(
       store.asFirestore(), () => now);
     const first = await previewEventOffers({repository, actor, input});
-    store.updateTimes[`events/${eventId}`] =
-      new Timestamp(1_800_000_000, 123_457_000);
+    store.docs[`events/${eventId}`] = {...store.docs[`events/${eventId}`],
+      setupRevision: 2};
     await assert.rejects(() => commitEventOffers({repository, actor,
-      input: {...input, requestId: "stale-legacy-offer",
+      input: {...input, requestId: "stale-setup-offer",
         planDigest: first.planDigest}}));
     assert.equal(Object.keys(store.docs).filter((path) =>
       path.startsWith("organizerEventOffers/")).length, 0);
     const refreshed = await previewEventOffers({repository, actor, input});
     assert.notEqual(refreshed.planDigest, first.planDigest);
     const saved = await commitEventOffers({repository, actor,
-      input: {...input, requestId: "fresh-legacy-offer",
+      input: {...input, requestId: "fresh-setup-offer",
         planDigest: refreshed.planDigest}});
     assert.equal(saved.results.length, 1);
   });

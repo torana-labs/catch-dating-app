@@ -251,13 +251,20 @@ test("missing schedule locks reconcile into zero-document collection denominator
   assert.equal(report.summary.collections.organizerScheduleLocks.enabled, true);
 });
 
-test("complete published and legacy fixtures remain valid and wrong time ordering still fails", () => {
-  for (const publicationState of [undefined, "published"]) {
-    const data = {...fixture("event_doc.json"), bookedCount: 0, genderCounts: {}, cohortCounts: {}, publicationState};
-    assert.deepEqual(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}), "events/e1"), []);
-    data.endTime = {_seconds: data.startTime._seconds - 60, _nanoseconds: 0};
+test("a complete published fixture is valid and wrong time ordering still fails", () => {
+  const data = {...fixture("event_doc.json"), bookedCount: 0, genderCounts: {}, cohortCounts: {}};
+  assert.deepEqual(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}), "events/e1"), []);
+  data.endTime = {_seconds: data.startTime._seconds - 60, _nanoseconds: 0};
+  assert.ok(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}), "events/e1")
+    .some((item) => item.code === "invalid-event-time"));
+});
+
+test("an event without its publication state or setup revision is reported", () => {
+  for (const field of ["publicationState", "setupRevision"]) {
+    const data = {...fixture("event_doc.json"), bookedCount: 0, genderCounts: {}, cohortCounts: {}};
+    delete data[field];
     assert.ok(findings(reportFor({organizers: [organizer()], events: [doc("events/e1", data)]}), "events/e1")
-      .some((item) => item.code === "invalid-event-time"));
+      .length > 0, field);
   }
 });
 

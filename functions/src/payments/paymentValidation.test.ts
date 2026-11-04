@@ -9,9 +9,11 @@ import {
   buildPaymentRecord,
   verifyPaidEventBooking,
 } from "./paymentValidation";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 function buildEventDoc(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
+    ...publishedEventSetup(),
     organizerId: "club-1",
     startTime: {toMillis: () => 1_000} as FirebaseFirestore.Timestamp,
     endTime: {toMillis: () => 2_000} as FirebaseFirestore.Timestamp,

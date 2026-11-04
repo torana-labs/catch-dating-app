@@ -62,6 +62,10 @@ const admin = requireFromFunctions("firebase-admin");
 const {
   eventDiscoveryProjection,
 } = requireFromFunctions("./lib/events/eventDiscoveryProjection.js");
+const {
+  publishedEventBasics,
+} = requireFromFunctions("./lib/events/progressiveSetup/basics.js");
+const {eventTitleLabel} = requireFromFunctions("./lib/shared/eventLabels.js");
 
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
@@ -1369,7 +1373,7 @@ function buildEvent({
   const market = cityMeta.market;
   const patterns = scenario.eventPatterns ?? defaultEventPatterns(preferPaid);
   const pattern = patterns[runIndex % patterns.length];
-  const start = offsetDate(now, {hours: pattern.offsetHours + organizerIndex * 8 + runIndex * 2});
+  const start = wholeMinute(offsetDate(now, {hours: pattern.offsetHours + organizerIndex * 8 + runIndex * 2}));
   const end = offsetDate(start, {minutes: pattern.durationMinutes});
   const id = `${seedPrefix}_run_${city}_${String(organizerIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
   const pace = ["easy", "moderate", "fast", "competitive"][runIndex % 4];
@@ -1393,6 +1397,7 @@ function buildEvent({
     priceInPaise: pattern.price,
     doc: {
       ...seedMarker,
+      ...publishedSeedEventSetup({eventFormat, market, start}),
       organizerId: organizer.id,
       startTime: admin.firestore.Timestamp.fromDate(start),
       endTime: admin.firestore.Timestamp.fromDate(end),
@@ -1439,6 +1444,30 @@ function buildEvent({
       cohortCounts: {},
       waitlistedCohortCounts: {},
     },
+  };
+}
+
+/**
+ * A seeded event is created published, like createEvent: the format label it
+ * always showed as its name, the organizer's city and market, the market's
+ * timezone and the local start, through the same Functions derivation.
+ */
+function publishedSeedEventSetup({eventFormat, market, start}) {
+  const basics = publishedEventBasics({
+    name: eventTitleLabel({eventFormat}),
+    startTimeMillis: start.getTime(),
+    defaults: {city: {cityId: market.cityId, marketId: market.marketId}},
+  });
+  return {
+    name: basics.name,
+    publicationState: "published",
+    setupRevision: 1,
+    eventCityId: basics.eventCityId,
+    eventMarketId: basics.eventMarketId,
+    eventLocalDate: basics.eventLocalDate,
+    eventLocalStartTime: basics.eventLocalStartTime,
+    eventTimezone: basics.eventTimezone,
+    setupDefaults: basics.setupDefaults,
   };
 }
 
@@ -3647,6 +3676,10 @@ function languageSet(city, index) {
 
 function daysFromNow(days) {
   return offsetDate(new Date(), {days});
+}
+
+function wholeMinute(date) {
+  return new Date(Math.floor(date.getTime() / 60000) * 60000);
 }
 
 function offsetDate(date, {days = 0, hours = 0, minutes = 0, seconds = 0}) {

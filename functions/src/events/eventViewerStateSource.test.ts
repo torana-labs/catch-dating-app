@@ -18,6 +18,7 @@ import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash} from
   "./seatIdentityAuthority";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 const uid = "person";
 const eventId = "event1";
@@ -27,7 +28,7 @@ const stamp = Timestamp.fromMillis;
 
 function fixture() {
   const store = new Store();
-  const event: Row = {organizerId,
+  const event: Row = {...publishedEventSetup(), organizerId,
     eventOrigin: catchNativeEventOrigin(),
     startTime: stamp(now + 3600000), endTime: stamp(now + 7200000),
     eventFormat: {version: 1, activityKind: "socialRun",
@@ -196,7 +197,7 @@ test("anonymous, deleted or foreign scope cannot obtain private viewer state",
     assert.equal(await read({db: h.store.db(), uid: "", eventId}), null);
     h.event.publicationState = "private";
     assert.equal(await h.readSource(), null);
-    delete h.event.publicationState;
+    h.event.publicationState = "published";
     h.store.put(`deletedUsers/${uid}`, {status: "processing"});
     assert.equal(await h.readSource(), null);
     h.store.rows.delete(`deletedUsers/${uid}`);
