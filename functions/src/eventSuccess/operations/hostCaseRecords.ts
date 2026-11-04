@@ -4,8 +4,6 @@ import type {EventAssistanceCaseDocument as Case} from
   "../../shared/generated/eventAssistanceCaseDocument";
 import type {EventAssistanceCaseCallableResponse as CaseResponse} from
   "../../shared/generated/eventAssistanceCaseCallableResponse";
-import type {EventAssistanceCasesCallableResponse as Response} from
-  "../../shared/generated/eventAssistanceCasesCallableResponse";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {validateEventAssistanceCaseDocument} from
@@ -95,9 +93,19 @@ export function projectHostCase(value: HostCase, event: DocumentSnapshot,
 }
 
 
-/** Current organizer managers only; selected identity is rechecked on write. */
+/** A manager snapshot; the server rechecks access for every assignment. */
+export interface CaseManagerOptions {
+  actorUid: string;
+  managers: Array<{uid: string; displayName: string | null}>;
+}
+
+/**
+ * Current organizer managers only; selected identity is rechecked on write.
+ * Practice runs return it; the live console builds the same list on the
+ * phone from the organizer document.
+ */
 export function projectCaseManagerOptions(organizer: OrganizerDocument,
-  actorUid: string): Response["managerOptions"] {
+  actorUid: string): CaseManagerOptions {
   if (!isOrganizerManager(organizer, actorUid)) throw invalidSource();
   const profiles = organizerHostProfiles(organizer);
   const managers = organizerManagerUserIds(organizer).map((uid) => ({uid,

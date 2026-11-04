@@ -649,11 +649,11 @@ own reviewed mutation boundaries.
 
 ### Practical guest-help queue and handling
 
-`listEventAssistanceCases` reads open or settled practical requests for one
-live event. Each manager-authorized transaction returns at most 50 cases and
-an explicit continuation cursor. Coverage is one page at the returned server
-time, not an event-wide count, a live subscription or an all-clear. The query
-filters for the event-lead owner before reading requests; comfort/safety cases
+The Host console lists open or settled practical requests for one live event
+from `hostEventCaseViews`, one view per request written ahead of time by the
+case view triggers. A manager's listener reads at most 50 views and continues
+after the last case id; coverage is one page, not an event-wide count or an
+all-clear. Only cases owned by the event lead get a view; comfort/safety cases
 remain exclusively in the authorized safety-operator boundary.
 
 New guest-help responses preserve both canonical source-generation hashes and
@@ -740,14 +740,17 @@ subsequent work; these callables have not been deployed by this source change.
 
 ### Delivery review and manual handling
 
-`listEventAssistanceDeliveries` returns a manager-authorized page of up to 50
-recorded messages for one live event. Each row separates delivery evidence,
+The Host console lists up to 50 recorded messages for one live event at a time
+from `hostEventDeliveryViews`, one view per live message written ahead of time by
+the delivery view triggers. Each row separates delivery evidence,
 coordinator progress and manual ownership. Accepted, unknown, reserved, failed,
 verified-revoked, delivered/read and conflicting states remain distinct; a failed
 attempt cannot hide another pending submission. Coverage is only the returned
 page. Endpoints, provider IDs, templates, private message content and guest-link
 secrets are excluded. Missing/recreated guest sources hide attendee identity and
-remove available actions; malformed matching records fail visibly.
+remove available actions; a malformed matching record marks its view
+`invalidSource` and the console fails the page visibly. A row's manual handoff
+lapses at its `relevantUntilMillis` on the phone's clock.
 
 `repairEventAssistanceDelivery` implements `repairDelivery/manualHandoff`. A
 current organizer manager must supply the exact reviewed message revision and
@@ -3664,8 +3667,8 @@ rather than embedded in event-type logic.
 | `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}` | Server-only single-use receipt. One live session may admit multiple attendees, but the same authenticated attendee cannot replay it. TTL uses `expiresAt`. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessAssignmentDrafts/{eventId_moduleId_uid}` | Server-owned, Host-readable next-round rotation drafts. Participants cannot read or write this collection. |
-| `eventSuccessPresence/{eventId_uid}` | Server-owned heartbeat timestamps for checked-in Flutter and no-download runtime attendees. Every direct read/write is denied; Host summaries are callable-derived. |
-| `eventSuccessLateArrivals/{eventId_uid}` | Server-owned Host resolution for one checked-in late attendee. The attendee and event Host may get the deterministic document; list and every direct write are denied. |
+| `eventSuccessPresence/{eventId_uid}` | Server-owned heartbeat timestamps for checked-in Flutter and no-download runtime attendees. Current organizer managers get or list an event's heartbeats and derive presence on the phone; attendees cannot read them and every direct write is denied. |
+| `eventSuccessLateArrivals/{eventId_uid}` | Server-owned Host resolution for one checked-in late attendee. The attendee and event Host may get the deterministic document, and a current organizer manager may list an event's resolutions; every direct write is denied. |
 | `eventSuccessUnitOutcomes/{eventId}` | Server-owned complete round facts for completion, score, or rank outcomes. Hosts may get the event document; attendee reads, list access, and every direct write are denied. |
 | `eventSuccessStandings/{eventId}` | Server-owned score/rank snapshots through each recorded round. Authorized Hosts, active participants, and ready external runtime identities may get the event document; list and direct writes are denied. |
 | `organizerEventSuccessLayouts/{organizerId_layoutId}` | Reusable organizer-owned parametric room-layout assets. Organizer managers may read their assets; all writes use the validated callable. Participants receive only the selected layout's timestamp-free projection through an authorized callable/runtime bootstrap. |
@@ -3679,19 +3682,22 @@ Schemas live under `contracts/firestore/` and generated outputs under
 
 An open checked-in companion sends `heartbeatEventSuccessPresence` from both
 Flutter and `website/src/features/eventRuntime/`. The server stores only the
-latest timestamp and derives `present`, `idle`, or `likelyDeparted` from its own
-clock. Deployment configuration owns the bounded policy:
+latest timestamp. `present`, `idle`, or `likelyDeparted` are derived from it and
+a clock with the policy in `contracts/catalogs/event_success_presence_policy.json`:
 
-- `EVENT_SUCCESS_HEARTBEAT_INTERVAL_SECONDS` defaults to 30;
-- `EVENT_SUCCESS_PRESENCE_PRESENT_SECONDS` defaults to 90;
-- `EVENT_SUCCESS_PRESENCE_LIKELY_DEPARTED_SECONDS` defaults to 300.
+- heartbeats every 30 seconds;
+- present while the latest heartbeat is at most 90 seconds old;
+- likely departed once it is more than 300 seconds old.
 
-Invalid, out-of-order configuration fails back to the reviewed defaults.
+Rotation generation and late placement derive on the server clock. The Host
+live console lists the event's heartbeats and late-arrival resolutions under
+rules and derives the liveness prompt and late-arrival candidates on the phone,
+re-evaluated every heartbeat interval: candidates are guests on the operational
+roster, linked to their account and checked in after the event started, who are
+neither in the next round's current draft nor already placed for it.
 Attendees without any monitored heartbeat are not inferred to have departed.
-`getEventSuccessPresenceSummary` is Host-only and supplies the liveness prompt
-and newly checked-in late-arrival candidates. A Host explicitly regenerates the
-next draft after reviewing likely departures; the server never silently edits a
-live round.
+A Host explicitly regenerates the next draft after reviewing likely departures;
+the server never silently edits a live round.
 
 `resolveEventSuccessLateArrival` is Host-confirmed and shares the live revision
 fence. It may replace a `likelyDeparted` draft slot, turn a prepared sit-out into

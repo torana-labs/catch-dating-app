@@ -445,10 +445,7 @@ export {
 } from "./eventSuccess/liveControl";
 export {setEventSuccessAccountabilityResolution} from
   "./eventSuccess/accountability";
-export {
-  getEventSuccessPresenceSummary,
-  heartbeatEventSuccessPresence,
-} from "./eventSuccess/presence";
+export {heartbeatEventSuccessPresence} from "./eventSuccess/presence";
 export {resolveEventSuccessLateArrival} from
   "./eventSuccess/lateArrivals";
 export {recordEventSuccessUnitOutcomes} from
@@ -706,9 +703,9 @@ export {
   recordOrganizerAnalyticsEvent,
 } from "./analytics/organizerAnalyticsEvents";
 
-export {listEventAssistanceCases, resolveEventAssistanceCase} from
+export {resolveEventAssistanceCase} from
   "./eventSuccess/operations/hostCasesHandlers";
-export {listEventAssistanceDeliveries, repairEventAssistanceDelivery} from
+export {repairEventAssistanceDelivery} from
   "./eventSuccess/operations/hostDeliveriesHandlers";
 export {getEventAssistanceHostGuests} from
   "./eventSuccess/operations/hostGuestsHandlers";
@@ -1067,6 +1064,14 @@ export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged, onHostRosterInsightPaymentChanged} from
   "./hostReadModels/rosterInsightViewTriggers";
+export {onHostEventCaseViewCaseChanged, onHostEventCaseViewAttendeeChanged,
+  onHostEventCaseViewEventChanged, onHostEventCaseViewOrganizerChanged} from
+  "./hostReadModels/eventCaseViewTriggers";
+export {onHostEventDeliveryViewMessageChanged,
+  onHostEventDeliveryViewGuestChanged, onHostEventDeliveryViewAttendeeChanged,
+  onHostEventDeliveryViewEventChanged, onHostEventDeliveryViewWorkItemChanged,
+  onHostEventDeliveryViewRunChanged, onHostEventDeliveryViewOrganizerChanged}
+  from "./hostReadModels/eventDeliveryViewTriggers";
 
 export {manageEventApprovalNotifications} from
   "./events/approvalNotifications/preferences";

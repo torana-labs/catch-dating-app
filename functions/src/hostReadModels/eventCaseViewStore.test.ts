@@ -59,9 +59,6 @@ async function harness(fixtureId?: ReturnType<typeof randomUUID>) {
     reconcileEventCaseView(h.db, caseId, deps);
   const view = async (caseId = created.caseId) =>
     await h.read(eventCaseViewsCollection + "/" + caseId) as Data | undefined;
-  const callableRow = async (status: "open" | "resolved" = "open") =>
-    (await cases.list(manager, {context: h.context, status, cursor: null}))
-      .cases.find((row) => row.caseId === created.caseId);
   const command = async (outcome: Command["command"]["payload"]["outcome"] =
   "resolved", owner = manager): Promise<Command> => {
     await reconcile();
@@ -73,8 +70,7 @@ async function harness(fixtureId?: ReturnType<typeof randomUUID>) {
       payload: {caseId: row.caseId, expectedRevision: row.revision,
         outcome, owner}}};
   };
-  return {...h, cases, deps, create, created, reconcile, view, callableRow,
-    command};
+  return {...h, cases, deps, create, created, reconcile, view, command};
 }
 
 /** A view as the Flutter fixtures hold it: evaluatedAt in milliseconds. */
@@ -86,7 +82,7 @@ function fixtureView(id: string, data: Data) {
     Math.floor(evaluatedAt._nanoseconds! / 1_000_000)}};
 }
 
-test("a practical live case gets a complete view equal to the callable's row",
+test("a practical live case gets a complete, current view",
   async () => {
     const h = await harness();
     assert.deepEqual(await h.reconcile(), {kind: "complete", revision: 1});
@@ -101,7 +97,13 @@ test("a practical live case gets a complete view equal to the callable's row",
     assert.equal(written.receivedAt, h.created.data.receivedAt);
     assert.equal(written.sourceCoverage, "complete");
     assert.equal(written.incompleteSource, null);
-    assert.deepEqual(written.view, await h.callableRow());
+    const row = written.view as Data;
+    assert.equal(row.caseId, h.created.caseId);
+    assert.equal(row.availability, "current");
+    assert.equal(row.revision, 0);
+    assert.equal(row.attendeeId, h.scope.attendeeId);
+    assert.equal(row.canChange, true);
+    assert.deepEqual(row.assignment, {kind: "unassigned"});
     for (const hidden of [h.actor.phone, "messageId", "guestId",
       "sourceGeneration", "secret", "responseId", "budget", "episodeId"]) {
       assert.ok(!JSON.stringify(written).includes(hidden), hidden);
@@ -136,7 +138,6 @@ test("resolution moves the view to the resolved queue with the command's row",
     const written = (await h.view())!;
     assert.equal(written.status, "resolved");
     assert.deepEqual(written.view, applied.view);
-    assert.deepEqual(written.view, await h.callableRow("resolved"));
   });
 
 test("a manager's removal revokes the assignment authority the view shows",
@@ -154,7 +155,6 @@ test("a manager's removal revokes the assignment authority the view shows",
     await h.reconcile();
     assert.deepEqual(((await h.view())!.view as Data).assignment,
       {kind: "assigned", uid: "host-2", authority: "revoked"});
-    assert.deepEqual((await h.view())!.view, await h.callableRow());
   });
 
 test("a replaced guest source hides the name and every action", async () => {

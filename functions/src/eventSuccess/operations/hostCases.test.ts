@@ -10,11 +10,13 @@ import type {ResolveEventAssistanceCaseCallablePayload as Command} from
   "../../shared/generated/resolveEventAssistanceCaseCallablePayload";
 import {validateEventAssistanceCaseDocument} from
   "../../shared/generated/validators/eventAssistanceCaseDocument";
-import {validateEventAssistanceCasesCallableResponse} from
-  "../../shared/generated/validators/eventAssistanceCasesOutput";
+import {validateEventAssistanceCaseCallableResponse} from
+  "../../shared/generated/validators/eventAssistanceCaseOutput";
 import {CASE_RECEIPTS, EventAssistanceCasesStore} from "./hostCasesStore";
-import {listEventAssistanceCasesHandler, resolveEventAssistanceCaseHandler} from
-  "./hostCasesHandlers";
+import type {HostCaseView} from "./hostCaseRecords";
+import {resolveEventAssistanceCaseHandler} from "./hostCasesHandlers";
+import {eventCaseViewsCollection, reconcileEventCaseView} from
+  "../../hostReadModels/eventCaseViewStore";
 import {guestCollections} from "./guestRecords";
 import {assistanceMessageId} from "./messageOutbox";
 import {setup} from "./liveLateJoinTestHarness";
@@ -25,7 +27,7 @@ async function harness(realDb?: Firestore,
   fixtureId?: ReturnType<typeof randomUUID>) {
   const h = await setup(realDb, fixtureId);
   const cases = new EventAssistanceCasesStore(h.db, () => h.clock.now);
-  const input = {context: h.context, status: "open" as const, cursor: null};
+  const deps = {now: () => Timestamp.fromMillis(h.clock.now)};
   const create = async (category: "eventLogistics" | "accessibility" |
     "other" | "comfortSafety" = "eventLogistics",
   id: string = randomUUID()) => {
@@ -52,7 +54,23 @@ async function harness(realDb?: Firestore,
   };
   const created = await create("eventLogistics",
     fixtureId ? "native-help" : undefined);
-  const list = () => cases.list(manager, input);
+  /** The queue a manager's listener sees: every case view re-evaluated. */
+  const list = async (status: "open" | "resolved" = "open") => {
+    const rows = await h.db.collection(guestCollections.cases)
+      .where("context.eventId", "==", h.context.eventId).get();
+    for (const doc of rows.docs) {
+      await reconcileEventCaseView(h.db, doc.id, deps);
+    }
+    const views = await h.db.collection(eventCaseViewsCollection)
+      .where("eventId", "==", h.context.eventId)
+      .where("status", "==", status).get();
+    return {cases: views.docs.map((doc) => doc.data())
+      .sort((a, b) => a.caseId < b.caseId ? -1 : 1)
+      .map((view) => view.view as HostCaseView)};
+  };
+  /** Source documents, without the derived views the queue reads. */
+  const sources = () => h.fake.entries().filter(([path]) =>
+    !path.startsWith(eventCaseViewsCollection + "/"));
   const command = async (outcome: Command["command"]["payload"]["outcome"] =
   "resolved", owner = manager): Promise<Command> => {
     const view = (await list()).cases.find((c) =>
@@ -64,15 +82,13 @@ async function harness(realDb?: Firestore,
       payload: {caseId: view.caseId, expectedRevision: view.revision!,
         outcome, owner}}};
   };
-  return {...h, cases, input, create, created, list, command};
+  return {...h, cases, deps, create, created, list, sources, command};
 }
 
 test("guest help becomes a bounded, read-only Host request", async () => {
   const h = await harness();
-  const before = h.fake.entries();
+  const before = h.sources();
   const result = await h.list();
-  assert.equal(result.coverage, "page");
-  assert.equal(result.nextCursor, null);
   assert.equal(result.cases.length, 1);
   const row = result.cases[0];
   assert.equal(row.availability, "current");
@@ -85,7 +101,7 @@ test("guest help becomes a bounded, read-only Host request", async () => {
     "secret", "responseId", "budget", "episodeId"]) {
     assert.ok(!JSON.stringify(result).includes(hidden), hidden);
   }
-  assert.deepEqual(h.fake.entries(), before);
+  assert.deepEqual(h.sources(), before);
 });
 
 test("restricted safety requests never enter the practical host queue",
@@ -109,16 +125,13 @@ test("manager authorization is checked before event, case or guest reads",
     for (const uid of [h.actor.uid, "checkin-staff", "another-manager"]) {
       const reads: string[] = [];
       h.fake.beforeRead = (path) => reads.push(path);
-      await assert.rejects(h.cases.list(uid, h.input),
-        {code: "permission-denied"});
       await assert.rejects(h.cases.resolve(uid, command),
         {code: "permission-denied"});
-      assert.deepEqual(reads,
-        Array(2).fill("organizers/" + h.context.organizerId));
+      assert.deepEqual(reads, ["organizers/" + h.context.organizerId]);
     }
   });
 
-test("queue pagination preserves all requests without claiming a total",
+test("every practical request in the event has its own view",
   async () => {
     const h = await harness();
     for (let i = 0; i < 51; i++) {
@@ -127,17 +140,10 @@ test("queue pagination preserves all requests without claiming a total",
       await h.write(guestCollections.cases + "/" + caseId,
         {...h.created.data, responseId, caseId});
     }
-    const first = await h.list();
-    assert.equal(first.cases.length, 50);
-    assert.ok(first.nextCursor);
-    const second = await h.cases.list(manager, {...h.input,
-      cursor: first.nextCursor});
-    assert.equal(second.cases.length, 2);
-    assert.equal(second.nextCursor, null);
-    const ids = [...first.cases, ...second.cases].map((c) => c.caseId);
+    const ids = (await h.list()).cases.map((c) => c.caseId);
+    assert.equal(ids.length, 52);
     assert.equal(new Set(ids).size, 52);
     assert.deepEqual(ids, [...ids].sort());
-    assert.ok(!("total" in first));
   });
 
 test("resolution and decline close the request with explicit outcomes",
@@ -145,7 +151,7 @@ test("resolution and decline close the request with explicit outcomes",
     for (const outcome of ["resolved", "declined"] as const) {
       const h = await harness();
       const command = await h.command(outcome);
-      const before = h.fake.entries();
+      const before = h.sources();
       const applied = await h.cases.resolve(manager, command);
       assert.equal(applied.outcome, "applied");
       assert.equal(applied.view.status, "resolved");
@@ -153,8 +159,7 @@ test("resolution and decline close the request with explicit outcomes",
       assert.equal(applied.view.canChange, false);
       assert.equal(applied.operationRevision, 1);
       assert.equal((await h.list()).cases.length, 0);
-      assert.equal((await h.cases.list(manager, {...h.input,
-        status: "resolved"})).cases.length, 1);
+      assert.equal((await h.list("resolved")).cases.length, 1);
       const replay = await h.cases.resolve(manager, command);
       assert.equal(replay.outcome, "replayed");
       assert.equal(replay.operationRevision, 1);
@@ -163,10 +168,10 @@ test("resolution and decline close the request with explicit outcomes",
       assert.equal((await h.guests.submit(h.created.submission)).result.kind,
         "replayed");
       assert.equal((await h.list()).cases.length, 0);
-      const effects = h.fake.entries().filter(([path]) =>
+      const effects = h.sources().filter(([path]) =>
         path === h.created.path || path.startsWith(CASE_RECEIPTS + "/"));
       assert.equal(effects.length, 2);
-      assert.deepEqual(h.fake.entries().filter(([path]) =>
+      assert.deepEqual(h.sources().filter(([path]) =>
         path !== h.created.path && !path.startsWith(CASE_RECEIPTS + "/")),
       before.filter(([path]) => path !== h.created.path));
       await assert.rejects(h.cases.resolve(manager, {...command, command: {
@@ -276,7 +281,7 @@ test("attendance, departure and event closure do not silently settle a request",
     assert.equal(result.outcome, "applied");
   });
 
-test("malformed case state fails rather than becoming an empty queue",
+test("malformed case state is recorded rather than becoming an empty queue",
   async () => {
     const h = await harness();
     assert.ok("handling" in h.created.data);
@@ -287,8 +292,9 @@ test("malformed case state fails rather than becoming an empty queue",
       {handling: {...h.created.data.handling, revision: 0.5}},
     ]) {
       await h.write(h.created.path, {...h.created.data, ...patch});
-      await assert.rejects(h.cases.list(manager, {...h.input,
-        status: patch.status === "resolved" ? "resolved" : "open"}));
+      const outcome = await reconcileEventCaseView(h.db,
+        h.created.data.caseId, h.deps);
+      assert.equal(outcome.kind, "invalidSource", JSON.stringify(patch));
     }
   });
 
@@ -298,13 +304,6 @@ test("invalid and rehearsal inputs fail before reading source documents",
     const command = await h.command();
     const reads: string[] = [];
     h.fake.beforeRead = (path) => reads.push(path);
-    for (const input of [{...h.input, cursor: "a/b"},
-      {...h.input, limit: 10000},
-      {...h.input, status: "everything"},
-      {...h.input, context: {mode: "rehearsal"}}]) {
-      await assert.rejects(h.cases.list(manager, input),
-        {code: "invalid-argument"});
-    }
     const payload: Record<string, unknown> = {...command.command.payload};
     delete payload.expectedRevision;
     await assert.rejects(h.cases.resolve(manager, {...command, command: {
@@ -317,8 +316,7 @@ test("invalid and rehearsal inputs fail before reading source documents",
 
 test("wire contracts reject impossible case state combinations", async () => {
   const h = await harness();
-  const result = await h.list();
-  const row = result.cases[0];
+  const row = (await h.list()).cases[0];
   assert.ok("handling" in h.created.data);
   for (const data of [
     {...h.created.data, sourceGeneration: undefined},
@@ -336,15 +334,15 @@ test("wire contracts reject impossible case state combinations", async () => {
     {assignment: {kind: "unassigned", uid: "host-2"}},
     {resolution: {outcome: "transferred", actorUid: manager, at: h.clock.now}},
   ]) {
-    assert.equal(validateEventAssistanceCasesCallableResponse({...result,
-      cases: [{...row, ...patch}]}), false);
+    assert.equal(validateEventAssistanceCaseCallableResponse({
+      context: h.context, serverTime: h.clock.now, outcome: "applied",
+      operationRevision: 0, view: {...row, ...patch}}), false);
   }
 });
 
 test("case handlers authenticate and rate-limit before accessing the store",
   async () => {
-    for (const handler of [listEventAssistanceCasesHandler,
-      resolveEventAssistanceCaseHandler]) {
+    for (const handler of [resolveEventAssistanceCaseHandler]) {
       const calls: string[] = [];
       const deps = {db: () => ({}) as Firestore,
         rateLimit: async () => {
@@ -414,7 +412,6 @@ test("guest-help names and manager choices remain bound to current sources",
     await h.write(h.attendeePath, {...attendee, displayName: "Alex"});
     const before = await h.list();
     assert.equal(before.cases[0].displayName, "Alex");
-    assert.equal(before.managerOptions!.actorUid, manager);
     const command = await h.command();
     await h.write(h.attendeePath, {...attendee, displayName: "Alex M"});
     await assert.rejects(h.cases.resolve(manager, command), {code: "aborted"});

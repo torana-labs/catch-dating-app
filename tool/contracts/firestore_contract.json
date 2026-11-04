@@ -1304,6 +1304,59 @@
       ]
     },
     {
+      "id": "hostEventCaseViews",
+      "path": "hostEventCaseViews/{caseId}",
+      "rulesMatch": "/hostEventCaseViews/{caseId}",
+      "typescriptInterface": "HostEventCaseViewDocument",
+      "dartModel": "lib/contexts/live/domain/event_assistance_cases_page.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers list an event's help-request and delivery views"
+      ],
+      "owner": "Host event case view evaluator: hostReadModels event case view triggers",
+      "read": "current organizer managers list an event's views for one status (organizerId, eventId and status, ordered by document id); authority comes from the organizer document",
+      "write": "server only; one view per live case owned by the event lead, deleted when the case is missing, safety-owned or rehearsal, or its organizer or event is gone",
+      "exportedFunctions": [
+        "onHostEventCaseViewCaseChanged",
+        "onHostEventCaseViewAttendeeChanged",
+        "onHostEventCaseViewEventChanged",
+        "onHostEventCaseViewOrganizerChanged",
+        "resolveEventAssistanceCase"
+      ],
+      "migrationNotes": [
+        "view is the row the retired listEventAssistanceCases callable returned; the handoff choices are built on the phone from the organizer document.",
+        "sourceCoverage invalidSource keeps the previous view and names incompleteSource; the phone fails the page rather than hiding a request."
+      ]
+    },
+    {
+      "id": "hostEventDeliveryViews",
+      "path": "hostEventDeliveryViews/{messageId}",
+      "rulesMatch": "/hostEventDeliveryViews/{messageId}",
+      "typescriptInterface": "HostEventDeliveryViewDocument",
+      "dartModel": "lib/contexts/live/domain/event_assistance_deliveries_page.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers list an event's help-request and delivery views"
+      ],
+      "owner": "Host event delivery view evaluator: hostReadModels event delivery view triggers",
+      "read": "current organizer managers list an event's views (organizerId and eventId, ordered by document id); authority comes from the organizer document",
+      "write": "server only; one view per live message, deleted when the message is missing or not live, or its organizer or event is gone",
+      "exportedFunctions": [
+        "onHostEventDeliveryViewMessageChanged",
+        "onHostEventDeliveryViewGuestChanged",
+        "onHostEventDeliveryViewAttendeeChanged",
+        "onHostEventDeliveryViewEventChanged",
+        "onHostEventDeliveryViewWorkItemChanged",
+        "onHostEventDeliveryViewRunChanged",
+        "onHostEventDeliveryViewOrganizerChanged",
+        "repairEventAssistanceDelivery"
+      ],
+      "migrationNotes": [
+        "view is the row the retired listEventAssistanceDeliveries callable returned, evaluated at evaluatedAt; relevantUntilMillis is when its manual handoff lapses, which the phone applies on its own clock, so no sweep runs.",
+        "sourceCoverage invalidSource keeps the previous view and names incompleteSource; the phone fails the page rather than hiding a message."
+      ]
+    },
+    {
       "id": "organizerEntitlements",
       "path": "organizerEntitlements/{organizerId}",
       "rulesMatch": "/organizerEntitlements/{organizerId}",
@@ -1853,14 +1906,13 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "Event Success attendee heartbeat callable",
-      "read": "server only; Hosts receive a derived callable summary",
+      "read": "current organizer managers get or list an event's heartbeats (organizerId and eventId); attendees never read them",
       "write": "server only",
       "exportedFunctions": [
-        "heartbeatEventSuccessPresence",
-        "getEventSuccessPresenceSummary"
+        "heartbeatEventSuccessPresence"
       ],
       "migrationNotes": [
-        "Presence state is derived from heartbeatAt with deployment-configured windows; it is never persisted as a stale enum."
+        "Presence state is derived from heartbeatAt and a clock with the windows in contracts/catalogs/event_success_presence_policy.json, on the server for rotations and late placement and on the manager's phone for the live console; it is never persisted as a stale enum."
       ]
     },
     {
@@ -1889,7 +1941,7 @@
       "dartModel": "lib/contexts/live/domain/event_success_presence.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "Event Success Host late-arrival callable",
-      "read": "attendee own deterministic eventId_uid document or authorized event Host; no list",
+      "read": "attendee own deterministic eventId_uid document or authorized event Host; current organizer managers list an event's placements (organizerId and eventId)",
       "write": "server only",
       "exportedFunctions": [
         "resolveEventSuccessLateArrival"
@@ -2990,8 +3042,8 @@
       "exportedFunctions": [
         "getEventAssistanceGuestView",
         "submitEventAssistanceGuestChoice",
-        "listEventAssistanceCases",
-        "resolveEventAssistanceCase"
+        "resolveEventAssistanceCase",
+        "onHostEventCaseViewCaseChanged"
       ]
     },
     {
@@ -3102,8 +3154,8 @@
         "Intent and bounded attempts are private. Provider activation and guest response endpoints are separate integration work."
       ],
       "exportedFunctions": [
-        "listEventAssistanceDeliveries",
-        "repairEventAssistanceDelivery"
+        "repairEventAssistanceDelivery",
+        "onHostEventDeliveryViewMessageChanged"
       ]
     },
     {

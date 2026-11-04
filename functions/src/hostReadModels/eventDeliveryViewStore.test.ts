@@ -44,9 +44,6 @@ async function harness(fixtureId?: ReturnType<typeof randomUUID>) {
     eventDeliveryViewsCollection + "/" + messageId) as Data | undefined;
   const row = async (messageId = published.messageId) =>
     (await view(messageId))!.view as Data;
-  const callableRow = async (messageId = published.messageId) =>
-    (await reviewStore.list(manager, {context: h.context, cursor: null}))
-      .deliveries.find((m) => m.messageId === messageId);
   const command = async (): Promise<Command> => {
     await reconcile();
     const current = await row();
@@ -65,7 +62,7 @@ async function harness(fixtureId?: ReturnType<typeof randomUUID>) {
       receivedAt: h.clock.now, state});
   };
   return {...h, published, delivery, reviewStore, deps, reconcile, view, row,
-    callableRow, command, record, receipt};
+    command, record, receipt};
 }
 
 function fixtureView(id: string, data: Data) {
@@ -76,7 +73,7 @@ function fixtureView(id: string, data: Data) {
     Math.floor(evaluatedAt._nanoseconds! / 1_000_000)}};
 }
 
-test("a live message gets a complete view equal to the callable's row",
+test("a live message gets a complete, current view",
   async () => {
     const h = await harness();
     for (const messageId of [h.published.messageId, h.messageId]) {
@@ -91,7 +88,9 @@ test("a live message gets a complete view equal to the callable's row",
       assert.equal(written.eventId, h.context.eventId);
       assert.equal(written.lifecycle, "active");
       assert.equal(written.sourceCoverage, "complete");
-      assert.deepEqual(written.view, await h.callableRow(messageId));
+      assert.equal((written.view as Data).messageId, messageId);
+      assert.equal((written.view as Data).availability, "current");
+      assert.equal((written.view as Data).attendeeId, h.scope.attendeeId);
     }
     const record = await h.record();
     const written = (await h.view())!;
@@ -111,9 +110,9 @@ test("the handoff lapses exactly at relevantUntilMillis", async () => {
   await h.reconcile();
   const until = (await h.view())!.relevantUntilMillis as number;
   h.clock.now = until - 1;
-  assert.deepEqual((await h.callableRow())!.actions, ["manualHandoff"]);
+  await h.reconcile();
+  assert.deepEqual((await h.row()).actions, ["manualHandoff"]);
   h.clock.now = until;
-  assert.deepEqual((await h.callableRow())!.actions, []);
   await h.reconcile();
   const written = (await h.view())!;
   assert.deepEqual((written.view as Data).actions, []);
@@ -145,7 +144,6 @@ test("a handoff and a manager's removal re-evaluate ownership and actions",
     assert.deepEqual((await h.row()).handling, {kind: "manual",
       actorUid: "host-2", at: h.clock.now, authority: "revoked"});
     assert.deepEqual((await h.row()).actions, ["manualHandoff"]);
-    assert.deepEqual(await h.row(), await h.callableRow());
   });
 
 test("a replaced guest loses identity and actions but keeps evidence",
