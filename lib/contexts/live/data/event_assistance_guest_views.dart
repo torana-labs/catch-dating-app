@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_platform/cryptography/sha256_digest.dart';
-import 'package:catch_platform/errors/app_exception.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_platform/cryptography/content_hash.dart';
 
 /// The live console's guest and settings views (`hostEventAccountabilityViews`,
 /// `hostEventMembershipViews`, `hostEventAssistanceSettingViews`,
@@ -17,17 +16,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// Only managers read these views, so the actor-specific parts of the retired
 /// responses are a manager's here. Time enters only as instants the views
 /// store (the event's end, a transfer's or a receiver's expiry, an automation
-/// window); [guestViewNow] applies the app clock, never earlier than the
-/// server's own evaluation.
+/// window); [liveViewNow] applies the app clock, never earlier than the
+/// server's own evaluation, and each listener is read again at the nearest
+/// of those instants.
 abstract final class EventAssistanceGuestViews {
   static const accountability = 'hostEventAccountabilityViews';
   static const memberships = 'hostEventMembershipViews';
   static const settings = 'hostEventAssistanceSettingViews';
   static const runtimes = 'hostEventRuntimeViews';
-
-  /// Departure checkpoint views; each carries its roster members'
-  /// checkpoint-scoped accountability.
-  static const checkpoints = 'hostEventCheckpointViews';
 }
 
 /// How long a reviewed choice of receiving operators stays offered, as the
@@ -39,77 +35,49 @@ String accountabilityViewId(EventAssistanceGuestScope guest) =>
     '${guest.eventId}_${guest.attendeeId}';
 
 /// The server names these views after the record they project
-/// (`membershipIdentity`, `settingId`, `runtimeConfigId`, `checkpointIdentity`
-/// in Functions): SHA-256 of the canonical JSON of the scope, keys sorted.
-/// Vectors pinned on both sides keep the two derivations equal.
+/// (`membershipIdentity`, `settingId`, `runtimeConfigId` in Functions):
+/// [operationContentHash] of the scope. Vectors pinned on both sides keep the
+/// two derivations equal.
 String membershipViewId(EventAssistanceGuestScope scope) =>
-    'membership:${_contentHash({'context': scope.context, 'attendeeId': scope.attendeeId})}';
+    'membership:${operationContentHash({'context': scope.context, 'attendeeId': scope.attendeeId})}';
 
 String lateJoinSettingViewId(EventAssistanceGroupScope scope) =>
-    'setting:${_contentHash([scope.context, scope.groupId, 'lateJoin'])}';
+    'setting:${operationContentHash([scope.context, scope.groupId, 'lateJoin'])}';
 
 String runtimeViewId(EventAssistanceRuntimeScope scope) =>
-    'runtime:lateJoin:${_contentHash(scope.context)}';
+    'runtime:lateJoin:${operationContentHash(scope.context)}';
 
-/// The departure checkpoint view holding a checkpoint-scoped accountability.
-String checkpointAccountabilityViewId(
-  EventAssistanceGroupScope group,
-  AssistanceAccountabilityCheckpoint checkpoint,
-) =>
-    'checkpoint:${_contentHash([group.context, group.groupId, checkpoint.progressRevision, checkpoint.checkpointId])}';
-
-/// The Functions `operationContentHash` of a JSON value.
-String _contentHash(Object? value) => sha256Digest(_canonicalJson(value));
-
-String _canonicalJson(Object? value) {
-  if (value == null || value is String || value is bool || value is int) {
-    return jsonEncode(value);
-  }
-  if (value is List) return '[${value.map(_canonicalJson).join(',')}]';
-  if (value is Map) {
-    final keys = value.keys.cast<String>().toList()..sort();
-    return '{${keys.map((key) => '${jsonEncode(key)}:${_canonicalJson(value[key])}').join(',')}}';
-  }
-  throw ArgumentError.value(value, 'value', 'Not a canonical JSON value.');
+/// When a membership view next changes on the clock: the event end ends
+/// readiness, a transfer expires, a receiver's authority ends, or the
+/// handover review window the phone opened closes.
+DateTime? membershipNextRebuild(Map<String, Object?>? data, int now) {
+  final view = data?['view'];
+  if (view is! Map) return null;
+  final transfer = view['transfer'];
+  final receivers = data!['receivers'];
+  return nextLiveViewRebuild([
+    data['eventEndAtMillis'],
+    if (transfer is Map) transfer['expiresAt'],
+    if (receivers is List)
+      for (final receiver in receivers.whereType<Map<Object?, Object?>>())
+        if (receiver['groups'] case final List<Object?> groups)
+          for (final group in groups.whereType<Map<Object?, Object?>>())
+            group['validUntil'],
+    if (receivers is List && receivers.isNotEmpty)
+      now + membershipHandoverReviewWindow,
+  ], now);
 }
 
-/// A view the server has not written yet, or no longer writes.
-BackendOperationException guestViewMissing(
-  String resource,
-) => BackendOperationException(
-  code: 'live-view-missing',
-  message:
-      'Event operating information is unavailable. Refresh the event setup.',
-  context: BackendErrorContext(
-    service: BackendService.firestore,
-    action: 'watch live guests and settings',
-    resource: resource,
-  ),
-  retryable: true,
-);
-
-/// A view whose last evaluation read a source that failed validation.
-BackendOperationException guestViewInvalidSource(
-  String resource,
-) => BackendOperationException(
-  code: 'live-view-invalid-source',
-  message:
-      'Event operating information is unavailable. Refresh the event setup.',
-  context: BackendErrorContext(
-    service: BackendService.firestore,
-    action: 'watch live guests and settings',
-    resource: resource,
-  ),
-);
-
-/// The app clock, but never before the server evaluation it is compared
-/// with: a view cannot have been evaluated in the future.
-int guestViewNow(DateTime clock, Map<String, Object?>? view) {
-  final evaluatedAt = view?['evaluatedAt'];
-  final now = clock.millisecondsSinceEpoch;
-  return evaluatedAt is Timestamp
-      ? math.max(now, evaluatedAt.millisecondsSinceEpoch)
-      : now;
+/// When an automation view next changes on the clock: the event end closes
+/// it, and a configured window expires.
+DateTime? runtimeNextRebuild(Map<String, Object?>? data, int now) {
+  final view = data?['view'];
+  final runtime = view is Map ? view['runtime'] : null;
+  final configuration = runtime is Map ? runtime['configuration'] : null;
+  return nextLiveViewRebuild([
+    data?['eventEndAtMillis'],
+    if (configuration is Map) configuration['expiresAt'],
+  ], now);
 }
 
 Map<String, Object?> _view(
@@ -119,17 +87,17 @@ Map<String, Object?> _view(
   required String eventId,
   Map<String, Object?> keys = const {},
 }) {
-  if (data == null) throw guestViewMissing(resource);
+  if (data == null) throw liveViewMissing(resource);
   if (data['organizerId'] != organizerId ||
       data['eventId'] != eventId ||
       keys.entries.any((key) => data[key.key] != key.value)) {
     throw const FormatException('Foreign live guest view.');
   }
   if (data['sourceCoverage'] != 'complete') {
-    throw guestViewInvalidSource(resource);
+    throw liveViewInvalidSource(resource);
   }
   final view = data['view'];
-  if (view is! Map) throw guestViewInvalidSource(resource);
+  if (view is! Map) throw liveViewInvalidSource(resource);
   return view.cast<String, Object?>();
 }
 
@@ -182,8 +150,8 @@ Map<String, Object?> checkpointAccountabilityReadResponse(
   if (checkpoint == null) {
     throw const FormatException('Choose a recorded departure.');
   }
-  const resource = EventAssistanceGuestViews.checkpoints;
-  if (data == null) throw guestViewMissing(resource);
+  const resource = EventAssistanceMovementViews.checkpoints;
+  if (data == null) throw liveViewMissing(resource);
   if (data['organizerId'] != scope.group.organizerId ||
       data['eventId'] != scope.group.eventId ||
       data['groupId'] != scope.group.groupId ||
@@ -192,17 +160,17 @@ Map<String, Object?> checkpointAccountabilityReadResponse(
     throw const FormatException('Foreign live guest view.');
   }
   if (data['sourceCoverage'] != 'complete') {
-    throw guestViewInvalidSource(resource);
+    throw liveViewInvalidSource(resource);
   }
   final entries = data['accountability'];
-  if (entries is! List) throw guestViewInvalidSource(resource);
+  if (entries is! List) throw liveViewInvalidSource(resource);
   final entry = entries
       .whereType<Map<Object?, Object?>>()
       .where((entry) => entry['attendeeId'] == scope.attendeeId)
       .firstOrNull;
-  if (entry == null) throw guestViewMissing(resource);
+  if (entry == null) throw liveViewMissing(resource);
   final view = entry['view'];
-  if (view is! Map) throw guestViewInvalidSource(resource);
+  if (view is! Map) throw liveViewInvalidSource(resource);
   return _read({
     ...view.cast<String, Object?>(),
     'context': scope.group.context,

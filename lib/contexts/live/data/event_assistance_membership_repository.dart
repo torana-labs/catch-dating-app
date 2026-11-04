@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
@@ -7,6 +8,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/transfer_event_assistance_group_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,7 +26,9 @@ class EventAssistanceMembershipRepository {
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
 
-  /// Applies time to the view on every delivered snapshot.
+  /// Applies time to the view on every delivered snapshot and again when
+  /// readiness, a transfer, a receiver's authority or the review window
+  /// lapses.
   final AppClock _clock;
 
   /// The membership as the manager [actorUid] reviews it: only managers can
@@ -33,22 +37,33 @@ class EventAssistanceMembershipRepository {
     EventAssistanceGuestScope scope, {
     required String actorUid,
   }) => withBackendErrorStream(
-    () => _firestore
-        .collection(EventAssistanceGuestViews.memberships)
-        .doc(membershipViewId(scope))
-        .snapshots()
-        .map((snapshot) {
-          final data = snapshot.data();
-          return EventAssistanceMembershipResult.fromCallableData(
-            membershipReadResponse(
-              data,
-              scope: scope,
-              actorUid: actorUid,
-              now: guestViewNow(_clock.now(), data),
-            ),
-            expectedScope: scope,
-          ).view;
-        }),
+    () =>
+        clockedListener<
+              Map<String, Object?>?,
+              ({EventAssistanceMembershipView view, DateTime? next})
+            >(
+              _firestore
+                  .collection(EventAssistanceGuestViews.memberships)
+                  .doc(membershipViewId(scope))
+                  .snapshots()
+                  .map((snapshot) => snapshot.data()),
+              clock: _clock,
+              build: (data, clock) {
+                final now = liveViewNow(clock, [data]);
+                final view = EventAssistanceMembershipResult.fromCallableData(
+                  membershipReadResponse(
+                    data,
+                    scope: scope,
+                    actorUid: actorUid,
+                    now: now,
+                  ),
+                  expectedScope: scope,
+                ).view;
+                return (view: view, next: membershipNextRebuild(data, now));
+              },
+              nextRebuildAt: (built) => built.next,
+            )
+            .map((built) => built.view),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch guest group membership',

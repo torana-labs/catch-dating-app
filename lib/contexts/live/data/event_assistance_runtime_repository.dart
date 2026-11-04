@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
@@ -8,6 +9,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_runtime_config_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -26,27 +28,35 @@ class EventAssistanceRuntimeRepository {
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
 
-  /// Applies time to the view on every delivered snapshot.
+  /// Applies time to the view on every delivered snapshot and again when
+  /// the event ends or a configured window expires.
   final AppClock _clock;
 
   /// The automation without sender choices; [fetchSenderPage] supplies them.
   Stream<AssistanceRuntimeView> watch(EventAssistanceRuntimeScope scope) =>
       withBackendErrorStream(
-        () => _firestore
-            .collection(EventAssistanceGuestViews.runtimes)
-            .doc(runtimeViewId(scope))
-            .snapshots()
-            .map((snapshot) {
-              final data = snapshot.data();
-              return AssistanceRuntimeResult.fromCallableData(
-                runtimeReadResponse(
-                  data,
-                  scope: scope,
-                  now: guestViewNow(_clock.now(), data),
-                ),
-                expectedScope: scope,
-              ).view;
-            }),
+        () =>
+            clockedListener<
+                  Map<String, Object?>?,
+                  ({AssistanceRuntimeView view, DateTime? next})
+                >(
+                  _firestore
+                      .collection(EventAssistanceGuestViews.runtimes)
+                      .doc(runtimeViewId(scope))
+                      .snapshots()
+                      .map((snapshot) => snapshot.data()),
+                  clock: _clock,
+                  build: (data, clock) {
+                    final now = liveViewNow(clock, [data]);
+                    final view = AssistanceRuntimeResult.fromCallableData(
+                      runtimeReadResponse(data, scope: scope, now: now),
+                      expectedScope: scope,
+                    ).view;
+                    return (view: view, next: runtimeNextRebuild(data, now));
+                  },
+                  nextRebuildAt: (built) => built.next,
+                )
+                .map((built) => built.view),
         context: const BackendErrorContext(
           service: BackendService.firestore,
           action: 'watch event automation',

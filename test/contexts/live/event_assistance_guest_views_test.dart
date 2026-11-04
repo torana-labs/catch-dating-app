@@ -1,9 +1,7 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,8 +12,7 @@ void main() {
   );
 
   // functions/src/hostReadModels/guestViewTriggers.test.ts pins the same
-  // vectors from membershipIdentity, settingId, runtimeConfigId and
-  // checkpointIdentity.
+  // vectors from membershipIdentity, settingId and runtimeConfigId.
   test('view ids are the server record ids', () {
     final guest = EventAssistanceGuestScope(
       organizerId: 'org-1',
@@ -45,23 +42,47 @@ void main() {
       'runtime:lateJoin:'
       '468f3e8fcfbaed5ffd78013b0b0770ca4f2a178c6dee1c8a5110fc0c107b3927',
     );
-    expect(
-      checkpointAccountabilityViewId(
-        group('event:whole'),
-        AssistanceAccountabilityCheckpoint(
-          checkpointId: 'stop-2',
-          progressRevision: 3,
-        ),
-      ),
-      'checkpoint:'
-      'b0cd2cb234df1869e45add17f36e3d810453a98739a899ac6e12ad09d7301ed1',
-    );
   });
 
-  test('the read time is the app clock, never before the evaluation', () {
-    final view = {'evaluatedAt': Timestamp.fromMillisecondsSinceEpoch(5000)};
-    expect(guestViewNow(DateTime.fromMillisecondsSinceEpoch(9000), view), 9000);
-    expect(guestViewNow(DateTime.fromMillisecondsSinceEpoch(1000), view), 5000);
-    expect(guestViewNow(DateTime.fromMillisecondsSinceEpoch(1000), null), 1000);
+  test('listeners are read again when readiness, a transfer, a receiver, '
+      'the review window or the automation window lapses', () {
+    DateTime at(int millis) => DateTime.fromMillisecondsSinceEpoch(millis);
+    final membership = {
+      'eventEndAtMillis': 9000000,
+      'view': {
+        'transfer': {'expiresAt': 2000000},
+      },
+      'receivers': [
+        {
+          'operatorId': 'pacer-1',
+          'groups': [
+            {'groupId': 'tempo', 'validUntil': 1500000},
+          ],
+        },
+      ],
+    };
+    expect(membershipNextRebuild(membership, 1000000), at(1500000));
+    expect(membershipNextRebuild(membership, 1600000), at(2000000));
+    expect(
+      membershipNextRebuild(membership, 2100000),
+      at(2100000 + membershipHandoverReviewWindow),
+    );
+    expect(
+      membershipNextRebuild({...membership, 'receivers': <Object?>[]}, 8500000),
+      at(9000000),
+      reason: 'with no receivers only the event end is ahead',
+    );
+    expect(membershipNextRebuild(null, 1), isNull);
+    final runtime = {
+      'eventEndAtMillis': 10000,
+      'view': {
+        'runtime': {
+          'configuration': {'expiresAt': 9000},
+        },
+      },
+    };
+    expect(runtimeNextRebuild(runtime, 1000), at(9000));
+    expect(runtimeNextRebuild(runtime, 9000), at(10000));
+    expect(runtimeNextRebuild(runtime, 10000), isNull);
   });
 }

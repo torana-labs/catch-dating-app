@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -71,7 +72,7 @@ class EventAssistanceDepartureHistoryRepository {
               rosters: views.rosters,
               query: query,
               actorUid: actorUid,
-              now: movementViewNow(clock, [views.progress, ...views.rosters]),
+              now: liveViewNow(clock, [views.progress, ...views.rosters]),
             ),
             expectedQuery: query,
             expectedActorUid: actorUid,

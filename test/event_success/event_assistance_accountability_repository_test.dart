@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_accountability_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -42,7 +43,7 @@ void main() {
           )
         : seedGuestView(
             firestore,
-            EventAssistanceGuestViews.checkpoints,
+            EventAssistanceMovementViews.checkpoints,
             checkpointAccountabilityViewDoc(
               response,
               scope: selected,
@@ -186,7 +187,7 @@ void main() {
       scope: checkpointAccountabilityScope,
       evaluatedAt: 900,
     );
-    await seedGuestView(firestore, EventAssistanceGuestViews.checkpoints, {
+    await seedGuestView(firestore, EventAssistanceMovementViews.checkpoints, {
       ...doc,
       'accountability': [
         {'attendeeId': 'other-guest', 'view': null},

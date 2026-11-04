@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -49,7 +50,7 @@ class EventAssistanceDepartureRepository {
                   .map((snapshot) => snapshot.data()),
               clock: _clock,
               build: (data, clock) {
-                final now = movementViewNow(clock, [data]);
+                final now = liveViewNow(clock, [data]);
                 final result =
                     EventAssistanceGroupProgressResult.fromCallableData(
                       groupProgressReadResponse(

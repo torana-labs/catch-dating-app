@@ -1,11 +1,16 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/resolve_event_assistance_accountability_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,7 +29,8 @@ class EventAssistanceAccountabilityRepository {
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
 
-  /// Applies time to the view on every delivered snapshot.
+  /// Stamps each delivered snapshot with the read instant. A visit review
+  /// compares the clock with no instant, so it is rebuilt per delivery only.
   final AppClock _clock;
 
   Stream<EventAssistanceAccountabilityView> watch(
@@ -33,30 +39,43 @@ class EventAssistanceAccountabilityRepository {
     final checkpoint = scope.checkpoint;
     final resource = checkpoint == null
         ? EventAssistanceGuestViews.accountability
-        : EventAssistanceGuestViews.checkpoints;
+        : EventAssistanceMovementViews.checkpoints;
     return withBackendErrorStream(
-      () => _firestore
-          .collection(resource)
-          .doc(
-            checkpoint == null
-                ? accountabilityViewId(scope.guest)
-                : checkpointAccountabilityViewId(scope.group, checkpoint),
-          )
-          .snapshots()
-          .map((snapshot) {
-            final data = snapshot.data();
-            final now = guestViewNow(_clock.now(), data);
-            return EventAssistanceAccountabilityResult.fromCallableData(
-              checkpoint == null
-                  ? accountabilityReadResponse(data, scope: scope, now: now)
-                  : checkpointAccountabilityReadResponse(
-                      data,
-                      scope: scope,
-                      now: now,
-                    ),
-              expectedScope: scope,
-            ).view;
-          }),
+      () =>
+          clockedListener<
+            Map<String, Object?>?,
+            EventAssistanceAccountabilityView
+          >(
+            _firestore
+                .collection(resource)
+                .doc(
+                  checkpoint == null
+                      ? accountabilityViewId(scope.guest)
+                      : checkpointViewId(
+                          EventAssistanceCheckpointScope(
+                            group: scope.group,
+                            checkpoint: checkpoint,
+                          ),
+                        ),
+                )
+                .snapshots()
+                .map((snapshot) => snapshot.data()),
+            clock: _clock,
+            build: (data, clock) {
+              final now = liveViewNow(clock, [data]);
+              return EventAssistanceAccountabilityResult.fromCallableData(
+                checkpoint == null
+                    ? accountabilityReadResponse(data, scope: scope, now: now)
+                    : checkpointAccountabilityReadResponse(
+                        data,
+                        scope: scope,
+                        now: now,
+                      ),
+                expectedScope: scope,
+              ).view;
+            },
+            nextRebuildAt: (_) => null,
+          ),
       context: BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch guest visit result',

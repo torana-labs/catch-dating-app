@@ -1,8 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_membership_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -151,6 +158,105 @@ void main() {
       expect(functions.calls.last.input, functions.calls.first.input);
     },
   );
+  test('the phone derives the manager actions the server read returns, for '
+      'every recorded state', () async {
+    // functions/src/hostReadModels/membershipViewStore.test.ts writes these
+    // from the membership view evaluator and the manager read.
+    final fixture =
+        jsonDecode(
+              File(
+                'test/event_success/fixtures/membership_views.json',
+              ).readAsStringSync(),
+            )
+            as Map<String, Object?>;
+    final states = fixture['states']! as Map<String, Object?>;
+    expect(
+      states.keys,
+      containsAll([
+        'noEpisode',
+        'ready',
+        'notReady',
+        'accepted',
+        'pendingToActor',
+        'pendingToOther',
+        'expiredTransfer',
+      ]),
+    );
+    for (final MapEntry(key: name, value: raw) in states.entries) {
+      final state = raw! as Map<String, Object?>;
+      final doc = (state['doc']! as Map).cast<String, Object?>();
+      final expected = (state['expected']! as Map).cast<String, Object?>();
+      final scope = EventAssistanceGuestScope(
+        organizerId: doc['organizerId']! as String,
+        eventId: doc['eventId']! as String,
+        attendeeId: doc['attendeeId']! as String,
+      );
+      final store = FakeFirebaseFirestore();
+      await seedGuestView(store, EventAssistanceGuestViews.memberships, doc);
+      final now = state['now']! as int;
+      final view = await EventAssistanceMembershipRepository(
+        functions,
+        store,
+        clock: AppClock.custom(() => DateTime.fromMillisecondsSinceEpoch(now)),
+      ).watch(scope, actorUid: state['actorUid']! as String).first;
+      expect(
+        view.actions.map((action) => action.name).toSet(),
+        (expected['actions']! as List).toSet(),
+        reason: name,
+      );
+      expect(view.ready, expected['ready'], reason: name);
+      expect(
+        switch (view.transfer) {
+          null => 'none',
+          AssistancePendingTransfer(:final state) => state.name,
+          AssistanceClosedTransfer(:final state) => state.name,
+        },
+        expected['transferState'],
+        reason: name,
+      );
+    }
+  });
+
+  test(
+    'an open listener expires a pending transfer without a new snapshot',
+    () {
+      fakeAsync((async) {
+        final listened = EventAssistanceMembershipRepository(
+          functions,
+          firestore,
+          clock: AppClock.custom(
+            () => DateTime.fromMillisecondsSinceEpoch(
+              1000 + async.elapsed.inMilliseconds,
+            ),
+          ),
+        );
+        unawaited(seed(membershipWire(state: 'pending')));
+        async.flushMicrotasks();
+        final views = <EventAssistanceMembershipView>[];
+        final subscription = listened
+            .watch(membershipScope, actorUid: 'host-2')
+            .listen(views.add);
+        async.flushMicrotasks();
+        expect(
+          (views.last.transfer! as AssistancePendingTransfer).state,
+          AssistancePendingTransferState.pending,
+        );
+        expect(views.last.actions, contains(AssistanceMembershipAction.accept));
+        async.elapse(const Duration(milliseconds: 4000));
+        expect(
+          (views.last.transfer! as AssistancePendingTransfer).state,
+          AssistancePendingTransferState.expired,
+        );
+        expect(
+          views.last.actions,
+          isNot(contains(AssistanceMembershipAction.accept)),
+        );
+        unawaited(subscription.cancel());
+        async.flushMicrotasks();
+      });
+    },
+  );
+
   test('missing, invalid and foreign views and unconfirmed mutation responses '
       'are visible errors', () async {
     await expectLater(

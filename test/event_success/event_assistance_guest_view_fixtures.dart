@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_guest_views.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
@@ -65,7 +67,12 @@ Map<String, Object?> checkpointAccountabilityViewDoc(
     ..remove('checkpoint');
   return {
     'schemaVersion': 1,
-    'checkpointViewId': checkpointAccountabilityViewId(scope.group, checkpoint),
+    'checkpointViewId': checkpointViewId(
+      EventAssistanceCheckpointScope(
+        group: scope.group,
+        checkpoint: checkpoint,
+      ),
+    ),
     'eventId': scope.group.eventId,
     'organizerId': scope.group.organizerId,
     'groupId': scope.group.groupId,
