@@ -128,7 +128,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `createPrivateEventSetup` / `updatePrivateEventBasics` / `updatePrivateEventPreferences` / `listPrivateEventSetups` / `updatePrivateEventDetails` / `listOfferEventTargets` | `src/events/progressiveSetup/` | Manager-only basic event setup, private event-local payment/preferences snapshots and sanitized reopen; mutations remain closed pending privacy migration |
 | `queryOrganizerFormResponses` | `src/organizerResponseQuery/` | Manager-only bounded typed filtering/sorting, safe display page and structured stale-result errors |
 | `updateOrganizerEventSetupDefaults` | `src/organizers/eventSetupDefaults/callables.ts` | Revision-fenced save of event setup defaults; managers read them through `hostEventSetupDefaultViews`; no provider activation |
-| `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
+| `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface; creates published events at `setupRevision` 1 and edits, cancels or deletes published events only |
 | `upsertOrganizerEventVenue` | `src/events/organizerEventVenues.ts` | Create, update, archive, or restore one organizer-owned reusable event venue |
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
 | `signUpForFreeEvent` | `src/events/` | Book a free event |

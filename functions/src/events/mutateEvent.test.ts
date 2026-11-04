@@ -1887,7 +1887,7 @@ test("ready ledger occupancy or stale policy prevents unsafe capacity edit",
         "events/event-1": event(), ...docs});
       await assert.rejects(updateEventHandler(request("host-1", {
         eventId: "event-1",
-          expectedSetupRevision: 1, fields: {capacityLimit: 25},
+        expectedSetupRevision: 1, fields: {capacityLimit: 25},
       }), h.deps), (error) => assertHttpsCode(error, "failed-precondition"));
       assert.deepEqual(h.firestore.get("events/event-1"), event());
       assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"),
