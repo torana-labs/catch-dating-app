@@ -251,6 +251,7 @@ function collectLooseHelperCandidates(code, classRanges) {
     const offset = (match.index ?? 0) + (match[0].startsWith("\n") ? 1 : 0);
     if (delimiterDepthAt(code, offset, "(", ")") > 0) continue;
     if (!isLooseReturnType(match[2])) continue;
+    if (match[2] == null && precededByReturnTypeLine(code, offset)) continue;
     const name = match[3];
     // A type-shaped, unannotated `Foo()` followed by `=>` is a Dart object
     // pattern in a switch expression, not a function declaration.
@@ -281,6 +282,7 @@ function collectLooseHelperCandidates(code, classRanges) {
   for (const match of code.matchAll(getterRegex)) {
     const offset = (match.index ?? 0) + (match[0].startsWith("\n") ? 1 : 0);
     if (!isLooseReturnType(match[2])) continue;
+    if (match[2] == null && precededByReturnTypeLine(code, offset)) continue;
     const body = looseCallableBody(
       code,
       (match.index ?? 0) + match[0].length,
@@ -338,6 +340,38 @@ const controlFlowNames = new Set([
 
 function isLooseReturnType(type) {
   return type == null || simpleTypeName(type) === "Object" || type === "dynamic";
+}
+
+// `dart format` wraps a long signature with the return type on a line of its
+// own:
+//
+//   AsyncValue<CheckpointSession>
+//   checkpointSessionForAccount(Ref ref) { ... }
+//
+// The name line then carries no type, but the declaration is typed, so it is
+// not a loose helper whose body decides what it returns. The typed scan above
+// already reads such declarations across the line break.
+const wrappedReturnTypeLine = new RegExp(
+  String.raw`^(?:(?:static|external)\s+)*(?:[A-Za-z_][A-Za-z0-9_]*\.)?([A-Za-z_][A-Za-z0-9_]*)(?:<[^;{}()=]*>)?\??$`,
+  "u",
+);
+const notReturnTypes = new Set([
+  "async", "await", "const", "else", "final", "late", "new", "return", "sync",
+  "throw", "var", "yield",
+]);
+
+function precededByReturnTypeLine(code, offset) {
+  let end = offset - 1;
+  while (end >= 0) {
+    const start = code.lastIndexOf("\n", end - 1) + 1;
+    const line = code.slice(start, end).trim();
+    if (line.length > 0) {
+      const match = wrappedReturnTypeLine.exec(line);
+      return match != null && !notReturnTypes.has(match[1]);
+    }
+    end = start - 1;
+  }
+  return false;
 }
 
 function looseCallableBody(code, start) {

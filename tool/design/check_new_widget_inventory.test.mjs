@@ -576,6 +576,62 @@ topLevelInferredHelper() => topLevelObjectHelper();
   assert.equal(helpers.some(({name}) => name === "callback"), false);
 });
 
+test("a return type wrapped onto its own line is a typed declaration, not a loose helper", () => {
+  const source = `
+@riverpod
+AsyncValue<CheckpointSession>
+checkpointSessionForAccount(Ref ref, {required Account account}) {
+  if (account.isLoading) return const AsyncLoading();
+  return AsyncData(const CheckpointSession());
+}
+
+Widget
+wrappedWidgetHelper() => const SizedBox();
+
+class WrappedOwner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => const SizedBox();
+
+  Widget
+  get child => const SizedBox();
+
+  Future<int>
+  get count async => 0;
+}
+`;
+  const lineStarts = buildLineStarts(source);
+  const declarations = collectClassDeclarations(source, lineStarts);
+  const helpers = collectWidgetHelpers(
+    source,
+    lineStarts,
+    collectClassRanges(source, lineStarts),
+    resolveWidgetTypeNames(declarations),
+  );
+
+  assert.deepEqual(
+    helpers.map(({name, returnType, declarationKind, owner}) => ({
+      name,
+      returnType,
+      declarationKind,
+      owner,
+    })),
+    [
+      {
+        name: "wrappedWidgetHelper",
+        returnType: "Widget",
+        declarationKind: "function",
+        owner: null,
+      },
+      {
+        name: "child",
+        returnType: "Widget",
+        declarationKind: "getter",
+        owner: "WrappedOwner",
+      },
+    ],
+  );
+});
+
 test("returning closures does not invent a helper named return", () => {
   const source = `
 CheckoutFactory checkoutFactory() {
