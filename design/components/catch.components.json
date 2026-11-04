@@ -10663,9 +10663,7 @@
           "subject",
           "step",
           "live",
-          "moment",
-          "wide-row",
-          "scrolled"
+          "moment"
         ],
         "slots": [
           {
@@ -15240,14 +15238,9 @@
           "press-and-slide",
           "pointer-focus",
           "long-press-secondary-action",
-          "bottom",
           "rail",
           "sidebar",
-          "header-identity",
-          "primary-action",
-          "sections",
-          "pinned-more",
-          "footer-identity"
+          "pinned-more"
         ],
         "slots": [],
         "tokens": [
@@ -18403,14 +18396,10 @@
           }
         ],
         "states": [
+          "auto",
           "bar",
-          "bar-summary",
-          "bar-secondary",
           "card",
-          "pane",
-          "pane-note",
-          "loading",
-          "disabled"
+          "pane"
         ],
         "slots": [
           {
@@ -20989,6 +20978,23 @@
                 "catch.app_shell"
               ],
               "reason": "Publishes the shell's navigation placement and bottom inset to the screens inside it; CatchAppShell owns the placement and provides it."
+            }
+          },
+          {
+            "id": "catch.app_shell.consumer_route_shell",
+            "symbol": "AppShell",
+            "file": "lib/routing/shell/app_shell.dart",
+            "summary": "The consumer app's route shell: the StatefulShellRoute builder with its destinations and the guest call to action, drawn on AdaptiveTabScaffold. It shares the shell's name, not its code, and moves onto CatchAppShell when the consumer's wave redraws it.",
+            "states": [
+              "signed-in",
+              "guest"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.app_shell",
+              "parentConceptId": "catch.app_shell",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.app_shell"
             }
           }
         ],
