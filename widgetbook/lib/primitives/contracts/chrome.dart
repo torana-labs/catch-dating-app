@@ -16,7 +16,7 @@ import '../../preview_layout_contracts.dart';
 Widget catchTopBarContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'CatchLegacyTopBar',
-    contractId: 'catch.top_bar',
+    contractId: 'catch.top_bar.legacy',
     states: const [
       'compact',
       'context',

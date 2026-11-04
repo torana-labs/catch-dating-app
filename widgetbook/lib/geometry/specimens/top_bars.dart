@@ -17,7 +17,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
   return widgetbookGeometryPage(
     context,
     title: 'Top bars',
-    contractIds: const ['catch.top_bar'],
+    contractIds: const ['catch.top_bar.legacy'],
     principles: const [
       'The primitive owns safe area, height, gutter, leading, and action lanes.',
       'Compact route and large editorial modes retain one alignment system.',

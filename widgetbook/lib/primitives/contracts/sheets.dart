@@ -213,7 +213,7 @@ Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
 Widget catchDockSurfaceContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'CatchLegacyDock',
-    contractId: 'catch.bottom_action',
+    contractId: 'catch.bottom_action.legacy',
     states: const [
       'ios-floating',
       'android-anchored',
