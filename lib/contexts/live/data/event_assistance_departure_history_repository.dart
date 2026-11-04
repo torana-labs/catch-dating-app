@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
-import 'package:catch_dating_app/contexts/live/data/live_listener_streams.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -50,21 +51,32 @@ class EventAssistanceDepartureHistoryRepository {
         resource: EventAssistanceMovementViews.departures,
       ),
     );
-    return combineLiveListeners(
-      progress,
-      rosters,
-      (progressData, rosterData) =>
+    // The page compares the clock with nothing: it is rebuilt per delivery
+    // only, so its read instant follows the app clock.
+    return clockedListener<
+      ({Map<String, Object?>? progress, List<Map<String, Object?>> rosters}),
+      EventAssistanceDepartureHistoryPage
+    >(
+      combineLatest(
+        progress,
+        rosters,
+        (progressData, rosterData) =>
+            (progress: progressData, rosters: rosterData),
+      ),
+      clock: _clock,
+      build: (views, clock) =>
           EventAssistanceDepartureHistoryPage.fromCallableData(
             departureHistoryReadResponse(
-              progress: progressData,
-              rosters: rosterData,
+              progress: views.progress,
+              rosters: views.rosters,
               query: query,
               actorUid: actorUid,
-              now: movementViewNow(_clock.now(), [progressData, ...rosterData]),
+              now: movementViewNow(clock, [views.progress, ...views.rosters]),
             ),
             expectedQuery: query,
             expectedActorUid: actorUid,
           ),
+      nextRebuildAt: (_) => null,
     );
   }
 

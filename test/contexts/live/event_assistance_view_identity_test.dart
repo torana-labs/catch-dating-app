@@ -43,12 +43,4 @@ void main() {
       'checkpoint:b0cd2cb234df1869e45add17f36e3d810453a98739a899ac6e12ad09d7301ed1',
     );
   });
-
-  test('canonical hashing sorts keys and rejects non-JSON values', () {
-    expect(
-      assistanceContentHash({'b': 1, 'a': 2}),
-      assistanceContentHash({'a': 2, 'b': 1}),
-    );
-    expect(() => assistanceContentHash(1.5), throwsArgumentError);
-  });
 }

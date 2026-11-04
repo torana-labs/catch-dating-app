@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_movement_views.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identity.dart';
@@ -6,6 +8,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -106,6 +109,36 @@ void main() {
       expect((await first()).serverTime, departureNow + 500);
     },
   );
+
+  test('the open listener closes the group at the event end without a new '
+      'snapshot', () {
+    fakeAsync((async) {
+      final clock = AppClock.custom(
+        () => DateTime.fromMillisecondsSinceEpoch(
+          departureNow + async.elapsed.inMilliseconds,
+        ),
+      );
+      final listened = EventAssistanceDepartureRepository(
+        functions,
+        firestore,
+        clock: clock,
+      );
+      unawaited(seed(departureResponse(revision: 1, freshness: 'current')));
+      async.flushMicrotasks();
+      final views = <EventAssistanceGroupProgressView>[];
+      final subscription = listened
+          .watch(departureScope(), actorUid: departureActor)
+          .listen(views.add);
+      async.flushMicrotasks();
+      expect(views.single.eventOpen, isTrue);
+      async.elapse(const Duration(milliseconds: _end - departureNow));
+      expect(views, hasLength(2));
+      expect(views.last.eventOpen, isFalse);
+      expect(views.last.guidance, isNull);
+      unawaited(subscription.cancel());
+      async.flushMicrotasks();
+    });
+  });
 
   test('missing, invalid and foreign views are visible errors', () async {
     await expectLater(

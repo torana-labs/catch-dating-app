@@ -69,6 +69,42 @@ int movementViewNow(DateTime clock, Iterable<Map<String, Object?>?> views) {
   return now;
 }
 
+/// The nearest of [instants] after [now], when the view must be read again
+/// because a field it derives from the clock changes then; null when none is
+/// ahead.
+DateTime? nextMovementViewRebuild(Iterable<Object?> instants, int now) {
+  int? next;
+  for (final instant in instants) {
+    if (instant is int && instant > now && (next == null || instant < next)) {
+      next = instant;
+    }
+  }
+  return next == null ? null : DateTime.fromMillisecondsSinceEpoch(next);
+}
+
+/// When the group view's openness and guidance next change: its event end.
+DateTime? groupProgressNextRebuild(Map<String, Object?>? data, int now) =>
+    nextMovementViewRebuild([data?['eventEndAtMillis']], now);
+
+/// When the checkpoint view next changes on the clock: the request falls
+/// due, the owner's authority ends, a reporter's authority ends, or the
+/// manager's reporter choice window closes.
+DateTime? checkpointNextRebuild(Map<String, Object?>? data, int now) {
+  final view = data?['view'];
+  if (view is! Map) return null;
+  final request = view['request'];
+  final options = view['reporterOptions'];
+  final reporters = options is Map ? options['reporters'] : null;
+  return nextMovementViewRebuild([
+    if (request is Map) request['dueAt'],
+    if (request is Map) data!['ownerValidUntilMillis'],
+    if (reporters is List)
+      for (final reporter in reporters)
+        if (reporter is Map) reporter['validUntil'],
+    if (options is Map) now + checkpointReporterChoiceWindow,
+  ], now);
+}
+
 Map<String, Object?> _view(
   Map<String, Object?>? data,
   String resource, {

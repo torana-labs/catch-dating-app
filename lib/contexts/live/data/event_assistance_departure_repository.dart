@@ -8,6 +8,7 @@ import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_departure_roster_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -26,7 +27,8 @@ class EventAssistanceDepartureRepository {
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
 
-  /// Applies time to the view on every delivered snapshot.
+  /// Applies time to the view on every delivered snapshot and again when
+  /// the event ends.
   final AppClock _clock;
 
   /// The group's view as a manager reads it. Only managers can listen, so
@@ -35,24 +37,38 @@ class EventAssistanceDepartureRepository {
     EventAssistanceGroupScope scope, {
     required String actorUid,
   }) => withBackendErrorStream(
-    () => _firestore
-        .collection(EventAssistanceMovementViews.groupProgress)
-        .doc(groupProgressViewId(scope))
-        .snapshots()
-        .map((snapshot) {
-          final data = snapshot.data();
-          final result = EventAssistanceGroupProgressResult.fromCallableData(
-            groupProgressReadResponse(
-              data,
-              scope: scope,
-              actorUid: actorUid,
-              now: movementViewNow(_clock.now(), [data]),
-            ),
-            expectedScope: scope,
-            expectedActorUid: actorUid,
-          );
-          return result.view;
-        }),
+    () =>
+        clockedListener<
+              Map<String, Object?>?,
+              ({EventAssistanceGroupProgressView view, DateTime? next})
+            >(
+              _firestore
+                  .collection(EventAssistanceMovementViews.groupProgress)
+                  .doc(groupProgressViewId(scope))
+                  .snapshots()
+                  .map((snapshot) => snapshot.data()),
+              clock: _clock,
+              build: (data, clock) {
+                final now = movementViewNow(clock, [data]);
+                final result =
+                    EventAssistanceGroupProgressResult.fromCallableData(
+                      groupProgressReadResponse(
+                        data,
+                        scope: scope,
+                        actorUid: actorUid,
+                        now: now,
+                      ),
+                      expectedScope: scope,
+                      expectedActorUid: actorUid,
+                    );
+                return (
+                  view: result.view,
+                  next: groupProgressNextRebuild(data, now),
+                );
+              },
+              nextRebuildAt: (built) => built.next,
+            )
+            .map((built) => built.view),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch group departure',

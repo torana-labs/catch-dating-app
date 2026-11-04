@@ -101,4 +101,48 @@ void main() {
     expect(page.nextBeforeRevision, 2);
     expect(page.progressRevision, 11);
   });
+
+  test('views are read again at the nearest instant the clock is compared '
+      'with, and never for a past one', () {
+    DateTime at(int millis) => DateTime.fromMillisecondsSinceEpoch(millis);
+    expect(
+      nextMovementViewRebuild([5000, null, 3000, 'x', 900], 1000),
+      at(3000),
+    );
+    expect(nextMovementViewRebuild([900, 1000], 1000), isNull);
+    expect(
+      groupProgressNextRebuild({'eventEndAtMillis': 8000}, 1000),
+      at(8000),
+    );
+    expect(groupProgressNextRebuild({'eventEndAtMillis': 8000}, 8000), isNull);
+    expect(groupProgressNextRebuild(null, 1000), isNull);
+    final doc = {
+      'ownerValidUntilMillis': 4000,
+      'view': {
+        'request': {'dueAt': 6000},
+        'reporterOptions': {
+          'reporters': [
+            {'validUntil': 2500},
+            {'validUntil': 9007199254740991},
+          ],
+        },
+      },
+    };
+    expect(checkpointNextRebuild(doc, 1000), at(2500));
+    expect(checkpointNextRebuild(doc, 3000), at(4000));
+    expect(checkpointNextRebuild(doc, 4500), at(6000));
+    expect(
+      checkpointNextRebuild(doc, 7000),
+      at(7000 + checkpointReporterChoiceWindow),
+      reason: 'the manager\'s reporter choices are offered for a window',
+    );
+    expect(
+      checkpointNextRebuild({
+        'ownerValidUntilMillis': 4000,
+        'view': {'request': null, 'reporterOptions': null},
+      }, 1000),
+      isNull,
+      reason: 'with no request the owner\'s authority is not compared',
+    );
+  });
 }

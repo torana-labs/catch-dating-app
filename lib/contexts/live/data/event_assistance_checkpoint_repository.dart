@@ -10,6 +10,7 @@ import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,7 +29,8 @@ class EventAssistanceCheckpointRepository {
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
 
-  /// Applies time to the view on every delivered snapshot.
+  /// Applies time to the view on every delivered snapshot and again when
+  /// the request falls due, an authority ends or the choice window closes.
   final AppClock _clock;
 
   Future<EventAssistanceCheckpointResult> manageRequest(
@@ -75,23 +77,36 @@ class EventAssistanceCheckpointRepository {
     EventAssistanceCheckpointScope scope, {
     required String actorUid,
   }) => withBackendErrorStream(
-    () => _firestore
-        .collection(EventAssistanceMovementViews.checkpoints)
-        .doc(checkpointViewId(scope))
-        .snapshots()
-        .map((snapshot) {
-          final data = snapshot.data();
-          final result = EventAssistanceCheckpointResult.fromCallableData(
-            checkpointReadResponse(
-              data,
-              scope: scope,
-              actorUid: actorUid,
-              now: movementViewNow(_clock.now(), [data]),
-            ),
-            expectedScope: scope,
-          );
-          return result.view;
-        }),
+    () =>
+        clockedListener<
+              Map<String, Object?>?,
+              ({EventAssistanceCheckpointView view, DateTime? next})
+            >(
+              _firestore
+                  .collection(EventAssistanceMovementViews.checkpoints)
+                  .doc(checkpointViewId(scope))
+                  .snapshots()
+                  .map((snapshot) => snapshot.data()),
+              clock: _clock,
+              build: (data, clock) {
+                final now = movementViewNow(clock, [data]);
+                final result = EventAssistanceCheckpointResult.fromCallableData(
+                  checkpointReadResponse(
+                    data,
+                    scope: scope,
+                    actorUid: actorUid,
+                    now: now,
+                  ),
+                  expectedScope: scope,
+                );
+                return (
+                  view: result.view,
+                  next: checkpointNextRebuild(data, now),
+                );
+              },
+              nextRebuildAt: (built) => built.next,
+            )
+            .map((built) => built.view),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch checkpoint arrivals',
