@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/audience/data/host_provider_repository.dart';
-import 'package:catch_dating_app/contexts/audience/data/listener_streams.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/schema_contracts/generated/organizer_provider_catalog.g.dart';
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -53,7 +53,7 @@ class HostProviderSetupReads {
     if (!_documentId.hasMatch(organizerId) || !_documentId.hasMatch(eventId)) {
       throw ArgumentError('Organizer and event ids are required');
     }
-    return combineLatestListeners(
+    return combineLatest(
       _connections(organizerId),
       _mapping(organizerId, eventId),
       (connections, mapping) => HostProviderSetup(
