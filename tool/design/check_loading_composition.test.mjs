@@ -61,12 +61,12 @@ test('rejects root typography overrides while ignoring comments and strings', ()
   const relativePath = 'lib/hosts/today/presentation/widgets/host_today_body.dart';
   const broken = scanLoadingCompositionSource({
     relativePath,
-    source: 'return CatchTopBar.primaryRail(title: "Today", titleStyle: CatchTextStyles.eventTitle(context));',
+    source: 'return CatchLegacyTopBar.primaryRail(title: "Today", titleStyle: CatchTextStyles.eventTitle(context));',
   });
   assert.deepEqual(broken.findings.map((item) => item.code), ['ROOT-TITLE-001']);
   const clean = scanLoadingCompositionSource({
     relativePath,
-    source: '// CatchSkeleton.rows()\nfinal note = "CatchTopBar.primaryRail(titleStyle: bad)";\nreturn CatchTopBar.primaryRail(title: "Today");',
+    source: '// CatchSkeleton.rows()\nfinal note = "CatchLegacyTopBar.primaryRail(titleStyle: bad)";\nreturn CatchLegacyTopBar.primaryRail(title: "Today");',
   });
   assert.equal(clean.findings.length, 0);
 });

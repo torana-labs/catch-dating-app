@@ -452,7 +452,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const topBarRequiresActionGroup = LintCode(
     'catch_top_bar_requires_action_group',
-    'Compose CatchTopBar actions through CatchTopBarActionRow so the primitive owns action geometry.',
+    'Compose CatchLegacyTopBar actions through CatchTopBarActionRow so the primitive owns action geometry.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -971,7 +971,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node, CatchUiLayoutRules.noRawNetworkImage);
     }
 
-    if (typeName == 'CatchTopBar' && _topBarHasRawActionComposition(node)) {
+    if (typeName == 'CatchLegacyTopBar' &&
+        _topBarHasRawActionComposition(node)) {
       _reportAtNode(node, CatchUiLayoutRules.topBarRequiresActionGroup);
     }
 

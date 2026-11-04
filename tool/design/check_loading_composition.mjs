@@ -23,7 +23,7 @@ export const legacyRowAllowanceFor = (relativePath) =>
   allowedLegacyRowsByPath[relativePath] ?? 0;
 export const legacyCollectionAllowanceFor = (relativePath) =>
   allowedLegacyCollectionsByPath[relativePath] ?? 0;
-const rootHeader = /\bCatchTopBar\.primaryRail\s*\(/gu;
+const rootHeader = /\bCatchLegacyTopBar\.primaryRail\s*\(/gu;
 const protectedHostPaths = [
   'lib/hosts/today/',
   'lib/hosts/events/presentation/',
@@ -81,7 +81,7 @@ export function scanLoadingCompositionSource({relativePath, source}) {
         path: relativePath,
         line: lineFor(source, match.index),
         code: 'ROOT-TITLE-001',
-        message: 'Root titles use the CatchTopBar typography; do not override titleStyle at the screen.',
+        message: 'Root titles use the CatchLegacyTopBar typography; do not override titleStyle at the screen.',
       });
     }
   }

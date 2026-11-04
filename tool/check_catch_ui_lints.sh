@@ -192,7 +192,7 @@ class CatchUiLintProbe extends StatelessWidget {
           padding: _probeScreenPadding,
           child: SizedBox.shrink(),
         ),
-        CatchTopBar(
+        CatchLegacyTopBar(
           title: 'Probe',
           actions: const [Row(children: [SizedBox.shrink()])],
         ),

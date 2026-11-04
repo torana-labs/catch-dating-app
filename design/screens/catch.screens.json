@@ -3696,7 +3696,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CrossPathsInvitationScreen",
         "reason": "The participant-only invitation route owns compact title and explicit back chrome."
       },
@@ -5508,8 +5508,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -7913,8 +7913,8 @@
       },
       "topBar": {
         "role": "identity",
-        "expression": "CatchTopBar.identity",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar.identity",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns identity-aware canonical top-bar chrome."
       },
       "statePolicy": {
@@ -8331,7 +8331,7 @@
           "id": "top_bar_actions",
           "kind": "populated",
           "status": "captured",
-          "source": "CatchTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
+          "source": "CatchLegacyTopBar.identity opens profile from identity title and exposes share/report/block overflow actions without duplicating profile in menu.",
           "tests": [
             "test/chats/chat_screen_test.dart"
           ],
@@ -8485,12 +8485,12 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchTopBar.identity",
+              "CatchLegacyTopBar.identity",
               "ChatActionsMenu"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
-              "symbol": "CatchTopBar.identity"
+              "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+              "symbol": "CatchLegacyTopBar.identity"
             },
             "currentOwner": "HostChatScreenState + ChatThreadActionController + ChatScreen UI primitives",
             "targetOwner": "shared chat top bar state and action controller",
@@ -9492,8 +9492,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -9667,7 +9667,7 @@
           "id": "loading_without_initial_profile",
           "kind": "loading",
           "status": "captured",
-          "source": "watchPublicProfileProvider loading with no initialProfile renders ProfileSurfaceSkeleton under CatchTopBar.",
+          "source": "watchPublicProfileProvider loading with no initialProfile renders ProfileSurfaceSkeleton under CatchLegacyTopBar.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ],
@@ -12459,7 +12459,7 @@
               "sign_out_action",
               "text_scale_2"
             ],
-            "migration": "Host team tab rail uses shared CatchPageTabBar, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
+            "migration": "Host team tab rail uses shared CatchPageTabBar, and the pushed route uses explicit CatchLegacyTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
             "previewIds": [
               "HostOrganizerTeamScreen/Route states",
               "CatchPageTabBar/Contract states"
@@ -14814,8 +14814,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -14950,7 +14950,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterSection while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterSection is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterSection while other aliases cannot override lifecycle relevance. The shared CatchLegacyTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterSection is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
       },
       "designRefs": [
         {
@@ -16142,7 +16142,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterSection renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchLegacyTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterSection renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
         "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, deep-link inputs, and event-scoped navigation effects. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker, inventing event-scoped Forms, or duplicating the lifecycle resolver.",
         "sections": [
           {
@@ -16673,7 +16673,7 @@
       },
       "topBar": {
         "role": "shell",
-        "expression": "CatchTopBar.primaryRail + CatchScreenTopBar",
+        "expression": "CatchLegacyTopBar.primaryRail + CatchScreenTopBar",
         "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
         "reason": "Each pane owns its actions and peer tabs. Audience and person tab rows align; person selection and nested submissions remain in the root navigation path at every width."
       },
@@ -18810,8 +18810,8 @@
       },
       "topBar": {
         "role": "identity",
-        "expression": "CatchTopBar.identity",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar.identity",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns identity-aware canonical top-bar chrome."
       },
       "statePolicy": {
@@ -18897,8 +18897,8 @@
             "symbol": "ChatController"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
-            "symbol": "CatchTopBar.identity"
+            "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+            "symbol": "CatchLegacyTopBar.identity"
           },
           {
             "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
@@ -18923,7 +18923,7 @@
             "symbol": "ConversationRepository"
           }
         ],
-        "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, ChatReadMarkerController executes ConversationRepository.markRead side effects, ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state, ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners, ChatRetryController executes typed provider retry invalidation, and ChatThreadLookupState owns profile/event/host lookup keys; CatchTopBar.identity is router/provider-free; _ChatContent owns local text entry and UI primitives."
+        "notes": "Host Chat uses the shared ChatScreen implementation from the host inbox route. ChatRouteState now performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState centralizes host inquiry identity, typed top-bar action availability, top-bar action intents, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy, ChatReadMarkerController executes ConversationRepository.markRead side effects, ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state, ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners, ChatRetryController executes typed provider retry invalidation, and ChatThreadLookupState owns profile/event/host lookup keys; CatchLegacyTopBar.identity is router/provider-free; _ChatContent owns local text entry and UI primitives."
       },
       "designRefs": [
         {
@@ -19487,10 +19487,10 @@
               "HostConversationTopBar"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
-              "symbol": "CatchTopBar.identity"
+              "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+              "symbol": "CatchLegacyTopBar.identity"
             },
-            "currentOwner": "CatchTopBar.identity",
+            "currentOwner": "CatchLegacyTopBar.identity",
             "targetOwner": "provider-free host chat top bar section",
             "dependencies": [
               "catch.top_bar",
@@ -19733,7 +19733,7 @@
         {
           "id": "DS-HOST-CHAT-002",
           "status": "closed",
-          "nextAction": "Closed. ChatRouteState performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks; ChatReadMarkerController executes ConversationRepository.markRead side effects; ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state; ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners; ChatRetryController executes typed retry invalidation; and ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. CatchTopBar.identity is router/provider-free and supports disabled menu actions. Reopen only for future product-specific action policies."
+          "nextAction": "Closed. ChatRouteState performs the route-level uid, match, messages, host-inquiry club, public-profile, event, Suvbot action, mutation-pending, and share-controller provider watches before _ChatContent renders. HostChatScreenState owns host inquiry identity, typed top-bar action availability, route/message/Suvbot retry intents, report/block pending action disabling, top-bar action intent policy, safety target copy, message peer name, and composer disabled reason. ChatReadMarkerState owns read-marker decision policy for duplicate, forced, incoming-latest, and dispose marks; ChatReadMarkerController executes ConversationRepository.markRead side effects; ChatScrollCoordinator owns initial/appended/send-success message list auto-scroll state; ChatThreadActionController executes profile/share/report/block typed action intents through injected UI and safety runners; ChatRetryController executes typed retry invalidation; and ChatThreadLookupState owns other-participant, host-inquiry club, host profile, public-profile, event, and Suvbot lookup decisions before ChatRouteState performs the provider watches. CatchLegacyTopBar.identity is router/provider-free and supports disabled menu actions. Reopen only for future product-specific action policies."
         },
         {
           "id": "DS-HOST-CHAT-003",
@@ -21343,8 +21343,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The pushed calendar route owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -21793,8 +21793,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -22161,8 +22161,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -22525,7 +22525,7 @@
               "edited_preferences",
               "reset_preferences"
             ],
-            "migration": "Route Widgetbook states now cover the shared CatchTopBar with close/reset actions across loading, default, text-scale, reduced-motion, save-error, and dark-theme review; FiltersPreferencesState owns reset enabled state while FiltersScreen owns the close/reset route callbacks.",
+            "migration": "Route Widgetbook states now cover the shared CatchLegacyTopBar with close/reset actions across loading, default, text-scale, reduced-motion, save-error, and dark-theme review; FiltersPreferencesState owns reset enabled state while FiltersScreen owns the close/reset route callbacks.",
             "previewIds": [
               "FiltersScreen/Route states"
             ]
@@ -22651,8 +22651,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -23183,8 +23183,8 @@
             "symbol": "CreateOrganizerScreen"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
-            "symbol": "CatchDock"
+            "file": "packages/catch_ui/lib/src/components/catch_legacy_dock.dart",
+            "symbol": "CatchLegacyDock"
           },
           {
             "file": "lib/hosts/presentation/organizer_management/create/create_organizer_screen.dart",
@@ -23776,8 +23776,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The source owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -24401,8 +24401,8 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
-              "symbol": "CatchDock"
+              "file": "packages/catch_ui/lib/src/components/catch_legacy_dock.dart",
+              "symbol": "CatchLegacyDock"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",
@@ -24892,8 +24892,8 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
-        "owner": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
+        "owner": "CatchLegacyTopBar",
         "reason": "The pushed Activity route owns canonical compact route chrome."
       },
       "statePolicy": {
@@ -25405,7 +25405,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
       },
@@ -25877,7 +25877,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
       },
@@ -26643,7 +26643,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "The city-access application is a compact Settings spoke with canonical back navigation and a scroll-derived divider."
       },
@@ -26954,7 +26954,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
       },
@@ -27127,7 +27127,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
       },
@@ -27696,7 +27696,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "HostFormResponseDetailScreen",
         "reason": "Saved application URLs delegate to the unified response detail route and its canonical back action."
       },
@@ -27872,7 +27872,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "HostEventRehearsalStartScreen and HostEventRehearsalScreen",
         "reason": "Setup and the live console are focused Host workspaces with explicit back navigation and persistent practice identity in page content."
       },
@@ -28086,7 +28086,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -28480,7 +28480,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -28641,7 +28641,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -28801,7 +28801,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -28967,7 +28967,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -29173,7 +29173,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -29338,7 +29338,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -29515,7 +29515,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -29695,7 +29695,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -29873,7 +29873,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30044,7 +30044,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30239,7 +30239,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30400,7 +30400,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30561,7 +30561,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30713,7 +30713,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30852,7 +30852,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -30994,7 +30994,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -31160,7 +31160,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
@@ -31316,7 +31316,7 @@
       },
       "topBar": {
         "role": "compact",
-        "expression": "CatchTopBar",
+        "expression": "CatchLegacyTopBar",
         "owner": "CatchRouteScaffold",
         "reason": "Pushed scoped workspace routes use canonical compact back chrome."
       },
