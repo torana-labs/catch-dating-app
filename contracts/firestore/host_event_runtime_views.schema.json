@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_runtime_views.schema.json",
+  "title": "HostEventRuntimeViewDocument",
+  "description": "Server-owned manager projection of one event's late-join automation for the live console's automation sheet, written ahead of time by triggers on the automation record, the event, its event success plan and the organizer's managers. view is what the getEventAssistanceRuntimeConfig callable returns for a manager without serverTime and without senderSetup, evaluated as if the time were one millisecond before the event ends: the phone sets canConfigure false and status eventClosed once the app clock reaches eventEnd, and turns configured or expired by runtime.configuration.expiresAt. closed is the event's own closure (not active, or the plan complete), which needs no clock. The sender picker keeps reading the callable. Written for every event with an eventFormat and an endTime. A source that fails validation records sourceCoverage invalidSource with incompleteSource and keeps the previous view. Managers get it by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventRuntimeViews",
+  "x-firestore-path": "hostEventRuntimeViews/{runtimeId}",
+  "x-document-id-field": "runtimeId",
+  "x-owner": "Live guest and settings view evaluator (hostReadModels guest view triggers)",
+  "required": [
+    "schemaVersion",
+    "runtimeId",
+    "eventId",
+    "organizerId",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "eventEndAtMillis",
+    "closed",
+    "view"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "runtimeId": {
+      "type": "string",
+      "pattern": "^runtime:lateJoin:[a-f0-9]{64}$",
+      "description": "runtimeConfigId(context), the id of the eventAssistanceRuntimeConfigs row.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The event's organizer; rules key on it.",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation that changed the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the last changing evaluation committed. The phone treats it as a lower bound for the current time.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "invalidSource"
+      ],
+      "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.",
+      "x-catch-ownership": "server-only"
+    },
+    "incompleteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The collection whose document failed validation (events, eventSuccessPlans, organizers or eventAssistanceRuntimeConfigs), or null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventEndAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only",
+      "description": "The event's end, as view.eventEnd."
+    },
+    "closed": {
+      "type": "boolean",
+      "description": "The event is not active or its plan is complete, regardless of the time.",
+      "x-catch-ownership": "server-only"
+    },
+    "view": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "sourceHash",
+            "revision",
+            "runtime",
+            "status",
+            "canConfigure",
+            "eventEnd"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/context"
+            },
+            "sourceHash": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/sourceHash"
+            },
+            "revision": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/revision"
+            },
+            "runtime": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/runtime"
+            },
+            "status": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/status"
+            },
+            "canConfigure": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/canConfigure"
+            },
+            "eventEnd": {
+              "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/View/properties/eventEnd"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The automation view; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

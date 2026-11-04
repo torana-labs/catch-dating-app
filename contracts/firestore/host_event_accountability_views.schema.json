@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_accountability_views.schema.json",
+  "title": "HostEventAccountabilityViewDocument",
+  "description": "Server-owned manager projection of one guest's sweep accountability (the scope {context, groupId: event:whole, attendeeId}) for the live console's visit sheet, written ahead of time by triggers on the attendee, the guest's episode and membership, and the event and event success plan. view is what the retired getEventAssistanceAccountability callable returned for a manager without serverTime or the scope fields; the checkpoint-scoped variant lives on hostEventCheckpointViews. Written for every attendee of an event whose format has the sweep primitive; deleted when the attendee or the event is gone or the format loses the sweep. A source that fails validation records sourceCoverage invalidSource with incompleteSource and keeps the previous view. Managers get it by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventAccountabilityViews",
+  "x-firestore-path": "hostEventAccountabilityViews/{accountabilityViewId}",
+  "x-document-id-field": "accountabilityViewId",
+  "x-owner": "Live guest and settings view evaluator (hostReadModels guest view triggers)",
+  "required": [
+    "schemaVersion",
+    "accountabilityViewId",
+    "eventId",
+    "organizerId",
+    "attendeeId",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "view"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "accountabilityViewId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 321,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*_[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "{eventId}_{attendeeId}.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The event's organizer; rules key on it.",
+      "x-catch-ownership": "server-only"
+    },
+    "attendeeId": {
+      "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/attendeeId",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation that changed the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the last changing evaluation committed. The phone treats it as a lower bound for the current time.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "invalidSource"
+      ],
+      "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.",
+      "x-catch-ownership": "server-only"
+    },
+    "incompleteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The collection whose document failed validation (eventAttendees, events, eventSuccessPlans, eventAssistanceGuests or eventAssistanceMemberships), or null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "view": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceHash",
+            "revision",
+            "episodeId",
+            "disposition",
+            "availability"
+          ],
+          "properties": {
+            "sourceHash": {
+              "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/sourceHash"
+            },
+            "revision": {
+              "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/revision"
+            },
+            "episodeId": {
+              "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/episodeId"
+            },
+            "disposition": {
+              "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/disposition"
+            },
+            "availability": {
+              "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/View/properties/availability"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The accountability view; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

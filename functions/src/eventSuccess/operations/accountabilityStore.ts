@@ -152,12 +152,39 @@ type State = {
     access: Awaited<ReturnType<typeof requireGroupPermission>>;
     checkpoint: Awaited<ReturnType<typeof readAccountabilityCheckpoint>>;
 };
-function checkInHash(s: State) {
+/** The membership facts accountability reads; no actor is involved. */
+export type AccountabilityMember = Pick<State["member"],
+  "sourceHash" | "event" | "attendee" | "membership" | "guest" | "source">;
+/** One guest's accountability sources for one scope. */
+export interface AccountabilityEvidence {
+  scope: Scope;
+  member: AccountabilityMember;
+  checkpoint: Pick<NonNullable<State["checkpoint"]>,
+    "proof" | "availability"> | null;
+}
+/** The time-free part of an accountability view. */
+export type AccountabilityState = Pick<Response["view"],
+  "sourceHash" | "revision" | "episodeId" | "disposition" | "availability">;
+
+/**
+ * Pure accountability projection: the fence hash, the guest episode, the
+ * saved disposition and whether the visit can be resolved in this scope.
+ * The resolve command and the live console's views read the same rules.
+ */
+export function accountabilityState(e: AccountabilityEvidence):
+  AccountabilityState {
+  return {sourceHash: sourceHash(e),
+    revision: e.member.attendee.accountabilityRevision ?? 0,
+    episodeId: episodeId(e),
+    disposition: currentAccountabilityResolution(e.member.attendee) ??
+      "unresolved", availability: availability(e)};
+}
+function checkInHash(s: AccountabilityEvidence) {
   const a = s.member.attendee;
   return operationContentHash([a.status, a.attendanceRevision ?? 0,
     a.checkedInAt ? timestampEvidence(a.checkedInAt) : null]);
 }
-function sourceHash(s: State) {
+function sourceHash(s: AccountabilityEvidence) {
   const a = s.member.attendee;
   const membership = s.member.membership;
   const facts = [s.scope, s.member.sourceHash,
@@ -176,7 +203,8 @@ function sourceHash(s: State) {
     proof: s.checkpoint.proof,
     availability: s.checkpoint.availability}] : facts);
 }
-function availability(s: State): Response["view"]["availability"] {
+function availability(s: AccountabilityEvidence):
+  Response["view"]["availability"] {
   if (s.checkpoint) return s.checkpoint.availability;
   const m = s.member;
   const reason = eventSuccessPrimitivesFor(m.event.eventFormat)
@@ -188,11 +216,7 @@ function availability(s: State): Response["view"]["availability"] {
 function response(outcome: Response["outcome"], s: State,
   operationRevision: number | null = null): Response {
   const value: Response = {outcome, operationRevision, view: {
-    ...s.scope, serverTime: s.member.now, sourceHash: sourceHash(s),
-    revision: s.member.attendee.accountabilityRevision ?? 0,
-    episodeId: episodeId(s),
-    disposition: currentAccountabilityResolution(s.member.attendee) ??
-      "unresolved", availability: availability(s)}};
+    ...s.scope, serverTime: s.member.now, ...accountabilityState(s)}};
   if (!validateEventAssistanceAccountabilityCallableResponse(value)) {
     throw invalidSource();
   }
@@ -203,7 +227,7 @@ function conflict() {
     "Accountability changed. Refresh this guest and retry.");
 }
 
-function episodeId(s: State): string | null {
+function episodeId(s: AccountabilityEvidence): string | null {
   const guest = s.member.guest;
   return guest && currentGuest(guest, s.member.source) ? guest.episodeId : null;
 }

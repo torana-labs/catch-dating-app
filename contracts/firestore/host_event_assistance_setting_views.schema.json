@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_assistance_setting_views.schema.json",
+  "title": "HostEventAssistanceSettingViewDocument",
+  "description": "Server-owned manager projection of one assistance setting (event, group and workflow kind) for the live console's settings sheets, written ahead of time by triggers on the event and on the settings of its groups. view is what the retired getEventAssistanceSetting callable returned for a manager without serverTime; it reads no clock. A group's view inherits from the event:whole setting of the same kind, so a change to that setting re-evaluates the group views. Written for every configured group of an event with an eventFormat and an endTime, for the workflow kinds the console reads (late join). A source that fails validation records sourceCoverage invalidSource with incompleteSource and keeps the previous view. Managers get it by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventAssistanceSettingViews",
+  "x-firestore-path": "hostEventAssistanceSettingViews/{settingId}",
+  "x-document-id-field": "settingId",
+  "x-owner": "Live guest and settings view evaluator (hostReadModels guest view triggers)",
+  "required": [
+    "schemaVersion",
+    "settingId",
+    "eventId",
+    "organizerId",
+    "groupId",
+    "workflowKind",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "eventEndAtMillis",
+    "view"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "settingId": {
+      "type": "string",
+      "pattern": "^setting:[a-f0-9]{64}$",
+      "description": "settingId({context, groupId, workflowKind}), the id of the eventAssistanceSettings row.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The event's organizer; rules key on it.",
+      "x-catch-ownership": "server-only"
+    },
+    "groupId": {
+      "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/groupId",
+      "x-catch-ownership": "server-only"
+    },
+    "workflowKind": {
+      "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/workflowKind",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation that changed the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the last changing evaluation committed. The phone treats it as a lower bound for the current time.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "invalidSource"
+      ],
+      "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.",
+      "x-catch-ownership": "server-only"
+    },
+    "incompleteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The collection whose document failed validation (events or eventAssistanceSettings), or null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventEndAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only",
+      "description": "The event's end, as setup.eventEnd."
+    },
+    "view": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "workflowKind",
+            "sourceHash",
+            "ownRevision",
+            "own",
+            "status",
+            "origin",
+            "effective",
+            "suggested",
+            "setup"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/context"
+            },
+            "groupId": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/groupId"
+            },
+            "workflowKind": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/workflowKind"
+            },
+            "sourceHash": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/sourceHash"
+            },
+            "ownRevision": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/ownRevision"
+            },
+            "own": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/own"
+            },
+            "status": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/status"
+            },
+            "origin": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/origin"
+            },
+            "effective": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/effective"
+            },
+            "suggested": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/suggested"
+            },
+            "setup": {
+              "$ref": "../shared/event_assistance_settings.schema.json#/definitions/View/properties/setup"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The setting view; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

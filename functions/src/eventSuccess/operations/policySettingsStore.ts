@@ -156,19 +156,29 @@ type State = {
   source: ReturnType<typeof settingSource>;
   parentSource: ReturnType<typeof settingSource>;
 };
+/**
+ * The setting as a manager reviews it: own and inherited preference, the
+ * resolved status and the current setup. It reads no clock, so the live
+ * console's view stores it as is.
+ */
+export function settingView(state: State):
+  Omit<Response["view"], "serverTime"> &
+  {setup: NonNullable<Response["view"]["setup"]>} {
+  const {scope, own, source} = state;
+  const {selected, template, status} = resolveSetting(state);
+  return {...scope, sourceHash: source.hash,
+    ownRevision: own?.revision ?? 0, own,
+    origin: !selected ? "none" : selected.groupId === "event:whole" ?
+      "event" : "group", status,
+    effective: status === "configured" || status === "disabled" ?
+      template : null,
+    suggested: suggestedTemplate(scope.workflowKind),
+    setup: {eventEnd: source.endAt, destinations: source.destinations}};
+}
 function response(outcome: Response["outcome"], state: State,
   operationRevision: number | null = null): Response {
-  const {scope, own, now, source} = state;
-  const {selected, template, status} = resolveSetting(state);
   const value: Response = {outcome, operationRevision,
-    view: {...scope, serverTime: now, sourceHash: source.hash,
-      ownRevision: own?.revision ?? 0, own,
-      origin: !selected ? "none" : selected.groupId === "event:whole" ?
-        "event" : "group", status,
-      effective: status === "configured" || status === "disabled" ?
-        template : null,
-      suggested: suggestedTemplate(scope.workflowKind),
-      setup: {eventEnd: source.endAt, destinations: source.destinations}}};
+    view: {...settingView(state), serverTime: state.now}};
   if (!validateEventAssistanceSettingCallableResponse(value)) {
     throw invalidSource();
   }

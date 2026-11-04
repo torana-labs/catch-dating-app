@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_membership_views.schema.json",
+  "title": "HostEventMembershipViewDocument",
+  "description": "Server-owned manager projection of one guest's group membership for the live console's membership sheet, written ahead of time by triggers on the event, the attendee, the organizer's managers, the event success plan, the guest's episode, the membership and the event's staff grants. view is what the retired getEventAssistanceMembership callable returned for a manager without serverTime or handoverReview, evaluated as if the time were one millisecond before the event ends: the phone ANDs ready with the app clock before eventEndAtMillis, re-derives the pending transfer's state from transfer.expiresAt, and re-derives the actions for the signed-in manager (accepting and rejecting need the manager to be the receiving operator). receivers holds every operator who could receive the guest, each group with the instant their transfer authority ends (no expiry for a manager); the phone offers them for the thirty-minute handover review it opens, capped at the event end. Written for every attendee of an event with an eventFormat and an endTime. A source that fails validation records sourceCoverage invalidSource with incompleteSource and keeps the previous view. Managers get it by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventMembershipViews",
+  "x-firestore-path": "hostEventMembershipViews/{membershipId}",
+  "x-document-id-field": "membershipId",
+  "x-owner": "Live guest and settings view evaluator (hostReadModels guest view triggers)",
+  "required": [
+    "schemaVersion",
+    "membershipId",
+    "eventId",
+    "organizerId",
+    "attendeeId",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "eventEndAtMillis",
+    "view",
+    "receivers"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "membershipId": {
+      "type": "string",
+      "pattern": "^membership:[a-f0-9]{64}$",
+      "description": "membershipIdentity({context, attendeeId}), the id of the guest's eventAssistanceMemberships row.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The event's organizer; rules key on it.",
+      "x-catch-ownership": "server-only"
+    },
+    "attendeeId": {
+      "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/attendeeId",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Increases by one with every committed evaluation that changed the document.",
+      "x-catch-ownership": "server-only"
+    },
+    "evaluatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the last changing evaluation committed. The phone treats it as a lower bound for the current time.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceCoverage": {
+      "enum": [
+        "complete",
+        "invalidSource"
+      ],
+      "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.",
+      "x-catch-ownership": "server-only"
+    },
+    "incompleteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "The collection whose document failed validation (events, eventAttendees, organizers, eventSuccessPlans, eventAssistanceGuests, eventAssistanceMemberships or eventStaffGrants), or null when coverage is complete.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventEndAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only",
+      "description": "The event's end. The phone sets ready false once the app clock reaches it, and caps the handover review at it."
+    },
+    "view": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId",
+            "sourceHash",
+            "revision",
+            "episodeId",
+            "participationRevision",
+            "freshness",
+            "ready",
+            "accepted",
+            "transfer",
+            "transferState",
+            "groups",
+            "actions"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/context"
+            },
+            "attendeeId": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/attendeeId"
+            },
+            "sourceHash": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/sourceHash"
+            },
+            "revision": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/revision"
+            },
+            "episodeId": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/episodeId"
+            },
+            "participationRevision": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/participationRevision"
+            },
+            "freshness": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/freshness"
+            },
+            "ready": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/ready"
+            },
+            "accepted": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/accepted"
+            },
+            "transfer": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/transfer"
+            },
+            "transferState": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/transferState"
+            },
+            "groups": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/groups"
+            },
+            "actions": {
+              "$ref": "../shared/event_assistance_membership.schema.json#/definitions/View/properties/actions"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The membership view; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    },
+    "receivers": {
+      "$ref": "../shared/event_assistance_membership.schema.json#/definitions/HandoverReview/properties/receivers",
+      "description": "Operators who could receive the guest, with uncapped authority instants; empty when the guest cannot be handed over.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
