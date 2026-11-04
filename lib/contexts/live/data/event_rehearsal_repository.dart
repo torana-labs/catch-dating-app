@@ -12,31 +12,47 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_rehearsal_repository.g.dart';
 
 class EventRehearsalRepository {
-  const EventRehearsalRepository(this._functions);
+  const EventRehearsalRepository(this._functions, {this.firestore});
+
+  static const _milestonesPath = 'eventRehearsalMilestones';
 
   final FirebaseFunctions _functions;
 
-  /// Server evidence only; failures remain errors rather than false completion.
-  Future<bool> hasCompletedRehearsal(String organizerId) => _call(
-    name: 'getEventRehearsalSummary',
-    payload: GetEventRehearsalSummaryCallableRequest(
-      organizerId: organizerId,
-    ).toJson(),
-    action: 'load rehearsal completion',
-    parse: (data) {
-      if (data is Map<Object?, Object?> &&
-          data['hasCompletedRehearsal'] is bool) {
-        return data['hasCompletedRehearsal']! as bool;
-      }
-      throw const FormatException('Rehearsal completion must be a boolean.');
-    },
-  );
+  /// The milestone listener's database; completion reads need it.
+  final FirebaseFirestore? firestore;
+
+  /// Whether the organizer has completed a dress rehearsal: its server-written
+  /// milestone document exists for this organizer. Failures stay errors
+  /// rather than a false "not yet".
+  Stream<bool> watchRehearsalCompletion(String organizerId) {
+    final db = firestore;
+    if (db == null) {
+      throw StateError('Rehearsal completion reads need Firestore.');
+    }
+    return withBackendErrorStream(
+      () => db
+          .collection(_milestonesPath)
+          .doc(organizerId)
+          .snapshots()
+          .map(
+            (snapshot) =>
+                snapshot.exists &&
+                snapshot.data()?['organizerId'] == organizerId,
+          ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch rehearsal completion',
+        resource: _milestonesPath,
+      ),
+    );
+  }
 
   Future<EventRehearsalCreated> create({
     required String organizerId,
@@ -368,7 +384,10 @@ final class EventRehearsalOperationCommands {
 // keepalive: One callable client owns the isolated rehearsal domain.
 @Riverpod(keepAlive: true)
 EventRehearsalRepository eventRehearsalRepository(Ref ref) =>
-    EventRehearsalRepository(ref.watch(firebaseFunctionsProvider));
+    EventRehearsalRepository(
+      ref.watch(firebaseFunctionsProvider),
+      firestore: ref.watch(firebaseFirestoreProvider),
+    );
 
 @riverpod
 EventRehearsalAssistanceCommands eventRehearsalAssistanceCommands(Ref ref) =>

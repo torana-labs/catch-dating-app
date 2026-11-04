@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
@@ -25,6 +26,7 @@ PrivateEventSetupRepository privateEventSetupTimelineRepository(Ref ref) {
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),
+    views: ref.watch(hostEventSetupViewReadsProvider),
   );
 }
 

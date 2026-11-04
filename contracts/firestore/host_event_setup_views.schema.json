@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_setup_views.schema.json",
+  "title": "HostEventSetupViewDocument",
+  "description": "Server-owned manager projection of one event for the progressive setup steps (Basics on resume, Details, Preferences, Publication), written ahead of time by triggers on the event, its preferences, its organizer and the seven commitment collections. summary holds what the retired getPrivateEventSetup callable returned, except that publication readiness leaves time to the phone: the server checks every requirement as if the event started one millisecond from now, and the phone sets futureActive (status active and start after the app clock's now), canPublish (canPublishWhenFuture and futureActive) and adds futureActive to missing when it is false, so the view needs no sweep. A source row that fails validation records sourceCoverage invalidSource and incompleteSource, keeps the previous summary (null when there was none) and never throws. Written for every event that carries a setupRevision, in either publication state and either status; deleted when the event is deleted or loses its setupRevision. Managers of an active organizer get it under rules; authority comes from the organizer document, never from the view.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventSetupViews",
+  "x-firestore-path": "hostEventSetupViews/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "Host event setup view evaluator (hostReadModels event setup view triggers)",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "organizerId",
+    "setupRevision",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "The event's organizer; rules key on it.", "x-catch-ownership": "server-only"},
+    "setupRevision": {"type": "integer", "minimum": 1, "maximum": 2147483647, "description": "The event's setupRevision at evaluation.", "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "Increases by one with every committed evaluation that changed the document.", "x-catch-ownership": "server-only"},
+    "evaluatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "sourceCoverage": {"enum": ["complete", "invalidSource"], "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous summary.", "x-catch-ownership": "server-only"},
+    "incompleteSource": {"type": ["string", "null"], "minLength": 1, "maxLength": 80, "description": "The collection whose document failed validation (events, eventSetupPreferences or organizers), or null when coverage is complete.", "x-catch-ownership": "server-only"},
+    "summary": {
+      "anyOf": [
+        {"$ref": "../shared/host_event_setup_common.schema.json#/definitions/privateEventSetupSummary"},
+        {"type": "null"}
+      ],
+      "description": "The manager projection; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

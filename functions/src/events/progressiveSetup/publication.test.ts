@@ -5,7 +5,8 @@ import {resolve} from "node:path";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Store} from "../../organizerFormAdmission/admissionTestFixture";
-import {getPrivateEventSetup} from "./readModel";
+import {projectPrivateEventSetupSummary} from "./readModel";
+import {privateEventBasicsShapeEditable} from "./commitments";
 import {createPrivateEventSetup} from "./service";
 import {updatePrivateEventDetails} from "./details";
 import {getManagerEventSetupDefaults} from
@@ -51,6 +52,17 @@ function setup() {
   command, actorUid = "host1") => setEventPublication({actorUid,
     command: next, deps, nowMillis: () => start - 60_000});
   return {store, event, command, deps, run};
+}
+/** The valid organizer fixture, limited to the fields the contract owns. */
+function validOrganizer(): Record<string, unknown> {
+  const read = (path: string) => JSON.parse(readFileSync(resolve(__dirname,
+    "../../../..", path), "utf8"));
+  const schema = read("contracts/firestore/organizers.schema.json");
+  return {...Object.fromEntries(Object.entries(
+    read("contracts/fixtures/valid/organizer_doc.json"))
+    .filter(([key]) => key in schema.properties)), organizerPhotos: [],
+  followerCount: 12, organizerType: "community",
+  appVisibility: "discoverable"};
 }
 const errorCode = (expected: string) => (e: unknown) =>
   e instanceof HttpsError && e.code === expected;
@@ -220,11 +232,14 @@ test("fresh progressive event publishes after details", async () => {
   assert.equal(event.publicRegistrationEnabled, false);
   assert.equal(event.distanceKm, 0);
   assert.equal(event.pace, "easy");
-  const reopened = await getPrivateEventSetup({actorUid: "host1", db,
-    command: {organizerId: "org1", eventId: created.eventId}});
+  // The setup view reopens the published event without a publish action.
+  const reopened = projectPrivateEventSetupSummary({eventId: created.eventId,
+    event, organizer: validOrganizer(), preferences: undefined,
+    canEditBasics: privateEventBasicsShapeEditable(created.eventId, event)});
   assert.equal(reopened.publicationState, "published");
   assert.equal(reopened.canEditBasics, false);
-  assert.equal(reopened.publicationReadiness?.canPublish, false);
+  assert.deepEqual(reopened.publicationReadiness,
+    {canPublishWhenFuture: false, missing: []});
   assert.equal(h.store.get(`eventSeatLedgers/${created.eventId}`)!.state,
     "ready");
 });

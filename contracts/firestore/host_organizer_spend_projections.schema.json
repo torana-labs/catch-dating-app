@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_spend_projections.schema.json",
+  "title": "HostOrganizerSpendProjectionDocument",
+  "description": "Server-owned, manager-readable top-quartile Catch spend thresholds for one organizer, written in the same transaction as organizerSpendTotals. Per currency, accounts with at least two paid orders are ranked by retained spend and the top 25 per cent (rounded up, at least one) qualify; the threshold is the smallest amount in that set. The phone labels a roster row top_catch_spender when one of its catchSpend amounts has at least two paid orders and reaches the threshold for its currency. It exposes thresholds only, never an account or a per-guest amount.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerSpendProjections",
+  "x-firestore-path": "hostOrganizerSpendProjections/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host organizer spend evaluator (hostReadModels roster insight payment trigger and backfill)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "topQuartileThresholdByCurrency",
+    "spendCoverage",
+    "revision",
+    "evaluatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "topQuartileThresholdByCurrency": {
+      "type": "object",
+      "maxProperties": 12,
+      "propertyNames": {"pattern": "^[A-Z]{3}$"},
+      "additionalProperties": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+      "description": "Minor-unit threshold per ISO currency code. A currency with no account of at least two paid orders has no entry.",
+      "x-catch-ownership": "server-only"
+    },
+    "spendCoverage": {"enum": ["catchPaymentsOnly", "insufficientData"], "description": "insufficientData when the totals behind it are partial; the phone then shows no spend labels.", "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "Increases by one with every committed change.", "x-catch-ownership": "server-only"},
+    "evaluatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"}
+  }
+}

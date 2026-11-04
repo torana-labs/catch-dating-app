@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
-import {updatePrivateEventPreferences} from "./preferences";
-import {getPrivateEventSetup} from "./readModel";
+import {projectEventPreferences, updatePrivateEventPreferences} from
+  "./preferences";
 import {createPrivateEventSetup, ProgressiveSetupDependencies} from "./service";
 import {getManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
@@ -117,10 +117,11 @@ test("event preference save snapshots defaults privately without admission",
     assert.equal(h.rows.get("events/event1")?.priceInPaise, undefined);
     assert.equal(h.rows.get("events/event1")?.paymentInstructions, undefined);
     h.rows.set("eventSetupPreferences/event1", {...stored, secret: "never"});
-    const read = await getPrivateEventSetup({actorUid: "host1", db: h.db,
-      command: {organizerId: "org1", eventId: "event1"}});
-    assert.equal(read.eventPreferences?.revision, 1);
-    assert.equal(Object.hasOwn(read.eventPreferences!, "secret"), false);
+    // The setup view projects saved preferences through the same guard.
+    const read = projectEventPreferences(
+      h.rows.get("eventSetupPreferences/event1"), "org1", "event1");
+    assert.equal(read?.revision, 1);
+    assert.equal(Object.hasOwn(read!, "secret"), false);
     for (const path of ["organizers/org1", "deletedUsers/host1",
       "events/event1", "organizerEventSetupDefaults/org1",
       "eventSetupPreferences/event1"]) assert.ok(h.readPaths.includes(path));
@@ -207,9 +208,8 @@ test("malformed saved snapshots cannot authorize changes", async () => {
   await assert.rejects(h.save({requestId: "preferences-2",
     expectedSetupRevision: 2, expectedPreferencesRevision: 1}),
   isCode("failed-precondition"));
-  await assert.rejects(getPrivateEventSetup({actorUid: "host1", db: h.db,
-    command: {organizerId: "org1", eventId: "event1"}}),
-  isCode("failed-precondition"));
+  assert.throws(() => projectEventPreferences(h.rows.get(path), "org1",
+    "event1"), isCode("failed-precondition"));
 });
 
 

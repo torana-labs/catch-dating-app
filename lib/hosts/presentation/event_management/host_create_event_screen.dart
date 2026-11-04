@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_view.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
-import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -210,12 +210,10 @@ class HostCreateEventRouteBody extends ConsumerWidget {
         initialSavedEventId: initialSavedEventId,
         initialRosterImportPlan: initialRosterImportPlan,
         promptForDraftsOnStart: promptForDrafts,
-        readOrganizerDefaults: (organizerId) =>
-            // provider-graph: ownership-repository-construction:HostCreateEventRouteBody.build:construct:ManagerEventSetupDefaultsRepository planned CAT156 -- HostCreateEventRouteBody.build directly constructs ManagerEventSetupDefaultsRepository at a widget/reactive-controller edge. Route the exact dependency through a generated overridable repository seam (reuse the existing PrivateEventSetup factory where compatible); preserve injectable command callbacks and domain/current-account fences.
-            ManagerEventSetupDefaultsRepository(
-              // provider-graph: ownership-widget-backend:HostCreateEventRouteBody.build:read:firebaseFunctionsProvider planned CAT156 -- HostCreateEventRouteBody.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
-              ref.read(firebaseFunctionsProvider),
-            ).get(organizerId),
+        // The organizer defaults listener's first complete value.
+        readOrganizerDefaults: (organizerId) => firstCompleteDefaultsView(
+          ref.read(hostEventSetupDefaultViewReadsProvider).watch(organizerId),
+        ),
         returnToResponsesOnSave: returnToResponsesOnSave,
         onSaved: returnToResponsesOnSave
             ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {

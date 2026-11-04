@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_setup_default_views.schema.json",
+  "title": "HostEventSetupDefaultViewDocument",
+  "description": "Server-owned manager projection of one organizer's event setup defaults, written ahead of time by triggers on the organizer and its organizerEventSetupDefaults document. view holds what the retired getOrganizerEventSetupDefaults callable returned, hashes included: the defaults update command and the first-save basics stay fenced by reviewedDefaultsHash, a hash over the organizer's city, timezone and hostDefaults and the defaults document that rules cannot compute and a client must not recompute. A source that fails validation records sourceCoverage invalidSource and incompleteSource, keeps the previous view (null when there was none) and never throws. Deleted when the organizer is deleted. Managers of an active organizer get it under rules; authority comes from the organizer document, never from the view.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventSetupDefaultViews",
+  "x-firestore-path": "hostEventSetupDefaultViews/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host event setup defaults evaluator (hostReadModels event setup default view triggers)",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "revision",
+    "evaluatedAt",
+    "sourceCoverage",
+    "incompleteSource",
+    "view"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "Increases by one with every committed evaluation that changed the document.", "x-catch-ownership": "server-only"},
+    "evaluatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "sourceCoverage": {"enum": ["complete", "invalidSource"], "description": "Whether the last evaluation read every source validly. invalidSource keeps the previous view.", "x-catch-ownership": "server-only"},
+    "incompleteSource": {"type": ["string", "null"], "minLength": 1, "maxLength": 80, "description": "The collection whose document failed validation (organizers or organizerEventSetupDefaults), or null when coverage is complete.", "x-catch-ownership": "server-only"},
+    "view": {
+      "anyOf": [
+        {"$ref": "../shared/host_event_setup_common.schema.json#/definitions/managerEventSetupDefaults"},
+        {"type": "null"}
+      ],
+      "description": "The defaults projection; null only when the first evaluation was already invalid.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

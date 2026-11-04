@@ -1166,6 +1166,144 @@
       ]
     },
     {
+      "id": "hostEventSetupViews",
+      "path": "hostEventSetupViews/{eventId}",
+      "rulesMatch": "/hostEventSetupViews/{eventId}",
+      "typescriptInterface": "HostEventSetupViewDocument",
+      "dartModel": "lib/contexts/events/data/private_event_setup_view.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets active managers get their event setup views and nothing else"
+      ],
+      "owner": "Host event setup view evaluator: hostReadModels event setup view triggers",
+      "read": "current managers of an active organizer get their event's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it and deleted with the event or its setupRevision",
+      "exportedFunctions": [
+        "onHostEventSetupViewEventChanged",
+        "onHostEventSetupViewPreferencesChanged",
+        "onHostEventSetupViewOrganizerChanged",
+        "onHostEventSetupViewAttendeeChanged",
+        "onHostEventSetupViewAttendeeImportChanged",
+        "onHostEventSetupViewParticipationChanged",
+        "onHostEventSetupViewWaitlistOfferChanged",
+        "onHostEventSetupViewEventOfferChanged",
+        "onHostEventSetupViewPaymentChanged",
+        "onHostEventSetupViewPendingOrderChanged"
+      ],
+      "migrationNotes": [
+        "Publication readiness checks every requirement as if the event started one millisecond from now; the phone applies the clock, so the view needs no sweep.",
+        "sourceCoverage invalidSource with its incompleteSource keeps the previous summary and means the step must not show it."
+      ]
+    },
+    {
+      "id": "hostEventSetupDefaultViews",
+      "path": "hostEventSetupDefaultViews/{organizerId}",
+      "rulesMatch": "/hostEventSetupDefaultViews/{organizerId}",
+      "typescriptInterface": "HostEventSetupDefaultViewDocument",
+      "dartModel": "lib/contexts/events/data/manager_event_setup_defaults_view.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets active managers get their setup defaults view and nothing else"
+      ],
+      "owner": "Host event setup defaults evaluator: hostReadModels event setup default view triggers",
+      "read": "current managers of an active organizer get their organizer's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it and deleted with the organizer",
+      "exportedFunctions": [
+        "onHostEventSetupDefaultViewDefaultsChanged",
+        "onHostEventSetupDefaultViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "The view carries the basics, preferences and reviewed-defaults hashes the defaults update command and the first-save basics are fenced by; the client never recomputes them."
+      ]
+    },
+    {
+      "id": "hostProviderConnectionViews",
+      "path": "hostProviderConnectionViews/{organizerId}",
+      "rulesMatch": "/hostProviderConnectionViews/{organizerId}",
+      "typescriptInterface": "HostProviderConnectionViewDocument",
+      "dartModel": "lib/contexts/audience/data/host_provider_setup_reads.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host provider connection evaluator: hostReadModels provider connection view triggers",
+      "read": "current organizer managers get their organizer's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it and deleted with the organizer",
+      "exportedFunctions": [
+        "onHostProviderConnectionViewConnectionChanged",
+        "onHostProviderConnectionViewOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "Rows never carry secretVersionResource, connectedByUid or lastErrorCode. More than 20 connections records overCap with the first 20; an invalid connection records invalidSource and keeps the previous rows. Either means the door must not claim a complete setup."
+      ]
+    },
+    {
+      "id": "hostEventRosterInsightViews",
+      "path": "hostEventRosterInsightViews/{eventId}",
+      "rulesMatch": "/hostEventRosterInsightViews/{eventId}",
+      "typescriptInterface": "HostEventRosterInsightViewDocument",
+      "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host roster insight evaluator: hostReadModels roster insight view triggers",
+      "read": "current organizer managers get their event's document; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written by every evaluation that changes it, frozen a day after the event ends, deleted with the event or its organizer",
+      "exportedFunctions": [
+        "onHostRosterInsightEventChanged",
+        "onHostRosterInsightAttendeeChanged",
+        "onHostRosterInsightEdgeChanged",
+        "onHostRosterInsightContactChanged",
+        "onHostRosterInsightTraitsChanged",
+        "onHostRosterInsightPaymentChanged"
+      ],
+      "migrationNotes": [
+        "Rows are the retired getEventRosterInsights rows except that top_catch_spender is left to the phone (from hostOrganizerSpendProjections) and member is always stored.",
+        "Labels use history from before the event's start, so a view is frozen 24 hours after the event ends (its start when it has no end)."
+      ]
+    },
+    {
+      "id": "hostOrganizerSpendProjections",
+      "path": "hostOrganizerSpendProjections/{organizerId}",
+      "rulesMatch": "/hostOrganizerSpendProjections/{organizerId}",
+      "typescriptInterface": "HostOrganizerSpendProjectionDocument",
+      "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host organizer spend evaluator: hostReadModels roster insight payment trigger and backfill",
+      "read": "current organizer managers get their organizer's document; nobody lists the collection",
+      "write": "server only; written in the same transaction as organizerSpendTotals when the thresholds change",
+      "exportedFunctions": [
+        "onHostRosterInsightPaymentChanged"
+      ],
+      "migrationNotes": [
+        "Thresholds only, never an account or a per-guest amount. A missing document means the organizer has no counted Catch payment yet."
+      ]
+    },
+    {
+      "id": "organizerSpendTotals",
+      "path": "organizerSpendTotals/{organizerId}",
+      "rulesMatch": "/organizerSpendTotals/{organizerId}",
+      "typescriptInterface": "OrganizerSpendTotalsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get their door read models and nothing else"
+      ],
+      "owner": "Host organizer spend evaluator: hostReadModels roster insight payment trigger and backfill",
+      "read": "server only; never client-readable",
+      "write": "server only; one transaction per payment change, idempotent by trigger event id",
+      "exportedFunctions": [
+        "onHostRosterInsightPaymentChanged"
+      ],
+      "migrationNotes": [
+        "At most 4,000 accounts keep the document under Firestore's 1 MiB limit; another account, or an uncomputable amount, makes coverage partial until a rebuild."
+      ]
+    },
+    {
       "id": "organizerEntitlements",
       "path": "organizerEntitlements/{organizerId}",
       "rulesMatch": "/organizerEntitlements/{organizerId}",
@@ -1561,14 +1699,14 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer booking-provider connection callables",
-      "read": "server only; manager setup projection is callable-owned",
+      "read": "server only; managers read the manager-safe projection in hostProviderConnectionViews",
       "write": "server only; credentials remain in Secret Manager",
       "exportedFunctions": [
         "connectOrganizerLumaProvider",
         "disconnectOrganizerProvider",
-        "getOrganizerProviderSetup",
         "listOrganizerLumaEvents",
-        "syncOrganizerProviderEvent"
+        "syncOrganizerProviderEvent",
+        "onHostProviderConnectionViewConnectionChanged"
       ],
       "migrationNotes": [
         "Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."
@@ -1582,16 +1720,19 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "external event provider mapping and reconciliation callables",
-      "read": "server only; manager setup projection is callable-owned",
+      "read": "current organizer managers get their event's mapping by its derived id under rules (an event without one reads as missing); nobody lists the collection",
       "write": "server only",
       "exportedFunctions": [
         "connectOrganizerLumaProvider",
         "disconnectOrganizerProvider",
-        "getOrganizerProviderSetup",
         "syncOrganizerProviderEvent"
       ],
       "migrationNotes": [
-        "One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation."
+        "One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation.",
+        "The document holds no credential; the Host app derives its id (eem_ + the first 48 hex characters of sha256(eventId)) and listens to it."
+      ],
+      "rulesTestNames": [
+        "lets managers get their own event's provider mapping only"
       ]
     },
     {
@@ -2142,7 +2283,8 @@
       "write": "server only",
       "exportedFunctions": [
         "createRazorpayOrder",
-        "verifyRazorpayPayment"
+        "verifyRazorpayPayment",
+        "onHostRosterInsightPaymentChanged"
       ]
     },
     {
@@ -3664,18 +3806,17 @@
       "dartModel": "lib/contexts/live/data/event_rehearsal_repository.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "rulesTestNames": [
-        "keeps all dress rehearsal collections callable-only"
+        "lets managers get their rehearsal milestone and nothing else"
       ],
       "owner": "event rehearsal completion callable",
-      "read": "server only; manager-authorized completion boolean via callable",
+      "read": "current organizer managers get their organizer's document under rules (a missing document is not yet completed); nobody lists the collection",
       "write": "server only; completion transaction",
       "exportedFunctions": [
         "controlEventRehearsal",
-        "completeEventRehearsal",
-        "getEventRehearsalSummary"
+        "completeEventRehearsal"
       ],
       "migrationNotes": [
-        "Permanent completion survives session expiry, reset and fork. Legacy completed sessions are a bounded read-only fallback while retained."
+        "Permanent completion survives session expiry, reset and fork. The phone listens to this document; there is no fallback to completed sessions."
       ]
     },
     {
@@ -3807,11 +3948,11 @@
         "keeps organizer event setup defaults and receipts server-only"
       ],
       "owner": "organizer event setup manager operations",
-      "read": "server only; current manager callable projection",
+      "read": "server only; managers read its projection in hostEventSetupDefaultViews",
       "write": "server only",
       "exportedFunctions": [
-        "getOrganizerEventSetupDefaults",
-        "updateOrganizerEventSetupDefaults"
+        "updateOrganizerEventSetupDefaults",
+        "onHostEventSetupDefaultViewDefaultsChanged"
       ]
     },
     {
@@ -3828,7 +3969,6 @@
       "read": "server only; current manager callable projection",
       "write": "server only",
       "exportedFunctions": [
-        "getOrganizerEventSetupDefaults",
         "updateOrganizerEventSetupDefaults"
       ]
     },
@@ -3863,13 +4003,13 @@
         "keeps organizer event setup defaults and receipts server-only"
       ],
       "owner": "private event setup operations",
-      "read": "server only; current manager callable projection",
+      "read": "server only; current manager callable projection (getEventOfferConfiguration) and the event's hostEventSetupViews summary",
       "write": "server only",
       "exportedFunctions": [
         "updatePrivateEventPreferences",
-        "getPrivateEventSetup",
         "getEventOfferConfiguration",
-        "configureEventOfferPreferences"
+        "configureEventOfferPreferences",
+        "onHostEventSetupViewPreferencesChanged"
       ]
     },
     {

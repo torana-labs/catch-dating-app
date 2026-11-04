@@ -6995,6 +6995,34 @@
       ]
     },
     {
+      "id": "design:icon-font-vendoring",
+      "category": "design",
+      "path": "tool/design/vendor_icon_font.mjs",
+      "command": "node tool/design/vendor_icon_font.mjs --dry-run",
+      "safety": "local-write-explicit",
+      "status": "active",
+      "description": "Vendors the icon family's Flutter font and codepoints from its static npm package at the version package-lock.json resolves for the React package, pins the version and font hash in the icon-role catalog, and regenerates both icon layers; run it on a lucide-react bump so design:icon-catalog passes.",
+      "checks": [
+        "node --check tool/design/vendor_icon_font.mjs",
+        "node --test tool/design/vendor_icon_font.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/design/vendor_icon_font.test.mjs",
+        "tool/design/generate_icon_catalog.mjs",
+        "design/tokens/catch.icons.json",
+        "design/tokens/catch.icons.schema.json",
+        "package-lock.json",
+        "packages/catch_ui/assets/fonts/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "operator"
+    },
+    {
       "id": "design:icon-family-usage",
       "category": "design",
       "path": "tool/design/check_icon_family_usage.mjs",

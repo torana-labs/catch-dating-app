@@ -10,7 +10,7 @@
     "CACHE-POLICY-001": 0,
     "CACHE-ACCOUNT-001": 0,
     "CACHE-KEY-001": 0,
-    "CACHE-INVALIDATE-001": 120,
+    "CACHE-INVALIDATE-001": 114,
     "CACHE-LISTENER-001": 9,
     "KEEPALIVE-MANUAL-001": 5
   },
@@ -462,19 +462,7 @@
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
       "symbol": "_HostOperationalRosterActions._completeRosterIntake",
-      "detail": "invalidate:hostEventRosterInsightsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._completeRosterIntake",
       "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._flushAttendanceOutbox",
-      "detail": "invalidate:hostEventRosterInsightsProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",
@@ -486,19 +474,7 @@
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
       "symbol": "_HostOperationalRosterActions._importRows",
-      "detail": "invalidate:hostEventRosterInsightsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._importRows",
       "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._reviewClaim",
-      "detail": "invalidate:hostEventRosterInsightsProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",
@@ -510,19 +486,7 @@
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
       "symbol": "_HostOperationalRosterActions._syncProvider",
-      "detail": "invalidate:hostEventRosterInsightsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._syncProvider",
       "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._toggleAttendance",
-      "detail": "invalidate:hostEventRosterInsightsProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",
@@ -539,20 +503,8 @@
     {
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
-      "symbol": "_HostTodayPersonalizedLayoutState._onRouteChanged",
-      "detail": "invalidate:hostTodayRehearsalCompletionProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
       "symbol": "_HostTodayPersonalizedLayoutState._openAction",
       "detail": "invalidate:hostCrmSummaryProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
-      "symbol": "_HostTodayPersonalizedLayoutState._openAction",
-      "detail": "invalidate:hostTodayRehearsalCompletionProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",

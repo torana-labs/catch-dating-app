@@ -8,8 +8,10 @@ import {
 } from "./syncPublicProfile";
 import {removeOrganizerManagerHandler, transferOrganizerOwnershipHandler} from
   "../organizers/manageOrganizerTeam";
-import {getOrganizerEventSetupDefaultsHandler} from
-  "../organizers/eventSetupDefaults/callables";
+import {getManagerEventSetupDefaults} from
+  "../organizers/eventSetupDefaults/service";
+import {eventSetupDefaultsDependencies} from
+  "../organizers/eventSetupDefaults/dependencies";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {defaultProfilePromptIds} from
   "../shared/generated/catalogs/defaultProfilePromptIds";
@@ -510,9 +512,11 @@ for (const syncingUid of ["manager", "owner"]) {
       assert.equal(isOrganizerManager(organizer as never, "manager"), false);
       assert.deepEqual((organizer.hostProfiles as Array<{uid: string}>)
         .map((host) => host.uid), ["owner"]);
-      await assert.rejects(getOrganizerEventSetupDefaultsHandler({
-        auth: {uid: "manager"}, data: {organizerId: "org-1"},
-      } as never, teamDeps(db)), {code: "permission-denied"});
+      // The removed manager loses the authorized defaults read.
+      await assert.rejects(getManagerEventSetupDefaults({actorUid: "manager",
+        organizerId: "org-1",
+        deps: eventSetupDefaultsDependencies(db as never)}),
+      {code: "permission-denied"});
     });
 }
 

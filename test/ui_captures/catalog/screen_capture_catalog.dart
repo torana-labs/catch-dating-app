@@ -290,6 +290,7 @@ import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -4026,19 +4027,27 @@ List<Object> _hostManageRouteProviderOverrides({
         profileId: defaultProfiles[profileId]!,
   };
   final firestore = FakeFirebaseFirestore();
+  // Roster labels listen to the view the server writes ahead of time.
+  unawaited(
+    firestore
+        .collection('hostEventRosterInsightViews')
+        .doc(effectiveEvent.id)
+        .set({
+          'schemaVersion': 1,
+          'eventId': effectiveEvent.id,
+          'organizerId': effectiveOrganizer.id,
+          'cutoffAtMillis': effectiveEvent.startTime.millisecondsSinceEpoch,
+          'revision': 1,
+          'evaluatedAt': Timestamp.fromDate(_captureNow),
+          'sourceCoverage': 'exact',
+          'incompleteSource': null,
+          'rows': const <Object?>[],
+        }),
+  );
   final functions = _CaptureFirebaseFunctions({
     'listEventStaff': <String, Object?>{
       'eventId': effectiveEvent.id,
       'members': const <Object?>[],
-    },
-    'getEventRosterInsights': <String, Object?>{
-      'eventId': effectiveEvent.id,
-      'organizerId': effectiveOrganizer.id,
-      'cutoffAtMillis': effectiveEvent.startTime.millisecondsSinceEpoch,
-      'sourceCoverage': 'exact',
-      'spendCoverage': 'catchPaymentsOnly',
-      'rows': const <Object?>[],
-      'computedAtMillis': _captureNow.millisecondsSinceEpoch,
     },
   });
   return [
@@ -13731,14 +13740,16 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _hostEvent.id,
       ).overrideWith((ref) => Stream.value(const [])),
       hostEventRosterInsightsProvider(_hostEvent.id).overrideWith(
-        (ref) async => HostEventRosterInsights(
-          eventId: _hostEvent.id,
-          organizerId: _captureViewerUid,
-          cutoffAt: _hostEvent.startTime,
-          sourceCoverage: HostRosterInsightCoverage.exact,
-          spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
-          rows: const <HostEventRosterInsight>[],
-          computedAt: _captureNow,
+        (ref) => Stream.value(
+          HostEventRosterInsights(
+            eventId: _hostEvent.id,
+            organizerId: _captureViewerUid,
+            cutoffAt: _hostEvent.startTime,
+            sourceCoverage: HostRosterInsightCoverage.exact,
+            spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+            rows: const <HostEventRosterInsight>[],
+            computedAt: _captureNow,
+          ),
         ),
       ),
       publicProfileRepositoryProvider.overrideWithValue(

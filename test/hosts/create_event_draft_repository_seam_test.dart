@@ -86,30 +86,30 @@ void main() {
   );
 
   test(
-    'get uses the override and retains organizer and event identity',
+    'watch uses the override and retains organizer and event identity',
     () async {
       final repository = _Repository();
       final controller = _controller(_container(repository));
 
-      final result = controller.getPrivateEventSetup(
+      final result = controller.watchPrivateEventSetup(
         organizerId: 'organizer-1',
         eventId: 'event-1',
       );
 
-      expect(result, same(repository.getResult));
-      expect(await result, same(_summary));
-      expect(repository.getCalls, [('organizer-1', 'event-1')]);
+      expect(result, same(repository.watchResult));
+      expect((await result.first).summary, same(_summary));
+      expect(repository.watchCalls, [('organizer-1', 'event-1')]);
     },
   );
 
-  for (final operation in ['create', 'update', 'get']) {
+  for (final operation in ['create', 'update', 'watch']) {
     test('$operation preserves repository errors without retrying', () async {
       final repository = _Repository();
       final receipt = Completer<PrivateEventCreateReceipt>();
-      final summary = Completer<PrivateEventBasicSummary>();
+      final summary = Completer<PrivateEventSetupView>();
       repository.createResult = receipt.future;
       repository.updateResult = receipt.future;
-      repository.getResult = summary.future;
+      repository.watchResult = Stream.fromFuture(summary.future);
       final controller = _controller(_container(repository));
       final error = StateError('Uncertain repository outcome');
 
@@ -120,13 +120,16 @@ void main() {
           basics: _basics,
         ),
         'update' => controller.updatePrivateEventBasics(_update),
-        _ => controller.getPrivateEventSetup(
-          organizerId: 'organizer-1',
-          eventId: 'event-1',
-        ),
+        _ =>
+          controller
+              .watchPrivateEventSetup(
+                organizerId: 'organizer-1',
+                eventId: 'event-1',
+              )
+              .first,
       };
       final expectation = expectLater(result, throwsA(same(error)));
-      if (operation == 'get') {
+      if (operation == 'watch') {
         summary.completeError(error);
       } else {
         receipt.completeError(error);
@@ -195,13 +198,15 @@ CreateEventDraftController _controller(ProviderContainer container) {
 class _Repository extends Fake implements PrivateEventSetupRepository {
   Future<PrivateEventCreateReceipt> createResult = Future.value(_receipt);
   Future<PrivateEventCreateReceipt> updateResult = Future.value(_receipt);
-  Future<PrivateEventBasicSummary> getResult = Future.value(_summary);
+  Stream<PrivateEventSetupView> watchResult = Stream.value(
+    PrivateEventSetupView.complete(_summary),
+  );
   final createCalls = <(String, String, PrivateEventBasics)>[];
   final updateCalls = <PrivateEventBasicsUpdateRequest>[];
-  final getCalls = <(String, String)>[];
+  final watchCalls = <(String, String)>[];
 
   int get callCount =>
-      createCalls.length + updateCalls.length + getCalls.length;
+      createCalls.length + updateCalls.length + watchCalls.length;
 
   @override
   Future<PrivateEventCreateReceipt> create({
@@ -222,11 +227,11 @@ class _Repository extends Fake implements PrivateEventSetupRepository {
   }
 
   @override
-  Future<PrivateEventBasicSummary> get({
+  Stream<PrivateEventSetupView> watch({
     required String organizerId,
     required String eventId,
   }) {
-    getCalls.add((organizerId, eventId));
-    return getResult;
+    watchCalls.add((organizerId, eventId));
+    return watchResult;
   }
 }
