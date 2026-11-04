@@ -56,15 +56,24 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=20" -q '.[].id'); do
-            if [[ "$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')" == "success" ]]; then
-              base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
-              if ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
-                echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
-                echo "skip=true" >> "$GITHUB_OUTPUT"
+          page=1
+          while true; do
+            # Assign separately: failures in a for substitution or an if
+            # condition do not stop Bash even with errexit enabled.
+            ids="$(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=100&page=$page" -q '.[].id')"
+            if [[ -z "$ids" ]]; then break; fi
+            for id in $ids; do
+              state="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')"
+              if [[ "$state" == "success" ]]; then
+                base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
+                if ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
+                  echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
+                  echo "skip=true" >> "$GITHUB_OUTPUT"
+                fi
+                exit 0
               fi
-              break
-            fi
+            done
+            page=$((page + 1))
           done
 
       - id: toolchain

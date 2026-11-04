@@ -805,34 +805,74 @@ test("Deploy backend preserves every readiness failure before mutation", (t) => 
   }
 });
 
-test("Deploy backend skips a commit older than the deployed one", (t) => {
+test("Deploy backend resolves delivered ancestry with fail-closed paginated lookups", async (t) => {
   const script = workflowStepShell(backendDeployWorkflow(), "Skip a commit older than the deployed one");
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-guard-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
-  for (const [label, deployments, ancestor, skipped] of [
-    ["newer commit", "7", 0, false],
-    ["older commit", "7", 1, true],
-    ["first deploy", "", 0, false],
-  ]) {
-    const output = path.join(cwd, `${label}.txt`);
-    fs.writeFileSync(output, "");
-    const result = spawnSync("bash", ["-c", `
-      gh() {
-        case "$*" in
-          *"/statuses"*) echo success;;
-          *"deployments?"*) printf '%s\\n' $DEPLOYMENTS;;
-          *) echo ${"b".repeat(40)};;
-        esac
-      }
-      git() { return "$ANCESTOR"; }
-      ${script}
-    `], {
-      cwd, encoding: "utf8",
-      env: {...process.env, GITHUB_OUTPUT: output, GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "dev",
-        GITHUB_SHA: "a".repeat(40), DEPLOYMENTS: deployments, ANCESTOR: String(ancestor)},
+  const list = (page) => `repos/o/r/deployments?environment=dev&task=deploy:backend&per_page=100&page=${page}`;
+  const status = (id) => `repos/o/r/deployments/${id}/statuses?per_page=1`;
+  const record = (id) => `repos/o/r/deployments/${id}`;
+  const base = "b".repeat(40);
+  const success = [[list(1), "7"], [status(7), "success"], [record(7), base]];
+  const scenarios = [
+    {label: "newer commit", calls: success},
+    {label: "same commit", calls: success, source: base},
+    {label: "older commit", calls: success, ancestor: 1, skipped: true},
+    {label: "first deploy", calls: [[list(1), ""]]},
+    {label: "list error", calls: [[list(1), "", 41]], exit: 41},
+    {label: "partial first page then list error", calls: [[list(1), "7", 42]], exit: 42},
+    {label: "status error", calls: [[list(1), "7"], [status(7), "", 43]], exit: 43},
+    {label: "partial status then error", calls: [[list(1), "7"], [status(7), "success", 44]], exit: 44},
+    {label: "record error", calls: [[list(1), "7"], [status(7), "success"], [record(7), "", 45]], exit: 45},
+    {label: "partial record then error", calls: [[list(1), "7"], [status(7), "success"], [record(7), base, 46]], exit: 46},
+    {label: "later page error after valid results", calls: [
+      [list(1), "9"], [status(9), "failure"], [list(2), "7", 47],
+    ], exit: 47},
+    {label: "successful record beyond page one", calls: [
+      [list(1), "9"], [status(9), "failure"], [list(2), "7"], [status(7), "success"], [record(7), base],
+    ], ancestor: 1, skipped: true},
+    {label: "empty status still searches later records", calls: [
+      [list(1), "9 7"], [status(9), ""], [status(7), "success"], [record(7), base],
+    ]},
+    {label: "verified exhaustion after partial pages", calls: [
+      [list(1), "9"], [status(9), "failure"], [list(2), "8"], [status(8), "pending"], [list(3), ""],
+    ]},
+  ];
+  for (const scenario of scenarios) {
+    await t.test(scenario.label, () => {
+      const output = path.join(cwd, "output.txt");
+      const callsLog = path.join(cwd, "calls.txt");
+      fs.writeFileSync(output, "");
+      fs.writeFileSync(callsLog, "");
+      // Only these exact mocked endpoints are allowed. Unexpected calls fail
+      // closed, and the call log proves short pages are not treated as exhaustion.
+      const cases = scenario.calls.map(([endpoint, response, exit = 0]) =>
+        `'${endpoint}') printf '%s\\n' '${response}'; return ${exit};;`).join("\n");
+      const result = spawnSync("bash", ["-c", `
+        gh() {
+          printf '%s\\n' "$2" >> "$CALLS_LOG"
+          case "$2" in
+            ${cases}
+            *) return 99;;
+          esac
+        }
+        git() {
+          [[ "$*" == "merge-base --is-ancestor ${base} $GITHUB_SHA" ]] || return 98
+          return "$ANCESTOR"
+        }
+        ${script}
+      `], {
+        cwd, encoding: "utf8", timeout: 5000,
+        env: {...process.env, GITHUB_OUTPUT: output, CALLS_LOG: callsLog,
+          GITHUB_REPOSITORY: "o/r", DEPLOY_ENVIRONMENT: "dev",
+          GITHUB_SHA: scenario.source ?? "a".repeat(40), ANCESTOR: String(scenario.ancestor ?? 0)},
+      });
+      assert.equal(result.error, undefined);
+      assert.equal(result.status, scenario.exit ?? 0, result.stderr);
+      assert.equal(fs.readFileSync(output, "utf8"), scenario.skipped ? "skip=true\n" : "");
+      assert.deepEqual(fs.readFileSync(callsLog, "utf8").trim().split("\n"),
+        scenario.calls.map(([endpoint]) => endpoint));
     });
-    assert.equal(result.status, 0, `${label}: ${result.stderr}`);
-    assert.equal(fs.readFileSync(output, "utf8"), skipped ? "skip=true\n" : "", label);
   }
 });
 
