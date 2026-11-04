@@ -24,13 +24,24 @@
         "flutter": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["fontFamily", "fontPackage", "fontAsset", "fontSha256", "codepoints"],
+          "required": ["fontFamily", "fontPackage", "fontAsset", "fontSha256", "codepoints", "fontSource"],
           "properties": {
             "fontFamily": {"type": "string", "minLength": 1},
             "fontPackage": {"type": "string", "minLength": 1},
             "fontAsset": {"type": "string", "minLength": 1},
             "fontSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-            "codepoints": {"type": "string", "minLength": 1}
+            "codepoints": {"type": "string", "minLength": 1},
+            "fontSource": {
+              "type": "object",
+              "description": "The npm package that ships this family's font, and the font and codepoints files inside it; tool/design/vendor_icon_font.mjs copies them out at the catalogued version.",
+              "additionalProperties": false,
+              "required": ["package", "font", "codepoints"],
+              "properties": {
+                "package": {"type": "string", "minLength": 1},
+                "font": {"type": "string", "pattern": "\\.ttf$"},
+                "codepoints": {"type": "string", "pattern": "\\.json$"}
+              }
+            }
           }
         },
         "react": {
