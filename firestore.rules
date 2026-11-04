@@ -1468,6 +1468,31 @@ service cloud.firestore {
         || isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
     }
+    // The live console's guest and settings views, written ahead of time by
+    // the guest view evaluator. Only an organizer's managers read them, by
+    // id, and the callables they replace did not refuse an archived or
+    // inactive organizer. A view the server has not written yet reads as
+    // missing; a missing document reveals nothing.
+    match /hostEventAccountabilityViews/{accountabilityViewId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    match /hostEventMembershipViews/{membershipId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    match /hostEventAssistanceSettingViews/{settingId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    match /hostEventRuntimeViews/{runtimeId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
 
     // Live console help-request and delivery views, one per practical case
     // or live message, written ahead of time by the view triggers. A current

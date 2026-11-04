@@ -11,8 +11,6 @@ import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
 import {validateEventAssistanceSettingReceiptDocument} from
   "../../shared/generated/validators/eventAssistanceSettingReceiptDocument";
-import {validateGetEventAssistanceSettingCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceSettingInput";
 import {validateSetEventAssistanceSettingCallablePayload} from
   "../../shared/generated/validators/setEventAssistanceSettingInput";
 import {validateEventAssistanceSettingCallableResponse} from
@@ -33,13 +31,16 @@ export class EventAssistanceSettingsStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateGetEventAssistanceSettingCallablePayload(input)) {
-      throw new HttpsError("invalid-argument",
-        "Invalid assistance setting scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventAssistanceSettingViews; the suites use it as the oracle for
+   * what a save checks. An unknown workflow kind fails the response
+   * contract.
+   */
+  async get(actorUid: string, scope: Omit<SettingScope, "workflowKind"> &
+    {workflowKind: string}): Promise<Response> {
     return transact(this.db, async (tx) =>
-      response("read", await this.read(tx, actorUid, input)));
+      response("read", await this.read(tx, actorUid, scope as SettingScope)));
   }
 
   async set(actorUid: string, input: unknown): Promise<Response> {

@@ -2,8 +2,6 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {runAssistanceTransaction} from "./transactionCallback";
-import {validateGetEventAssistanceMembershipCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceMembershipInput";
 import {validateTransferEventAssistanceGroupCallablePayload} from
   "../../shared/generated/validators/transferEventAssistanceGroupInput";
 import {validateEventAssistanceMembershipReceiptDocument} from
@@ -12,7 +10,7 @@ import {assertCommandContext, assertCommandRole} from "./commands";
 import {requireGroupPermission} from "./groupStaffAuthority";
 import {invalidSource} from "./groupProgressSource";
 import {MEMBERSHIPS, MEMBERSHIP_RECEIPTS, readMembership,
-  canReadMembership, membershipDenied, parseMembership} from
+  canReadMembership, membershipDenied, parseMembership, Scope} from
   "./membershipReader";
 import {membershipResponse, transitionMembership, membershipConflict} from
   "./membershipTransitions";
@@ -22,13 +20,14 @@ export class EventMembershipStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown) {
-    if (!validateGetEventAssistanceMembershipCallablePayload(input)) {
-      throw new HttpsError("invalid-argument",
-        "Invalid group membership scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventMembershipViews; the suites use it as the oracle for what a
+   * transfer checks.
+   */
+  async get(actorUid: string, scope: Scope) {
     return runAssistanceTransaction(this.db, async (tx) => {
-      const state = await readMembership(this.db, tx, input, actorUid,
+      const state = await readMembership(this.db, tx, scope, actorUid,
         this.clock);
       if (!canReadMembership(state)) throw membershipDenied();
       const handoverReview = await readMembershipReceivers(this.db, tx,

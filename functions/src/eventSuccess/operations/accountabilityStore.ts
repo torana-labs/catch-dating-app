@@ -7,10 +7,6 @@ import {accountabilityResolutionFields, currentAccountabilityResolution} from
 import {eventSuccessPrimitivesFor} from "../formatPrimitives";
 import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
-import type {GetEventAssistanceAccountabilityCallablePayload as Scope} from
-  "../../shared/generated/getEventAssistanceAccountabilityCallablePayload";
-import {validateGetEventAssistanceAccountabilityCallablePayload} from
-  "../../shared/generated/validators/getEventAssistanceAccountabilityInput";
 import {validateResolveEventAssistanceAccountabilityCallablePayload} from
   "../../shared/generated/validators/resolveEventAssistanceAccountabilityInput";
 import {validateEventAssistanceAccountabilityCallableResponse} from
@@ -25,7 +21,8 @@ import {currentGuest, guestIdentity} from "./guestRecords";
 import {invalidSource, timestampEvidence} from "./groupProgressSource";
 import {requireGroupPermission, denied} from "./groupStaffAuthority";
 import {readMembership, currentMembership} from "./membershipReader";
-import {readAccountabilityCheckpoint} from "./accountabilityCheckpoint";
+import {AccountabilityScope as Scope, readAccountabilityCheckpoint} from
+  "./accountabilityCheckpoint";
 import {runAssistanceTransaction} from "./transactionCallback";
 
 export const ACCOUNTABILITY_RECEIPTS = "eventAssistanceAccountabilityReceipts";
@@ -35,12 +32,15 @@ export class EventAccountabilityStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
 
-  async get(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateGetEventAssistanceAccountabilityCallablePayload(input)) {
-      throw new HttpsError("invalid-argument", "Invalid accountability scope.");
-    }
+  /**
+   * Trusted read for one actor. No client reaches it: managers listen to
+   * hostEventAccountabilityViews (and, for a departure, the member entries
+   * of hostEventCheckpointViews); the suites use it as the oracle for what
+   * resolve checks.
+   */
+  async get(actorUid: string, scope: Scope): Promise<Response> {
     return runAssistanceTransaction(this.db, async (tx) =>
-      response("read", await this.read(tx, actorUid, input)));
+      response("read", await this.read(tx, actorUid, scope)));
   }
 
   async resolve(actorUid: string, input: unknown): Promise<Response> {
