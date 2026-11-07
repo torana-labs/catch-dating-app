@@ -22,6 +22,7 @@ Photo failing falls back to initials.
 - `CatchAvatar.count`
 - `CatchAvatar.veiled`
 - `CatchAvatar.monogram`
+- `CatchAvatar.system`
 <!-- generated:flutter:end -->
 
 ## Replaces

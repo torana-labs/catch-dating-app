@@ -28,6 +28,8 @@ class CatchIndexRowBadge {
     this.tone = CatchBadgeTone.neutral,
     this.format,
     this.icon,
+    this.emphasis = CatchBadgeEmphasis.soft,
+    this.dot = false,
   });
 
   final String label;
@@ -36,6 +38,12 @@ class CatchIndexRowBadge {
   /// Fills the badge with the format colour; wins over [tone].
   final CatchFormat? format;
   final IconData? icon;
+
+  /// Solid draws the tone at full strength, as [CatchBadge.emphasis] does.
+  final CatchBadgeEmphasis emphasis;
+
+  /// A leading dot in the label colour.
+  final bool dot;
 }
 
 /// The day-and-date tile that leads an event row, tinted by its format.
@@ -258,7 +266,6 @@ class CatchIndexRow extends StatelessWidget {
           );
     final Widget titleLine;
     if (badge != null) {
-      final format = badge.format;
       titleLine = Row(
         spacing: CatchSpacing.s2,
         children: [
@@ -267,8 +274,9 @@ class CatchIndexRow extends StatelessWidget {
             label: badge.label,
             tone: badge.tone,
             icon: badge.icon,
-            backgroundColor: format?.accent,
-            foregroundColor: format?.ink,
+            format: badge.format,
+            emphasis: badge.emphasis,
+            dot: badge.dot,
           ),
           if (statusText != null) ...[const Spacer(), statusText],
         ],

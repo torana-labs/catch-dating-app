@@ -27,6 +27,10 @@ abstract interface class CatchFieldInputConfiguration {
   Widget? get leading;
   String? get leadingUnit;
   int? get maxLength;
+
+  /// When the length counter shows; [CatchFieldSupportRowMode.always] keeps
+  /// it painted at rest.
+  CatchFieldSupportRowMode get counter;
   int? get maxLines;
   int? get minLines;
   List<FontFeature>? get fontFeatures;
@@ -428,6 +432,8 @@ class CatchFieldInput extends StatelessWidget {
             counterText:
                 configuration.maxLength != null &&
                     (_focused ||
+                        configuration.counter ==
+                            CatchFieldSupportRowMode.always ||
                         configuration.states.contains(WidgetState.focused) ||
                         hasError)
                 ? '${controller.text.characters.length} / ${configuration.maxLength}'
@@ -481,7 +487,9 @@ class CatchFieldInput extends StatelessWidget {
         final counterText =
             effectiveVariant == CatchFieldVariant.underline &&
                 configuration.maxLength != null &&
-                (_focused || configuration.states.contains(WidgetState.focused))
+                (_focused ||
+                    configuration.counter == CatchFieldSupportRowMode.always ||
+                    configuration.states.contains(WidgetState.focused))
             ? '${controller.text.characters.length} / ${configuration.maxLength}'
             : null;
         final hasMeta = supportText != null || counterText != null;

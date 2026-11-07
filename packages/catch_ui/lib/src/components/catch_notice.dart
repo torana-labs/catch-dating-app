@@ -17,17 +17,21 @@ class CatchNotice extends StatelessWidget {
     required this.notice,
     required this.dismissLabel,
     this.onDismiss,
-  }) : _inline = false;
+  }) : _inline = false,
+       _action = null;
 
   /// The system Notice: a tinted block in the flow (help, a warning, a
   /// result) with its icon, an optional [title] and the [body] copy.
-  /// [CatchNoticeTone.status] is the system's info tone, in indigo.
+  /// [CatchNoticeTone.status] is the system's info tone, in indigo, and
+  /// [CatchNoticeTone.neutral] the grey tile. An [action] draws a quiet small
+  /// button under the copy.
   CatchNotice.inline({
     super.key,
     required String body,
     String? title,
     CatchNoticeTone tone = CatchNoticeTone.status,
     IconData? icon,
+    CatchNoticeAction? action,
   }) : notice = title == null
            ? CatchNoticeData(id: body, title: body, tone: tone, icon: icon)
            : CatchNoticeData(
@@ -39,10 +43,14 @@ class CatchNotice extends StatelessWidget {
              ),
        dismissLabel = '',
        onDismiss = null,
+       // The public argument stays `action`; the field is private.
+       // ignore: prefer_initializing_formals
+       _action = action,
        _inline = true;
 
   final CatchNoticeData notice;
   final bool _inline;
+  final CatchNoticeAction? _action;
 
   /// Caller-resolved accessibility copy for the optional dismiss control.
   final String dismissLabel;
@@ -222,6 +230,7 @@ class CatchNotice extends StatelessWidget {
       CatchNoticeTone.danger => (t.tintCoral, t.deepCoral),
       CatchNoticeTone.status ||
       CatchNoticeTone.event => (t.tintIndigo, t.deepIndigo),
+      CatchNoticeTone.neutral => (t.tile, t.ink2),
     };
     final icon = notice.hasIcon
         ? notice.icon
@@ -229,8 +238,11 @@ class CatchNotice extends StatelessWidget {
             CatchNoticeTone.success => CatchIcons.success,
             CatchNoticeTone.warning => CatchIcons.warning,
             CatchNoticeTone.danger => CatchIcons.error,
-            CatchNoticeTone.status || CatchNoticeTone.event => CatchIcons.info,
+            CatchNoticeTone.status ||
+            CatchNoticeTone.event ||
+            CatchNoticeTone.neutral => CatchIcons.info,
           };
+    final action = _action;
     final message = notice.message;
     final title = message == null ? null : notice.title;
     final body = message ?? notice.title;
@@ -270,6 +282,16 @@ class CatchNotice extends StatelessWidget {
                       if (title != null)
                         CatchText(title, variant: CatchTextVariant.titleRow),
                       CatchText(body, variant: CatchTextVariant.bodySmall),
+                      if (action != null)
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: CatchButton(
+                            label: action.label,
+                            onPressed: action.onPressed,
+                            variant: CatchButtonVariant.quiet,
+                            size: CatchButtonSize.sm,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -312,6 +334,7 @@ class _NoticePalette {
           CatchNoticeTone.warning => t.warning,
           CatchNoticeTone.danger => t.danger,
           CatchNoticeTone.event => t.primary,
+          CatchNoticeTone.neutral => t.ink2,
         };
 
     return _NoticePalette(

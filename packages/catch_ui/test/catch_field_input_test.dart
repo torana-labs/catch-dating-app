@@ -96,6 +96,9 @@ class _InputData implements CatchFieldInputConfiguration {
   @override
   final int? maxLength = 3;
   @override
+  final CatchFieldSupportRowMode counter =
+      CatchFieldSupportRowMode.whileFocused;
+  @override
   final int? maxLines = 1;
   @override
   final int? minLines = null;
