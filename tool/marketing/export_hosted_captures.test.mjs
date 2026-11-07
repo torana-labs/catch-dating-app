@@ -44,7 +44,7 @@ function fixture(t, {web = false, catalog = null} = {}) {
     fs.writeFileSync(destination, bytes);
     return destination;
   };
-  for (const file of ["tool/lib/repo_paths.mjs", "tool/ui_capture/run_captures.mjs",
+  for (const file of ["tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs", "tool/ui_capture/run_captures.mjs",
     "tool/marketing/export_app_screenshots.mjs", "tool/marketing/export_hosted_captures.mjs",
     "tool/marketing/import_hosted_captures.mjs",
     "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",

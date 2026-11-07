@@ -134,7 +134,8 @@ test("edited catalog prose and sparse source roots cannot be mistaken for derive
 
 test("a newly generated route still fails the actual authored capture coverage gate", t => {
   const f = fixture(t);
-  for (const file of ["tool/ui_capture/check_capture_coverage.mjs", "tool/lib/repo_paths.mjs"]) {
+  for (const file of ["tool/ui_capture/check_capture_coverage.mjs", "tool/lib/repo_paths.mjs",
+    "tool/lib/dart_call_blocks.mjs"]) {
     f.write(file, fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8"));
   }
   const decisions = JSON.stringify({routes: [{routeId: "home", status: "planned", priority: "P1", reason: "Explicit authored decision"}]});
@@ -358,6 +359,7 @@ test("committed semantic route errors prevent a fresh CI receipt, while coverage
 test("actual CLI persists proof only in bound CI and preserves standalone generation", t => {
   const f = ciFixture(t);
   const files = ["tool/ci/generated_inventories.mjs", "tool/lib/path_glob.mjs", "tool/lib/repo_paths.mjs",
+    "tool/lib/dart_call_blocks.mjs",
     "tool/ui_capture/check_route_inventory.mjs", "tool/marketing/export_hosted_captures.mjs",
     "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
     "tool/design/component_concepts.mjs", "tool/design/lib/component_naming.mjs",

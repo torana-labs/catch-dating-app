@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {findBalancedEnd} from "../lib/dart_call_blocks.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const routerPath = fromRepo("lib/routing/go_router.dart");
@@ -1085,43 +1086,19 @@ function extractBalancedBlock(source, label, openChar, closeChar, startAt = null
     throw new Error(`Could not find ${openChar} after ${label}.`);
   }
 
-  let depth = 0;
-  let stringQuote = null;
-  let escaped = false;
-  for (let index = openIndex; index < source.length; index += 1) {
-    const char = source[index];
-
-    if (stringQuote) {
-      if (escaped) {
-        escaped = false;
-      } else if (char === "\\") {
-        escaped = true;
-      } else if (char === stringQuote) {
-        stringQuote = null;
-      }
-      continue;
-    }
-
-    if (char === "'" || char === '"') {
-      stringQuote = char;
-      continue;
-    }
-    if (char === openChar) depth += 1;
-    if (char === closeChar) {
-      depth -= 1;
-      if (depth === 0) {
-        return {
-          labelIndex,
-          text: source.slice(labelIndex, index + 1),
-          body: source.slice(openIndex + 1, index),
-          openIndex,
-          closeIndex: index,
-        };
-      }
-    }
+  let closeIndex;
+  try {
+    closeIndex = findBalancedEnd(source, openIndex, openChar, closeChar);
+  } catch {
+    throw new Error(`Could not find balanced ${openChar}${closeChar} block for ${label}.`);
   }
-
-  throw new Error(`Could not find balanced ${openChar}${closeChar} block for ${label}.`);
+  return {
+    labelIndex,
+    text: source.slice(labelIndex, closeIndex + 1),
+    body: source.slice(openIndex + 1, closeIndex),
+    openIndex,
+    closeIndex,
+  };
 }
 
 function normalizeExpression(value) {
