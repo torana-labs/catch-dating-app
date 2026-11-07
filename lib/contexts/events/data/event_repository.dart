@@ -8,9 +8,11 @@ import 'package:catch_dating_app/contexts/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_tags.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_venue_session.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
@@ -514,6 +516,7 @@ Future<EventViewerState> eventViewerState(
   String uid, {
   String? inviteCode,
 }) async {
+  ref.providesTags({EventTags.viewer(eventId)});
   final currentUid = await ref.watch(uidProvider.future);
   if (currentUid != uid) throw StateError('Event viewer account changed');
   ref.watch(watchEventProvider(eventId));

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_tags.dart';
 import 'package:catch_dating_app/contexts/payments/data/organizer_event_checkout.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
@@ -17,6 +18,7 @@ import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
@@ -151,16 +153,15 @@ class EventDetailDock extends ConsumerWidget {
     if (viewerState?.isSettledData != true || uid != userProfile.uid) {
       final error = viewerState?.error ?? authState.error;
       final pending = error == null;
+      void retryViewerState(String viewerId) => ref.invalidate(
+        eventViewerStateProvider(event.id, viewerId, inviteCode: inviteCode),
+      );
       return EventBookingDock(
         label: pending
             ? context.l10n.eventsEventViewerCheckingBooking
             : context.l10n.eventsEventViewerRetryBooking,
         isLoading: pending,
-        onPressed: pending || uid == null
-            ? null
-            : () => ref.invalidate(
-                eventViewerStateProvider(event.id, uid, inviteCode: inviteCode),
-              ),
+        onPressed: pending || uid == null ? null : () => retryViewerState(uid),
         errorMessage: error == null
             ? null
             : appErrorMessage(
@@ -200,22 +201,19 @@ class EventDetailDock extends ConsumerWidget {
     final mutationError = errorMutation.hasError
         ? (errorMutation as MutationError).error
         : null;
-    for (final mutation in [
-      EventBookingController.bookMutation,
-      EventBookingController.cancelMutation,
-      EventBookingController.joinWaitlistMutation,
-      EventBookingController.leaveWaitlistMutation,
-      EventBookingController.acceptWaitlistOfferMutation,
-      EventBookingController.declineWaitlistOfferMutation,
-    ]) {
-      ref.listen(mutation, (previous, next) {
-        if (previous?.isPending == true && !next.isPending) {
-          ref.invalidate(
-            eventViewerStateProvider(event.id, uid!, inviteCode: inviteCode),
-          );
-        }
-      });
+    // Every booking write, settled or failed, makes the viewer's quote and
+    // allowed actions stale.
+    Future<T> staleViewer<T>(
+      MutationTransaction tx,
+      Future<T> Function() write,
+    ) async {
+      try {
+        return await write();
+      } finally {
+        tx.get(cacheTagsProvider).invalidate({EventTags.viewer(event.id)});
+      }
     }
+
     final dockState = eventDetailBookingDockStateFrom(
       l10n: context.l10n,
       event: event,
@@ -268,87 +266,93 @@ class EventDetailDock extends ConsumerWidget {
       final navigator = Navigator.of(context, rootNavigator: true);
       final priceInPaise =
           viewer.quotedPriceInPaise ?? event.priceInPaiseFor(userProfile);
-      EventBookingController.bookMutation.run(ref, (tx) async {
-        // Paid seats in an organizer-collected event go to the organizer's
-        // own Razorpay account; free seats keep the native booking path.
-        if (priceInPaise > 0 && usesOrganizerCheckout(event)) {
-          final checkout = tx.get(
-            organizerEventCheckoutControllerProvider.notifier,
-          );
-          final session = await checkout.prepare(
-            event: event,
-            user: userProfile,
-          );
-          if (!session.admitted) {
-            if (!navigator.mounted) return;
-            // Catch's payment page uses the server quote, not a local price.
-            final deadlineMillis = session.payment.refundDeadlineMillis;
-            final method = await showCatchBottomSheet<OrganizerPaymentMethod>(
-              context: navigator.context,
-              builder: (_) => OrganizerPaymentMethodSheet(
-                amountPaise: session.payment.amountPaise,
-                currency: session.payment.currency,
-                refundDeadline: deadlineMillis == null
-                    ? null
-                    : DateTime.fromMillisecondsSinceEpoch(deadlineMillis),
-              ),
+      EventBookingController.bookMutation.run(
+        ref,
+        (tx) => staleViewer(tx, () async {
+          // Paid seats in an organizer-collected event go to the organizer's
+          // own Razorpay account; free seats keep the native booking path.
+          if (priceInPaise > 0 && usesOrganizerCheckout(event)) {
+            final checkout = tx.get(
+              organizerEventCheckoutControllerProvider.notifier,
             );
-            if (method == null) return;
-            final paid = await checkout.pay(
+            final session = await checkout.prepare(
               event: event,
               user: userProfile,
-              session: session,
-              method: method,
             );
+            if (!session.admitted) {
+              if (!navigator.mounted) return;
+              // Catch's payment page uses the server quote, not a local price.
+              final deadlineMillis = session.payment.refundDeadlineMillis;
+              final method = await showCatchBottomSheet<OrganizerPaymentMethod>(
+                context: navigator.context,
+                builder: (_) => OrganizerPaymentMethodSheet(
+                  amountPaise: session.payment.amountPaise,
+                  currency: session.payment.currency,
+                  refundDeadline: deadlineMillis == null
+                      ? null
+                      : DateTime.fromMillisecondsSinceEpoch(deadlineMillis),
+                ),
+              );
+              if (method == null) return;
+              final paid = await checkout.pay(
+                event: event,
+                user: userProfile,
+                session: session,
+                method: method,
+              );
+              handleBookingCompletion(
+                router: router,
+                navigator: navigator,
+                paymentData: paid,
+              );
+              return;
+            }
             handleBookingCompletion(
               router: router,
               navigator: navigator,
-              paymentData: paid,
+              paymentData: checkout.alreadyBooked(session),
             );
             return;
           }
+          final data = await tx
+              .get(eventBookingControllerProvider.notifier)
+              .book(
+                event: event,
+                user: userProfile,
+                quotedPriceInPaise: viewer.quotedPriceInPaise,
+                inviteCode: inviteCode,
+                inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
+              );
           handleBookingCompletion(
             router: router,
             navigator: navigator,
-            paymentData: checkout.alreadyBooked(session),
+            paymentData: data,
           );
-          return;
-        }
-        final data = await tx
-            .get(eventBookingControllerProvider.notifier)
-            .book(
-              event: event,
-              user: userProfile,
-              quotedPriceInPaise: viewer.quotedPriceInPaise,
-              inviteCode: inviteCode,
-              inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
-            );
-        handleBookingCompletion(
-          router: router,
-          navigator: navigator,
-          paymentData: data,
-        );
-      });
+        }),
+      );
     }
 
     void runAcceptWaitlistOfferAction(BuildContext context) {
       final router = GoRouter.maybeOf(context);
       final navigator = Navigator.of(context, rootNavigator: true);
-      EventBookingController.acceptWaitlistOfferMutation.run(ref, (tx) async {
-        final data = await tx
-            .get(eventBookingControllerProvider.notifier)
-            .acceptWaitlistOffer(
-              event: event,
-              user: userProfile,
-              inviteCode: inviteCode,
-              inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
-            );
-        handleBookingCompletion(
-          router: router,
-          navigator: navigator,
-          paymentData: data,
-        );
-      });
+      EventBookingController.acceptWaitlistOfferMutation.run(
+        ref,
+        (tx) => staleViewer(tx, () async {
+          final data = await tx
+              .get(eventBookingControllerProvider.notifier)
+              .acceptWaitlistOffer(
+                event: event,
+                user: userProfile,
+                inviteCode: inviteCode,
+                inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
+              );
+          handleBookingCompletion(
+            router: router,
+            navigator: navigator,
+            paymentData: data,
+          );
+        }),
+      );
     }
 
     void runBookingDockAction(
@@ -368,34 +372,43 @@ class EventDetailDock extends ConsumerWidget {
           final booking = participation;
           EventBookingController.cancelMutation.run(
             ref,
-            (tx) async => booking != null && isOrganizerBooking(booking)
-                // Refunded from the organizer's account at the current quote.
-                ? tx
-                      .get(organizerEventCheckoutControllerProvider.notifier)
-                      .cancel(event: event, participation: booking)
-                : tx
-                      .get(eventBookingControllerProvider.notifier)
-                      .cancelBooking(event: event),
+            (tx) => staleViewer(
+              tx,
+              () async => booking != null && isOrganizerBooking(booking)
+                  // Refunded from the organizer's account at the current quote.
+                  ? tx
+                        .get(organizerEventCheckoutControllerProvider.notifier)
+                        .cancel(event: event, participation: booking)
+                  : tx
+                        .get(eventBookingControllerProvider.notifier)
+                        .cancelBooking(event: event),
+            ),
           );
           return;
         case EventDetailBookingDockAction.joinWaitlist:
           EventBookingController.joinWaitlistMutation.run(
             ref,
-            (tx) async => tx
-                .get(eventBookingControllerProvider.notifier)
-                .joinWaitlist(
-                  event: event,
-                  inviteCode: inviteCode,
-                  inviteLinkId: inviteLinkId,
-                ),
+            (tx) => staleViewer(
+              tx,
+              () => tx
+                  .get(eventBookingControllerProvider.notifier)
+                  .joinWaitlist(
+                    event: event,
+                    inviteCode: inviteCode,
+                    inviteLinkId: inviteLinkId,
+                  ),
+            ),
           );
           return;
         case EventDetailBookingDockAction.leaveWaitlist:
           EventBookingController.leaveWaitlistMutation.run(
             ref,
-            (tx) async => tx
-                .get(eventBookingControllerProvider.notifier)
-                .leaveWaitlist(event: event),
+            (tx) => staleViewer(
+              tx,
+              () => tx
+                  .get(eventBookingControllerProvider.notifier)
+                  .leaveWaitlist(event: event),
+            ),
           );
           return;
         case EventDetailBookingDockAction.acceptWaitlistOffer:
@@ -404,9 +417,12 @@ class EventDetailDock extends ConsumerWidget {
         case EventDetailBookingDockAction.declineWaitlistOffer:
           EventBookingController.declineWaitlistOfferMutation.run(
             ref,
-            (tx) async => tx
-                .get(eventBookingControllerProvider.notifier)
-                .declineWaitlistOffer(event: event),
+            (tx) => staleViewer(
+              tx,
+              () => tx
+                  .get(eventBookingControllerProvider.notifier)
+                  .declineWaitlistOffer(event: event),
+            ),
           );
           return;
       }
