@@ -1703,6 +1703,49 @@
       "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
     },
     {
+      "id": "shared_site_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_detail_canonical",
+        "help",
+        "home",
+        "host",
+        "host_apply",
+        "not_found",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "privacy",
+        "terms",
+        "visitor_discovery"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/SiteHeader.tsx",
+      "exportName": "SiteHeader",
+      "comparedWith": [
+        "catch.step_header",
+        "catch.top_bar",
+        "catch.workspace_header"
+      ],
+      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header. Not a workspace pane header: site chrome above the page, not a pane title row. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today.",
+      "css": [
+        "website/src/styles/site-footer.css",
+        "website/src/styles/site-shell.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "light",
+          "dark",
+          "menu-open",
+          "scrolled"
+        ]
+      },
+      "notes": "Shared website component; Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header."
+    },
+    {
       "id": "shared_plain_button",
       "kind": "supporting-component",
       "routeIds": [

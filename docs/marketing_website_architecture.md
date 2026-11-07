@@ -138,7 +138,8 @@ links and the operator line; only the claim page records footer clicks. Import
 both from `shared/site`; `features/organizers/sections/PublicPageChrome.tsx`
 is a deprecated re-export kept until its last caller moves. Pages not yet
 rebuilt keep `PublicSiteFooter`; `SiteFooter` is the legacy footer's
-presentation. The legacy `SiteHeader` is deleted.
+presentation. The legacy `SiteHeader` renders nowhere and is kept only until
+its registry record and copy-allowlist entries retire.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
