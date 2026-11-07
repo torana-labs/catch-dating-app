@@ -57,7 +57,7 @@ final class CreateOrganizerControllerProvider
 }
 
 String _$createOrganizerControllerHash() =>
-    r'71f01f2f761261a98cd2622e8893e50931d3335e';
+    r'076a9a2a5c4ada63d698b13bb9efcb974addc439';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
