@@ -20,6 +20,8 @@ class CatchTabBarIdentity extends StatelessWidget {
     super.key,
     required this.name,
     this.photoUrl,
+    this.initials,
+    this.color,
     this.note,
     this.switcher = false,
     this.onTap,
@@ -27,6 +29,13 @@ class CatchTabBarIdentity extends StatelessWidget {
 
   final String name;
   final String? photoUrl;
+
+  /// Overrides the initials taken from [name]: "LL".
+  final String? initials;
+
+  /// The palette fill behind the initials, as the system Avatar draws them;
+  /// null keeps the quiet person initials.
+  final CatchAvatarColor? color;
 
   /// A muted line under the name: "Switch organiser", "Settings".
   final String? note;
@@ -39,11 +48,20 @@ class CatchTabBarIdentity extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < GeneratedCatchLayoutTokens.rail;
-      final avatar = CatchAvatar(
-        size: GeneratedCatchSizeTokens.avatarSm,
-        name: name,
-        imageUrl: photoUrl,
-      );
+      final avatar = color == null
+          ? CatchAvatar(
+              size: GeneratedCatchSizeTokens.avatarSm,
+              name: name,
+              imageUrl: photoUrl,
+              initials: initials,
+            )
+          : CatchAvatar.system(
+              size: CatchAvatarSize.sm,
+              name: name,
+              imageUrl: photoUrl,
+              initials: initials,
+              color: color,
+            );
       final note = this.note;
       final tile = InkWell(
         onTap: onTap,
