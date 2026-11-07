@@ -62,6 +62,9 @@ describe("InstantClaimPanel", () => {
     expect(screen.getByText("account form")).toBeTruthy();
     expect(accountForm).toHaveBeenCalledWith(account, {askBirthDate: false});
     expect(firebase.getOrganizerClaimVerificationOptions).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", {level: 1, name: `Is ${listing.name} yours?`})).toBeTruthy();
+    expect(screen.getByText("Sign in with your phone")).toBeTruthy();
+    expect(screen.getByText("Not claimed yet")).toBeTruthy();
   });
 
   it("shows the Instagram code and follows the attempt to verified", async () => {
@@ -73,18 +76,21 @@ describe("InstantClaimPanel", () => {
     firebase.watchOrganizerClaimAttempt.mockImplementation(async (_id, onValue) => {push = onValue; return vi.fn();});
     renderSection();
 
-    expect(await screen.findByText(`Send a code we show you from @carterroadrunners to @${brand.social.instagramHandle}`)).toBeTruthy();
+    expect(await screen.findByText(`Send a code from @carterroadrunners to @${brand.social.instagramHandle}`)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Show my code"}));
     expect(await screen.findByText("482 173")).toBeTruthy();
     expect(firebase.startOrganizerClaimVerification).toHaveBeenCalledWith({organizerId: listing.id, method: "instagramMessage"});
-    expect(screen.getByText("1. Open Instagram as @carterroadrunners.")).toBeTruthy();
+    expect(screen.getByText("Open Instagram as @carterroadrunners.")).toBeTruthy();
+    expect(screen.getByText("Waiting for your message…")).toBeTruthy();
+    expect(screen.getByRole("heading", {level: 1, name: "Send us this code"})).toBeTruthy();
     expect(screen.getByRole("link", {name: "Open Instagram"}).getAttribute("href")).toBe(`https://ig.me/m/${brand.social.instagramHandle}`);
 
     await vi.waitFor(() => expect(firebase.watchOrganizerClaimAttempt).toHaveBeenCalled());
     act(() => push({status: "awaitingProof", expiresAtMillis: Date.parse(inAnHour), rejection: "wrongSender"}));
     expect(screen.getByText("That message came from a different Instagram account. Send the code from @carterroadrunners.")).toBeTruthy();
     act(() => push({status: "verified", expiresAtMillis: Date.parse(inAnHour), rejection: null}));
-    expect(await screen.findByText("It’s yours.")).toBeTruthy();
+    expect(await screen.findByRole("heading", {level: 1, name: "It’s yours, Asha."})).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Open your page"}).getAttribute("href")).toBe(listing.path);
   });
 
   it("checks the Luma calendar and says when the code is not there yet", async () => {
@@ -102,7 +108,7 @@ describe("InstantClaimPanel", () => {
     fireEvent.click(screen.getByRole("button", {name: "Check my Luma page"}));
     expect(await screen.findByText(/couldn’t find the code on your Luma calendar/u)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Check my Luma page"}));
-    expect(await screen.findByText("It’s yours.")).toBeTruthy();
+    expect(await screen.findByRole("heading", {level: 1, name: "It’s yours, Asha."})).toBeTruthy();
     expect(firebase.confirmOrganizerClaimVerification).toHaveBeenCalledWith({attemptId: "a2"});
   });
 
@@ -118,14 +124,16 @@ describe("InstantClaimPanel", () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, false));
     firebase.requestOrganizerClaim.mockResolvedValue({requestId: "r1"});
     renderSection();
-    fireEvent.click(await screen.findByRole("button", {name: "Ask for a review instead"}));
+    fireEvent.click(await screen.findByRole("button", {name: "I can’t use either. Ask for a review"}));
     fireEvent.click(screen.getByRole("button", {name: "Ask for a review"}));
     expect(await screen.findByText("Add at least one link that shows the page is yours.")).toBeTruthy();
     expect(firebase.requestOrganizerClaim).not.toHaveBeenCalled();
 
     fireEvent.change(screen.getByLabelText("Links that show it’s yours"), {target: {value: "carterroadrunners.in"}});
     fireEvent.click(screen.getByRole("button", {name: "Ask for a review"}));
-    expect(await screen.findByText("We’ll check it.")).toBeTruthy();
+    expect(await screen.findByRole("heading", {level: 1, name: "Thanks, we’ve got it."})).toBeTruthy();
+    expect(screen.getByText("We’ll check it")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Use a code instead"}).getAttribute("href")).toBe(`/claim/${listing.slug}/`);
     expect(firebase.requestOrganizerClaim).toHaveBeenCalledWith({organizerId: listing.id, requesterName: "Asha Rao",
       requesterRole: "owner", businessEmail: null, businessPhone: "+919800000000",
       proofUrls: ["https://carterroadrunners.in"], message: null});
