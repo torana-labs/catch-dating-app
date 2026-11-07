@@ -183,7 +183,7 @@ class _HostResponseOfferScreenState
   Widget build(BuildContext context) {
     if (widget.responseId == null && widget.queryController == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (_, _) => CatchTopBar.route(
+        topBarBuilder: (_, _) => CatchLegacyTopBar.route(
           title: context.l10n.hostResponseOfferEvent,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -218,7 +218,7 @@ class _HostResponseOfferScreenState
         ? CallableHostEventOfferGateway(ref.read(firebaseFunctionsProvider))
         : null;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostResponseOfferEvent,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

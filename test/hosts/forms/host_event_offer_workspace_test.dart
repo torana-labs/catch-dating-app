@@ -97,7 +97,7 @@ void main() {
     expect(find.text(preview), findsNothing);
     await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
     await pumpUntilFound(tester, find.text(preview));
-    final dock = find.byType(CatchDock);
+    final dock = find.byType(CatchLegacyDock);
     expect(dock, findsOneWidget);
     expect(tester.getBottomLeft(dock).dy, greaterThan(500));
     expect(
@@ -397,7 +397,7 @@ void main() {
               now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
               layoutBuilder: (body, action) => CatchRouteScaffold(
                 topBarBuilder: (context, scrolledUnder) =>
-                    const CatchTopBar.route(
+                    const CatchLegacyTopBar.route(
                       title: 'Offer an event',
                       navigation: CatchTopBarNavigation(
                         mode: CatchTopBarNavigationMode.back,
