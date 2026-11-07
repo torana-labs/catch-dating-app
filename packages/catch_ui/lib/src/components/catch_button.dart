@@ -561,6 +561,16 @@ class _CatchButtonState extends State<CatchButton> {
         ? CatchButtonTokens.hoverFilledAlpha
         : CatchButtonTokens.hoverOutlineAlpha;
 
+    final contentRow = CatchButtonContentRow(
+      label: widget.label,
+      color: palette.foreground,
+      leading: widget.leading,
+      gap: CatchSpacing.micro6,
+      fullWidth: widget.fullWidth,
+      allowMultiline: !widget._selection,
+      textStyle: spec.textStyle(context),
+    );
+
     final buttonContent = Stack(
       alignment: Alignment.center,
       children: [
@@ -581,16 +591,24 @@ class _CatchButtonState extends State<CatchButton> {
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
             child: widget.isLoading
-                ? CatchLoadingIndicator.dots(color: palette.foreground)
-                : CatchButtonContentRow(
-                    label: widget.label,
-                    color: palette.foreground,
-                    leading: widget.leading,
-                    gap: CatchSpacing.micro6,
-                    fullWidth: widget.fullWidth,
-                    allowMultiline: !widget._selection,
-                    textStyle: spec.textStyle(context),
-                  ),
+                // The label stays laid out, unseen, so the button keeps the
+                // width it had while the spinner is drawn inside it.
+                ? Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ExcludeSemantics(
+                        child: Visibility(
+                          visible: false,
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          maintainState: true,
+                          child: contentRow,
+                        ),
+                      ),
+                      CatchLoadingIndicator.dots(color: palette.foreground),
+                    ],
+                  )
+                : contentRow,
           ),
         ),
       ],
