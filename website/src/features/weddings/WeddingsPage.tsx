@@ -1,33 +1,28 @@
-import {CatchButton, CatchRoot} from "@catch/web-ui";
+import {CatchButton, CatchRoot, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {weddingsCopy as copy} from "@content/weddings";
 import {PublicSiteHeader, WebsitePageMain} from "../../shared/site";
-import {Follow} from "./sections/weddingsFollowSections";
-import {Foot, Hero, MessagesAndFamily, Pilot, Pricing, Problem, Questions, Team} from "./sections/weddingsLandingSections";
-import {useWeddingsLandingController, type WeddingsLandingController} from "./useWeddingsController";
+import {WeddingsBands} from "./sections/weddingsBands";
+import {useWeddingsLandingController} from "./useWeddingsController";
 
-/** The landing's bands in the board's order, for the page and its stories. */
-export function WeddingsBands({landing}: {landing: WeddingsLandingController}) {
+/** The foot band (ink): the product name across from what it is. */
+function Foot() {
   return (
-    <>
-      <Hero />
-      <Problem />
-      <Follow landing={landing} />
-      <Team />
-      <MessagesAndFamily />
-      <Pricing />
-      <Pilot landing={landing} />
-      <Questions />
-    </>
+    <CatchStack as="footer" gap={0}>
+      <CatchSurface block="band" color="ink">
+        <CatchStack align="end" direction="row" gap={24} justify="between" wrap>
+          <CatchText variant="display-section">{copy.foot.title}</CatchText>
+          <CatchText tone="secondary" variant="body-small">{copy.foot.body}</CatchText>
+        </CatchStack>
+      </CatchSurface>
+    </CatchStack>
   );
 }
 
 /**
  * Catch for weddings (/weddings/), band for band as the RbWebWeddings board on
  * the white ground in the nights-out format: the site top bar naming the
- * product, the running-order hero, why planners switch, one wedding followed
- * through six chapters, the team, messages and the family, pricing, the pilot
- * with the step-1 card, questions and the foot band. Every example is
- * illustrative and runs nothing.
+ * product and its sections, the board's bands and the foot band. Every
+ * example is illustrative and runs nothing.
  */
 export function WeddingsPage() {
   const landing = useWeddingsLandingController();

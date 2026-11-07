@@ -5,11 +5,15 @@ import {
   CatchField,
   CatchIcon,
   CatchIndexRow,
+  CatchPageBody,
+  CatchPaneLayout,
+  CatchRoot,
   CatchSection,
   CatchStack,
   CatchStepper,
   CatchSurface,
   CatchText,
+  CatchTopBar,
 } from "@catch/web-ui";
 import {interpolateContent as fill} from "@content/interpolate";
 import {weddingsCopy} from "@content/weddings";
@@ -97,7 +101,7 @@ function Counter({title, subtitle, unit, min, max, value, onChanged}: {
 }
 
 /** Step 2 (RbWebWeddingsApply): the shape of the weekend, then Send. */
-export function StepTwo({application}: {application: WeddingsApplicationController}) {
+function StepTwo({application}: {application: WeddingsApplicationController}) {
   const {stepTwo, updateStepTwo} = application;
   return (
     <CatchStack aria-labelledby="weddings-step-two-title" as="section" gap={20}>
@@ -130,18 +134,35 @@ export function StepTwo({application}: {application: WeddingsApplicationControll
 }
 
 /** After Send: the thanks tile and what happens next. */
-export function Sent({name}: {name: string}) {
+function Sent({name}: {name: string}) {
   const sent = weddingsCopy.sent;
   return (
-    <CatchStack aria-labelledby="weddings-sent-title" as="section" gap={20}>
+    <CatchStack aria-labelledby="weddings-sent-title" aria-live="polite" as="section" gap={20}>
       <CatchSurface block="tile">
         <CatchStack align="start"><CatchBadge icon={<CatchIcon name="check" size={16} />} label={sent.badge} tone="success" /></CatchStack>
-        <CatchText as="h1" id="weddings-sent-title" role="status" variant="display-title">{fill(sent.title, {name: firstName(name)})}</CatchText>
+        <CatchText as="h1" id="weddings-sent-title" variant="display-title">{fill(sent.title, {name: firstName(name)})}</CatchText>
         <CatchText variant="body">{sent.body}</CatchText>
       </CatchSurface>
       <CatchSection title={sent.nextTitle}>
         {sent.next.map((step, index) => <CatchIndexRow density="compact" key={step.title} rank={index + 1} subtitle={step.body} title={step.title} wrap />)}
       </CatchSection>
     </CatchStack>
+  );
+}
+
+/** The application's current stage: step 1 if the landing did not hand it over, step 2, or sent. */
+export function WeddingsApplicationView({application}: {application: WeddingsApplicationController}) {
+  return (
+    <CatchRoot format="nightsOut" theme="day">
+      <CatchTopBar homeHref="/weddings/" title={weddingsCopy.header.title} variant="site" />
+      <CatchPageBody as="main" gutter={false} pb="s0" pt="s4">
+        <CatchPaneLayout
+          main={application.stage === "sent" ? <Sent name={application.stepOne.draft.name} /> :
+            application.stage === "stepTwo" ? <StepTwo application={application} /> :
+            <StepOneCard idPrefix="weddings-apply" onContinue={application.continueToStepTwo} stepOne={application.stepOne} />}
+          pattern="reading"
+        />
+      </CatchPageBody>
+    </CatchRoot>
   );
 }
