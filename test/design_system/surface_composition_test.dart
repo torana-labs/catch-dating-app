@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -11,8 +10,6 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_hel
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -58,38 +55,6 @@ void main() {
       await pumpUntilFound(tester, ready ?? find.byType(CatchLoadingIndicator));
     }
   }
-
-  testWidgets(
-    'Today recommendation uses the action module and preserves intent',
-    (tester) async {
-      final actions = <HostTodaySuggestedAction>[];
-      await mount(
-        tester,
-        HostTodayPersonalizationSection(
-          state: HostTodayPersonalizationState(
-            showOrientation: false,
-            focus: HostTodayFocus.rehearsal,
-            primaryAction: HostTodaySuggestedAction.startDressRehearsal,
-            roadmap: const [],
-          ),
-          onChangeFocus: () {},
-          onAction: actions.add,
-        ),
-      );
-      final button = find.byKey(const ValueKey('host-today-suggested-action'));
-      expect(tester.widget<CatchButton>(button).fullWidth, isTrue);
-      final surface = tester.widget<CatchLegacySurface>(
-        find
-            .ancestor(of: button, matching: find.byType(CatchLegacySurface))
-            .first,
-      );
-      expect(surface.emphasis, CatchSurfaceEmphasis.flat);
-      expect(surface.tone, CatchSurfaceTone.primarySoft);
-      await tester.tap(button);
-      expect(actions, [HostTodaySuggestedAction.startDressRehearsal]);
-      expect(tester.takeException(), isNull);
-    },
-  );
 
   testWidgets('publication keeps channel facts above explanation and action', (
     tester,

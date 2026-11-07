@@ -249,8 +249,6 @@ import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
-import 'package:widgetbook_workspace/hosts/host_today_personalization_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_today_personalization_use_cases;
 import 'package:widgetbook_workspace/hosts/host_work_use_cases.dart'
     as _widgetbook_workspace_hosts_host_work_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
@@ -9858,55 +9856,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
-        name: 'Host Today',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'HostTodayFocusPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Choose a focus',
-                builder:
-                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
-                        .hostTodayFocusChoices,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostTodayFocusScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Covered by focus choice',
-                builder:
-                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
-                        .hostTodayFocusScreenPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostTodayPersonalizationSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Quiet day roadmap',
-                builder:
-                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
-                        .hostTodayQuietRoadmap,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostTodayPersonalizedLayout',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Covered by quiet roadmap',
-                builder:
-                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
-                        .hostTodayPersonalizedLayoutPreview,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
         name: 'Host create club',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -10612,86 +10561,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_team_identity
                             .hostTeamRouteStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayBodyStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventMetadataRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventMetadataStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventMetricTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Operational metric states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventMetricStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Operational spotlight states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventSpotlightStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayHeaderStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayLoadedRoute',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayLoadedRouteStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayOrganizerEmptyState',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayOrganizerEmptyStateStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayOverview',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Overview route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayOverviewStates,
                   ),
                 ],
               ),
@@ -11757,16 +11626,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_unified_event_setup_use_cases
                         .hostPrivateEventSetupInventorySectionPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostTodayScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route states',
-                builder: _widgetbook_workspace_hosts_operations_home_routes
-                    .hostTodayScreenStates,
               ),
             ],
           ),
@@ -13001,17 +12860,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_workflow_components
                             .hostSaveAudienceSheetStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEmptyState',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Quiet day',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_workflow_components
-                            .hostTodayEmptyStateStates,
                   ),
                 ],
               ),

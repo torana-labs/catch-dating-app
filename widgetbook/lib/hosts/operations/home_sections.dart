@@ -2,11 +2,6 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
-import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -16,7 +11,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
-import 'shell_fixture.dart';
 
 @widgetbook.UseCase(
   name: 'Covered by host event section states',
@@ -183,20 +177,6 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
 
 Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final organizer = HostOperationsFixtures.primaryOrganizer;
-  final event = HostOperationsFixtures.upcomingEvent;
-  final now = event.startTime.subtract(const Duration(hours: 2));
-  final state = buildHostTodayState(
-    CatchAsyncState<HostTodayFeedData>.data(
-      HostTodayFeedData(
-        activeEvents: [event, HostOperationsFixtures.privateEvent],
-        pastEvents: const [],
-        attentionItems: widgetbookTodayAttentionItems([event], now),
-      ),
-    ),
-    now: now,
-    l10n: context.l10n,
-  );
-  final tasks = state.attentionItems;
   return switch (focus) {
     'CatchEmptyState' => CatchEmptyState(
       title: 'No clubs yet',
@@ -216,25 +196,6 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       ),
       size: CatchLayout.appShellNavigationIdentityExtent,
       selected: true,
-    ),
-    'HostTodayOverview' => HostTodayOverview(
-      state: state,
-      now: now,
-      onRetry: () {},
-      onOpenEvent: (_) {},
-      onOpenAttention: (_) {},
-      onViewEvents: () {},
-      onStartRehearsal: () {},
-    ),
-    'HostTodayEventSection' => HostTodayEventSection(
-      event: event,
-      now: HostOperationsFixtures.now,
-      taskCount: tasks.length,
-      onPressed: () {},
-    ),
-    'HostTodayEventMetricTile' => const HostTodayEventMetricTile(
-      value: '10',
-      label: 'Going',
     ),
     _ => Text('No exact preview registered for $focus.'),
   };

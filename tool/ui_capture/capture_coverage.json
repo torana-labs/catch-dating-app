@@ -693,18 +693,20 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_home_dashboard"
+        "host_home_dashboard",
+        "host_today_phone",
+        "host_today_medium",
+        "host_today_tablet",
+        "host_today_desktop"
       ],
-      "reason": "The first-class Today branch has a deterministic full-shell capture of its cross-event operational spotlight and later schedule."
+      "reason": "The first-class Today branch has deterministic full-shell captures of tonight, what needs the host, the week and the last thirty days at phone, medium, tablet and desktop widths, in both themes."
     },
     {
       "routeId": "hostTodayFocusScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P1",
-      "captureIds": [
-        "host_today_focus"
-      ],
-      "reason": "The real Focus screen uses a deterministic authorized organizer, proven quiet operational feed and unanswered preference. The standard harness captures both themes and supports text-scale overrides; interaction tests cover save and navigation."
+      "canonicalRouteId": "hostTodayScreen",
+      "reason": "Today has no focus page; the old path redirects to Today."
     },
     {
       "routeId": "hostEventsScreen",

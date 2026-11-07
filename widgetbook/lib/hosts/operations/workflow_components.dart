@@ -6,7 +6,6 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer_sheet.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -58,19 +57,6 @@ Widget createEventConsequenceSectionStates(BuildContext context) =>
             CatchFormReviewSummaryItem(label: 'Price', value: 'Free'),
             CatchFormReviewSummaryItem(label: 'Approval', value: 'Required'),
           ],
-        ),
-      ),
-    ]);
-
-@widgetbook.UseCase(name: 'Quiet day', type: HostTodayEmptyState, path: _path)
-Widget hostTodayEmptyStateStates(BuildContext context) =>
-    widgetbookHostComponentStates('HostTodayEmptyState', [
-      (
-        'nothing scheduled',
-        HostTodayEmptyState(
-          onCreateEvent: () {},
-          onViewEvents: () {},
-          onStartRehearsal: () {},
         ),
       ),
     ]);
