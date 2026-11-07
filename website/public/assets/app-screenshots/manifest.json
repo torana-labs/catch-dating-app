@@ -130,9 +130,7 @@
       "alt": "Catch host live console with roster and check-in controls",
       "caption": "Fictional app preview. Confirm guest arrivals and follow the host-led run of show.",
       "walkthroughStep": "Live",
-      "pages": [
-        "/host/"
-      ]
+      "pages": []
     },
     {
       "id": "host-post-event-report",
@@ -171,9 +169,7 @@
       "alt": "Saturday Trivia Social check-in page open in Safari at catchdates.com, asking for the mobile number used for the booking",
       "caption": "Fictional app preview. Guests check in from their phone's browser with the number they booked with. Nothing to download.",
       "walkthroughStep": "Check in",
-      "pages": [
-        "/host/"
-      ]
+      "pages": []
     }
   ]
 }

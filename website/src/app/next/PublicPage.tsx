@@ -8,7 +8,6 @@ import {useLocation, useNavigate} from "react-router";
 import {PageShell} from "../../shared/site";
 import {isLegalPageKey, pageClassFor, type PageKey} from "../pageMeta";
 import {useHashScroll, useMarketingAnalytics} from "../usePageLifecycle";
-import {marketingCaptures as captures} from "../marketingCaptures";
 import {usePublicHostListings} from "../../features/organizers/usePublicEventListingsController";
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../../features/events/eventDetailModel";
@@ -46,7 +45,7 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   if (page === "home") content = home ? <Home catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
-    ? <Apply /> : <Host captures={captures} />;
+    ? <Apply /> : <Host />;
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",

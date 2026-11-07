@@ -26,7 +26,6 @@ import {
   useRevealAnimations,
 } from "./usePageLifecycle";
 import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
-import {marketingCaptures as captures} from "./marketingCaptures";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
 import {publishedLegalContent} from "../content/legal";
 import {assistanceCredential} from "../features/eventAssistance/eventAssistanceModel";
@@ -219,7 +218,7 @@ function CanonicalMarketingRouteShell() {
           />
           <Route
             path={marketingRoutePaths.host}
-            element={<HostPage captures={captures} />}
+            element={<HostPage />}
           />
           <Route
             path={marketingRoutePaths.organizer_search}

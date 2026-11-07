@@ -1,7 +1,10 @@
 import {expect, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {CatchRoot, CatchSurface} from "@catch/web-ui";
+import type {ReactNode} from "react";
+import {hostLandingCopy as copy} from "@content/hostLanding";
 import {HostApplicationFlow} from "../features/host/application/HostApplicationFlow";
-import {HostLanding, HostLandingSection} from "../shared/ui/primitives/hostLanding";
+import {HostPage} from "../features/host/HostPage";
 
 const meta = {
   title: "Marketing Website/Host/Sections",
@@ -30,11 +33,11 @@ export const HostApplicationFlowInitial: Story = {
     },
   },
   render: () => (
-    <HostLanding>
-      <HostLandingSection variant="apply" aria-label="Host application">
+    <CatchRoot theme="day">
+      <CatchSurface aria-label="Host application" as="section" block="band">
         <HostApplicationFlow />
-      </HostLandingSection>
-    </HostLanding>
+      </CatchSurface>
+    </CatchRoot>
   ),
 };
 
@@ -98,3 +101,62 @@ async function exerciseRailContrast(canvasElement: HTMLElement, selector: string
   rail.scrollTo({...railScroll, behavior: "instant"});
   window.scrollTo({...pageScroll, behavior: "instant"});
 }
+
+/** The host landing at the board's widths. */
+function Width({children, width}: {children: ReactNode; width: 390 | 1280}) {
+  return <div style={{margin: "0 auto", width}}>{children}</div>;
+}
+
+/** The whole landing at 1280, as the RbWebHostV2 board. */
+export const HostLanding1280: Story = {
+  name: "Host landing · 1280",
+  parameters: {layout: "fullscreen"},
+  render: () => <Width width={1280}><HostPage /></Width>,
+};
+
+/** The whole landing on a phone: the rows stack and the header's links move into its menu. */
+export const HostLanding390: Story = {
+  name: "Host landing · 390 (phone)",
+  parameters: {layout: "fullscreen"},
+  render: () => <Width width={390}><HostPage /></Width>,
+};
+
+/** A later chapter of the night: earlier steps muted, the reveal live, the phone following. */
+export const NightChapter: Story = {
+  name: "Host landing · night chapter",
+  parameters: {layout: "fullscreen"},
+  render: () => <Width width={1280}><HostPage /></Width>,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", {name: /The reveal/}));
+    await expect(canvas.getByText("04 / 05 · 8:24 PM")).toBeInTheDocument();
+  },
+};
+
+/** Pricing at the cap, and the first layer, where Catch runs only the night. */
+export const PricingCapAndLayerOne: Story = {
+  name: "Host landing · pricing cap and layer one",
+  parameters: {layout: "fullscreen"},
+  render: () => <Width width={1280}><HostPage /></Width>,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("tab", {name: copy.layers.options[0].label}));
+    const slider = canvas.getByRole("slider", {name: copy.pricing.sales}) as HTMLInputElement;
+    slider.focus();
+    await userEvent.keyboard("{End}");
+    await expect(canvas.getByText(copy.pricing.capped)).toBeInTheDocument();
+  },
+};
+
+/** The applicant board after a replay, and the application card with a kind chosen. */
+export const ApplicantReplayAndApplyCard: Story = {
+  name: "Host landing · applicant replay and apply card",
+  parameters: {layout: "fullscreen"},
+  render: () => <Width width={1280}><HostPage /></Width>,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", {name: copy.pipeline.replay}));
+    await userEvent.click(canvas.getByRole("radio", {name: "Pub crawl"}));
+    await expect(canvas.getByRole("link", {name: copy.apply.card.continue})).toHaveAttribute("href", "/host/apply/");
+  },
+};

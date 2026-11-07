@@ -111,7 +111,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Restored selectable adoption circles, restrained participation and privacy explanations; global navigation is shared with Home and Explore.",
+      "notes": "The host landing, band for band as the RbWebHostV2 board on the system: hero, kinds of night, a night on Catch (chapters), the iPad, the applicant board (replay), guests, growth links, layers, pricing (slider), FAQ and the step-1 application card, whose Continue opens /host/apply/. The retired-route anchors sit on the bands that carry their content. The site header names the product and its sections.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -120,38 +120,26 @@
           "mobile"
         ],
         "states": [
-          "default",
-          "run-club",
-          "dinner",
-          "games",
-          "pickleball",
-          "pub-crawl",
-          "pilot-offer",
-          "application-link",
-          "existing-tools",
-          "adoption-tools",
-          "adoption-booking",
-          "adoption-network",
-          "participation-privacy"
-        ],
+        "default",
+        "night-chapter",
+        "applicant-replay",
+        "layer-one",
+        "pricing-cap",
+        "apply-card",
+        "phone"
+      ],
         "stateCoverage": {
           "storybook": [
-            "default"
-          ],
+          "default"
+        ],
           "manual": [
-            "run-club",
-            "dinner",
-            "games",
-            "pickleball",
-            "pub-crawl",
-            "pilot-offer",
-            "application-link",
-            "existing-tools",
-            "adoption-tools",
-            "adoption-booking",
-            "adoption-network",
-            "participation-privacy"
-          ]
+          "night-chapter",
+          "applicant-replay",
+          "layer-one",
+          "pricing-cap",
+          "apply-card",
+          "phone"
+        ]
         }
       }
     },
