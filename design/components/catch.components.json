@@ -331,8 +331,11 @@
               "warning",
               "danger",
               "gold",
-              "affinity"
-            ]
+              "affinity",
+              "info",
+              "social"
+            ],
+            "notes": "info is indigo and social pink, as in the system."
           },
           {
             "name": "size",
@@ -363,9 +366,10 @@
             "tsType": "CatchBadgeEmphasis",
             "values": [
               "soft",
-              "strong"
+              "strong",
+              "solid"
             ],
-            "notes": "Ticket-status constructor only; preserves its soft pigment and strong dark recipes."
+            "notes": "The default constructor: soft is the pale tint, solid (or strong) the tone at full strength, ink for neutral. CatchBadge.ticketStatus keeps its soft pigment and strong dark recipes."
           },
           {
             "name": "color",
@@ -383,6 +387,30 @@
             "dartType": "bool",
             "tsType": "boolean",
             "notes": "Optional recipe only: shows the field's validation feedback."
+          },
+          {
+            "name": "format",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFormat?",
+            "values": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ],
+            "notes": "The default constructor: fills the badge with the event colour; wins over tone.",
+            "tsType": "CatchFormat"
+          },
+          {
+            "name": "dot",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool",
+            "default": false,
+            "notes": "The default constructor: a leading dot in the label colour (Live, Connected).",
+            "tsType": "boolean"
           }
         ],
         "states": [
@@ -396,7 +424,11 @@
           "truncated",
           "readable-status",
           "ticket-status",
-          "optional-field"
+          "optional-field",
+          "system-tones",
+          "system-solid",
+          "system-format",
+          "system-dot"
         ],
         "slots": [],
         "tokens": [
@@ -430,7 +462,8 @@
         ],
         "goldens": [
           "badge_recipe_family@1.0",
-          "badge_recipe_family@2.0"
+          "badge_recipe_family@2.0",
+          "wave2_board_family"
         ],
         "members": [
           {
@@ -548,7 +581,8 @@
           "Use for short factual labels only; long prose belongs in supporting text.",
           "Use activity accent overrides only when the badge meaning is activity-scoped.",
           "Use the named solid, live, and on-dark constructors; those fixed recipes are not generic tone values.",
-          "CatchCountBadge owns numeric overlays, while CatchStatusRow owns quiet unboxed status."
+          "CatchCountBadge owns numeric overlays, while CatchStatusRow owns quiet unboxed status.",
+          "The default CatchBadge is the system Badge: tone (with info and social), emphasis soft or solid, a format that wins over tone, and a dot. CatchIndexRowBadge carries the same fields."
         ]
       },
       "governance": {
@@ -783,7 +817,7 @@
             "required": false,
             "dartType": "Widget?",
             "tsType": "ReactNode",
-            "notes": "Optional trailing media for the command recipe."
+            "notes": "The default constructor and CatchButton.command: an icon after the label (open external)."
           },
           {
             "name": "icon",
@@ -967,7 +1001,8 @@
           "text-danger",
           "text-disabled",
           "text-custom-color",
-          "text-custom-padding"
+          "text-custom-padding",
+          "trailing-icon"
         ],
         "slots": [
           {
@@ -1016,7 +1051,9 @@
           "CatchButtonMode",
           "CatchButtonStatus"
         ],
-        "goldens": [],
+        "goldens": [
+          "wave2_board_family"
+        ],
         "members": [
           {
             "id": "catch.button.label",
@@ -1209,7 +1246,9 @@
           "CatchChip.selectable",
           "CatchChip.choice",
           "CatchChip.activity",
-          "CatchChip.removable"
+          "CatchChip.removable",
+          "CatchChip.link",
+          "CatchChip.filter"
         ]
       },
       "react": {
@@ -1283,7 +1322,8 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
-            "tsType": "ReactNode"
+            "tsType": "ReactNode",
+            "notes": "Tag, selectable, removable, link, filter, and choice when it has no dot."
           },
           {
             "name": "onChanged",
@@ -1389,7 +1429,7 @@
               "courts",
               "nightsOut"
             ],
-            "notes": "CatchChip.choice: a format colour before the label."
+            "notes": "CatchChip.choice and CatchChip.tag: a format colour before the label."
           },
           {
             "name": "colourWhenSelected",
@@ -1409,7 +1449,15 @@
               "sm"
             ],
             "default": "md",
-            "notes": "CatchChip.choice: sm is the 32 px chip."
+            "notes": "CatchChip.choice, tag, link and filter: sm is the 32 px chip."
+          },
+          {
+            "name": "count",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "notes": "CatchChip.choice and CatchChip.link: a muted number after the label.",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -1430,7 +1478,11 @@
           "choice-disabled",
           "choice-dot",
           "choice-colour",
-          "choice-sm"
+          "choice-sm",
+          "choice-count",
+          "link",
+          "tag-sm-dot",
+          "filter"
         ],
         "slots": [
           {
@@ -1465,7 +1517,7 @@
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover"
         ],
-        "goldens": ["choice_board_family", "choice_board_family_other"],
+        "goldens": ["choice_board_family", "choice_board_family_other", "wave2_board_family"],
         "members": [],
         "accessibility": {
           "largeText": {
@@ -1488,7 +1540,8 @@
           "Selected choices use a solid fill, inverse ink, subtle selected shadow, and press-only scale. Selection state is always parent-owned.",
           "Use badges for compact status metadata, compact controls for floating actions, identity switchers for current-context menus, and progress cues for sequence state.",
           "Use OptionCard when each choice needs explanatory copy.",
-          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchChoiceInput.segmented when fixed terse choices fit, or CatchSelectionMenu.control when they do not."
+          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchChoiceInput.segmented when fixed terse choices fit, or CatchSelectionMenu.control when they do not.",
+          "CatchChip.link goes somewhere (a saved group, with its count); CatchChip.filter is a plain action chip with no selected state (Add a tag). The system toggling filter chip is CatchChip.choice with CatchChipMode.multiple."
         ]
       },
       "governance": {
@@ -2665,10 +2718,11 @@
               "success",
               "warning",
               "danger",
-              "event"
+              "event",
+              "neutral"
             ],
             "default": "status",
-            "notes": "CatchNotice.inline only: status is the system's info tone."
+            "notes": "CatchNotice.inline only: status is the system's info tone and neutral its grey tile."
           },
           {
             "name": "icon",
@@ -2676,6 +2730,14 @@
             "required": false,
             "dartType": "IconData?",
             "notes": "CatchNotice.inline only."
+          },
+          {
+            "name": "action",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchNoticeAction?",
+            "notes": "CatchNotice.inline only: a quiet small button under the copy (label, onPressed).",
+            "tsType": "CatchNoticeAction"
           }
         ],
         "states": [
@@ -2690,7 +2752,9 @@
           "arrival-swipe-to-dismiss",
           "arrival-reduced-motion",
           "inline-info",
-          "inline-success"
+          "inline-success",
+          "inline-neutral",
+          "inline-action"
         ],
         "slots": [],
         "tokens": [
@@ -2720,7 +2784,7 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.supporting"
         ],
-        "goldens": ["sheet_scan_result_board"],
+        "goldens": ["sheet_scan_result_board", "wave2_board_family"],
         "members": [
           {
             "id": "catch.notice.host",
@@ -3555,6 +3619,19 @@
             "dartType": "String?",
             "tsType": "string",
             "notes": "Input recipe: fixed text after the value, such as a unit, in the secondary ink."
+          },
+          {
+            "name": "counter",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFieldSupportRowMode",
+            "values": [
+              "whileFocused",
+              "always"
+            ],
+            "default": "whileFocused",
+            "notes": "CatchField.input: always keeps the length counter painted at rest.",
+            "tsType": "CatchFieldSupportRowMode"
           }
         ],
         "states": [
@@ -3626,7 +3703,8 @@
           "read-only",
           "navigable",
           "multiline",
-          "facts"
+          "facts",
+          "edit-counter-always"
         ],
         "slots": [
           {
@@ -5459,7 +5537,8 @@
             "type": "string",
             "required": false,
             "dartType": "String?",
-            "tsType": "string"
+            "tsType": "string",
+            "notes": "The unnamed CatchSection: a muted line over the title, as the system SectionHeader draws it."
           },
           {
             "name": "action",
@@ -5572,7 +5651,8 @@
           "horizontal-fractional",
           "horizontal-footer",
           "system-timeline",
-          "system-columns"
+          "system-columns",
+          "system-kicker"
         ],
         "slots": [
           {
@@ -5645,7 +5725,8 @@
         "goldens": [
           "section_system_family",
           "index_row_board_family",
-          "index_row_scores_expanded"
+          "index_row_scores_expanded",
+          "wave2_board_family"
         ],
         "members": [
           {
@@ -11903,7 +11984,21 @@
             "required": true,
             "dartType": "List<Widget>",
             "tsType": "ReactNode",
-            "notes": "Slivers recipe only; receives sliver content under one semantic geometry owner."
+            "notes": "CatchPageBody.slivers takes slivers; CatchPageBody.screen takes the sections straight in, in place of child, spaced by gap."
+          },
+          {
+            "name": "gap",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchPageBodyGap",
+            "values": [
+              "section",
+              "tight",
+              "none"
+            ],
+            "default": "section",
+            "notes": "CatchPageBody.screen with children: the system rhythm, section 28 on compact and 40 wider, tight 16, none 0.",
+            "tsType": "CatchPageBodyGap"
           }
         ],
         "states": [
@@ -11916,7 +12011,9 @@
           "sliver-insets",
           "standard-slivers",
           "full-bleed-slivers",
-          "responsive-sliver-width"
+          "responsive-sliver-width",
+          "screen-gap-section",
+          "screen-gap-tight"
         ],
         "slots": [
           {
@@ -12586,7 +12683,8 @@
           "Regular root bodies may not override the 16-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchSectionList.page when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding.",
-          "CatchPageBody default, formStep, screen, sliver and slivers are one body contract. The screen recipe delegates viewport filling to CatchScrollView; its typed variant explicitly retains or omits scrolling."
+          "CatchPageBody default, formStep, screen, sliver and slivers are one body contract. The screen recipe delegates viewport filling to CatchScrollView; its typed variant explicitly retains or omits scrolling.",
+          "CatchPageBody.screen is the system ScreenBody: put the sections straight in children and pick the rhythm with gap (section, tight, none); a single child keeps its own spacing."
         ]
       },
       "governance": {
@@ -13364,13 +13462,56 @@
             "required": false,
             "dartType": "String?",
             "tsType": "string"
+          },
+          {
+            "name": "aspect",
+            "type": "number",
+            "required": false,
+            "dartType": "double?",
+            "notes": "Width over height: 1, 4 / 3, 16 / 7.",
+            "tsType": "number"
+          },
+          {
+            "name": "corner",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchNetworkImageSize?",
+            "values": [
+              "none",
+              "sm",
+              "md",
+              "lg",
+              "xl"
+            ],
+            "notes": "The system radius; null leaves the clip to the caller.",
+            "tsType": "CatchNetworkImageSize"
+          },
+          {
+            "name": "placeholder",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchNetworkImageColor?",
+            "values": [
+              "tile",
+              "ink",
+              "indigo",
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ],
+            "notes": "The colour under the picture while it loads, when it fails and when the url is empty.",
+            "tsType": "CatchNetworkImageColor"
           }
         ],
         "states": [
           "bundled-asset",
           "fitted",
           "fallback",
-          "semantic-label"
+          "semantic-label",
+          "system-aspect-corner",
+          "system-placeholder"
         ],
         "slots": [],
         "tokens": [
@@ -13387,7 +13528,9 @@
           "CatchIcons.imageOutlined",
           "CatchIconSize.md"
         ],
-        "goldens": [],
+        "goldens": [
+          "wave2_board_family"
+        ],
         "members": [
           {
             "id": "catch.network_image.fallback",
@@ -13437,7 +13580,8 @@
         "notes": [
           "All remote images should route through this primitive for cache sizing and branded fallback behavior.",
           "Clipping, aspect ratio, and circular/rounded framing remain caller-owned layout decisions.",
-          "Missing hero imagery uses CatchImageFallbackSurface.hero; reuse its branded gradient instead of another fallback Widget."
+          "Missing hero imagery uses CatchImageFallbackSurface.hero; reuse its branded gradient instead of another fallback Widget.",
+          "The system Image is CatchNetworkImage with aspect, corner and placeholder; callers that pass none of them are unchanged."
         ]
       },
       "governance": {
@@ -16526,7 +16670,8 @@
           "CatchAvatar",
           "CatchAvatar.count",
           "CatchAvatar.veiled",
-          "CatchAvatar.monogram"
+          "CatchAvatar.monogram",
+          "CatchAvatar.system"
         ]
       },
       "react": {
@@ -16584,7 +16729,8 @@
             "type": "number",
             "required": true,
             "dartType": "double",
-            "tsType": "number"
+            "tsType": "number",
+            "notes": "A double on the other constructors; CatchAvatar.system takes CatchAvatarSize (xs 24, sm 28, md 40, lg 48, xl 64, xxl 104)."
           },
           {
             "name": "name",
@@ -16707,6 +16853,23 @@
               "magenta"
             ],
             "notes": "Required by CatchAvatar.monogram: initials on a palette ground (CAT-245), in its fill and ink; initials of 24px and up take the display voice (D19)."
+          },
+          {
+            "name": "color",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchAvatarColor?",
+            "values": [
+              "ink",
+              "indigo",
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ],
+            "notes": "CatchAvatar.system: the fill behind the initials; null picks one from the name, so a person keeps the same colour.",
+            "tsType": "CatchAvatarColor"
           }
         ],
         "states": [
@@ -16723,7 +16886,9 @@
           "veiled-dinner",
           "monogram",
           "monogram-display",
-          "status-checked-in"
+          "status-checked-in",
+          "system-sizes",
+          "system-colors"
         ],
         "slots": [],
         "tokens": [
@@ -16743,7 +16908,7 @@
           "CatchLayout.avatarStatusDotExtent",
           "CatchAvatarRow"
         ],
-        "goldens": ["index_row_board_family"],
+        "goldens": ["index_row_board_family", "wave2_board_family"],
         "members": [
           {
             "id": "catch.person_avatar.colors",
@@ -16872,7 +17037,8 @@
         "notes": [
           "Do not reintroduce ActivityAvatar as a separate contract; activity-context fallback is part of CatchAvatar.",
           "Avatar stacks are composition members of catch.person_avatar rather than a separate avatar family.",
-          "Use CatchAvatar.veiled for anonymous roster slots; it shares the same clipping and ring renderer as all other avatar recipes."
+          "Use CatchAvatar.veiled for anonymous roster slots; it shares the same clipping and ring renderer as all other avatar recipes.",
+          "CatchAvatar.system is the system Avatar: a photo or initials on a palette colour at the six system sizes, display initials from xl up. CatchAvatarColors stays for caller-resolved pigments."
         ]
       },
       "governance": {
@@ -19579,7 +19745,8 @@
             "name": "badge",
             "type": "object",
             "required": false,
-            "dartType": "CatchIndexRowBadge?"
+            "dartType": "CatchIndexRowBadge?",
+            "notes": "CatchIndexRowBadge: label, tone, format, icon, emphasis and dot, drawn by the default CatchBadge."
           },
           {
             "name": "body",
@@ -21837,7 +22004,6 @@
       "kind": "composite",
       "tier": "T2",
       "aliases": [
-        "PaneHeader",
         "QueueHeader",
         "WorkspaceTitle"
       ],
@@ -21983,7 +22149,8 @@
         "allowedChildren": [],
         "notes": [
           "Every queue and directory header is this record with data; no screen builds its own header row.",
-          "Flutter's CatchWorkspaceHeader measures the header inside CatchWorkspaceHeaderLayout; the title, views, filters and position props follow in the Flutter mirror."
+          "Flutter's CatchWorkspaceHeader measures the header inside CatchWorkspaceHeaderLayout; the title, views, filters and position props follow in the Flutter mirror.",
+          "CatchPaneHeader draws the system PaneHeader as data (title, kicker, count, note, back, trailing) inside a CatchWorkspaceHeader; views, filters and position follow."
         ]
       },
       "governance": {
@@ -24025,6 +24192,340 @@
           {"name": "defaultOpen", "tsType": "number[]", "required": false},
           {"name": "size", "tsType": "\"md\" | \"lg\"", "required": false}
         ]
+      }
+    },
+    {
+      "id": "catch.chat_bubble",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchChatBubble",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T3",
+      "summary": "One message in a chat: the viewer's own in ink at the end, someone else's in grey after their avatar, the host's in the event colour, or a centred system line, with the time on the last line and a sent mark.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ChatBubble",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ChatBubble",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchChatBubbleVariant",
+            "values": [
+              "mine",
+              "theirs",
+              "host",
+              "system"
+            ],
+            "default": "theirs",
+            "notes": "The system's sender."
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchChatBubbleStatus?",
+            "values": [
+              "sending",
+              "sent",
+              "failed",
+              "read"
+            ],
+            "notes": "A small mark under a mine bubble; failed is in the danger tone."
+          },
+          {
+            "name": "time",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Caller-formatted; it sits on the last line of the text when it fits."
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "The avatar of a theirs sender."
+          },
+          {
+            "name": "continued",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool",
+            "default": false,
+            "notes": "A follow-on message from the same sender: no avatar, closer to the one before."
+          },
+          {
+            "name": "format",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFormat",
+            "values": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ],
+            "default": "games",
+            "notes": "The colour of a host bubble."
+          }
+        ],
+        "states": [
+          "mine",
+          "theirs",
+          "host",
+          "system",
+          "status",
+          "continued"
+        ],
+        "slots": [
+          {
+            "name": "leading",
+            "kind": "optional-leading-widget"
+          }
+        ],
+        "tokens": [
+          "theme.light.color.primary",
+          "theme.light.color.tile",
+          "format.games.accent",
+          "radius.lg",
+          "radius.xs"
+        ],
+        "dartRoles": [
+          "CatchChatBubbleVariant",
+          "CatchChatBubbleStatus",
+          "CatchTimestampedMessageText",
+          "CatchFormat"
+        ],
+        "goldens": [
+          "chat_bubble_family"
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.person_avatar"
+        ],
+        "notes": [
+          "The system ChatMessage. Callers pass already-localized text and time; the bubble composes CatchTimestampedMessageText, which places the time on the last line or under it. Copy for a failed message belongs to the caller."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.chat_bubble",
+        "publicApi": true,
+        "stateOwnership": "none",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "member",
+        "conceptId": "catch.timestamped_message",
+        "parentConceptId": "catch.timestamped_message",
+        "qualifier": "recipe",
+        "decisionRef": "contract-family:catch.timestamped_message"
+      },
+      "dart": {
+        "symbol": "CatchChatBubble",
+        "file": "packages/catch_ui/lib/src/components/catch_chat_bubble.dart",
+        "constructors": [
+          "CatchChatBubble"
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Bubble",
+      "naming": {
+        "useCase": "Chat",
+        "comparedWith": [
+          "catch.timestamped_message"
+        ],
+        "reason": "Owns the message bubble: who sent it, its fill and corners, the avatar column, the sent mark and continuation spacing. CatchTimestampedMessageText, which it composes, only fits a timestamp beside the last line of text."
+      }
+    },
+    {
+      "id": "catch.pane_header",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchPaneHeader",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T3",
+      "summary": "The 56 px row that heads one pane of a list and detail layout, as data: a breadcrumb kicker, the title with a muted count and note, a back button and small trailing actions, over one hairline.",
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/PaneHeaderData",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "PaneHeaderData",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "The breadcrumb before the title."
+          },
+          {
+            "name": "count",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "notes": "Muted after the title."
+          },
+          {
+            "name": "note",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "A muted line after the title."
+          },
+          {
+            "name": "back",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTopBarBack?",
+            "notes": "A plain back or close button first; null onPressed pops."
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "The small actions at the end."
+          }
+        ],
+        "states": [
+          "list-pane",
+          "detail-pane",
+          "back",
+          "aligned-panes"
+        ],
+        "slots": [
+          {
+            "name": "trailing",
+            "kind": "header-trailing"
+          }
+        ],
+        "tokens": [
+          "theme.light.color.line",
+          "theme.light.color.ink2",
+          "size.controlSm"
+        ],
+        "dartRoles": [
+          "CatchWorkspaceHeader",
+          "CatchTopBarBack",
+          "CatchLayout.topBarHeight"
+        ],
+        "goldens": [
+          "pane_header_family"
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.button",
+          "catch.icon_button"
+        ],
+        "notes": [
+          "Put it first in each pane. It sits in a CatchWorkspaceHeader, so pane headers side by side share one height and one hairline. Views, filters and position stay on the React CatchWorkspaceHeader until a board needs them in Flutter."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.pane_header",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.pane_header"
+      },
+      "dart": {
+        "symbol": "CatchPaneHeader",
+        "file": "packages/catch_ui/lib/src/patterns/catch_pane_header.dart",
+        "constructors": [
+          "CatchPaneHeader"
+        ]
+      },
+      "level": "L4",
+      "roleNoun": "Header",
+      "naming": {
+        "useCase": "Pane",
+        "comparedWith": [
+          "catch.workspace_header"
+        ],
+        "reason": "Draws the pane header row from data. CatchWorkspaceHeader only measures and aligns whatever header it wraps, so pane headers side by side share one height."
       }
     }
   ]

@@ -23,6 +23,8 @@ Rest, hover, pressed (scale 0.97), focus, selected (fill eases 160 ms), disabled
 - `CatchChip.choice`
 - `CatchChip.activity`
 - `CatchChip.removable`
+- `CatchChip.link`
+- `CatchChip.filter`
 `catch.chip.field`:
 - `CatchChoiceInput`
 - `CatchChoiceInput.described`
