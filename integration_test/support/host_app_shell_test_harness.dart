@@ -180,6 +180,11 @@ class HostShellBackend {
       'setEventAttendeeAttendance' => _setAttendance(request),
       'createOrganizer' => _createOrganizer(request),
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
+      // Setup's Getting paid step: Razorpay is open and nothing is connected.
+      'manageOrganizerFormPaymentConnection' => {
+        'available': true,
+        'connections': const <Object?>[],
+      },
       'createEventVenueSession' => {
         'eventId': eventId,
         'venueSessionToken': 'host-journey-venue-session',
