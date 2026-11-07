@@ -672,8 +672,7 @@
       "exportName": "EventBookingFrame",
       "comparedWith": [
         "catch.screen_body",
-        "catch.text",
-        "catch.pane_layout"
+        "catch.text"
       ],
       "comparisonReason": "A website page frame for private bookings: it places the booking card in a CatchSplit rail beside a CatchText heading inside a CatchBand. It lays out library parts and implements neither the screen body nor the text contract. Not a pane layout: a public booking page section, not a workspace screen of sibling panes.",
       "css": [
@@ -1794,11 +1793,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimeLiveHeader",
-      "comparedWith": [
-        "catch.step_header",
-        "catch.workspace_header"
-      ],
-      "comparisonReason": "Live-event header with a check-in badge; no step navigation or progress. Not a workspace pane header: a guest-facing live banner, not a pane title with views, filters or position.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -1849,10 +1843,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimeNoticeStack",
-      "comparedWith": [
-        "catch.stack"
-      ],
-      "comparisonReason": "Event runtime notice list, not the system Stack: a grid at the s2 gap that also draws each paragraph child as a paper notice card (runtime paper fill, hairline border, md radius, s3/s4 padding) in the event runtime theme. The system Stack draws nothing; it only arranges its children along one axis with a token gap.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -2101,14 +2091,7 @@
           "host-create-flow"
         ]
       },
-      "notes": "Shared website action-group primitive for hero, flow, and host-create-flow action wrappers; raw flow-actions, hero__actions, and host-create-flow__actions shells are blocked by web:react-component-governance.",
-      "comparedWith": [
-        "catch.journey_steps",
-        "catch.section",
-        "catch.metric_strip",
-        "catch.form_step_list"
-      ],
-      "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contracts own different responsibilities, including CatchFormStepList's step selection and completion status."
+      "notes": "Shared website action-group primitive for hero, flow, and host-create-flow action wrappers; raw flow-actions, hero__actions, and host-create-flow__actions shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_listing_claim_shell",
@@ -3587,11 +3570,7 @@
           "image-only"
         ]
       },
-      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Shows a pre-rendered app capture whose PNG carries its own device frame, at its intrinsic size with a caption. catch.detail_media is an edge-to-edge hero photo with grading and a scrim; catch.graded_image and catch.network_image load and grade remote photos; catch.text only sets the caption's type roles."
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame."
     },
     {
       "id": "shared_event_backdrop_image",
@@ -3774,10 +3753,6 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchGrid.tsx",
       "exportName": "CatchGrid",
-      "comparedWith": [
-        "catch.stack"
-      ],
-      "comparisonReason": "The deprecated two-dimensional grid of equal columns, counted from the page's catch-page container. CatchStack with direction row, equal and collapseBelow replaces it, and it is deleted in P7, as its JSDoc says; until then it is compared with the contract, not an implementation of it.",
       "css": [
         "packages/web-ui/src/components/CatchGrid.module.css"
       ],
@@ -3875,11 +3850,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "A calendar date on a ground; it sets its weekday, day and month in CatchText roles rather than being a text role."
+      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
     },
     {
       "id": "shared_sticky_aside",
@@ -3967,14 +3938,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact.",
-      "comparedWith": [
-        "catch.analytics_metric",
-        "catch.icon_tile",
-        "catch.option_card",
-        "catch.text"
-      ],
-      "comparisonReason": "A labelled fact or stat on a ground; it arranges CatchText roles and is not a text role itself. It shows a published fact, not a caller-formatted metric with partial and missing-data states (analytics_metric), an icon presentation (icon_tile) or a choice target with checked semantics (option_card)."
+      "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact."
     },
     {
       "id": "shared_share_bar",
@@ -4029,13 +3993,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, OrganizerHeader, IdentityHeader, BioHeader.",
-      "comparedWith": [
-        "catch.person_avatar",
-        "catch.detail_media",
-        "catch.text"
-      ],
-      "comparisonReason": "An organiser identity block that arranges a cover, a monogram avatar and copy; it is not itself an avatar, a detail media slot or a text role."
+      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, OrganizerHeader, IdentityHeader, BioHeader."
     },
     {
       "id": "shared_ground_card",
@@ -4047,11 +4005,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
       "exportName": "CatchGroundCard",
-      "comparedWith": [
-        "catch.surface",
-        "catch.event_card"
-      ],
-      "comparisonReason": "A card on a named ground, which CatchSurface does not draw today. The redesign folds it into Surface when its first redesigned consumer lands. It holds whatever the page arranges, never one event, so it is not the EventCard poster.",
       "css": [
         "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],
@@ -4101,11 +4054,7 @@
           "no-icon"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "One link-in-bio row with an optional icon tile and an outward arrow; its title and subtitle are CatchText roles inside the link."
+      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink."
     },
     {
       "id": "shared_rating_summary",
@@ -4133,11 +4082,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "An average over its star distribution with bars; the figures and note are CatchText roles, the bars are the part's own."
+      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars."
     },
     {
       "id": "shared_review_item",
@@ -4170,17 +4115,7 @@
           "board-reference-cards"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One review as an article named by the reviewer: stars, a verification badge slot (Booked on Catch or Unverified), the text, the organiser's reply and a footer slot for Reply. The row recipe is the organiser page's hairline list; the card recipe is the event page's paper card. Search aliases: Review, ReviewCard, ReviewRow, Testimonial, CustomerReview, Comment.",
-      "comparedWith": [
-        "catch.analytics_metric",
-        "catch.icon_tile",
-        "catch.index_row",
-        "catch.meta_row",
-        "catch.option_card",
-        "catch.text",
-        "catch.event_card"
-      ],
-      "comparisonReason": "One review with identity, stars, verification, text and reply; it arranges CatchText roles and is not a text role. It is not a metric, icon or choice tile, and not a directory index row or a passive metadata row: its meta line is one part of a review the reader reads whole. It is not an event card: it summarises a review, not an event."
+      "notes": "Website T4 under D18 (CAT-249). One review as an article named by the reviewer: stars, a verification badge slot (Booked on Catch or Unverified), the text, the organiser's reply and a footer slot for Reply. The row recipe is the organiser page's hairline list; the card recipe is the event page's paper card. Search aliases: Review, ReviewCard, ReviewRow, Testimonial, CustomerReview, Comment."
     },
     {
       "id": "shared_star_input",
@@ -4263,12 +4198,7 @@
           "placeholder"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile.",
-      "comparedWith": [
-        "catch.detail_media",
-        "catch.text"
-      ],
-      "comparisonReason": "A past-moment tile that frames CatchHeroImage under a caption on a ground; it is neither the detail media slot nor a text role."
+      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile."
     },
     {
       "id": "shared_preview_card",
@@ -4297,13 +4227,7 @@
           "action"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser; the organiser page's \"Next up\" card is its feature size on ink, with a tag, a detail line and an action label (CAT-251). Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard.",
-      "comparedWith": [
-        "catch.text",
-        "catch.button",
-        "catch.event_card"
-      ],
-      "comparisonReason": "A link card on a ground with a label, a display title, a detail line and an action label; the copy is CatchText roles and the action a static CatchButton inside one link, so it is neither a text role nor a button. It has no media, counts or faces and links to any page, so it is not the EventCard poster."
+      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser; the organiser page's \"Next up\" card is its feature size on ink, with a tag, a detail line and an action label (CAT-251). Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard."
     },
     {
       "id": "shared_event_poster",
@@ -4314,10 +4238,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchEventPoster.tsx",
       "exportName": "CatchEventPoster",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "A no-photo event poster on a ground that sets its kicker, date, title and place in CatchText roles; it owns the framed media, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchEventPoster.module.css"
       ],
@@ -4506,11 +4426,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). The homepage hero art: a rounded panel on one ground with the app in a device frame and up to three decorative plan stickers, which are hidden from assistive technology and leave pages narrower than 840px. Nearest concept: CatchHeroImage, a photo hero without a device. Search aliases: HeroArt, PhoneShowcase, HeroPanel, FloatingChips.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
+      "notes": "Website T4 under D18 (CAT-260). The homepage hero art: a rounded panel on one ground with the app in a device frame and up to three decorative plan stickers, which are hidden from assistive technology and leave pages narrower than 840px. Nearest concept: CatchHeroImage, a photo hero without a device. Search aliases: HeroArt, PhoneShowcase, HeroPanel, FloatingChips."
     },
     {
       "id": "shared_format_tile",
@@ -4543,11 +4459,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). One activity format on its accent: a count line, the format's name and line, and a plan photo at its foot when there is one. It is a pressed toggle when it filters and a link when it navigates. Nearest concept: catch.chip.field (CatchChip choice), the compact filter it pairs with. Search aliases: FormatCard, CategoryTile, ActivityTile, FilterTile.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
+      "notes": "Website T4 under D18 (CAT-260). One activity format on its accent: a count line, the format's name and line, and a plan photo at its foot when there is one. It is a pressed toggle when it filters and a link when it navigates. Nearest concept: catch.chip.field (CatchChip choice), the compact filter it pairs with. Search aliases: FormatCard, CategoryTile, ActivityTile, FilterTile."
     },
     {
       "id": "shared_plan_card",
@@ -4609,12 +4521,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, OrganizerCard, FollowCard.",
-      "comparedWith": [
-        "catch.text",
-        "catch.person_avatar"
-      ],
-      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it. It shows the organiser's monogram through CatchAvatar rather than implementing an avatar."
+      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, OrganizerCard, FollowCard."
     },
     {
       "id": "web_ui_catch_accordion",
@@ -4634,11 +4541,7 @@
           "default"
         ]
       },
-      "notes": "The library's disclosure list (#948): the homepage FAQ, one question open at a time. Search aliases: FAQ, Disclosure, Collapsible, Expander.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchText for its questions and answers; it is a disclosure list with its own open state and layout, not a text style, so it uses catch.text rather than implementing it."
+      "notes": "The library's disclosure list (#948): the homepage FAQ, one question open at a time. Search aliases: FAQ, Disclosure, Collapsible, Expander."
     },
     {
       "id": "web_ui_catch_chip",
@@ -4659,11 +4562,7 @@
           "default"
         ]
       },
-      "notes": "The library's catch.chip twin, rendered on the website through CatchChoiceInput's filter chips.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Renders CatchText for its label; it is the website's styled chip, not a text style, so it uses catch.text rather than implementing it."
+      "notes": "The library's catch.chip twin, rendered on the website through CatchChoiceInput's filter chips."
     },
     {
       "id": "web_ui_catch_choice_input",
