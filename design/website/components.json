@@ -2621,26 +2621,25 @@
       "notes": "Every stage of the public form drawn from a controller, so stories can render each one: the site top bar (left out when embedded), the organiser row, title and lead, the fields and choices, the messages tile, Send, the review, payment, receipt, withdrawal and the boards' short footer."
     },
     {
-      "id": "shared_public_form_shells",
+      "id": "shared_public_form_inputs",
       "kind": "supporting-component",
       "routeIds": [
         "public_form"
       ],
       "owner": "shared/ui/primitives",
       "source": "website/src/shared/ui/primitives/publicForms.tsx",
-      "exportName": "PublicFormFrame",
+      "exportName": "PublicFormSignatureInput",
       "css": [
         "website/src/styles/public-forms.css"
       ],
       "storybook": {
         "status": "planned",
         "states": [
-          "frame",
-          "question-section",
-          "review"
+          "signature",
+          "file-upload"
         ]
       },
-      "notes": "Governed visual primitives for the public form frame, question sections, choices, progress, consent, and response review."
+      "notes": "The two inputs the public form still draws with its own styling: the signature pad (a canvas plus a typed-name fallback) and the multi-file picker. Everything else on the form is @catch/web-ui. public-forms.css carries only these two."
     },
     {
       "id": "route_event_assistance",
