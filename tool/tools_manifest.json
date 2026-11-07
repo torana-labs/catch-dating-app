@@ -2005,6 +2005,29 @@
       "role": "gate"
     },
     {
+      "id": "ui-capture:dart-call-blocks",
+      "category": "ui-capture",
+      "path": "tool/lib/dart_call_blocks.mjs",
+      "command": "node --test tool/lib/dart_call_blocks.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Finds balanced Dart call blocks for the capture, route and Widgetbook checks, skipping line and block comments and plain, raw and triple-quoted strings so delimiters inside them never unbalance a block.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/lib/dart_call_blocks.test.mjs"
+      ],
+      "checks": [
+        "node --check tool/lib/dart_call_blocks.mjs",
+        "node --test tool/lib/dart_call_blocks.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "lint:catch-ui-plugin-smoke",
       "category": "lint",
       "path": "tool/check_catch_ui_lints.sh",

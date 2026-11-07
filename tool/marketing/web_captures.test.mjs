@@ -20,7 +20,7 @@ function fixture(t) {
     fs.writeFileSync(file, content);
     return file;
   };
-  for (const name of ["tool/lib/repo_paths.mjs", "tool/marketing/export_app_screenshots.mjs",
+  for (const name of ["tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs", "tool/marketing/export_app_screenshots.mjs",
     "tool/marketing/lib/web_capture_render.mjs", "tool/marketing/lib/web_capture_screen.mjs",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/web_capture_inputs.mjs"]) {
     write(name, fs.readFileSync(fromRepo(name)));
@@ -190,6 +190,7 @@ test("Flutter route coverage accepts web stories but still rejects missing app f
   const f = fixture(t);
   f.write("tool/ui_capture/check_capture_coverage.mjs",
     fs.readFileSync(fromRepo("tool/ui_capture/check_capture_coverage.mjs")));
+  f.write("tool/lib/dart_call_blocks.mjs", fs.readFileSync(fromRepo("tool/lib/dart_call_blocks.mjs")));
   f.write("tool/ui_capture/route_inventory.json", JSON.stringify({routes: []}));
   f.write("tool/ui_capture/capture_coverage.json", JSON.stringify({routes: []}));
   const check = () => f.run("tool/ui_capture/check_capture_coverage.mjs", "--check");
