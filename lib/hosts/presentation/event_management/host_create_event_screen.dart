@@ -1,12 +1,10 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
-import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_view.dart';
-import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_default_view_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/create/create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -203,23 +201,16 @@ class HostCreateEventRouteBody extends ConsumerWidget {
           actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.ready => PrivateEventCreateScreen(
+      HostCreateEventRouteStatus.ready => CreateScreen(
         organizer: state.organizer!,
+        userId: ref.watch(uidProvider).value ?? '',
         initialDraft: initialDraft,
         initialPrefill: initialPrefill,
         initialSavedEventId: initialSavedEventId,
-        initialRosterImportPlan: initialRosterImportPlan,
-        promptForDraftsOnStart: promptForDrafts,
-        // The organizer defaults listener's first complete value.
-        readOrganizerDefaults: (organizerId) => firstCompleteDefaultsView(
-          ref.read(hostEventSetupDefaultViewReadsProvider).watch(organizerId),
-        ),
-        returnToResponsesOnSave: returnToResponsesOnSave,
+        externalBookingMode: externalBookingMode,
         onSaved: returnToResponsesOnSave
-            ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  Navigator.of(context).pop(receipt.eventId);
-                }
+            ? (eventId) => WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) Navigator.of(context).pop(eventId);
               })
             : null,
       ),

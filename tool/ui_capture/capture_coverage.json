@@ -1236,6 +1236,13 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
+        "host_create_step_basics",
+        "host_create_step_when",
+        "host_create_step_when_calendar",
+        "host_create_step_tickets",
+        "host_create_step_plan",
+        "host_create_step_share",
+        "host_create_editor_desktop",
         "host_event_setup",
         "host_create_basics",
         "host_create_initial_club_extra",
