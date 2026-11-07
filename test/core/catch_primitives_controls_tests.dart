@@ -234,7 +234,20 @@ void _registerCatchPrimitivesControlsTests() {
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
         240,
       );
-      expect(find.byType(CatchButtonContentRow), findsOneWidget);
+      // Both buttons keep their content row; the loading one draws its
+      // spinner over a hidden label so its width holds.
+      expect(find.byType(CatchButtonContentRow), findsNWidgets(2));
+      expect(
+        tester
+            .widget<CatchButtonContentRow>(
+              find.descendant(
+                of: find.widgetWithText(CatchButton, 'Loading'),
+                matching: find.byType(CatchButtonContentRow),
+              ),
+            )
+            .mode,
+        CatchButtonContentRowMode.loading,
+      );
       expect(
         find.byWidgetPredicate(
           (widget) =>
@@ -255,7 +268,8 @@ void _registerCatchPrimitivesControlsTests() {
       );
       await tester.pump();
       expect(taps, 1);
-      expect(find.text('Loading'), findsNothing);
+      // The label stays laid out under the spinner but cannot be reached.
+      expect(find.text('Loading').hitTestable(), findsNothing);
     },
   );
 

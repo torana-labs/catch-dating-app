@@ -6,7 +6,6 @@ import 'package:catch_ui/src/components/catch_count_badge.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
-import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -562,7 +561,6 @@ class _CatchButtonState extends State<CatchButton> {
         : CatchButtonTokens.hoverOutlineAlpha;
 
     final contentRow = CatchButtonContentRow(
-      key: ValueKey<bool>(widget.isLoading), // lets the switcher cross-fade
       label: widget.label,
       color: palette.foreground,
       leading: widget.leading,

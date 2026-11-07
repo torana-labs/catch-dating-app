@@ -692,7 +692,8 @@ void main() {
       expect(find.text('FREE'), findsOneWidget);
       expect(find.text('VIEW'), findsNothing);
       expect(find.text('Next'), findsOneWidget);
-      expect(find.text('Schedule event'), findsNothing);
+      // A loading button keeps its label laid out, hidden, under the spinner.
+      expect(find.text('Schedule event').hitTestable(), findsNothing);
       expect(
         find.byWidgetPredicate(
           (widget) => widget is CatchButton && widget.isLoading,
