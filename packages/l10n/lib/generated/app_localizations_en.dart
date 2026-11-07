@@ -26529,4 +26529,224 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostMembershipsRosterMembers => 'Members';
+
+  @override
+  String get doorTitle => 'Door';
+
+  @override
+  String doorKicker({required String time}) {
+    return 'Doors open · $time';
+  }
+
+  @override
+  String get doorBack => 'Back to Today';
+
+  @override
+  String get doorLiveTag => 'Door';
+
+  @override
+  String doorHeadline({required int checkedIn, required int expected}) {
+    return '$checkedIn of $expected in';
+  }
+
+  @override
+  String get doorMeterLabel => 'Checked in';
+
+  @override
+  String doorSummary({
+    required int toCome,
+    required int asked,
+    required int waiting,
+  }) {
+    return '$toCome still to come · $asked asked to join · $waiting waiting';
+  }
+
+  @override
+  String doorSearchPlaceholder({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Search $count guests',
+      one: 'Search 1 guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get doorFiltersLabel => 'Show guests';
+
+  @override
+  String get doorFilterArriving => 'Arriving';
+
+  @override
+  String get doorFilterIn => 'In';
+
+  @override
+  String get doorFilterWaitlist => 'Waitlist';
+
+  @override
+  String get doorFilterAsked => 'Asked';
+
+  @override
+  String get doorEmpty => 'Nobody here right now.';
+
+  @override
+  String get doorScanTicket => 'Scan a ticket';
+
+  @override
+  String get doorAddWalkIn => 'Add walk-in';
+
+  @override
+  String doorWalkInAdded({required String name}) {
+    return '$name is on the list';
+  }
+
+  @override
+  String doorWalkInFailed({required String name}) {
+    return 'Could not add $name';
+  }
+
+  @override
+  String doorRefusedTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes did not save',
+      one: '1 change did not save',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get doorRefusedBody =>
+      'Someone else changed these guests first. Try again or drop your changes.';
+
+  @override
+  String get doorRefusedRetry => 'Try again';
+
+  @override
+  String get doorRefusedDiscard => 'Drop them';
+
+  @override
+  String get doorScannerTileTitle => 'Scanner';
+
+  @override
+  String get doorScannerTileBody => 'Hold a ticket up to the camera';
+
+  @override
+  String doorLatestTitle({required String name}) {
+    return '$name is in';
+  }
+
+  @override
+  String get doorStatToCome => 'still to come';
+
+  @override
+  String get doorStatAsked => 'asked to join';
+
+  @override
+  String get doorStatWaiting => 'waiting';
+
+  @override
+  String get doorGuestNew => 'New';
+
+  @override
+  String get doorGuestCheckIn => 'Check in';
+
+  @override
+  String get doorGuestUndo => 'Undo';
+
+  @override
+  String get doorGuestLetIn => 'Let in';
+
+  @override
+  String get doorGuestOffer => 'Offer';
+
+  @override
+  String get doorGuestFirstTime => 'first time';
+
+  @override
+  String doorGuestNightsBefore({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nights with you',
+      one: '1 night with you',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String doorGuestPaid({required String amount}) {
+    return 'paid $amount';
+  }
+
+  @override
+  String doorGuestInAt({required String time}) {
+    return 'In at $time';
+  }
+
+  @override
+  String get doorGuestInJustNow => 'In just now';
+
+  @override
+  String doorGuestAskedAt({required String time}) {
+    return 'Asked at $time';
+  }
+
+  @override
+  String get doorGuestOffered => 'Offered a place · waiting to pay';
+
+  @override
+  String get doorGuestFirstOnWaitlist => 'First on the waitlist';
+
+  @override
+  String doorGuestWaitlistPosition({required int position}) {
+    return 'Number $position on the waitlist';
+  }
+
+  @override
+  String get doorGuestNotSynced => 'not synced yet';
+
+  @override
+  String get doorScanTitle => 'Scan tickets';
+
+  @override
+  String get doorScanClose => 'Close the scanner';
+
+  @override
+  String get doorScanFinderLabel => 'Camera';
+
+  @override
+  String get doorScanHint => 'Point at the ticket on their phone';
+
+  @override
+  String get doorScanNotATicket => 'That code is not a Catch ticket.';
+
+  @override
+  String get doorScanOtherEvent => 'That ticket is for another event.';
+
+  @override
+  String get doorScanEventCode =>
+      'That is the event code guests scan, not a ticket.';
+
+  @override
+  String get doorScanCheckedIn => 'Checked in';
+
+  @override
+  String get doorScanNext => 'Next ticket';
+
+  @override
+  String get doorScanPaidOnCatch => 'paid on Catch';
+
+  @override
+  String get doorScanNothingPaid => 'Free';
+
+  @override
+  String get doorScanFirstNight => 'first night';
+
+  @override
+  String doorScanNights({required int count}) {
+    return 'Night $count';
+  }
 }
