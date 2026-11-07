@@ -33,6 +33,7 @@ import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
+import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
@@ -219,7 +220,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
       GoRoute(
         path: Routes.authScreen.path,
         name: Routes.authScreen.name,
-        builder: (context, state) => const AuthScreen(),
+        builder: (context, state) => _AuthRouteScreen(isHostApp: isHostApp),
       ),
       if (!isHostApp) ...[
         GoRoute(
@@ -1529,6 +1530,18 @@ EventDetailScreen _eventDetailScreen(GoRouterState state) => EventDetailScreen(
   heroTag: _eventDetailHeroTag(state),
   attribution: _eventDetailAttribution(state),
 );
+
+/// Sign-in: Catch Host's own screens on the system, the guest app's
+/// shared auth screen otherwise.
+class _AuthRouteScreen extends StatelessWidget {
+  const _AuthRouteScreen({required this.isHostApp});
+
+  final bool isHostApp;
+
+  @override
+  Widget build(BuildContext context) =>
+      isHostApp ? const HostSignInScreen() : const AuthScreen();
+}
 
 class _RouteLoadingScreen extends StatelessWidget {
   const _RouteLoadingScreen({required this.isHostApp});

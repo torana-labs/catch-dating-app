@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "d71e534070e5e2601c048a803cf11eb9f80b339a5c1fa086adc342853f5b2389",
+    "routeContractSha256": "9e510f60de83befd37e9ecab6656ba4f42ac923f71e5850b57c9839e5341b108",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -19,7 +19,7 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 13,
+    "imperativePageRouteCount": 14,
     "imperativePageTargetCount": 7
   },
   "routes": [
@@ -63,8 +63,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.authScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>const AuthScreen()",
-      "presentationTarget": "AuthScreen",
+      "presentationExpression": "(context,state)=>_AuthRouteScreen(isHostApp:isHostApp)",
+      "presentationTarget": "_AuthRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1909,6 +1909,15 @@
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventJoinedCelebrationScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/create/create_screen.dart:a9757c5a245ad8fc1cf0e0e311b087da455c819ec36e7762b46646c18e90107f:1",
+      "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:lat==null||lng==null?null:LocationCoordinate(lat,lng),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:draft.meetingPoint),fullscreenDialog:true)",
+      "sourcePath": "lib/hosts/create/create_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:lat==null||lng==null?null:LocationCoordinate(lat,lng),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:draft.meetingPoint)",
+      "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },
     {
