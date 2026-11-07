@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -133,7 +133,7 @@ class LiveArrivalRow extends StatelessWidget {
           ? l10n.hostLiveNeedArrivalAnonymous
           : l10n.hostLiveNeedArrival(name: name),
       subtitle: l10n.hostLiveNeedArrivalBody(
-        time: EventFormatters.time(
+        time: AppTimeFormatters.time(
           DateTime.fromMillisecondsSinceEpoch(arrival.checkedInAtMillis),
         ),
       ),

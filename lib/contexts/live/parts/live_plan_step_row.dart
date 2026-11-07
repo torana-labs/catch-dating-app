@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
+import 'package:catch_dating_app/contexts/formats/formats.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -19,6 +18,7 @@ import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -171,7 +171,7 @@ CatchTopBar hostLiveTopBar(
   variant: CatchTopBarVariant.live,
   title: event.title,
   back: CatchTopBarBack(label: context.l10n.hostLiveBack, onPressed: back),
-  live: context.l10n.hostLiveTag(time: EventFormatters.time(now)),
+  live: context.l10n.hostLiveTag(time: AppTimeFormatters.time(now)),
 );
 
 /// What the console's rows and buttons do, shared by its four screens: the

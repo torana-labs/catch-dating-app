@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/live/parts/live_need_row.dart';
 import 'package:catch_dating_app/contexts/live/parts/live_plan_step_row.dart';
 import 'package:catch_dating_app/contexts/live/parts/live_score_row.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -319,7 +319,7 @@ class _HostLiveSpotlight extends StatelessWidget {
     } else if (beforeStart) {
       kicker = l10n.hostLiveStepKickerFirst(total: total);
       clock = l10n.hostLiveStepStarts(
-        time: EventFormatters.time(step.startsAt),
+        time: AppTimeFormatters.time(step.startsAt),
       );
       progress = 0;
     } else {
