@@ -26,6 +26,7 @@ class CreateWhenBody extends StatelessWidget {
     required this.onPlace,
     required this.onDirections,
     this.showTitle = false,
+    this.enableNetworkTiles = true,
   });
 
   final CreateFlowState state;
@@ -39,6 +40,9 @@ class CreateWhenBody extends StatelessWidget {
   final VoidCallback onPlace;
   final ValueChanged<String> onDirections;
   final bool showTitle;
+
+  /// False draws the map's no-network fallback (previews and captures).
+  final bool enableNetworkTiles;
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +159,7 @@ class CreateWhenBody extends StatelessWidget {
                 child: MapPreview(
                   coordinate: LocationCoordinate(lat, lng),
                   fallbackLabel: CreateCopy.onTheMap(place),
+                  enableNetworkTiles: enableNetworkTiles,
                 ),
               ),
               CatchIndexRow(

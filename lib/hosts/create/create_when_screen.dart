@@ -13,6 +13,7 @@ class CreateWhenScreen extends StatelessWidget {
     required this.handlers,
     required this.today,
     this.calendarSheet,
+    this.enableNetworkTiles = true,
   });
 
   final CreateFlowState state;
@@ -22,15 +23,20 @@ class CreateWhenScreen extends StatelessWidget {
   /// The open calendar sheet, or null.
   final Widget? calendarSheet;
 
+  /// False draws the map's no-network fallback (previews and captures).
+  final bool enableNetworkTiles;
+
   static Widget bodyFor(
     CreateFlowState state,
     CreateHandlers handlers, {
     required DateTime today,
     bool showTitle = false,
+    bool enableNetworkTiles = true,
   }) => CreateWhenBody(
     state: state,
     today: today,
     showTitle: showTitle,
+    enableNetworkTiles: enableNetworkTiles,
     onDate: handlers.onDate,
     onPickDate: handlers.onPickDate,
     onStart: handlers.onStart,
@@ -43,7 +49,12 @@ class CreateWhenScreen extends StatelessWidget {
   Widget build(BuildContext context) => CreateStepFrame(
     state: state,
     handlers: handlers,
-    body: bodyFor(state, handlers, today: today),
+    body: bodyFor(
+      state,
+      handlers,
+      today: today,
+      enableNetworkTiles: enableNetworkTiles,
+    ),
     overlay: calendarSheet,
   );
 }
