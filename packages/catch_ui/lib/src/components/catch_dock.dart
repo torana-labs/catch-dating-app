@@ -238,12 +238,22 @@ class CatchDock extends StatelessWidget {
           gutter,
           safeBottom + CatchSpacing.s2,
         ),
-        child: Row(
-          spacing: CatchSpacing.micro10,
-          children: [
-            if (first != null) Flexible(child: first),
-            Expanded(child: primaryButton),
-          ],
+        // The summary or secondary takes its own width, up to half the bar;
+        // the primary fills the rest.
+        child: LayoutBuilder(
+          builder: (context, constraints) => Row(
+            spacing: CatchSpacing.micro10,
+            children: [
+              if (first != null)
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: constraints.maxWidth / 2,
+                  ),
+                  child: first,
+                ),
+              Expanded(child: primaryButton),
+            ],
+          ),
         ),
       ),
     );
