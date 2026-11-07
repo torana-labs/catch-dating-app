@@ -1,85 +1,69 @@
-import {
-  CatchAvatar,
-  CatchButton,
-  CatchFactTile,
-  CatchGap,
-  CatchGrid,
-  CatchGroundCard,
-  CatchLegacyText,
-} from "@catch/web-ui";
+import {CatchAvatar, CatchButton, CatchIndexRow, CatchMetricTile, CatchSection, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
-import {organizerSectionHeading} from "./organizerSectionHeading";
 
-/** In the organiser's words, with formats, facts and who runs it. */
+/** About: in the organiser's words, the formats, the facts as Stats, and who runs it. */
 export function OrganizerAboutSection({controller}: {controller: OrganizerPageController}) {
-  const {about, header} = controller.view;
+  const {about} = controller.view;
   if (!about.text && !about.facts.length && !about.host) return null;
   return (
-    <CatchGap aria-labelledby="organizer-about-title" as="section" id="about" size="formField">
-      {organizerSectionHeading({id: "organizer-about-title", title: copy.aboutTitle})}
-      {about.text ? <CatchLegacyText variant="bodyL">{about.text}</CatchLegacyText> : null}
-      {about.formats ? <CatchLegacyText color="ink2" variant="supportingStrong">{about.formats}</CatchLegacyText> : null}
-      {about.facts.length ? (
-        <CatchGrid columns={2} compactColumns={1}>
-          {about.facts.map((fact) => <CatchFactTile key={`${fact.label}-${fact.value}`} label={fact.label} value={fact.value} />)}
-        </CatchGrid>
-      ) : null}
-      {about.host ? (
-        <CatchGap crossAxisAlignment="center" direction="horizontal" size="related">
-          <CatchAvatar ground={header.accent} initials={about.host.initials} name={about.host.name} recipe="monogram" size={40} />
-          <CatchGap size="headerTitleToSubtitle">
-            <CatchLegacyText variant="sectionTitle">{about.host.name}</CatchLegacyText>
-            <CatchLegacyText color="ink2" variant="bodyS">{about.host.role}</CatchLegacyText>
-          </CatchGap>
-        </CatchGap>
-      ) : null}
-    </CatchGap>
+    <CatchStack gap={0} id="about">
+      <CatchSection dividers="none" title={copy.aboutTitle}>
+        <CatchStack gap={16}>
+          {about.text ? <CatchText as="p" variant="body">{about.text}</CatchText> : null}
+          {about.formats ? <CatchText as="p" tone="secondary" variant="label-action">{about.formats}</CatchText> : null}
+          {about.facts.length ? (
+            <CatchStack gap={8}>
+              {about.facts.map((fact) => <CatchMetricTile key={`${fact.label}-${fact.value}`} label={fact.label} layout="fact" value={fact.value} />)}
+            </CatchStack>
+          ) : null}
+          {about.host ? (
+            <CatchSection>
+              <CatchIndexRow density="compact" leading={<CatchAvatar initials={about.host.initials} name={about.host.name} size={36} />}
+                subtitle={about.host.role} title={about.host.name} />
+            </CatchSection>
+          ) : null}
+        </CatchStack>
+      </CatchSection>
+    </CatchStack>
   );
 }
 
-/** Generated pages only: what claiming the page gives the organiser, with the people already waiting. */
+/**
+ * Generated pages only: what claiming the page gives the organiser, with the
+ * people already waiting, on a spotlight above the calendar.
+ */
 export function OrganizerClaimSection({controller}: {controller: OrganizerPageController}) {
   const {claim} = controller.view;
   if (!claim) return null;
   const pitch = copy.claim;
+  const waiting = [
+    claim.followers ? `${claim.followers} ${pitch.followers}` : null,
+    claim.reviewers ? `${claim.reviewers} ${claim.reviewVerb}` : null,
+  ].filter(Boolean).join(pitch.and);
   return (
-    <CatchGroundCard aria-labelledby="organizer-claim-title" as="section" ground="indigo" id="claim" padding="spacious">
-      <CatchGap size="formField">
-        <CatchLegacyText color="inherit" variant="titleS">{pitch.label}</CatchLegacyText>
-        <CatchLegacyText as="h2" id="organizer-claim-title" variant="displayM">{pitch.title}</CatchLegacyText>
-        <CatchLegacyText variant="bodyL">
-          {claim.followers ? <><CatchLegacyText as="strong" variant="sectionTitle">{claim.followers}</CatchLegacyText>{` ${pitch.followers}`}</> : null}
-          {claim.followers && claim.reviewers ? pitch.and : null}
-          {claim.reviewers ? <><CatchLegacyText as="strong" variant="sectionTitle">{claim.reviewers}</CatchLegacyText>{` ${claim.reviewVerb}`}</> : null}
-          {claim.followers || claim.reviewers ? ". " : null}
-          {claim.built}
-        </CatchLegacyText>
-        <CatchGrid as="ul" columns={2} compactColumns={1} gap="related">
-          {pitch.points.map((point) => (
-            <CatchGroundCard ground="white" key={point.title} padding="compact">
-              <CatchLegacyText variant="bodyM">
-                <CatchLegacyText as="strong" variant="titleS">{point.title}</CatchLegacyText>{` ${point.body}`}
-              </CatchLegacyText>
-            </CatchGroundCard>
-          ))}
-        </CatchGrid>
-        <CatchGap crossAxisAlignment="start" size="inline">
-          {claim.href ? <CatchButton href={claim.href} label={pitch.action} onPressed={controller.openClaim} /> : null}
-          {claim.pending ? <CatchLegacyText variant="supportingStrong">{pitch.pending}</CatchLegacyText> : null}
-        </CatchGap>
-      </CatchGap>
-    </CatchGroundCard>
+    <CatchSurface aria-labelledby="organizer-claim-title" as="section" block="spotlight" color="courts" id="claim">
+      <CatchText variant="label-kicker">{pitch.label}</CatchText>
+      <CatchText as="h2" id="organizer-claim-title" variant="display-sm">{pitch.title}</CatchText>
+      <CatchText as="p" variant="body">{waiting ? `${waiting}. ${claim.built}` : claim.built}</CatchText>
+      <CatchSection container="tile">
+        {pitch.points.map((point) => <CatchIndexRow density="compact" key={point.title} subtitle={point.body} title={point.title} wrap />)}
+      </CatchSection>
+      <CatchStack align="start" gap={8}>
+        {claim.href ? <CatchButton href={claim.href} label={pitch.action} onPressed={controller.openClaim} /> : null}
+        {claim.pending ? <CatchText as="p" variant="label-action">{pitch.pending}</CatchText> : null}
+      </CatchStack>
+    </CatchSurface>
   );
 }
 
-/** "Made with Catch", or on a generated page where it came from and how to report a mistake. */
+/** "Made with Catch · Make a page like this", or on a generated page where it came from and how to report a mistake. */
 export function OrganizerPageFooter({controller}: {controller: OrganizerPageController}) {
   const {footer} = controller.view;
   return (
-    <CatchGap as="footer" crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween" size="related" wrap>
-      <CatchLegacyText color="ink2" variant="bodyM">{footer.line}</CatchLegacyText>
-      <CatchButton href={footer.href} label={footer.link} onPressed={() => undefined} recipe="text" tone="neutral" />
-    </CatchGap>
+    <CatchStack align="center" as="footer" direction="row" gap={8} justify="center" wrap>
+      <CatchText tone="secondary" variant="label-action">{footer.line}</CatchText>
+      <CatchButton href={footer.href} label={footer.link} size="sm" variant="quiet" />
+    </CatchStack>
   );
 }
