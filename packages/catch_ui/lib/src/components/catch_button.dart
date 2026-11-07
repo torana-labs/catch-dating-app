@@ -562,6 +562,7 @@ class _CatchButtonState extends State<CatchButton> {
         : CatchButtonTokens.hoverOutlineAlpha;
 
     final contentRow = CatchButtonContentRow(
+      key: ValueKey<bool>(widget.isLoading), // lets the switcher cross-fade
       label: widget.label,
       color: palette.foreground,
       leading: widget.leading,
@@ -569,6 +570,9 @@ class _CatchButtonState extends State<CatchButton> {
       fullWidth: widget.fullWidth,
       allowMultiline: !widget._selection,
       textStyle: spec.textStyle(context),
+      loadingIndicator: widget.isLoading
+          ? CatchLoadingIndicator.dots(color: palette.foreground)
+          : null,
     );
 
     final buttonContent = Stack(
@@ -590,25 +594,7 @@ class _CatchButtonState extends State<CatchButton> {
             duration: transitionDuration,
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
-            child: widget.isLoading
-                // The label stays laid out, unseen, so the button keeps the
-                // width it had while the spinner is drawn inside it.
-                ? Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ExcludeSemantics(
-                        child: Visibility(
-                          visible: false,
-                          maintainSize: true,
-                          maintainAnimation: true,
-                          maintainState: true,
-                          child: contentRow,
-                        ),
-                      ),
-                      CatchLoadingIndicator.dots(color: palette.foreground),
-                    ],
-                  )
-                : contentRow,
+            child: contentRow,
           ),
         ),
       ],

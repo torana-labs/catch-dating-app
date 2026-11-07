@@ -11,6 +11,7 @@ class CatchButtonContentRow extends StatelessWidget {
     this.gap = CatchSpacing.micro6,
     this.fullWidth = false,
     this.allowMultiline = false,
+    this.loadingIndicator,
   });
 
   final String label;
@@ -20,6 +21,10 @@ class CatchButtonContentRow extends StatelessWidget {
   final bool fullWidth;
   final bool allowMultiline;
   final TextStyle textStyle;
+
+  /// Drawn centred over the row while a command runs. The row stays laid
+  /// out, unseen, so the button keeps the width it had.
+  final Widget? loadingIndicator;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +53,22 @@ class CatchButtonContentRow extends StatelessWidget {
       ],
     );
 
-    return content;
+    final indicator = loadingIndicator;
+    if (indicator == null) return content;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ExcludeSemantics(
+          child: Visibility(
+            visible: false,
+            maintainSize: true,
+            maintainAnimation: true,
+            maintainState: true,
+            child: content,
+          ),
+        ),
+        indicator,
+      ],
+    );
   }
 }
