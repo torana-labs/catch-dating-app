@@ -6,13 +6,13 @@
   "mode": "report-only",
   "description": "Screen-data caching findings that existed when the rules landed, by exact rule, path, symbol and detail. The provider graph check fails only when a finding is not listed here (or occurs more often than its count). A context migration PR deletes the entries it fixes, so the list only shrinks; never add an entry to admit new code.",
   "countsByRule": {
-    "CACHE-LIFETIME-001": 3,
+    "CACHE-LIFETIME-001": 0,
     "CACHE-POLICY-001": 0,
     "CACHE-ACCOUNT-001": 0,
     "CACHE-KEY-001": 0,
-    "CACHE-INVALIDATE-001": 113,
-    "CACHE-LISTENER-001": 9,
-    "KEEPALIVE-MANUAL-001": 5
+    "CACHE-INVALIDATE-001": 94,
+    "CACHE-LISTENER-001": 0,
+    "KEEPALIVE-MANUAL-001": 0
   },
   "findings": [
     {
@@ -63,19 +63,6 @@
       "path": "lib/event_success/presentation/event_attendance_disposition_editor.dart",
       "symbol": "eventAttendanceDispositionEditorProvider",
       "detail": "invalidate:eventAttendanceReportForAccountProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/event_success/presentation/event_success_host_screen.dart",
-      "symbol": "_EventSuccessHostSectionState.build",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/events/presentation/widgets/event_detail_dock.dart",
-      "symbol": "EventDetailDock.build",
-      "detail": "invalidate:eventViewerStateProvider",
-      "count": 2
     },
     {
       "rule": "CACHE-INVALIDATE-001",
@@ -254,18 +241,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
-      "symbol": "_EditHostedEventActions._saveChanges",
-      "detail": "invalidate:watchEventParticipationRosterProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
-      "symbol": "_EditHostedEventActions._saveChanges",
-      "detail": "invalidate:watchEventProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
       "symbol": "_HostFormAutomationsScreenState.build",
       "detail": "invalidate:hostFormAutomationsControllerProvider"
@@ -412,12 +387,6 @@
     {
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
-      "detail": "invalidate:watchOrganizerPostRemainingWeeklyQuotaProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
       "symbol": "_HostSendsPageBodySliverState._runCampaignAction",
       "detail": "invalidate:hostSendsProvider"
     },
@@ -441,42 +410,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._completeRosterIntake",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._flushAttendanceOutbox",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._importRows",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._reviewClaim",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._syncProvider",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._toggleAttendance",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
       "symbol": "_HostTodayPersonalizedLayoutState._onRouteChanged",
       "detail": "invalidate:hostCrmSummaryProvider"
@@ -486,12 +419,6 @@
       "path": "lib/hosts/today/personalization/presentation/host_today_personalized_layout.dart",
       "symbol": "_HostTodayPersonalizedLayoutState._openAction",
       "detail": "invalidate:hostCrmSummaryProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart",
-      "symbol": "OrganizerDetailReadOnlyPreview.build",
-      "detail": "retry-composition:organizerDetailViewModelProvider"
     },
     {
       "rule": "CACHE-INVALIDATE-001",
@@ -562,12 +489,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/reviews/presentation/reviews_history_screen.dart",
-      "symbol": "ReviewsHistoryScreen.build",
-      "detail": "invalidate:watchReviewsByUserProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/swipes/presentation/event_recap_screen.dart",
       "symbol": "_EventRecapScreenState._retry",
       "detail": "retry-composition:eventRecapViewModelProvider"
@@ -589,108 +510,6 @@
       "path": "lib/user_profile/presentation/form_profiles_controller.dart",
       "symbol": "formProfileClaimControllerProvider",
       "detail": "invalidate:formProfilesControllerProvider"
-    },
-    {
-      "rule": "CACHE-LIFETIME-001",
-      "path": "lib/contexts/profiles/data/profile_location_initializer.dart",
-      "symbol": "profileLocationInitializerProvider",
-      "detail": "keepAlive"
-    },
-    {
-      "rule": "CACHE-LIFETIME-001",
-      "path": "lib/contexts/profiles/data/user_profile_repository.dart",
-      "symbol": "watchUserProfileProvider",
-      "detail": "keepAlive"
-    },
-    {
-      "rule": "CACHE-LIFETIME-001",
-      "path": "packages/platform/lib/cities/city_repository.dart",
-      "symbol": "cityListProvider",
-      "detail": "keepAlive"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/event_success/presentation/event_success_host_screen.dart",
-      "symbol": "_EventSuccessHostSectionState.build",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
-      "symbol": "_EditHostedEventActions._saveChanges",
-      "detail": "invalidate:watchEventParticipationRosterProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/edit_hosted_event_actions.dart",
-      "symbol": "_EditHostedEventActions._saveChanges",
-      "detail": "invalidate:watchEventProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
-      "detail": "invalidate:watchOrganizerPostRemainingWeeklyQuotaProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._flushAttendanceOutbox",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._importRows",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._reviewClaim",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._syncProvider",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "CACHE-LISTENER-001",
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_actions.dart",
-      "symbol": "_HostOperationalRosterActions._toggleAttendance",
-      "detail": "invalidate:watchEventAttendeesProvider"
-    },
-    {
-      "rule": "KEEPALIVE-MANUAL-001",
-      "path": "packages/platform/lib/device/clipboard.dart",
-      "symbol": "clipboardControllerProvider",
-      "detail": "no-keepalive-marker"
-    },
-    {
-      "rule": "KEEPALIVE-MANUAL-001",
-      "path": "packages/platform/lib/device/clipboard.dart",
-      "symbol": "clipboardSetterProvider",
-      "detail": "no-keepalive-marker"
-    },
-    {
-      "rule": "KEEPALIVE-MANUAL-001",
-      "path": "packages/platform/lib/device/device_location.dart",
-      "symbol": "deviceLocationGatewayProvider",
-      "detail": "no-keepalive-marker"
-    },
-    {
-      "rule": "KEEPALIVE-MANUAL-001",
-      "path": "packages/platform/lib/persistence/command_journal_provider.dart",
-      "symbol": "commandJournalStorageProvider",
-      "detail": "no-keepalive-marker"
-    },
-    {
-      "rule": "KEEPALIVE-MANUAL-001",
-      "path": "lib/programs/presentation/program_events_controller.dart",
-      "symbol": "programCreateJournalProvider",
-      "detail": "no-keepalive-marker"
     }
   ]
 }

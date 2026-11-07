@@ -21,10 +21,22 @@ and for eight reads that cannot move: `previewEventOfferPreferences`,
 `getEventInviteLinkToken`, `getEventAssistanceDepartureRoster`,
 `getEventAssistanceRuntimeConfig` and `getHostAnalytics`.
 
-So the stale-while-revalidate client and the timed policies serve those eight
-callables, one-shot Firestore `.get()`s, and the callable reads that have not
-moved yet. Listeners need little more than a 60-second window after leaving:
-they render from the on-device cache on re-open and deliver their own updates.
+Decision S (2 November) settles what the cache serves: the timed policies,
+`ref.callableRead` and tags serve those eight callables and the one-shot gets
+that survive wave 1, and nothing else. Legacy screens that P3, P5 and P6
+replace are not migrated; their findings leave the baseline with the screen
+(see Rollout). Listeners need little more than a 60-second window after
+leaving: they render from the on-device cache on re-open and deliver their own
+updates.
+
+Of the eight, a command (create, manage, preview, token issue) stays a plain
+callable and declares what its write makes stale; a read goes through
+`ref.callableRead` with its freshness-table policy. `getHostAnalytics`
+(`hostReports`) is on the contract. The departure roster review, the runtime
+sender pages and the Luma event list are still called imperatively from their
+flows: the first two are steps inside a reviewed command, checked against the
+listener snapshot they were read from, and the third is keyed by an API key
+the host has just typed, which a session cache must not hold.
 
 ## Lifetimes
 
@@ -135,15 +147,22 @@ stale in the same `Mutation.run`:
   `AuthSessionController`). Native plugins start a fresh instance on the next
   call; on the web the terminated instance cannot restart, so the page
   reloads. A failed wipe is reported and sign-out continues.
-- The container retry policy merged in #1345; the 17 per-provider opt-outs
-  stay, because those reads must describe one runtime revision.
+- The container retry policy (`catchProviderRetry`, #1345) retries only
+  failures the backend marks retryable, three times within 1.4 s. One rule
+  decides the `@Riverpod(retry:)` opt-outs: a Firestore listener read owner
+  keeps its opt-out, because restarting a listener is the user's reload and
+  never an automatic retry; a Cloud Function or one-shot read owner takes the
+  container policy unless a comment on it names a reason review accepted.
+  Today nine listener read owners opt out and no callable read owner does.
 
 ## App clock and time to content
 
 `appClockProvider` (`packages/platform/lib/cache/app_clock.dart`) gives now and timers;
-tests drive it with `fake_async` through `AppClock.custom`. `dashboardNow`,
+tests drive it with `fake_async` through `AppClock.custom`. Read owners and
+time rules under `lib/contexts` take the time from it. `dashboardNow`,
 `exploreDiscoveryReferenceNow`, `eventChatNow` and `programProjectionClock`
-are deprecated aliases until 1.3b moves their callers.
+still read it for the dashboard, Explore, event chat and programme screens,
+and leave with those screens.
 
 `CatchAsyncBoundary` logs `screen_time_to_content` once per screen visit
 through the app analytics: the route name (`surface`), milliseconds from the
@@ -204,10 +223,27 @@ findings instead of failing on them.
 
 ### Phase 2: context migrations empty the baseline
 
-1.3b moves the feature clocks' callers to `appClockProvider`. Each context's
-migration PR then puts its read owners on the contract, applies the shared
-harness to them and deletes its baseline entries. When the baseline is empty,
-the rules gate with no list.
+Code that survives the redesign is on the contract: the lifetime, listener
+and keep-alive findings are gone, and so are the invalidations outside legacy
+screens. What the baseline still lists is `CACHE-INVALIDATE-001` in screens
+the redesign deletes, so each screen PR deletes its entries with the screen.
+When the baseline is empty, the rules gate with no list.
+
+| Legacy code | Entries | Call sites | Deleted by |
+|---|---|---|---|
+| `lib/hosts/today/personalization` | 2 | 2 | P3.1 Today |
+| `lib/event_success/presentation` (departure controller, attendance disposition editor) | 3 | 3 | P3.4 Live |
+| `lib/event_rehearsal/presentation` | 2 | 10 | P5 events workspace |
+| `lib/hosts/presentation/widgets/host_event_participants_section.dart` | 1 | 1 | P5 events workspace |
+| `lib/hosts/presentation/customers` | 22 | 23 | P5 people |
+| `lib/hosts/presentation/inbox` | 10 | 10 | P5 people |
+| `lib/hosts/presentation/forms` | 12 | 14 | P5 forms |
+| `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart`, `host_tracking_settings_section.dart` | 5 | 5 | P5 organizer |
+| `lib/programs/presentation` | 11 | 12 | P5 programmes |
+| `lib/explore/presentation` | 7 | 7 | P6 explore |
+| `lib/chats/presentation/chat_retry_controller.dart`, `lib/swipes/presentation` | 5 | 5 | P6 after and chats |
+| `lib/user_profile/presentation` | 2 | 2 | P6 you |
+| Total | 82 | 94 | |
 
 ## Code map
 
