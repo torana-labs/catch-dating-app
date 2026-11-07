@@ -16396,7 +16396,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
       ..._hostInboxSelectedThreadOverrides(),
-      // The sidebar's footer shows who is signed in.
+      // The sidebar footer shows who is signed in.
       watchUserProfileProvider.overrideWith(
         (ref) => Stream.value(_captureViewer),
       ),
