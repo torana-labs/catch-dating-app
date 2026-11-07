@@ -73,7 +73,7 @@ export const Host: Story = {
     },
     catchComponent: {
       id: "route_host", routeIds: ["host"],
-      states: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"],
+      states: ["default", "night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"],
     },
   },
   render: () => <HostPage />,

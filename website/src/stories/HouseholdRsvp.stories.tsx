@@ -34,6 +34,7 @@ type Story = StoryObj<typeof meta>;
 
 /** Who is coming to each function, the travel and the consent, ready to send. */
 export const Ready: Story = {
+  parameters: {catchComponent: {id: "household_rsvp_view", routeIds: ["household_rsvp"], states: ["ready"]}},
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", {level: 1, name: view.programTitle})).toBeVisible();
@@ -42,8 +43,8 @@ export const Ready: Story = {
 };
 export const Desktop: Story = {globals: {viewport: {value: "rsvpDesktop", isRotated: false}}};
 export const Sending: Story = {args: {screen: {...ready, pending: true}}};
-export const Saved: Story = {args: {screen: {...ready, dirty: false, submitted: true, notice: householdRsvpCopy.saved}}};
+export const Saved: Story = {parameters: {catchComponent: {id: "household_rsvp_view", routeIds: ["household_rsvp"], states: ["saved"]}}, args: {screen: {...ready, dirty: false, submitted: true, notice: householdRsvpCopy.saved}}};
 export const Uncertain: Story = {args: {screen: {...ready, notice: householdRsvpCopy.uncertain}}};
-export const Loading: Story = {args: {screen: {kind: "loading"}}};
-export const Unavailable: Story = {args: {screen: {kind: "unavailable", reason: "invalid"}}};
+export const Loading: Story = {parameters: {catchComponent: {id: "household_rsvp_view", routeIds: ["household_rsvp"], states: ["loading"]}}, args: {screen: {kind: "loading"}}};
+export const Unavailable: Story = {parameters: {catchComponent: {id: "household_rsvp_view", routeIds: ["household_rsvp"], states: ["unavailable"]}}, args: {screen: {kind: "unavailable", reason: "invalid"}}};
 export const NetworkError: Story = {args: {screen: {kind: "unavailable", reason: "network"}}};

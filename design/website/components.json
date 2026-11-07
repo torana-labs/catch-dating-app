@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 113,
-  "updated": "2026-10-26",
+  "version": 114,
+  "updated": "2026-11-08",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -154,6 +154,71 @@
       "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today."
     },
     {
+      "id": "shared_public_page_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/PublicSiteChrome.tsx",
+      "exportName": "PublicPageHeader",
+      "comparedWith": [
+        "catch.button",
+        "catch.step_header",
+        "catch.workspace_header"
+      ],
+      "comparisonReason": "Configures the site top bar (PublicSiteHeader, CatchTopBar variant site) with the organiser and event boards' links and Get the app; it is site chrome, not a wizard step header, a workspace pane header or a button.",
+      "css": [
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "links",
+          "get-the-app"
+        ]
+      },
+      "notes": "The organiser and event pages' site top bar: the wordmark, Explore and For organisers, and Get the app. Rendered at the top of both pages; features/organizers/sections/PublicPageChrome.tsx is a deprecated re-export for callers not yet moved."
+    },
+    {
+      "id": "shared_public_page_footer",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_detail_canonical",
+        "event_offer",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "public_form"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/PublicSiteChrome.tsx",
+      "exportName": "PublicPageFooter",
+      "comparedWith": [
+        "catch.button",
+        "catch.stack",
+        "catch.text"
+      ],
+      "comparisonReason": "The rebuilt public pages' short footer: the wordmark across from quiet site links, with an optional operator line. It arranges Text, Stack and Button and implements none of them.",
+      "css": [
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "page-links",
+          "site-and-legal-links"
+        ]
+      },
+      "notes": "The boards' short footer. The organiser and event pages close their main column with the default links (Privacy, Terms, For organisers, Help); the claim, form and offer pages pass the site and legal links and the operator line. Only the claim page records footer clicks."
+    },
+    {
       "id": "route_home",
       "kind": "route",
       "routeIds": [
@@ -190,24 +255,23 @@
       "source": "website/src/features/home/sections/homeSections.tsx",
       "exportName": "HomePageSections",
       "css": [
-        "packages/web-ui/src/components/CatchSiteHeader.module.css",
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGap.module.css",
-        "packages/web-ui/src/components/CatchHeroShowcase.module.css",
-        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
-        "packages/web-ui/src/components/CatchFormatTile.module.css",
-        "packages/web-ui/src/components/CatchScroller.module.css",
-        "packages/web-ui/src/components/CatchPlanCard.module.css",
-        "packages/web-ui/src/components/CatchGrid.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchScrollStory.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchRail.module.css",
+        "packages/web-ui/src/components/CatchEventCard.module.css",
         "packages/web-ui/src/components/CatchOrganizerCard.module.css",
-        "packages/web-ui/src/components/CatchStoreButton.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
         "packages/web-ui/src/components/CatchQrCode.module.css",
         "packages/web-ui/src/components/CatchAccordion.module.css",
-        "packages/web-ui/src/components/CatchMenu.module.css",
-        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -372,8 +436,7 @@
         "website/src/styles/host-foundation.css",
         "website/src/styles/host.css",
         "website/src/styles/flows.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/host-landing.css"
+        "website/src/styles/responsive.css"
       ],
       "storybook": {
         "status": "ready",
@@ -381,21 +444,15 @@
         "exportName": "Host",
         "states": [
           "default",
-          "run-club",
-          "dinner",
-          "games",
-          "pickleball",
-          "pub-crawl",
-          "pilot-offer",
-          "application-link",
-          "existing-tools",
-          "adoption-tools",
-          "adoption-booking",
-          "adoption-network",
-          "participation-privacy"
+          "night-chapter",
+          "applicant-replay",
+          "layer-one",
+          "pricing-cap",
+          "apply-card",
+          "phone"
         ]
       },
-      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Includes selectable adoption circles and participation/privacy guidance."
+      "notes": "Host landing from the RbWebHostV2 board on the white ground: hero with the phone mock, the five formats, on the night (chapters drive the phone), the host stand, from interested to expected (applicant replay), for your guests, what brings people in, the layer picker, the pricing range (5%, capped at ₹10,000), the FAQ and the apply card that continues to /host/apply/. Retired-route anchors sit on the bands that carry that content. The route story covers the default state; the other review states are manual."
     },
     {
       "id": "route_organizer_listing",
@@ -408,9 +465,11 @@
       "source": "website/src/features/organizers/HostListingPage.tsx",
       "exportName": "HostListingPage",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "website/src/styles/site-shell.css"
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -421,7 +480,7 @@
           "claim-pitch"
         ]
       },
-      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. Generated pages keep the site header; claimed pages are the organiser's own. The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
+      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. Every organiser page, claimed or generated, carries the site top bar (PublicPageHeader) and ends with the boards' short footer (PublicPageFooter), both from shared/site (PublicSiteChrome.tsx). The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
     },
     {
       "id": "route_event_detail",
@@ -435,7 +494,13 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css"
+        "website/src/styles/consumer-home.css",
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchNoticeRegion.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -450,7 +515,32 @@
           "mobile-sticky-action"
         ]
       },
-      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) and composed only of @catch/web-ui parts: media (photo, or a poster in the activity accent), title and host, the when/where/price facts, description, hosted moments, the plan for the day, where (map once a static map provider exists, otherwise text and Open in Google Maps), good to know, going and spots left, the organiser card, organiser reviews and more from the organiser. Every optional section closes when its field is absent, so an imported event with only title, time, place, price and description still reads as complete. Catch events keep the existing phone-verified guest entry in the booking card and its docked phone bar; imported events send a recorded booking click to their source. Booking moves into the sticky aside in the next slice."
+      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) on the RbWebEventV2 board: the site top bar, a reading lane beside the booking card (sticky aside from 840px, docked bar and sheet below), and the boards' short footer closing the lane. Composed of @catch/web-ui parts: photo or poster, the head with Hosted by and Share, the when/where/price facts, about, coming on your own, the plan for the night, where (map when the server has one, else text and Open in Google Maps), good to know, who's going, the organiser card, what people say and more from the organiser. Every optional section closes when its field is absent. One CatchBand stays as the container the booking aside measures. Catch events keep the phone-verified guest entry in the booking card; imported events send a recorded booking click to their source. EventPageFrame is the shared frame for the route and its stories."
+    },
+    {
+      "id": "event_page_frame",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "exportName": "EventPageFrame",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "reading-lane",
+          "booking-aside"
+        ]
+      },
+      "notes": "The event page's frame shared by the route and EventPage.stories.tsx: the site top bar, the reading lane with the sections and the short footer, and the booking aside. The band is only the container the booking aside measures."
     },
     {
       "id": "event_detail_public_registration",
@@ -489,8 +579,10 @@
       "source": "website/src/features/events/sections/EventPageSections.tsx",
       "exportName": "EventPageHeader",
       "css": [
-        "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchAvatar.module.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -513,14 +605,17 @@
       "source": "website/src/features/events/sections/EventPageSections.tsx",
       "exportName": "EventPageMain",
       "css": [
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchEventCard.module.css",
+        "packages/web-ui/src/components/CatchRail.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchStarRating.module.css",
+        "packages/web-ui/src/components/CatchMarker.module.css",
         "packages/web-ui/src/components/CatchHeroImage.module.css",
-        "packages/web-ui/src/components/CatchEventPoster.module.css",
-        "packages/web-ui/src/components/CatchFactTile.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchStepList.module.css",
-        "packages/web-ui/src/components/MapPreview.module.css",
-        "packages/web-ui/src/components/CatchReviewItem.module.css",
-        "packages/web-ui/src/components/CatchPreviewCard.module.css"
+        "packages/web-ui/src/components/MapPreview.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -607,7 +702,9 @@
       "source": "website/src/features/events/sections/EventPageSections.tsx",
       "exportName": "EventBookingCard",
       "css": [
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
@@ -633,9 +730,9 @@
       "source": "website/src/features/organizers/sections/HostListingSections.tsx",
       "exportName": "HostListingSections",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGap.module.css"
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -659,10 +756,13 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
       "exportName": "OrganizerIdentitySection",
       "css": [
-        "packages/web-ui/src/components/CatchProfileHeader.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchHeroImage.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchGrid.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
         "packages/web-ui/src/components/CatchQrCode.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCodeInput.module.css"
@@ -682,6 +782,29 @@
       "notes": "Profile header with follow and share; the share card holds the page's QR code and copy action. Follow uses the visitor's account until follow by phone (CAT-253) lands; its sheet is built and hidden behind OrganizerPageBackends.followByPhone."
     },
     {
+      "id": "organizer_cover",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
+      "exportName": "OrganizerCover",
+      "css": [
+        "packages/web-ui/src/components/CatchHeroImage.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "photo",
+          "format-colour"
+        ]
+      },
+      "notes": "The RbWebOrgV2 hero above the identity: a past event's photo, or a spotlight in the organiser's format colour where there is none. Rendered by HostListingSections; the Guest and Generated stories draw it inside the page."
+    },
+    {
       "id": "organizer_next_up_section",
       "kind": "section",
       "routeIds": [
@@ -692,7 +815,10 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerRailSections.tsx",
       "exportName": "OrganizerNextUpSection",
       "css": [
-        "packages/web-ui/src/components/CatchPreviewCard.module.css"
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -716,8 +842,9 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerRailSections.tsx",
       "exportName": "OrganizerLinksSection",
       "css": [
-        "packages/web-ui/src/components/CatchLinkTile.module.css",
-        "packages/web-ui/src/components/CatchGap.module.css"
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -741,10 +868,10 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
       "exportName": "OrganizerEventsSection",
       "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
         "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchDateTile.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css"
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -769,8 +896,10 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
       "exportName": "OrganizerMomentsSection",
       "css": [
-        "packages/web-ui/src/components/CatchPhotoTile.module.css",
-        "packages/web-ui/src/components/CatchGrid.module.css"
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchHeroImage.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -794,10 +923,11 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerReviewsSection.tsx",
       "exportName": "OrganizerReviewsSection",
       "css": [
-        "packages/web-ui/src/components/CatchRatingSummary.module.css",
-        "packages/web-ui/src/components/CatchReviewItem.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStarRating.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
         "packages/web-ui/src/components/CatchStarInput.module.css",
         "packages/web-ui/src/components/CatchField.module.css"
       ],
@@ -825,8 +955,9 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
       "exportName": "OrganizerAboutSection",
       "css": [
-        "packages/web-ui/src/components/CatchFactTile.module.css",
-        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
         "packages/web-ui/src/components/CatchAvatar.module.css"
       ],
       "storybook": {
@@ -851,8 +982,9 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
       "exportName": "OrganizerClaimSection",
       "css": [
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
         "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
@@ -877,7 +1009,7 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
       "exportName": "OrganizerPageFooter",
       "css": [
-        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
@@ -902,7 +1034,6 @@
       "exportName": "HostApplicationFlow",
       "css": [
         "website/src/styles/flows.css",
-        "website/src/styles/host-landing.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -929,8 +1060,11 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/flows.css",
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -944,7 +1078,7 @@
           "claim-unavailable"
         ]
       },
-      "notes": "Claim route story wraps the route in the website Query provider because submission owns a TanStack Query mutation. Direct links to listings without a verified claim target render claim-unavailable instead of collecting a packet that cannot be submitted."
+      "notes": "Claim route on the RbWebClaim boards (white ground, reading layout): search or the link states with the help beside them, then the instant claim for one listing, and the boards' short footer (PublicPageFooter). The story wraps the route in the website Query provider because submission owns a TanStack Query mutation. Direct links to listings without a verified claim target render claim-unavailable. site-shell.css and flows.css stay only for the demo continuation (?continuation=), which still renders inside ClaimFlowMain."
     },
     {
       "id": "shared_legal_document_shell",
@@ -1035,8 +1169,12 @@
       "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
       "exportName": "ClaimHeroSection",
       "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1060,8 +1198,15 @@
       "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
       "exportName": "ClaimUrlStateSection",
       "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1086,9 +1231,15 @@
       "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
       "exportName": "ClaimSearchSection",
       "css": [
-        "website/src/styles/flows.css",
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1112,10 +1263,19 @@
       "source": "website/src/features/claims/sections/InstantClaimSection.tsx",
       "exportName": "InstantClaimPanel",
       "css": [
-        "packages/web-ui/src/components/CatchGap.module.css",
         "packages/web-ui/src/components/CatchText.module.css",
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchChoiceTile.module.css",
+        "packages/web-ui/src/components/CatchNotice.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1134,7 +1294,143 @@
           "pending-review"
         ]
       },
-      "notes": "The whole claim for one listing (WebOrgV2 claim band, CAT-256): a phone sign-in, then a code sent from the listing's Instagram account to Catch's or pasted into its Luma calendar, with a staff review request (proof links and an optional note) as the fallback. Storybook uses a mock controller; the route wraps it with useInstantClaimController."
+      "notes": "The whole claim for one listing (RbWebClaim boards, CAT-256): a phone sign-in, then a code sent from the listing's Instagram account to Catch's or pasted into its Luma calendar, with a staff review request (proof links and an optional note) as the fallback. Storybook uses a mock controller; the route wraps it with useInstantClaimController."
+    },
+    {
+      "id": "claim_head",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/ClaimParts.tsx",
+      "exportName": "ClaimHead",
+      "css": [
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "kicker-title-lead"
+        ]
+      },
+      "notes": "A claim page's opening on every RbWebClaim board: the coloured kicker over the page title and its lead. Drawn by every step story in ClaimSections.stories.tsx."
+    },
+    {
+      "id": "claim_page_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/ClaimParts.tsx",
+      "exportName": "ClaimPageCard",
+      "css": [
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "unclaimed",
+          "claimed",
+          "change"
+        ]
+      },
+      "notes": "The page being claimed, as the boards' page card: avatar, name, meta and the claim badge, with Change when the page was picked from search."
+    },
+    {
+      "id": "claim_steps",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/ClaimParts.tsx",
+      "exportName": "ClaimSteps",
+      "css": [
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "sign-in-current",
+          "prove-current"
+        ]
+      },
+      "notes": "The two ranked steps, sign in then prove it, with the current one chosen (the desktop aside and the sign-in board)."
+    },
+    {
+      "id": "claim_split_only",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/ClaimParts.tsx",
+      "exportName": "SplitOnly",
+      "css": [],
+      "storybook": {
+        "status": "not-required",
+        "states": [
+          "split"
+        ]
+      },
+      "notes": "Renders its children only while the reading layout is split (the desktop board's aside parts). Unstyled."
+    },
+    {
+      "id": "claim_unsplit_only",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/ClaimParts.tsx",
+      "exportName": "UnsplitOnly",
+      "css": [],
+      "storybook": {
+        "status": "not-required",
+        "states": [
+          "stacked"
+        ]
+      },
+      "notes": "Renders its children only while the reading layout is stacked, where each phone board places the aside's parts in the lane. Unstyled."
+    },
+    {
+      "id": "claim_guidance",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims/sections",
+      "source": "website/src/features/claims/sections/ClaimParts.tsx",
+      "exportName": "ClaimGuidance",
+      "css": [
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchAccordion.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "faq"
+        ]
+      },
+      "notes": "Help beside the search and the link states: the FAQ accordion, Help and Pilot."
     },
     {
       "id": "shared_claim_flow_shell",
@@ -1155,15 +1451,10 @@
         "story": "website/src/stories/RouteShellPrimitives.stories.tsx",
         "exportName": "ClaimFlowShellStory",
         "states": [
-          "route-root",
-          "hero",
-          "workspace",
-          "panel",
-          "listing-results",
-          "verification"
+          "route-root"
         ]
       },
-      "notes": "Shared website claim-flow shell primitives for the /claim/ route root, hero, workspace, panel, stage, listing results, listing cards, verification grid, owner unlock board, and AuthStatusRow variants; raw claim-flow route/root/auth-row shells are blocked by web:react-component-governance."
+      "notes": "The /claim/ route root main (ClaimFlowMain), kept only for the demo continuation (?continuation=) and AuthStatusRow variants. The claim flow itself is drawn from @catch/web-ui (P4.4); the hero, workspace, panel, stage, listing result, selected listing, verification grid and owner unlock primitives are deleted. Raw claim-flow shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_ui_label_shell",
@@ -1306,11 +1597,10 @@
           "default",
           "public-event",
           "organizer-results",
-          "claim",
           "listing-review"
         ]
       },
-      "notes": "Shared website EmptyState shell with named variants for home discovery, claim lookup, organizer search results, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance.",
+      "notes": "Shared website EmptyState shell with named variants for home discovery, organizer search results, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance.",
       "exportName": "EmptyState",
       "componentId": "catch.empty_state"
     },
@@ -1411,49 +1701,6 @@
         ]
       },
       "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
-    },
-    {
-      "id": "shared_site_header",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_detail_canonical",
-        "help",
-        "home",
-        "host",
-        "host_apply",
-        "not_found",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "privacy",
-        "terms",
-        "visitor_discovery"
-      ],
-      "owner": "shared/site",
-      "source": "website/src/shared/site/SiteHeader.tsx",
-      "exportName": "SiteHeader",
-      "comparedWith": [
-        "catch.step_header",
-        "catch.top_bar",
-        "catch.workspace_header"
-      ],
-      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header. Not a workspace pane header: site chrome above the page, not a pane title row. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today.",
-      "css": [
-        "website/src/styles/site-footer.css",
-        "website/src/styles/site-shell.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "light",
-          "dark",
-          "menu-open",
-          "scrolled"
-        ]
-      },
-      "notes": "Shared website component; Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header."
     },
     {
       "id": "shared_plain_button",
@@ -1755,29 +2002,6 @@
       "notes": "Shared website component; FAQ accordion of details elements; not a numbered journey."
     },
     {
-      "id": "shared_verification_method_grid",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup"
-      ],
-      "owner": "features/claims",
-      "source": "website/src/shared/ui/primitives/layout.tsx",
-      "exportName": "VerificationMethodGrid",
-      "componentId": "catch.chip.field",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "unselected",
-          "selected"
-        ]
-      },
-      "notes": "Single-select verification method group over ToggleGroupControl: a choice-input adapter."
-    },
-    {
       "id": "shared_choice_chip_grid",
       "kind": "supporting-component",
       "routeIds": [
@@ -1942,11 +2166,10 @@
           "format",
           "trust",
           "surface",
-          "claim-review",
           "listing-event"
         ]
       },
-      "notes": "Shared website content grid primitive for format, trust, public event, host surface, listing event, and claim review grids, including configured MarketingInfoCardGrid usage for trust and surface cards; raw format-grid, trust-grid, public-event-grid, surface-grid, listing-catch-event-grid, and claim-review-grid shells are blocked by web:react-component-governance."
+      "notes": "Shared website content grid primitive for format, trust, public event, host surface, and listing event grids, including configured MarketingInfoCardGrid usage for trust and surface cards; raw format-grid, trust-grid, public-event-grid, surface-grid, and listing-catch-event-grid shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_host_application_shell",
@@ -2241,6 +2464,22 @@
       "source": "website/src/features/forms/PublicFormPage.tsx",
       "exportName": "PublicFormPage",
       "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchMetaRow.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
         "website/src/styles/public-forms.css"
       ],
       "storybook": {
@@ -2253,7 +2492,49 @@
           "unavailable"
         ]
       },
-      "notes": "Opaque public organizer form respondent route with app-free verification, autosave, review, submission, and withdrawal."
+      "notes": "Opaque public organizer form route on the RbWebForm board (white ground, reading layout): app-free verification, autosave, review, submission, payment and withdrawal. The route binds usePublicFormController to PublicFormView. public-forms.css stays for the signature pad and the multi-file picker, which have no system component yet."
+    },
+    {
+      "id": "public_form_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "public_form"
+      ],
+      "owner": "features/forms",
+      "source": "website/src/features/forms/PublicFormPage.tsx",
+      "exportName": "PublicFormView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchMetaRow.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "website/src/styles/public-forms.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PublicForm.stories.tsx",
+        "exportName": "Questions",
+        "states": [
+          "questions",
+          "identity",
+          "review",
+          "complete",
+          "unavailable"
+        ]
+      },
+      "notes": "Every stage of the public form drawn from a controller, so stories can render each one: the site top bar (left out when embedded), the organiser row, title and lead, the fields and choices, the messages tile, Send, the review, payment, receipt, withdrawal and the boards' short footer."
     },
     {
       "id": "shared_public_form_shells",
@@ -2339,12 +2620,22 @@
       "source": "website/src/features/householdRsvp/HouseholdRsvpPage.tsx",
       "exportName": "HouseholdRsvpPage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
-        "story": "website/src/stories/HouseholdRsvp.stories.tsx",
-        "exportName": "HouseholdRsvp",
         "states": [
           "loading",
           "ready",
@@ -2352,7 +2643,7 @@
           "unavailable"
         ]
       },
-      "notes": "Uses existing runtime primitives for the private household RSVP page. Stories are deterministic; promotion requires reviewed visual baselines."
+      "notes": "The private household RSVP page on the RbProgRsvp board: the programme's top bar, the spotlight with the dates and greeting, a tile per function with each member's reply, getting there, the WhatsApp consent tile and Send our reply. Messaging consent is an explicit checkbox."
     },
     {
       "id": "household_rsvp_view",
@@ -2364,12 +2655,24 @@
       "source": "website/src/features/householdRsvp/HouseholdRsvpPage.tsx",
       "exportName": "HouseholdRsvpView",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
         "story": "website/src/stories/HouseholdRsvp.stories.tsx",
-        "exportName": "HouseholdInvitation",
+        "exportName": "Ready",
         "states": [
           "loading",
           "ready",
@@ -2377,7 +2680,7 @@
           "unavailable"
         ]
       },
-      "notes": "Uses existing runtime primitives for the private household RSVP page. Stories are deterministic; promotion requires reviewed visual baselines."
+      "notes": "The private household RSVP page on the RbProgRsvp board: the programme's top bar, the spotlight with the dates and greeting, a tile per function with each member's reply, getting there, the WhatsApp consent tile and Send our reply. Messaging consent is an explicit checkbox."
     },
     {
       "id": "event_sms_preference_panel",
@@ -2647,10 +2950,15 @@
       "source": "website/src/features/eventOffers/EventOfferPage.tsx",
       "exportName": "EventOfferPage",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
         "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
         "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchField.module.css"
@@ -2681,10 +2989,15 @@
       "source": "website/src/features/eventOffers/EventOfferPage.tsx",
       "exportName": "EventOfferView",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
         "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
         "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
         "packages/web-ui/src/components/CatchField.module.css"
@@ -2995,7 +3308,6 @@
       "source": "website/src/features/host/HostApplicationPage.tsx",
       "exportName": "HostApplicationPage",
       "css": [
-        "website/src/styles/host-landing.css",
         "website/src/styles/flows.css"
       ],
       "storybook": {

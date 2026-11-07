@@ -74,6 +74,7 @@ type Story = StoryObj<typeof meta>;
 
 /** The questions: the organiser, the title and lead, the fields and the pace chips. */
 export const Questions: Story = {
+  parameters: {catchComponent: {id: "public_form_view", routeIds: ["public_form"], states: ["questions"]}},
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", {level: 1, name: definition.title})).toBeVisible();
@@ -84,11 +85,12 @@ export const Desktop: Story = {globals: {viewport: {value: "formDesktop", isRota
 export const Embedded: Story = {args: {controller: at({embed: true})}};
 export const FieldErrors: Story = {args: {controller: at({answers: {}, errors: {name: "Your name is required.", pace: "Choose one."}})}};
 export const Loading: Story = {args: {controller: at({stage: "loading", form: null})}};
-export const Identity: Story = {args: {controller: at({stage: "identity", form: {...form, definition: {...definition, identityPolicy: "emailOrPhoneVerified"}}})}};
+export const Identity: Story = {parameters: {catchComponent: {id: "public_form_view", routeIds: ["public_form"], states: ["identity"]}}, args: {controller: at({stage: "identity", form: {...form, definition: {...definition, identityPolicy: "emailOrPhoneVerified"}}})}};
 export const PhoneCode: Story = {args: {controller: at({stage: "phoneCode", phoneNumber: "+919819022117"})}};
 export const EmailSent: Story = {args: {controller: at({stage: "emailSent"})}};
 /** The review: every answer, the consent and the messages tile, then Send. */
 export const Review: Story = {
+  parameters: {catchComponent: {id: "public_form_view", routeIds: ["public_form"], states: ["review"]}},
   args: {controller: at({stage: "review"})},
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -99,6 +101,6 @@ export const Review: Story = {
 export const PaidReview: Story = {args: {controller: at({stage: "review", form: {...form, definition: paidDefinition}})}};
 export const Payment: Story = {args: {controller: at({stage: "payment", form: {...form, definition: paidDefinition},
   payments: {payment, pending: false, pay: asyncNoop, refresh: asyncNoop, status: {message: "", tone: ""}}})}};
-export const Complete: Story = {args: {controller: at({stage: "complete", receipt})}};
+export const Complete: Story = {parameters: {catchComponent: {id: "public_form_view", routeIds: ["public_form"], states: ["complete"]}}, args: {controller: at({stage: "complete", receipt})}};
 export const Withdrawn: Story = {args: {controller: at({stage: "withdrawn"})}};
-export const Unavailable: Story = {args: {controller: at({stage: "unavailable"})}};
+export const Unavailable: Story = {parameters: {catchComponent: {id: "public_form_view", routeIds: ["public_form"], states: ["unavailable"]}}, args: {controller: at({stage: "unavailable"})}};
