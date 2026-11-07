@@ -22,6 +22,8 @@ const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.Ho
 const Explore = dynamic(() => import("../../features/home/ExplorePage").then(m => m.ExplorePage));
 const Host = dynamic(() => import("../../features/host/HostPage").then(m => m.HostPage));
 const Apply = dynamic(() => import("../../features/host/HostApplicationPage").then(m => m.HostApplicationPage));
+const Weddings = dynamic(() => import("../../features/weddings/WeddingsPage").then(m => m.WeddingsPage));
+const WeddingsApply = dynamic(() => import("../../features/weddings/WeddingsApplicationPage").then(m => m.WeddingsApplicationPage));
 const Listing = dynamic(() => import("../../features/organizers/HostListingPage").then(m => m.HostListingPage));
 const Event = dynamic(() => import("../../features/events/EventDetailPage").then(m => m.EventDetailPage));
 const Claim = dynamic(() => import("../../features/claims/ClaimPage").then(m => m.ClaimPage));
@@ -46,6 +48,8 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host />;
+  else if (page === "weddings") content = location.pathname.replace(/\/$/, "") === "/weddings/apply"
+    ? <WeddingsApply /> : <Weddings />;
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",
