@@ -1,25 +1,30 @@
-import {CatchGap} from "@catch/web-ui";
+import {
+  CatchBadge,
+  CatchButton,
+  CatchIcon,
+  CatchIndexRow,
+  CatchLoadingIndicator,
+  CatchNotice,
+  CatchPageBody,
+  CatchPaneLayout,
+  CatchRoot,
+  CatchSection,
+  CatchStack,
+  CatchSurface,
+  CatchText,
+  CatchTopBar,
+  type CatchNoticeTone,
+} from "@catch/web-ui";
+import {publicSiteCopy} from "@content/site";
+import type {ReactNode} from "react";
 import {useParams} from "react-router";
 import {eventRehearsalCopy} from "../../content/eventRehearsal";
 import type {
   EventRehearsalGuestAction,
   EventRehearsalGuestBootstrap,
 } from "../../firebase";
-import {
-  Button,
-  EventRuntimeAssignments,
-  EventRuntimeFrame,
-  EventRuntimeKicker,
-  EventRuntimeLive,
-  EventRuntimeLiveHeader,
-  EventRuntimeLoading,
-  EventRuntimeModule,
-  EventRuntimeNoticeStack,
-  EventRuntimePanel,
-  EventRuntimePracticeBanner,
-  EventRuntimeRouteMap,
-  FormStatus,
-} from "../../shared/ui/primitives";
+import {WebsitePageMain} from "../../shared/site";
+import {EventRuntimeRouteMap} from "../../shared/ui/primitives";
 import {availableEventRehearsalGuestActions, canReplyToRehearsal,
   pendingRehearsalRequiredData, type RehearsalReply,
   type RehearsalReplyState, type RehearsalRequiredField} from "./eventRehearsalModel";
@@ -38,37 +43,23 @@ function EventRehearsalGuest({publicRehearsalId}: {publicRehearsalId: string}) {
 
   if (controller.isLoading) {
     return (
-      <EventRuntimeFrame
-        brandLabel={eventRehearsalCopy.brand}
-        brandWord={eventRehearsalCopy.brandWord}
-      >
-        <EventRuntimePanel
-          kicker={eventRehearsalCopy.loadingTitle}
-          title={eventRehearsalCopy.loadingTitle}
-          body={eventRehearsalCopy.practiceBanner}
-        >
-          <EventRuntimeLoading label={eventRehearsalCopy.loading} />
-        </EventRuntimePanel>
-      </EventRuntimeFrame>
+      <RehearsalShell banner={eventRehearsalCopy.practiceBanner}>
+        <CatchText as="h1" variant="page-title">{eventRehearsalCopy.loadingTitle}</CatchText>
+        <CatchLoadingIndicator label={eventRehearsalCopy.loading} />
+      </RehearsalShell>
     );
   }
 
   if (controller.isUnavailable || !controller.bootstrap) {
     return (
-      <EventRuntimeFrame
-        brandLabel={eventRehearsalCopy.brand}
-        brandWord={eventRehearsalCopy.brandWord}
-      >
-        <EventRuntimePanel
-          kicker={eventRehearsalCopy.unavailableKicker}
-          title={eventRehearsalCopy.unavailableTitle}
-          body={eventRehearsalCopy.unavailableBody}
-        >
-          <Button onClick={() => void controller.refresh()} type="button">
-            {eventRehearsalCopy.retry}
-          </Button>
-        </EventRuntimePanel>
-      </EventRuntimeFrame>
+      <RehearsalShell>
+        <CatchStack gap={8}>
+          <CatchText tone="secondary" variant="label-kicker">{eventRehearsalCopy.unavailableKicker}</CatchText>
+          <CatchText as="h1" variant="page-title">{eventRehearsalCopy.unavailableTitle}</CatchText>
+          <CatchText tone="secondary" variant="body">{eventRehearsalCopy.unavailableBody}</CatchText>
+        </CatchStack>
+        <CatchButton fill label={eventRehearsalCopy.retry} onPressed={() => void controller.refresh()} />
+      </RehearsalShell>
     );
   }
 
@@ -84,6 +75,47 @@ function EventRehearsalGuest({publicRehearsalId}: {publicRehearsalId: string}) {
       pending={controller.pending}
       status={controller.status}
     />
+  );
+}
+
+/**
+ * The guest live screens in practice (P4.6): the same night ground, top bar
+ * and parts as `/join`, under a practice notice. Every control changes only
+ * the synthetic guest this phone holds.
+ */
+function RehearsalShell({banner, children}: {banner?: string; children: ReactNode}) {
+  return (
+    <CatchRoot theme="night">
+      <CatchTopBar homeHref="/" title={publicSiteCopy.wordmark} variant="site" />
+      <WebsitePageMain id="event-rehearsal">
+        <CatchPageBody gutter={false} pb="s8" pt="s4">
+          <CatchPaneLayout
+            main={
+              <CatchStack gap={16}>
+                {banner ? <RehearsalNotice icon="flag" id="practice" title={banner} tone="warning" /> : null}
+                {children}
+              </CatchStack>
+            }
+            pattern="reading"
+          />
+        </CatchPageBody>
+      </WebsitePageMain>
+    </CatchRoot>
+  );
+}
+
+function RehearsalNotice({id, title, tone = "status", icon = "info"}: {
+  id: string;
+  title: string;
+  tone?: CatchNoticeTone;
+  icon?: "flag" | "info";
+}) {
+  return <CatchNotice dismissLabel="" notice={{id, title, tone, icon: <CatchIcon name={icon} />}} />;
+}
+
+function RehearsalStatus({message, error = false}: {message: string; error?: boolean}) {
+  return (
+    <CatchText role="status" tone={error ? "danger" : "secondary"} variant="body-small">{message}</CatchText>
   );
 }
 
@@ -119,118 +151,126 @@ export function EventRehearsalPreview({
     hour: "numeric",
     minute: "2-digit",
   }).format(bootstrap.session.virtualNowMillis);
+  const blocked = pending || !replyState.fresh ||
+    replyState.retryChoice !== null || requiredDataRetry;
+  const actionButton = (action: EventRehearsalGuestAction, variant: "primary" | "secondary") => (
+    <CatchButton
+      key={action}
+      label={eventRehearsalActionLabel(action)}
+      leadingIcon={action === "askForHelp" ? "help" : undefined}
+      onPressed={blocked ? null : () => onAction(action)}
+      size="sm"
+      status={pending ? "loading" : "idle"}
+      variant={variant}
+    />
+  );
+  const controls = actions.filter((action) => action !== "askForHelp" && action !== "completePrompt");
+  const disconnected = (bootstrap.actor.connectionState ??
+    (bootstrap.actor.status === "disconnected" ? "disconnected" : "connected")) === "disconnected";
 
   return (
-    <EventRuntimeFrame
-      brandLabel={eventRehearsalCopy.brand}
-      brandWord={eventRehearsalCopy.brandWord}
-      eventTitle={bootstrap.session.title}
-    >
-      <EventRuntimePracticeBanner>
-        {bootstrap.practiceBanner}
-      </EventRuntimePracticeBanner>
-      <EventRuntimeLive
-        reducedMotion={bootstrap.session.faultId === "reducedMotion"}
-      >
-        <EventRuntimeLiveHeader
-          badge={`${bootstrap.actor.displayName} · ${
-            eventRehearsalCopy.statusLabels[bootstrap.actor.status]
-          }`}
-        >
-          <EventRuntimeKicker>
-            {complete
-              ? eventRehearsalCopy.completeKicker
-              : eventRehearsalCopy.liveKicker}
-          </EventRuntimeKicker>
-          <h1>{bootstrap.session.title}</h1>
-          <p>
-            {bootstrap.session.locationName}
-            {eventRehearsalCopy.locationSeparator}
-            {eventRehearsalCopy.virtualTimePrefix} {clock}
-          </p>
-        </EventRuntimeLiveHeader>
+    <RehearsalShell banner={bootstrap.practiceBanner}>
+      <CatchStack align="start" direction="row" gap={12} justify="between">
+        <CatchStack gap={2}>
+          <CatchText as="h1" variant="title-bar">{bootstrap.session.title}</CatchText>
+          <CatchText tone="secondary" variant="body-meta">
+            {eventRehearsalCopy.headMeta(bootstrap.session.locationName, clock)}
+          </CatchText>
+        </CatchStack>
+        <CatchBadge label={eventRehearsalCopy.actorBadge(bootstrap.actor.displayName,
+          eventRehearsalCopy.statusLabels[bootstrap.actor.status])} />
+      </CatchStack>
 
-        {bootstrap.actor.assistanceMessage ? (
-          <EventRehearsalJoiningInstruction bootstrap={bootstrap}
-            pending={pending} state={replyState} onReply={onReply}
-            onRefresh={onRefresh} blocked={requiredDataRetry} />
-        ) : null}
+      {bootstrap.actor.assistanceMessage ? (
+        <EventRehearsalJoiningInstruction bootstrap={bootstrap}
+          pending={pending} state={replyState} onReply={onReply}
+          onRefresh={onRefresh} blocked={requiredDataRetry} />
+      ) : null}
 
-        {bootstrap.actor.requiredData?.request ? (
-          <EventRehearsalRequiredData bootstrap={bootstrap} pending={pending}
-            fresh={replyState.fresh} retryRequired={requiredDataRetry}
-            blockedByReply={replyState.retryChoice !== null}
-            onSubmit={onRequiredData} />
-        ) : null}
+      {bootstrap.actor.requiredData?.request ? (
+        <EventRehearsalRequiredData bootstrap={bootstrap} pending={pending}
+          fresh={replyState.fresh} retryRequired={requiredDataRetry}
+          blockedByReply={replyState.retryChoice !== null}
+          onSubmit={onRequiredData} />
+      ) : null}
 
-        <EventRuntimeModule title={eventRehearsalCopy.momentTitles[moment]}>
-          <p>{eventRehearsalCopy.momentBodies[moment]}</p>
-        </EventRuntimeModule>
+      <CatchSurface block="spotlight" color="ink">
+        <CatchStack gap={8}>
+          <CatchText variant="label-kicker">
+            {complete ? eventRehearsalCopy.completeKicker : eventRehearsalCopy.liveKicker}
+          </CatchText>
+          <CatchText as="h2" variant="display-lg">{eventRehearsalCopy.momentTitles[moment]}</CatchText>
+          <CatchText variant="body">{eventRehearsalCopy.momentBodies[moment]}</CatchText>
+        </CatchStack>
+      </CatchSurface>
 
-        <EventRuntimeModule title={eventRehearsalCopy.promptTitle} accent="coral">
-          <p>{bootstrap.session.attendeePrompt}</p>
-        </EventRuntimeModule>
+      <CatchSurface block="tile">
+        <CatchStack gap={8}>
+          <CatchText tone="secondary" variant="label-kicker">{eventRehearsalCopy.promptTitle}</CatchText>
+          <CatchText as="h2" variant="display-sm">{bootstrap.session.attendeePrompt}</CatchText>
+          {!complete && actions.includes("completePrompt") ? (
+            <CatchStack align="start">{actionButton("completePrompt", "primary")}</CatchStack>
+          ) : null}
+        </CatchStack>
+      </CatchSurface>
 
-        {bootstrap.session.movementSimulation ? (
-          <EventRehearsalMovementPreview
-            movement={bootstrap.session.movementSimulation}
-          />
-        ) : null}
+      {bootstrap.session.movementSimulation ? (
+        <EventRehearsalMovementPreview
+          movement={bootstrap.session.movementSimulation}
+        />
+      ) : null}
 
-        {complete ? (
-          <EventRuntimeModule title={eventRehearsalCopy.completeTitle}>
-            <p>{eventRehearsalCopy.completeBody}</p>
-          </EventRuntimeModule>
-        ) : actions.length === 0 ? (
-          <EventRuntimeModule title={eventRehearsalCopy.waitingTitle}>
-            <p>{eventRehearsalCopy.waitingBody}</p>
-          </EventRuntimeModule>
-        ) : (
-          <EventRuntimeModule title={eventRehearsalCopy.actionsTitle}>
-            <p>{eventRehearsalCopy.actionsBody}</p>
-            <CatchGap direction="horizontal" size="related" wrap>
-              {actions.map((action) => (
-                <Button
-                  disabled={pending || !replyState.fresh ||
-                    replyState.retryChoice !== null || requiredDataRetry}
-                  key={action}
-                  loading={pending}
-                  loadingLabel={eventRehearsalCopy.actionPending}
-                  onClick={() => onAction(action)}
-                  type="button"
-                  variant={action === "optOut" ? "ghost" : "primary"}
-                >
-                  {eventRehearsalActionLabel(action)}
-                </Button>
-              ))}
-            </CatchGap>
-            <FormStatus status={status} />
-            {!replyState.fresh && !bootstrap.actor.assistanceMessage ? (
-              <Button type="button" variant="ghost" disabled={pending} onClick={onRefresh}>
-                {eventRehearsalCopy.refresh}
-              </Button>
+      {complete ? (
+        <CatchSurface block="tile">
+          <CatchStack gap={4}>
+            <CatchText as="h2" variant="title-bar">{eventRehearsalCopy.completeTitle}</CatchText>
+            <CatchText variant="body-small">{eventRehearsalCopy.completeBody}</CatchText>
+          </CatchStack>
+        </CatchSurface>
+      ) : actions.length === 0 ? (
+        <CatchSurface block="tile">
+          <CatchStack gap={4}>
+            <CatchText as="h2" variant="title-bar">{eventRehearsalCopy.waitingTitle}</CatchText>
+            <CatchText variant="body-small">{eventRehearsalCopy.waitingBody}</CatchText>
+          </CatchStack>
+        </CatchSurface>
+      ) : (
+        <CatchSurface block="tile">
+          <CatchStack gap={12}>
+            <CatchStack gap={4}>
+              <CatchText as="h2" variant="title-bar">{eventRehearsalCopy.actionsTitle}</CatchText>
+              <CatchText tone="secondary" variant="body-small">{eventRehearsalCopy.actionsBody}</CatchText>
+            </CatchStack>
+            {controls.length ? (
+              <CatchStack direction="row" gap={8} wrap>
+                {controls.map((action) => actionButton(action, action === "optOut" ? "secondary" : "primary"))}
+              </CatchStack>
             ) : null}
-          </EventRuntimeModule>
-        )}
+            <RehearsalStatus error={status.tone === "is-error"} message={status.message} />
+            {!replyState.fresh && !bootstrap.actor.assistanceMessage ? (
+              <CatchStack align="start">
+                <CatchButton label={eventRehearsalCopy.refresh} onPressed={pending ? null : onRefresh}
+                  size="sm" variant="secondary" />
+              </CatchStack>
+            ) : null}
+          </CatchStack>
+        </CatchSurface>
+      )}
 
-        <EventRuntimeNoticeStack>
-          {(bootstrap.actor.connectionState ??
-            (bootstrap.actor.status === "disconnected" ? "disconnected" : "connected")) === "disconnected"
-            ? <p>{eventRehearsalCopy.disconnectedNotice}</p>
-            : null}
-          {faultNotice ? <p>{faultNotice}</p> : null}
-          {bootstrap.actor.optedOut
-            ? <p>{eventRehearsalCopy.optedOutNotice}</p>
-            : null}
-          {bootstrap.actor.helpRequested
-            ? <p>{eventRehearsalCopy.helpRequestedNotice}</p>
-            : null}
-          {bootstrap.actor.promptCompleted
-            ? <p>{eventRehearsalCopy.promptCompletedNotice}</p>
-            : null}
-        </EventRuntimeNoticeStack>
-      </EventRuntimeLive>
-    </EventRuntimeFrame>
+      {!complete && actions.includes("askForHelp") ? (
+        <CatchButton fill label={eventRehearsalActionLabel("askForHelp")} leadingIcon="help"
+          onPressed={blocked ? null : () => onAction("askForHelp")}
+          status={pending ? "loading" : "idle"} variant="secondary" />
+      ) : null}
+
+      {disconnected ? <RehearsalNotice id="disconnected" title={eventRehearsalCopy.disconnectedNotice} tone="warning" /> : null}
+      {faultNotice ? <RehearsalNotice id="fault" title={faultNotice} /> : null}
+      {bootstrap.actor.optedOut ? <RehearsalNotice id="opted-out" title={eventRehearsalCopy.optedOutNotice} /> : null}
+      {bootstrap.actor.helpRequested ? <RehearsalNotice id="help" title={eventRehearsalCopy.helpRequestedNotice} /> : null}
+      {bootstrap.actor.promptCompleted ? (
+        <RehearsalNotice id="prompt" title={eventRehearsalCopy.promptCompletedNotice} tone="success" />
+      ) : null}
+    </RehearsalShell>
   );
 }
 
@@ -259,24 +299,27 @@ function EventRehearsalRequiredData({bootstrap, pending, fresh, retryRequired,
   const request = bootstrap.actor.requiredData!.request!;
   const submission = pendingRehearsalRequiredData(bootstrap);
   return (
-    <EventRuntimeModule title={eventRehearsalCopy.requiredDataTitle} accent="coral">
-      {submission ? <>
-        <p>{eventRehearsalCopy.requiredDataBody}</p>
-        <ul>{submission.fieldIds.map((field) =>
-          <li key={field}>{requiredFieldLabels[field]}</li>)}</ul>
-        <Button type="button" disabled={pending || !fresh || blockedByReply}
-          loading={pending}
-          loadingLabel={eventRehearsalCopy.actionPending} onClick={onSubmit}>
-          {eventRehearsalCopy.requiredDataSubmit}
-        </Button>
-        {retryRequired && !pending ? (
-          <p role="status">{eventRehearsalCopy.requiredDataUncertain}</p>
-        ) : null}
-        {!fresh ? <p role="status">{eventRehearsalCopy.replyStale}</p> : null}
-      </> : <p role="status">{request.status === "completed"
-        ? eventRehearsalCopy.requiredDataComplete
-        : eventRehearsalCopy.requiredDataClosed}</p>}
-    </EventRuntimeModule>
+    <CatchSurface block="tile">
+      <CatchStack gap={8}>
+        <CatchText as="h2" variant="title-bar">{eventRehearsalCopy.requiredDataTitle}</CatchText>
+        {submission ? <>
+          <CatchText tone="secondary" variant="body-small">{eventRehearsalCopy.requiredDataBody}</CatchText>
+          <CatchSection>
+            {submission.fieldIds.map((field) =>
+              <CatchIndexRow density="compact" key={field} title={requiredFieldLabels[field]} />)}
+          </CatchSection>
+          <CatchStack align="start">
+            <CatchButton label={eventRehearsalCopy.requiredDataSubmit}
+              onPressed={pending || !fresh || blockedByReply ? null : onSubmit}
+              size="sm" status={pending ? "loading" : "idle"} />
+          </CatchStack>
+          {retryRequired && !pending ? <RehearsalStatus message={eventRehearsalCopy.requiredDataUncertain} /> : null}
+          {!fresh ? <RehearsalStatus message={eventRehearsalCopy.replyStale} /> : null}
+        </> : <RehearsalStatus message={request.status === "completed"
+          ? eventRehearsalCopy.requiredDataComplete
+          : eventRehearsalCopy.requiredDataClosed} />}
+      </CatchStack>
+    </CatchSurface>
   );
 }
 
@@ -293,33 +336,35 @@ function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply,
   const saved = message.choices.find((choice) => choice.choiceId === message.responseChoiceId);
   const canRespond = canReplyToRehearsal(bootstrap);
   return (
-    <EventRuntimeModule title={eventRehearsalCopy.joiningTitle} accent="coral">
-      <p>{message.text}</p>
-      {saved ? <p role="status">{eventRehearsalCopy.replySaved(saved.label)}</p> :
-        canRespond ? <>
-          <p>{eventRehearsalCopy.joiningBody}</p>
-          <CatchGap direction="horizontal" size="related" wrap>
-            {message.choices.map((choice) => (
-              <Button key={choice.choiceId} type="button" variant="ghost"
-                disabled={pending || blocked || !state.fresh ||
-                  (state.retryChoice !== null && state.retryChoice !== choice.choiceId)}
-                loading={state.pendingChoice === choice.choiceId}
-                loadingLabel={eventRehearsalCopy.replyPending}
-                onClick={() => onReply({messageId: message.messageId,
-                  intentRevision: message.intentRevision, choiceId: choice.choiceId})}>
-                {choice.label}
-              </Button>
-            ))}
-          </CatchGap>
-        </> : <p role="status">{eventRehearsalCopy.replyClosed}</p>}
-      {!state.fresh ? <p role="status">{eventRehearsalCopy.replyStale}</p> : null}
-      {state.notice ? <FormStatus status={{message: state.notice, tone: "is-error"}} /> : null}
-      {!state.fresh || state.notice || (!canRespond && !saved) ? (
-        <Button type="button" variant="ghost" disabled={pending} onClick={onRefresh}>
-          {eventRehearsalCopy.refresh}
-        </Button>
-      ) : null}
-    </EventRuntimeModule>
+    <CatchSurface block="tile">
+      <CatchStack gap={8}>
+        <CatchText tone="secondary" variant="label-kicker">{eventRehearsalCopy.joiningTitle}</CatchText>
+        <CatchText variant="body">{message.text}</CatchText>
+        {saved ? <RehearsalStatus message={eventRehearsalCopy.replySaved(saved.label)} /> :
+          canRespond ? <>
+            <CatchText tone="secondary" variant="body-small">{eventRehearsalCopy.joiningBody}</CatchText>
+            <CatchStack direction="row" gap={8} wrap>
+              {message.choices.map((choice) => (
+                <CatchButton key={choice.choiceId} label={choice.label}
+                  onPressed={pending || blocked || !state.fresh ||
+                    (state.retryChoice !== null && state.retryChoice !== choice.choiceId) ? null :
+                    () => onReply({messageId: message.messageId,
+                      intentRevision: message.intentRevision, choiceId: choice.choiceId})}
+                  size="sm" status={state.pendingChoice === choice.choiceId ? "loading" : "idle"}
+                  variant="secondary" />
+              ))}
+            </CatchStack>
+          </> : <RehearsalStatus message={eventRehearsalCopy.replyClosed} />}
+        {!state.fresh ? <RehearsalStatus message={eventRehearsalCopy.replyStale} /> : null}
+        {state.notice ? <RehearsalStatus error message={state.notice} /> : null}
+        {!state.fresh || state.notice || (!canRespond && !saved) ? (
+          <CatchStack align="start">
+            <CatchButton label={eventRehearsalCopy.refresh} onPressed={pending ? null : onRefresh}
+              size="sm" variant="secondary" />
+          </CatchStack>
+        ) : null}
+      </CatchStack>
+    </CatchSurface>
   );
 }
 
@@ -335,39 +380,42 @@ function EventRehearsalMovementPreview({
   return (
     <>
       {movement.itinerary.length ? (
-        <EventRuntimeModule title={eventRehearsalCopy.runOfShowTitle}>
-          <EventRuntimeAssignments>
-            {movement.itinerary.map((item) => (
-              <article key={item.id}>
-                <span>{eventRehearsalCopy.itineraryOffset(
-                  item.offsetMinutes
-                )}</span>
-                <h3>{item.title}</h3>
-                {item.description ? <p>{item.description}</p> : null}
-                {item.location?.name ? <small>{item.location.name}</small> : null}
-              </article>
-            ))}
-          </EventRuntimeAssignments>
-        </EventRuntimeModule>
+        <CatchSection dividers="none" timeline title={eventRehearsalCopy.runOfShowTitle}>
+          {movement.itinerary.map((item) => (
+            <CatchIndexRow
+              density="compact"
+              key={item.id}
+              marker={{kind: "ring", size: 12}}
+              meta={item.location?.name}
+              subtitle={item.description ?? undefined}
+              time={eventRehearsalCopy.itineraryOffset(item.offsetMinutes)}
+              title={item.title}
+              wrap
+            />
+          ))}
+        </CatchSection>
       ) : null}
       {movement.routePlan || position || movement.lateArrivalGuidance ? (
-        <EventRuntimeModule title={eventRehearsalCopy.routeTitle} accent="coral">
-          {routePath.length ? (
-            <p>{eventRehearsalCopy.routePoints(routePath.length)}</p>
-          ) : null}
-          {position ? (
-            <p>{eventRehearsalCopy.trackerRole(position.role)}</p>
-          ) : null}
-          <EventRuntimeRouteMap
-            ariaLabel={eventRehearsalCopy.routeMapLabel}
-            help={eventRehearsalCopy.routeMapHelp}
-            marker={position}
-            path={routePath}
-          />
-          {movement.lateArrivalGuidance ? (
-            <p>{movement.lateArrivalGuidance}</p>
-          ) : null}
-        </EventRuntimeModule>
+        <CatchSurface block="tile">
+          <CatchStack gap={8}>
+            <CatchText as="h2" variant="title-bar">{eventRehearsalCopy.routeTitle}</CatchText>
+            {routePath.length ? (
+              <CatchText tone="secondary" variant="body-small">{eventRehearsalCopy.routePoints(routePath.length)}</CatchText>
+            ) : null}
+            {position ? (
+              <CatchText variant="label-action">{eventRehearsalCopy.trackerRole(position.role)}</CatchText>
+            ) : null}
+            <EventRuntimeRouteMap
+              ariaLabel={eventRehearsalCopy.routeMapLabel}
+              help={eventRehearsalCopy.routeMapHelp}
+              marker={position}
+              path={routePath}
+            />
+            {movement.lateArrivalGuidance ? (
+              <CatchText variant="body-small">{movement.lateArrivalGuidance}</CatchText>
+            ) : null}
+          </CatchStack>
+        </CatchSurface>
       ) : null}
     </>
   );
