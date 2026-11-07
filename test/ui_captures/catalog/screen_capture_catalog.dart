@@ -181,6 +181,7 @@ import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
@@ -322,6 +323,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../events/events_test_helpers.dart';
+import '../../hosts/onboarding/onboarding_captures.dart';
 import '../../organizers/organizers_test_helpers.dart' as organizer_test;
 import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
@@ -12660,6 +12662,48 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _exploreCapture(
       child: const ExploreMapScreen(enableNetworkTiles: false),
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_onboarding_sign_in',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostOnboardingSignInOverrides(),
+    builder: (context) => hostOnboardingSignInCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_onboarding_code',
+    routeIds: const <String>['authScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostOnboardingCodeOverrides(),
+    builder: (context) => hostOnboardingCodeCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_onboarding_start_page',
+    routeIds: const <String>['hostCreateOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostOnboardingSetupOverrides(HostSetupStep.start),
+    builder: (context) => hostOnboardingSetupCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_onboarding_details',
+    routeIds: const <String>['hostCreateOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostOnboardingSetupOverrides(HostSetupStep.details),
+    builder: (context) => hostOnboardingSetupCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_onboarding_payments',
+    routeIds: const <String>['hostCreateOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostOnboardingSetupOverrides(HostSetupStep.payments),
+    builder: (context) => hostOnboardingSetupCapture(),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_onboarding_done',
+    routeIds: const <String>['hostCreateOrganizerScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: hostOnboardingSetupOverrides(HostSetupStep.done),
+    builder: (context) => hostOnboardingSetupCapture(),
   ),
   ScreenCaptureEntry(
     id: 'create_club_basics',
