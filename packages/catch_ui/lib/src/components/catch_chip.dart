@@ -5,9 +5,13 @@ import 'package:catch_ui/src/components/catch_chip_mode.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
 enum _CatchChipVariant { tag, selectable, choice, activity, removable }
+
+/// A choice chip's height: md 38 by default, sm 32 with 13 px type.
+enum CatchChipSize { md, sm }
 
 /// Canonical compact-label primitive for facts, choices, activities, and
 /// removable values.
@@ -68,6 +72,10 @@ class CatchChip extends StatefulWidget {
 
   /// One checked choice in a caller-owned single or multiple selection input.
   /// A null action disables the choice without losing its checked semantics.
+  ///
+  /// The system Chip with `kind="choice"`: a [dot] puts an event format's
+  /// colour before the label, and [colourWhenSelected] fills a selected chip
+  /// with that colour instead of ink. [size] sm is the 32 px chip.
   const CatchChip.choice({
     Key? key,
     required String label,
@@ -76,6 +84,9 @@ class CatchChip extends StatefulWidget {
     required VoidCallback? onPressed,
     Color? accent,
     String? semanticsLabel,
+    CatchFormat? dot,
+    bool colourWhenSelected = false,
+    CatchChipSize size = CatchChipSize.md,
   }) : this._(
          key: key,
          variant: _CatchChipVariant.choice,
@@ -86,6 +97,9 @@ class CatchChip extends StatefulWidget {
          enabled: onPressed != null,
          accent: accent,
          semanticsLabel: semanticsLabel,
+         dot: dot,
+         colourWhenSelected: colourWhenSelected,
+         size: size,
        );
 
   const CatchChip.activity({
@@ -148,9 +162,15 @@ class CatchChip extends StatefulWidget {
     this._contract,
     this._contractValue,
     this._contractExemption,
+    this._dot,
+    this._colourWhenSelected = false,
+    this._size = CatchChipSize.md,
   });
 
   final _CatchChipVariant _variant;
+  final CatchFormat? _dot;
+  final bool _colourWhenSelected;
+  final CatchChipSize _size;
   final CatchChipMode? _mode;
   final String? _label;
   final Widget? leading;
@@ -190,6 +210,11 @@ class CatchChip extends StatefulWidget {
   VoidCallback? get onRemove => _onRemove;
   String? get semanticsLabel => _semanticsLabel;
   String? get contractExemption => _contractExemption;
+
+  /// The format whose colour dot leads a choice chip.
+  CatchFormat? get dot => _dot;
+  bool get colourWhenSelected => _colourWhenSelected;
+  CatchChipSize get size => _size;
 
   @override
   State<CatchChip> createState() => _CatchChipState();
@@ -289,9 +314,16 @@ class _CatchChipState extends State<CatchChip> {
         break;
       case _CatchChipVariant.selectable:
       case _CatchChipVariant.choice:
-        final accent = widget._accent ?? t.primary;
+        final dot = widget._dot;
+        final formatFill =
+            widget._colourWhenSelected && dot != null && widget._selected;
+        final accent = formatFill ? dot.accent : widget._accent ?? t.primary;
         background = widget._selected ? accent : t.surface;
-        foreground = widget._selected ? _inkForFill(t, accent) : t.ink;
+        foreground = formatFill
+            ? dot.ink
+            : widget._selected
+            ? _inkForFill(t, accent)
+            : t.ink;
         border = widget._selected ? Colors.transparent : t.line2;
         shadow = widget._selected
             ? CatchElevation.segmentedSelected(t)
@@ -304,12 +336,27 @@ class _CatchChipState extends State<CatchChip> {
                 CatchIcons.check,
                 size: CatchFieldTokens.chipSelectedGlyphExtent,
               )
+            : dot != null
+            ? _ChipDot(
+                color: dot.accent,
+                ring: widget._selected && !formatFill ? foreground : null,
+              )
             : widget.leading;
-        textStyle = CatchTextStyles.titleS(context, color: foreground);
-        padding = const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s4,
-          vertical: CatchSpacing.micro10,
-        );
+        final small = widget._size == CatchChipSize.sm;
+        textStyle = small
+            ? CatchTextVariant.labelAction
+                  .style(CatchWindowSize.compact)
+                  .copyWith(color: foreground)
+            : CatchTextStyles.titleS(context, color: foreground);
+        padding = small
+            ? const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.s3,
+                vertical: CatchSpacing.micro6,
+              )
+            : const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.s4,
+                vertical: CatchSpacing.micro10,
+              );
         break;
       case _CatchChipVariant.activity:
         final solid = widget._emphasis == CatchChipEmphasis.solid;
@@ -348,7 +395,9 @@ class _CatchChipState extends State<CatchChip> {
         ? CatchBorder.resolve(
             t,
             CatchBorderRole.selected,
-            color: widget._accent,
+            color: widget._colourWhenSelected
+                ? widget._dot?.accent ?? widget._accent
+                : widget._accent,
           )
         : _hasControlRole && border != Colors.transparent
         ? CatchBorder.interactive(
@@ -470,6 +519,32 @@ class _CatchChipState extends State<CatchChip> {
               ),
             )
           : chip,
+    );
+  }
+}
+
+/// The 8 px format dot before a choice chip's label, ringed in the chip's
+/// ink when the chip is selected in ink.
+class _ChipDot extends StatelessWidget {
+  const _ChipDot({required this.color, this.ring});
+
+  final Color color;
+  final Color? ring;
+
+  @override
+  Widget build(BuildContext context) {
+    final ring = this.ring;
+    return SizedBox.square(
+      dimension: CatchSpacing.s2,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          boxShadow: ring == null
+              ? null
+              : [BoxShadow(color: ring, spreadRadius: CatchStroke.emphasis)],
+        ),
+      ),
     );
   }
 }

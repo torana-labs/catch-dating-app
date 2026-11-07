@@ -36,13 +36,10 @@ part 'catch_action_module.dart';
 part 'catch_collection_section.dart';
 
 /// Design-system `Section`: the canonical primitive for grouping information.
-///
-/// Compose these inside `CatchSectionList` with no ad-hoc gaps. Optional
-/// title colors are caller-resolved. Contained recipes pass explicit focus/error
-/// states to `CatchSectionSurface`, which owns their precedence and rendering.
+/// Compose these inside `CatchSectionList` with no ad-hoc gaps. Contained
+/// recipes pass explicit focus/error states to `CatchSectionSurface`.
 class CatchSection extends StatelessWidget {
-  /// The system Section: the title with a [note] or a quiet [action], then
-  /// the rows with the lines [dividers] places, or the [empty] copy.
+  /// The system Section, laid out by [CatchListSection].
   factory CatchSection({
     Key? key,
     String? title,
@@ -50,6 +47,8 @@ class CatchSection extends StatelessWidget {
     CatchSectionAction? action,
     CatchSectionPlacement dividers = CatchSectionPlacement.between,
     String? empty,
+    bool timeline = false,
+    int? columns,
     required List<Widget> children,
   }) => CatchSection._rows(
     key: key,
@@ -60,6 +59,8 @@ class CatchSection extends StatelessWidget {
       action: action,
       dividers: dividers,
       empty: empty,
+      timeline: timeline,
+      columns: columns,
       children: children,
     ),
   );
@@ -195,7 +196,6 @@ class CatchSection extends StatelessWidget {
        _horizontalConfig = null;
 
   /// One outlined collection containing one or more labelled field groups.
-  ///
   /// This is the grouped sibling of [containedFieldRows]. It preserves one
   /// section-owned perimeter while giving each internal group its own kicker
   /// and inset boundary. It is intended for one collection of mutually related

@@ -46,19 +46,21 @@ class CatchMetricTile extends StatelessWidget {
        noteTone = CatchMetricTileTone.secondary,
        _stat = false;
 
-  /// The system Stat tile.
+  /// The system Stat: a tile ([CatchMetricTileMode.surface], the default),
+  /// or the system's inline layout ([CatchMetricTileMode.plain]): no box and
+  /// a section-size value, for strips inside spotlights and sheets.
   const CatchMetricTile.stat({
     super.key,
     required String this._label,
     required String this._value,
     this.note,
     this.noteTone = CatchMetricTileTone.secondary,
+    this.mode = CatchMetricTileMode.surface,
   }) : item = null,
        icon = null,
        highlight = false,
        center = false,
        variant = CatchMetricTileVariant.display,
-       mode = CatchMetricTileMode.surface,
        padding = null,
        borderColor = null,
        valueColor = null,
@@ -117,39 +119,42 @@ class CatchMetricTile extends StatelessWidget {
   Widget build(BuildContext context) {
     if (_stat) {
       final note = this.note;
+      final inline = mode == CatchMetricTileMode.plain;
+      final stat = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: CatchSpacing.micro6,
+        children: [
+          CatchText(
+            label,
+            variant: CatchTextVariant.labelKicker,
+            tone: CatchTextTone.secondary,
+          ),
+          CatchText(
+            value!,
+            variant: inline
+                ? CatchTextVariant.displaySection
+                : CatchTextVariant.displayTitle,
+            numeric: true,
+            maxLines: 1,
+          ),
+          if (note != null)
+            CatchText(
+              note,
+              variant: CatchTextVariant.labelKicker,
+              tone: switch (noteTone) {
+                CatchMetricTileTone.secondary => CatchTextTone.secondary,
+                CatchMetricTileTone.success => CatchTextTone.success,
+                CatchMetricTileTone.warning => CatchTextTone.warning,
+                CatchMetricTileTone.danger => CatchTextTone.danger,
+              },
+            ),
+        ],
+      );
+      if (inline) return stat;
       return ConstrainedBox(
         constraints: const BoxConstraints(minHeight: statMinHeight),
-        child: CatchSurface(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: CatchSpacing.micro6,
-            children: [
-              CatchText(
-                label,
-                variant: CatchTextVariant.labelKicker,
-                tone: CatchTextTone.secondary,
-              ),
-              CatchText(
-                value!,
-                variant: CatchTextVariant.displayTitle,
-                numeric: true,
-                maxLines: 1,
-              ),
-              if (note != null)
-                CatchText(
-                  note,
-                  variant: CatchTextVariant.labelKicker,
-                  tone: switch (noteTone) {
-                    CatchMetricTileTone.secondary => CatchTextTone.secondary,
-                    CatchMetricTileTone.success => CatchTextTone.success,
-                    CatchMetricTileTone.warning => CatchTextTone.warning,
-                    CatchMetricTileTone.danger => CatchTextTone.danger,
-                  },
-                ),
-            ],
-          ),
-        ),
+        child: CatchSurface(child: stat),
       );
     }
     final t = CatchTokens.of(context);

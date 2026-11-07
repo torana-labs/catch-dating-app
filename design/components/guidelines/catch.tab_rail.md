@@ -20,6 +20,7 @@ The pill slides over 240 ms.
 `catch.tab_rail`:
 - `CatchPageTabBar`
 - `CatchPageTabBar.controlled`
+- `CatchPageTabBar.segmented`
 <!-- generated:flutter:end -->
 
 ## Replaces

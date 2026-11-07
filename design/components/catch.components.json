@@ -1376,6 +1376,40 @@
             "tsType": "() => void",
             "required": false,
             "notes": "Required nullable action for choice; null disables both pointer and semantic activation."
+          },
+          {
+            "name": "dot",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFormat?",
+            "values": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ],
+            "notes": "CatchChip.choice: a format colour before the label."
+          },
+          {
+            "name": "colourWhenSelected",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool",
+            "default": false,
+            "notes": "CatchChip.choice: a selected chip fills with the dot's colour."
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchChipSize",
+            "values": [
+              "md",
+              "sm"
+            ],
+            "default": "md",
+            "notes": "CatchChip.choice: sm is the 32 px chip."
           }
         ],
         "states": [
@@ -1393,7 +1427,10 @@
           "truncated",
           "choice-single",
           "choice-multiple",
-          "choice-disabled"
+          "choice-disabled",
+          "choice-dot",
+          "choice-colour",
+          "choice-sm"
         ],
         "slots": [
           {
@@ -1428,7 +1465,7 @@
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover"
         ],
-        "goldens": [],
+        "goldens": ["choice_board_family", "choice_board_family_other"],
         "members": [],
         "accessibility": {
           "largeText": {
@@ -2534,7 +2571,8 @@
         "symbol": "CatchNotice",
         "file": "packages/catch_ui/lib/src/components/catch_notice.dart",
         "constructors": [
-          "CatchNotice"
+          "CatchNotice",
+          "CatchNotice.inline"
         ]
       },
       "react": {
@@ -2602,6 +2640,42 @@
             "required": false,
             "dartType": "VoidCallback?",
             "tsType": "() => void"
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "required": false,
+            "dartType": "String",
+            "notes": "CatchNotice.inline only."
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "CatchNotice.inline only."
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchNoticeTone",
+            "values": [
+              "status",
+              "success",
+              "warning",
+              "danger",
+              "event"
+            ],
+            "default": "status",
+            "notes": "CatchNotice.inline only: status is the system's info tone."
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?",
+            "notes": "CatchNotice.inline only."
           }
         ],
         "states": [
@@ -2614,7 +2688,9 @@
           "dismissible",
           "arrival-tap-to-open",
           "arrival-swipe-to-dismiss",
-          "arrival-reduced-motion"
+          "arrival-reduced-motion",
+          "inline-info",
+          "inline-success"
         ],
         "slots": [],
         "tokens": [
@@ -2644,7 +2720,7 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.supporting"
         ],
-        "goldens": [],
+        "goldens": ["sheet_scan_result_board"],
         "members": [
           {
             "id": "catch.notice.host",
@@ -2700,7 +2776,8 @@
           "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchAvatar's circular image/initials fallback.",
           "Keep match/message copy and identity in feature adapters. Do not fork the renderer for different strings, icons or colors. Accent overrides must be theme-derived and reviewed for contrast; geometry and typography remain renderer-owned.",
           "Use CatchBanner.error for inline persistent form/section failures and CatchErrorState for blocking data-load failures.",
-          "Notice text wraps and action placement follows measured label widths at the active text scale. CatchIconAction.plain owns dismiss feedback; the overlay pauses expiry during pointer, hover and focus interaction, provides F6/Shift+F6 focus transfer without autofocus, and supplies the Tooltip overlay ancestor."
+          "Notice text wraps and action placement follows measured label widths at the active text scale. CatchIconAction.plain owns dismiss feedback; the overlay pauses expiry during pointer, hover and focus interaction, provides F6/Shift+F6 focus transfer without autofocus, and supplies the Tooltip overlay ancestor.",
+          "CatchNotice.inline is the system Notice: a tinted block in the flow with its icon, optional title and body. The unnamed constructor stays the floating, dismissible notice the notice host shows."
         ]
       },
       "governance": {
@@ -5428,10 +5505,12 @@
           },
           {
             "name": "timeline",
-            "type": "list",
+            "type": "bool",
             "required": false,
-            "dartType": "List<CatchSectionStep>?",
-            "tsType": "readonly CatchSectionStep[]"
+            "dartType": "bool",
+            "tsType": "boolean",
+            "default": false,
+            "notes": "The system Section: joins the rows' leading markers with a line."
           },
           {
             "name": "empty",
@@ -5446,7 +5525,8 @@
             "type": "number",
             "required": false,
             "dartType": "int?",
-            "tsType": "number"
+            "tsType": "number",
+            "notes": "The system Section: 2 or 3 columns of rows, one on compact windows."
           }
         ],
         "states": [
@@ -5490,7 +5570,9 @@
           "horizontal-full-bleed",
           "horizontal-intrinsic",
           "horizontal-fractional",
-          "horizontal-footer"
+          "horizontal-footer",
+          "system-timeline",
+          "system-columns"
         ],
         "slots": [
           {
@@ -5561,7 +5643,9 @@
           "CatchSurface"
         ],
         "goldens": [
-          "section_system_family"
+          "section_system_family",
+          "index_row_board_family",
+          "index_row_scores_expanded"
         ],
         "members": [
           {
@@ -7213,7 +7297,8 @@
         "symbol": "CatchBarIndicator",
         "file": "packages/catch_ui/lib/src/components/catch_bar_indicator.dart",
         "constructors": [
-          "CatchBarIndicator"
+          "CatchBarIndicator",
+          "CatchBarIndicator.chart"
         ]
       },
       "design": {
@@ -7296,21 +7381,24 @@
             "required": false,
             "default": "default",
             "dartType": "String",
-            "tsType": "\"default\" | \"chart\""
+            "tsType": "\"default\" | \"chart\"",
+            "notes": "React's switch; Flutter takes the CatchBarIndicator.chart constructor."
           },
           {
             "name": "bars",
             "type": "list",
             "required": false,
             "dartType": "List<CatchBarIndicatorBar>?",
-            "tsType": "readonly CatchBarIndicatorBar[]"
+            "tsType": "readonly CatchBarIndicatorBar[]",
+            "notes": "CatchBarIndicator.chart only: the system BarChart's bars."
           },
           {
             "name": "label",
             "type": "string",
             "required": false,
             "dartType": "String?",
-            "tsType": "string"
+            "tsType": "string",
+            "notes": "CatchBarIndicator.chart only: what the bars count, read aloud with every bar."
           },
           {
             "name": "height",
@@ -7318,13 +7406,16 @@
             "required": false,
             "default": 120,
             "dartType": "double",
-            "tsType": "number"
+            "tsType": "number",
+            "notes": "CatchBarIndicator.chart only: the plot height."
           }
         ],
         "states": [
           "default",
           "zero-values",
-          "color-override"
+          "color-override",
+          "chart",
+          "partial-period"
         ],
         "slots": [],
         "tokens": [
@@ -7337,7 +7428,7 @@
           "CatchSurface",
           "CatchRadius.xs"
         ],
-        "goldens": [],
+        "goldens": ["meter_family"],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -7356,7 +7447,8 @@
         "allowedChildren": [],
         "notes": [
           "The parent layout supplies bounded width and height. Values clamp to the supported fractional range; zero and negative values use the empty color.",
-          "Compose separate bars when needed. The unused series wrapper is retired; callers own shared scales, layout and accessible chart descriptions."
+          "Compose separate bars when needed. The unused series wrapper is retired; callers own shared scales, layout and accessible chart descriptions.",
+          "CatchBarIndicator.chart is the system BarChart: bars on one scale with each value above and its label beneath, a partial (running) period outlined, read aloud as one image."
         ]
       },
       "governance": {
@@ -7584,14 +7676,15 @@
           "CatchSurface"
         ],
         "goldens": [
-          "stat_tile_family"
+          "stat_tile_family",
+          "sheet_scan_result_board"
         ],
         "members": [
           {
             "id": "catch.metric_strip.stat_column",
             "symbol": "CatchMetricTile",
             "file": "packages/catch_ui/lib/src/components/catch_metric_tile.dart",
-            "summary": "One value and supporting label, with natural-height display and bounded compact value/unit recipes. CatchMetricTile.stat is the system Stat tile: label, value, note and noteTone (CatchMetricTileTone), 118 px at least so a CatchStack row with equal set lines up.",
+            "summary": "One value and supporting label, with natural-height display and bounded compact value/unit recipes. CatchMetricTile.stat is the system Stat tile: label, value, note and noteTone (CatchMetricTileTone), 118 px at least so a CatchStack row with equal set lines up; mode plain is the system's inline Stat with a section-size value and no box.",
             "states": [
               "plain",
               "highlighted",
@@ -7604,7 +7697,8 @@
               "long-label",
               "color-overrides",
               "stat",
-              "stat-note-tone"
+              "stat-note-tone",
+              "stat-inline"
             ],
             "governance": {
               "conceptRole": "member",
@@ -7742,7 +7836,8 @@
         "constructors": [
           "CatchSheet",
           "CatchSheet.standard",
-          "CatchSheet.filter"
+          "CatchSheet.filter",
+          "CatchSheet.contained"
         ]
       },
       "react": {
@@ -7910,6 +8005,33 @@
             "dartType": "bool",
             "tsType": "boolean",
             "notes": "Standard recipe only; filter always pins its owned secondary Close action."
+          },
+          {
+            "name": "kicker",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "CatchSheet.contained only."
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSheetTone",
+            "values": [
+              "standard",
+              "success"
+            ],
+            "default": "standard",
+            "notes": "CatchSheet.contained only."
+          },
+          {
+            "name": "scrim",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool",
+            "default": true,
+            "notes": "CatchSheet.contained only: dims the screen and docks to the edge; without it the sheet floats."
           }
         ],
         "states": [
@@ -7920,7 +8042,9 @@
           "keyboard-safe",
           "scrollable",
           "without-grabber",
-          "filter"
+          "filter",
+          "contained",
+          "contained-floating-success"
         ],
         "slots": [
           {
@@ -7970,7 +8094,7 @@
           "CatchTextStyles.bodyM",
           "CatchElevation.overlay"
         ],
-        "goldens": [],
+        "goldens": ["sheet_calendar_board", "sheet_scan_result_board"],
         "members": [
           {
             "id": "catch.sheet.picker",
@@ -8166,7 +8290,8 @@
           "Host uses CatchSheet.standard or CatchSheet.filter with natural-height content; the shell owns the viewport cap, keyboard obstruction, clipping and terminal safe region.",
           "Use flat first field groups and sheet choice rows; editors use a full-width footer action. Legacy geometry controls remain only on the default constructor.",
           "Native wheel pickers and capturable sharing keep their separate shared interaction contracts.",
-          "Immediate filters use the filter recipe with no instructional subtitle and a persistent outlined Close action. Titled chip groups use CatchSection.fieldRows without color overrides, matching the muted ruled headings of action groups."
+          "Immediate filters use the filter recipe with no instructional subtitle and a persistent outlined Close action. Titled chip groups use CatchSection.fieldRows without color overrides, matching the muted ruled headings of action groups.",
+          "CatchSheet.contained draws the system Sheet in place, in the screen's overlay slot, rather than pushing a route: kicker, title, child and footer, docked over a scrim or floating without one, success in day colours on any theme."
         ]
       },
       "governance": {
@@ -10206,13 +10331,56 @@
             "required": false,
             "dartType": "VoidCallback?",
             "tsType": "(() => void) | null"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchChoiceTileVariant?",
+            "values": [
+              "row",
+              "tile",
+              "day",
+              "add"
+            ],
+            "notes": "The system's layout; null keeps the leading-radio tile."
+          },
+          {
+            "name": "format",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchFormat?",
+            "values": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut"
+            ]
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
           }
         ],
         "states": [
           "default",
           "selected",
           "focused",
-          "disabled-by-null-action"
+          "disabled-by-null-action",
+          "row",
+          "tile",
+          "day",
+          "add",
+          "format"
         ],
         "slots": [],
         "tokens": [
@@ -10234,7 +10402,7 @@
           "CatchTextStyles.supporting",
           "CatchIconSize.lg"
         ],
-        "goldens": [],
+        "goldens": ["choice_board_family"],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -13805,7 +13973,8 @@
         "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
         "constructors": [
           "CatchPageTabBar",
-          "CatchPageTabBar.controlled"
+          "CatchPageTabBar.controlled",
+          "CatchPageTabBar.segmented"
         ]
       },
       "design": {
@@ -13895,22 +14064,25 @@
             "values": [
               "md",
               "sm"
-            ]
+            ],
+            "notes": "CatchPageTabBar.segmented only."
           },
           {
             "name": "fill",
             "type": "bool",
             "required": false,
-            "default": false,
+            "default": true,
             "dartType": "bool",
-            "tsType": "boolean"
+            "tsType": "boolean",
+            "notes": "CatchPageTabBar.segmented only: equal items with a sliding pill, or items at their own widths that scroll."
           },
           {
             "name": "label",
             "type": "string",
             "required": false,
             "dartType": "String?",
-            "tsType": "string"
+            "tsType": "string",
+            "notes": "CatchPageTabBar.segmented only: the group label."
           }
         ],
         "states": [
@@ -13920,7 +14092,10 @@
           "operational",
           "controlled-first",
           "controlled-second",
-          "swipe-interpolated"
+          "swipe-interpolated",
+          "segmented",
+          "segmented-counts",
+          "segmented-scroll"
         ],
         "slots": [],
         "tokens": [
@@ -13940,7 +14115,7 @@
           "CatchPageTabBar.minimumHeightFor",
           "CatchPageTabBar.heightFor"
         ],
-        "goldens": [],
+        "goldens": ["choice_board_family"],
         "members": [],
         "accessibility": {
           "largeText": {
@@ -13963,7 +14138,8 @@
         "notes": [
           "Use for app-bar bottom tabs. Use CatchChoiceInput.segmented directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms.",
           "preferredSize reports the variant-specific unscaled minimum; preferredSizeFor(context) and rendering share heightFor(context, variant). Operational chrome includes its existing 8-point inner vertical inset. Root adapters must forward these values: root validation rejects inconsistent minimum or scaled declarations.",
-          "Use controlled for a caller-owned TabController. It preserves tap-to-page binding, continuous drag interpolation and committed selected semantics; changing controllers retains the same renderer and releases the old animation listener. The unused CatchTopBarTabBar and its label are retired."
+          "Use controlled for a caller-owned TabController. It preserves tap-to-page binding, continuous drag interpolation and committed selected semantics; changing controllers retains the same renderer and releases the old animation listener. The unused CatchTopBarTabBar and its label are retired.",
+          "CatchPageTabBar.segmented is the system Segmented; a count rides on each CatchOption. The unnamed and controlled constructors stay the underlined page tabs."
         ]
       },
       "governance": {
@@ -16456,7 +16632,9 @@
             "tsType": "CatchAvatarStatus",
             "values": [
               "none",
-              "online"
+              "online",
+              "checkedIn",
+              "away"
             ]
           },
           {
@@ -16544,7 +16722,8 @@
           "veiled-run",
           "veiled-dinner",
           "monogram",
-          "monogram-display"
+          "monogram-display",
+          "status-checked-in"
         ],
         "slots": [],
         "tokens": [
@@ -16564,7 +16743,7 @@
           "CatchLayout.avatarStatusDotExtent",
           "CatchAvatarRow"
         ],
-        "goldens": [],
+        "goldens": ["index_row_board_family"],
         "members": [
           {
             "id": "catch.person_avatar.colors",
@@ -19363,6 +19542,91 @@
               "roomy"
             ],
             "notes": "Null keeps the 66 px hairline index row with its own bottom line; a size selects the system row (10, 12 or 14 above and below, no line of its own: the enclosing CatchSection owns the lines). The Flutter enum takes the Size axis because the grammar has no Density axis."
+          },
+          {
+            "name": "time",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "iconTone",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchIndexRowTone",
+            "values": [
+              "neutral",
+              "success",
+              "warning",
+              "danger",
+              "info"
+            ],
+            "default": "neutral"
+          },
+          {
+            "name": "rank",
+            "type": "number",
+            "required": false,
+            "dartType": "int?"
+          },
+          {
+            "name": "badge",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchIndexRowBadge?"
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "metaTone",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchIndexRowTone",
+            "values": [
+              "neutral",
+              "success",
+              "warning",
+              "danger",
+              "info"
+            ],
+            "default": "neutral"
+          },
+          {
+            "name": "value",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "emphasis",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchIndexRowEmphasis",
+            "values": [
+              "regular",
+              "unread",
+              "done"
+            ],
+            "default": "regular",
+            "notes": "The system's unread and done states."
+          },
+          {
+            "name": "chevron",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool",
+            "default": false,
+            "notes": "Off by default in Flutter: callers ask for the chevron on rows that open something."
           }
         ],
         "states": [
@@ -19375,7 +19639,18 @@
           "marker",
           "date",
           "progress",
-          "action"
+          "action",
+          "time",
+          "icon",
+          "rank",
+          "badge",
+          "body",
+          "value",
+          "chevron",
+          "done",
+          "selected-system",
+          "timeline",
+          "columns"
         ],
         "slots": [
           {
@@ -19413,7 +19688,10 @@
           "CatchFormatColors.accent"
         ],
         "goldens": [
-          "index_row_family"
+          "index_row_family",
+          "index_row_board_family",
+          "index_row_scores_compact",
+          "index_row_scores_expanded"
         ],
         "accessibility": {
           "largeText": {
@@ -19436,7 +19714,8 @@
         "notes": [
           "Use for quiet browse and directory indexes; richer selectable controls belong to CatchChoiceInput.segmented.",
           "The row owns one semantic tap action with its selected/enabled state and resolved label. Leading and trailing slots are passive adornments; independent controls belong in a row that preserves child actions.",
-          "A system row passes a density and sits in the unnamed CatchSection, which draws the lines between rows. Event rows lead with a date tile and carry meta, status and progress; task rows lead with a marker and end with one action."
+          "A system row passes a density and sits in the unnamed CatchSection, which draws the lines between rows. Event rows lead with a date tile and carry meta, status and progress; task rows lead with a marker and end with one action.",
+          "The system ListRow's avatar and ring, number or live markers go in leading (a CatchAvatar, a CatchMarker); the marker shortcut is the tone dot. time leads any leading part. An action draws its own button beside the row's tap target and suppresses the chevron. A selected system row sits on a tile that bleeds 12 px past its edges."
         ]
       },
       "governance": {
@@ -22918,10 +23197,10 @@
       "id": "catch.marker",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMarker",
-      "status": "planned",
+      "status": "active",
       "kind": "primitive",
       "tier": "T1",
       "absorbs": ["CatchStatusIndicator", "CatchClockIndicator"],
@@ -22943,12 +23222,82 @@
         }
       },
       "contract": {
-        "props": [],
-        "states": [],
+        "props": [
+          {
+          "name": "variant",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchMarkerVariant",
+          "values": [
+            "dot",
+            "ring",
+            "check",
+            "number"
+          ],
+          "default": "dot",
+          "notes": "The system's kind."
+        },
+          {
+          "name": "size",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchMarkerSize",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "default": "md",
+          "notes": "8, 10 or 12; checks and numbers are 20."
+        },
+          {
+          "name": "tone",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchMarkerTone",
+          "values": [
+            "ink",
+            "muted",
+            "success",
+            "warning",
+            "danger",
+            "info",
+            "format"
+          ],
+          "default": "ink"
+        },
+          {
+          "name": "format",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchFormat?",
+          "values": [
+            "run",
+            "dinner",
+            "games",
+            "courts",
+            "nightsOut"
+          ]
+        },
+          {
+          "name": "live",
+          "type": "bool",
+          "required": false,
+          "dartType": "bool",
+          "default": false
+        },
+          {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "dartType": "int?"
+        }
+        ],
+        "states": ["dot", "ring", "check", "number", "tones", "format", "live"],
         "slots": [],
-        "tokens": [],
-        "dartRoles": [],
-        "goldens": [],
+        "tokens": ["format.run.accent", "theme.light.color.ink", "theme.light.color.ink3", "theme.light.color.indigo", "duration.pulse"],
+        "dartRoles": ["CatchMarkerVariant", "CatchMarkerSize", "CatchMarkerTone", "CatchFormat", "CatchRootScope"],
+        "goldens": ["meter_family", "index_row_board_family"],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -22966,7 +23315,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Port both frameworks; absorbs the status and clock indicators when its first redesigned consumer lands."
+          "CatchMarker is decorative: the row or legend beside it carries the meaning. Put a ring, number or live marker in CatchIndexRow.leading; the row's marker shortcut is the tone dot. A live marker pulses and holds still under reduced motion. Absorbs the status and clock indicators when their callers move."
         ]
       },
       "governance": {
@@ -23001,6 +23350,25 @@
           ]
         },
         "notes": "React lands first under the record's name; the Dart port takes CatchMarker. Decorative (aria-hidden): the row beside it carries the meaning. A live marker pulses, and is still under reduced motion."
+      },
+      "dart": {
+        "symbol": "CatchMarker",
+        "file": "packages/catch_ui/lib/src/primitives/catch_marker.dart",
+        "constructors": [
+          "CatchMarker",
+          "CatchMarker.number"
+        ]
+      },
+      "level": "L2",
+      "roleNoun": "Marker",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.badge",
+          "catch.loading_indicator",
+          "catch.page_dots"
+        ],
+        "reason": "A decorative dot, ring, check or number beside the content that carries the meaning. A badge carries its own words, a loading indicator shows indeterminate work and page dots show a selected index."
       },
       "system": {
         "name": "Marker",
@@ -23103,10 +23471,10 @@
       "id": "catch.calendar",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchCalendar",
-      "status": "planned",
+      "status": "active",
       "kind": "composite",
       "tier": "T2",
       "aliases": ["CatchAdaptivePicker"],
@@ -23129,12 +23497,69 @@
         }
       },
       "contract": {
-        "props": [],
-        "states": [],
+        "props": [
+          {
+          "name": "month",
+          "type": "object",
+          "required": true,
+          "dartType": "DateTime"
+        },
+          {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "dartType": "String"
+        },
+          {
+          "name": "value",
+          "type": "object",
+          "required": false,
+          "dartType": "DateTime?"
+        },
+          {
+          "name": "onChanged",
+          "type": "callback",
+          "required": false,
+          "dartType": "ValueChanged<DateTime>?"
+        },
+          {
+          "name": "min",
+          "type": "object",
+          "required": false,
+          "dartType": "DateTime?"
+        },
+          {
+          "name": "marked",
+          "type": "list",
+          "required": false,
+          "dartType": "List<DateTime>",
+          "default": "const []"
+        },
+          {
+          "name": "repeats",
+          "type": "list",
+          "required": false,
+          "dartType": "List<DateTime>",
+          "default": "const []"
+        },
+          {
+          "name": "markedLabel",
+          "type": "string",
+          "required": false,
+          "dartType": "String?"
+        },
+          {
+          "name": "repeatsLabel",
+          "type": "string",
+          "required": false,
+          "dartType": "String?"
+        }
+        ],
+        "states": ["month", "selected", "min", "marked", "repeats", "legend", "night"],
         "slots": [],
-        "tokens": [],
-        "dartRoles": [],
-        "goldens": [],
+        "tokens": ["radius.sm", "space.s1", "space.s3", "theme.light.color.primary", "theme.light.color.ink3", "format.run.accent"],
+        "dartRoles": ["CatchText", "CatchRowPressSurface", "MaterialLocalizations"],
+        "goldens": ["sheet_calendar_board"],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -23152,7 +23577,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Port both frameworks, inside a Sheet; absorbs the wheel and adaptive pickers."
+          "CatchCalendar is the system Calendar, Monday first, inside CatchSheet.contained (or a sheet route). The caller owns the chosen day; the calendar owns only the month it shows. Month names, weekday initials, arrow labels and spoken dates come from MaterialLocalizations; markedLabel and repeatsLabel add the legend. Absorbs the wheel and adaptive pickers when their callers move."
         ]
       },
       "governance": {
@@ -23167,6 +23592,23 @@
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
         "conceptId": "catch.calendar"
+      },
+      "dart": {
+        "symbol": "CatchCalendar",
+        "file": "packages/catch_ui/lib/src/components/catch_calendar.dart",
+        "constructors": [
+          "CatchCalendar"
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Calendar",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.option_card",
+          "catch.sheet.picker"
+        ],
+        "reason": "A month grid for choosing one day past the day strip, with marked and repeating days. Day choice cards are the strip; the wheel picker sheet picks scalar values."
       },
       "system": {
         "name": "Calendar",
@@ -23188,10 +23630,10 @@
       "id": "catch.meter",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Planned: its Widgetbook contract arrives with the first code, and this check applies once the record has a Dart symbol."
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
       "name": "CatchMeter",
-      "status": "planned",
+      "status": "active",
       "kind": "primitive",
       "tier": "T2",
       "absorbs": ["CatchBarIndicator"],
@@ -23213,12 +23655,107 @@
         }
       },
       "contract": {
-        "props": [],
-        "states": [],
+        "props": [
+          {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "dartType": "num"
+        },
+          {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "dartType": "String"
+        },
+          {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "dartType": "num",
+          "default": 100
+        },
+          {
+          "name": "variant",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchMeterVariant",
+          "values": [
+            "progress",
+            "cap",
+            "segments",
+            "stack"
+          ],
+          "default": "progress",
+          "notes": "The system's kind."
+        },
+          {
+          "name": "size",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchMeterSize",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "default": "md",
+          "notes": "The system's thickness: 4, 6 or 8."
+        },
+          {
+          "name": "color",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchMeterColor",
+          "values": [
+            "ink",
+            "format",
+            "success",
+            "warning",
+            "danger"
+          ],
+          "default": "ink",
+          "notes": "The system's fill."
+        },
+          {
+          "name": "format",
+          "type": "enum",
+          "required": false,
+          "dartType": "CatchFormat?",
+          "values": [
+            "run",
+            "dinner",
+            "games",
+            "courts",
+            "nightsOut"
+          ]
+        },
+          {
+          "name": "showLabel",
+          "type": "bool",
+          "required": false,
+          "dartType": "bool",
+          "default": false
+        },
+          {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "dartType": "num?"
+        },
+          {
+          "name": "parts",
+          "type": "list",
+          "required": false,
+          "dartType": "List<CatchMeterPart>",
+          "default": "const []"
+        }
+        ],
+        "states": ["progress", "cap", "segments", "stack", "on-colour", "labelled"],
         "slots": [],
-        "tokens": [],
-        "dartRoles": [],
-        "goldens": [],
+        "tokens": ["stroke.meterSm", "stroke.meterMd", "stroke.meterLg", "theme.light.color.track", "theme.light.color.nested", "opacity.onColour", "duration.slow"],
+        "dartRoles": ["CatchMeterVariant", "CatchMeterSize", "CatchMeterColor", "CatchMeterPart", "CatchMeterPartColor", "CatchRootScope", "CatchText"],
+        "goldens": ["meter_family"],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -23236,7 +23773,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Port both frameworks; absorbs CatchBarIndicator. catch.distance_ring stays T3."
+          "CatchMeter is the system Meter. The track follows the ground: the nested block in a tile, translucent white in a format colour, where the fill turns ink. A stack meter takes CatchMeterPart shares and draws a legend with whole percentages. Absorbs CatchBarIndicator's single bar when its callers move; catch.distance_ring stays T3."
         ]
       },
       "governance": {
@@ -23273,6 +23810,23 @@
           ]
         },
         "notes": "React lands first under the record's name; the Dart port takes CatchMeter. Progress, cap, segments and stack, 4/6/8 thick; the track follows the ground (nested on a tile, white at the on-colour opacity on a format colour, where the fill turns ink). Absorbs CatchBarIndicator's single bar when its callers move."
+      },
+      "dart": {
+        "symbol": "CatchMeter",
+        "file": "packages/catch_ui/lib/src/components/catch_meter.dart",
+        "constructors": [
+          "CatchMeter"
+        ]
+      },
+      "level": "L3",
+      "roleNoun": "Meter",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.mini_bar_chart",
+          "catch.distance_ring"
+        ],
+        "reason": "A known value against a maximum, a limit, equal steps or shares of a whole, on one track. CatchBarIndicator compares values across bars; the distance ring is a radial T3 measure."
       },
       "system": {
         "name": "Meter",

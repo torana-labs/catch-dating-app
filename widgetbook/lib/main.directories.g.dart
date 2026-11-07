@@ -467,6 +467,8 @@ import 'package:widgetbook_workspace/primitives/contracts/messages.dart'
     as _widgetbook_workspace_primitives_contracts_messages;
 import 'package:widgetbook_workspace/primitives/contracts/metadata.dart'
     as _widgetbook_workspace_primitives_contracts_metadata;
+import 'package:widgetbook_workspace/primitives/contracts/meters.dart'
+    as _widgetbook_workspace_primitives_contracts_meters;
 import 'package:widgetbook_workspace/primitives/contracts/page_body.dart'
     as _widgetbook_workspace_primitives_contracts_page_body;
 import 'package:widgetbook_workspace/primitives/contracts/pane_layout.dart'
@@ -511,6 +513,10 @@ import 'package:widgetbook_workspace/primitives/contracts/top_bar.dart'
     as _widgetbook_workspace_primitives_contracts_top_bar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
+import 'package:widgetbook_workspace/primitives/contracts/wave1_board_overlays.dart'
+    as _widgetbook_workspace_primitives_contracts_wave1_board_overlays;
+import 'package:widgetbook_workspace/primitives/contracts/wave1_board_states.dart'
+    as _widgetbook_workspace_primitives_contracts_wave1_board_states;
 import 'package:widgetbook_workspace/primitives/contracts/welcome_text.dart'
     as _widgetbook_workspace_primitives_contracts_welcome_text;
 import 'package:widgetbook_workspace/primitives/contracts/workspace_header.dart'
@@ -2787,6 +2793,60 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Avatars',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAvatar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_overlays
+                        .catchAvatarBoardStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Choices',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchChip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_states
+                        .catchChipBoardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchChoiceTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_states
+                        .catchChoiceTileBoardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPageTabBar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_overlays
+                        .catchPageTabBarBoardStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Content',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2949,6 +3009,12 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookComponent(
             name: 'CatchNotice',
             useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_overlays
+                        .catchNoticeBoardStates,
+              ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_feedback
@@ -3210,6 +3276,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Inputs',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchCalendar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_meters
+                    .catchCalendarContractStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchCheckboxInput',
             useCases: [
@@ -4012,6 +4088,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Overlays',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_overlays
+                        .catchSheetBoardStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'People',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -4199,6 +4291,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_sheets
                     .organizerDetailDockContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Rows',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchIndexRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_states
+                        .catchIndexRowBoardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchListSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_states
+                        .catchSectionBoardStates,
               ),
             ],
           ),
@@ -4444,12 +4563,54 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchBarIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_overlays
+                        .catchBarChartBoardStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchCountBadge',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_metadata
                     .catchCountBadgeContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMarker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_meters
+                    .catchMarkerContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMeter',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_meters
+                    .catchMeterContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMetricTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Board stat states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_wave1_board_overlays
+                        .catchStatBoardStates,
               ),
             ],
           ),

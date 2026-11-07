@@ -19,6 +19,7 @@ Bars grow over 500 ms when values change.
 
 `catch.mini_bar_chart`:
 - `CatchBarIndicator`
+- `CatchBarIndicator.chart`
 <!-- generated:flutter:end -->
 
 ## Replaces

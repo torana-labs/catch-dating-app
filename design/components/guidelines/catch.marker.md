@@ -17,7 +17,9 @@ Live markers pulse.
 <!-- generated:flutter:start -->
 ## Flutter
 
-`catch.marker`: No Flutter symbol yet.
+`catch.marker`:
+- `CatchMarker`
+- `CatchMarker.number`
 <!-- generated:flutter:end -->
 
 ## Replaces

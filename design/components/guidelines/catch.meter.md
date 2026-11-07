@@ -17,7 +17,8 @@ The fill eases over 500 ms when the value changes.
 <!-- generated:flutter:start -->
 ## Flutter
 
-`catch.meter`: No Flutter symbol yet.
+`catch.meter`:
+- `CatchMeter`
 <!-- generated:flutter:end -->
 
 ## Replaces
