@@ -27,6 +27,8 @@
       "status": "captured",
       "priority": "P2",
       "captureIds": [
+        "host_onboarding_sign_in",
+        "host_onboarding_code",
         "auth_phone_entry",
         "auth_phone_valid",
         "auth_otp_entry",
@@ -1212,6 +1214,10 @@
       "status": "captured",
       "priority": "P2",
       "captureIds": [
+        "host_onboarding_start_page",
+        "host_onboarding_details",
+        "host_onboarding_payments",
+        "host_onboarding_done",
         "create_club_basics",
         "create_club_basics_validation",
         "create_club_picked_media",

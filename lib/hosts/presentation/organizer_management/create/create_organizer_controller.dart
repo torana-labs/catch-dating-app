@@ -57,7 +57,7 @@ final class NewOrganizerPhotoInput extends OrganizerPhotoInput {
 class CreateOrganizerController extends _$CreateOrganizerController {
   static final submitMutation = Mutation<void>();
 
-  Future<void>? _submitInFlight;
+  Future<String>? _submitInFlight;
 
   @override
   void build() {}
@@ -98,7 +98,8 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     );
   }
 
-  Future<void> submit({
+  /// Creates the organizer and returns its id.
+  Future<String> submit({
     required String name,
     required String location,
     required String area,
@@ -114,7 +115,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     final existingRequest = _submitInFlight;
     if (existingRequest != null) return existingRequest;
 
-    late final Future<void> trackedRequest;
+    late final Future<String> trackedRequest;
     trackedRequest =
         _submit(
           name: name,
@@ -137,7 +138,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     return trackedRequest;
   }
 
-  Future<void> _submit({
+  Future<String> _submit({
     required String name,
     required String location,
     required String area,
@@ -224,6 +225,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
           patch: UpdateOrganizerPatch.raw(patch),
         );
       }
+      return createdOrganizerId;
     } catch (_) {
       for (final path in newStoragePaths) {
         try {

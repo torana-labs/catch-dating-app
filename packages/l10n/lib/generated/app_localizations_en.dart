@@ -504,6 +504,272 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationNewEvent => 'New event';
 
   @override
+  String get hostOnboardingSignInKicker => 'Catch Host';
+
+  @override
+  String get hostOnboardingSignInStatTonightLabel => 'Tonight';
+
+  @override
+  String get hostOnboardingSignInStatTonightValue => '18';
+
+  @override
+  String get hostOnboardingSignInStatTonightNote => 'of 26 in';
+
+  @override
+  String get hostOnboardingSignInStatMonthLabel => 'This month';
+
+  @override
+  String get hostOnboardingSignInStatMonthValue => '41%';
+
+  @override
+  String get hostOnboardingSignInStatMonthNote => 'came back';
+
+  @override
+  String get hostOnboardingSignInTitle => 'Run nights people come back to.';
+
+  @override
+  String get hostOnboardingSignInLead =>
+      'Tickets, the door, the live night and your regulars in one app. Free for 30 days from your first event.';
+
+  @override
+  String get hostOnboardingSignInPhoneLabel => 'Your phone number';
+
+  @override
+  String get hostOnboardingSignInPhonePlaceholder => '98201 44718';
+
+  @override
+  String get hostOnboardingSignInSendCode => 'Text me a code';
+
+  @override
+  String get hostOnboardingSignInGuestPrompt => 'Going to events, not hosting?';
+
+  @override
+  String get hostOnboardingSignInGetCatch => 'Get Catch';
+
+  @override
+  String get hostOnboardingCodeTitle => 'Enter the code';
+
+  @override
+  String hostOnboardingCodeSentTo({required String phone}) {
+    return 'Sent to $phone';
+  }
+
+  @override
+  String get hostOnboardingCodeBack => 'Back';
+
+  @override
+  String get hostOnboardingCodeHeading => 'Six digits, by SMS';
+
+  @override
+  String get hostOnboardingCodeLabel => 'Code';
+
+  @override
+  String hostOnboardingCodeResendIn({
+    required int minutes,
+    required String seconds,
+  }) {
+    return 'Didn’t get it? Send again in $minutes:$seconds.';
+  }
+
+  @override
+  String get hostOnboardingCodeResendPrompt => 'Didn’t get it?';
+
+  @override
+  String get hostOnboardingCodeResend => 'Send again';
+
+  @override
+  String get hostOnboardingCodeAutofill =>
+      'We fill it in for you when the message arrives. It works the same in Catch and Catch Host.';
+
+  @override
+  String get hostOnboardingCodeContinue => 'Continue';
+
+  @override
+  String hostOnboardingSetupStep({required int index, required int total}) {
+    return 'Step $index of $total';
+  }
+
+  @override
+  String get hostOnboardingSetupBack => 'Back';
+
+  @override
+  String get hostOnboardingSetupNext => 'Next';
+
+  @override
+  String get hostOnboardingStartTitle => 'Start your page';
+
+  @override
+  String get hostOnboardingStartLead =>
+      'Catch has no page of yours yet. Start one here: it is what guests find you on, and you can change all of it later.';
+
+  @override
+  String get hostOnboardingStartName => 'Name';
+
+  @override
+  String get hostOnboardingStartNamePlaceholder => 'Lantern Lane Social';
+
+  @override
+  String get hostOnboardingStartWhere => 'Where you run things';
+
+  @override
+  String get hostOnboardingStartArea => 'Neighbourhood';
+
+  @override
+  String get hostOnboardingStartAreaPlaceholder => 'Bandra West';
+
+  @override
+  String get hostOnboardingDetailsTitle => 'Check your details';
+
+  @override
+  String get hostOnboardingDetailsLogoNote =>
+      'Add a logo now or later. Change it any time from Your page.';
+
+  @override
+  String get hostOnboardingDetailsLogoAdded =>
+      'Logo added. It uploads when you finish, and you can change it any time from Your page.';
+
+  @override
+  String get hostOnboardingDetailsAddLogo => 'Add a logo';
+
+  @override
+  String get hostOnboardingDetailsChangeLogo => 'Change logo';
+
+  @override
+  String get hostOnboardingDetailsAbout => 'What happens at your nights';
+
+  @override
+  String get hostOnboardingDetailsAboutPlaceholder =>
+      'Quiz nights and supper clubs around Bandra, most weeks.';
+
+  @override
+  String get hostOnboardingDetailsFormats => 'What you run';
+
+  @override
+  String get hostOnboardingFormatGames => 'Quizzes';
+
+  @override
+  String get hostOnboardingFormatRun => 'Social runs';
+
+  @override
+  String get hostOnboardingFormatDinner => 'Suppers';
+
+  @override
+  String get hostOnboardingFormatCourts => 'Racket sports';
+
+  @override
+  String get hostOnboardingFormatNightsOut => 'Parties';
+
+  @override
+  String get hostOnboardingPageKicker => 'Your page';
+
+  @override
+  String get hostOnboardingDetailsPagePending =>
+      'Your link is made when you finish';
+
+  @override
+  String get hostOnboardingDetailsDomainNote =>
+      'Use your own domain later, from Your page.';
+
+  @override
+  String get hostOnboardingPaymentsTitle => 'Getting paid';
+
+  @override
+  String get hostOnboardingPaymentsConnectTitle => 'Connect Razorpay';
+
+  @override
+  String get hostOnboardingPaymentsConnectBody =>
+      'Guests pay straight into your own Razorpay account. Catch never holds ticket money.';
+
+  @override
+  String get hostOnboardingPaymentsConnect => 'Connect Razorpay';
+
+  @override
+  String get hostOnboardingPaymentsReconnect => 'Reconnect Razorpay';
+
+  @override
+  String get hostOnboardingPaymentsConnected => 'Connected';
+
+  @override
+  String get hostOnboardingPaymentsConnecting =>
+      'Waiting for Razorpay to finish connecting. You can carry on.';
+
+  @override
+  String get hostOnboardingPaymentsUnavailable =>
+      'Razorpay connections are not open for your page yet. You can connect later from Payouts.';
+
+  @override
+  String get hostOnboardingPaymentsNoAccount =>
+      'No account yet? You can make one in about ten minutes.';
+
+  @override
+  String get hostOnboardingPaymentsCostsTitle => 'What Catch costs';
+
+  @override
+  String get hostOnboardingPaymentsCostsBody =>
+      'Free for 30 days from your first event. Then 5% of ticket sales, never more than ₹10,000 in a 30-day cycle, or ₹5,000 a cycle for the tools only. WhatsApp messages are optional and billed at what WhatsApp charges.';
+
+  @override
+  String get hostOnboardingPaymentsFreeNotice =>
+      'Only running free events for now? Skip this. We’ll ask again when you add a price.';
+
+  @override
+  String get hostOnboardingPaymentsFinish => 'Finish';
+
+  @override
+  String get hostOnboardingPaymentsSkip => 'Skip for now';
+
+  @override
+  String get hostOnboardingDoneClose => 'Close';
+
+  @override
+  String get hostOnboardingDoneLive => 'Live';
+
+  @override
+  String get hostOnboardingDoneCreated => 'Page created';
+
+  @override
+  String hostOnboardingDoneTitle({required String name}) {
+    return '$name is yours.';
+  }
+
+  @override
+  String get hostOnboardingDoneLinkPending =>
+      'Your link appears here once the page is published.';
+
+  @override
+  String get hostOnboardingDoneCopy => 'Copy';
+
+  @override
+  String get hostOnboardingDoneCopied => 'Copied';
+
+  @override
+  String get hostOnboardingDoneNextTitle => 'Next';
+
+  @override
+  String get hostOnboardingDoneNextBio => 'Put the link in your Instagram bio';
+
+  @override
+  String get hostOnboardingDoneNextBioNote =>
+      'It replaces your link-in-bio page';
+
+  @override
+  String get hostOnboardingDoneNextTeam => 'Add your team';
+
+  @override
+  String get hostOnboardingDoneNextTeamNote =>
+      'Who runs the door and the live screens';
+
+  @override
+  String get hostOnboardingDoneNextRehearse => 'Rehearse a night';
+
+  @override
+  String get hostOnboardingDoneNextRehearseNote =>
+      'Practise with made-up guests first';
+
+  @override
+  String get hostOnboardingDoneCreateEvent => 'Create your first event';
+
+  @override
   String get hostTodayEmptyTitle => 'You’re all caught up';
 
   @override

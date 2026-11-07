@@ -913,6 +913,483 @@ abstract class AppLocalizations {
   /// **'New event'**
   String get hostNavigationNewEvent;
 
+  /// Host sign-in kicker above the stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch Host'**
+  String get hostOnboardingSignInKicker;
+
+  /// Host sign-in stat label: a sample night's check-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostOnboardingSignInStatTonightLabel;
+
+  /// Host sign-in stat value: guests in on a sample night.
+  ///
+  /// In en, this message translates to:
+  /// **'18'**
+  String get hostOnboardingSignInStatTonightValue;
+
+  /// Host sign-in stat note: out of how many booked.
+  ///
+  /// In en, this message translates to:
+  /// **'of 26 in'**
+  String get hostOnboardingSignInStatTonightNote;
+
+  /// Host sign-in stat label: a sample month's returning guests.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get hostOnboardingSignInStatMonthLabel;
+
+  /// Host sign-in stat value: share of guests who came back.
+  ///
+  /// In en, this message translates to:
+  /// **'41%'**
+  String get hostOnboardingSignInStatMonthValue;
+
+  /// Host sign-in stat note under the returning share.
+  ///
+  /// In en, this message translates to:
+  /// **'came back'**
+  String get hostOnboardingSignInStatMonthNote;
+
+  /// Host sign-in page title.
+  ///
+  /// In en, this message translates to:
+  /// **'Run nights people come back to.'**
+  String get hostOnboardingSignInTitle;
+
+  /// Host sign-in lead under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets, the door, the live night and your regulars in one app. Free for 30 days from your first event.'**
+  String get hostOnboardingSignInLead;
+
+  /// Host sign-in phone field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone number'**
+  String get hostOnboardingSignInPhoneLabel;
+
+  /// Host sign-in phone field placeholder: a sample national number.
+  ///
+  /// In en, this message translates to:
+  /// **'98201 44718'**
+  String get hostOnboardingSignInPhonePlaceholder;
+
+  /// Host sign-in button that sends the SMS code.
+  ///
+  /// In en, this message translates to:
+  /// **'Text me a code'**
+  String get hostOnboardingSignInSendCode;
+
+  /// Host sign-in line pointing guests to the Catch app.
+  ///
+  /// In en, this message translates to:
+  /// **'Going to events, not hosting?'**
+  String get hostOnboardingSignInGuestPrompt;
+
+  /// Host sign-in button that opens the Catch app download page.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Catch'**
+  String get hostOnboardingSignInGetCatch;
+
+  /// Host code step top bar title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code'**
+  String get hostOnboardingCodeTitle;
+
+  /// Host code step top bar kicker with the number the code went to.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to {phone}'**
+  String hostOnboardingCodeSentTo({required String phone});
+
+  /// Host code step back button: change the number.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostOnboardingCodeBack;
+
+  /// Host code step page title.
+  ///
+  /// In en, this message translates to:
+  /// **'Six digits, by SMS'**
+  String get hostOnboardingCodeHeading;
+
+  /// Host code input label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get hostOnboardingCodeLabel;
+
+  /// Host code step countdown until a new code can be sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn’t get it? Send again in {minutes}:{seconds}.'**
+  String hostOnboardingCodeResendIn({
+    required int minutes,
+    required String seconds,
+  });
+
+  /// Host code step line before Send again.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn’t get it?'**
+  String get hostOnboardingCodeResendPrompt;
+
+  /// Host code step button that sends a new code.
+  ///
+  /// In en, this message translates to:
+  /// **'Send again'**
+  String get hostOnboardingCodeResend;
+
+  /// Host code step notice about SMS autofill.
+  ///
+  /// In en, this message translates to:
+  /// **'We fill it in for you when the message arrives. It works the same in Catch and Catch Host.'**
+  String get hostOnboardingCodeAutofill;
+
+  /// Host code step button that checks the code.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get hostOnboardingCodeContinue;
+
+  /// Organiser setup top bar step label.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {index} of {total}'**
+  String hostOnboardingSetupStep({required int index, required int total});
+
+  /// Organiser setup back action.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostOnboardingSetupBack;
+
+  /// Organiser setup dock action to the next step.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostOnboardingSetupNext;
+
+  /// Organiser setup step one title when no page was found for the number.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your page'**
+  String get hostOnboardingStartTitle;
+
+  /// Organiser setup step one lead.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch has no page of yours yet. Start one here: it is what guests find you on, and you can change all of it later.'**
+  String get hostOnboardingStartLead;
+
+  /// Organiser setup name field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostOnboardingStartName;
+
+  /// Organiser setup name field placeholder: a sample organiser name.
+  ///
+  /// In en, this message translates to:
+  /// **'Lantern Lane Social'**
+  String get hostOnboardingStartNamePlaceholder;
+
+  /// Organiser setup label over the city choice and neighbourhood.
+  ///
+  /// In en, this message translates to:
+  /// **'Where you run things'**
+  String get hostOnboardingStartWhere;
+
+  /// Organiser setup neighbourhood field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighbourhood'**
+  String get hostOnboardingStartArea;
+
+  /// Organiser setup neighbourhood placeholder: a sample neighbourhood.
+  ///
+  /// In en, this message translates to:
+  /// **'Bandra West'**
+  String get hostOnboardingStartAreaPlaceholder;
+
+  /// Organiser setup step two title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your details'**
+  String get hostOnboardingDetailsTitle;
+
+  /// Organiser setup note beside the logo before one is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a logo now or later. Change it any time from Your page.'**
+  String get hostOnboardingDetailsLogoNote;
+
+  /// Organiser setup note beside the logo once one is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo added. It uploads when you finish, and you can change it any time from Your page.'**
+  String get hostOnboardingDetailsLogoAdded;
+
+  /// Organiser setup button that picks a logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a logo'**
+  String get hostOnboardingDetailsAddLogo;
+
+  /// Organiser setup button that picks a different logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change logo'**
+  String get hostOnboardingDetailsChangeLogo;
+
+  /// Organiser setup description field label.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens at your nights'**
+  String get hostOnboardingDetailsAbout;
+
+  /// Organiser setup description placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz nights and supper clubs around Bandra, most weeks.'**
+  String get hostOnboardingDetailsAboutPlaceholder;
+
+  /// Organiser setup label over the format chips.
+  ///
+  /// In en, this message translates to:
+  /// **'What you run'**
+  String get hostOnboardingDetailsFormats;
+
+  /// Organiser setup format chip: quizzes and games.
+  ///
+  /// In en, this message translates to:
+  /// **'Quizzes'**
+  String get hostOnboardingFormatGames;
+
+  /// Organiser setup format chip: social runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Social runs'**
+  String get hostOnboardingFormatRun;
+
+  /// Organiser setup format chip: suppers and dinners.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppers'**
+  String get hostOnboardingFormatDinner;
+
+  /// Organiser setup format chip: racket sports.
+  ///
+  /// In en, this message translates to:
+  /// **'Racket sports'**
+  String get hostOnboardingFormatCourts;
+
+  /// Organiser setup format chip: parties and nights out.
+  ///
+  /// In en, this message translates to:
+  /// **'Parties'**
+  String get hostOnboardingFormatNightsOut;
+
+  /// Organiser setup kicker over the page link tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your page'**
+  String get hostOnboardingPageKicker;
+
+  /// Organiser setup link tile before the page exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Your link is made when you finish'**
+  String get hostOnboardingDetailsPagePending;
+
+  /// Organiser setup note under the page link.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your own domain later, from Your page.'**
+  String get hostOnboardingDetailsDomainNote;
+
+  /// Organiser setup step three title.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting paid'**
+  String get hostOnboardingPaymentsTitle;
+
+  /// Organiser setup payouts spotlight title.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Razorpay'**
+  String get hostOnboardingPaymentsConnectTitle;
+
+  /// Organiser setup payouts spotlight body.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay straight into your own Razorpay account. Catch never holds ticket money.'**
+  String get hostOnboardingPaymentsConnectBody;
+
+  /// Organiser setup button that opens Razorpay sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Razorpay'**
+  String get hostOnboardingPaymentsConnect;
+
+  /// Organiser setup button that replaces a Razorpay connection that stopped working.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Razorpay'**
+  String get hostOnboardingPaymentsReconnect;
+
+  /// Organiser setup badge once Razorpay is connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get hostOnboardingPaymentsConnected;
+
+  /// Organiser setup line while a Razorpay connection is pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Razorpay to finish connecting. You can carry on.'**
+  String get hostOnboardingPaymentsConnecting;
+
+  /// Organiser setup line when payouts cannot be connected yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay connections are not open for your page yet. You can connect later from Payouts.'**
+  String get hostOnboardingPaymentsUnavailable;
+
+  /// Organiser setup line under Connect Razorpay.
+  ///
+  /// In en, this message translates to:
+  /// **'No account yet? You can make one in about ten minutes.'**
+  String get hostOnboardingPaymentsNoAccount;
+
+  /// Organiser setup pricing section title.
+  ///
+  /// In en, this message translates to:
+  /// **'What Catch costs'**
+  String get hostOnboardingPaymentsCostsTitle;
+
+  /// Organiser setup pricing body.
+  ///
+  /// In en, this message translates to:
+  /// **'Free for 30 days from your first event. Then 5% of ticket sales, never more than ₹10,000 in a 30-day cycle, or ₹5,000 a cycle for the tools only. WhatsApp messages are optional and billed at what WhatsApp charges.'**
+  String get hostOnboardingPaymentsCostsBody;
+
+  /// Organiser setup notice that payouts can wait for free events.
+  ///
+  /// In en, this message translates to:
+  /// **'Only running free events for now? Skip this. We’ll ask again when you add a price.'**
+  String get hostOnboardingPaymentsFreeNotice;
+
+  /// Organiser setup dock action that ends setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get hostOnboardingPaymentsFinish;
+
+  /// Organiser setup dock action that ends setup without payouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get hostOnboardingPaymentsSkip;
+
+  /// Organiser setup Done close button.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostOnboardingDoneClose;
+
+  /// Organiser setup Done badge when the public page is published.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get hostOnboardingDoneLive;
+
+  /// Organiser setup Done badge when the page exists but is not published yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Page created'**
+  String get hostOnboardingDoneCreated;
+
+  /// Organiser setup Done title with the page name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is yours.'**
+  String hostOnboardingDoneTitle({required String name});
+
+  /// Organiser setup Done link tile before the page has a public address.
+  ///
+  /// In en, this message translates to:
+  /// **'Your link appears here once the page is published.'**
+  String get hostOnboardingDoneLinkPending;
+
+  /// Organiser setup button that copies the page link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get hostOnboardingDoneCopy;
+
+  /// Organiser setup button after the page link was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get hostOnboardingDoneCopied;
+
+  /// Organiser setup Done next steps section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostOnboardingDoneNextTitle;
+
+  /// Organiser setup next step: share the page link.
+  ///
+  /// In en, this message translates to:
+  /// **'Put the link in your Instagram bio'**
+  String get hostOnboardingDoneNextBio;
+
+  /// Organiser setup next step note for the Instagram bio.
+  ///
+  /// In en, this message translates to:
+  /// **'It replaces your link-in-bio page'**
+  String get hostOnboardingDoneNextBioNote;
+
+  /// Organiser setup next step: invite the team.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your team'**
+  String get hostOnboardingDoneNextTeam;
+
+  /// Organiser setup next step note for the team.
+  ///
+  /// In en, this message translates to:
+  /// **'Who runs the door and the live screens'**
+  String get hostOnboardingDoneNextTeamNote;
+
+  /// Organiser setup next step: run a rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse a night'**
+  String get hostOnboardingDoneNextRehearse;
+
+  /// Organiser setup next step note for rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise with made-up guests first'**
+  String get hostOnboardingDoneNextRehearseNote;
+
+  /// Organiser setup Done button that starts creating an event.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first event'**
+  String get hostOnboardingDoneCreateEvent;
+
   /// Today workspace title when no live or upcoming event needs attention.
   ///
   /// In en, this message translates to:
