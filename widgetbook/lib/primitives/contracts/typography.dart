@@ -92,6 +92,10 @@ Widget catchIndexRowContractStates(BuildContext context) {
       'trailing',
       'stacked',
       'disabled',
+      'marker',
+      'date',
+      'progress',
+      'action',
     ],
     children: [
       WidgetbookContractStateCard(
@@ -131,6 +135,66 @@ Widget catchIndexRowContractStates(BuildContext context) {
       const WidgetbookContractStateCard(
         label: 'disabled',
         child: CatchIndexRow(title: 'Coming soon', onTap: null),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'marker',
+        description: 'A roomy task row: a tone dot, the title and a subtitle.',
+        child: CatchIndexRow(
+          title: 'A place opened up',
+          subtitle: 'Offer it to Nikhil, first on the waitlist',
+          marker: CatchIndexRowTone.info,
+          density: CatchIndexRowSize.roomy,
+          onTap: null,
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'date',
+        description: 'An event row led by its format-tinted date tile.',
+        child: CatchIndexRow(
+          title: 'Long Table Supper',
+          meta: '8:00 PM · 14 of 14 booked',
+          status: 'Full',
+          statusTone: CatchIndexRowTone.success,
+          date: CatchIndexRowDate(
+            day: 'Wed',
+            date: '4',
+            format: CatchFormat.dinner,
+          ),
+          density: CatchIndexRowSize.regular,
+          onTap: widgetbookNoop,
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'progress',
+        description: 'Meta, status and the fill meter under the text.',
+        child: CatchIndexRow(
+          title: 'Carter Road Social Run',
+          meta: '6:30 AM · 32 of 40 booked',
+          status: '8 left',
+          progress: CatchIndexRowProgress(value: 32, max: 40, label: 'Booked'),
+          date: CatchIndexRowDate(
+            day: 'Sun',
+            date: '1',
+            format: CatchFormat.run,
+          ),
+          density: CatchIndexRowSize.regular,
+          onTap: widgetbookNoop,
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'action',
+        description: 'One secondary button at the end; the row stays still.',
+        child: CatchIndexRow(
+          title: '2 people want in',
+          subtitle: 'Ishaan and Zoya asked to join tonight',
+          marker: CatchIndexRowTone.warning,
+          action: CatchIndexRowAction(
+            label: 'Review',
+            onPressed: widgetbookNoop,
+          ),
+          density: CatchIndexRowSize.roomy,
+          onTap: null,
+        ),
       ),
     ],
   );
