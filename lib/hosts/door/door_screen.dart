@@ -37,6 +37,7 @@ class DoorScreen extends ConsumerStatefulWidget {
     required this.organizerId,
     required this.eventId,
     this.initialEvent,
+    this.initialFilter,
     this.scanCamera,
   });
 
@@ -45,6 +46,9 @@ class DoorScreen extends ConsumerStatefulWidget {
 
   /// The event the opener already had, shown until the listener delivers.
   final Event? initialEvent;
+
+  /// The filter to open on, such as Asked from a join-request task.
+  final DoorFilter? initialFilter;
 
   /// Replaces the scanner's live camera in previews and tests.
   final Widget? scanCamera;
@@ -63,7 +67,9 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(_guard(_session.loadOutbox));
+      if (!mounted) return;
+      if (widget.initialFilter case final filter?) _session.setFilter(filter);
+      unawaited(_guard(_session.loadOutbox));
     });
     ref.listenManual(appConnectivityProvider, (_, next) {
       final results = next.asData?.value;

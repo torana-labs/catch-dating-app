@@ -64,7 +64,7 @@ void main() {
     );
     expect(find.text('Dev Patel'), findsOneWidget);
     expect(find.text('paid ₹998 · first time'), findsOneWidget);
-    expect(find.text('5 nights with you before'), findsOneWidget);
+    expect(find.text('5 nights with you'), findsOneWidget);
     expect(find.text('New'), findsNWidgets(2));
     expect(find.text('Check in'), findsNWidgets(4));
     expect(find.text('Aanya Sharma'), findsNothing);

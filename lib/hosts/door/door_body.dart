@@ -213,11 +213,13 @@ class DoorBody extends StatelessWidget {
                           CatchText(
                             l10n.doorScannerTileTitle,
                             variant: CatchTextVariant.titleRow,
+                            align: TextAlign.center,
                           ),
                           CatchText(
                             l10n.doorScannerTileBody,
                             variant: CatchTextVariant.bodySmall,
                             tone: CatchTextTone.secondary,
+                            align: TextAlign.center,
                           ),
                         ],
                       ),
