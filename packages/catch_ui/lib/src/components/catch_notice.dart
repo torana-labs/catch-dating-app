@@ -7,6 +7,8 @@ import 'package:catch_ui/src/components/catch_notice_tone.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
+import 'package:catch_ui/src/primitives/catch_text.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
 class CatchNotice extends StatelessWidget {
@@ -15,9 +17,32 @@ class CatchNotice extends StatelessWidget {
     required this.notice,
     required this.dismissLabel,
     this.onDismiss,
-  });
+  }) : _inline = false;
+
+  /// The system Notice: a tinted block in the flow (help, a warning, a
+  /// result) with its icon, an optional [title] and the [body] copy.
+  /// [CatchNoticeTone.status] is the system's info tone, in indigo.
+  CatchNotice.inline({
+    super.key,
+    required String body,
+    String? title,
+    CatchNoticeTone tone = CatchNoticeTone.status,
+    IconData? icon,
+  }) : notice = title == null
+           ? CatchNoticeData(id: body, title: body, tone: tone, icon: icon)
+           : CatchNoticeData(
+               id: title,
+               title: title,
+               message: body,
+               tone: tone,
+               icon: icon,
+             ),
+       dismissLabel = '',
+       onDismiss = null,
+       _inline = true;
 
   final CatchNoticeData notice;
+  final bool _inline;
 
   /// Caller-resolved accessibility copy for the optional dismiss control.
   final String dismissLabel;
@@ -25,6 +50,7 @@ class CatchNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_inline) return _inlineNotice(context);
     final palette = _NoticePalette.from(
       CatchTokens.of(context),
       notice.tone,
@@ -183,6 +209,73 @@ class CatchNotice extends StatelessWidget {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _inlineNotice(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final (fill, iconColor) = switch (notice.tone) {
+      CatchNoticeTone.success => (t.tintMint, t.deepMint),
+      CatchNoticeTone.warning => (t.tintYellow, t.deepYellow),
+      CatchNoticeTone.danger => (t.tintCoral, t.deepCoral),
+      CatchNoticeTone.status ||
+      CatchNoticeTone.event => (t.tintIndigo, t.deepIndigo),
+    };
+    final icon = notice.hasIcon
+        ? notice.icon
+        : switch (notice.tone) {
+            CatchNoticeTone.success => CatchIcons.success,
+            CatchNoticeTone.warning => CatchIcons.warning,
+            CatchNoticeTone.danger => CatchIcons.error,
+            CatchNoticeTone.status || CatchNoticeTone.event => CatchIcons.info,
+          };
+    final message = notice.message;
+    final title = message == null ? null : notice.title;
+    final body = message ?? notice.title;
+    return Semantics(
+      container: true,
+      liveRegion: notice.tone == CatchNoticeTone.danger,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(CatchRadius.md),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.micro14,
+            vertical: CatchSpacing.s3,
+          ),
+          child: DefaultTextStyle.merge(
+            style: TextStyle(color: t.ink),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: CatchSpacing.s3,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: CatchStroke.hairline),
+                  child: Icon(
+                    icon,
+                    size: CatchIconSize.control,
+                    color: iconColor,
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: CatchSpacing.micro2,
+                    children: [
+                      if (title != null)
+                        CatchText(title, variant: CatchTextVariant.titleRow),
+                      CatchText(body, variant: CatchTextVariant.bodySmall),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

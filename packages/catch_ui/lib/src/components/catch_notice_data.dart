@@ -65,5 +65,8 @@ class CatchNoticeData {
 
   IconData get icon => _icon ?? CatchIcons.info;
 
+  /// Whether the caller chose an icon, rather than the default.
+  bool get hasIcon => _icon != null;
+
   bool get isPersistent => duration == null;
 }
