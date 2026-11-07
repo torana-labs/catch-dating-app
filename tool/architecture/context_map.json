@@ -83,6 +83,7 @@
     {"path": "lib/hosts/work/", "context": "programmes"},
     {"path": "lib/programs/", "context": "programmes"},
 
+    {"path": "lib/hosts/create/", "layer": "app"},
     {"path": "lib/hosts/today/", "layer": "app"},
     {"path": "lib/hosts/live/", "layer": "app"},
     {"path": "lib/user_analytics/", "context": "insights"}

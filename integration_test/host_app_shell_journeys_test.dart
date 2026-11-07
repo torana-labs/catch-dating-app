@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
+import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
@@ -213,35 +215,52 @@ void main() {
       ),
     );
     await pumpAppShellFrames(tester, frames: 30);
+    expect(find.byType(CreateBasicsScreen), findsOneWidget);
     await tester.enterText(
       find.descendant(
-        of: find.byKey(const ValueKey('private-event-name')),
+        of: find.byKey(const ValueKey('create-name')),
         matching: find.byType(EditableText),
       ),
       'Rooftop supper club',
     );
-    await _pickFirstOfNextMonth(tester, const ValueKey('private-event-date'));
-    await tester.tap(find.byKey(const ValueKey('private-event-start')));
+    await tester.tap(find.byKey(const ValueKey('create-format-supper')));
+    await pumpAppShellFrames(tester);
+    await tester.tap(find.text('Next'));
+    await pumpAppShellFrames(tester, frames: 20);
+
+    expect(find.byType(CreateWhenScreen), findsOneWidget);
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    await tester.tap(find.byKey(ValueKey('create-day-${tomorrow.day}')));
+    await pumpAppShellFrames(tester);
+    await tester.tap(find.byKey(const ValueKey('create-starts')));
     await pumpAppShellFrames(tester);
     await tester.tap(find.text('OK'));
     await pumpAppShellFrames(tester);
-    await tester.ensureVisible(
-      find.byKey(const ValueKey('private-event-save')),
-    );
-    await tester.tap(find.byKey(const ValueKey('private-event-save')));
-    await pumpAppShellFrames(tester, frames: 30);
+    await tester.tap(find.text('Next'));
+    await pumpAppShellFrames(tester, frames: 40);
 
+    // The create command, then the details command for the format and the
+    // length, both through the setup commands; the steps move on to tickets.
     final eventId = backend.privateEvents.keys.single;
-    expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
-    expect(find.text('Rooftop supper club'), findsWidgets);
-    expect(find.text('Private'), findsOneWidget);
+    expect(
+      backend.functions.calls.map((call) => call.name),
+      containsAllInOrder([
+        'createPrivateEventSetup',
+        'updatePrivateEventDetails',
+      ]),
+    );
+    expect(find.byType(CreateTicketsScreen), findsOneWidget);
 
-    // Back returns to the Events list kept mounted across the create flow. It
-    // re-reads the private inventory, so the new event is listed at once.
+    // Back walks the steps; Close on the first returns to the Events list
+    // kept mounted across the create flow, which re-reads the inventory.
     final backFrom = backend.functions.calls.length;
     await tester.tap(find.byTooltip('Back'));
+    await pumpAppShellFrames(tester);
+    await tester.tap(find.byTooltip('Back'));
+    await pumpAppShellFrames(tester);
+    await tester.tap(find.byTooltip('Close'));
     await pumpAppShellFrames(tester, frames: 30);
-    expect(find.byType(PrivateEventSetupScreen), findsNothing);
+    expect(find.byType(CreateBasicsScreen), findsNothing);
     expect(
       backend.functions.calls
           .skip(backFrom)
@@ -254,7 +273,7 @@ void main() {
     await tester.tap(find.byKey(ValueKey('host-event-row-$eventId')));
     await pumpAppShellFrames(tester, frames: 30);
 
-    expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
+    expect(find.byType(CreateBasicsScreen), findsOneWidget);
     expect(find.text('Rooftop supper club'), findsWidgets);
     // The saved event comes from its setup view listener, not a callable.
     expect(
@@ -417,15 +436,4 @@ Future<void> _enterField(WidgetTester tester, String title, String text) async {
   );
   tester.testTextInput.hide();
   await tester.pump();
-}
-
-Future<void> _pickFirstOfNextMonth(WidgetTester tester, Key field) async {
-  await tester.tap(find.byKey(field));
-  await pumpAppShellFrames(tester);
-  await tester.tap(find.byTooltip('Next month'));
-  await pumpAppShellFrames(tester);
-  await tester.tap(find.text('1').hitTestable());
-  await pumpAppShellFrames(tester);
-  await tester.tap(find.text('OK'));
-  await pumpAppShellFrames(tester);
 }
