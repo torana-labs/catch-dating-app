@@ -1,0 +1,1 @@
+Works with the latest Catch backend. Reliability fixes across event setup, the guest list and the live console.

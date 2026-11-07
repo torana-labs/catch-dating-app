@@ -197,6 +197,11 @@ platform :ios do
     target = app_target(role)
     build_number = options[:build].to_s
     UI.user_error!("build:<TestFlight build number> is required") unless build_number.match?(/\A\d+\z/)
+    # App Store Connect refuses a submission whose version has no "What's New",
+    # so the notes travel with the code: fastlane/metadata/<role>/en-US/release_notes.txt.
+    metadata_path = File.join(REPO_ROOT, "fastlane", "metadata", role)
+    notes = File.join(metadata_path, "en-US", "release_notes.txt")
+    UI.user_error!("#{notes} is missing; write this version's What's New there") unless File.exist?(notes)
     with_api_key do |key, _key_path|
     upload_to_app_store(
       api_key: key,
@@ -204,7 +209,8 @@ platform :ios do
       app_version: marketing_version(target),
       build_number: build_number,
       skip_binary_upload: true,
-      skip_metadata: true,
+      skip_metadata: false,
+      metadata_path: metadata_path,
       skip_screenshots: true,
       submit_for_review: true,
       automatic_release: false,
