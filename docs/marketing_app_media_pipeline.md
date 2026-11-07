@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.14.1
+version: 1.14.2
 updated: 2026-11-02
 owner: marketing_website
 status: active
@@ -62,9 +62,14 @@ and is part of that renderer's recipe.
 - feature code names an `/assets/app-screenshots/` path;
 - a recorded size differs from the PNG.
 
-The `/host/` hero and the home "For organisers" card show
-`host-live-console`. The per-format phone illustrations on `/host/` stay
-authored until each launch format has a demo world to capture.
+No page renders an app capture today: the redesigned `/host/` and home pages
+draw their phone illustrations from the system parts. The Flutter captures
+were retired from `capture_manifest.json` in P4 cleanup 2, and the manifest
+keeps the one web capture (`guest-join-phone`) so the hosted capture pipeline,
+which needs at least one canonical capture, still has an inventory. The OG
+cards for `/host/` and `/host/apply/` still read two retired captures'
+website PNGs directly (`host-live-console`, `host-create-basics`), and web-ui's
+device-frame stories read seven; those files stay until their readers move.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
@@ -75,8 +80,8 @@ owned by `node tool/design_tokens.mjs`.
 A `web-capture` record names `story.file`, `story.id`, the website `routeId`
 and the displayed `address` (`catchdates.com`) instead of an app `fixtureKey`.
 It uses the same manifest slots, framed size, sync and artifact-import protocol.
-The first slot, `guest-join-phone`, shows the synthetic Mumbai event's guest
-check-in story beside the `/host/` FAQ.
+The one slot, `guest-join-phone`, shows the synthetic Mumbai event's guest
+check-in story. No page lists it today.
 
 `tool/marketing/lib/web_capture_render.mjs` serves a built website Storybook on
 loopback and opens the named story in Playwright WebKit on macOS. It verifies
