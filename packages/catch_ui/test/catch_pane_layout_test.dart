@@ -154,4 +154,36 @@ void main() {
     await tester.pumpWidget(browse(400));
     expect(tester.getRect(find.byKey(const ValueKey('cell 0'))).width, 400);
   });
+
+  testWidgets('a feed splits 40 apart from 960 and stacks 24 apart below', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    Widget feed(double width) => host(
+      const SingleChildScrollView(
+        child: CatchPaneLayout(
+          pattern: CatchPaneLayoutMode.feed,
+          children: [
+            SizedBox(key: ValueKey('main'), height: 300),
+            SizedBox(key: ValueKey('side'), height: 120),
+          ],
+        ),
+      ),
+      width: width,
+    );
+    await tester.pumpWidget(feed(1100));
+    var main = tester.getRect(find.byKey(const ValueKey('main')));
+    var side = tester.getRect(find.byKey(const ValueKey('side')));
+    expect(side.width, 360);
+    expect(side.left - main.right, 40);
+    expect(side.top, main.top);
+    expect(side.height, 120);
+    await tester.pumpWidget(feed(700));
+    main = tester.getRect(find.byKey(const ValueKey('main')));
+    side = tester.getRect(find.byKey(const ValueKey('side')));
+    expect(main.width, 700);
+    expect(side.top - main.bottom, 24);
+  });
 }

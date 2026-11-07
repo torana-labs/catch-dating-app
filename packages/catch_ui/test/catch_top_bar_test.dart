@@ -226,4 +226,51 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Pushed'), findsNothing);
   });
+
+  testWidgets(
+    'a tab home shows its identity on phones and search on desktops',
+    (tester) async {
+      var switched = 0;
+      final bar = CatchTopBar(
+        variant: CatchTopBarVariant.tabHome,
+        kicker: 'Tuesday 27 October',
+        title: 'Good evening, Meher',
+        identity: CatchTopBarIdentity(
+          name: 'Lantern Lane Social',
+          initials: 'LL',
+          label: 'Lantern Lane Social. Switch organiser',
+          onTap: () => switched += 1,
+        ),
+        search: CatchTopBarSearch(
+          copy: CatchSearchFieldCopy(
+            searchLabel: 'Search',
+            clearTooltip: (placeholder) => 'Clear $placeholder',
+            closeSearchLabel: 'Close search',
+          ),
+          placeholder: 'Find a guest or an event',
+          tooltip: 'Search',
+        ),
+      );
+      await _pumpScreen(tester, bar, width: 390);
+      expect(
+        find.bySemanticsLabel('Lantern Lane Social. Switch organiser'),
+        findsOneWidget,
+      );
+      expect(find.byType(CatchSearchField), findsNothing);
+      await tester.tap(find.byType(CatchAvatar));
+      expect(switched, 1);
+
+      await _pumpScreen(tester, bar, width: 700);
+      expect(find.byType(CatchAvatar), findsNothing);
+      expect(find.byType(CatchSearchField), findsNothing);
+
+      await _pumpScreen(tester, bar, width: 1200);
+      expect(find.byType(CatchAvatar), findsNothing);
+      expect(find.byType(CatchSearchField), findsOneWidget);
+      expect(
+        tester.getSize(find.byType(CatchSearchField)).width,
+        closeTo(336, 0.01),
+      );
+    },
+  );
 }

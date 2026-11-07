@@ -18,6 +18,7 @@ Static; rows animate in.
 ## Flutter
 
 `catch.section`:
+- `CatchSection`
 - `CatchSection.divided`
 - `CatchSection.fieldRows`
 - `CatchSection.containedFieldRows`

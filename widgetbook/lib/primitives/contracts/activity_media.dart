@@ -245,7 +245,7 @@ Widget catchMapPreviewContractStates(BuildContext context) {
 Widget catchEventCardContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'EventCard',
-    contractId: 'catch.event_card',
+    contractId: 'catch.event_card.ticket',
     states: const ['ticket', 'ticket-status', 'long-copy'],
     children: [
       const WidgetbookContractStateCard(

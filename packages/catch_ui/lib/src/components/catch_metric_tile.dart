@@ -3,11 +3,17 @@ import 'package:catch_ui/src/components/catch_metric_value.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:catch_ui/src/primitives/catch_text.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
 enum CatchMetricTileVariant { display, mono }
 
 enum CatchMetricTileMode { plain, surface }
+
+/// The colour of a [CatchMetricTile.stat] note.
+enum CatchMetricTileTone { secondary, success, warning, danger }
 
 /// One caller-formatted value and its label, with an optional icon or unit.
 ///
@@ -15,6 +21,10 @@ enum CatchMetricTileMode { plain, surface }
 /// and bounded label behavior. Display values keep natural-height text. Data
 /// completeness, status labels and explanatory captions have their own typed
 /// contract in CatchDataQualityMetricTile.
+///
+/// [CatchMetricTile.stat] is the system Stat: a tile with the label as a
+/// kicker, the value large, and a note under it, such as "Up 18%" in success.
+/// A row of them is a `CatchStack` row with `equal` set.
 class CatchMetricTile extends StatelessWidget {
   const CatchMetricTile({
     super.key,
@@ -31,7 +41,31 @@ class CatchMetricTile extends StatelessWidget {
        valueColor = null,
        unitColor = null,
        labelColor = null,
-       expanded = false;
+       expanded = false,
+       note = null,
+       noteTone = CatchMetricTileTone.secondary,
+       _stat = false;
+
+  /// The system Stat tile.
+  const CatchMetricTile.stat({
+    super.key,
+    required String this._label,
+    required String this._value,
+    this.note,
+    this.noteTone = CatchMetricTileTone.secondary,
+  }) : item = null,
+       icon = null,
+       highlight = false,
+       center = false,
+       variant = CatchMetricTileVariant.display,
+       mode = CatchMetricTileMode.surface,
+       padding = null,
+       borderColor = null,
+       valueColor = null,
+       unitColor = null,
+       labelColor = null,
+       expanded = false,
+       _stat = true;
 
   const CatchMetricTile.compact({
     super.key,
@@ -48,7 +82,10 @@ class CatchMetricTile extends StatelessWidget {
        variant = CatchMetricTileVariant.mono,
        mode = CatchMetricTileMode.plain,
        padding = null,
-       borderColor = null;
+       borderColor = null,
+       note = null,
+       noteTone = CatchMetricTileTone.secondary,
+       _stat = false;
 
   final IconData? icon;
   final String? _value;
@@ -65,11 +102,56 @@ class CatchMetricTile extends StatelessWidget {
   final Color? labelColor;
   final bool expanded;
 
+  /// The stat's note under the value.
+  final String? note;
+  final CatchMetricTileTone noteTone;
+  final bool _stat;
+
+  /// A stat tile's least height, so a row of them lines up.
+  static const double statMinHeight = 118;
+
   String? get value => item?.value ?? _value;
   String get label => item?.label ?? _label!;
 
   @override
   Widget build(BuildContext context) {
+    if (_stat) {
+      final note = this.note;
+      return ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: statMinHeight),
+        child: CatchSurface(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: CatchSpacing.micro6,
+            children: [
+              CatchText(
+                label,
+                variant: CatchTextVariant.labelKicker,
+                tone: CatchTextTone.secondary,
+              ),
+              CatchText(
+                value!,
+                variant: CatchTextVariant.displayTitle,
+                numeric: true,
+                maxLines: 1,
+              ),
+              if (note != null)
+                CatchText(
+                  note,
+                  variant: CatchTextVariant.labelKicker,
+                  tone: switch (noteTone) {
+                    CatchMetricTileTone.secondary => CatchTextTone.secondary,
+                    CatchMetricTileTone.success => CatchTextTone.success,
+                    CatchMetricTileTone.warning => CatchTextTone.warning,
+                    CatchMetricTileTone.danger => CatchTextTone.danger,
+                  },
+                ),
+            ],
+          ),
+        ),
+      );
+    }
     final t = CatchTokens.of(context);
     final compact = item;
     final reflow = MediaQuery.textScalerOf(context).scale(1) >= 1.4;

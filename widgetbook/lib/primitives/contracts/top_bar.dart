@@ -5,6 +5,8 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/primitives/contracts/shell_preview.dart';
 import 'package:widgetbook_workspace/support/contract_preview.dart';
 
+String _clearSearchTooltip(String placeholder) => 'Clear $placeholder';
+
 /// One variant compact and wide, each at rest and once the body has scrolled.
 class _Matrix extends StatelessWidget {
   const _Matrix(this.bar);
@@ -50,7 +52,16 @@ Widget catchSystemTopBarContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'CatchTopBar',
     contractId: 'catch.top_bar',
-    states: const ['tab-home', 'tool', 'subject', 'step', 'live', 'moment'],
+    states: const [
+      'tab-home',
+      'tool',
+      'subject',
+      'step',
+      'live',
+      'moment',
+      'tab-home-identity',
+      'tab-home-search',
+    ],
     children: [
       for (final (label, description, bar) in [
         (
@@ -129,6 +140,47 @@ Widget catchSystemTopBarContractStates(BuildContext context) {
           description: description,
           child: _Matrix(bar),
         ),
+      WidgetbookContractStateCard(
+        label: 'tab-home-identity',
+        description: 'On a phone the organizer avatar ends the bar.',
+        child: WidgetbookShellWindow(
+          width: WidgetbookShellLayout.phone,
+          sizeClass: CatchWindowSize.compact,
+          child: CatchTopBar(
+            variant: CatchTopBarVariant.tabHome,
+            kicker: 'Tuesday 27 October',
+            title: 'Good evening, Meher',
+            identity: CatchTopBarIdentity(
+              name: 'Lantern Lane Social',
+              initials: 'LL',
+              label: 'Lantern Lane Social. Switch organiser',
+              onTap: () {},
+            ),
+          ),
+        ),
+      ),
+      WidgetbookContractStateCard(
+        label: 'tab-home-search',
+        description: 'On a desktop a search field starts the actions.',
+        child: WidgetbookShellWindow(
+          width: WidgetbookShellLayout.wideDesktop,
+          sizeClass: CatchWindowSize.expanded,
+          child: CatchTopBar(
+            variant: CatchTopBarVariant.tabHome,
+            kicker: 'Tuesday 27 October',
+            title: 'Good evening, Meher',
+            search: const CatchTopBarSearch(
+              copy: CatchSearchFieldCopy(
+                searchLabel: 'Search',
+                clearTooltip: _clearSearchTooltip,
+                closeSearchLabel: 'Close search',
+              ),
+              placeholder: 'Find a guest or an event',
+              tooltip: 'Search',
+            ),
+          ),
+        ),
+      ),
     ],
   );
 }

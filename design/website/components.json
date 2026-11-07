@@ -3491,9 +3491,10 @@
       "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
       "exportName": "CatchGroundCard",
       "comparedWith": [
-        "catch.surface"
+        "catch.surface",
+        "catch.event_card"
       ],
-      "comparisonReason": "A card on a named ground, which CatchSurface does not draw today. The redesign folds it into Surface when its first redesigned consumer lands.",
+      "comparisonReason": "A card on a named ground, which CatchSurface does not draw today. The redesign folds it into Surface when its first redesigned consumer lands. It holds whatever the page arranges, never one event, so it is not the EventCard poster.",
       "css": [
         "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],
@@ -3619,9 +3620,10 @@
         "catch.index_row",
         "catch.meta_row",
         "catch.option_card",
-        "catch.text"
+        "catch.text",
+        "catch.event_card"
       ],
-      "comparisonReason": "One review with identity, stars, verification, text and reply; it arranges CatchText roles and is not a text role. It is not a metric, icon or choice tile, and not a directory index row or a passive metadata row: its meta line is one part of a review the reader reads whole."
+      "comparisonReason": "One review with identity, stars, verification, text and reply; it arranges CatchText roles and is not a text role. It is not a metric, icon or choice tile, and not a directory index row or a passive metadata row: its meta line is one part of a review the reader reads whole. It is not an event card: it summarises a review, not an event."
     },
     {
       "id": "shared_star_input",
@@ -3741,9 +3743,10 @@
       "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser; the organiser page's \"Next up\" card is its feature size on ink, with a tag, a detail line and an action label (CAT-251). Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard.",
       "comparedWith": [
         "catch.text",
-        "catch.button"
+        "catch.button",
+        "catch.event_card"
       ],
-      "comparisonReason": "A link card on a ground with a label, a display title, a detail line and an action label; the copy is CatchText roles and the action a static CatchButton inside one link, so it is neither a text role nor a button."
+      "comparisonReason": "A link card on a ground with a label, a display title, a detail line and an action label; the copy is CatchText roles and the action a static CatchButton inside one link, so it is neither a text role nor a button. It has no media, counts or faces and links to any page, so it is not the EventCard poster."
     },
     {
       "id": "shared_event_poster",

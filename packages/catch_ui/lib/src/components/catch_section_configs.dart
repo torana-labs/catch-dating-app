@@ -1,5 +1,31 @@
 part of 'catch_section.dart';
 
+enum _CatchSectionVariant { divided, contained, plain }
+
+/// The supported action hierarchies inside a contained task.
+enum CatchSectionEmphasis { primary, secondary, destructive }
+
+/// The renderer's reading of whichever private record a constructor filled.
+extension _CatchSectionResolution on CatchSection {
+  _SectionCommonConfig get _common =>
+      _horizontalConfig?.common ??
+      _dividedConfig?.common ??
+      _fieldRowsConfig?.common ??
+      _containedFieldRowsConfig?.common ??
+      _containedConfig?.common ??
+      _plainConfig!.common;
+
+  _CatchSectionVariant get _variant =>
+      _containedConfig != null || _containedFieldRowsConfig != null
+      ? _CatchSectionVariant.contained
+      : _plainConfig != null
+      ? _CatchSectionVariant.plain
+      : _CatchSectionVariant.divided;
+
+  bool get _fieldRows =>
+      _fieldRowsConfig != null || _containedFieldRowsConfig != null;
+}
+
 /// Closed, renderer-facing records for [CatchSection].
 ///
 /// Dart record literals can be composed from parameters in a const constructor;

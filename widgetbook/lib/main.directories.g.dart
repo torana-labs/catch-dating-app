@@ -441,6 +441,8 @@ import 'package:widgetbook_workspace/primitives/contracts/dialogs.dart'
     as _widgetbook_workspace_primitives_contracts_dialogs;
 import 'package:widgetbook_workspace/primitives/contracts/dock.dart'
     as _widgetbook_workspace_primitives_contracts_dock;
+import 'package:widgetbook_workspace/primitives/contracts/event_card.dart'
+    as _widgetbook_workspace_primitives_contracts_event_card;
 import 'package:widgetbook_workspace/primitives/contracts/feedback.dart'
     as _widgetbook_workspace_primitives_contracts_feedback;
 import 'package:widgetbook_workspace/primitives/contracts/field.dart'
@@ -459,6 +461,8 @@ import 'package:widgetbook_workspace/primitives/contracts/inputs.dart'
     as _widgetbook_workspace_primitives_contracts_inputs;
 import 'package:widgetbook_workspace/primitives/contracts/legacy_text.dart'
     as _widgetbook_workspace_primitives_contracts_legacy_text;
+import 'package:widgetbook_workspace/primitives/contracts/list_section.dart'
+    as _widgetbook_workspace_primitives_contracts_list_section;
 import 'package:widgetbook_workspace/primitives/contracts/loading.dart'
     as _widgetbook_workspace_primitives_contracts_loading;
 import 'package:widgetbook_workspace/primitives/contracts/messages.dart'
@@ -4078,6 +4082,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchEventCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_event_card
+                    .catchEventCardContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchLegacyDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4218,6 +4232,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Bounded and intrinsic rails',
                 builder: _widgetbook_workspace_primitives_rail_use_cases
                     .horizontalScrollViewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchListSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_list_section
+                    .catchListSectionContractStates,
               ),
             ],
           ),

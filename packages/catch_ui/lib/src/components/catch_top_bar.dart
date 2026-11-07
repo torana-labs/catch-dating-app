@@ -1,7 +1,10 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
+import 'package:catch_ui/src/components/catch_search_field.dart';
+import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
 import 'package:catch_ui/src/patterns/catch_screen.dart';
@@ -60,6 +63,28 @@ class CatchTopBarStep {
   final String label;
 }
 
+/// Who a tab-home bar acts as on a phone: the organizer's avatar, which
+/// opens the switcher. On wider windows the navigation's header carries it.
+@immutable
+class CatchTopBarIdentity {
+  const CatchTopBarIdentity({
+    required this.name,
+    required this.label,
+    this.photoUrl,
+    this.initials,
+    this.onTap,
+  });
+
+  /// The name behind the avatar's initials.
+  final String name;
+
+  /// The press label, such as "Lantern Lane Social. Switch organiser".
+  final String label;
+  final String? photoUrl;
+  final String? initials;
+  final VoidCallback? onTap;
+}
+
 /// The top of every screen, in the system's six app variants.
 ///
 /// On medium and expanded windows every variant but [CatchTopBarVariant.moment]
@@ -72,8 +97,10 @@ class CatchTopBarStep {
 ///
 /// The bar reads [CatchScreenScope]: it shows its hairline only once the body
 /// has scrolled, and a `subject` bar stays transparent over its hero (titles
-/// hidden) until then. A top bar never holds search or a footer; those belong
-/// to the body.
+/// hidden) until then. A `tabHome` bar ends with its [identity] on compact
+/// windows and starts its actions with the fixed [search] field on expanded
+/// ones; otherwise a top bar holds no search or footer, which belong to the
+/// body.
 class CatchTopBar extends StatelessWidget {
   const CatchTopBar({
     super.key,
@@ -85,6 +112,8 @@ class CatchTopBar extends StatelessWidget {
     this.actions = const <Widget>[],
     this.step,
     this.live,
+    this.identity,
+    this.search,
   });
 
   final CatchTopBarVariant variant;
@@ -104,6 +133,16 @@ class CatchTopBar extends StatelessWidget {
 
   /// The live badge, such as "Live · 9:04 PM".
   final String? live;
+
+  /// `tabHome` on compact windows: the avatar at the end of the bar.
+  final CatchTopBarIdentity? identity;
+
+  /// `tabHome` on expanded windows: a search field before the actions,
+  /// 240 to 360 px wide.
+  final CatchTopBarSearch? search;
+
+  /// The search field's share of the window, between its 240 and 360 px.
+  static const double _searchWidthRatio = 0.28;
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +176,36 @@ class CatchTopBar extends StatelessWidget {
     final crumb = variant == CatchTopBarVariant.step && step != null
         ? step.label
         : kicker;
+    final tabHome = variant == CatchTopBarVariant.tabHome;
+    final search = tabHome && sizeClass == CatchWindowSize.expanded
+        ? this.search
+        : null;
+    final identity = tabHome && sizeClass == CatchWindowSize.compact
+        ? this.identity
+        : null;
     final trailing = <Widget>[
+      if (search != null)
+        SizedBox(
+          width: (MediaQuery.sizeOf(context).width * _searchWidthRatio).clamp(
+            GeneratedCatchLayoutTokens.sidebar,
+            GeneratedCatchLayoutTokens.paneList,
+          ),
+          child: CatchSearchField.expanded(
+            key: search.fieldKey,
+            copy: search.copy,
+            value: search.value,
+            contract: search.contract,
+            contractExemption: search.contractExemption,
+            placeholder: search.placeholder,
+            onChanged: search.onChanged,
+            autofocus: search.autofocus,
+            enabled: search.enabled,
+            textInputAction: search.textInputAction,
+            onSubmitted: search.onSubmitted,
+            onFocusChanged: search.onFocusChanged,
+            semanticLabel: search.semanticLabel ?? search.placeholder,
+          ),
+        ),
       if (live case final live?) CatchBadge.live(label: live),
       if (action != null)
         CatchButton(
@@ -147,6 +215,23 @@ class CatchTopBar extends StatelessWidget {
           size: wide ? CatchButtonSize.sm : CatchButtonSize.md,
         ),
       ...actions,
+      if (identity != null)
+        Semantics(
+          button: true,
+          label: identity.label,
+          child: ExcludeSemantics(
+            child: InkWell(
+              onTap: identity.onTap,
+              customBorder: const CircleBorder(),
+              child: CatchAvatar(
+                size: GeneratedCatchSizeTokens.avatarMd,
+                name: identity.name,
+                imageUrl: identity.photoUrl,
+                initials: identity.initials,
+              ),
+            ),
+          ),
+        ),
     ];
     final trailingRow = trailing.isEmpty
         ? null

@@ -33,6 +33,10 @@ enum CatchPaneLayoutMode {
 ///   pane beside it from 960 px.
 /// - browse: a wide grid that never splits; [children] are its cells, in
 ///   columns of at least 280 px from 600 px and one column below.
+/// - feed: a page that scrolls as one, so both panes take their content's
+///   height: the main column and the 360 px side column 40 px apart from
+///   960 px (about two to one on a 1440 desktop beside the sidebar), and
+///   below that the side column under the main one, 24 px apart.
 class CatchPaneLayout extends StatelessWidget {
   const CatchPaneLayout({
     super.key,
@@ -134,6 +138,24 @@ class CatchPaneLayout extends StatelessWidget {
                 child: SizedBox(width: double.infinity, child: main),
               ),
             ),
+            SizedBox(width: secondPaneWidthOf(pattern, width), child: second),
+          ],
+        );
+      }
+      if (pattern == CatchPaneLayoutMode.feed) {
+        if (!split) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: CatchSpacing.s6,
+            children: [main, second],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: CatchSpacing.s10,
+          children: [
+            Expanded(child: main),
             SizedBox(width: secondPaneWidthOf(pattern, width), child: second),
           ],
         );

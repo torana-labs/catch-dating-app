@@ -64,7 +64,7 @@ symbol outside `catch_ui`.
 | AppShell | `catch.screen` | T2 | `CatchScreen` | — | port react; absorbs: `CatchScaffold`, `CatchRootScreenScaffold`, `CatchRouteScaffold` |
 | ScreenBody | `catch.screen_body` | T1 | `CatchPageBody` | `CatchPageBody` | align |
 | PaneLayout | `catch.pane_layout` | T2 | `CatchPaneLayout` | `CatchPaneLayout` | align; absorbs: `CatchWorkspacePaneScaffold` |
-| EventCard | `catch.event_card` | T2 | `EventCard` (app) | — | port react; absorbs: `CatchEventPoster`, `CatchPreviewCard`, `CatchLinkTile`, `CatchPlanCard` |
+| EventCard | `catch.event_card` | T2 | `CatchEventCard` | — | port react; absorbs: `CatchEventPoster`, `CatchPreviewCard`, `CatchLinkTile`, `CatchPlanCard` |
 | EventCard | `catch.cover_story` | T4 | `FeaturedEventPoster` (app) | — | port react |
 | OrganiserCard | `catch.organizer_poster` | T2 | `CatchPoster` | — | port react; absorbs: `CatchOrganizerCard` |
 | OrganiserCard | `catch.club_cover` | T2 | `OrganizerCover` (app) | `OrganizerCover` | align |

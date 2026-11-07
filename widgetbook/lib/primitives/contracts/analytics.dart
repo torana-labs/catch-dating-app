@@ -268,6 +268,8 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
       'with-unit',
       'long-label',
       'color-overrides',
+      'stat',
+      'stat-note-tone',
     ],
     children: [
       const WidgetbookContractStateCard(
@@ -346,6 +348,50 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
               unit: 'min',
               label: 'walk',
             ),
+          ),
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'stat',
+        description: 'The system Stat: two in an equal row.',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.standardContractWidth,
+          child: CatchStack(
+            direction: CatchStackDirection.row,
+            equal: true,
+            children: [
+              CatchMetricTile.stat(label: 'Ticket sales', value: '₹1.48L'),
+              CatchMetricTile.stat(
+                label: 'Came back',
+                value: '41%',
+                note: 'of guests rebooked',
+              ),
+            ],
+          ),
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'stat-note-tone',
+        description: 'A note in the success, warning or danger tone.',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.standardContractWidth,
+          child: CatchStack(
+            direction: CatchStackDirection.row,
+            equal: true,
+            children: [
+              CatchMetricTile.stat(
+                label: 'Bookings',
+                value: '312',
+                note: 'Up 18%',
+                noteTone: CatchMetricTileTone.success,
+              ),
+              CatchMetricTile.stat(
+                label: 'No-shows',
+                value: '9%',
+                note: 'Up 3%',
+                noteTone: CatchMetricTileTone.danger,
+              ),
+            ],
           ),
         ),
       ),
