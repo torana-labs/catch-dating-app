@@ -169,24 +169,30 @@ export function validateAndResolveHostFeatureResponsibilities({
       `feature order must be ${expectedFeatureIds.join(", ")}; found ${declaredIds.join(", ")}`,
     );
   }
+  // Features own code; destinations own navigation. People holds two
+  // features, the audience (its home) and the inbox (another index route).
   const shellRoutes = shellManifest?.primaryRoutes ?? [];
-  if (shellRoutes.length !== expectedFeatureIds.length) {
-    errors.push(`Host shell manifest must declare five primary routes, found ${shellRoutes.length}.`);
+  if (shellRoutes.length !== 4) {
+    errors.push(`Host shell manifest must declare four primary routes, found ${shellRoutes.length}.`);
   }
 
   const ownedRouteIds = new Map();
   const resolved = [];
-  for (const [index, feature] of (contract.features ?? []).entries()) {
+  for (const feature of contract.features ?? []) {
     const label = `features.${feature.id}`;
-    const shellRoute = shellRoutes[index];
-    if (shellRoute?.destination !== feature.destination) {
-      errors.push(
-        `${label}: destination ${feature.destination} does not match shell position ${shellRoute?.destination ?? "missing"}.`,
-      );
+    const shellRoute = shellRoutes.find(
+      (route) => route.destination === feature.destination,
+    );
+    if (shellRoute == null) {
+      errors.push(`${label}: destination ${feature.destination} is not a shell destination.`);
     }
-    if (shellRoute?.routeId !== feature.primaryRouteId) {
+    const isHome = shellRoute?.routeId === feature.primaryRouteId;
+    if (
+      !isHome &&
+      !(shellRoute?.otherIndexRouteIds ?? []).includes(feature.primaryRouteId)
+    ) {
       errors.push(
-        `${label}: primary route ${feature.primaryRouteId} does not match shell route ${shellRoute?.routeId ?? "missing"}.`,
+        `${label}: primary route ${feature.primaryRouteId} is not an index route of shell destination ${shellRoute?.destination ?? "missing"}.`,
       );
     }
     if (feature.targetRoot !== `lib/hosts/${feature.id}`) {
@@ -211,7 +217,7 @@ export function validateAndResolveHostFeatureResponsibilities({
       .map((routeId) => resolveRoute({routeId, routes, label, errors}))
       .filter((route) => route != null);
     const primaryRoute = routes.get(feature.primaryRouteId);
-    if (primaryRoute != null && shellRoute?.path !== primaryRoute.path) {
+    if (isHome && primaryRoute != null && shellRoute?.path !== primaryRoute.path) {
       errors.push(
         `${label}: shell path ${shellRoute?.path} does not match route contract ${primaryRoute.path}.`,
       );
@@ -257,7 +263,7 @@ export function validateAndResolveHostFeatureResponsibilities({
     resolved.push({
       ...feature,
       guide,
-      label: shellRoute?.label ?? titleCase(feature.id),
+      label: titleCase(feature.id),
       primaryRoute,
       routes: resolvedRoutes,
       handoffRoutes,

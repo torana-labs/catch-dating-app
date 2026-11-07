@@ -246,7 +246,7 @@ import 'package:catch_dating_app/public_profile/presentation/public_profile_cont
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
-import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -2776,6 +2776,9 @@ class _HostRoutedShellCapture extends StatefulWidget {
   });
 
   final String initialLocation;
+
+  /// Which index route shows [child]: 0 Today, 1 Events, 2 Audience and
+  /// 3 Inbox (both under People), 4 Organizer.
   final int activeIndex;
   final Widget child;
 
@@ -2796,37 +2799,29 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
-              HostAppShell(navigationShell: navigationShell),
+              HostShellScreen(navigationShell: navigationShell),
           branches: [
-            _branch('/host/today', 0),
-            _branch('/host/events', 1),
-            _audienceBranch(2),
-            _branch('/host/inbox', 3),
-            _branch('/host/organizer', 4),
+            _branch([('/host/today', 0)]),
+            _branch([('/host/events', 1)]),
+            _branch([('/host/audience', 2), ('/host/inbox', 3)]),
+            _branch([('/host/organizer', 4)]),
           ],
         ),
       ],
     );
   }
 
-  StatefulShellBranch _branch(String path, int index) {
+  StatefulShellBranch _branch(List<(String, int)> indexes) {
     return StatefulShellBranch(
       routes: [
-        GoRoute(
-          path: path,
-          builder: (context, state) => index == widget.activeIndex
-              ? widget.child
-              : const SizedBox.shrink(),
-        ),
+        for (final (path, index) in indexes)
+          GoRoute(
+            path: path,
+            builder: (context, state) => index == widget.activeIndex
+                ? widget.child
+                : const SizedBox.shrink(),
+          ),
       ],
-    );
-  }
-
-  StatefulShellBranch _audienceBranch(int index) {
-    Widget builder(BuildContext context, GoRouterState state) =>
-        index == widget.activeIndex ? widget.child : const SizedBox.shrink();
-    return StatefulShellBranch(
-      routes: [GoRoute(path: '/host/audience', builder: builder)],
     );
   }
 
@@ -16401,6 +16396,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostInboxSurfaceFixtures.hostUid),
       ..._hostInboxSelectedThreadOverrides(),
+      // The sidebar footer shows who is signed in.
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
     ],
     builder: (context) => _HostRoutedShellCapture(
       initialLocation:

@@ -14,6 +14,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memo
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
@@ -22,7 +23,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_scr
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
-import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
@@ -59,7 +60,7 @@ void main() {
         tester,
       ) async {
         final harness = await _pumpCrm(tester, width: width, scale: scale);
-        expect(find.byType(HostAppShell), findsOneWidget);
+        expect(find.byType(HostShellScreen), findsOneWidget);
         expect(find.byType(HostCustomersScreen), findsOneWidget);
         await _openDetailMenu(tester);
         // Select a real, non-destructive command; do not substitute its callback.

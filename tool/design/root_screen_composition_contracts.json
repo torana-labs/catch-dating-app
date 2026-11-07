@@ -58,26 +58,22 @@
       ]
     },
     {
-      "path": "lib/routing/shell/host_app_shell.dart",
+      "path": "lib/routing/shell/host_shell_screen.dart",
       "requires": [
         {
           "text": "return CatchWorkspaceHeaderLayout(",
           "minimumOccurrences": 1
         },
         {
-          "text": "child: AdaptiveTabScaffold(",
+          "text": "child: CatchAppShell(",
           "minimumOccurrences": 1
         },
         {
-          "text": "navigationBar: bottomNavigation",
+          "text": "navigation: CatchTabBar<HostShellDestination>(",
           "minimumOccurrences": 1
         },
         {
-          "text": "mediumSideNavigation: railNavigation",
-          "minimumOccurrences": 1
-        },
-        {
-          "text": "expandedSideNavigation: sidebarNavigation",
+          "text": "items: hostShellDestinations(",
           "minimumOccurrences": 1
         }
       ],
@@ -87,6 +83,12 @@
         },
         {
           "text": "CatchTabViewportScope("
+        },
+        {
+          "text": "AdaptiveTabScaffold("
+        },
+        {
+          "text": "Scaffold("
         }
       ]
     }
@@ -117,12 +119,8 @@
       "routeName": "Routes.hostEventsScreen.name"
     },
     {
-      "branchKey": "keys.hostAudience",
+      "branchKey": "keys.hostPeople",
       "routeName": "Routes.hostAudienceScreen.name"
-    },
-    {
-      "branchKey": "keys.hostInbox",
-      "routeName": "Routes.hostInboxScreen.name"
     },
     {
       "branchKey": "keys.hostOrganizer",

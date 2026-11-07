@@ -307,12 +307,14 @@ export function applicationRouteOwnershipFindings({
   const applicationsRoute = "name: Routes.hostApplicationsScreen.name";
   const applicationDetailRoute =
     "name: Routes.hostApplicationDetailScreen.name";
-  const audienceBranch = /StatefulShellBranch\(\s*navigatorKey:\s*keys\.hostAudience,\s*observers:\s*\[AnalyticsRouteObserver\(analytics\)\],\s*routes:\s*\[workspaceRoute\(Routes\.hostAudienceScreen,\s*roots\[2\]\)\],\s*\)/u;
-  const ownedDestinationMount = /routes:\s*\[rootRoute,\s*\.\.\.routes\.where\(\(route\)\s*=>\s*route\.root\.route\s*==\s*root\)\]/u;
+  // The People branch mounts one workspace per index route: the Audience
+  // index and the inbox index.
+  const audienceBranch = /StatefulShellBranch\(\s*navigatorKey:\s*keys\.hostPeople,\s*observers:\s*\[AnalyticsRouteObserver\(analytics\)\],\s*routes:\s*indexRoutes\(HostWorkspaceRoot\.people\),\s*\)/u;
+  const ownedDestinationMount = /routes:\s*\[rootRoute,\s*\.\.\.routes\.where\(\(route\)\s*=>\s*route\.index\s*==\s*root\)\]/u;
   // Ownership is now declared on the destination, not inferred from its path.
   // Verify both the closed root mount and each application's typed metadata.
   const audienceDestination = (name) => new RegExp(
-    `HostWorkspaceDestination\\(\\s*root:\\s*HostWorkspaceRoot\\.audience,` +
+    `HostWorkspaceDestination\\(\\s*root:\\s*HostWorkspaceRoot\\.people,` +
     `(?:(?!HostWorkspaceDestination\\()[\\s\\S])*?name:\\s*Routes\\.${name}\\.name,`, "u",
   ).test(routerSource);
   const audienceOwnsBothRoutes =
@@ -327,7 +329,7 @@ export function applicationRouteOwnershipFindings({
     findings.push({
       path: routerPath,
       line: 1,
-      reason: "Named application routes must be mounted in the Audience shell branch.",
+      reason: "Named application routes must be mounted over the Audience index in the People shell branch.",
     });
   }
 

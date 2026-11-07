@@ -93,7 +93,7 @@ import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dar
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
-import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
@@ -546,7 +546,7 @@ List<HostWorkspaceDestination> _sharedEventWorkspaceRoutes() => [
 List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
   ..._sharedEventWorkspaceRoutes(),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.inbox,
+    root: HostWorkspaceRoot.people,
     path: Routes.hostNewMessageScreen.path,
     name: Routes.hostNewMessageScreen.name,
     builder: (context, state) => HostNewMessageScreen(
@@ -576,7 +576,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostFormResponseDetailScreen,
     audienceView: HostAudienceView.responses,
     path: Routes.hostResponseOfferScreen.path,
@@ -588,7 +588,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     contextualParent: (state) =>
         state.uri.queryParameters['_parentQueryFormId'] == null
         ? Routes.hostResponseOfferScreen
@@ -603,7 +603,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostResponseOfferScreen,
     audienceView: HostAudienceView.responses,
     path: Routes.hostResponseOfferPreferencesScreen.path,
@@ -625,7 +625,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostResponseQueryOfferScreen,
     audienceView: HostAudienceView.forms,
     path: Routes.hostResponseQueryOfferPreferencesScreen.path,
@@ -647,7 +647,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostFormBuilderScreen,
     audienceView: HostAudienceView.forms,
     path: Routes.hostResponseQueryOfferScreen.path,
@@ -1073,13 +1073,13 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: Routes.hostApplicationsScreen.path,
     name: Routes.hostApplicationsScreen.name,
     redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.responses,
     contextualParent: (state) =>
         state.uri.queryParameters.containsKey('_parentContactId')
@@ -1094,7 +1094,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.people,
     path: Routes.hostAddCustomerScreen.path,
     name: Routes.hostAddCustomerScreen.name,
@@ -1103,7 +1103,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.audiences,
     path: Routes.hostCreateSavedAudienceScreen.path,
     name: Routes.hostCreateSavedAudienceScreen.name,
@@ -1112,7 +1112,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.audiences,
     path: Routes.hostSavedAudienceDetailScreen.path,
     name: Routes.hostSavedAudienceDetailScreen.name,
@@ -1123,7 +1123,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormTemplatesScreen.path,
     name: Routes.hostFormTemplatesScreen.name,
@@ -1132,7 +1132,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.responses,
     contextualParent: (state) =>
         state.uri.queryParameters.containsKey('_parentContactId')
@@ -1147,7 +1147,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostFormBuilderScreen,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormPreviewScreen.path,
@@ -1158,7 +1158,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostFormBuilderScreen,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormShareScreen.path,
@@ -1169,7 +1169,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostFormBuilderScreen,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormAnalyticsScreen.path,
@@ -1180,7 +1180,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.people,
     path: Routes.hostAudienceAutomationsScreen.path,
     name: Routes.hostAudienceAutomationsScreen.name,
@@ -1189,7 +1189,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     parent: Routes.hostFormBuilderScreen,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormAutomationsScreen.path,
@@ -1200,7 +1200,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormBuilderScreen.path,
     name: Routes.hostFormBuilderScreen.name,
@@ -1211,7 +1211,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.people,
     contextualParent: (state) =>
         state.uri.queryParameters.containsKey('_parentAudienceId')
@@ -1226,92 +1226,92 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.people,
     path: Routes.hostCustomersLegacyScreen.path,
     name: Routes.hostCustomersLegacyScreen.name,
     redirect: (context, state) => hostCustomersLegacyRedirect(state.uri),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostCustomersLegacyScreen.path}/new',
     redirect: _customersUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostCustomersLegacyScreen.path}/audiences/new',
     redirect: _customersUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostCustomersLegacyScreen.path}/audiences/:audienceId',
     redirect: _customersUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostCustomersLegacyScreen.path}/applications',
     redirect: _customersUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path:
         '${Routes.hostCustomersLegacyScreen.path}/applications/:applicationId',
     redirect: _customersUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostCustomersLegacyScreen.path}/:contactId',
     redirect: _customersUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     audienceView: HostAudienceView.forms,
     path: Routes.hostFormsLegacyScreen.path,
     name: Routes.hostFormsLegacyScreen.name,
     redirect: (context, state) => hostFormsLegacyRedirect(state.uri),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/new',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/responses/:responseId',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/applications',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/applications/:applicationId',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/:formId/preview',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/:formId/share',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/:formId/analytics',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/:formId/automations',
     redirect: _formsUriRedirect,
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.audience,
+    root: HostWorkspaceRoot.people,
     path: '${Routes.hostFormsLegacyScreen.path}/:formId',
     redirect: _formsUriRedirect,
   ),
@@ -1324,7 +1324,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     ),
   ),
   HostWorkspaceDestination(
-    root: HostWorkspaceRoot.inbox,
+    root: HostWorkspaceRoot.people,
     path: Routes.hostChatScreen.path,
     name: Routes.hostChatScreen.name,
     builder: (context, state) => ChatScreen(
@@ -1476,39 +1476,43 @@ StatefulShellRoute _hostShellRoute(
         },
       );
     },
-    routes: [rootRoute, ...routes.where((route) => route.root.route == root)],
+    routes: [rootRoute, ...routes.where((route) => route.index == root)],
   );
+  List<ShellRoute> indexRoutes(HostWorkspaceRoot root) => [
+    for (final index in root.indexes)
+      workspaceRoute(
+        index,
+        roots.where((route) => route.name == index.name).single,
+      ),
+  ];
   return StatefulShellRoute.indexedStack(
-    builder: (context, state, navigationShell) => HostAppShell(
+    builder: (context, state, navigationShell) => HostShellScreen(
       navigationShell: navigationShell,
       requestedOrganizerId:
           _routeOrganizerQueryId(state) ?? state.pathParameters['organizerId'],
     ),
+    // One branch per HostWorkspaceRoot, in its order; each mounts one
+    // workspace per index route.
     branches: [
       StatefulShellBranch(
         navigatorKey: keys.hostToday,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [workspaceRoute(Routes.hostTodayScreen, roots[0])],
+        routes: indexRoutes(HostWorkspaceRoot.today),
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostEvents,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [workspaceRoute(Routes.hostEventsScreen, roots[1])],
+        routes: indexRoutes(HostWorkspaceRoot.events),
       ),
       StatefulShellBranch(
-        navigatorKey: keys.hostAudience,
+        navigatorKey: keys.hostPeople,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [workspaceRoute(Routes.hostAudienceScreen, roots[2])],
-      ),
-      StatefulShellBranch(
-        navigatorKey: keys.hostInbox,
-        observers: [AnalyticsRouteObserver(analytics)],
-        routes: [workspaceRoute(Routes.hostInboxScreen, roots[3])],
+        routes: indexRoutes(HostWorkspaceRoot.people),
       ),
       StatefulShellBranch(
         navigatorKey: keys.hostOrganizer,
         observers: [AnalyticsRouteObserver(analytics)],
-        routes: [workspaceRoute(Routes.hostOrganizerScreen, roots[4])],
+        routes: indexRoutes(HostWorkspaceRoot.organizer),
       ),
     ],
   );

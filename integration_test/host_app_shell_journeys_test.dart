@@ -9,7 +9,8 @@ import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_con
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
-import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,7 +48,7 @@ void main() {
     final backend = _returningHostBackend();
     await _pumpHost(tester, backend, organizers: [_saketRunClub]);
 
-    expect(find.byType(HostAppShell), findsOneWidget);
+    expect(find.byType(HostShellScreen), findsOneWidget);
     expect(find.byType(HostTodayScreen), findsOneWidget);
     for (final label in _hostTabs.keys) {
       expect(
@@ -59,10 +60,7 @@ void main() {
         reason: 'Host navigation must expose $label.',
       );
     }
-    expect(
-      find.byKey(const ValueKey<String>('host-organizer-navigation-avatar')),
-      findsOneWidget,
-    );
+    expect(_navigation(tester).items.last.semanticValue, _saketRunClub.name);
     // Today listens to its attention queue in Firestore; booting the shell
     // makes no attention callable.
     expect(
@@ -103,6 +101,23 @@ void main() {
     await unmountHostAppShell(tester);
   });
 
+  testWidgets('the inbox opens under People and keeps its path', (
+    tester,
+  ) async {
+    final backend = _returningHostBackend();
+    await _pumpHost(
+      tester,
+      backend,
+      organizers: [_saketRunClub],
+      initialRoute: '/host/inbox',
+    );
+
+    expect(find.byType(HostInboxScreen, skipOffstage: false), findsOneWidget);
+    expect(_navigation(tester).active, HostShellDestination.people);
+    expectHostSurfaceLoaded(tester, backend, surface: 'People inbox');
+    await unmountHostAppShell(tester);
+  });
+
   testWidgets('Host without an organizer creates one and lands on it', (
     tester,
   ) async {
@@ -133,8 +148,8 @@ void main() {
     expect(find.byType(HostTodayScreen, skipOffstage: false), findsOneWidget);
     expect(find.text('Create your first organizer'), findsNothing);
     expect(
-      find.byKey(const ValueKey<String>('host-organizer-navigation-avatar')),
-      findsOneWidget,
+      _navigation(tester).items.last.semanticValue,
+      'Lodhi Garden Socials',
     );
     expectHostSurfaceLoaded(tester, backend, surface: 'new organizer Today');
     await unmountHostAppShell(tester);
@@ -348,8 +363,7 @@ void main() {
 const _hostTabs = <String, Type>{
   'Today': HostTodayScreen,
   'Events': HostEventsScreen,
-  'Audience': HostCustomersScreen,
-  'Inbox': HostInboxScreen,
+  'People': HostCustomersScreen,
   'Organizer': HostOrganizersScreen,
 };
 
@@ -375,8 +389,13 @@ Future<void> _pumpHost(
   await pumpAppShellFrames(tester, frames: 20);
 }
 
+CatchTabBar<HostShellDestination> _navigation(WidgetTester tester) =>
+    tester.widget<CatchTabBar<HostShellDestination>>(
+      find.byKey(AppShellKeys.navigationBar),
+    );
+
 String? _selectedOrganizerId(WidgetTester tester) => ProviderScope.containerOf(
-  tester.element(find.byType(HostAppShell)),
+  tester.element(find.byType(HostShellScreen)),
 ).read(hostOrganizerSelectionProvider(_hostUid));
 
 Finder _field(String title) => find.byWidgetPredicate(

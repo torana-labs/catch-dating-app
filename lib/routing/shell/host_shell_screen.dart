@@ -4,22 +4,32 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/notifications/notifications.dart';
-import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HostAppShell extends ConsumerStatefulWidget {
-  const HostAppShell({
+/// The Host app's frame: the four destinations around the branch navigator.
+///
+/// It keeps the selected organizer in step with the route's requested
+/// organizer, opens the organizer switcher, starts Firebase Messaging and
+/// tags errors and analytics with the signed-in person. Every screen inside
+/// brings its own frame; legacy screens keep their legacy top bars.
+class HostShellScreen extends ConsumerStatefulWidget {
+  const HostShellScreen({
     super.key,
     required this.navigationShell,
     this.requestedOrganizerId,
@@ -29,15 +39,15 @@ class HostAppShell extends ConsumerStatefulWidget {
   final String? requestedOrganizerId;
 
   @override
-  ConsumerState<HostAppShell> createState() => _HostAppShellState();
+  ConsumerState<HostShellScreen> createState() => _HostShellScreenState();
 }
 
-class _HostAppShellState extends ConsumerState<HostAppShell> {
+class _HostShellScreenState extends ConsumerState<HostShellScreen> {
   String? _consumedRequestedOrganizerId;
   String? _scheduledSelection;
 
   @override
-  void didUpdateWidget(covariant HostAppShell oldWidget) {
+  void didUpdateWidget(covariant HostShellScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     final requestedOrganizerId = widget.requestedOrganizerId?.trim();
     if (requestedOrganizerId != null &&
@@ -49,18 +59,20 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
 
   @override
   Widget build(BuildContext context) {
-    final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value ?? '';
+    final uid =
+        catchAsyncStateFromAsyncValue(ref.watch(uidProvider)).value ?? '';
     final isAuthenticated = uid.isNotEmpty;
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
-    final organizersAsync = isAuthenticated
-        ? ref.watch(hostOperableOrganizersProvider(uid))
+    final loadedOrganizers = isAuthenticated
+        ? catchAsyncStateFromAsyncValue(
+            ref.watch(hostOperableOrganizersProvider(uid)),
+          ).value
         : null;
-    final organizers = organizersAsync?.asData?.value ?? const <Organizer>[];
+    final organizers = loadedOrganizers ?? const <Organizer>[];
     final selectedOrganizerId = isAuthenticated
         ? ref.watch(hostOrganizerSelectionProvider(uid))
         : null;
@@ -74,7 +86,7 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: hasUnconsumedRequest ? requestedOrganizerId : null,
     );
-    if (hasUnconsumedRequest && organizersAsync?.hasValue == true) {
+    if (hasUnconsumedRequest && loadedOrganizers != null) {
       _consumedRequestedOrganizerId = requestedOrganizerId;
     }
     if (isAuthenticated && selectedOrganizer != null) {
@@ -121,63 +133,78 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
       }
     });
 
-    void selectDestination(int index) => widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
-    );
-
-    final navigationItems = _hostNavigationItems(
-      selectedOrganizer: selectedOrganizer,
-      onOrganizerLongPress: organizers.length > 1 && selectedOrganizer != null
-          ? () => unawaited(
-              _openOrganizerSwitcher(
-                uid: uid,
-                organizers: organizers,
-                selectedOrganizer: selectedOrganizer,
-              ),
-            )
-          : null,
-      organizerSemanticHint: organizers.length > 1
-          ? context.l10n.hostsHostTodayTooltipSwitchOrganizer
-          : null,
-    );
-
-    final bottomNavigation = isAuthenticated
-        ? AppShellNavigationBar(
-            currentIndex: widget.navigationShell.currentIndex,
-            unreadCount: unreadCount,
-            items: navigationItems,
-            onDestinationSelected: selectDestination,
+    final size = CatchWindowSize.fromWidth(MediaQuery.sizeOf(context).width);
+    // Only the sidebar shows who is signed in.
+    final profile = isAuthenticated && size == CatchWindowSize.expanded
+        ? catchAsyncStateFromAsyncValue(
+            ref.watch(watchUserProfileProvider),
+          ).value
+        : null;
+    final canSwitch = organizers.length > 1 && selectedOrganizer != null;
+    final onSwitchOrganizer = canSwitch
+        ? () => unawaited(
+            _openOrganizerSwitcher(
+              uid: uid,
+              organizers: organizers,
+              selectedOrganizer: selectedOrganizer,
+            ),
           )
         : null;
-    final railNavigation = isAuthenticated
-        ? AppShellNavigationBar(
-            currentIndex: widget.navigationShell.currentIndex,
-            unreadCount: unreadCount,
-            items: navigationItems,
-            layout: AppShellNavigationLayout.rail,
-            onDestinationSelected: selectDestination,
-          )
-        : null;
-    final sidebarNavigation = isAuthenticated
-        ? AppShellNavigationBar(
-            currentIndex: widget.navigationShell.currentIndex,
-            unreadCount: unreadCount,
-            items: navigationItems,
-            layout: AppShellNavigationLayout.sidebar,
-            onDestinationSelected: selectDestination,
-          )
-        : null;
+    final l10n = context.l10n;
 
     return CatchWorkspaceHeaderLayout(
-      child: AdaptiveTabScaffold(
-        activeIndex: widget.navigationShell.currentIndex,
-        navigationBar: bottomNavigation,
-        mediumSideNavigation: railNavigation,
-        expandedSideNavigation: sidebarNavigation,
-        body: CatchWorkspacePaneScope(
-          isSinglePane: true,
-          child: widget.navigationShell,
+      child: CatchAppShell(
+        navigation: CatchTabBar<HostShellDestination>(
+          key: AppShellKeys.navigationBar,
+          layout: hostShellPlacement(size),
+          label: l10n.appTitleHost,
+          active:
+              HostShellDestination.values[widget.navigationShell.currentIndex],
+          onChanged: (destination) => widget.navigationShell.goBranch(
+            destination.index,
+            initialLocation:
+                destination.index == widget.navigationShell.currentIndex,
+          ),
+          items: hostShellDestinations(
+            l10n: l10n,
+            unreadCount: unreadCount,
+            organizerName: selectedOrganizer?.name,
+            onSwitchOrganizer: onSwitchOrganizer,
+          ),
+          primaryAction: hostShellNewEvent(
+            l10n: l10n,
+            onPressed: selectedOrganizer == null
+                ? null
+                : () => unawaited(_openCreateEvent(selectedOrganizer)),
+          ),
+          header: selectedOrganizer == null
+              ? null
+              : CatchTabBarIdentity(
+                  key: const ValueKey<String>('host-shell-organizer-identity'),
+                  name: selectedOrganizer.name,
+                  photoUrl: selectedOrganizer.logoPhotoUrl,
+                  switcher: canSwitch,
+                  note: canSwitch
+                      ? l10n.hostsHostTodayTooltipSwitchOrganizer
+                      : null,
+                  onTap: onSwitchOrganizer,
+                ),
+          footer: profile == null
+              ? null
+              : CatchTabBarIdentity(
+                  key: const ValueKey<String>('host-shell-person-identity'),
+                  name: profile.accountDisplayName,
+                  photoUrl: profile.primaryPhotoThumbnailUrl,
+                ),
+        ),
+        // A branch navigator's modal barrier drops the semantics painted
+        // before it; confined to the screen it cannot hide a rail or sidebar.
+        child: Semantics(
+          container: true,
+          child: CatchWorkspacePaneScope(
+            isSinglePane: true,
+            child: widget.navigationShell,
+          ),
         ),
       ),
     );
@@ -202,6 +229,14 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
     });
   }
 
+  Future<void> _openCreateEvent(Organizer organizer) async {
+    await GoRouter.of(context).pushNamed(
+      Routes.hostCreateEventScreen.name,
+      pathParameters: {'organizerId': organizer.id},
+      extra: HostCreateEventRouteArguments(initialOrganizer: organizer),
+    );
+  }
+
   Future<void> _openOrganizerSwitcher({
     required String uid,
     required List<Organizer> organizers,
@@ -221,66 +256,3 @@ class _HostAppShellState extends ConsumerState<HostAppShell> {
     ref.read(hostOrganizerSelectionProvider(uid).notifier).select(organizerId);
   }
 }
-
-List<AppShellNavigationItem> _hostNavigationItems({
-  required Organizer? selectedOrganizer,
-  required VoidCallback? onOrganizerLongPress,
-  required String? organizerSemanticHint,
-}) => [
-  AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostToday,
-    materialIcon: CatchIcons.home,
-    materialSelectedIcon: CatchIcons.home,
-    cupertinoIcon: CatchIcons.home,
-    cupertinoSelectedIcon: CatchIcons.home,
-  ),
-  AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostEvents,
-    materialIcon: CatchIcons.ticket,
-    materialSelectedIcon: CatchIcons.ticket,
-    cupertinoIcon: CatchIcons.ticket,
-    cupertinoSelectedIcon: CatchIcons.ticket,
-  ),
-  AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostAudience,
-    materialIcon: CatchIcons.people,
-    materialSelectedIcon: CatchIcons.people,
-    cupertinoIcon: CatchIcons.people,
-    cupertinoSelectedIcon: CatchIcons.people,
-  ),
-  AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostInbox,
-    materialIcon: CatchIcons.chat,
-    materialSelectedIcon: CatchIcons.chat,
-    cupertinoIcon: CatchIcons.chat,
-    cupertinoSelectedIcon: CatchIcons.chat,
-    showsUnreadBadge: true,
-  ),
-  AppShellNavigationItem(
-    destination: AppShellNavigationDestination.hostOrganizer,
-    materialIcon: CatchIcons.organizer,
-    materialSelectedIcon: CatchIcons.organizer,
-    cupertinoIcon: CatchIcons.organizer,
-    cupertinoSelectedIcon: CatchIcons.organizer,
-    iconBuilder: selectedOrganizer == null
-        ? null
-        : (context) => HostOrganizerAvatar(
-            key: const ValueKey<String>('host-organizer-navigation-avatar'),
-            organizer: selectedOrganizer,
-            size: CatchLayout.appShellNavigationIdentityExtent,
-          ),
-    selectedIconBuilder: selectedOrganizer == null
-        ? null
-        : (context) => HostOrganizerAvatar(
-            key: const ValueKey<String>(
-              'host-organizer-navigation-avatar-selected',
-            ),
-            organizer: selectedOrganizer,
-            size: CatchLayout.appShellNavigationIdentityExtent,
-            selected: true,
-          ),
-    onLongPress: onOrganizerLongPress,
-    semanticValue: selectedOrganizer?.name,
-    semanticHint: organizerSemanticHint,
-  ),
-];

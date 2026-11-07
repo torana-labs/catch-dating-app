@@ -7,7 +7,7 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 const manifestPath = fromRepo(
   "design/source_packs/host-v2/host-coverage-manifest.json",
 );
-const shellPath = fromRepo("lib/routing/shell/host_app_shell.dart");
+const shellPath = fromRepo("lib/routing/shell/host_shell_navigation.dart");
 const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const captureCoveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 const isCliEntrypoint =
@@ -15,16 +15,14 @@ const isCliEntrypoint =
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 export function extractHostNavigationDestinations(source) {
-  const marker = "List<AppShellNavigationItem> _hostNavigationItems";
+  const marker = "List<CatchTabBarItem<HostShellDestination>> hostShellDestinations(";
   const start = source.indexOf(marker);
   if (start === -1) return [];
   return [
     ...source
       .slice(start)
-      .matchAll(
-        /destination:\s*AppShellNavigationDestination\.(host[A-Za-z0-9_]+)/gu,
-      ),
-  ].map((match) => match[1]);
+      .matchAll(/id:\s*HostShellDestination\.([A-Za-z0-9_]+)/gu),
+  ].map((match) => `host${match[1][0].toUpperCase()}${match[1].slice(1)}`);
 }
 
 export function validateHostShellCoverage({
@@ -48,19 +46,19 @@ export function validateHostShellCoverage({
   const declaredDestinations = routes.map((route) => route.destination);
   if (JSON.stringify(declaredDestinations) !== JSON.stringify(shellDestinations)) {
     errors.push(
-      `primary destination order ${JSON.stringify(declaredDestinations)} does not match HostAppShell ${JSON.stringify(shellDestinations)}`,
+      `primary destination order ${JSON.stringify(declaredDestinations)} does not match the Host shell navigation ${JSON.stringify(shellDestinations)}`,
     );
   }
-  if (routes.length !== 5) {
-    errors.push(`expected five primary Host routes, found ${routes.length}`);
+  if (routes.length !== 4) {
+    errors.push(`expected four primary Host routes, found ${routes.length}`);
   }
   const informationArchitecture = manifest?.informationArchitectureDecision;
   if (
     informationArchitecture?.selectedOption !==
-    "today-events-audience-inbox-organizer"
+    "today-events-people-organizer"
   ) {
     errors.push(
-      "information architecture must remain Today, Events, Audience, Inbox, Organizer",
+      "information architecture must remain Today, Events, People, Organizer",
     );
   }
   const declaredLabels = routes.map((route) => route.label);

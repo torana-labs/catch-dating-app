@@ -4441,7 +4441,7 @@
         "tool/design/check_host_shell_coverage.test.mjs",
         "design/source_packs/host-v2/host-coverage-manifest.json",
         "docs/design_parity/host_shell_route_ui_audit.md",
-        "lib/routing/shell/host_app_shell.dart",
+        "lib/routing/shell/host_shell_navigation.dart",
         "tool/ui_capture/route_inventory.json",
         "tool/ui_capture/capture_coverage.json"
       ],
@@ -4454,7 +4454,7 @@
       "command": "node tool/design/check_host_shell_coverage.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Checks the five ordered Host shell destinations against runtime routes, production sources, and canonical UI capture ownership.",
+      "description": "Checks the four ordered Host shell destinations against runtime routes, production sources, and canonical UI capture ownership.",
       "checks": [
         "node --check tool/design/check_host_shell_coverage.mjs",
         "node --test tool/design/check_host_shell_coverage.test.mjs",

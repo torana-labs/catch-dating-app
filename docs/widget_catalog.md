@@ -104,7 +104,7 @@ and candidate discussions; this document has no parallel status ledger.
 
 1287 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
 
-Purpose comes from the first class documentation paragraph, then the registry summary. 816 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
+Purpose comes from the first class documentation paragraph, then the registry summary. 815 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
 
 ### L1 (2)
 
@@ -312,7 +312,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchLocalizedSliverErrorState</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_sliver_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
 | <code>CatchNoticeOverlay</code> | <code>packages/platform/lib/riverpod_ui/catch_notice_overlay.dart</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
 
-### L5 (975)
+### L5 (974)
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
@@ -1201,7 +1201,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>AppShellNavigationBar</code> | <code>lib/routing/shell/app_shell.dart</code> | — | — | No class documentation or registry summary. |
 | <code>AppShellSideNavigation</code> | <code>lib/routing/shell/app_shell.dart</code> | — | — | Labelled vertical destination plane for medium and expanded app shells. |
 | <code>GuestAuthCtaBar</code> | <code>lib/routing/shell/app_shell.dart</code> | — | — | No class documentation or registry summary. |
-| <code>HostAppShell</code> | <code>lib/routing/shell/host_app_shell.dart</code> | — | — | No class documentation or registry summary. |
 | <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/blocked_account_tile.dart</code> | — | — | No class documentation or registry summary. |
 | <code>MessagingPermissionsPageBody</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>AccountProfileSection</code> | <code>lib/safety/presentation/settings_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1292,7 +1291,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OrderedPhotoTile</code> | <code>packages/platform/lib/media/ordered_photo_picker.dart</code> | — | — | No class documentation or registry summary. |
 | <code>StartupAnimationScope</code> | <code>packages/platform/lib/startup/startup_animation_scope.dart</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
 
-### L6 (131)
+### L6 (132)
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
@@ -1418,6 +1417,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostWorkspaceIndexScreen</code> | <code>lib/routing/host_workspace_index_screen.dart</code> | — | — | One route index recipe shared by the visible workspace and its navigator. The navigator anchor retains routing state without mounting a second index. |
+| <code>HostShellScreen</code> | <code>lib/routing/shell/host_shell_screen.dart</code> | — | — | The Host app's frame: the four destinations around the branch navigator. |
 | <code>MessagingPermissionsScreen</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>SettingsScreen</code> | <code>lib/safety/presentation/settings_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapScreen</code> | <code>lib/swipes/presentation/event_recap_screen.dart</code> | — | — | No class documentation or registry summary. |

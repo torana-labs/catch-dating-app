@@ -23,7 +23,6 @@ class _RouterNavigatorKeys {
   final profile = GlobalKey<NavigatorState>();
   final hostToday = GlobalKey<NavigatorState>();
   final hostEvents = GlobalKey<NavigatorState>();
-  final hostAudience = GlobalKey<NavigatorState>();
-  final hostInbox = GlobalKey<NavigatorState>();
+  final hostPeople = GlobalKey<NavigatorState>();
   final hostOrganizer = GlobalKey<NavigatorState>();
 }

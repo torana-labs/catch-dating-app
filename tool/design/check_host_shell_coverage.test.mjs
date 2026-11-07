@@ -5,28 +5,20 @@ import {
   validateHostShellCoverage,
 } from "./check_host_shell_coverage.mjs";
 
-const destinations = [
-  "hostToday",
-  "hostEvents",
-  "hostAudience",
-  "hostInbox",
-  "hostOrganizer",
-];
-const labels = ["Today", "Events", "Audience", "Inbox", "Organizer"];
+const shellIds = ["today", "events", "people", "organizer"];
+const destinations = ["hostToday", "hostEvents", "hostPeople", "hostOrganizer"];
+const labels = ["Today", "Events", "People", "Organizer"];
 const primaryRoutes = destinations.map((destination, index) => ({
   destination,
   routeId: `${destination}Screen`,
-  path: `/host/${destination.slice(4).toLowerCase()}`,
+  path: `/host/${shellIds[index]}`,
   label: labels[index],
   source: `lib/${destination}.dart`,
   captureId: `capture-${index}`,
 }));
-const shellSource = `List<AppShellNavigationItem> _hostNavigationItems() => [
-${destinations
-  .map(
-    (destination) =>
-      `AppShellNavigationItem(destination: AppShellNavigationDestination.${destination}),`,
-  )
+const shellSource = `List<CatchTabBarItem<HostShellDestination>> hostShellDestinations({}) => [
+${shellIds
+  .map((id) => `CatchTabBarItem(id: HostShellDestination.${id}),`)
   .join("\n")}
 ];`;
 
@@ -36,7 +28,7 @@ function fixture() {
       $schema: "catch.host-shell-coverage/v2",
       updated: "2026-08-29",
       informationArchitectureDecision: {
-        selectedOption: "today-events-audience-inbox-organizer",
+        selectedOption: "today-events-people-organizer",
         primaryLabels: primaryRoutes.map((route) => route.label),
         todayOwnerRouteId: "hostTodayScreen",
         formsOwnerRouteId: "hostAudienceScreen",
@@ -84,7 +76,7 @@ test("extracts the ordered Host shell destination contract", () => {
   assert.deepEqual(extractHostNavigationDestinations(shellSource), destinations);
 });
 
-test("accepts five routes backed by runtime routes, sources, and captures", () => {
+test("accepts four routes backed by runtime routes, sources, and captures", () => {
   assert.deepEqual(validateHostShellCoverage(fixture()), []);
 });
 
@@ -118,7 +110,7 @@ test("rejects the retired shell IA and its split Forms owner", () => {
   const errors = validateHostShellCoverage(input);
   assert.ok(
     errors.some((error) =>
-      error.includes("remain Today, Events, Audience, Inbox, Organizer"),
+      error.includes("remain Today, Events, People, Organizer"),
     ),
   );
   assert.ok(

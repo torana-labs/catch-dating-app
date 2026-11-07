@@ -80,23 +80,12 @@
       ]
     },
     {
-      "branchKey": "keys.hostAudience",
+      "branchKey": "keys.hostPeople",
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
         {
           "path": "lib/hosts/presentation/host_audience_header.dart",
           "symbol": "HostAudienceHeader",
-          "owner": "CatchLegacyTopBar.primaryRail"
-        }
-      ]
-    },
-    {
-      "branchKey": "keys.hostInbox",
-      "routeName": "Routes.hostInboxScreen.name",
-      "surfaces": [
-        {
-          "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-          "symbol": "ChatsBrowseHeader",
           "owner": "CatchLegacyTopBar.primaryRail"
         }
       ]
@@ -803,6 +792,13 @@
       "role": "legacy",
       "owner": "CatchTextStyles.headline",
       "reason": "Recap hero: event kicker and stats on the dark recap card; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
+    },
+    {
+      "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "symbol": "ChatsBrowseHeader",
+      "role": "screen",
+      "owner": "CatchLegacyTopBar.primaryRail",
+      "reason": "The Host inbox is an index route under People, no longer a tab root; it keeps its legacy primary-rail top bar until its wave rewrites it."
     }
   ]
 }

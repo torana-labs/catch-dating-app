@@ -55,7 +55,7 @@ Typed handoffs:
 | `runHostEventEntryFlow` | `lib/hosts/events/presentation/host_event_entry_flow.dart` | Actions: create_event, repeat_event. |
 | `HostEventsOrganizerCard` | `lib/hosts/events/presentation/widgets/host_events_list.dart` | Actions: retry_host_events, open_program. |
 | `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Actions: load_more_schedule, load_more_history, retry_event_history. |
-| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Actions: switch_organizer. |
+| `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 | `ProgramCreateScreen` | `lib/programs/presentation/program_create_screen.dart` | Recoverable organizer-scoped Program creation route entered from Events. |
 | `ProgramEventsController` | `lib/programs/presentation/program_events_controller.dart` | Bounded Program inventory, exact saved-row confirmation, mutation, retry, and actor-generation fences. |
 | `ProgramEventsRow` | `lib/programs/presentation/program_events_row.dart` | Identifiable Program date-range, function-count, and lifecycle row inside Events. |
@@ -63,7 +63,7 @@ Typed handoffs:
 ## Shared dependencies
 
 - `lib/contexts/events/data/event_repository.dart` — The shared repository owns canonical event queries; Events owns inventory pagination and display policy.
-- `lib/routing/shell/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
+- `lib/routing/shell/host_shell_screen.dart` — The shell owns global destination navigation and organizer scope.
 - `lib/programs` — The Program domain retains creation orchestration and existing workspace behavior while Events owns the consolidated inventory entry point.
 
 ## Data contracts

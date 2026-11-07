@@ -38,7 +38,7 @@ Future<_CrmHarness> _pumpCrm(
     initialLocation: _peopleLocation(),
     routes: [
       StatefulShellRoute.indexedStack(
-        builder: (_, _, navigationShell) => HostAppShell(
+        builder: (_, _, navigationShell) => HostShellScreen(
           navigationShell: navigationShell,
           requestedOrganizerId: _organizer,
         ),
@@ -52,9 +52,12 @@ Future<_CrmHarness> _pumpCrm(
                 name: Routes.hostAudienceScreen.name,
                 builder: (_, state) => hostAudienceScreenForUri(state.uri),
               ),
+              GoRoute(
+                path: Routes.hostInboxScreen.path,
+                builder: (_, _) => const SizedBox.shrink(),
+              ),
             ],
           ),
-          _unusedBranch('/host/inbox'),
           _unusedBranch('/host/organizer'),
         ],
       ),
@@ -63,6 +66,9 @@ Future<_CrmHarness> _pumpCrm(
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(_actor)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(buildUser(uid: _actor, name: 'Hit Target Host')),
+      ),
       hostOperableOrganizersProvider(_actor).overrideWithValue(
         AsyncData([buildOrganizer(id: _organizer, ownerUserId: _actor)]),
       ),

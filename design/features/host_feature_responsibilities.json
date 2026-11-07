@@ -73,8 +73,8 @@
         },
         {
           "id": "host_shell",
-          "file": "lib/routing/shell/host_app_shell.dart",
-          "symbol": "HostAppShell",
+          "file": "lib/routing/shell/host_shell_screen.dart",
+          "symbol": "HostShellScreen",
           "role": "Actions: switch_organizer."
         }
       ],
@@ -98,7 +98,7 @@
           "reason": "Device-local absolute attendance operations are intentionally merged after the server projection."
         },
         {
-          "path": "lib/routing/shell/host_app_shell.dart",
+          "path": "lib/routing/shell/host_shell_screen.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],
@@ -177,8 +177,8 @@
         },
         {
           "id": "host_shell",
-          "file": "lib/routing/shell/host_app_shell.dart",
-          "symbol": "HostAppShell",
+          "file": "lib/routing/shell/host_shell_screen.dart",
+          "symbol": "HostShellScreen",
           "role": "Actions: switch_organizer."
         },
         {
@@ -215,7 +215,7 @@
           "reason": "The shared repository owns canonical event queries; Events owns inventory pagination and display policy."
         },
         {
-          "path": "lib/routing/shell/host_app_shell.dart",
+          "path": "lib/routing/shell/host_shell_screen.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         },
         {
@@ -234,7 +234,7 @@
     },
     {
       "id": "audience",
-      "destination": "hostAudience",
+      "destination": "hostPeople",
       "primaryRouteId": "hostAudienceScreen",
       "ownedRouteIds": [
         "hostAudienceScreen",
@@ -276,7 +276,7 @@
               "lib/hosts/presentation/customers/host_customers_screen.dart",
               "lib/hosts/presentation/forms/host_forms_screen.dart",
               "lib/routing/go_router.dart",
-              "lib/routing/shell/host_app_shell.dart"
+              "lib/routing/shell/host_shell_screen.dart"
             ],
             "examples": []
           },
@@ -616,7 +616,7 @@
           "reason": "Current shared Host data seam for forms, responses, exports, and automations until A3 relocates it."
         },
         {
-          "path": "lib/routing/shell/host_app_shell.dart",
+          "path": "lib/routing/shell/host_shell_screen.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],
@@ -630,7 +630,7 @@
     },
     {
       "id": "inbox",
-      "destination": "hostInbox",
+      "destination": "hostPeople",
       "primaryRouteId": "hostInboxScreen",
       "ownedRouteIds": [
         "hostInboxScreen",
@@ -786,7 +786,7 @@
           "reason": "Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now."
         },
         {
-          "path": "lib/routing/shell/host_app_shell.dart",
+          "path": "lib/routing/shell/host_shell_screen.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],
@@ -921,8 +921,8 @@
         },
         {
           "id": "host_shell",
-          "file": "lib/routing/shell/host_app_shell.dart",
-          "symbol": "HostAppShell",
+          "file": "lib/routing/shell/host_shell_screen.dart",
+          "symbol": "HostShellScreen",
           "role": "Actions: switch_organizer."
         }
       ],
@@ -958,7 +958,7 @@
           "reason": "Provider-neutral payout account persistence and callable orchestration."
         },
         {
-          "path": "lib/routing/shell/host_app_shell.dart",
+          "path": "lib/routing/shell/host_shell_screen.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],

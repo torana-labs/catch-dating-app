@@ -194,7 +194,8 @@ void main() {
       'direct ${destination.name} Back reaches its contextual parent',
       (tester) async {
         final routes = hostWorkspaceRouteGraph(AppAnalytics()).branches
-            .expand((branch) => branch.routes.single.routes)
+            .expand((branch) => branch.routes)
+            .expand((shell) => shell.routes)
             .whereType<HostWorkspaceDestination>()
             .toList();
         final route = routes.singleWhere(
@@ -278,7 +279,8 @@ Future<void> pumpWorkspace(
 
 GoRouter workspaceRouter({bool realParticipants = false}) {
   final production = hostWorkspaceRouteGraph(AppAnalytics()).branches
-      .expand((branch) => branch.routes.single.routes)
+      .expand((branch) => branch.routes)
+      .expand((shell) => shell.routes)
       .whereType<HostWorkspaceDestination>();
   final routes = [
     for (final route in production)

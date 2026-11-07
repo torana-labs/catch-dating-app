@@ -85,7 +85,7 @@
       "appRoot": "apps/host/lib/host_platform_app.dart",
       "appWidget": "HostPlatformApp",
       "routerProvider": "hostGoRouterProvider",
-      "shell": "HostAppShell",
+      "shell": "HostShellScreen",
       "initialRoute": "/host",
       "iosEntitlements": "ios/Runner/RunnerHost.entitlements",
       "androidManifestOverlay": "android/app/src/host/AndroidManifest.xml",
