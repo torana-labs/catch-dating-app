@@ -49,7 +49,6 @@ export const Desktop: Story = {
       reviewStates: ["default", "phone"],
       stateCoverage: {storybook: ["default", "phone"], manual: []},
     },
-    catchComponent: {id: "route_weddings", routeIds: ["weddings"], states: ["default"]},
   },
   render: () => <WeddingsPage />,
   play: async ({canvasElement}) => {
@@ -63,7 +62,6 @@ export const Desktop: Story = {
 export const Phone: Story = {
   name: "Landing · 390 (phone)",
   globals: phone,
-  parameters: {catchComponent: {id: "route_weddings", routeIds: ["weddings"], states: ["phone"]}},
   render: () => <WeddingsPage />,
 };
 

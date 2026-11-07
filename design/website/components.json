@@ -3437,15 +3437,13 @@
         "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/Weddings.stories.tsx",
-        "exportName": "Desktop",
+        "status": "planned",
         "states": [
           "default",
           "phone"
         ]
       },
-      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares each state."
+      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares the route review states but no catchComponent: the landing story fails its axe check (colour-contrast on the row subtitles over the coral ground, 2.7:1), so the record stays planned until that is fixed."
     },
     {
       "id": "weddings_bands",
