@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 /// Where a step stands in a rehearsal: practised, the one to do now, or
 /// still to come.
@@ -45,7 +45,12 @@ class HostEventStepRow extends StatelessWidget {
         subtitle: step.attendeeExperience.trim().isEmpty
             ? null
             : l10n.hostEventsStepGuestsSee(what: step.attendeeExperience),
-        time: startsAt == null ? null : EventFormatters.time(startsAt),
+        time: startsAt == null
+            ? null
+            : DateFormat(
+                'h:mm',
+                Localizations.localeOf(context).toLanguageTag(),
+              ).format(startsAt),
         density: CatchIndexRowSize.compact,
         onTap: null,
       );

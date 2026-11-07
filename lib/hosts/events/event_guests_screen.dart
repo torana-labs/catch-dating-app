@@ -41,6 +41,7 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final request = widget.request;
     final state = ref.watch(hostEventGuestsControllerProvider(request));
     final event = state.event;
@@ -80,6 +81,7 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
         key: const ValueKey<String>('host-event-guests-screen'),
         topBar: CatchTopBar(
           variant: CatchTopBarVariant.tool,
+          back: CatchTopBarBack(label: l10n.hostEventsBack),
           kicker: event == null ? null : hostEventKicker(event),
           title: event?.title,
         ),

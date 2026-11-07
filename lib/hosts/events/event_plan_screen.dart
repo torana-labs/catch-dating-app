@@ -58,6 +58,7 @@ class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
         key: const ValueKey<String>('host-event-plan-screen'),
         topBar: CatchTopBar(
           variant: CatchTopBarVariant.tool,
+          back: CatchTopBarBack(label: l10n.hostEventsBack),
           title: l10n.hostEventsLinkPlan,
           kicker: state.eventTitle,
           action: CatchTopBarAction(

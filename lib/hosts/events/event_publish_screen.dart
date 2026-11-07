@@ -37,6 +37,7 @@ class HostEventPublishScreen extends ConsumerWidget {
         key: const ValueKey<String>('host-event-publish-screen'),
         topBar: CatchTopBar(
           variant: CatchTopBarVariant.tool,
+          back: CatchTopBarBack(label: l10n.hostEventsBack),
           title: l10n.hostEventsLinkPublish,
           kicker: state.eventTitle,
         ),

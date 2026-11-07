@@ -50,6 +50,7 @@ class _HostEventCloseOutScreenState
         key: const ValueKey<String>('host-event-close-out-screen'),
         topBar: CatchTopBar(
           variant: CatchTopBarVariant.tool,
+          back: CatchTopBarBack(label: l10n.hostEventsBack),
           title: l10n.hostEventsCloseOutTitle,
           kicker: state.eventTitle,
         ),
