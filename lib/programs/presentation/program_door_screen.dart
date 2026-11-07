@@ -80,7 +80,7 @@ class _ProgramFunctionDoorScreenState
         programFunctionDoorViewProvider(widget.programId, widget.functionId),
       ),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: title,
           subtitle: context.l10n.programsDoorTitle,
           emphasis: scrolledUnder
@@ -95,7 +95,7 @@ class _ProgramFunctionDoorScreenState
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: title,
           subtitle: context.l10n.programsDoorTitle,
           emphasis: scrolledUnder
@@ -224,7 +224,7 @@ class ProgramDoorPageBody extends StatelessWidget {
         fn.checkInEnabled && fn.status == ProgramFunctionStatus.scheduled;
     final pendingWalkIns = outbox.walkInsFor(view.functionId);
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: fn.name,
         subtitle: context.l10n.programsDoorTitle,
         emphasis: scrolledUnder

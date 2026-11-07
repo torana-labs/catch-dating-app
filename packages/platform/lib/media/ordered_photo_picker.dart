@@ -248,7 +248,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
     return CatchRouteScaffold(
       key: OrderedPhotoPickerKeys.managerScreen,
       backgroundColor: t.bg,
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.coreOrderedPhotoPickerTitlePhotoManager,
         subtitle: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
           count: _photos.length,

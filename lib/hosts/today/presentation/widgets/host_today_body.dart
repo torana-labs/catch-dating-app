@@ -85,7 +85,7 @@ class HostTodayHeader extends StatelessWidget {
     final date = now == null
         ? null
         : MaterialLocalizations.of(context).formatFullDate(now!);
-    return CatchTopBar.primaryRail(
+    return CatchLegacyTopBar.primaryRail(
       title: context.l10n.hostNavigationToday,
       subtitle: date,
     );

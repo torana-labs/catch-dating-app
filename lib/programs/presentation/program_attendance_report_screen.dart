@@ -74,7 +74,7 @@ class _ProgramAttendanceReportScreenState
       onRetry: () =>
           ref.invalidate(programAttendanceReportProvider(widget.programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsAttendanceTitle,
           subtitle: context.l10n.programsAttendanceSubtitle,
           emphasis: scrolledUnder
@@ -89,7 +89,7 @@ class _ProgramAttendanceReportScreenState
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsAttendanceTitle,
           subtitle: context.l10n.programsAttendanceSubtitle,
           emphasis: scrolledUnder
@@ -109,7 +109,7 @@ class _ProgramAttendanceReportScreenState
         ),
       ),
       builder: (context, report) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsAttendanceTitle,
           subtitle: context.l10n.programsAttendanceSubtitle,
           emphasis: scrolledUnder

@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-11-02",
+  "updated": "2026-11-04",
   "sourceOfTruth": {
     "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and packages/platform/lib are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -10528,16 +10528,15 @@
           "SliverAppBar"
         ],
         "replacementMap": {
-          "AppBar": "CatchTopBar.route or CatchTopBar.screen",
-          "CupertinoNavigationBar": "CatchTopBar.route or CatchTopBar.screen",
-          "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
+          "AppBar": "CatchTopBar inside a CatchScreen",
+          "CupertinoNavigationBar": "CatchTopBar inside a CatchScreen",
+          "SliverAppBar": "a registered media-hero sliver or a subject CatchTopBar"
         },
         "steeringGroup": "control",
         "steeringCode": "catch_no_raw_material_control",
         "placement": {
           "allowedParents": [
-            "CatchPageBody.screen",
-            "CatchRootScreenScaffold"
+            "CatchScreen"
           ],
           "slot": "topBar"
         },
@@ -10555,17 +10554,16 @@
         "CatchSiteHeader",
         "CatchPrimaryRail"
       ],
-      "absorbs": ["CatchStepHeader", "CatchCollapsedHeaderTitle"],
-      "summary": "One canonical app bar with route, identity, root, embedded-root and branded navigation recipes; workspace headers flow from their content and share an anchored title baseline, with subtitles below and width-aware parent navigation.",
+      "absorbs": [
+        "CatchStepHeader",
+        "CatchCollapsedHeaderTitle"
+      ],
+      "summary": "The top of every screen in the system's six app variants (tabHome, tool, subject, step, live, moment): one 56px row of back, breadcrumb title and actions on medium and expanded windows, and each variant's own shape on phones. It shows its hairline only once the CatchScreen body has scrolled; a subject bar stays transparent over its hero until then.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "constructors": [
-          "CatchTopBar.route",
-          "CatchTopBar.identity",
-          "CatchTopBar.screen",
-          "CatchTopBar.primaryRail",
-          "CatchTopBar.brand"
+          "CatchTopBar"
         ]
       },
       "design": {
@@ -10587,6 +10585,22 @@
       "contract": {
         "props": [
           {
+            "name": "variant",
+            "type": "enum",
+            "required": true,
+            "dartType": "CatchTopBarVariant",
+            "tsType": "CatchTopBarVariant",
+            "values": [
+              "tabHome",
+              "tool",
+              "subject",
+              "step",
+              "live",
+              "moment"
+            ],
+            "notes": "The system's six app tops; React spells them in kebab case, and its site header is web-only. On medium and expanded windows every variant but moment is the same 56px row."
+          },
+          {
             "name": "title",
             "type": "string",
             "required": false,
@@ -10594,190 +10608,131 @@
             "tsType": "string"
           },
           {
-            "name": "subtitle",
-            "type": "string",
-            "required": false,
-            "dartType": "String?",
-            "tsType": "string"
-          },
-          {
-            "name": "identityName",
-            "type": "string",
-            "required": false,
-            "dartType": "String",
-            "tsType": "string"
-          },
-          {
-            "name": "identityPhotoUrl",
-            "type": "string",
-            "required": false,
-            "dartType": "String?",
-            "tsType": "string"
-          },
-          {
-            "name": "onIdentityTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?",
-            "tsType": "() => void"
-          },
-          {
-            "name": "tone",
-            "type": "enum",
-            "required": false,
-            "default": "page",
-            "dartType": "CatchTopBarTone",
-            "values": [
-              "page",
-              "surface",
-              "overlay"
-            ],
-            "tsType": "CatchTopBarTone"
-          },
-          {
-            "name": "emphasis",
-            "type": "enum",
-            "required": false,
-            "default": "plain",
-            "dartType": "CatchTopBarEmphasis",
-            "values": [
-              "plain",
-              "divided"
-            ],
-            "tsType": "CatchTopBarEmphasis"
-          },
-          {
-            "name": "navigation",
-            "type": "object",
-            "required": false,
-            "dartType": "CatchTopBarNavigation",
-            "tsType": "CatchTopBarNavigation"
-          },
-          {
-            "name": "search",
-            "type": "object",
-            "required": false,
-            "dartType": "CatchTopBarSearch?",
-            "tsType": "CatchTopBarSearch"
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "tool",
-            "dartType": "CatchTopBarVariant",
-            "tsType": "CatchTopBarVariant",
-            "values": [
-              "tab-home",
-              "tool",
-              "step",
-              "live",
-              "moment"
-            ],
-            "notes": "Design system v15 page tops; on tablets and desktops every variant but moment is the same 56px row."
-          },
-          {
             "name": "kicker",
             "type": "string",
             "required": false,
             "dartType": "String?",
             "tsType": "string",
-            "notes": "A muted line above the title; a breadcrumb before it on wide screens."
+            "notes": "Above the title on compact bars (below it on live); a muted breadcrumb before it on wide bars."
           },
           {
             "name": "back",
             "type": "object",
             "required": false,
             "dartType": "CatchTopBarBack?",
-            "tsType": "CatchTopBarBack"
+            "tsType": "CatchTopBarBack",
+            "notes": "Back, or close with close: true; the label defaults to the platform's, and a null onPressed pops the navigator."
           },
           {
             "name": "action",
             "type": "object",
             "required": false,
             "dartType": "CatchTopBarAction?",
-            "tsType": "CatchTopBarAction"
+            "tsType": "CatchTopBarAction",
+            "notes": "The one text action, drawn as a quiet button."
           },
           {
             "name": "actions",
-            "type": "widget",
+            "type": "list",
             "required": false,
-            "dartType": "List<Widget>?",
-            "tsType": "ReactNode"
+            "default": "const []",
+            "dartType": "List<Widget>",
+            "tsType": "ReactNode",
+            "notes": "Icon buttons or a button after the text action."
           },
           {
             "name": "step",
             "type": "object",
             "required": false,
-            "dartType": "({int index, int total})?",
-            "tsType": "{index: number; total: number}"
+            "dartType": "CatchTopBarStep?",
+            "tsType": "{index: number; total: number}",
+            "notes": "step: the position, the 4px segmented meter and the breadcrumb. Flutter takes the caller's localized label (\"Step 2 of 5\")."
           },
           {
             "name": "live",
-            "type": "widget",
+            "type": "string",
             "required": false,
-            "dartType": "Widget?",
-            "tsType": "ReactNode"
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "The live badge, such as \"Live · 9:04 PM\"."
           }
         ],
         "states": [
-          "compact",
-          "context",
-          "with-leading",
-          "with-action-icon",
-          "with-action-text",
-          "with-search",
-          "conversation-title",
-          "surface",
-          "divider",
-          "outlined-actions",
-          "root-title",
-          "root-subtitle-actions",
-          "primary-rail"
+          "tab-home",
+          "tool",
+          "subject",
+          "step",
+          "live",
+          "moment"
         ],
         "slots": [
           {
-            "name": "leading",
-            "kind": "optional-leading-widget"
-          },
-          {
             "name": "actions",
             "kind": "optional-action-list"
-          },
-          {
-            "name": "footer",
-            "kind": "optional-preferred-size-widget"
           }
         ],
         "tokens": [
-          "font.family.function",
-          "space.s0",
-          "space.micro3",
-          "space.micro6",
-          "theme.light.color.bg",
-          "theme.light.color.surface",
-          "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.line"
+          "layout.gutterCompact",
+          "layout.gutterMedium",
+          "layout.gutterExpanded",
+          "size.controlSm",
+          "size.controlMd",
+          "stroke.meterSm",
+          "theme.light.color.ground",
+          "theme.light.color.line",
+          "theme.light.color.track",
+          "theme.light.color.primary"
         ],
         "dartRoles": [
-          "CatchTopBar.screen",
+          "CatchTopBarVariant",
+          "CatchTopBarBack",
+          "CatchTopBarAction",
+          "CatchTopBarStep",
+          "CatchScreenScope",
           "CatchLayout.topBarHeight",
-          "CatchIconAction.navSize",
-          "CatchSearchField",
-          "CatchAvatar",
-          "CatchTextStyles.headline",
-          "CatchTextStyles.titleL",
-          "CatchTextStyles.bodyS",
-          "CatchCollapsedHeaderTitle",
           "CatchIconAction",
-          "CatchTopBarPrimaryButton",
-          "CatchActionMenu",
-          "CatchButton.text",
-          "CatchTopBarNavigation"
+          "CatchButton",
+          "CatchBadge.live",
+          "CatchText"
         ],
-        "goldens": [],
+        "goldens": [
+          "top_bar_family"
+        ],
         "members": [
+          {
+            "id": "catch.top_bar.legacy",
+            "symbol": "CatchLegacyTopBar",
+            "file": "packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart",
+            "summary": "The pre-redesign top bar (route, identity, screen, primaryRail and brand recipes with tone, emphasis, navigation, search and footer), kept for legacy screens until their wave redraws them; redrawn screens use the system variants in a CatchScreen.",
+            "states": [
+              "compact",
+              "context",
+              "with-leading",
+              "with-action-icon",
+              "with-action-text",
+              "with-search",
+              "conversation-title",
+              "surface",
+              "divider",
+              "outlined-actions",
+              "root-title",
+              "root-subtitle-actions",
+              "primary-rail"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "legacy",
+              "decisionRef": "contract-family:catch.top_bar"
+            },
+            "level": "L3",
+            "roleNoun": "TopBar",
+            "naming": {
+              "useCase": "Legacy",
+              "reason": "Retired by P3.0, which gave CatchTopBar to the system's six app variants; legacy screens call its recipes until their redraw."
+            }
+          },
           {
             "id": "catch.top_bar.collapsed_sliver_title",
             "symbol": "CatchCollapsedHeaderTitle",
@@ -10997,14 +10952,11 @@
           "catch.icon_button"
         ],
         "notes": [
-          "CatchTopBar is the only app-bar renderer. Use route for pushed tasks, identity for avatar-backed conversation identity, screen for a standalone root app bar, and primaryRail for embedded scroll-away root titles. Root recipes default to no navigation.",
-          "The primary line identifies the current screen or task. Optional secondary context follows underneath in the same platform function family. Event recap precedes the event name; event defaults precedes the organizer name. Identity names remain the main title when the destination itself is a person.",
-          "IBM Plex and Archivo are never app-bar typography. Eyebrow, kicker, arbitrary heading widgets, title styles, line counts, height, size, mode, padding, gutter and alignment are not caller inputs.",
-          "The component owns text scaling, wrapping, safe-area placement and control alignment. Search remains a typed capability, and all recipes preserve full text in accessibility semantics.",
-          "Use CatchTopBarPrimaryButton, CatchIconAction, CatchButton.text or CatchActionMenu for actions. Body-style pill buttons are invalid app-bar actions.",
-          "At enlarged text sizes, titles and context may wrap and actions reflow underneath. Search hides covered title/action semantics while expanded.",
-          "Golden images record reviewed output. Correct semantic and geometry rules take precedence over preserving flawed baselines; approve fresh renders before replacing affected images.",
-          "Controls share 44-point visuals, platform hit allocation, centered alignment and 8-point gaps including collapsed search. Labelled selectors and actions may grow for accessible text. Overlay contrast belongs to the bar; icon and menu overrides are rejected inside it."
+          "Put the top bar in CatchScreen's topBar slot; the screen tells it when the body has scrolled. A subject bar sits over the hero, transparent with its titles hidden until then.",
+          "tabHome is a tab's own screen (kicker over a section title, actions at the end); tool is a sub-screen with back; step adds the position and a segmented meter; live puts the kicker under the title; moment shows close only.",
+          "On medium and expanded windows every variant but moment is one 56px row that lines up with the navigation's header and every pane header: back as a small ghost icon button, the kicker as a breadcrumb, the title on one line, then the live badge, the text action and actions.",
+          "A top bar never holds search or a footer; those are body content, and a pane header (CatchWorkspaceHeader) keeps its filters.",
+          "Legacy screens keep CatchLegacyTopBar and its recipes until their wave redraws them; nothing under apps/*/lib may use it."
         ]
       },
       "governance": {
@@ -11044,7 +10996,7 @@
             "moment"
           ]
         },
-        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; identity, tone, emphasis, navigation and search remain Flutter recipes until the Flutter mirror adopts the variants."
+        "notes": "Design system v15 TopBar (variant, kicker, back, action, actions, step, live). Inside CatchViewport it gains a hairline once the body scrolls. The website keeps CatchSiteHeader for the site variant; Flutter's pre-redesign identity, tone, emphasis, navigation and search recipes are CatchLegacyTopBar."
       },
       "system": {
         "name": "TopBar",
@@ -11754,13 +11706,14 @@
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
+              "qualifier": "legacy",
               "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
             },
             "level": "L4",
             "roleNoun": "Scaffold",
             "naming": {
-              "useCase": ""
+              "useCase": "",
+              "reason": "Absorbed by CatchScreen in P3.0: legacy screens keep calling CatchScaffold until the wave that rewrites its last caller deletes it."
             }
           },
           {
@@ -11781,18 +11734,14 @@
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
+              "qualifier": "legacy",
               "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
             },
             "level": "L4",
             "roleNoun": "Scaffold",
             "naming": {
               "useCase": "RootScreen",
-              "comparedWith": [
-                "catch.screen_body.screen_scaffold",
-                "catch.screen_body.route_scaffold"
-              ],
-              "reason": "Composes the canonical Scaffold and RootScreenScrollView for a root destination: scroll-away title, optional pinned primary rail, shell clearance and typed pages. RouteScaffold owns fixed pushed-route chrome and scroll-under state; the base Scaffold does not own scrolling or tab overlap."
+              "reason": "Absorbed by CatchScreen in P3.0: legacy screens keep calling CatchRootScreenScaffold until the wave that rewrites its last caller deletes it."
             }
           },
           {
@@ -12084,18 +12033,14 @@
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
+              "qualifier": "legacy",
               "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
             },
             "level": "L4",
             "roleNoun": "Scaffold",
             "naming": {
               "useCase": "Route",
-              "comparedWith": [
-                "catch.screen_body.screen_scaffold",
-                "catch.screen_body.root_screen_scaffold"
-              ],
-              "reason": "Composes the canonical Scaffold with a fixed route bar, vertical scroll-under state and typed route-body geometry. RootScreenScaffold puts its title into the scroll content and coordinates pinned rails and nested pages; the base Scaffold owns surface and platform insets without either navigation composition."
+              "reason": "Absorbed by CatchScreen in P3.0: legacy screens keep calling CatchRouteScaffold until the wave that rewrites its last caller deletes it."
             }
           },
           {
@@ -15172,7 +15117,7 @@
         "NavBar",
         "BottomTabBar"
       ],
-      "summary": "Adaptive bottom navigation with stable keyed destination slots, one shared 48px selection/contact indicator, measured selected labels, press-and-slide selection, badges, and platform-specific chrome.",
+      "summary": "The app's destinations from one list of items: a bottom bar under 600px (one shared selection and contact indicator, press-and-slide selection, badges and platform-adaptive chrome, pinned items with More), a 96px rail from 600 and a 240px sidebar from 840, with a header identity, a primary action, section headings and a footer.",
       "dart": {
         "symbol": "CatchTabBar",
         "file": "packages/catch_ui/lib/src/components/catch_tab_bar.dart",
@@ -15204,7 +15149,7 @@
             "required": true,
             "dartType": "List<CatchTabBarItem<T>>",
             "tsType": "readonly CatchTabBarItem[]",
-            "notes": "Each item carries value, label, icon, href and badge; section draws a sidebar heading (a rule in the rail) and pinned keeps it on the phone bar."
+            "notes": "Each item carries id, icon, label and badgeCount; section draws a sidebar heading (a rule in the rail) and pinned keeps it on the phone bar. React adds href."
           },
           {
             "name": "active",
@@ -15225,15 +15170,15 @@
             "type": "enum",
             "required": false,
             "default": "auto",
-            "dartType": "CatchTabBarLayout",
-            "tsType": "CatchTabBarLayout",
+            "dartType": "CatchTabBarPlacement",
+            "tsType": "CatchTabBarPlacement",
             "values": [
               "auto",
               "bottom",
               "rail",
               "sidebar"
             ],
-            "notes": "auto follows the size class: bottom under 600, rail from 600, sidebar from 840."
+            "notes": "auto follows the CatchRoot size class: bottom under 600, rail from 600, sidebar from 840. The axis is Placement (CatchTabBarPlacement); the web twin still exports it as CatchTabBarLayout until its port."
           },
           {
             "name": "header",
@@ -15241,14 +15186,15 @@
             "required": false,
             "dartType": "Widget?",
             "tsType": "ReactNode | CatchTabBarIdentity",
-            "notes": "Sidebar and rail: the app mark or who the app acts as, in the shared 56px header row."
+            "notes": "Sidebar and rail: the app mark or who the app acts as, in the shared 56px header row; CatchTabBarIdentity draws compact in the rail."
           },
           {
             "name": "primaryAction",
             "type": "object",
             "required": false,
             "dartType": "CatchTabBarAction?",
-            "tsType": "CatchTabBarAction"
+            "tsType": "CatchTabBarAction",
+            "notes": "Rail: a filled square icon button; sidebar: a full-width medium button."
           },
           {
             "name": "footer",
@@ -15256,15 +15202,15 @@
             "required": false,
             "dartType": "Widget?",
             "tsType": "ReactNode | CatchTabBarIdentity",
-            "notes": "Sidebar: who is signed in."
+            "notes": "Sidebar: who is signed in, usually a CatchTabBarIdentity."
           },
           {
             "name": "label",
             "type": "string",
             "required": false,
-            "default": "Main",
-            "dartType": "String",
-            "tsType": "string"
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "The navigation's screen-reader name; Flutter has no default copy."
           },
           {
             "name": "more",
@@ -15272,7 +15218,7 @@
             "required": false,
             "dartType": "CatchTabBarMore?",
             "tsType": "CatchTabBarMore",
-            "notes": "Phone bar with pinned items: where More goes."
+            "notes": "Phone bar with pinned items: More, the last destination. Flutter shows only pinned items while more is set."
           }
         ],
         "states": [
@@ -15291,7 +15237,10 @@
           "contact-preview",
           "press-and-slide",
           "pointer-focus",
-          "long-press-secondary-action"
+          "long-press-secondary-action",
+          "rail",
+          "sidebar",
+          "pinned-more"
         ],
         "slots": [],
         "tokens": [
@@ -15316,9 +15265,16 @@
           "CatchLayout.tabBarPillLeadingPadding",
           "CatchLayout.tabBarPillTrailingPadding",
           "CatchLayout.tabBarDragHysteresis",
-          "CatchLayout.tabBarDragCancelSlop"
+          "CatchLayout.tabBarDragCancelSlop",
+          "CatchTabBarPlacement",
+          "CatchTabBarAction",
+          "CatchTabBarMore",
+          "CatchTabBarIdentity",
+          "CatchCountBadge.navigationIcon"
         ],
-        "goldens": [],
+        "goldens": [
+          "navigation_family"
+        ],
         "members": [
           {
             "id": "catch.tab_bar.indicator",
@@ -15382,6 +15338,34 @@
               ],
               "reason": "Selects a product navigation destination rather than executing a generic command. Bottom and side navigation share item binding, active glyphs, count badges and actions; their distinct geometry is expressed as named recipes, not competing components."
             }
+          },
+          {
+            "id": "catch.tab_bar.identity",
+            "symbol": "CatchTabBarIdentity",
+            "file": "packages/catch_ui/lib/src/components/catch_tab_bar_identity.dart",
+            "summary": "Who the app acts as (an organizer, with the up-down switcher mark) or who is signed in: avatar, name and note, drawn as the avatar alone in a slot narrower than the rail.",
+            "states": [
+              "full",
+              "compact",
+              "note",
+              "switcher"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.tab_bar",
+              "parentConceptId": "catch.tab_bar",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.tab_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Identity",
+            "naming": {
+              "useCase": "TabBar",
+              "comparedWith": [
+                "catch.tab_bar"
+              ],
+              "reason": "The header and footer of the rail and sidebar: an avatar with a name and note that taps through to a switcher or the account. It owns no destination selection, so it is anatomy of the tab bar, not a button or a row."
+            }
           }
         ],
         "accessibility": {
@@ -15403,11 +15387,12 @@
           "catch.badge"
         ],
         "notes": [
-          "Use for Catch bottom navigation. Platform adaptation belongs inside this widget; do not fork native/custom tab bars in shells.",
           "Keep every destination in one stable keyed slot. Animate geometry and pill reveal without replacing fixed and expanded subtrees on selection.",
           "Use optical leading and trailing pill insets because the square icon box reserves transparent badge clearance.",
           "Keep contact previews transient: move the shared indicator while the route and selected semantics remain committed until release.",
-          "Preserve item long press when the pointer remains stationary; horizontal travel transfers ownership to press-and-slide selection."
+          "Preserve item long press when the pointer remains stationary; horizontal travel transfers ownership to press-and-slide selection.",
+          "Use for the app's destinations at every size: CatchAppShell places it, and layout auto draws the bottom bar, rail or sidebar from the CatchRoot size class. Platform adaptation belongs inside this widget; do not fork native or custom tab bars in shells.",
+          "Pass the acting identity as header and the signed-in person as footer (CatchTabBarIdentity), and the one primary action (\"New event\"). Sections head groups in the sidebar and draw a rule in the rail."
         ]
       },
       "governance": {
@@ -15447,7 +15432,7 @@
             "quiet-register"
           ]
         },
-        "notes": "Design system v15 Navigation: one item list draws the phone bar, the 96px rail and the 240px sidebar. With an href and onChanged a plain click calls onChanged (client routing) and modified clicks follow the link. The quiet register draws a text-only sidebar with plain counts. Flutter's layout, header, primaryAction, footer, label and more props follow in the Flutter mirror."
+        "notes": "Design system v15 Navigation: one item list draws the phone bar, the 96px rail and the 240px sidebar. With an href and onChanged a plain click calls onChanged (client routing) and modified clicks follow the link. The quiet register draws a text-only sidebar with plain counts. The Flutter twin draws the same layouts; its layout enum is CatchTabBarPlacement."
       },
       "system": {
         "name": "Navigation",
@@ -18316,7 +18301,7 @@
       "id": "catch.bottom_action",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+        "reason": "Each placement renders in the Widgetbook contract; dock_family goldens and catch_dock_test pin the bar, card and pane."
       },
       "name": "CatchDock",
       "status": "active",
@@ -18328,7 +18313,7 @@
         "BottomBar",
         "ActionDock"
       ],
-      "summary": "Persistent docked controls with utility, platform-adaptive primary-action and embedded primary-content recipes.",
+      "summary": "The bottom action bar: one primary action with a secondary action or a summary beside it, in the system's four placements: auto (a bar on compact and medium windows, a floating card on expanded), bar, card, and pane, the decision bar at the foot of a detail pane with a note, what comes next and a danger action.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -18348,208 +18333,146 @@
       "contract": {
         "props": [
           {
-            "name": "label",
-            "type": "string",
-            "required": false,
-            "dartType": "String",
-            "tsType": "string",
-            "notes": "Required by primary and primaryContent."
+            "name": "primary",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchDockAction",
+            "tsType": "CatchDockAction",
+            "notes": "label, onPressed (null disables), icon, loading."
           },
           {
-            "name": "onPressed",
-            "type": "callback",
+            "name": "secondary",
+            "type": "object",
             "required": false,
-            "dartType": "VoidCallback?",
-            "tsType": "(() => void) | null",
-            "notes": "Required by primary and primaryContent."
+            "dartType": "CatchDockAction?",
+            "tsType": "CatchDockAction",
+            "notes": "A quiet action before the primary in a bar or card; a secondary button in a pane."
           },
           {
-            "name": "leading",
+            "name": "summary",
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
-            "tsType": "ReactNode"
+            "tsType": "ReactNode",
+            "notes": "A price, a date, a count; it replaces the secondary action in a bar or card."
           },
           {
-            "name": "buttonKey",
-            "type": "object",
-            "required": false,
-            "dartType": "Key?",
-            "tsType": null
-          },
-          {
-            "name": "isLoading",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool",
-            "tsType": "boolean"
-          },
-          {
-            "name": "backgroundColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "tsType": "string"
-          },
-          {
-            "name": "dividerColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "tsType": "string"
-          },
-          {
-            "name": "buttonAccentColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "tsType": "string"
-          },
-          {
-            "name": "buttonMode",
+            "name": "placement",
             "type": "enum",
             "required": false,
-            "default": "pill",
-            "dartType": "CatchButtonMode",
-            "tsType": "CatchButtonMode",
+            "default": "auto",
+            "dartType": "CatchDockPlacement",
+            "tsType": "CatchDockPlacement",
             "values": [
-              "pill",
-              "rounded"
+              "auto",
+              "bar",
+              "card",
+              "pane"
             ]
-          },
-          {
-            "name": "catchLine",
-            "type": "string",
-            "required": false,
-            "dartType": "String?",
-            "tsType": "string"
-          },
-          {
-            "name": "catchLineAccent",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "tsType": "string"
-          },
-          {
-            "name": "footnote",
-            "type": "string",
-            "required": false,
-            "dartType": "String?",
-            "tsType": "string"
-          },
-          {
-            "name": "child",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget",
-            "tsType": "ReactNode",
-            "notes": "Required by the default utility constructor."
-          },
-          {
-            "name": "padding",
-            "type": "object",
-            "required": false,
-            "dartType": "EdgeInsetsGeometry",
-            "tsType": "CSSProperties[\"padding\"]"
-          },
-          {
-            "name": "includeSafeArea",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool",
-            "tsType": "boolean"
-          },
-          {
-            "name": "bottomPadding",
-            "type": "number",
-            "required": false,
-            "dartType": "double",
-            "tsType": "number",
-            "notes": "Available on primaryContent; its caller owns terminal clearance."
           },
           {
             "name": "danger",
             "type": "object",
             "required": false,
-            "dartType": "CatchDockPaneAction?",
-            "tsType": "CatchDockPaneAction"
+            "dartType": "CatchDockAction?",
+            "tsType": "CatchDockAction",
+            "notes": "pane: the refusing action, a quiet danger button."
           },
           {
             "name": "note",
             "type": "object",
             "required": false,
             "dartType": "CatchDockNote?",
-            "tsType": "{label: string; placeholder?: string; value: string; onChanged: (value: string) => void; required?: boolean}"
+            "tsType": "{label: string; placeholder?: string; value: string; onChanged: (value: string) => void}",
+            "notes": "pane: the one-line note above the actions; Flutter takes the caller's TextEditingController."
           },
           {
             "name": "next",
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
-            "tsType": "ReactNode"
+            "tsType": "ReactNode",
+            "notes": "pane: what happens after the decision, in place of the summary."
           }
         ],
         "states": [
-          "ios-floating",
-          "android-anchored",
-          "leading-content",
-          "catch-line",
-          "footnote",
-          "scroll-overlay",
-          "loading",
-          "disabled",
-          "rounded-button",
-          "custom",
-          "custom-no-safe-area",
-          "embedded"
+          "auto",
+          "bar",
+          "card",
+          "pane"
         ],
         "slots": [
           {
-            "name": "leading",
-            "kind": "optional-action-leading",
+            "name": "summary",
+            "kind": "optional-dock-summary",
             "allowedComponents": [
               "catch.badge",
               "catch.metric_strip"
             ]
           },
           {
-            "name": "child",
-            "kind": "dock-content",
-            "allowedComponents": [
-              "catch.button",
-              "catch.search_field",
-              "catch.icon_button"
-            ]
+            "name": "next",
+            "kind": "optional-pane-next"
           }
         ],
         "tokens": [
+          "layout.gutterCompact",
+          "layout.gutterMedium",
+          "layout.gutterExpanded",
           "space.s2",
           "space.s3",
           "space.s4",
-          "space.s12",
-          "space.s16",
-          "space.micro18",
-          "radius.lg",
-          "theme.light.color.bg",
-          "theme.light.color.ink2",
-          "theme.light.color.ink3",
+          "space.s6",
+          "space.micro10",
+          "theme.light.color.ground",
           "theme.light.color.line",
-          "theme.light.color.surface"
+          "theme.light.color.deepCoral"
         ],
         "dartRoles": [
+          "CatchDockPlacement",
+          "CatchDockAction",
+          "CatchDockNote",
           "CatchButton",
-          "CatchElevation.raised",
-          "CatchIcons.sparkle",
-          "CatchSpacing.s16",
-          "CatchOpacity.bottomActionScrim",
-          "CatchSpacing.screenPx",
-          "CatchTextStyles.monoLabel"
+          "CatchSurface",
+          "CatchTextInput"
         ],
-        "goldens": [],
+        "goldens": [
+          "dock_family"
+        ],
         "members": [
+          {
+            "id": "catch.bottom_action.legacy",
+            "symbol": "CatchLegacyDock",
+            "file": "packages/catch_ui/lib/src/components/catch_legacy_dock.dart",
+            "summary": "The pre-redesign dock (utility content, platform-adaptive primary with catch line and footnote, pageAction and primaryContent recipes), kept for legacy screens until their wave redraws them; redrawn screens use the system placements.",
+            "states": [
+              "ios-floating",
+              "android-anchored",
+              "leading-content",
+              "catch-line",
+              "footnote",
+              "scroll-overlay",
+              "loading",
+              "disabled",
+              "rounded-button",
+              "custom",
+              "custom-no-safe-area",
+              "embedded"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.bottom_action",
+              "parentConceptId": "catch.bottom_action",
+              "qualifier": "legacy",
+              "decisionRef": "contract-family:catch.bottom_action"
+            },
+            "level": "L3",
+            "roleNoun": "Dock",
+            "naming": {
+              "useCase": "Legacy",
+              "reason": "Retired by P3.0, which gave CatchDock to the system's placements; legacy screens call its recipes until their redraw."
+            }
+          },
           {
             "id": "catch.bottom_action.overlay",
             "symbol": "CatchBottomActionOverlay",
@@ -18603,9 +18526,9 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use the default constructor for utility content; primary selects floating Cupertino or anchored Material chrome without platform branches in callers.",
-          "Use primaryContent only when an owning surface already supplies chrome. The BottomActionOverlay member independently pins multi-action controls above a scrolling body.",
-          "Tab navigation retains its own contract and does not use this dock."
+          "Put the dock in CatchScreen's dock slot; the screen keeps it below the body and the dock picks bar or card from the size class. Use pane at the foot of a detail pane.",
+          "One primary action fills the bar; a summary or a quiet secondary sits before it. A pane adds the note field, what comes next, and the refusing action as a quiet danger button before the secondary and primary.",
+          "Legacy screens keep CatchLegacyDock and its recipes until their wave redraws them. The BottomActionOverlay member pins multi-action form controls above a scrolling body. Tab navigation keeps its own contract."
         ]
       },
       "governance": {
@@ -18625,10 +18548,7 @@
         "symbol": "CatchDock",
         "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
         "constructors": [
-          "CatchDock",
-          "CatchDock.primary",
-          "CatchDock.pageAction",
-          "CatchDock.primaryContent"
+          "CatchDock"
         ]
       },
       "react": {
@@ -18653,7 +18573,7 @@
             "pane"
           ]
         },
-        "notes": "Recipes utility (Flutter's default constructor; children is Flutter's child), primary, pageAction and primaryContent. The web has no Cupertino floating chrome, so primary always draws the anchored recipe (ios-floating is Flutter-only), and the caller places the dock: CatchStickyAside fixes it to the bottom edge on phones. BottomActionOverlay (scroll-overlay) has no web member yet. buttonKey is a Flutter mechanism. The footnote is ink2 because Flutter's ink3 is under 4.5:1. The pane recipe is design system v15's Dock placement=\"pane\": the decision bar at the foot of a detail pane with a note field, the next line, and danger, secondary and primary actions."
+        "notes": "Recipes utility (Flutter's default constructor; children is Flutter's child), primary, pageAction and primaryContent. The web has no Cupertino floating chrome, so primary always draws the anchored recipe (ios-floating is Flutter-only), and the caller places the dock: CatchStickyAside fixes it to the bottom edge on phones. BottomActionOverlay (scroll-overlay) has no web member yet. buttonKey is a Flutter mechanism. The footnote is ink2 because Flutter's ink3 is under 4.5:1. The pane recipe is design system v15's Dock placement=\"pane\": the decision bar at the foot of a detail pane with a note field, the next line, and danger, secondary and primary actions. Flutter's pre-redesign recipes are CatchLegacyDock; the system placements land on the web with its port."
       },
       "level": "L3",
       "roleNoun": "Dock",
@@ -20618,7 +20538,9 @@
         "AdaptiveTabScaffold",
         "HostAppShell"
       ],
-      "absorbs": ["CatchScaffold", "CatchRootScreenScaffold", "CatchNavigationViewport", "CatchRouteScaffold"],
+      "absorbs": [
+        "CatchNavigationViewport"
+      ],
       "summary": "One local viewport owner with named size-class, explicit-width, sliver geometry, readable sliver lane and bounded-scene recipes.",
       "dart": {
         "symbol": "CatchViewport",
@@ -20925,6 +20847,437 @@
       }
     },
     {
+      "id": "catch.app_shell",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The bottom bar, rail and sidebar placements render with a sample screen in the Widgetbook contract; app_shell_family goldens and catch_app_shell_test pin the placement, the scope and the insets."
+      },
+      "name": "CatchAppShell",
+      "status": "active",
+      "kind": "pattern",
+      "tier": "T2",
+      "level": "L4",
+      "roleNoun": "AppShell",
+      "naming": {
+        "useCase": ""
+      },
+      "aliases": [
+        "AdaptiveNavigationShell",
+        "NavigationShell",
+        "AppFrame"
+      ],
+      "summary": "The frame of an app: it places the navigation by size class (a bottom bar under 600px, a 96px rail from 600, a 240px sidebar from 840) and hosts the screen, drawing nothing of its own. In Flutter the router's navigator is its child and each route brings its own CatchScreen.",
+      "dart": {
+        "symbol": "CatchAppShell",
+        "file": "packages/catch_ui/lib/src/patterns/catch_app_shell.dart",
+        "constructors": [
+          "CatchAppShell"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/AppShell",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "AppShell",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "navigation",
+            "type": "widget",
+            "required": true,
+            "dartType": "CatchTabBar<Object?>",
+            "tsType": "ReactNode",
+            "notes": "A CatchTabBar; auto layout follows the size class."
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget",
+            "tsType": "ReactNode",
+            "notes": "The screen, usually the router's navigator."
+          },
+          {
+            "name": "overlay",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode",
+            "notes": "Drawn over the navigation and the screen: a switcher sheet, a toast."
+          }
+        ],
+        "states": [
+          "bottom",
+          "rail",
+          "sidebar"
+        ],
+        "slots": [
+          {
+            "name": "navigation",
+            "kind": "required-navigation",
+            "allowedComponents": [
+              "catch.tab_bar"
+            ]
+          },
+          {
+            "name": "child",
+            "kind": "required-content-widget"
+          },
+          {
+            "name": "overlay",
+            "kind": "optional-overlay"
+          }
+        ],
+        "tokens": [
+          "layout.rail",
+          "layout.sidebar",
+          "windowSize.mediumMinWidth",
+          "windowSize.expandedMinWidth"
+        ],
+        "dartRoles": [
+          "CatchShellScope",
+          "CatchShellScopeData",
+          "CatchTabBarPlacement",
+          "CatchTabViewportScope"
+        ],
+        "goldens": [
+          "app_shell_family"
+        ],
+        "members": [
+          {
+            "id": "catch.app_shell.scope",
+            "symbol": "CatchShellScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_app_shell.dart",
+            "summary": "Publishes where the shell put the navigation (bottom, rail or sidebar) and how much a floating bottom bar covers, as CatchShellScopeData; CatchAppShell is its only provider.",
+            "states": [
+              "read"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.app_shell",
+              "parentConceptId": "catch.app_shell",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.app_shell"
+            },
+            "level": "L4",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "Shell",
+              "comparedWith": [
+                "catch.app_shell"
+              ],
+              "reason": "Publishes the shell's navigation placement and bottom inset to the screens inside it; CatchAppShell owns the placement and provides it."
+            }
+          },
+          {
+            "id": "catch.app_shell.consumer_route_shell",
+            "symbol": "AppShell",
+            "file": "lib/routing/shell/app_shell.dart",
+            "summary": "The consumer app's route shell: the StatefulShellRoute builder with its destinations and the guest call to action, drawn on AdaptiveTabScaffold. It shares the shell's name, not its code, and moves onto CatchAppShell when the consumer's wave redraws it.",
+            "states": [
+              "signed-in",
+              "guest"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.app_shell",
+              "parentConceptId": "catch.app_shell",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.app_shell"
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.tab_bar",
+          "catch.screen"
+        ],
+        "notes": [
+          "One shell per app, inside a CatchRoot. Pass the app's CatchTabBar as navigation and the router's navigator as child; every route brings its own CatchScreen.",
+          "The shell draws nothing: the navigation and the screen own their grounds and lines. It keeps the screen in place in the tree across placements, so rotation and the keyboard never rebuild the navigator.",
+          "While the keyboard is up the bottom bar steps aside. Where the platform floats the bottom bar over the screen, CatchShellScope reports how much it covers, and legacy screens read the same through CatchTabViewportScope."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.app_shell",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.app_shell"
+      },
+      "system": {
+        "name": "AppShell",
+        "states": ["rest"],
+        "slots": ["navigation", "topBar", "dock", "overlay", "children"],
+        "props": [
+          {"name": "theme", "tsType": "Theme", "required": false},
+          {"name": "register", "tsType": "Register", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "size", "tsType": "SizeClass | \"auto\"", "required": false},
+          {"name": "frame", "tsType": "\"phone\" | \"tablet\" | \"desktop\" | \"fluid\"", "required": false},
+          {"name": "navigation", "tsType": "React.ReactNode", "required": false},
+          {"name": "topBar", "tsType": "React.ReactNode", "required": false},
+          {"name": "dock", "tsType": "React.ReactNode", "required": false},
+          {"name": "overlay", "tsType": "React.ReactNode", "required": false},
+          {"name": "height", "tsType": "number", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "className", "tsType": "string", "required": false}
+        ]
+      }
+    },
+    {
+      "id": "catch.screen",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "A screen with a top bar, a body and a dock renders at rest and scrolled, alone and in a shell, in the Widgetbook contract; app_shell_family goldens and catch_screen_test pin the scroll state, the subject overlay and the dock."
+      },
+      "name": "CatchScreen",
+      "status": "active",
+      "kind": "pattern",
+      "tier": "T2",
+      "level": "L4",
+      "roleNoun": "Screen",
+      "naming": {
+        "useCase": ""
+      },
+      "aliases": [
+        "ScreenFrame",
+        "PageFrame",
+        "ScreenScaffold"
+      ],
+      "absorbs": [
+        "CatchScaffold",
+        "CatchRootScreenScaffold",
+        "CatchRouteScaffold"
+      ],
+      "summary": "One screen's frame, inside a CatchAppShell or alone: the top bar, the body, the dock and an overlay. It owns the scrolled state the top bar reads, keeps the dock below the body and clear of a floating bottom bar, and places a subject top bar over the hero.",
+      "dart": {
+        "symbol": "CatchScreen",
+        "file": "packages/catch_ui/lib/src/patterns/catch_screen.dart",
+        "constructors": [
+          "CatchScreen"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Screen",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Screen",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "topBar",
+            "type": "widget",
+            "required": false,
+            "dartType": "CatchTopBar?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "body",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "dock",
+            "type": "widget",
+            "required": false,
+            "dartType": "CatchDock?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "overlay",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode",
+            "notes": "Drawn over the body and the top bar."
+          },
+          {
+            "name": "bodyScrolls",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool",
+            "tsType": "boolean",
+            "notes": "true: the screen scrolls the body and ends it clear of the device inset. false: the body fills the frame and owns its scrolling; the web body always scrolls."
+          }
+        ],
+        "states": [
+          "rest",
+          "scrolled",
+          "subject",
+          "with-dock",
+          "in-shell"
+        ],
+        "slots": [
+          {
+            "name": "topBar",
+            "kind": "optional-top-bar",
+            "allowedComponents": [
+              "catch.top_bar"
+            ]
+          },
+          {
+            "name": "body",
+            "kind": "required-content-widget"
+          },
+          {
+            "name": "dock",
+            "kind": "optional-dock",
+            "allowedComponents": [
+              "catch.bottom_action"
+            ]
+          },
+          {
+            "name": "overlay",
+            "kind": "optional-overlay"
+          }
+        ],
+        "tokens": [
+          "theme.light.color.ground"
+        ],
+        "dartRoles": [
+          "CatchScreenScope",
+          "CatchScreenScopeData",
+          "CatchShellScope",
+          "CatchScaffold.workspace"
+        ],
+        "goldens": [
+          "app_shell_family"
+        ],
+        "members": [
+          {
+            "id": "catch.screen.scope",
+            "symbol": "CatchScreenScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_screen.dart",
+            "summary": "Publishes whether the screen's body has scrolled past 4px, as CatchScreenScopeData; CatchScreen is its only provider and the top bar its first reader.",
+            "states": [
+              "rest",
+              "scrolled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen",
+              "parentConceptId": "catch.screen",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.screen"
+            },
+            "level": "L4",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "Screen",
+              "comparedWith": [
+                "catch.screen"
+              ],
+              "reason": "Publishes the screen's scroll state to its top bar and body; CatchScreen owns the scroll listener and provides it."
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.top_bar",
+          "catch.bottom_action",
+          "catch.screen_body",
+          "catch.pane_layout"
+        ],
+        "notes": [
+          "Every redrawn screen is one CatchScreen: a CatchTopBar variant, a body and an optional CatchDock. Legacy screens keep CatchScaffold, CatchRouteScaffold and CatchRootScreenScaffold until their wave.",
+          "Leave bodyScrolls on for a body of sections; turn it off for a pane layout, a map or a body that scrolls itself. Either way the screen hears the vertical scroll and tells the top bar.",
+          "The screen hosts its frame in the canonical Material scaffold, so snackbars, keyboard insets and Material ink behave as on every screen."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.screen",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.screen"
+      },
+      "system": {
+        "name": "AppShell",
+        "states": ["rest"],
+        "slots": ["navigation", "topBar", "dock", "overlay", "children"],
+        "props": [
+          {"name": "theme", "tsType": "Theme", "required": false},
+          {"name": "register", "tsType": "Register", "required": false},
+          {"name": "format", "tsType": "Format", "required": false},
+          {"name": "size", "tsType": "SizeClass | \"auto\"", "required": false},
+          {"name": "frame", "tsType": "\"phone\" | \"tablet\" | \"desktop\" | \"fluid\"", "required": false},
+          {"name": "navigation", "tsType": "React.ReactNode", "required": false},
+          {"name": "topBar", "tsType": "React.ReactNode", "required": false},
+          {"name": "dock", "tsType": "React.ReactNode", "required": false},
+          {"name": "overlay", "tsType": "React.ReactNode", "required": false},
+          {"name": "height", "tsType": "number", "required": false},
+          {"name": "children", "tsType": "React.ReactNode", "required": false},
+          {"name": "className", "tsType": "string", "required": false}
+        ]
+      }
+    },
+    {
       "id": "catch.workspace_header",
       "name": "CatchWorkspaceHeader",
       "status": "active",
@@ -21143,8 +21496,10 @@
         "ListDetailLayout",
         "WorkspaceLayout"
       ],
-      "absorbs": ["CatchWorkspacePaneScaffold"],
-      "summary": "One layout for workspace screens: queue (a table and a 440/480px inspector that replaces the table when narrow), list-detail (a 360px list and the detail), feed and reading (with a 360px side pane) and wide-table, measured on the layout's own width.",
+      "absorbs": [
+        "CatchWorkspacePaneScaffold"
+      ],
+      "summary": "One layout for workspace screens: queue (a table and a 440/480px inspector that replaces the table when narrow), list-detail (a 360px list and the detail), feed and reading (with a 360px side pane), wide-table, editor (the 600px form lane with a 320px preview and the step list from 960px), operations (capped at 1040px with a 360px live pane from 960px) and browse (a wide grid of 280px-minimum cells that never splits), measured on the layout's own width.",
       "dart": {
         "symbol": "CatchPaneLayout",
         "file": "packages/catch_ui/lib/src/patterns/catch_pane_layout.dart",
@@ -21200,8 +21555,12 @@
               "list-detail",
               "feed",
               "reading",
-              "wide-table"
-            ]
+              "wide-table",
+              "editor",
+              "operations",
+              "browse"
+            ],
+            "notes": "Flutter adds editor, operations and browse ahead of the web."
           },
           {
             "name": "main",
@@ -21209,7 +21568,7 @@
             "required": true,
             "dartType": "Widget",
             "tsType": "ReactNode",
-            "notes": "Flutter takes children: [main, second pane]."
+            "notes": "Flutter takes children: [main, second pane], plus an editor's step list third; a browse grid's children are its cells."
           },
           {
             "name": "detail",
@@ -21217,7 +21576,7 @@
             "required": false,
             "dartType": "Widget?",
             "tsType": "ReactNode",
-            "notes": "Flutter takes children: [main, second pane]."
+            "notes": "Flutter takes children: [main, second pane], plus an editor's step list third; a browse grid's children are its cells."
           },
           {
             "name": "aside",
@@ -21225,7 +21584,7 @@
             "required": false,
             "dartType": "Widget?",
             "tsType": "ReactNode",
-            "notes": "Flutter takes children: [main, second pane]."
+            "notes": "Flutter takes children: [main, second pane], plus an editor's step list third; a browse grid's children are its cells."
           },
           {
             "name": "detailOpen",
@@ -21242,6 +21601,10 @@
           "feed",
           "reading",
           "wide-table",
+          "editor",
+          "editor-steps",
+          "operations",
+          "browse",
           "unsplit",
           "detail-open"
         ],
@@ -21252,8 +21615,16 @@
           "theme.light.color.line",
           "theme.light.color.surface"
         ],
-        "dartRoles": [],
-        "goldens": [],
+        "dartRoles": [
+          "GeneratedCatchLayoutTokens.paneList",
+          "GeneratedCatchLayoutTokens.paneLane",
+          "GeneratedCatchLayoutTokens.panePreview",
+          "GeneratedCatchLayoutTokens.paneLive",
+          "GeneratedCatchLayoutTokens.liveCap"
+        ],
+        "goldens": [
+          "pane_layout_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,

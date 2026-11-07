@@ -279,7 +279,7 @@ Future<void> _pump(
         ),
         home: CatchRouteScaffold(
           topBarBuilder: (_, _) =>
-              const CatchTopBar.route(title: 'Review your profile'),
+              const CatchLegacyTopBar.route(title: 'Review your profile'),
           body: CatchRouteBody.standardConstrained(child: body),
         ),
       ),

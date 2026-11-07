@@ -65,7 +65,7 @@ class ReviewsHistoryScreen extends ConsumerWidget {
     }
 
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.reviewsReviewsHistoryScreenTitleReviewHistory,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

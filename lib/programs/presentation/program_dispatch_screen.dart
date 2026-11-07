@@ -198,7 +198,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
 
   CatchRouteScaffold _routeScaffold({required CatchRouteBody body}) =>
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: widget.stationLabel,
           subtitle: context.l10n.programsDispatchTitle,
           emphasis: scrolledUnder

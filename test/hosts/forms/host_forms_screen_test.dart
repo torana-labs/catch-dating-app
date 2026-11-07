@@ -420,7 +420,7 @@ void main() {
         );
         expect(
           find.descendant(
-            of: find.byType(CatchTopBar),
+            of: find.byType(CatchLegacyTopBar),
             matching: find.byKey(const ValueKey('host-responses-import')),
           ),
           findsOneWidget,

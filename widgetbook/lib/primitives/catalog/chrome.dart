@@ -45,17 +45,17 @@ Widget catchTextButtonCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBar,
+  type: CatchLegacyTopBar,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarScreenCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBar',
+    title: 'CatchLegacyTopBar',
     catalogId: 'core.widgets.catch_top_bar_screen',
     children: [
       WidgetbookCatalogStateCard(
         label: 'root title / subtitle / action',
-        child: CatchTopBar.screen(
+        child: CatchLegacyTopBar.screen(
           title: 'Chats',
           subtitle: 'Messages from your matches',
           actions: [
@@ -69,7 +69,7 @@ Widget catchTopBarScreenCatalogStates(BuildContext context) {
       ),
       WidgetbookCatalogStateCard(
         label: 'root search chrome',
-        child: CatchTopBar.screen(
+        child: CatchLegacyTopBar.screen(
           leading: CatchIconAction.toolbar(
             icon: CatchIcons.location,
             tooltip: 'Change city',
@@ -100,11 +100,11 @@ Widget catchPageTabBarAppBarStates(BuildContext context) {
     catalogId: 'catch.tab_rail',
     children: [
       WidgetbookCatalogStateCard(
-        label: 'inside CatchTopBar',
+        label: 'inside CatchLegacyTopBar',
         child: DefaultTabController(
           length: 3,
           child: Builder(
-            builder: (context) => CatchTopBar.route(
+            builder: (context) => CatchLegacyTopBar.route(
               title: 'Explore',
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.none,
@@ -133,12 +133,12 @@ Widget catchPageTabBarAppBarStates(BuildContext context) {
 )
 Widget catchTopBarActionsCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBar actions',
+    title: 'CatchLegacyTopBar actions',
     catalogId: 'core.widgets.catch_top_bar_actions',
     children: [
       WidgetbookCatalogStateCard(
         label: 'icon / text / menu',
-        child: CatchTopBar.route(
+        child: CatchLegacyTopBar.route(
           title: 'Event details',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,

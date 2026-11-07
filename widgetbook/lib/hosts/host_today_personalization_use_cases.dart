@@ -23,7 +23,7 @@ Widget hostTodayFocusScreenPreview(BuildContext context) =>
   path: '[P1 product surfaces]/Host Today',
 )
 Widget hostTodayFocusChoices(BuildContext context) => CatchRouteScaffold(
-  topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Your focus'),
+  topBarBuilder: (_, _) => const CatchLegacyTopBar.route(title: 'Your focus'),
   body: CatchRouteBody.standardConstrained(
     child: HostTodayFocusPageBody(
       selected: HostTodayFocus.audience,

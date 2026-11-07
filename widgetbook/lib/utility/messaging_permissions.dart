@@ -41,8 +41,9 @@ Widget messagingPermissionsPageStates(BuildContext context) =>
             label: pending ? 'withdrawal pending' : 'independent senders',
             child: WidgetbookUtilityDeviceFrame(
               child: CatchRouteScaffold(
-                topBarBuilder: (_, _) =>
-                    const CatchTopBar.route(title: 'WhatsApp permissions'),
+                topBarBuilder: (_, _) => const CatchLegacyTopBar.route(
+                  title: 'WhatsApp permissions',
+                ),
                 body: CatchRouteBody.standardConstrained(
                   child: MessagingPermissionsPageBody(
                     state: _state(pending: pending),

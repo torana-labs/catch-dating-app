@@ -74,7 +74,9 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.text('Reload customer'), findsOneWidget);
     expect(find.text('Organizer unavailable'), findsNothing);
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).identityName,
+      tester
+          .widget<CatchLegacyTopBar>(find.byType(CatchLegacyTopBar))
+          .identityName,
       'Ananya Rao',
     );
   });
@@ -484,7 +486,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    final header = find.byType(CatchTopBar);
+    final header = find.byType(CatchLegacyTopBar);
     final titleFinder = find.descendant(
       of: header,
       matching: find.text('Audience'),
@@ -502,7 +504,7 @@ void _registerHostOperationsCustomerDetailTests() {
     );
     expect(
       find.descendant(
-        of: find.byType(CatchTopBar),
+        of: find.byType(CatchLegacyTopBar),
         matching: find.byWidgetPredicate(
           (widget) =>
               widget is CatchIconAction && widget.tooltip == 'Add person',

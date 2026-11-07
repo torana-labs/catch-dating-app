@@ -17,7 +17,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final organizer = ref.watch(watchOrganizerProvider(organizerId));
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostSendsSettings,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

@@ -1,750 +1,428 @@
-import 'dart:math' as math;
-
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_avatar.dart';
+import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_search_field.dart';
-import 'package:catch_ui/src/components/catch_search_field_status.dart';
-import 'package:catch_ui/src/components/catch_toolbar_button.dart';
-import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
-import 'package:catch_ui/src/components/catch_toolbar_scope.dart';
-import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
-import 'package:catch_ui/src/components/catch_top_bar_emphasis.dart';
-import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
-import 'package:catch_ui/src/components/catch_top_bar_primary_button.dart';
-import 'package:catch_ui/src/components/catch_top_bar_search.dart';
-import 'package:catch_ui/src/components/catch_top_bar_tone.dart';
-import 'package:catch_ui/src/foundations/catch_fonts.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
-import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/patterns/catch_navigation_viewport.dart';
-import 'package:catch_ui/src/patterns/catch_workspace_back_scope.dart';
-import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_legacy_text.dart';
-import 'package:catch_ui/src/primitives/catch_legacy_text_variant.dart';
-import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
+import 'package:catch_ui/src/patterns/catch_screen.dart';
+import 'package:catch_ui/src/primitives/catch_text.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
-part 'catch_top_bar_workspace_geometry.dart';
+/// The six app tops. `tabHome` is a tab's own screen, `tool` a sub-screen
+/// with back, `subject` sits over a hero, `step` is a step in a flow,
+/// `live` is the night console and `moment` is a full-screen moment with
+/// close only. The system's `site` header is web-only.
+enum CatchTopBarVariant { tabHome, tool, subject, step, live, moment }
 
-/// Canonical app chrome. Recipes own typography, hierarchy and geometry.
-///
-/// Route titles identify the current task; subtitles identify its context.
-/// Root titles use the same platform family at headline scale. Search, navigation,
-/// actions and identity are functional inputs, never typography overrides.
-class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
-  const CatchTopBar.route({
-    super.key,
-    required String this.title,
-    this.subtitle,
-    this.leading,
-    this.navigation = const CatchTopBarNavigation(),
-    this.actions = const <Widget>[],
-    this.backgroundColor,
-    this.tone = CatchTopBarTone.page,
-    this.emphasis = CatchTopBarEmphasis.plain,
-    this.footer,
-    this.search,
-  }) : identityName = null,
-       identitySemanticLabel = null,
-       identityPhotoUrl = null,
-       onIdentityTap = null,
-       _kind = _TopBarKind.route;
+/// Back (or close) at the start of a top bar.
+@immutable
+class CatchTopBarBack {
+  const CatchTopBarBack({this.label, this.onPressed, this.close = false});
 
-  const CatchTopBar.screen({
-    super.key,
-    required String this.title,
-    this.subtitle,
-    this.leading,
-    this.navigation = const CatchTopBarNavigation(
-      mode: CatchTopBarNavigationMode.none,
-    ),
-    this.actions = const <Widget>[],
-    this.backgroundColor,
-    this.tone = CatchTopBarTone.page,
-    this.emphasis = CatchTopBarEmphasis.plain,
-    this.footer,
-    this.search,
-  }) : identityName = null,
-       identitySemanticLabel = null,
-       identityPhotoUrl = null,
-       onIdentityTap = null,
-       _kind = _TopBarKind.screen;
+  /// The tooltip and screen-reader label; null uses the platform's back or
+  /// close label.
+  final String? label;
 
-  const CatchTopBar.primaryRail({
-    super.key,
-    required String this.title,
-    this.subtitle,
-    this.leading,
-    this.navigation = const CatchTopBarNavigation(
-      mode: CatchTopBarNavigationMode.none,
-    ),
-    this.actions = const <Widget>[],
-    this.backgroundColor,
-    this.tone = CatchTopBarTone.page,
-    this.emphasis = CatchTopBarEmphasis.plain,
-    this.footer,
-    this.search,
-  }) : identityName = null,
-       identitySemanticLabel = null,
-       identityPhotoUrl = null,
-       onIdentityTap = null,
-       _kind = _TopBarKind.primaryRail;
+  /// Null pops the nearest navigator.
+  final VoidCallback? onPressed;
 
-  /// Branded navigation title; shares workspace geometry, retains Archivo voice.
-  const CatchTopBar.brand({
-    super.key,
-    required String this.title,
-    this.backgroundColor,
-  }) : subtitle = null,
-       leading = null,
-       navigation = const CatchTopBarNavigation(
-         mode: CatchTopBarNavigationMode.none,
-       ),
-       actions = const [],
-       tone = CatchTopBarTone.surface,
-       emphasis = CatchTopBarEmphasis.plain,
-       footer = null,
-       search = null,
-       identityName = null,
-       identitySemanticLabel = null,
-       identityPhotoUrl = null,
-       onIdentityTap = null,
-       _kind = _TopBarKind.brand;
-
-  const CatchTopBar.identity({
-    super.key,
-    required String this.identityName,
-    required String this.identitySemanticLabel,
-    this.identityPhotoUrl,
-    this.onIdentityTap,
-    this.leading,
-    this.navigation = const CatchTopBarNavigation(),
-    this.actions = const <Widget>[],
-    this.backgroundColor,
-    this.tone = CatchTopBarTone.page,
-    this.emphasis = CatchTopBarEmphasis.plain,
-    this.footer,
-  }) : title = null,
-       subtitle = null,
-       search = null,
-       _kind = _TopBarKind.identity;
-
-  final _TopBarKind _kind;
-  final String? title;
-  final String? subtitle;
-  final String? identityName;
-  final String? identitySemanticLabel;
-  final String? identityPhotoUrl;
-  final VoidCallback? onIdentityTap;
-  final Widget? leading;
-  final CatchTopBarNavigation navigation;
-  final List<Widget> actions;
-  final Color? backgroundColor;
-  final CatchTopBarTone tone;
-  final CatchTopBarEmphasis emphasis;
-  final PreferredSizeWidget? footer;
-  final CatchTopBarSearch? search;
-
-  bool get _root =>
-      _kind == _TopBarKind.screen ||
-      _kind == _TopBarKind.primaryRail ||
-      _kind == _TopBarKind.brand;
-  bool get _safeArea => _kind != _TopBarKind.primaryRail;
-  EdgeInsets get _padding => _kind == _TopBarKind.primaryRail
-      ? CatchInsets.primaryRailTitleBlock
-      : _root
-      ? CatchInsets.screenTitleBlock
-      : const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.screenPx,
-          vertical: CatchSpacing.s1,
-        );
-
-  static int _lines(BuildContext context) =>
-      MediaQuery.textScalerOf(context).scale(1) >= 1.5 ? 2 : 1;
-
-  @override
-  Size get preferredSize => Size.fromHeight(
-    CatchLayout.topBarHeight + (footer?.preferredSize.height ?? 0),
-  );
-
-  @override
-  Size preferredSizeFor(BuildContext context, {double? width}) {
-    final bottom = switch (footer) {
-      final CatchScaledPreferredSize scaled =>
-        scaled.preferredSizeFor(context, width: width).height,
-      final bar? => bar.preferredSize.height,
-      null => 0.0,
-    };
-    return Size.fromHeight(
-      _contentHeightFor(context, width ?? MediaQuery.sizeOf(context).width) +
-          bottom,
-    );
-  }
-
-  double contentHeightFor(BuildContext context) =>
-      _contentHeightFor(context, MediaQuery.sizeOf(context).width);
-
-  double _contentHeightFor(BuildContext context, double width) {
-    final padding = _paddingFor(context);
-    final target = CatchIconAction.targetExtentFor(CatchIconAction.navSize);
-    final largeText = _lines(context) > 1;
-    final selectorReflow = largeText && _root && leading is CatchToolbarLeading;
-    final hasLeading = leading != null || _navigationVisible(context);
-    final leadingSize = leading is CatchToolbarLeading
-        ? (leading! as CatchToolbarLeading).toolbarSizeFor(context)
-        : Size.square(target);
-    final contentWidth = math.max(1.0, width - padding.horizontal);
-    var laneWidth =
-        contentWidth -
-        (hasLeading && !selectorReflow
-            ? leadingSize.width + CatchSpacing.s3
-            : 0);
-    if (!selectorReflow && !largeText && (search?.enabled ?? false)) {
-      laneWidth -= CatchToolbarMetrics.targetExtent;
-      if (!largeText && actions.isNotEmpty) {
-        laneWidth -= CatchToolbarMetrics.gap;
-      }
-    }
-    if (!largeText && actions.isNotEmpty) {
-      laneWidth -= math.max(
-        contentWidth * CatchLayout.topBarTrailingMaxRatio,
-        CatchTopBarActionRow(actions: actions).minimumWidth,
-      );
-    }
-    if (identityName != null) {
-      laneWidth -= 36 + CatchSpacing.s2 + CatchSpacing.micro2;
-    }
-    laneWidth = math.max(1, laneWidth);
-    final titleHeight = _WorkspaceTopBarGeometry._textHeight(
-      context,
-      identityName ?? title ?? '',
-      _titleStyle(context),
-      laneWidth,
-      maxLines: _lines(context),
-    );
-    var textHeight =
-        titleHeight +
-        (_workspace(context) ? _workspaceTitleMetrics(context).inset : 0);
-    if (subtitle?.isNotEmpty ?? false) {
-      textHeight +=
-          CatchGaps.headerTitleToSubtitle +
-          _WorkspaceTopBarGeometry._textHeight(
-            context,
-            subtitle!,
-            CatchTextStyles.bodyS(context),
-            laneWidth,
-            maxLines: _lines(context),
-          );
-    }
-    if (identityName != null) {
-      textHeight += CatchInsets.controlVerticalTight.vertical;
-    }
-    final controlsWidth = math.max(
-      1.0,
-      contentWidth -
-          ((search?.enabled ?? false)
-              ? CatchToolbarMetrics.targetExtent + CatchToolbarMetrics.gap
-              : 0),
-    );
-    if (selectorReflow) {
-      final searchHeight = (search?.enabled ?? false)
-          ? CatchSearchField.heightFor(
-              context,
-              visualExtent: CatchToolbarMetrics.visualExtent,
-            )
-          : target;
-      final controlsHeight = math.max(
-        leadingSize.height,
-        math.max(searchHeight, _actionsHeight(context, controlsWidth)),
-      );
-      return math.max(
-        _workspace(context) ? 0 : CatchLayout.topBarHeight,
-        (textHeight +
-                CatchToolbarMetrics.gap +
-                controlsHeight +
-                padding.vertical)
-            .ceilToDouble(),
-      );
-    }
-    var rowHeight = math.max(hasLeading ? leadingSize.height : 0, textHeight);
-    if (!largeText && (search?.enabled ?? false)) {
-      rowHeight = math.max(
-        rowHeight,
-        CatchSearchField.heightFor(
-          context,
-          visualExtent: CatchToolbarMetrics.visualExtent,
-        ),
-      );
-    }
-    if (!largeText && actions.isNotEmpty) {
-      rowHeight = math.max(
-        rowHeight,
-        _actionsHeight(
-          context,
-          contentWidth * CatchLayout.topBarTrailingMaxRatio,
-        ),
-      );
-    }
-    var height = rowHeight + padding.vertical;
-    if (largeText && (actions.isNotEmpty || (search?.enabled ?? false))) {
-      height +=
-          CatchSpacing.s2 +
-          math.max(
-            _actionsHeight(context, controlsWidth),
-            (search?.enabled ?? false)
-                ? CatchSearchField.heightFor(
-                    context,
-                    visualExtent: CatchToolbarMetrics.visualExtent,
-                  )
-                : 0,
-          );
-    }
-    return math.max(
-      _workspace(context) ? 0 : CatchLayout.topBarHeight,
-      height.ceilToDouble(),
-    );
-  }
-
-  @override
-  State<CatchTopBar> createState() => _CatchTopBarState();
+  /// Draws close instead of back (a moment, a sheet-like flow).
+  final bool close;
 }
 
-enum _TopBarKind { route, identity, screen, primaryRail, brand }
+/// The one text action at the end of a top bar: "Reset", "Preview", "Save".
+@immutable
+class CatchTopBarAction {
+  const CatchTopBarAction({required this.label, this.onPressed});
 
-class _CatchTopBarState extends State<CatchTopBar> {
-  final _searchSubtreeKey = GlobalKey();
-  bool _searchOpen = false;
+  final String label;
 
-  bool get _searchEnabled => widget.search?.enabled ?? false;
+  /// Null disables the action.
+  final VoidCallback? onPressed;
+}
 
-  bool get _searchOpenEffective {
-    if (!_searchEnabled) return false;
-    return widget.search?.expanded ?? _searchOpen;
-  }
+/// Where a step top bar is in its flow.
+@immutable
+class CatchTopBarStep {
+  const CatchTopBarStep({
+    required this.index,
+    required this.total,
+    required this.label,
+  }) : assert(total > 0 && index >= 1 && index <= total);
 
-  @override
-  void didUpdateWidget(covariant CatchTopBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!_searchEnabled && _searchOpen) _searchOpen = false;
-  }
+  /// One-based position of the current step.
+  final int index;
+  final int total;
+
+  /// The caller's localized position, such as "Step 2 of 5": the compact
+  /// kicker, the wide breadcrumb and the meter's screen-reader label.
+  final String label;
+}
+
+/// The top of every screen, in the system's six app variants.
+///
+/// On medium and expanded windows every variant but [CatchTopBarVariant.moment]
+/// is one 56 px row: back or close as a small ghost icon button, the kicker as a
+/// muted breadcrumb before a one-line title, then the live badge, the text
+/// action and [actions]. On compact windows each variant has its own shape:
+/// `tabHome` puts the kicker over a section-size title, `step` adds a
+/// segmented meter, `moment` shows close only, and `tool`, `subject` and
+/// `live` are a three-column row of back, titles and actions.
+///
+/// The bar reads [CatchScreenScope]: it shows its hairline only once the body
+/// has scrolled, and a `subject` bar stays transparent over its hero (titles
+/// hidden) until then. A top bar never holds search or a footer; those belong
+/// to the body.
+class CatchTopBar extends StatelessWidget {
+  const CatchTopBar({
+    super.key,
+    required this.variant,
+    this.title,
+    this.kicker,
+    this.back,
+    this.action,
+    this.actions = const <Widget>[],
+    this.step,
+    this.live,
+  });
+
+  final CatchTopBarVariant variant;
+  final String? title;
+
+  /// Above the title on compact bars (below it on `live`); a breadcrumb before
+  /// it on wide bars.
+  final String? kicker;
+  final CatchTopBarBack? back;
+  final CatchTopBarAction? action;
+
+  /// Icon buttons or a button after the text action.
+  final List<Widget> actions;
+
+  /// `step` only: the position, the meter and the breadcrumb.
+  final CatchTopBarStep? step;
+
+  /// The live badge, such as "Live · 9:04 PM".
+  final String? live;
 
   @override
   Widget build(BuildContext context) {
-    final bar = LayoutBuilder(
-      builder: (context, constraints) =>
-          _buildBar(context, constraints.maxWidth),
-    );
-    if (widget.tone != CatchTopBarTone.overlay) return bar;
-    return Theme(
-      data: Theme.of(context).copyWith(
-        extensions: [
-          ...Theme.of(
-            context,
-          ).extensions.values.where((extension) => extension is! CatchTokens),
-          CatchTokens.dark,
-        ],
-      ),
-      child: bar,
-    );
-  }
+    final tokens = CatchTokens.of(context);
+    final sizeClass = CatchRootScope.sizeClassOf(context);
+    final scrolled = CatchScreenScope.scrolledOf(context);
+    final safeTop = MediaQuery.paddingOf(context).top;
+    final gutter = switch (sizeClass) {
+      CatchWindowSize.compact => GeneratedCatchLayoutTokens.gutterCompact,
+      CatchWindowSize.medium => GeneratedCatchLayoutTokens.gutterMedium,
+      CatchWindowSize.expanded => GeneratedCatchLayoutTokens.gutterExpanded,
+    };
+    final wide =
+        sizeClass != CatchWindowSize.compact &&
+        variant != CatchTopBarVariant.moment;
+    final subject = variant == CatchTopBarVariant.subject;
+    final transparent =
+        variant == CatchTopBarVariant.moment || (subject && !scrolled);
+    final titlesHidden = subject && !scrolled;
+    final localizations = MaterialLocalizations.of(context);
+    final back = this.back;
+    final backLabel =
+        back?.label ??
+        (back?.close ?? false
+            ? localizations.closeButtonTooltip
+            : localizations.backButtonTooltip);
+    final onBack = back?.onPressed ?? () => Navigator.of(context).maybePop();
+    final backIcon = back?.close ?? false ? CatchIcons.close : CatchIcons.back;
+    final action = this.action;
+    final step = this.step;
+    final crumb = variant == CatchTopBarVariant.step && step != null
+        ? step.label
+        : kicker;
+    final trailing = <Widget>[
+      if (live case final live?) CatchBadge.live(label: live),
+      if (action != null)
+        CatchButton(
+          label: action.label,
+          onPressed: action.onPressed,
+          variant: CatchButtonVariant.quiet,
+          size: wide ? CatchButtonSize.sm : CatchButtonSize.md,
+        ),
+      ...actions,
+    ];
+    final trailingRow = trailing.isEmpty
+        ? null
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: CatchSpacing.s2,
+            children: trailing,
+          );
+    final titleText = title == null
+        ? null
+        : Semantics(
+            header: true,
+            child: CatchText(
+              title!,
+              variant: CatchTextVariant.titleBar,
+              maxLines: 1,
+            ),
+          );
+    final kickerText = kicker == null
+        ? null
+        : CatchText(
+            kicker!,
+            variant: CatchTextVariant.labelKicker,
+            tone: CatchTextTone.secondary,
+            maxLines: 1,
+          );
 
-  Widget _buildBar(BuildContext context, double width) {
-    final t = CatchTokens.of(context);
-    final showDivider = widget.emphasis == CatchTopBarEmphasis.divided;
-    final background =
-        widget.backgroundColor ??
-        switch (widget.tone) {
-          CatchTopBarTone.surface => t.surface,
-          CatchTopBarTone.overlay => Colors.transparent,
-          CatchTopBarTone.page => t.bg,
-        };
-    final workspace = widget._workspace(context);
-    final crossAxisAlignment = workspace
-        ? CrossAxisAlignment.start
-        : CrossAxisAlignment.center;
-    Widget? leading = widget.leading;
-    if (leading == null) {
-      final type = widget.navigation.mode;
-      final wantsLeading = widget._navigationVisible(context);
-      if (wantsLeading) {
-        final isClose = type == CatchTopBarNavigationMode.close;
-        final localizations = MaterialLocalizations.of(context);
-        leading = CatchIconAction.toolbar(
-          tooltip: isClose
-              ? localizations.closeButtonTooltip
-              : localizations.backButtonTooltip,
-          icon: isClose ? CatchIcons.close : CatchIcons.back,
-          onPressed:
-              widget.navigation.onPressed ??
-              CatchWorkspaceBackScope.maybeOf(context) ??
-              () => Navigator.of(context).maybePop(),
-        );
-      }
-    }
-    final largeText = CatchTopBar._lines(context) > 1;
-    final selectorReflow =
-        largeText && widget._root && widget.leading is CatchToolbarLeading;
-    final effectiveActions = largeText ? const <Widget>[] : widget.actions;
-    final identityName = widget.identityName;
-    final body = (identityName != null && identityName.isNotEmpty
-        ? Semantics(
-            button: widget.onIdentityTap != null,
-            label: widget.onIdentityTap == null
-                ? null
-                : widget.identitySemanticLabel,
-            child: InkWell(
-              onTap: widget.onIdentityTap,
-              borderRadius: BorderRadius.circular(CatchRadius.lg),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: CatchPlatformTokens.minimumInteractiveExtent,
-                  minWidth: CatchPlatformTokens.minimumInteractiveExtent,
-                ),
-                child: Padding(
-                  padding: CatchInsets.controlVerticalTight,
-                  child: Row(
-                    crossAxisAlignment: workspace
-                        ? CrossAxisAlignment.baseline
-                        : CrossAxisAlignment.center,
-                    textBaseline: workspace ? TextBaseline.alphabetic : null,
-                    children: [
-                      CatchAvatar(
-                        size: 36,
-                        name: identityName,
-                        imageUrl: widget.identityPhotoUrl,
-                      ),
-                      gapW10,
-                      Expanded(
-                        child: Text(
-                          identityName,
-                          maxLines: CatchTopBar._lines(context),
-                          overflow: TextOverflow.ellipsis,
-                          style: widget._titleStyle(context, color: t.ink),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+    final Widget content;
+    final EdgeInsets padding;
+    if (wide) {
+      padding = EdgeInsets.fromLTRB(gutter, safeTop, gutter, 0);
+      content = ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: CatchLayout.topBarHeight),
+        child: Row(
+          spacing: CatchSpacing.s3,
+          children: [
+            if (back != null)
+              CatchIconAction.icon(
+                icon: backIcon,
+                tooltip: backLabel,
+                onPressed: onBack,
+                variant: CatchIconActionVariant.plain,
+                size: GeneratedCatchSizeTokens.controlSm,
               ),
-            ),
-          )
-        : widget.title == null || widget.title!.isEmpty
-        ? const SizedBox.shrink()
-        : widget._kind == _TopBarKind.brand
-        ? Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: widget.title!.split(' ').first),
-                TextSpan(
-                  text: widget.title!.substring(
-                    widget.title!.split(' ').first.length,
-                  ),
-                  style: TextStyle(color: t.ink2),
-                ),
-              ],
-            ),
-            maxLines: CatchTopBar._lines(context),
-            overflow: TextOverflow.ellipsis,
-            style: widget._titleStyle(context, color: t.ink),
-          )
-        : Text(
-            widget.title!,
-            maxLines: CatchTopBar._lines(context),
-            overflow: TextOverflow.ellipsis,
-            style: widget._titleStyle(context, color: t.ink),
-          ));
-
-    final titleBlock = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (workspace)
-          Baseline(
-            baseline: widget._workspaceTitleMetrics(context).baseline,
-            baselineType: TextBaseline.alphabetic,
-            child: body,
-          )
-        else
-          body,
-        if (widget.subtitle?.isNotEmpty ?? false) ...[
-          const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-          CatchLegacyText(
-            widget.subtitle!,
-            maxLines: CatchTopBar._lines(context),
-
-            variant: CatchLegacyTextVariant.bodyS,
-            color: t.ink2,
-          ),
-        ],
-      ],
-    );
-
-    final trailing = effectiveActions.isNotEmpty
-        ? CatchTopBarActionRow(actions: effectiveActions)
-        : null;
-    final title = largeText && _searchEnabled
-        ? ExcludeSemantics(
-            excluding: _searchOpenEffective,
-            child: IgnorePointer(
-              ignoring: _searchOpenEffective,
-              child: Opacity(
-                opacity: _searchOpenEffective ? 0 : 1,
-                child: titleBlock,
-              ),
-            ),
-          )
-        : titleBlock;
-    final height = widget._contentHeightFor(context, width);
-    final content = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: workspace ? null : height,
-          padding: widget._paddingFor(context),
-          // The scroll divider paints inside the frame without reducing its title lane.
-          foregroundDecoration: BoxDecoration(
-            border: showDivider && widget.footer == null
-                ? Border(bottom: BorderSide(color: t.line))
-                : const Border(),
-          ),
-          child: LayoutBuilder(
-            builder: (context, frameConstraints) => selectorReflow
-                ? Column(
-                    mainAxisSize: workspace
-                        ? MainAxisSize.min
-                        : MainAxisSize.max,
-                    mainAxisAlignment: workspace
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      title,
-                      const SizedBox(height: CatchToolbarMetrics.gap),
-                      _selectorControls(leading!, frameConstraints.maxWidth),
-                    ],
-                  )
-                : Column(
-                    mainAxisSize: workspace
-                        ? MainAxisSize.min
-                        : MainAxisSize.max,
-                    mainAxisAlignment: workspace
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        crossAxisAlignment: crossAxisAlignment,
-                        children: [
-                          if (leading != null) ...[
-                            CatchToolbarScope(child: leading),
-                            gapW12,
-                          ],
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, laneConstraints) {
-                                final search = _searchEnabled && !largeText
-                                    ? widget.search
-                                    : null;
-                                final searchWidget = search == null
-                                    ? null
-                                    : _searchField(
-                                        search,
-                                        laneConstraints.maxWidth,
-                                      );
-                                final maxTrailingWidth =
-                                    frameConstraints.maxWidth *
-                                    CatchLayout.topBarTrailingMaxRatio;
-                                final minimumTrailingWidth =
-                                    trailing is CatchTopBarActionRow
-                                    ? trailing.minimumWidth
-                                    : CatchPlatformTokens
-                                          .minimumInteractiveExtent;
-                                final trailingEdge = trailing == null
-                                    ? const SizedBox.shrink()
-                                    : ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxWidth:
-                                              maxTrailingWidth <
-                                                  minimumTrailingWidth
-                                              ? minimumTrailingWidth
-                                              : maxTrailingWidth,
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Flexible(
-                                              child: CatchToolbarScope(
-                                                child: trailing,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                if (searchWidget == null) {
-                                  return Row(
-                                    crossAxisAlignment: crossAxisAlignment,
-                                    children: [
-                                      Expanded(child: title),
-                                      trailingEdge,
-                                    ],
-                                  );
-                                }
-                                return Stack(
-                                  alignment: Alignment.centerRight,
-                                  children: [
-                                    ExcludeSemantics(
-                                      excluding: _searchOpenEffective,
-                                      child: IgnorePointer(
-                                        ignoring: _searchOpenEffective,
-                                        child: AnimatedOpacity(
-                                          opacity: _searchOpenEffective ? 0 : 1,
-                                          duration: CatchMotion.base,
-                                          curve: CatchMotion.standardCurve,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                crossAxisAlignment,
-                                            children: [
-                                              Expanded(child: title),
-                                              trailingEdge,
-                                              if (trailing != null)
-                                                const SizedBox(
-                                                  width:
-                                                      CatchToolbarMetrics.gap,
-                                                ),
-                                              SizedBox(
-                                                width: CatchToolbarMetrics
-                                                    .targetExtent,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    searchWidget,
-                                  ],
-                                );
-                              },
+            Expanded(
+              child: AnimatedOpacity(
+                opacity: titlesHidden ? 0 : 1,
+                duration: CatchMotion.quick,
+                child: ExcludeSemantics(
+                  excluding: titlesHidden,
+                  child: LayoutBuilder(
+                    // The breadcrumb gives way before the title does.
+                    builder: (context, constraints) => Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      spacing: CatchSpacing.s2,
+                      children: [
+                        if (crumb != null) ...[
+                          Flexible(
+                            child: CatchText(
+                              crumb,
+                              tone: CatchTextTone.secondary,
+                              maxLines: 1,
                             ),
                           ),
+                          const ExcludeSemantics(
+                            child: CatchText('/', tone: CatchTextTone.tertiary),
+                          ),
                         ],
+                        if (titleText != null)
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: crumb == null
+                                  ? constraints.maxWidth
+                                  : constraints.maxWidth *
+                                        CatchLayout.topBarTrailingMaxRatio,
+                            ),
+                            child: titleText,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ?trailingRow,
+          ],
+        ),
+      );
+    } else {
+      padding = EdgeInsets.fromLTRB(
+        gutter,
+        safeTop +
+            (variant == CatchTopBarVariant.tabHome
+                ? CatchSpacing.s3
+                : CatchSpacing.s2),
+        gutter,
+        CatchSpacing.s2,
+      );
+      const rowHeight = BoxConstraints(
+        minHeight: GeneratedCatchSizeTokens.controlMd,
+      );
+      final outlinedBack = back == null
+          ? null
+          : CatchIconAction.icon(
+              icon: backIcon,
+              tooltip: backLabel,
+              onPressed: onBack,
+              variant: subject
+                  ? CatchIconActionVariant.float
+                  : CatchIconActionVariant.bordered,
+              size: GeneratedCatchSizeTokens.controlMd,
+            );
+      content = switch (variant) {
+        CatchTopBarVariant.tabHome => ConstrainedBox(
+          constraints: rowHeight,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            spacing: CatchSpacing.s3,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: CatchSpacing.s1,
+                  children: [
+                    if (kicker != null)
+                      CatchText(
+                        kicker!,
+                        variant: CatchTextVariant.labelKicker,
+                        tone: CatchTextTone.secondary,
                       ),
-                      if (largeText &&
-                          (widget.actions.isNotEmpty || _searchEnabled)) ...[
-                        gapH8,
-                        if (_searchEnabled)
-                          _selectorControls(null, frameConstraints.maxWidth)
-                        else
-                          Align(
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: CatchToolbarScope(
-                              child: CatchTopBarActionRow(
-                                actions: widget.actions,
+                    if (title != null)
+                      Semantics(
+                        header: true,
+                        child: CatchText(
+                          title!,
+                          variant: CatchTextVariant.displaySection,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              ?trailingRow,
+            ],
+          ),
+        ),
+        CatchTopBarVariant.step => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          spacing: CatchSpacing.micro14,
+          children: [
+            ConstrainedBox(
+              constraints: rowHeight,
+              child: Row(
+                spacing: CatchSpacing.s3,
+                children: [
+                  ?outlinedBack,
+                  if (crumb != null)
+                    Expanded(
+                      child: CatchText(
+                        crumb,
+                        variant: CatchTextVariant.labelKicker,
+                        tone: CatchTextTone.secondary,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ?trailingRow,
+                ],
+              ),
+            ),
+            if (step != null)
+              Semantics(
+                label: step.label,
+                child: ExcludeSemantics(
+                  child: Row(
+                    spacing: CatchSpacing.s1,
+                    children: [
+                      for (var index = 1; index <= step.total; index++)
+                        Expanded(
+                          child: SizedBox(
+                            height: GeneratedCatchStrokeTokens.meterSm,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: index <= step.index
+                                    ? tokens.primary
+                                    : tokens.track,
+                                borderRadius: BorderRadius.circular(
+                                  CatchRadius.pill,
+                                ),
                               ),
                             ),
                           ),
-                      ],
+                        ),
                     ],
                   ),
+                ),
+              ),
+            if (title != null)
+              Semantics(
+                header: true,
+                child: CatchText(
+                  title!,
+                  variant: CatchTextVariant.displaySection,
+                ),
+              ),
+          ],
+        ),
+        CatchTopBarVariant.moment => ConstrainedBox(
+          constraints: rowHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (back != null)
+                CatchIconAction.icon(
+                  icon: CatchIcons.close,
+                  tooltip: back.label ?? localizations.closeButtonTooltip,
+                  onPressed: onBack,
+                  variant: CatchIconActionVariant.plain,
+                  size: GeneratedCatchSizeTokens.controlMd,
+                ),
+            ],
           ),
         ),
-        if (widget.footer != null)
-          DecoratedBox(
-            decoration: BoxDecoration(
-              border: showDivider
-                  ? Border(bottom: BorderSide(color: t.line))
-                  : const Border(),
-            ),
-            child: widget.footer!,
-          ),
-      ],
-    );
-    return Material(
-      color: background,
-      surfaceTintColor: Colors.transparent,
-      child: widget._safeArea
-          ? SafeArea(bottom: false, child: content)
-          : content,
-    );
-  }
-
-  Widget _searchField(
-    CatchTopBarSearch search,
-    double maxWidth,
-  ) => KeyedSubtree(
-    // Reflow moves this single editor between title and controls rows. Keep
-    // its focus and selection; the inner public key still owns query identity.
-    key: _searchSubtreeKey,
-    child: CatchSearchField.expanding(
-      copy: search.copy,
-      key: search.fieldKey,
-      status: _searchOpenEffective
-          ? CatchSearchFieldStatus.expanded
-          : CatchSearchFieldStatus.collapsed,
-      maxWidth: maxWidth,
-      value: search.value,
-      contract: search.contract,
-      contractExemption: search.contractExemption,
-      onChanged: search.onChanged,
-      placeholder: search.placeholder,
-      autofocus: search.autofocus,
-      textInputAction: search.textInputAction,
-      onSubmitted: search.onSubmitted,
-      onFocusChanged: search.onFocusChanged,
-      semanticLabel: search.semanticLabel,
-      onOpenSearch: () => _setSearchOpen(true),
-      onCloseSearch: () => _setSearchOpen(false),
-      tooltip: search.tooltip,
-    ),
-  );
-
-  Widget _selectorControls(Widget? leading, double width) {
-    final search = _searchEnabled ? widget.search : null;
-    return Stack(
-      alignment: Alignment.centerRight,
-      children: [
-        Visibility(
-          visible: !_searchOpenEffective,
-          maintainSize: true,
-          maintainState: true,
-          maintainAnimation: true,
-          child: Padding(
-            padding: EdgeInsets.only(
-              right: search == null
-                  ? 0
-                  : CatchToolbarMetrics.targetExtent + CatchToolbarMetrics.gap,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (leading != null)
-                  Expanded(
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: CatchToolbarScope.selectorRow(child: leading),
+        CatchTopBarVariant.tool ||
+        CatchTopBarVariant.subject ||
+        CatchTopBarVariant.live => ConstrainedBox(
+          constraints: rowHeight,
+          child: Row(
+            spacing: CatchSpacing.s3,
+            children: [
+              outlinedBack ??
+                  SizedBox(
+                    width: CatchIconAction.targetExtentFor(
+                      GeneratedCatchSizeTokens.controlMd,
                     ),
                   ),
-                if (widget.actions.isNotEmpty) ...[
-                  const SizedBox(width: CatchToolbarMetrics.gap),
-                  Flexible(
-                    child: CatchToolbarScope(
-                      child: CatchTopBarActionRow(actions: widget.actions),
+              Expanded(
+                child: AnimatedOpacity(
+                  opacity: titlesHidden ? 0 : 1,
+                  duration: CatchMotion.quick,
+                  child: ExcludeSemantics(
+                    excluding: titlesHidden,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: CatchSpacing.micro2,
+                      children: [
+                        if (variant != CatchTopBarVariant.live) ?kickerText,
+                        ?titleText,
+                        if (variant == CatchTopBarVariant.live) ?kickerText,
+                      ],
                     ),
                   ),
-                ],
-              ],
-            ),
+                ),
+              ),
+              ?trailingRow,
+            ],
           ),
         ),
-        if (search != null) _searchField(search, width),
-      ],
-    );
-  }
-
-  void _setSearchOpen(bool value) {
-    widget.search?.onExpandedChanged?.call(value);
-    if (widget.search?.expanded == null) {
-      setState(() => _searchOpen = value);
+      };
     }
+
+    return DecoratedBox(
+      decoration: BoxDecoration(color: transparent ? null : tokens.ground),
+      position: DecorationPosition.background,
+      child: DecoratedBox(
+        // The hairline paints inside the bar, so it never moves the body.
+        decoration: BoxDecoration(
+          border: scrolled
+              ? Border(bottom: BorderSide(color: tokens.line))
+              : const Border(),
+        ),
+        position: DecorationPosition.foreground,
+        child: Padding(padding: padding, child: content),
+      ),
+    );
   }
 }

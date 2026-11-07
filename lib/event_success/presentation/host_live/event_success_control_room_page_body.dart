@@ -194,7 +194,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     controlRoomBody,
-                    CatchDock.primary(
+                    CatchLegacyDock.primary(
                       label: primaryLabel,
                       onPressed: primaryAction,
                       isLoading: isPrimaryLoading,
@@ -215,7 +215,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
                   Expanded(
                     child: SingleChildScrollView(child: controlRoomBody),
                   ),
-                  CatchDock.primary(
+                  CatchLegacyDock.primary(
                     label: primaryLabel,
                     onPressed: primaryAction,
                     isLoading: isPrimaryLoading,
@@ -253,7 +253,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
                       showVenue: true,
                     ),
                   ),
-                  CatchDock.primary(
+                  CatchLegacyDock.primary(
                     label: primaryLabel,
                     onPressed: primaryAction,
                     isLoading: isPrimaryLoading,

@@ -303,7 +303,9 @@ void main() {
     );
     await tester.pump();
 
-    final pendingTopBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    final pendingTopBar = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(pendingTopBar.navigation.mode, CatchTopBarNavigationMode.back);
     expect((pendingTopBar.leading! as CatchIconAction).onPressed, isNull);
     expect(
@@ -535,7 +537,7 @@ Material _topBarMaterial(WidgetTester tester) {
   return tester.widget<Material>(
     find
         .descendant(
-          of: find.byType(CatchTopBar),
+          of: find.byType(CatchLegacyTopBar),
           matching: find.byType(Material),
         )
         .first,

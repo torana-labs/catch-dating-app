@@ -39,7 +39,7 @@ test("split geometry specimens retain exact type, path, and generated registrati
     ["menus", "menuGeometryMatrix", "CatchMenu"],
     ["fields", "fieldAndSectionGeometryMatrix", "CatchSection"],
     ["navigation", "bottomNavigationGeometryMatrix", "CatchTabBar"],
-    ["top_bars", "topBarGeometryMatrix", "CatchTopBar"],
+    ["top_bars", "topBarGeometryMatrix", "CatchLegacyTopBar"],
   ];
   const useCaseByKey = new Map(specimens.map(([file, builder, type]) => [
     `widgetbook/lib/geometry/specimens/${file}.dart:${builder}`,

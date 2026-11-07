@@ -338,7 +338,7 @@ scan_raw_text_styles() {
     '(^|[^A-Za-z])TextStyle\(' \
     lib/contexts/*/parts packages/platform/lib/media lib/pages/startup lib/*/presentation apps/*/lib \
     --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' \
-    --glob '!packages/catch_ui/lib/src/components/catch_top_bar.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_legacy_top_bar.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then

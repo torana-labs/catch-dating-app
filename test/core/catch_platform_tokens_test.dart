@@ -76,7 +76,7 @@ void main() {
                   width: 360,
                   child: CatchScaffold.workspace(
                     title: identity
-                        ? const CatchTopBar.identity(
+                        ? const CatchLegacyTopBar.identity(
                             identityName: 'Ananya Rao',
                             identitySemanticLabel: 'Ananya Rao',
                             emphasis: CatchTopBarEmphasis.divided,
@@ -84,7 +84,7 @@ void main() {
                               mode: CatchTopBarNavigationMode.none,
                             ),
                           )
-                        : const CatchTopBar.route(
+                        : const CatchLegacyTopBar.route(
                             title: 'Ananya Rao',
                             emphasis: CatchTopBarEmphasis.divided,
                             navigation: CatchTopBarNavigation(
@@ -100,7 +100,7 @@ void main() {
             ),
           );
           expect(tester.takeException(), isNull);
-          final header = tester.getRect(find.byType(CatchTopBar));
+          final header = tester.getRect(find.byType(CatchLegacyTopBar));
           final title = tester.getRect(find.text('Ananya Rao'));
           expect(header.width, 360);
           expect(header.height, greaterThan(CatchLayout.topBarHeight));
@@ -132,7 +132,7 @@ void main() {
             child: child!,
           ),
           home: const CatchScaffold.workspace(
-            title: CatchTopBar.route(
+            title: CatchLegacyTopBar.route(
               title: 'Customers',
               footer: CatchPageTabBar<int>(
                 selected: 0,

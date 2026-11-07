@@ -59,7 +59,9 @@ symbol outside `catch_ui`.
 | PaneHeader | `catch.workspace_header` | T2 | `CatchWorkspaceHeader` | `CatchWorkspaceHeader` | align |
 | Navigation | `catch.tab_bar` | T2 | `CatchTabBar` | `CatchTabBar` | align |
 | Dock | `catch.bottom_action` | T2 | `CatchDock` | `CatchDock` | align |
-| AppShell | `catch.viewport` | T2 | `CatchViewport` | `CatchViewport` | align; absorbs: `CatchScaffold`, `CatchRootScreenScaffold`, `CatchNavigationViewport`, `CatchRouteScaffold` |
+| AppShell | `catch.viewport` | T2 | `CatchViewport` | `CatchViewport` | align; absorbs: `CatchNavigationViewport` |
+| AppShell | `catch.app_shell` | T2 | `CatchAppShell` | — | port react |
+| AppShell | `catch.screen` | T2 | `CatchScreen` | — | port react; absorbs: `CatchScaffold`, `CatchRootScreenScaffold`, `CatchRouteScaffold` |
 | ScreenBody | `catch.screen_body` | T1 | `CatchPageBody` | `CatchPageBody` | align |
 | PaneLayout | `catch.pane_layout` | T2 | `CatchPaneLayout` | `CatchPaneLayout` | align; absorbs: `CatchWorkspacePaneScaffold` |
 | EventCard | `catch.event_card` | T2 | `EventCard` (app) | — | port react; absorbs: `CatchEventPoster`, `CatchPreviewCard`, `CatchLinkTile`, `CatchPlanCard` |

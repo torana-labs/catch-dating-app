@@ -44,7 +44,7 @@ Widget formProfileReviewBodyPreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: CatchRouteScaffold(
         topBarBuilder: (_, _) =>
-            const CatchTopBar.route(title: 'Review profile'),
+            const CatchLegacyTopBar.route(title: 'Review profile'),
         body: CatchRouteBody.standardConstrained(
           child: FormProfileReviewPageBody(
             review: _review(photo: false),
@@ -80,7 +80,7 @@ Widget formProfilePhotoFieldPreview(BuildContext context) =>
         ],
         child: CatchRouteScaffold(
           topBarBuilder: (_, _) =>
-              const CatchTopBar.route(title: 'Review photo'),
+              const CatchLegacyTopBar.route(title: 'Review photo'),
           body: CatchRouteBody.standardConstrained(
             child: FormProfilePhotoField(
               responseId: 'response',

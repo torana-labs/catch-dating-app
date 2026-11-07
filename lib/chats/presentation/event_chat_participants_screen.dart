@@ -141,7 +141,7 @@ class _EventChatParticipantsScreenState
         _resumed && ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog);
     _syncActive(active);
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.eventChatParticipantsTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

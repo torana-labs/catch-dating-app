@@ -11,17 +11,17 @@ class %%Name%%Screen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(%%camel%%ViewModelProvider);
-    return CatchViewport(
-      compactBuilder: (context) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) =>
-            CatchTopBar.route(title: title),
-        body: CatchRouteBody.fullBleed(
-          child: CatchAsyncBoundary<%%Name%%ViewModel>(
-            value: viewModel,
-            onRetry: () => ref.invalidate(%%camel%%ViewModelProvider),
-            builder: (context, state) => %%Name%%Body(title: title),
-          ),
-        ),
+    return CatchScreen(
+      topBar: CatchTopBar(
+        variant: CatchTopBarVariant.tool,
+        title: title,
+        back: const CatchTopBarBack(),
+      ),
+      bodyScrolls: false,
+      body: CatchAsyncBoundary<%%Name%%ViewModel>(
+        value: viewModel,
+        onRetry: () => ref.invalidate(%%camel%%ViewModelProvider),
+        builder: (context, state) => %%Name%%Body(title: title),
       ),
     );
   }

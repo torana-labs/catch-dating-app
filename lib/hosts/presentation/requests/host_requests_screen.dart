@@ -382,7 +382,7 @@ class HostRequestBody extends StatelessWidget {
             ],
           ),
         ),
-        CatchDock(
+        CatchLegacyDock(
           includeSafeArea: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

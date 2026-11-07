@@ -150,7 +150,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     expect(
       find.ancestor(
         of: find.byKey(const ValueKey('host-customer-message')),
-        matching: find.byType(CatchTopBar),
+        matching: find.byType(CatchLegacyTopBar),
       ),
       findsOneWidget,
     );

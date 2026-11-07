@@ -537,7 +537,7 @@ class _HostOfferPaymentSetupPageBodyState
               ),
             ),
           ),
-          CatchDock.primaryContent(
+          CatchLegacyDock.primaryContent(
             label: l10n.hostOfferPaymentSave,
             buttonKey: const ValueKey('offer-payment-setup-save'),
             catchLine: blockers.isEmpty

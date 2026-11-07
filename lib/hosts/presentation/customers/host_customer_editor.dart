@@ -36,7 +36,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
     canPop: !_saving,
     child: CatchRouteScaffold(
       resizeToAvoidBottomInset: true,
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostCustomersAddTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
@@ -45,7 +45,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      footer: CatchDock.primary(
+      footer: CatchLegacyDock.primary(
         label: context.l10n.hostCustomersAdd,
         buttonKey: const ValueKey('host-add-customer-submit'),
         isLoading: _saving,

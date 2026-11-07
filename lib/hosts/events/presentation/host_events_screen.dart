@@ -53,7 +53,7 @@ class HostEventsScreen extends ConsumerWidget {
 
     return switch (routeState.status) {
       HostEventsRouteStatus.authRequired => CatchRootScreenScaffold.standard(
-        title: CatchTopBar.primaryRail(
+        title: CatchLegacyTopBar.primaryRail(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         children: [
@@ -68,13 +68,13 @@ class HostEventsScreen extends ConsumerWidget {
         ],
       ),
       HostEventsRouteStatus.loading => CatchRootScreenScaffold.standard(
-        title: CatchTopBar.primaryRail(
+        title: CatchLegacyTopBar.primaryRail(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         children: const [CatchStateViewport.sliverLoading()],
       ),
       HostEventsRouteStatus.error => CatchRootScreenScaffold.standard(
-        title: CatchTopBar.primaryRail(
+        title: CatchLegacyTopBar.primaryRail(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         children: [
@@ -252,7 +252,7 @@ class _HostEventsRouteScaffoldState
       );
     }
     return CatchRootScreenScaffold.standard(
-      title: CatchTopBar.primaryRail(
+      title: CatchLegacyTopBar.primaryRail(
         title: context.l10n.hostsHostEventsListTextEvents,
       ),
       children: [

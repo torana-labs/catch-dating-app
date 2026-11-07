@@ -37,7 +37,7 @@ void main() {
                 CatchWorkspacePane(
                   id: 'index',
                   child: CatchWorkspacePaneScaffold(
-                    title: CatchTopBar.primaryRail(
+                    title: CatchLegacyTopBar.primaryRail(
                       title: 'Audience',
                       subtitle: subtitle,
                     ),
@@ -53,7 +53,7 @@ void main() {
                 CatchWorkspacePane(
                   id: 'detail',
                   child: CatchWorkspacePaneScaffold(
-                    title: const CatchTopBar.route(title: 'Person'),
+                    title: const CatchLegacyTopBar.route(title: 'Person'),
                     actions: CatchPageTabBar<int>(
                       groupKey: const ValueKey('detail-tabs'),
                       selected: 0,
@@ -128,13 +128,13 @@ void main() {
                   Expanded(
                     child: CatchWorkspacePaneScaffold(
                       title: id == 'first'
-                          ? CatchTopBar.screen(
+                          ? CatchLegacyTopBar.screen(
                               title: id,
                               actions: [
                                 SizedBox(width: 48, height: controlHeight),
                               ],
                             )
-                          : CatchTopBar.screen(title: id),
+                          : CatchLegacyTopBar.screen(title: id),
                       body: Text('$id body', key: ValueKey(id)),
                     ),
                   ),
@@ -201,7 +201,7 @@ void main() {
         MaterialApp(
           theme: AppTheme.light,
           home: const CatchWorkspacePaneScaffold(
-            title: CatchTopBar.brand(title: 'Catch Host'),
+            title: CatchLegacyTopBar.brand(title: 'Catch Host'),
             body: SizedBox.shrink(),
           ),
         ),
@@ -223,7 +223,7 @@ void main() {
       expect(spans.last.style!.color, CatchTokens.light.ink2);
       final materials = tester.widgetList<Material>(
         find.descendant(
-          of: find.byType(CatchTopBar),
+          of: find.byType(CatchLegacyTopBar),
           matching: find.byType(Material),
         ),
       );

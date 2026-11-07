@@ -107,8 +107,8 @@ test("composition renderer recognition stays bound to real owner methods", () =>
     {file: `${ui}catch_banner.dart`, library: `${ui}catch_banner.dart`,
       owner: "CatchBanner", name: "_buildBodyFeedback", returnType: "Widget"},
     ...["_buildBar", "_searchField", "_selectorControls"].map((name) => ({
-      file: `${ui}catch_top_bar.dart`, library: `${ui}catch_top_bar.dart`,
-      owner: "_CatchTopBarState", name, returnType: "Widget",
+      file: `${ui}catch_legacy_top_bar.dart`, library: `${ui}catch_legacy_top_bar.dart`,
+      owner: "_CatchLegacyTopBarState", name, returnType: "Widget",
     })),
   ];
   const routeDeclarations = collectClassDeclarations(fs.readFileSync(path.join(

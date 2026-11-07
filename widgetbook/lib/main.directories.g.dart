@@ -423,6 +423,8 @@ import 'package:widgetbook_workspace/primitives/contracts/activity_media.dart'
     as _widgetbook_workspace_primitives_contracts_activity_media;
 import 'package:widgetbook_workspace/primitives/contracts/analytics.dart'
     as _widgetbook_workspace_primitives_contracts_analytics;
+import 'package:widgetbook_workspace/primitives/contracts/app_shell.dart'
+    as _widgetbook_workspace_primitives_contracts_app_shell;
 import 'package:widgetbook_workspace/primitives/contracts/avatars.dart'
     as _widgetbook_workspace_primitives_contracts_avatars;
 import 'package:widgetbook_workspace/primitives/contracts/buttons.dart'
@@ -437,6 +439,8 @@ import 'package:widgetbook_workspace/primitives/contracts/code_input.dart'
     as _widgetbook_workspace_primitives_contracts_code_input;
 import 'package:widgetbook_workspace/primitives/contracts/dialogs.dart'
     as _widgetbook_workspace_primitives_contracts_dialogs;
+import 'package:widgetbook_workspace/primitives/contracts/dock.dart'
+    as _widgetbook_workspace_primitives_contracts_dock;
 import 'package:widgetbook_workspace/primitives/contracts/feedback.dart'
     as _widgetbook_workspace_primitives_contracts_feedback;
 import 'package:widgetbook_workspace/primitives/contracts/field.dart'
@@ -475,6 +479,8 @@ import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
     as _widgetbook_workspace_primitives_contracts_roster;
 import 'package:widgetbook_workspace/primitives/contracts/row_composition.dart'
     as _widgetbook_workspace_primitives_contracts_row_composition;
+import 'package:widgetbook_workspace/primitives/contracts/screen.dart'
+    as _widgetbook_workspace_primitives_contracts_screen;
 import 'package:widgetbook_workspace/primitives/contracts/section.dart'
     as _widgetbook_workspace_primitives_contracts_section;
 import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
@@ -499,6 +505,8 @@ import 'package:widgetbook_workspace/primitives/contracts/timeline_list.dart'
     as _widgetbook_workspace_primitives_contracts_timeline_list;
 import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
     as _widgetbook_workspace_primitives_contracts_toolbar;
+import 'package:widgetbook_workspace/primitives/contracts/top_bar.dart'
+    as _widgetbook_workspace_primitives_contracts_top_bar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
 import 'package:widgetbook_workspace/primitives/contracts/welcome_text.dart'
@@ -2012,6 +2020,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchLegacyTopBar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_catalog_chrome
+                    .catchTopBarScreenCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchPageIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2038,16 +2056,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchSliverHeaderCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTopBar',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_catalog_chrome
-                    .catchTopBarScreenCatalogStates,
               ),
             ],
           ),
@@ -2147,7 +2155,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDock',
+            name: 'CatchLegacyDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Embedded primary action states',
@@ -2467,6 +2475,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Viewport',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchAppShell',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_app_shell
+                    .catchAppShellContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchBottomActionOverlay',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2505,6 +2523,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_screen
+                    .catchScreenContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchScreenScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_screen
+                    .catchScreenScopeContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchScrollView',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2512,6 +2550,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_viewport_layout_use_cases
                         .fillViewportStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchShellScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_app_shell
+                    .catchShellScopeContractStates,
               ),
             ],
           ),
@@ -3810,6 +3858,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchLegacyTopBar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_chrome
+                    .catchTopBarContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchMenu',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3890,6 +3948,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchTabBarIdentity',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_tabs
+                    .catchTabBarIdentityContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchTabBarIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3924,8 +3992,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder: _widgetbook_workspace_primitives_contracts_chrome
-                    .catchTopBarContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_top_bar
+                    .catchSystemTopBarContractStates,
               ),
             ],
           ),
@@ -4001,6 +4069,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         children: [
           _widgetbook.WidgetbookComponent(
             name: 'CatchDock',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_dock
+                    .catchSystemDockContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLegacyDock',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -5811,6 +5889,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'CatchLegacyTopBar',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_specimens_top_bars
+                .topBarGeometryMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'CatchMenu',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -5862,16 +5950,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Geometry matrix',
             builder: _widgetbook_workspace_geometry_specimens_navigation
                 .bottomNavigationGeometryMatrix,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
-        name: 'CatchTopBar',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_specimens_top_bars
-                .topBarGeometryMatrix,
           ),
         ],
       ),
@@ -6533,7 +6611,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dashboard home',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTopBar',
+            name: 'CatchLegacyTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header content',
@@ -13723,22 +13801,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Sections',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchLegacyTopBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile title',
+                    builder: _widgetbook_workspace_profiles_catalog_header
+                        .profileTitleStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'CatchSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Field row section states',
                     builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileFieldRowSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchTopBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Profile title',
-                    builder: _widgetbook_workspace_profiles_catalog_header
-                        .profileTitleStates,
                   ),
                 ],
               ),

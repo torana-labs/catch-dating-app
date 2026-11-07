@@ -52,11 +52,13 @@ void main() {
 
     await pumpFeatureUi(tester);
     expect(find.text('Dress rehearsal'), findsWidgets);
-    expect(find.byType(CatchTopBar), findsOneWidget);
-    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    expect(find.byType(CatchLegacyTopBar), findsOneWidget);
+    final topBar = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(topBar.title, 'Dress rehearsal');
     final titleFinder = find.descendant(
-      of: find.byType(CatchTopBar),
+      of: find.byType(CatchLegacyTopBar),
       matching: find.text('Dress rehearsal'),
     );
     final titleContext = tester.element(titleFinder);
@@ -67,7 +69,7 @@ void main() {
         color: CatchTokens.of(titleContext).ink,
       ),
     );
-    expect(find.byType(CatchTopBar), findsOneWidget);
+    expect(find.byType(CatchLegacyTopBar), findsOneWidget);
     expect(
       find.ancestor(
         of: find.byType(CatchPageBody),
@@ -116,11 +118,13 @@ void main() {
 
     expect(find.text('Courtyard practice'), findsWidgets);
     expect(find.text('REHEARSAL'), findsOneWidget);
-    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    final topBar = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(topBar.title, 'Host · Manage');
     expect(topBar.subtitle, 'Courtyard practice');
     final titleFinder = find.descendant(
-      of: find.byType(CatchTopBar),
+      of: find.byType(CatchLegacyTopBar),
       matching: find.text('Host · Manage'),
     );
     final titleContext = tester.element(titleFinder);
@@ -151,7 +155,7 @@ void main() {
             ),
           )
           .dy,
-      tester.getBottomLeft(find.byType(CatchTopBar)).dy,
+      tester.getBottomLeft(find.byType(CatchLegacyTopBar)).dy,
     );
     expect(find.text('Setup'), findsNothing);
     expect(find.text('Report'), findsNothing);

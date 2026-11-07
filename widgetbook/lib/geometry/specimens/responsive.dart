@@ -479,7 +479,7 @@ Widget _responsiveGeometryShell(
       title: 'Catch Hosts',
     ),
     body: CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: 'Event settings',
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.none,

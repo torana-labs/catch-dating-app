@@ -20,7 +20,7 @@ class HostAudienceHeader extends StatelessWidget {
   final CatchTopBarSearch? search;
 
   @override
-  Widget build(BuildContext context) => CatchTopBar.primaryRail(
+  Widget build(BuildContext context) => CatchLegacyTopBar.primaryRail(
     title: context.l10n.hostNavigationAudience,
     actions: [
       ?primaryAction,

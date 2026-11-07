@@ -27,12 +27,12 @@ void main() {
             );
             return Scaffold(
               appBar: root
-                  ? CatchTopBar.screen(
+                  ? CatchLegacyTopBar.screen(
                       key: key,
                       title: 'People',
                       search: search,
                     )
-                  : CatchTopBar.route(
+                  : CatchLegacyTopBar.route(
                       key: key,
                       title: 'People',
                       search: search,
@@ -75,7 +75,7 @@ void main() {
               builder: (context, setState) {
                 update = setState;
                 return CatchScaffold.workspace(
-                  title: CatchTopBar.screen(
+                  title: CatchLegacyTopBar.screen(
                     title: 'People',
                     leading: selector ? const _LeadingSelector() : null,
                     search: CatchTopBarSearch(

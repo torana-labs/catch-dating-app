@@ -51,7 +51,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
 
     return CatchRouteScaffold(
       backgroundColor: CatchTokens.of(context).bg,
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.swipesEventRecapScreenTitleEventRecap,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

@@ -8,18 +8,18 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Header content',
-  type: CatchTopBar,
+  type: CatchLegacyTopBar,
   path: '[P1 product surfaces]/Dashboard home',
 )
 Widget dashboardHeaderContentReview(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'CatchTopBar',
+    title: 'CatchLegacyTopBar',
     contractId: 'dashboard.home.header_content',
     children: [
       WidgetbookPageStateCard(
         label: 'copy only',
         child: const WidgetbookDashboardPrimitiveFrame(
-          child: CatchTopBar.primaryRail(
+          child: CatchLegacyTopBar.primaryRail(
             title: 'Good evening, Subrath',
             actions: [],
           ),
@@ -28,7 +28,7 @@ Widget dashboardHeaderContentReview(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'notification action',
         child: WidgetbookDashboardPrimitiveFrame(
-          child: CatchTopBar.primaryRail(
+          child: CatchLegacyTopBar.primaryRail(
             title: 'Three plans ready',
             actions: [
               CatchIconAction.counted(

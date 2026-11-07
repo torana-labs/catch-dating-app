@@ -24,14 +24,14 @@ void main() {
           GoRoute(
             path: '/',
             builder: (context, state) => CatchRootScreenScaffold.standard(
-              title: const CatchTopBar.primaryRail(title: 'Today'),
+              title: const CatchLegacyTopBar.primaryRail(title: 'Today'),
               children: const [SliverToBoxAdapter(child: Text('Root content'))],
             ),
           ),
           GoRoute(
             path: '/detail',
             builder: (context, state) => CatchRouteScaffold(
-              topBarBuilder: (context, scrolled) => CatchTopBar.route(
+              topBarBuilder: (context, scrolled) => CatchLegacyTopBar.route(
                 title: 'Detail',
                 emphasis: (scrolled)
                     ? CatchTopBarEmphasis.divided
@@ -90,7 +90,7 @@ void main() {
       expect(offline, findsOneWidget);
       expect(
         tester.getTopLeft(offline).dy,
-        tester.getBottomLeft(find.byType(CatchTopBar)).dy,
+        tester.getBottomLeft(find.byType(CatchLegacyTopBar)).dy,
       );
       connectivity.add([ConnectivityResult.wifi]);
       await tester.pump();

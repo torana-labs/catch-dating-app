@@ -8,7 +8,7 @@ class HostLoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: title,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

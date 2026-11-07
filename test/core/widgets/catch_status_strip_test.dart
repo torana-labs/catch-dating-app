@@ -170,7 +170,7 @@ void main() {
         ),
       );
       await tester.pump();
-      final topBar = tester.getRect(find.byType(CatchTopBar));
+      final topBar = tester.getRect(find.byType(CatchLegacyTopBar));
       expect(tester.getTopLeft(find.byKey(_rehearsal)).dy, topBar.bottom);
       expect(
         tester.getTopLeft(find.byKey(_body)).dy,
@@ -185,7 +185,9 @@ void main() {
       expect(tester.getTopLeft(find.byKey(_rehearsal)).dy, topBar.bottom);
       expect(tester.takeException(), isNull);
       expect(
-        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).emphasis,
+        tester
+            .widget<CatchLegacyTopBar>(find.byType(CatchLegacyTopBar))
+            .emphasis,
         CatchTopBarEmphasis.divided,
       );
     },
@@ -373,12 +375,13 @@ Widget _app({
               child: pushed
                   ? CatchRouteScaffold(
                       statuses: local,
-                      topBarBuilder: (context, scrolled) => CatchTopBar.route(
-                        title: 'Dress rehearsal',
-                        emphasis: (scrolled)
-                            ? CatchTopBarEmphasis.divided
-                            : CatchTopBarEmphasis.plain,
-                      ),
+                      topBarBuilder: (context, scrolled) =>
+                          CatchLegacyTopBar.route(
+                            title: 'Dress rehearsal',
+                            emphasis: (scrolled)
+                                ? CatchTopBarEmphasis.divided
+                                : CatchTopBarEmphasis.plain,
+                          ),
                       body: CatchRouteBody.standardSlivers(
                         slivers: slivers,
                         controller: controller,
@@ -421,7 +424,9 @@ Widget _app({
                       ),
                     )
                   : CatchRootScreenScaffold.standard(
-                      title: const CatchTopBar.primaryRail(title: 'Today'),
+                      title: const CatchLegacyTopBar.primaryRail(
+                        title: 'Today',
+                      ),
                       controller: controller,
                       topEdge: headerOwned
                           ? CatchRootScreenScrollViewPlacement.headerOwned

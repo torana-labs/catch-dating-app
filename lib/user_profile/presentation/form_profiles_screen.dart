@@ -16,7 +16,7 @@ class FormProfilesScreen extends StatelessWidget {
   const FormProfilesScreen({super.key});
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.formProfilesTitle,
       navigation: const CatchTopBarNavigation(
         mode: CatchTopBarNavigationMode.back,

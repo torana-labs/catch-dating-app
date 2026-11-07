@@ -7,7 +7,7 @@ import {checkScreenTopBarContracts} from "./check_screen_top_bar_contracts.mjs";
 
 test("accepts registered app-bar, root-screen, geometry, and hero contracts", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'July 2026'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'July 2026'));",
     contract: screenContract(),
     rawSource: "Widget build() => SliverAppBar();",
     rawChromeExceptions: [heroException()],
@@ -24,7 +24,7 @@ test("accepts canonical route-scaffold top-bar builders", () => {
   const root = fixtureRoot({
     source: `
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: 'Review history',
           navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back),
           emphasis: scrolledUnder ? CatchTopBarEmphasis.divided : CatchTopBarEmphasis.plain,
@@ -47,7 +47,7 @@ test("accepts screen-title route-scaffold top-bar builders", () => {
   const root = fixtureRoot({
     source: `
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.screen(
           context: context,
           title: 'Customer name',
           navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back),
@@ -72,10 +72,10 @@ test("flags geometry overrides on compact route bars", () => {
   const root = fixtureRoot({
     source: `
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: 'Sunday Padel',
           subtitle: 'Event recap',
-          height: CatchTopBar.heightFor(
+          height: CatchLegacyTopBar.heightFor(
             context: context,
             hasSubtitle: true,
           ),
@@ -100,7 +100,7 @@ test("flags a compact route that bypasses the shared title widget", () => {
   const root = fixtureRoot({
     source: `
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           body: Text(
             'Dress rehearsal',
             style: CatchTextStyles.titleL(context),
@@ -126,7 +126,7 @@ test("flags a workspace route that bypasses the shared title widget", () => {
   const root = fixtureRoot({
     source: `
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           body: PrivateWorkspaceTitle(),
           emphasis: scrolledUnder ? CatchTopBarEmphasis.divided : CatchTopBarEmphasis.plain,
         ),
@@ -145,7 +145,7 @@ test("flags a workspace route that retains the invalid eyebrow hierarchy", () =>
   const root = fixtureRoot({
     source: `
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: 'Sunday Evening Run',
           eyebrow: 'Event preparation',
           emphasis: scrolledUnder ? CatchTopBarEmphasis.divided : CatchTopBarEmphasis.plain,
@@ -163,7 +163,7 @@ test("flags a workspace route that retains the invalid eyebrow hierarchy", () =>
 
 test("rejects a feature-selected typography variant", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.route(
+    source: `Scaffold(appBar: CatchLegacyTopBar.route(
       title: profile.name,
       variant: CatchTopBarVariant.identity,
     ));`,
@@ -177,7 +177,7 @@ test("rejects a feature-selected typography variant", () => {
 
 test("names and route labels share one title family without a variant", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.route(title: profile?.name ?? 'Profile'));`,
+    source: `Scaffold(appBar: CatchLegacyTopBar.route(title: profile?.name ?? 'Profile'));`,
     contract: compactContract(),
   });
   assert.deepEqual(checkScreenTopBarContracts({root}).findings, []);
@@ -186,7 +186,7 @@ test("names and route labels share one title family without a variant", () => {
 test("rejects retired eyebrow and geometry combinations", () => {
   for (const input of ["eyebrow: 'Event recap'", "kicker: 'RECAP'", "mode: CatchTopBarMode.content", "size: CatchTopBarSize.compact"]) {
     const root = fixtureRoot({
-      source: `Scaffold(appBar: CatchTopBar.route(title: 'Event recap', ${input}));`,
+      source: `Scaffold(appBar: CatchLegacyTopBar.route(title: 'Event recap', ${input}));`,
       contract: compactContract(),
     });
     assert.ok(hasFinding(checkScreenTopBarContracts({root}), "route-title-role-override"));
@@ -197,7 +197,7 @@ test("flags a route contract that drops its canonical surface", () => {
   const root = fixtureRoot({
     source: `
       Scaffold(
-        appBar: CatchTopBar.route(
+        appBar: CatchLegacyTopBar.route(
           title: 'Review history',
           navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back),
         ),
@@ -217,16 +217,16 @@ test("flags a route contract that drops its canonical surface", () => {
 
 test("resolves canonical root chrome owned by a StatefulWidget state", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Fallback'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Fallback'));",
     contract: screenContract(),
-    rootSurface: rootSurface({owner: "CatchTopBar.screen"}),
+    rootSurface: rootSurface({owner: "CatchLegacyTopBar.screen"}),
     rootSource: `
       class RootHeader extends StatefulWidget {
         State<RootHeader> createState() => _RootHeaderState();
       }
       class _RootHeaderState extends State<RootHeader> {
         Widget build(BuildContext context) =>
-          CatchTopBar.screen(title: 'Chats');
+          CatchLegacyTopBar.screen(title: 'Chats');
       }
     `,
   });
@@ -238,7 +238,7 @@ test("resolves canonical root chrome owned by a StatefulWidget state", () => {
 
 test("accepts the typed root header as the canonical title owner", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Fallback'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Fallback'));",
     contract: screenContract(),
     rootSurface: rootSurface({owner: "CatchRootScreenHeader.title"}),
     rootSource: `
@@ -260,7 +260,7 @@ test("accepts the typed root header as the canonical title owner", () => {
 test("flags a direct pill action in canonical top-bar actions", () => {
   const root = fixtureRoot({
     source: `Scaffold(
-      appBar: CatchTopBar.screen(
+      appBar: CatchLegacyTopBar.screen(
         title: 'Calendar',
         actions: [CatchButton(label: 'Today', onPressed: selectToday)],
       ),
@@ -280,7 +280,7 @@ test("flags a direct pill hidden behind a local top-bar action list", () => {
         CatchButton(label: 'Add customer', onPressed: addCustomer),
       ];
       return Scaffold(
-        appBar: CatchTopBar.screen(
+        appBar: CatchLegacyTopBar.screen(
           title: 'Customers',
           actions: headerActions,
         ),
@@ -296,7 +296,7 @@ test("flags a direct pill hidden behind a local top-bar action list", () => {
 
 test("accepts the canonical text recipe in top-bar actions", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.screen(
+    source: `Scaffold(appBar: CatchLegacyTopBar.screen(
       title: 'Events',
       actions: [CatchButton.text(label: 'Done', onPressed: save)],
     ));`,
@@ -307,7 +307,7 @@ test("accepts the canonical text recipe in top-bar actions", () => {
 
 test("flags named pill recipes in top-bar actions", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.screen(
+    source: `Scaffold(appBar: CatchLegacyTopBar.screen(
       title: 'Events',
       actions: [CatchButton.floating(label: 'Map', onPressed: showMap)],
     ));`,
@@ -319,7 +319,7 @@ test("flags named pill recipes in top-bar actions", () => {
 test("accepts the canonical adaptive primary top-bar action", () => {
   const root = fixtureRoot({
     source: `Scaffold(
-      appBar: CatchTopBar.screen(
+      appBar: CatchLegacyTopBar.screen(
         title: 'Events',
         actions: [
           CatchTopBarPrimaryButton(
@@ -341,7 +341,7 @@ test("accepts the canonical adaptive primary top-bar action", () => {
 test("flags every noncanonical surface inside an aligned root adopter", () => {
   const trackedPath = "lib/root/chats_browse_header.dart";
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     trackedRootSources: [
@@ -350,7 +350,7 @@ test("flags every noncanonical surface inside an aligned root adopter", () => {
         source: `
           class ChatsBrowseHeader extends StatelessWidget {
             Widget build(BuildContext context) =>
-              CatchTopBar.screen(title: 'Chats');
+              CatchLegacyTopBar.screen(title: 'Chats');
           }
           class ChatsLegacyTopBar extends StatelessWidget {
             Widget build(BuildContext context) => Text(
@@ -373,7 +373,7 @@ test("flags every noncanonical surface inside an aligned root adopter", () => {
 
 test("flags the known-bad screen fixture when compact chrome replaces the screen title voice", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Calendar'));",
     contract: screenContract(),
   });
 
@@ -385,9 +385,9 @@ test("flags the known-bad screen fixture when compact chrome replaces the screen
 
 test("flags a new app bar until its screen-chrome role is registered", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));",
     contract: screenContract(),
-    extraSource: "Scaffold(appBar: CatchTopBar.route(title: 'New route'));",
+    extraSource: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'New route'));",
   });
 
   const result = checkScreenTopBarContracts({root});
@@ -444,7 +444,7 @@ test("does not let workspace and raw-exception entries bless Material AppBar", (
 test("does not let a compact contract bless raw chrome", () => {
   const root = fixtureRoot({
     source: `
-      Widget decoy() => CatchTopBar.route(title: 'Elsewhere');
+      Widget decoy() => CatchLegacyTopBar.route(title: 'Elsewhere');
       Widget build() => Scaffold(appBar: AppBar(title: const Text('Raw')));
     `,
     contract: compactContract({expression: "AppBar"}),
@@ -460,7 +460,7 @@ test("does not count a canonical call outside a helper-owned appBar", () => {
   const root = fixtureRoot({
     source: `
       PreferredSizeWidget helper() => AppBar(title: const Text('Raw'));
-      Widget decoy() => CatchTopBar.route(title: 'Elsewhere');
+      Widget decoy() => CatchLegacyTopBar.route(title: 'Elsewhere');
       Widget build() => Scaffold(appBar: helper());
     `,
     contract: compactContract({expression: "helper"}),
@@ -474,7 +474,7 @@ test("does not count a canonical call outside a helper-owned appBar", () => {
 
 test("flags every root-screen branch that lacks a root-header contract", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));",
     contract: screenContract(),
     rootHeaders: [],
   });
@@ -487,7 +487,7 @@ test("flags every root-screen branch that lacks a root-header contract", () => {
 
 test("flags a custom root-screen header that does not delegate to the canonical owner", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));",
     contract: screenContract(),
     rootSource: `
       class RootHeader {
@@ -504,14 +504,14 @@ test("flags a custom root-screen header that does not delegate to the canonical 
 
 test("flags root-header text-scale and geometry overrides", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));",
     contract: screenContract(),
-    rootSurface: rootSurface({owner: "CatchTopBar.screen"}),
+    rootSurface: rootSurface({owner: "CatchLegacyTopBar.screen"}),
     rootSource: `
       class RootHeader {
         Widget build() => MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1)),
-          child: CatchTopBar.screen(
+          child: CatchLegacyTopBar.screen(
             title: 'Chats',
             height: 56,
             contentPadding: EdgeInsets.zero,
@@ -531,7 +531,7 @@ test("flags local geometry on a screen-role Scaffold app bar", () => {
   const root = fixtureRoot({
     source: `
       Scaffold(
-        appBar: CatchTopBar.screen(
+        appBar: CatchLegacyTopBar.screen(
           title: 'Calendar',
           contentPadding: EdgeInsets.zero,
         ),
@@ -547,7 +547,7 @@ test("flags local geometry on a screen-role Scaffold app bar", () => {
 
 test("flags raw sliver chrome until a durable hero exception is registered", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));",
     contract: screenContract(),
     rawSource: "Widget build() => SliverAppBar();",
   });
@@ -559,7 +559,7 @@ test("flags raw sliver chrome until a durable hero exception is registered", () 
 
 test("flags an aliased or non-zero canonical screen-title inset", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));",
     contract: screenContract(),
     tokenSource:
       "static const EdgeInsets screenTitleBlock = pageHeaderCompact;",
@@ -572,7 +572,7 @@ test("flags an aliased or non-zero canonical screen-title inset", () => {
 
 test("accepts an app-bar-only ownership manifest", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Edit photo'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Edit photo'));",
     contract: compactContract(),
     includeRootContracts: false,
   });
@@ -586,7 +586,7 @@ test("accepts an app-bar-only ownership manifest", () => {
 test("flags a pushed compact route that suppresses its required back action", () => {
   const root = fixtureRoot({
     source:
-      "Scaffold(appBar: CatchTopBar.route(title: 'Host profile', navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.none)));",
+      "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Host profile', navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.none)));",
     contract: compactContract({leading: "back"}),
     includeRootContracts: false,
   });
@@ -598,7 +598,7 @@ test("flags a pushed compact route that suppresses its required back action", ()
 
 test("accepts an explicit back action on a pushed compact route", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.route(
+    source: `Scaffold(appBar: CatchLegacyTopBar.route(
       title: 'Host profile',
       navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back),
     ));`,
@@ -614,7 +614,7 @@ test("accepts an explicit back action on a pushed compact route", () => {
 test("accepts back navigation that is suppressed only when embedded", () => {
   const root = fixtureRoot({
     source: `CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: 'Customer',
         navigation: CatchTopBarNavigation(mode: widget.embedded
             ? CatchTopBarNavigationMode.none
@@ -640,7 +640,7 @@ test("flags a shell-covering editor pushed on a branch navigator", () => {
       Future<void> openEditor({required BuildContext context}) async {
         await Navigator.of(context).push(MaterialPageRoute(builder: (_) => Screen()));
       }
-      Widget build() => Scaffold(appBar: CatchTopBar.route(title: 'Edit photo'));
+      Widget build() => Scaffold(appBar: CatchLegacyTopBar.route(title: 'Edit photo'));
     `,
     contract: compactContract(),
     includeRootContracts: false,
@@ -667,7 +667,7 @@ test("accepts a shell-covering editor pushed on the root navigator", () => {
           MaterialPageRoute(builder: (_) => Screen()),
         );
       }
-      Widget build() => Scaffold(appBar: CatchTopBar.route(title: 'Edit photo'));
+      Widget build() => Scaffold(appBar: CatchLegacyTopBar.route(title: 'Edit photo'));
     `,
     contract: compactContract(),
     includeRootContracts: false,
@@ -688,7 +688,7 @@ test("accepts a shell-covering editor pushed on the root navigator", () => {
 
 test("preserves content-header classification for the equivalent CatchText role", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(), includeRootContracts: false,
     manualSource: `class FeatureHeader extends StatelessWidget {
       Widget build(BuildContext context) => ui.CatchText(
@@ -703,7 +703,7 @@ test("preserves content-header classification for the equivalent CatchText role"
 
 test("the legacy CatchLegacyText keeps its content-header classification", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(), includeRootContracts: false,
     manualSource: `class FeatureHeader extends StatelessWidget {
       Widget build(BuildContext context) => ui.CatchLegacyText(
@@ -718,7 +718,7 @@ test("the legacy CatchLegacyText keeps its content-header classification", () =>
 
 for (const role of ["headline", "titleL"]) test(`discovers unregistered CatchLegacyText ${role} headers`, () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(), includeRootContracts: false,
     manualSource: `class FeatureHeader extends StatelessWidget {
       Widget build(BuildContext context) => CatchLegacyText('Feature', variant: CatchLegacyTextVariant.${role});
@@ -729,7 +729,7 @@ for (const role of ["headline", "titleL"]) test(`discovers unregistered CatchLeg
 
 for (const role of ["headline", "titleL"]) test(`discovers unregistered CatchText ${role} headers`, () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(), includeRootContracts: false,
     manualSource: `class FeatureHeader extends StatelessWidget {
       Widget build(BuildContext context) => CatchText('Feature', variant: CatchTextVariant.${role});
@@ -743,7 +743,7 @@ for (const [role, navigation, finding] of [
   ["content", true, "content-header-owns-navigation"],
 ]) test(`CatchText preserves ${finding} enforcement`, () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(), includeRootContracts: false,
     manualSource: `class FeatureHeader extends StatelessWidget {
       Widget build(BuildContext context) => Row(children: [
@@ -759,7 +759,7 @@ for (const [role, navigation, finding] of [
 
 test("CatchText cannot disguise a local root-title typography override", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));", contract: screenContract(),
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Calendar'));", contract: screenContract(),
     rootSource: `class RootHeader {
       Widget build() => CatchText('Today', variant: CatchTextVariant.headline);
     }`,
@@ -769,7 +769,7 @@ test("CatchText cannot disguise a local root-title typography override", () => {
 
 test("unrelated and nested variant tokens cannot impersonate header typography", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(), includeRootContracts: false,
     manualSource: `class FeatureHeader extends StatelessWidget {
       final decoy = CatchTextVariant.titleL;
@@ -784,7 +784,7 @@ test("unrelated and nested variant tokens cannot impersonate header typography",
 
 test("flags an unregistered body-owned manual screen header", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     manualSource: `
@@ -804,7 +804,7 @@ test("flags an unregistered body-owned manual screen header", () => {
 
 test("accepts an exact content-header classification", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     manualSource: `
@@ -833,7 +833,7 @@ test("accepts an exact content-header classification", () => {
 
 test("flags a manual screen role backed by content title styling", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     manualSource: `
@@ -862,7 +862,7 @@ test("flags a manual screen role backed by content title styling", () => {
 
 test("does not let a navigation header hide legacy debt as content", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     manualSource: `
@@ -892,7 +892,7 @@ test("does not let a navigation header hide legacy debt as content", () => {
 test("discovers canonical root chrome delegated through StatefulWidget State", () => {
   const trackedPath = "lib/root/chats_browse_header.dart";
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     trackedRootSources: [
@@ -904,7 +904,7 @@ test("discovers canonical root chrome delegated through StatefulWidget State", (
           }
           class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
             Widget build(BuildContext context) =>
-              CatchTopBar.screen(title: 'Chats');
+              CatchLegacyTopBar.screen(title: 'Chats');
           }
         `,
       },
@@ -924,7 +924,7 @@ test("discovers canonical root chrome delegated through StatefulWidget State", (
 test("discovers a canonical root HeaderContent surface", () => {
   const trackedPath = "lib/root/explore_header.dart";
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     trackedRootSources: [
@@ -933,7 +933,7 @@ test("discovers a canonical root HeaderContent surface", () => {
         source: `
           class ExploreBrowseHeaderContent extends StatelessWidget {
             Widget build(BuildContext context) =>
-              CatchTopBar.primaryRail(title: 'Explore');
+              CatchLegacyTopBar.primaryRail(title: 'Explore');
           }
         `,
       },
@@ -952,7 +952,7 @@ test("discovers a canonical root HeaderContent surface", () => {
 test("flags a tracked root Screen that drops its canonical owner", () => {
   const trackedPath = "lib/root/dashboard_home_screen.dart";
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     trackedRootSources: [
@@ -961,7 +961,7 @@ test("flags a tracked root Screen that drops its canonical owner", () => {
         source: `
           class DashboardHomeScreen extends StatelessWidget {
             Widget build(BuildContext context) =>
-              CatchTopBar.route(title: 'Home');
+              CatchLegacyTopBar.route(title: 'Home');
           }
         `,
       },
@@ -978,7 +978,7 @@ test("flags a tracked root Screen that drops its canonical owner", () => {
 
 test("canonical scaffold title is checked as screen chrome", () => {
   const root = fixtureRoot({
-    source: "CatchScaffold.workspace(title: CatchTopBar.route(title: 'Details'), body: Text('Body'));",
+    source: "CatchScaffold.workspace(title: CatchLegacyTopBar.route(title: 'Details'), body: Text('Body'));",
     contract: compactContract(),
     includeRootContracts: false,
   });
@@ -986,8 +986,8 @@ test("canonical scaffold title is checked as screen chrome", () => {
 });
 
 for (const source of [
-  "CatchScaffold.workspace(body: CatchTopBar.route(title: 'Nested title'));",
-  "CatchSection(title: CatchTopBar.route(title: 'Other component'));",
+  "CatchScaffold.workspace(body: CatchLegacyTopBar.route(title: 'Nested title'));",
+  "CatchSection(title: CatchLegacyTopBar.route(title: 'Other component'));",
 ]) {
   test(`a nested or unrelated title does not satisfy screen chrome: ${source}`, () => {
     const root = fixtureRoot({source, contract: compactContract(), includeRootContracts: false});
@@ -997,18 +997,18 @@ for (const source of [
 
 test("unregistered canonical scaffold titles remain violations", () => {
   const root = fixtureRoot({
-    source: "CatchScaffold.workspace(title: CatchTopBar.route(title: 'Details'));",
+    source: "CatchScaffold.workspace(title: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
   });
-  write(root, "lib/unregistered.dart", "CatchScaffold.workspace(title: CatchTopBar.route(title: 'Rogue')); ");
+  write(root, "lib/unregistered.dart", "CatchScaffold.workspace(title: CatchLegacyTopBar.route(title: 'Rogue')); ");
   const result = checkScreenTopBarContracts({root});
   assert.ok(result.findings.some((finding) => finding.code === "unregistered-app-bar" && finding.path === "lib/unregistered.dart"));
 });
 
 test("exempts only the canonical CatchScaffold app-bar forwarder", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     canonicalScaffoldSource: `
@@ -1023,7 +1023,7 @@ test("exempts only the canonical CatchScaffold app-bar forwarder", () => {
 
       class RogueInfrastructureWidget extends StatelessWidget {
         Widget build(BuildContext context) =>
-          Scaffold(appBar: CatchTopBar.route(title: 'Rogue'));
+          Scaffold(appBar: CatchLegacyTopBar.route(title: 'Rogue'));
       }
     `,
   });
@@ -1048,7 +1048,7 @@ test("exempts only the canonical CatchScaffold app-bar forwarder", () => {
 
 test("fails closed when the canonical app-bar forwarder drifts", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     canonicalScaffoldSource: `
@@ -1085,7 +1085,7 @@ for (const [label, height, child, fallback, valid] of [
 ]) {
   test(`scaled scaffold app-bar boundary: ${label}`, () => {
     const root = fixtureRoot({
-      source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+      source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
       contract: compactContract(),
       includeRootContracts: false,
       canonicalScaffoldSource: `
@@ -1115,7 +1115,7 @@ for (const [label, width, child, valid] of [
 ]) {
   test(`constrained scaffold header measurement: ${label}`, () => {
     const root = fixtureRoot({
-      source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+      source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'Details'));",
       contract: compactContract(),
       includeRootContracts: false,
       canonicalScaffoldSource: `
@@ -1144,7 +1144,7 @@ for (const [label, width, child, valid] of [
 
 test("navigation policy reads the top bar's direct configuration", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.route(
+    source: `Scaffold(appBar: CatchLegacyTopBar.route(
       title: 'People',
       actions: [SomeAction(navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back))],
     ));`,
@@ -1155,7 +1155,7 @@ test("navigation policy reads the top bar's direct configuration", () => {
 
 test("retired back flag cannot satisfy typed navigation policy", () => {
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.route(title: 'People', showBackButton: true));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.route(title: 'People', showBackButton: true));",
     contract: compactContract({leading: "back"}),
   });
   assert.ok(hasFinding(checkScreenTopBarContracts({root}), "missing-required-back-navigation"));
@@ -1163,7 +1163,7 @@ test("retired back flag cannot satisfy typed navigation policy", () => {
 
 test("nested action content cannot masquerade as a title override", () => {
   const root = fixtureRoot({
-    source: `Scaffold(appBar: CatchTopBar.route(
+    source: `Scaffold(appBar: CatchLegacyTopBar.route(
       title: 'People', actions: [SomeAction(body: Text('Details'), variant: ActionVariant.quiet)],
     ));`,
     contract: compactContract(),
@@ -1177,22 +1177,22 @@ function hasFinding(result, code) {
 
 test("an app-package screen registers its chrome like any other screen", () => {
   const registered = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Today'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Today'));",
     contract: {...screenContract(), path: "apps/host/lib/today/today_screen.dart"},
   });
   assert.deepEqual(checkScreenTopBarContracts({root: registered}).findings, []);
 
   const root = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'July 2026'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'July 2026'));",
     contract: screenContract(),
   });
   const appPath = "apps/consumer/lib/explore/explore_screen.dart";
   write(root, appPath, `
-    Widget build() => Scaffold(appBar: CatchTopBar.screen(title: 'Explore'));
+    Widget build() => Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Explore'));
     Widget hero() => SliverAppBar();
-    Widget action() => CatchTopBar.route(title: 'Saved', actions: [CatchButton(label: 'Save')]);
+    Widget action() => CatchLegacyTopBar.route(title: 'Saved', actions: [CatchButton(label: 'Save')]);
     class ExploreHeader extends StatelessWidget {
-      Widget build(BuildContext context) => CatchTopBar.route(title: 'Explore');
+      Widget build(BuildContext context) => CatchLegacyTopBar.route(title: 'Explore');
     }
   `);
   const codes = checkScreenTopBarContracts({root}).findings
@@ -1207,21 +1207,21 @@ test("an app-package screen registers its chrome like any other screen", () => {
 
 test("manifest paths may name an app package but nothing outside the screen roots", () => {
   const appContract = {...screenContract(), path: "apps/host/lib/today/today_screen.dart"};
-  const allowed = fixtureRoot({source: "Scaffold(appBar: CatchTopBar.screen(title: 'Today'));", contract: appContract});
+  const allowed = fixtureRoot({source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Today'));", contract: appContract});
   assert.deepEqual(
     checkScreenTopBarContracts({root: allowed}).findings.filter((finding) => finding.code === "invalid-path"),
     [],
   );
   const outside = fixtureRoot({
-    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Today'));",
+    source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Today'));",
     contract: {...screenContract(), path: "apps/host/test/today_screen.dart"},
   });
   assert.ok(checkScreenTopBarContracts({root: outside}).findings.some((finding) => finding.code === "invalid-path"));
 });
 
 function screenContract({
-  expression = "CatchTopBar.screen",
-  owner = "CatchTopBar.screen",
+  expression = "CatchLegacyTopBar.screen",
+  owner = "CatchLegacyTopBar.screen",
 } = {}) {
   return {
     path: "lib/calendar/calendar_screen.dart",
@@ -1232,7 +1232,7 @@ function screenContract({
 }
 
 function compactContract({
-  expression = "CatchTopBar.route",
+  expression = "CatchLegacyTopBar.route",
   leading,
   surface,
   titlePolicy,
@@ -1241,7 +1241,7 @@ function compactContract({
     path: "lib/calendar/calendar_screen.dart",
     role: "compact",
     expression,
-    owner: "CatchTopBar",
+    owner: "CatchLegacyTopBar",
     ...(leading == null ? {} : {leading}),
     ...(surface == null ? {} : {surface}),
     ...(titlePolicy == null ? {} : {titlePolicy}),
@@ -1252,14 +1252,14 @@ function workspaceContract() {
   return {
     path: "lib/calendar/calendar_screen.dart",
     role: "workspace",
-    expression: "CatchTopBar.route",
-    owner: "CatchTopBar",
+    expression: "CatchLegacyTopBar.route",
+    owner: "CatchLegacyTopBar",
     surface: "CatchRouteScaffold",
     reason: "The route owns a responsive operational workspace header.",
   };
 }
 
-function rootSurface({owner = "CatchTopBar.primaryRail"} = {}) {
+function rootSurface({owner = "CatchLegacyTopBar.primaryRail"} = {}) {
   return {
     path: "lib/root/root_header.dart",
     symbol: "RootHeader",
@@ -1282,7 +1282,7 @@ function fixtureRoot({
   extraSource,
   rootSource = `
     class RootHeader {
-      Widget build() => CatchTopBar.primaryRail(title: 'Home');
+      Widget build() => CatchLegacyTopBar.primaryRail(title: 'Home');
     }
   `,
   rootSurface: configuredRootSurface = rootSurface(),
@@ -1396,7 +1396,7 @@ function write(root, relativePath, contents) {
 
 test("screen geometry rejects app-local and escaped token sources", (t) => {
   for (const tokenPath of ["lib/core/theme/local.dart", "packages/catch_tokens/lib/../../local.dart"]) {
-    const root = fixtureRoot({source: "Scaffold(appBar: CatchTopBar.screen(title: 'Review'));", contract: screenContract()});
+    const root = fixtureRoot({source: "Scaffold(appBar: CatchLegacyTopBar.screen(title: 'Review'));", contract: screenContract()});
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
     const file = path.join(root, "tool/design/screen_top_bar_contracts.json");
     const manifest = JSON.parse(fs.readFileSync(file, "utf8"));

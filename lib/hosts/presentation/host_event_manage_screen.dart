@@ -473,7 +473,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       );
     }
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: topBarTitle,
         subtitle: screenState.eventTitle,
         leading: CatchIconAction.toolbar(

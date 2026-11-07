@@ -78,7 +78,7 @@ const requiredGeometrySpecimens = [
     sourcePath: "widgetbook/lib/geometry/specimens/navigation.dart",
   },
   {
-    component: "CatchTopBar",
+    component: "CatchLegacyTopBar",
     builder: "topBarGeometryMatrix",
     sourcePath: "widgetbook/lib/geometry/specimens/top_bars.dart",
   },

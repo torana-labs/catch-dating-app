@@ -188,7 +188,7 @@ Future<void> _pump(
         ),
         home: CatchRouteScaffold(
           topBarBuilder: (_, _) =>
-              const CatchTopBar.route(title: 'WhatsApp permissions'),
+              const CatchLegacyTopBar.route(title: 'WhatsApp permissions'),
           body: CatchRouteBody.standardConstrained(
             child: MessagingPermissionsPageBody(
               state: state,

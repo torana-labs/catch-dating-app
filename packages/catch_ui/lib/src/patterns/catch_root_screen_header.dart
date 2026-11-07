@@ -43,7 +43,7 @@ final class CatchRootScreenHeader {
 
   Widget _build(BuildContext context) {
     if (_kind == _CatchRootScreenHeaderKind.custom) return _header!;
-    return CatchTopBar.primaryRail(
+    return CatchLegacyTopBar.primaryRail(
       title: _title!,
       subtitle: _subtitle,
       leading: _leading,

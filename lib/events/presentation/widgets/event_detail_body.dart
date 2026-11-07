@@ -329,7 +329,7 @@ class GuestBookDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchDock.primary(
+    return CatchLegacyDock.primary(
       label: context.l10n.eventsEventDetailBodyLabelSignInToBook,
       onPressed: onPressed,
       backgroundColor: darkSurface ? t.ink : t.surface,

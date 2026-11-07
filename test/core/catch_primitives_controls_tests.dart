@@ -261,10 +261,12 @@ void _registerCatchPrimitivesControlsTests() {
 
   _registerCatchPrimitivesButtonTests();
 
-  testWidgets('CatchDock renders catch line and footnote', (tester) async {
+  testWidgets('CatchLegacyDock renders catch line and footnote', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchDock.primary(
+        CatchLegacyDock.primary(
           label: 'Confirm',
           onPressed: () {},
           catchLine: 'free to join',
@@ -716,7 +718,7 @@ void _registerCatchPrimitivesControlsTests() {
     final topBarSize = tester.getSize(
       find.descendant(
         of: find.byType(CatchStepHeader),
-        matching: find.byType(CatchTopBar),
+        matching: find.byType(CatchLegacyTopBar),
       ),
     );
     expect(topBarSize.height, greaterThanOrEqualTo(CatchLayout.topBarHeight));
@@ -743,7 +745,7 @@ void _registerCatchPrimitivesControlsTests() {
       lessThanOrEqualTo(CatchSpacing.s4),
     );
 
-    final barRect = tester.getRect(find.byType(CatchTopBar));
+    final barRect = tester.getRect(find.byType(CatchLegacyTopBar));
     final counterRect = tester.getRect(find.text('STEP 2 OF 5'));
     expect(counterRect.center.dy, closeTo(barRect.center.dy, 0.001));
     expect(progressRect.top, closeTo(barRect.bottom, 0.001));
@@ -777,7 +779,7 @@ void _registerCatchPrimitivesControlsTests() {
     final topBarSize = tester.getSize(
       find.descendant(
         of: find.byType(CatchStepHeader),
-        matching: find.byType(CatchTopBar),
+        matching: find.byType(CatchLegacyTopBar),
       ),
     );
     expect(topBarSize.height, CatchLayout.topBarHeight);
@@ -808,7 +810,7 @@ void _registerCatchPrimitivesControlsTests() {
           ),
         );
 
-        final barRect = tester.getRect(find.byType(CatchTopBar));
+        final barRect = tester.getRect(find.byType(CatchLegacyTopBar));
         final titleRect = tester.getRect(find.text("What's your number?"));
         final subtitleRect = tester.getRect(find.text(subtitle));
         heights.add(barRect.height);

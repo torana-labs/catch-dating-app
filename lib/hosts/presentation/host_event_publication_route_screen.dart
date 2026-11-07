@@ -84,7 +84,7 @@ class HostEventPublicationStateScaffold extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
       navigation: const CatchTopBarNavigation(
         mode: CatchTopBarNavigationMode.back,

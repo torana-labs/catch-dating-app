@@ -18,11 +18,7 @@ Title fade 160 ms on scroll.
 ## Flutter
 
 `catch.top_bar`:
-- `CatchTopBar.route`
-- `CatchTopBar.identity`
-- `CatchTopBar.screen`
-- `CatchTopBar.primaryRail`
-- `CatchTopBar.brand`
+- `CatchTopBar`
 `catch.step_header`:
 - `CatchStepHeader`
 <!-- generated:flutter:end -->

@@ -351,7 +351,7 @@ Future<void> pumpRoom(
           child: child!,
         ),
         home: CatchRouteScaffold(
-          topBarBuilder: (_, _) => const CatchTopBar.route(
+          topBarBuilder: (_, _) => const CatchLegacyTopBar.route(
             title: 'RSVP coffee afternoon',
             navigation: CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,

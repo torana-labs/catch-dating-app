@@ -653,7 +653,10 @@ void main() {
     await tester.pump();
 
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).navigation.mode,
+      tester
+          .widget<CatchLegacyTopBar>(find.byType(CatchLegacyTopBar))
+          .navigation
+          .mode,
       CatchTopBarNavigationMode.none,
     );
     expect(

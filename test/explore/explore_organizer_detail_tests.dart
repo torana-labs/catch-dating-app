@@ -88,7 +88,7 @@ void _registerExploreOrganizerDetailTests() {
               builder: (context) => CustomScrollView(
                 slivers: CatchSliverHeader(
                   title: const SizedBox.shrink(),
-                  bottomHeight: const CatchTopBar.primaryRail(
+                  bottomHeight: const CatchLegacyTopBar.primaryRail(
                     title: 'Explore',
                   ).contentHeightFor(context),
                   bottom: _exploreCoverHeader(),

@@ -15,7 +15,7 @@
         {
           "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
           "symbol": "DashboardHomeScreen",
-          "owner": "CatchTopBar.primaryRail"
+          "owner": "CatchLegacyTopBar.primaryRail"
         }
       ]
     },
@@ -26,7 +26,7 @@
         {
           "path": "lib/explore/presentation/widgets/explore_header.dart",
           "symbol": "_ExploreDiscoveryTopBar",
-          "owner": "CatchTopBar.screen"
+          "owner": "CatchLegacyTopBar.screen"
         }
       ]
     },
@@ -37,7 +37,7 @@
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
           "symbol": "ChatsBrowseHeader",
-          "owner": "CatchTopBar.primaryRail"
+          "owner": "CatchLegacyTopBar.primaryRail"
         }
       ]
     },
@@ -59,7 +59,7 @@
         {
           "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
           "symbol": "HostTodayHeader",
-          "owner": "CatchTopBar.primaryRail"
+          "owner": "CatchLegacyTopBar.primaryRail"
         }
       ]
     },
@@ -70,7 +70,7 @@
         {
           "path": "lib/hosts/events/presentation/host_events_screen.dart",
           "symbol": "HostEventsRouteScaffold",
-          "owner": "CatchTopBar.primaryRail"
+          "owner": "CatchLegacyTopBar.primaryRail"
         },
         {
           "path": "lib/hosts/events/presentation/widgets/host_events_list.dart",
@@ -86,7 +86,7 @@
         {
           "path": "lib/hosts/presentation/host_audience_header.dart",
           "symbol": "HostAudienceHeader",
-          "owner": "CatchTopBar.primaryRail"
+          "owner": "CatchLegacyTopBar.primaryRail"
         }
       ]
     },
@@ -97,7 +97,7 @@
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
           "symbol": "ChatsBrowseHeader",
-          "owner": "CatchTopBar.primaryRail"
+          "owner": "CatchLegacyTopBar.primaryRail"
         }
       ]
     },
@@ -122,37 +122,37 @@
     {
       "path": "lib/chats/presentation/chat_screen.dart",
       "role": "identity",
-      "expression": "CatchTopBar.identity",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.identity",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "backUnlessEmbedded"
     },
     {
       "path": "packages/platform/lib/media/ordered_photo_picker.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "leading": "back"
     },
     {
       "path": "lib/dashboard/presentation/activity_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
       "role": "workspace",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "reason": "The rehearsal runtime owns a responsive operational workspace header."
@@ -160,54 +160,54 @@
     {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/events/presentation/calendar/calendar_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/events/presentation/saved_events_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/host_memberships/presentation/my_memberships_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/work/presentation/host_work_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -215,24 +215,24 @@
     {
       "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
       "role": "identity",
-      "expression": "CatchTopBar.identity",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.identity",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_editor.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -240,8 +240,8 @@
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -249,109 +249,109 @@
     {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "occurrences": 4
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/hosts/presentation/forms/host_automation_rule_editor.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_analytics_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_preview_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_share_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_templates_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_route_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "occurrences": 4
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
       "role": "workspace",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "reason": "Host Event Manage spans responsive setup, live, and recap workspaces."
     },
     {
       "path": "lib/hosts/presentation/host_event_operator_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -359,8 +359,8 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 5
@@ -368,8 +368,8 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_organizer_team_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 5
@@ -377,59 +377,59 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/inbox/host_new_message_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/today/personalization/presentation/host_today_focus_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/launch_access/presentation/launch_access_application_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/payments/presentation/payment_history_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/programs/presentation/program_guest_desk_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 5
@@ -437,8 +437,8 @@
     {
       "path": "lib/programs/presentation/program_guests_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 5
@@ -446,8 +446,8 @@
     {
       "path": "lib/programs/presentation/program_import_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -455,8 +455,8 @@
     {
       "path": "lib/programs/presentation/program_team_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -464,8 +464,8 @@
     {
       "path": "lib/programs/presentation/program_workspace_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -473,8 +473,8 @@
     {
       "path": "lib/programs/presentation/program_arrivals_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -482,8 +482,8 @@
     {
       "path": "lib/programs/presentation/program_door_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -491,8 +491,8 @@
     {
       "path": "lib/programs/presentation/program_dispatch_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -500,8 +500,8 @@
     {
       "path": "lib/programs/presentation/program_hotel_desk_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -509,8 +509,8 @@
     {
       "path": "lib/programs/presentation/program_hotel_rooms_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -518,8 +518,8 @@
     {
       "path": "lib/programs/presentation/program_lodging_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 5
@@ -527,8 +527,8 @@
     {
       "path": "lib/programs/presentation/program_trips_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -536,8 +536,8 @@
     {
       "path": "lib/programs/presentation/program_now_next_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -545,8 +545,8 @@
     {
       "path": "lib/programs/presentation/program_attention_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -554,8 +554,8 @@
     {
       "path": "lib/programs/presentation/program_stakeholder_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -563,8 +563,8 @@
     {
       "path": "lib/programs/presentation/program_attendance_report_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -572,8 +572,8 @@
     {
       "path": "lib/programs/presentation/program_work_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 1
@@ -581,107 +581,107 @@
     {
       "path": "lib/public_profile/presentation/public_profile_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "titlePolicy": "sharedRoute"
     },
     {
       "path": "lib/reviews/presentation/reviews_history_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/safety/presentation/settings_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/swipes/presentation/event_recap_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/swipes/presentation/filters_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar"
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar"
     },
     {
       "path": "lib/user_profile/presentation/form_profiles_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/user_profile/presentation/form_profile_review_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/chats/presentation/event_chat_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/safety/presentation/messaging_permissions_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/chats/presentation/event_chat_participants_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/chats/presentation/event_profile_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 2
@@ -689,32 +689,32 @@
     {
       "path": "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "auto"
     },
     {
       "path": "lib/hosts/audience/phone_import/presentation/phone_import_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/host_event_publication_route_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
       "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
+      "expression": "CatchLegacyTopBar.route",
+      "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold"
     }
   ],
@@ -746,7 +746,7 @@
       "symbol": "HostFormWorkspaceHeader",
       "role": "content",
       "owner": "CatchTextStyles.titleL",
-      "reason": "Form identity and its workspace tabs are content beneath the canonical compact Form route bar; route navigation remains in CatchTopBar."
+      "reason": "Form identity and its workspace tabs are content beneath the canonical compact Form route bar; route navigation remains in CatchLegacyTopBar."
     },
     {
       "path": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
@@ -780,7 +780,7 @@
       "path": "lib/explore/presentation/widgets/explore_header.dart",
       "symbol": "_ExploreDiscoveryTopBar",
       "role": "screen",
-      "owner": "CatchTopBar.screen",
+      "owner": "CatchLegacyTopBar.screen",
       "reason": "Explore discovery delegates its body-owned floating screen chrome to the canonical screen top bar."
     },
     {

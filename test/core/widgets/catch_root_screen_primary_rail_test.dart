@@ -212,11 +212,15 @@ void main() {
       );
 
       expect(find.text('Forms'), findsOneWidget);
-      final titleBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-      final measured = tester.getSize(find.byType(CatchTopBar)).height;
+      final titleBar = tester.widget<CatchLegacyTopBar>(
+        find.byType(CatchLegacyTopBar),
+      );
+      final measured = tester.getSize(find.byType(CatchLegacyTopBar)).height;
       expect(titleBar.navigation.mode, CatchTopBarNavigationMode.none);
       expect(
-        titleBar.contentHeightFor(tester.element(find.byType(CatchTopBar))),
+        titleBar.contentHeightFor(
+          tester.element(find.byType(CatchLegacyTopBar)),
+        ),
         measured,
       );
       expect(measured, lessThanOrEqualTo(CatchLayout.topBarHeight));

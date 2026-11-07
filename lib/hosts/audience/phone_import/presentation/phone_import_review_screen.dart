@@ -42,7 +42,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
             PhoneImportSubmissionPhase.completed,
           }.contains(live?.phase);
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.phoneImportTitle,
           navigation: live == null
               ? const CatchTopBarNavigation(

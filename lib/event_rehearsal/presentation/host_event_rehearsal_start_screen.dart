@@ -208,7 +208,7 @@ class EventRehearsalEntryStateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolled) => CatchTopBar.route(
+    topBarBuilder: (context, scrolled) => CatchLegacyTopBar.route(
       title: context.l10n.hostEventRehearsalTitle,
       navigation: const CatchTopBarNavigation(
         mode: CatchTopBarNavigationMode.back,

@@ -38,7 +38,7 @@ class FormProfileReviewScreen extends ConsumerWidget {
       child: AbsorbPointer(
         absorbing: mutation.isPending,
         child: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: context.l10n.formProfileReviewTitle,
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,

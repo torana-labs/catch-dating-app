@@ -101,7 +101,7 @@ void main() {
       var opened = false;
       await tester.pumpWidget(
         _app(
-          CatchTopBar.identity(
+          CatchLegacyTopBar.identity(
             identityName: 'Camille',
             identitySemanticLabel: 'Ouvrir le profil de Camille',
             onIdentityTap: interactive ? () => opened = true : null,

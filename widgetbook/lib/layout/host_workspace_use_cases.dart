@@ -23,11 +23,11 @@ Widget hostNavigationWorkspace(BuildContext context) =>
       child: HostNavigationWorkspace(
         spec: HostEditorWorkspace(
           editor: const CatchWorkspacePaneScaffold(
-            title: CatchTopBar.primaryRail(title: 'Organizer'),
+            title: CatchLegacyTopBar.primaryRail(title: 'Organizer'),
             body: CatchEmptyState(title: 'Organizer editor'),
           ),
           preview: const CatchWorkspacePaneScaffold(
-            title: CatchTopBar.primaryRail(title: 'Preview'),
+            title: CatchLegacyTopBar.primaryRail(title: 'Preview'),
             body: CatchEmptyState(title: 'Public organizer preview'),
           ),
         ),
@@ -59,7 +59,7 @@ Widget workspacePaneScaffold(BuildContext context) =>
                   CatchWorkspacePane(
                     id: 'events',
                     child: CatchWorkspacePaneScaffold(
-                      title: CatchTopBar.primaryRail(
+                      title: CatchLegacyTopBar.primaryRail(
                         title: 'Events',
                         actions: [
                           CatchTopBarPrimaryButton(
@@ -75,7 +75,7 @@ Widget workspacePaneScaffold(BuildContext context) =>
                   const CatchWorkspacePane(
                     id: 'program',
                     child: CatchWorkspacePaneScaffold(
-                      title: CatchTopBar.route(
+                      title: CatchLegacyTopBar.route(
                         title: 'Program',
                         navigation: CatchTopBarNavigation(
                           mode: CatchTopBarNavigationMode.back,
@@ -131,7 +131,7 @@ Widget workspaceBackScope(BuildContext context) =>
       child: CatchWorkspaceBackScope(
         onBack: () {},
         child: const CatchWorkspacePaneScaffold(
-          title: CatchTopBar.route(title: 'Nested detail'),
+          title: CatchLegacyTopBar.route(title: 'Nested detail'),
           body: CatchEmptyState(title: 'Back returns to the parent selection'),
         ),
       ),
@@ -151,7 +151,7 @@ Widget hostWorkspaceRouteScope(BuildContext context) =>
           CatchWorkspacePane(
             id: 'selected',
             child: CatchWorkspacePaneScaffold(
-              title: CatchTopBar.route(title: 'Selected program'),
+              title: CatchLegacyTopBar.route(title: 'Selected program'),
               body: CatchEmptyState(title: 'Program content'),
             ),
           ),
@@ -159,7 +159,7 @@ Widget hostWorkspaceRouteScope(BuildContext context) =>
         child: const HostNavigationWorkspace(
           spec: HostTaskWorkspace(
             content: CatchWorkspacePaneScaffold(
-              title: CatchTopBar.primaryRail(title: 'Events'),
+              title: CatchLegacyTopBar.primaryRail(title: 'Events'),
               body: CatchEmptyState(title: 'Existing index'),
             ),
           ),
@@ -202,7 +202,7 @@ Widget hostWorkspaceRouteFrame(BuildContext context) =>
         index: const HostNavigationWorkspace(
           spec: HostTaskWorkspace(
             content: CatchWorkspacePaneScaffold(
-              title: CatchTopBar.primaryRail(title: 'Events'),
+              title: CatchLegacyTopBar.primaryRail(title: 'Events'),
               body: CatchEmptyState(title: 'Events directory'),
             ),
           ),
@@ -212,11 +212,11 @@ Widget hostWorkspaceRouteFrame(BuildContext context) =>
           builder: (context) => const HostNavigationWorkspace(
             spec: HostEditorWorkspace(
               editor: CatchWorkspacePaneScaffold(
-                title: CatchTopBar.route(title: 'Event editor'),
+                title: CatchLegacyTopBar.route(title: 'Event editor'),
                 body: CatchEmptyState(title: 'Draft event'),
               ),
               preview: CatchWorkspacePaneScaffold(
-                title: CatchTopBar.route(title: 'Preview'),
+                title: CatchLegacyTopBar.route(title: 'Preview'),
                 body: CatchEmptyState(title: 'Public event preview'),
               ),
             ),

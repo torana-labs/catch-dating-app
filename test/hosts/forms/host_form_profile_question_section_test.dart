@@ -55,7 +55,7 @@ void main() {
               ),
               home: CatchRouteScaffold(
                 topBarBuilder: (_, _) =>
-                    const CatchTopBar.route(title: 'Form question'),
+                    const CatchLegacyTopBar.route(title: 'Form question'),
                 body: CatchRouteBody.standardConstrainedSlivers(
                   slivers: [
                     SliverToBoxAdapter(

@@ -57,7 +57,9 @@ void _registerHostOperationsCustomerCompositionTests() {
       expect(find.text('Ananya Rao'), findsOneWidget);
       expect(find.byType(HostCustomerIdentityCard), findsNothing);
       expect(
-        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).identityName,
+        tester
+            .widget<CatchLegacyTopBar>(find.byType(CatchLegacyTopBar))
+            .identityName,
         'Ananya Rao',
       );
       await tester.tap(find.text('Details'));

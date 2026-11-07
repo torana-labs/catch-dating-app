@@ -258,11 +258,13 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
             .bodyLayout,
         CatchPageBodyMode.fullBleed,
       );
-      expect(find.byType(CatchTopBar), findsOneWidget);
+      expect(find.byType(CatchLegacyTopBar), findsOneWidget);
       expect(find.byType(HostTodayEventSection), findsNothing);
       expect(find.byType(CatchSkeleton), findsNothing);
       expect(find.byType(CatchLoadingIndicator), findsOneWidget);
-      final headerBottom = tester.getRect(find.byType(CatchTopBar)).bottom;
+      final headerBottom = tester
+          .getRect(find.byType(CatchLegacyTopBar))
+          .bottom;
       final progress = tester.getRect(find.byType(CircularProgressIndicator));
       expect(progress.center.dy, greaterThan(headerBottom));
       expect(tester.takeException(), isNull);
@@ -901,12 +903,12 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     expect(find.text('Groups'), findsOneWidget);
     expect(find.text('Campaigns'), findsNothing);
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).subtitle,
+      tester.widget<CatchLegacyTopBar>(find.byType(CatchLegacyTopBar)).subtitle,
       isNull,
     );
     expect(
       find.descendant(
-        of: find.byType(CatchTopBar),
+        of: find.byType(CatchLegacyTopBar),
         matching: find.byKey(
           const ValueKey<String>('host-customers-add-customer'),
         ),

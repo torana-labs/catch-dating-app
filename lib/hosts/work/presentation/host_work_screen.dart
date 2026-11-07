@@ -81,7 +81,7 @@ class _HostWorkScreenState extends ConsumerState<HostWorkScreen> {
       value: assignmentsAsync,
       onRetry: () => ref.invalidate(hostWorkAssignmentsProvider),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostWorkShellTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -95,7 +95,7 @@ class _HostWorkScreenState extends ConsumerState<HostWorkScreen> {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostWorkShellTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -131,7 +131,7 @@ class HostWorkPageBody extends StatelessWidget {
     }
 
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostWorkShellTitle,
         subtitle: context.l10n.hostWorkShellSubtitle,
         emphasis: scrolledUnder

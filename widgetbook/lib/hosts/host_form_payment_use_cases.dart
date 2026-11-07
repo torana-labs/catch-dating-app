@@ -134,7 +134,7 @@ Widget hostFormPaymentsPreview(BuildContext context) => WidgetbookFixtureScope(
       ).overrideWith(_Payments.new),
   ],
   child: CatchRouteScaffold(
-    topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Payments'),
+    topBarBuilder: (_, _) => const CatchLegacyTopBar.route(title: 'Payments'),
     body: const CatchRouteBody.fullBleed(
       child: CustomScrollView(
         slivers: [
