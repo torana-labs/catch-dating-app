@@ -2,7 +2,6 @@ import {forwardRef} from "react";
 import {CheckboxControl} from "@catch/web-ui";
 import type {
   FormHTMLAttributes,
-  HTMLAttributes,
   InputHTMLAttributes,
   ReactNode,
 } from "react";
@@ -12,20 +11,6 @@ import {LiveStatus} from "./feedback";
 import {classNames} from "@catch/web-ui";
 
 export type SearchFormVariant = "organizer";
-
-export function SelectedListingCard({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("selected-listing-card", className)}>
-      {children}
-    </div>
-  );
-}
 
 export function CheckboxField({
   children,

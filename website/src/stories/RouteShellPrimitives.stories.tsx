@@ -1,8 +1,8 @@
-import {CatchField, CatchGap} from "@catch/web-ui";
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
 import {PageShell, WebsitePageMain} from "../shared/site/PageShell";
-import {Button, ClaimFlowHero, ClaimFlowMain, ClaimFlowPanel, ClaimFlowStage, ClaimFlowWorkspace, ClaimListingResults, ClaimRequestForm, ClaimResultButton, ContentGrid, FormStatus, HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, OperationalNote, OwnerUnlockBoard, SelectedListingCard, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
+import {Button, ClaimFlowMain, ClaimRequestForm, ContentGrid, FormStatus, HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, OperationalNote, UiLabel} from "../shared/ui/primitives";
 
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
@@ -52,61 +52,18 @@ export const ClaimFlowShellStory: Story = {
     catchComponent: {
       id: "shared_claim_flow_shell",
       routeIds: ["claim", "claim_lookup"],
-      states: ["route-root", "hero", "workspace", "panel", "listing-results", "verification"],
+      states: ["route-root"],
     },
   },
   render: () => (
     <ClaimFlowMain>
-      <ClaimFlowHero
-        eyebrow="Claim organizer page"
-        title="Prove ownership before controls unlock"
-        body="The route shell holds the hero, workspace, selected listing, and verification stages."
-        summaryTitle="Review path"
-        summaryBody="Owner proof, public sources, and staff review"
-      />
-      <ClaimFlowWorkspace onSubmit={preventSubmit}>
-        <ClaimFlowPanel>
-          <ClaimFlowStage>
-            <CatchGap size="formField">
-              <CatchField
-                recipe="input"
-                id="storybook-claim-name"
-                title="Requester name"
-                name="requesterName"
-                initialValue="Taylor Host"
-              />
-              <CatchField recipe="select" id="storybook-claim-role" title="Role" name="requesterRole"
-                values={["owner", "manager"]} itemLabelBuilder={(role) => role === "owner" ? "Owner" : "Manager"}
-                initialValue="owner" />
-            </CatchGap>
-            <ClaimListingResults>
-              <ClaimResultButton activityToken="var(--activity-dinner)" selected>
-                Sunday Table Club
-              </ClaimResultButton>
-              <SelectedListingCard>
-                <strong>Selected listing</strong>
-                <p>Profile evidence and source links are ready for staff review.</p>
-              </SelectedListingCard>
-            </ClaimListingResults>
-            <VerificationMethodGrid aria-label="Verification evidence">
-              <article>
-                <UiLabel>Public proof</UiLabel>
-                <p>Link to event pages or social profiles that show ownership.</p>
-              </article>
-              <article>
-                <UiLabel>Business contact</UiLabel>
-                <p>Add a reachable email or phone number for the review packet.</p>
-              </article>
-            </VerificationMethodGrid>
-            <OwnerUnlockBoard
-              items={[
-                {title: "Owner response", body: "Reply to public review signals after approval."},
-                {title: "Event controls", body: "Publish app-created events from the host surface."},
-              ]}
-            />
-          </ClaimFlowStage>
-        </ClaimFlowPanel>
-      </ClaimFlowWorkspace>
+      <ContentGrid variant="surface">
+        <article>
+          <UiLabel>Demo continuation</UiLabel>
+          <h1>Claim flow route root</h1>
+          <p>Only the demo continuation still renders inside this main; the claim flow itself is drawn from the system.</p>
+        </article>
+      </ContentGrid>
     </ClaimFlowMain>
   ),
 };

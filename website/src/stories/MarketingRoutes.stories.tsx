@@ -73,7 +73,7 @@ export const Host: Story = {
     },
     catchComponent: {
       id: "route_host", routeIds: ["host"],
-      states: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"],
+      states: ["default", "night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"],
     },
   },
   render: () => <HostPage />,
@@ -139,7 +139,7 @@ export const EventRuntimeShells: Story = {
     a11y: {test: "error"},
     catchComponent: {
       id: "shared_event_runtime_shells",
-      routeIds: ["event_runtime", "event_rehearsal"],
+      routeIds: ["event_assistance", "sales_demo"],
       states: ["phone-entry", "live-module-shell"],
     },
   },

@@ -5,7 +5,6 @@ import {
   CatchButton,
   CatchIcon,
   CatchIndexRow,
-  CatchPageBody,
   CatchSection,
   CatchStack,
   CatchSurface,
@@ -19,8 +18,6 @@ import type {ReactNode} from "react";
 import {claimFlowCopy as flow} from "@content/claimFlow";
 import {claimGuidance} from "@content/claimGuidance";
 import {activityMeta} from "@content/marketing";
-import {publicSiteCopy, siteFooterLegalLinks} from "@content/site";
-import {slugForTracking, trackSiteCtaClick} from "../../../shared/site/siteTracking";
 import {activityForListing} from "../../organizers/publicDiscovery";
 import type {HostListing} from "../../organizers/types";
 
@@ -102,26 +99,5 @@ export function ClaimGuidance() {
         <CatchButton href="/host/apply/" label={claimGuidance.pilot} size="sm" variant="quiet" />
       </CatchStack>
     </CatchStack>
-  );
-}
-
-/** The boards' site footer: the wordmark beside the site and legal links, then the operator line. */
-export function ClaimSiteFooter() {
-  const links = [...publicSiteCopy.nav, ...siteFooterLegalLinks];
-  return (
-    <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-      <CatchStack as="footer" gap={12}>
-        <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
-          <CatchText variant="display-xs">{publicSiteCopy.wordmark}</CatchText>
-          <CatchStack aria-label={flow.footerLabel} as="nav" direction="row" gap={4} wrap>
-            {links.map((link) => (
-              <CatchButton href={link.href} key={link.href} label={link.label}
-                onPressed={() => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href)} size="sm" variant="quiet" />
-            ))}
-          </CatchStack>
-        </CatchStack>
-        <CatchText tone="secondary" variant="body-meta">{publicSiteCopy.footerOperator}</CatchText>
-      </CatchStack>
-    </CatchPageBody>
   );
 }

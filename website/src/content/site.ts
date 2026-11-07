@@ -21,3 +21,21 @@ export const publicSiteCopy = {
   nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
   footerOperator: publishedLegalContent.ui.footerBody,
 } as const;
+
+/**
+ * The site top bar and the short footer the rebuilt public pages share,
+ * as the RbWebOrgV2 and RbWebEventV2 boards draw them (shared/site/PublicSiteChrome.tsx).
+ */
+export const publicPageChromeCopy = {
+  links: [{label: "Explore", href: "/explore/"}, {label: "For organisers", href: "/host/"}],
+  getApp: "Get the app",
+  getAppHref: "/#app",
+  wordmark: brand.name,
+  footerLabel: "Site links",
+  footerLinks: [
+    {label: "Privacy", href: "/privacy/"},
+    {label: "Terms", href: "/terms/"},
+    {label: "For organisers", href: "/host/"},
+    {label: "Help", href: "/help/"},
+  ],
+} as const;

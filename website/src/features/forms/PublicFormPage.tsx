@@ -22,7 +22,7 @@ import {eventDetailCopy} from "../../content/events";
 import {publicSiteCopy, siteFooterLegalLinks} from "@content/site";
 import {useEffect, useId, useRef, useState, type FormEvent, type ReactNode} from "react";
 import {useParams} from "react-router";
-import {PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {PublicFormFileInput, PublicFormSignatureInput} from "../../shared/ui/primitives/publicForms";
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
@@ -103,7 +103,11 @@ export function PublicFormView({controller}: {controller: Controller}) {
             />
           </CatchPageBody>
         </WebsitePageMain>
-        {controller.embed ? null : <FormSiteFooter />}
+        {controller.embed ? null : (
+          <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
+            <PublicPageFooter label={publicFormsCopy.footerLabel} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator} />
+          </CatchPageBody>
+        )}
       </CatchRoot>
     </div>
   );
@@ -927,25 +931,6 @@ function PaymentStage({controller}: {controller: Controller}) {
       <StatusLine status={status} />
       <StatusLine status={controller.status} />
     </>
-  );
-}
-
-/** The board's site footer: the wordmark beside the site and legal links, then the operator line. */
-function FormSiteFooter() {
-  return (
-    <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-      <CatchStack as="footer" gap={12}>
-        <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
-          <CatchText variant="display-xs">{publicSiteCopy.wordmark}</CatchText>
-          <CatchStack aria-label={publicFormsCopy.footerLabel} as="nav" direction="row" gap={4} wrap>
-            {[...publicSiteCopy.nav, ...siteFooterLegalLinks].map((link) => (
-              <CatchButton href={link.href} key={link.href} label={link.label} size="sm" variant="quiet" />
-            ))}
-          </CatchStack>
-        </CatchStack>
-        <CatchText tone="secondary" variant="body-meta">{publicSiteCopy.footerOperator}</CatchText>
-      </CatchStack>
-    </CatchPageBody>
   );
 }
 

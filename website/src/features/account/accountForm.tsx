@@ -8,9 +8,10 @@ const noop = () => undefined;
 
 /**
  * Inline account step shared by follow, event and claim actions. A claim has
- * no age rule, so it leaves the optional birth date out.
+ * no age rule, so it leaves the optional birth date out, and names the send
+ * action as its board does.
  */
-export function renderAccountForm(account: WebsiteAccountController, {askBirthDate = true} = {}) {
+export function renderAccountForm(account: WebsiteAccountController, {askBirthDate = true, sendCodeLabel = accountCopy.sendCode}: {askBirthDate?: boolean; sendCodeLabel?: string} = {}) {
   if (account.loading) return <CatchLegacyText as="p" color="ink2" role="status" variant="bodyS">{accountCopy.loading}</CatchLegacyText>;
   if (account.ageIneligible) return <CatchLegacyText as="p" role="status" variant="bodyM">{accountCopy.ageIneligible}</CatchLegacyText>;
   return <Form noValidate onSubmit={account.handleSubmit} pending={account.pending}>
@@ -58,7 +59,7 @@ export function renderAccountForm(account: WebsiteAccountController, {askBirthDa
       /> : null}
       <div id={account.recaptchaId} />
       <CatchButton fullWidth onPressed={noop} status={account.pending ? "loading" : "idle"} type="submit"
-        label={account.stage === "code" ? accountCopy.verify : account.verified ? accountCopy.continue : accountCopy.sendCode} />
+        label={account.stage === "code" ? accountCopy.verify : account.verified ? accountCopy.continue : sendCodeLabel} />
       {account.stage === "code" ? <CatchButton fullWidth label={accountCopy.restartVerification}
         onPressed={account.pending ? null : account.restartVerification} variant="quiet" /> : null}
       <CatchLegacyText as="p" color={account.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">

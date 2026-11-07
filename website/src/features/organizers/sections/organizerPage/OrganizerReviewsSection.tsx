@@ -43,7 +43,7 @@ export function OrganizerReviewsSection({controller}: {controller: OrganizerPage
               <CatchSection dividers="none">
                 {reviews.distribution.map((row) => (
                   <CatchIndexRow density="compact" key={row.stars} progress={{label: row.label, max: total, value: row.count}}
-                    title={`${row.stars}★`} value={String(row.count)} />
+                    title={copy.starsShort(row.stars)} value={String(row.count)} />
                 ))}
               </CatchSection>
               <CatchText as="p" tone="secondary" variant="body-small">{reviews.policy}</CatchText>

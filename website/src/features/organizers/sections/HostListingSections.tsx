@@ -5,7 +5,7 @@ import {OrganizerEventsSection, OrganizerMomentsSection} from "./organizerPage/O
 import {OrganizerCover, OrganizerIdentitySection} from "./organizerPage/OrganizerIdentitySection";
 import {OrganizerLinksSection, OrganizerNextUpSection} from "./organizerPage/OrganizerRailSections";
 import {OrganizerReviewsSection} from "./organizerPage/OrganizerReviewsSection";
-import {PublicPageFooter} from "./PublicPageChrome";
+import {PublicPageFooter} from "../../../shared/site";
 
 /**
  * The organiser page as the RbWebOrgV2 board lays it out: the profile (the

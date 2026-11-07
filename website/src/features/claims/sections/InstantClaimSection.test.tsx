@@ -60,7 +60,7 @@ describe("InstantClaimPanel", () => {
     account.ready = false;
     renderSection();
     expect(screen.getByText("account form")).toBeTruthy();
-    expect(accountForm).toHaveBeenCalledWith(account, {askBirthDate: false});
+    expect(accountForm).toHaveBeenCalledWith(account, {askBirthDate: false, sendCodeLabel: "Text me a code"});
     expect(firebase.getOrganizerClaimVerificationOptions).not.toHaveBeenCalled();
     expect(screen.getByRole("heading", {level: 1, name: `Is ${listing.name} yours?`})).toBeTruthy();
     expect(screen.getByText("Sign in with your phone")).toBeTruthy();
