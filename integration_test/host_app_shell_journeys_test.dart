@@ -344,6 +344,67 @@ void main() {
     await unmountHostAppShell(tester);
   });
 
+  testWidgets('Host opens the door and checks a guest in', (tester) async {
+    final backend = HostShellBackend(uid: _hostUid);
+    final now = DateTime.now();
+    final event = event_helpers.buildEvent(
+      id: 'host-journey-door-event',
+      organizerId: _saketRunClub.id,
+      name: 'Door social run',
+      startTime: now.subtract(const Duration(minutes: 10)),
+      endTime: now.add(const Duration(hours: 2)),
+    );
+    await backend.seedPublishedEvent(event);
+    for (final (id, name) in const [
+      ('door-asha', 'Asha Rao'),
+      ('door-dev', 'Dev Mehta'),
+    ]) {
+      await backend.seedAttendee(
+        EventAttendee(
+          id: id,
+          eventId: event.id,
+          organizerId: _saketRunClub.id,
+          displayName: name,
+          searchName: name.toLowerCase(),
+          source: EventAttendeeSource.hostImport,
+          status: EventAttendeeStatus.registered,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    }
+    await _pumpHost(
+      tester,
+      backend,
+      organizers: [_saketRunClub],
+      initialRoute:
+          '/host/organizers/${_saketRunClub.id}/events/${event.id}/guests',
+    );
+    await pumpAppShellFrames(tester, frames: 30);
+
+    expect(find.text('0 of 2 in'), findsOneWidget);
+    expect(find.text('Asha Rao'), findsOneWidget);
+    expect(find.text('Dev Mehta'), findsOneWidget);
+
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('door-guest-door-asha')),
+        matching: find.text('Check in'),
+      ),
+    );
+    await pumpAppShellFrames(tester, frames: 30);
+
+    final checkIn = backend.functions.calls.singleWhere(
+      (call) => call.name == 'setEventAttendeeAttendance',
+    );
+    expect(checkIn.input, containsPair('attendeeId', 'door-asha'));
+    expect(checkIn.input, containsPair('desiredCheckedIn', true));
+    expect(find.text('1 of 2 in'), findsOneWidget);
+    expect(find.text('Asha Rao'), findsNothing);
+    expectHostSurfaceLoaded(tester, backend, surface: 'door');
+    await unmountHostAppShell(tester);
+  });
+
   testWidgets('Host account menu offers Delete account', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
     await _pumpHost(tester, backend, organizers: [_saketRunClub]);
