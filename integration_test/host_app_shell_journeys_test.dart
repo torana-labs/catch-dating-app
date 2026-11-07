@@ -7,7 +7,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/priv
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
-import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';

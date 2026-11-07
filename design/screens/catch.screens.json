@@ -277,11 +277,11 @@
           "routes": [
             "hostTodayScreen"
           ],
-          "file": "lib/hosts/today/presentation/host_today_screen.dart",
+          "file": "lib/hosts/today/host_today_screen.dart",
           "symbol": "_HostTodayScreenState",
           "family": "root",
-          "expression": "CatchRootScreenScaffold.sections",
-          "bodyGeometry": "full-bleed",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
           "topEdge": "safe-area"
         },
         {
@@ -316,17 +316,6 @@
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
           "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostTodayFocusScreen"
-          ],
-          "file": "lib/hosts/today/personalization/presentation/host_today_focus_screen.dart",
-          "symbol": "_HostTodayFocusScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
         }
       ],
       "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
@@ -10138,15 +10127,15 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/today/presentation/host_today_screen.dart",
+        "file": "lib/hosts/today/host_today_screen.dart",
         "symbol": "HostTodayScreen"
       },
       "stateController": {
-        "primary": "HostTodayFeedController + HostEventsTimelineController",
+        "primary": "hostTodayController + HostEventsTimelineController",
         "files": [
           {
-            "file": "lib/hosts/today/presentation/host_today_feed_controller.dart",
-            "symbol": "HostTodayFeedController"
+            "file": "lib/hosts/today/host_today_controller.dart",
+            "symbol": "hostTodayController"
           },
           {
             "file": "lib/hosts/events/presentation/host_events_state.dart",
@@ -10170,7 +10159,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller. Quiet Today uses account-and-organizer-scoped device-local focus preferences; authoritative audience, rehearsal, public-page and payout evidence remains distinct from preference and navigation."
+        "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller. Today has no personalization: the boards fix its order."
       },
       "designRefs": [
         {
@@ -10517,7 +10506,7 @@
           "id": "dress_rehearsal_action",
           "kind": "populated",
           "status": "tested",
-          "source": "HostTodayScreen owns a dedicated Dress Rehearsal callback that pushes hostEventRehearsalStartScreen with the selected organizer id. HostEventEntrySheet does not expose rehearsal as an event-creation intent.",
+          "source": "A dress-rehearsal attention item pushes hostEventRehearsalStartScreen with the selected organizer id. HostEventEntrySheet does not expose rehearsal as an event-creation intent.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -10593,7 +10582,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostTodayScreen is the direct Today route edge and delegates provider-free command-centre composition to HostTodayBody and HostTodayOverview. Compact layouts stack the current event, exhaustive attention, and seven-day horizon; capable layouts place the current event and horizon beside a fixed attention pane. HostAttentionPolicy derives supported work from backend facts, while Events exclusively owns create, repeat, import, draft-resume, schedule, and history inventory. No speculative recent-activity feed is rendered without an authoritative source.",
+        "currentLayout": "HostTodayScreen is the direct Today route edge: a CatchRoot and CatchScreen with the tab-home top bar, and the provider-free HostTodayBody below it. Compact and medium windows stack tonight's poster and its actions, Needs you, This week and Last 30 days; expanded windows use the feed pane layout with the poster, actions and week beside Needs you and the stats. HostAttentionPolicy derives supported work from backend facts, while Events exclusively owns create, repeat, import, draft-resume, schedule, and history inventory. No speculative recent-activity feed is rendered without an authoritative source.",
         "targetLayout": "Complete. Keep Today as the independent time-sensitive command centre and Events as the durable lifecycle inventory. Preserve their separate route, state, view-model, and controller boundaries, shared repository-owned event facts, and the original adaptive Catch navigation chrome.",
         "sections": [
           {
@@ -10622,7 +10611,7 @@
               "loaded_club",
               "event_loading"
             ],
-            "migration": "Complete. Today owns HostTodayScreen, HostTodayRouteState, HostTodayState, HostTodayFeedController, and HostAttentionPolicy. Events owns HostEventsScreen, HostEventsRouteState, HostEventsWorkspaceState, and HostEventsTimelineController. The combined Home adapter and surface enum are removed.",
+            "migration": "Complete. Today owns HostTodayScreen, HostTodayBody, HostTodayState, hostTodayController, and HostAttentionPolicy. Events owns HostEventsScreen, HostEventsRouteState, HostEventsWorkspaceState, and HostEventsTimelineController. The combined Home adapter and surface enum are removed.",
             "previewIds": [
               "hostHomeRouteStates"
             ]
@@ -10633,13 +10622,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostTodayOverview"
+              "HostTodayBody"
             ],
             "flutter": {
-              "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
-              "symbol": "HostTodayOverview"
+              "file": "lib/hosts/today/host_today_body.dart",
+              "symbol": "HostTodayBody"
             },
-            "currentOwner": "HostTodayBody + HostTodayOverview",
+            "currentOwner": "HostTodayBody with parts from the events and insights contexts",
             "targetOwner": "provider-free responsive Today composition",
             "dependencies": [
               "catch.button",
@@ -10837,7 +10826,7 @@
         {
           "id": "DS-HOST-HOME-003",
           "status": "closed",
-          "nextAction": "Closed. HostTodayRouteState and HostEventsRouteState independently map auth and organizer branches. HostTodayFeedController owns the bounded command-centre feed; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsWorkspaceState maps inventory branches and render-ready rows."
+          "nextAction": "Closed. HostTodayRouteState and HostEventsRouteState independently map auth and organizer branches. hostTodayController composes the Today listeners and the cached report; HostEventsTimelineController owns schedule/history pagination and partial recovery; HostEventsWorkspaceState maps inventory branches and render-ready rows."
         },
         {
           "id": "DS-HOST-HOME-004",

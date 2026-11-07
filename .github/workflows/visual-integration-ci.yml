@@ -56,7 +56,7 @@ jobs:
             --build-filter=lib/hosts/presentation/forms/host_forms_controller.g.dart \
             --build-filter=lib/hosts/presentation/forms/host_form_operations_controller.g.dart \
             --build-filter=lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart \
-            --build-filter=lib/hosts/today/presentation/host_today_feed_controller.g.dart \
+            --build-filter=lib/hosts/today/host_today_controller.g.dart \
             --build-filter=lib/onboarding/presentation/onboarding_controller.g.dart \
             --build-filter=lib/dashboard/presentation/dashboard_full_view_model.g.dart \
             --build-filter=lib/contexts/payments/data/payment_repository.g.dart \
@@ -77,7 +77,7 @@ jobs:
               'lib/hosts/presentation/forms/host_forms_controller.g.dart',
               'lib/hosts/presentation/forms/host_form_operations_controller.g.dart',
               'lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart',
-              'lib/hosts/today/presentation/host_today_feed_controller.g.dart',
+              'lib/hosts/today/host_today_controller.g.dart',
               'lib/onboarding/presentation/onboarding_controller.g.dart',
               'lib/dashboard/presentation/dashboard_full_view_model.g.dart',
               'lib/contexts/payments/data/payment_repository.g.dart',
@@ -139,7 +139,7 @@ jobs:
                   pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.g.dart'),
                   pathlib.Path('lib/hosts/presentation/forms/host_form_operations_controller.g.dart'),
                   pathlib.Path('lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart'),
-                  pathlib.Path('lib/hosts/today/presentation/host_today_feed_controller.g.dart'),
+                  pathlib.Path('lib/hosts/today/host_today_controller.g.dart'),
                   pathlib.Path('lib/onboarding/presentation/onboarding_controller.g.dart'),
                   pathlib.Path('lib/dashboard/presentation/dashboard_full_view_model.g.dart'),
                   pathlib.Path('lib/contexts/payments/data/payment_repository.g.dart'),
@@ -157,7 +157,7 @@ jobs:
                      pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.dart'),
                      pathlib.Path('lib/hosts/presentation/forms/host_form_operations_controller.dart'),
                      pathlib.Path('lib/contexts/audience/data/crm/host_saved_audience_repository.dart'),
-                     pathlib.Path('lib/hosts/today/presentation/host_today_feed_controller.dart'),
+                     pathlib.Path('lib/hosts/today/host_today_controller.dart'),
                      pathlib.Path('lib/hosts/presentation/forms/host_form_target_controller.dart'),
                      pathlib.Path('lib/onboarding/presentation/onboarding_controller.dart'),
                      pathlib.Path('lib/dashboard/presentation/dashboard_full_view_model.dart'),
@@ -198,7 +198,7 @@ jobs:
           git ls-files --error-unmatch -- lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart > /dev/null
           git diff --exit-code -- lib/hosts/presentation/forms/host_form_operations_controller.g.dart
           git diff --exit-code -- lib/contexts/payments/data/payment_repository.g.dart lib/events/presentation/event_booking_controller.g.dart
-          git diff --exit-code -- lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart lib/hosts/today/presentation/host_today_feed_controller.g.dart
+          git diff --exit-code -- lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart lib/hosts/today/host_today_controller.g.dart
 
       # Golden pixel changes are reported, not failed: the app is still
       # changing visually on purpose. CATCH_GOLDEN_REPORT puts the shared

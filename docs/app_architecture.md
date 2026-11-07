@@ -3036,7 +3036,14 @@ of a Catch code.
 `widgets/` by path, `catch_arch_parts_provider_coupling` holds `parts/`, and
 `tool/design/check_library_shims.mjs` refuses a deprecated `catch_ui` symbol.
 Screens, bodies, states and `widgets/` here take no Widgetbook case: captures and
-body render tests cover them, and Widgetbook cannot import an app package. Two
+body render tests cover them, and Widgetbook cannot import an app package.
+Until the host router moves into `apps/host`, a redrawn host destination is
+rewritten in place under its root folder and joins the roots there, with no
+legacy list: `lib/hosts/today` is the first (`HostTodayScreen` composes
+`CatchRoot` and `CatchScreen`; `HostTodayBody` and `HostTodayState` are
+provider-free; `hostTodayController` composes the listeners and the cached
+host report; the event and attention bindings live in the events and
+insights `parts/`). The folder moves into `apps/host` unchanged with the router. Two
 files under `lib/pages` predate D24 and are listed shrink-only in `migration_scope.dart`
 until their P6 redraw (`splash_screen.dart`, `celebration_screen.dart`); the list
 cannot grow, and `apps/*/lib` stays at zero with no list.
@@ -5119,10 +5126,9 @@ Reference files:
 
 Current Host adopters:
 
-- `lib/hosts/today/presentation/host_today_state.dart`
-- `lib/hosts/today/presentation/host_today_view_model.dart`
-- `lib/hosts/today/presentation/widgets/host_today_body.dart`
-- `test/hosts/today/host_today_state_test.dart`
+- `lib/hosts/today/host_today_state.dart`
+- `lib/hosts/today/host_today_body.dart`
+- `test/hosts/today/host_today_body_test.dart`
 - `lib/hosts/events/presentation/host_events_state.dart`
 - `lib/hosts/events/presentation/host_events_view_model.dart`
 - `lib/hosts/events/presentation/widgets/host_events_list.dart`

@@ -61,28 +61,6 @@
         "noncanonical-feature-widget-file",
         "noncanonical-feature-widget-name"
       ]
-    },
-    {
-      "file": "lib/hosts/today/presentation/host_today_screen.dart",
-      "name": "HostTodayLoadedRoute",
-      "issues": [
-        "noncanonical-feature-widget-name"
-      ]
-    },
-    {
-      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
-      "name": "HostTodayAttentionSection",
-      "issues": [
-        "noncanonical-feature-widget-file"
-      ]
-    },
-    {
-      "file": "lib/hosts/today/presentation/widgets/host_today_overview.dart",
-      "name": "HostTodayOverview",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
     }
   ]
 }

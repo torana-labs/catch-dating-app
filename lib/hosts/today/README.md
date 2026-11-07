@@ -18,10 +18,10 @@ Current implementation roots:
 ## This feature owns
 
 - Own the /host/today route, its authentication and organizer-selection states, and its provider-free body composition.
-- Fetch the bounded active-event context independently of the Events inventory controller.
+- Listen to the organizer's live and coming events, the featured event's roster and roster labels, and read the thirty-day host report through its cache, independently of the Events inventory controller.
 - Listen to the server-evaluated attention rows and their evaluation schedule under manager rules, compute coverage from the generated policy catalog, and merge device-local attendance retry or conflict work.
 - Order work by urgency, consequence, deadline, and stable identity without inferring mandatory tasks from missing optional data.
-- Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience Responses, Inbox, and Payouts.
+- Own typed handoffs to the door, messages, the live console, Events, Event Manage, Audience Responses, Inbox, Payouts, organizer insights and event creation.
 - Keep incomplete attention sources visible so the screen cannot claim a false all-clear.
 
 ## This feature does not own
@@ -50,11 +50,11 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostTodayScreen` | `lib/hosts/today/presentation/host_today_screen.dart` | Actions: sign_in, open_operational_event, open_attention_task, start_dress_rehearsal. |
-| `HostTodayBody` | `lib/hosts/today/presentation/widgets/host_today_body.dart` | Structural owner. |
+| `HostTodayScreen` | `lib/hosts/today/host_today_screen.dart` | Actions: sign_in, open_operational_event, open_attention_task, open_door, message_guests, open_live_console. |
+| `HostTodayBody` | `lib/hosts/today/host_today_body.dart` | Structural owner. |
 | `HostAttentionProjection` | `lib/contexts/insights/domain/host_attention_item.dart` | Structural owner. |
 | `HostAttentionRepository` | `lib/contexts/insights/data/host_attention_repository.dart` | Structural owner. |
-| `HostTodayFeedController` | `lib/hosts/today/presentation/host_today_feed_controller.dart` | Structural owner. |
+| `hostTodayController` | `lib/hosts/today/host_today_controller.dart` | Structural owner. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies
@@ -77,8 +77,9 @@ Typed handoffs:
 ## Focused tests
 
 - `test/hosts/today/host_attention_item_test.dart`
-- `test/hosts/today/host_today_feed_controller_test.dart`
-- `test/hosts/today/host_today_state_test.dart`
+- `test/hosts/today/host_today_controller_test.dart`
+- `test/hosts/today/host_today_body_test.dart`
+- `test/hosts/today/host_today_parts_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
 ## Maintenance

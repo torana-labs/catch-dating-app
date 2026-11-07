@@ -35,7 +35,8 @@ export const registryPath = "design/components/catch.components.json";
 const barrelPath = "packages/catch_ui/lib/catch_ui.dart";
 const libraryRoot = "packages/catch_ui/lib";
 const migrationScopePath = "packages/catch_ui_lints/lib/src/migration_scope.dart";
-const newRootPages = "lib/pages";
+// lib/hosts/today is a host destination redrawn in place (migration_scope.dart).
+const newRootFolders = ["lib/pages", "lib/hosts/today"];
 
 /** Blanks comments and string bodies, keeping every offset and line. */
 export function maskDart(source) {
@@ -346,7 +347,7 @@ function dartFilesUnder(root, relative) {
 
 /** Every file D24 holds, skipping what predates it. */
 export function newRootFiles(root, legacy) {
-  return [...appPackageSourceRoots(root), newRootPages]
+  return [...appPackageSourceRoots(root), ...newRootFolders]
     .flatMap((relative) => dartFilesUnder(root, relative))
     .filter((file) => !legacy.has(file))
     .sort();
