@@ -1848,7 +1848,7 @@
           "checked-in"
         ]
       },
-      "notes": "Shared website component; Live-event header with a check-in badge; no step navigation or progress."
+      "notes": "Shared website component; Live-event header with a check-in badge; no step navigation or progress. Since P4.6 no route renders it; only the motion-parity story in MarketingRoutes.stories.tsx draws it. Retire with that story."
     },
     {
       "id": "shared_event_runtime_loading",
@@ -1861,8 +1861,6 @@
         "event_detail_canonical",
         "event_invite",
         "event_offer",
-        "event_rehearsal",
-        "event_runtime",
         "household_rsvp",
         "sales_demo"
       ],
@@ -1886,7 +1884,6 @@
       "kind": "supporting-component",
       "routeIds": [
         "event_assistance",
-        "event_rehearsal",
         "household_rsvp"
       ],
       "owner": "shared/ui",
@@ -1917,8 +1914,6 @@
         "event_booking",
         "event_invite",
         "event_offer",
-        "event_rehearsal",
-        "event_runtime",
         "household_rsvp",
         "sales_demo"
       ],
@@ -1948,7 +1943,6 @@
       "id": "shared_event_runtime_practice_banner",
       "kind": "supporting-component",
       "routeIds": [
-        "event_rehearsal",
         "sales_demo"
       ],
       "owner": "shared/ui",
@@ -2367,6 +2361,22 @@
       "source": "website/src/features/eventRuntime/EventRuntimePage.tsx",
       "exportName": "EventRuntimePage",
       "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
@@ -2377,14 +2387,55 @@
           "phone-entry"
         ]
       },
-      "notes": "Opaque-link, no-download attendee route with OTP, roster claim, event-scoped intake, check-in, and live Event Success modules."
+      "notes": "Opaque-link, no-download attendee route with OTP, roster claim, event-scoped intake, check-in, and live Event Success modules. Drawn on @catch/web-ui on the white ground since P4.6 (EventRuntimeView); event-runtime.css stays only for the route and room map primitives (EventRuntimeRouteMap, EventRuntimeRoomMap), which have no system part yet. The registered route story still renders the legacy runtime shells; EventRuntime.stories.tsx draws the page."
+    },
+    {
+      "id": "event_runtime_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime"
+      ],
+      "owner": "features/eventRuntime",
+      "source": "website/src/features/eventRuntime/EventRuntimePage.tsx",
+      "exportName": "EventRuntimeView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchMeter.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "join",
+          "join-code",
+          "join-team",
+          "round",
+          "round-scores",
+          "reveal"
+        ]
+      },
+      "notes": "The /join page drawn from the controller (P4.6, RbAppLive boards in the browser): join by phone, code and team, the Now spotlight with the round, scores and the reveal. EventRuntime.stories.tsx renders Join, JoinCode, JoinTeam, Round, RoundScores, Reveal and Rehearsal without catchComponent parameters, so the record stays planned until those stories declare it."
     },
     {
       "id": "shared_event_runtime_shells",
       "kind": "supporting-component",
       "routeIds": [
-        "event_runtime",
-        "event_rehearsal"
+        "event_assistance",
+        "sales_demo"
       ],
       "owner": "shared/ui/primitives",
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
@@ -2401,7 +2452,7 @@
           "live-module-shell"
         ]
       },
-      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards.",
+      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards. Since P4.6 /join and /rehearse no longer render these shells; the event assistance page and the sales demo do.",
       "comparedWith": [
         "catch.pane_layout"
       ],
@@ -2417,6 +2468,20 @@
       "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
       "exportName": "EventRehearsalPage",
       "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchNotice.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
@@ -2438,7 +2503,7 @@
           "required-data-closed"
         ]
       },
-      "notes": "Noindex anonymous synthetic-guest route with deterministic browser slot redemption, virtual event updates, guest actions, persistent practice identity, and fault-aware recovery. The deterministic story is implemented; visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist."
+      "notes": "Noindex anonymous synthetic-guest route with deterministic browser slot redemption, virtual event updates, guest actions, persistent practice identity, and fault-aware recovery. The deterministic story is implemented; visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist. Drawn on @catch/web-ui since P4.6; event-runtime.css stays only for the map primitives."
     },
     {
       "id": "event_rehearsal_preview",
@@ -2450,6 +2515,20 @@
       "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
       "exportName": "EventRehearsalPreview",
       "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchPaneLayout.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchNotice.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
@@ -2468,7 +2547,7 @@
           "required-data-closed"
         ]
       },
-      "notes": "Pure guest-phone presentation used by the route and deterministic Storybook fixtures; all remote state remains in the feature controller. Visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist."
+      "notes": "Pure guest-phone presentation used by the route and deterministic Storybook fixtures; all remote state remains in the feature controller. Visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist. Drawn on @catch/web-ui since P4.6; event-runtime.css stays only for the map primitives."
     },
     {
       "id": "route_event_invite",

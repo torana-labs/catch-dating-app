@@ -139,7 +139,7 @@ export const EventRuntimeShells: Story = {
     a11y: {test: "error"},
     catchComponent: {
       id: "shared_event_runtime_shells",
-      routeIds: ["event_runtime", "event_rehearsal"],
+      routeIds: ["event_assistance", "sales_demo"],
       states: ["phone-entry", "live-module-shell"],
     },
   },
