@@ -12,6 +12,7 @@ import {
   sendCrossPathsInvitationHandler,
 } from "./invitations";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 type Filter = {field: string; op: string; value: unknown};
@@ -500,6 +501,7 @@ function matches(actual: unknown, op: string, expected: unknown): boolean {
 
 function event(): FakeData {
   return {
+    ...publishedEventSetup(),
     status: "active",
     crossPathsDiscoveryEnabled: true,
     discoveryMarketId: "in-mh-mumbai",

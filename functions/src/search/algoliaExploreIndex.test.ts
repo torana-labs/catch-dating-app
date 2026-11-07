@@ -11,6 +11,7 @@ import type {
   OrganizerDocument,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes.js";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 /**
  * Builds a minimal Firestore timestamp double for pure record tests.
@@ -78,6 +79,7 @@ function organizer(overrides: Partial<OrganizerDocument> =
  */
 function event(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
+    ...publishedEventSetup(),
     organizerId: "club-1",
     startTime: timestamp("2026-05-30T01:30:00.000Z"),
     endTime: timestamp("2026-05-30T02:30:00.000Z"),
@@ -168,7 +170,7 @@ test("buildEventSearchRecord omits cancelled events", () => {
 test("private and malformed setup events never enter a visible organizer index",
   () => {
     for (const state of [{publicationState: "private"},
-      {publicationState: null}, {setupRevision: 1}]) {
+      {publicationState: null}, {publicationState: undefined}]) {
       assert.equal(buildEventSearchRecord("private-event", {
         ...event(), ...state,
       } as EventDocument, organizer()), null);

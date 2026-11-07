@@ -323,13 +323,8 @@ Stream<List<Event>> watchEventsForOrganizerIdsStream({
 /// manager's private basics reader uses its own authorized projection.
 Event? publishedRichEvent(DocumentSnapshot<Map<String, dynamic>> snapshot) {
   final data = snapshot.data();
-  final explicitState = data?['publicationState'];
-  final legacyPublic =
-      data != null &&
-      !data.containsKey('publicationState') &&
-      !data.containsKey('setupRevision');
   if (data == null ||
-      (explicitState != 'published' && !legacyPublic) ||
+      data['publicationState'] != 'published' ||
       (data['organizerId'] is! String && data['organizerId'] is! String) ||
       data['startTime'] is! Timestamp ||
       data['endTime'] is! Timestamp ||

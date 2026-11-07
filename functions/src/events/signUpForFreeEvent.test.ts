@@ -4,6 +4,7 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {signUpForFreeEventHandler} from "./signUpForFreeEvent";
 import type {HostMembershipContext} from
   "../hostMemberships/entitlementReader";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 test(
   "signUpForFreeEventHandler books a free event through shared signer",
@@ -337,6 +338,7 @@ function emptyMembershipContext(): HostMembershipContext {
 function configuredEventFixture(): Record<string, unknown> {
   const time = (millis: number) => ({toMillis: () => millis});
   return {
+    ...publishedEventSetup(),
     organizerId: "club-1",
     startTime: time(1_000),
     endTime: time(2_000),

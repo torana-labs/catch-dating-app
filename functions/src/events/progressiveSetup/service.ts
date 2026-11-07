@@ -355,7 +355,10 @@ export function authorizeSetupManager(
   return organizer;
 }
 
-function organizerDefaults(organizerId: string, organizer: OrganizerDocument,
+/** The organizer's city, timezone and defaults revision, read in the same
+ * transaction as the event write, through the defaults projection. */
+export function organizerDefaults(organizerId: string,
+  organizer: OrganizerDocument,
   privateDefaults: FirebaseFirestore.DocumentData | undefined,
   db: FirebaseFirestore.Firestore): OrganizerSetupDefaults {
   const projected = projectManagerEventSetupDefaults(organizerId, organizer,

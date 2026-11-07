@@ -7,6 +7,7 @@
 import {createHash} from "node:crypto";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
 import {cohortIdForUser, normalizePolicy} from "../events/eventPolicy";
+import {publishedEventBasics} from "../events/progressiveSetup/basics";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import type {CanonicalMarket} from "../locations/marketConfig";
 import {
@@ -621,10 +622,26 @@ function worldEventDoc(params: {
     longitude: venue.lng,
     notes: venue.directions,
   };
+  const startTime = clock.atDateTime(event.civilDate, event.startTime);
+  // Created published, like createEvent: the organizer's city and market
+  // and its market's timezone.
+  const basics = publishedEventBasics({
+    name: event.name,
+    startTimeMillis: startTime.getTime(),
+    defaults: {city: {cityId: params.market.cityId,
+      marketId: params.market.marketId}},
+  });
   const base: FirebaseFirestore.DocumentData = {
     ...params.marker,
-    name: event.name,
+    name: basics.name,
     publicationState: "published",
+    setupRevision: 1,
+    eventCityId: basics.eventCityId,
+    eventMarketId: basics.eventMarketId,
+    eventLocalDate: basics.eventLocalDate,
+    eventLocalStartTime: basics.eventLocalStartTime,
+    eventTimezone: basics.eventTimezone,
+    setupDefaults: basics.setupDefaults,
     organizerId: params.organizerId,
     eventOrigin: {
       mode: "catchNative",
@@ -638,7 +655,7 @@ function worldEventDoc(params: {
       connectedAt: null,
       connectedBy: null,
     },
-    startTime: ts(clock.atDateTime(event.civilDate, event.startTime)),
+    startTime: ts(startTime),
     endTime: ts(clock.atDateTime(event.civilDate, event.endTime)),
     meetingPoint: venue.name,
     meetingLocation,

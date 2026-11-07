@@ -2192,6 +2192,31 @@ The contract layer owns:
 
 ### Progressive Event Setup Contracts
 
+Every event document has one shape in one of two states. `publicationState`
+says whether it is `private` (still being set up by its managers) or
+`published`, and `setupRevision` (at least 1) counts every setup change in
+either state; both are required on every event, with the basics (`name`,
+`eventCityId`, `eventMarketId`, `eventLocalDate`, `eventLocalStartTime`,
+`eventTimezone`, `setupDefaults`). The schema's private branch still requires
+closed public registration, and its published branch the rich fields.
+`createPrivateEventSetup` creates a private event at revision 1. `createEvent`
+creates a published event at revision 1 and derives its basics through the
+same defaults resolver as the private first save: the name it was given, the
+organizer's city and market, the organizer's saved timezone or, when none is
+saved, its market's timezone, and the local date and time of the start in
+that timezone. A start that is not a whole minute, or that names an ambiguous
+local time, is refused, as a published edit refuses it. Seeds, the demo
+tooling and the Suvbot demo worlds create published events the same way. An
+event's source revision for offer settings, offer plans and admission is its
+`setupRevision`; a missing or malformed revision is an invalid event, never a
+fallback to the document's update time. Rich edits, cancellation, deletion and
+create-photo recovery act on published events whatever created them, raise
+`setupRevision` (deletion removes the event) and refuse private events, which
+belong to the progressive setup commands; an event without a publication
+state or setup revision is refused as invalid. Dev and prod are reseeded after
+the release that introduced this shape (pre-launch clean-schema mandate), so
+no event without it remains.
+
 The progressive wizard uses `createPrivateEventSetup`,
 `updatePrivateEventBasics` and `listPrivateEventSetups` payload contracts, and
 reads each event through its manager setup view (below). The manager inventory defaults to
@@ -2312,7 +2337,7 @@ Host journals the exact publication request before sending it. An uncertain
 result retries that request; only an exact server rejection proving that the
 request did not commit can discard it. A replayed receipt is followed by a fresh
 read, so an older publish receipt cannot overwrite a later unpublish in the UI.
-Rich edits use the published editor. Progressive events require the loaded
+Rich edits use the published editor. Every published event requires the loaded
 `expectedSetupRevision`; successful edits increment it and preserve the stored
 IANA timezone while deriving matching local date/time for schedule changes.
 Unchanged schedule/policy values in a complete form save do not count as a
@@ -2355,8 +2380,7 @@ The required role-scoped Remote Config build minimum must use the actual
 released build numbers. It is not a privacy barrier: old clients can start
 offline or use bundled nonblocking defaults when the fetch fails. Restrictive
 rules must be live and tested before either private-setup gate is enabled.
-Individual legacy document reads remain compatible only when neither
-`publicationState` nor `setupRevision` exists.
+Individual event reads are public only for a published event.
 Direct private event reads require a current organizer manager or active viewRoster
 staff grant; deleted users, foreign tenants and expired/revoked staff grants
 are denied. Consumer bookmarks cannot target private events.
@@ -2370,14 +2394,21 @@ remains disabled until the explicit legacy publication backfill, all public
 readers/search projections and integrated privacy checks are complete.
 
 The offer picker uses `listOfferEventTargets` for both private and already
-published owned events, including valid rich legacy events. The bounded index
+published owned events. The bounded index
 uses canonical `organizerId`, status, start time and document ID; contradictory
 organizer ownership fails. This list exposes no payment settings.
-`getEventOfferConfiguration` separately reads manager-only current terms for
-the selected event and suggests expiry from the server clock and event policy.
-The read includes the private preference revision and resolved intent provenance
-so editing preserves inherit/set/clear decisions. Missing configuration remains
-null with revision zero, never an invented free price or expiry.
+The offer settings screen reads the event's `eventSetupPreferences/{eventId}`
+document directly: current managers of the event's organizer get it under rules,
+and an event without saved settings reads as missing. The phone combines it with
+the event document: the event's `setupRevision` is the offer commands' source
+revision and its `startTime` the start; a cancelled event, or one without a
+`setupRevision`, cannot take offer settings. The preference revision and resolved
+intent provenance keep editing's inherit/set/clear decisions. Missing settings
+remain null with revision zero, never an invented free price or expiry. The
+suggested expiry is the server's rule applied with the app clock: an
+`offerValidityMinutes` of 5 to 10,080 counted from now and clamped at the event
+start while the event is in the future, otherwise none; the preview and commit
+recheck it.
 `previewEventOfferPreferences` authorizes the same manager and resolves the
 complete candidate against the event, saved preferences and organizer defaults
 in one read-only transaction. Its before/after projection includes inherited
@@ -2464,11 +2495,11 @@ requires publication-ready scheduling and admission values at creation.
 
 | Fields | Ownership / requirement | Entry point and detail behavior |
 |---|---|---|
-| `name` | Host; required for new events (legacy records may omit) | Event name; detail uses authored name, legacy title fallback only for old records. |
+| `name` | Host; required on every event | Event name; detail uses the authored name. |
 | `organizerId`, `organizerId` | Required organizer context | Organizer selection/route; resolved organizer identity, never raw ID inputs. |
 | `startTime` | Required schedule | Date/time; private flow resolves civil input through chosen timezone. Detail uses stored timezone when present; legacy records retain their existing clock interpretation. |
 | `endTime` | Required before publication | Duration/end time; private draft can clear it. No rich guest page for incomplete private records. |
-| `eventCityId`, `eventMarketId`, `eventLocalDate`, `eventLocalStartTime`, `eventTimezone` | Required progressive schedule context | City/timezone/date/time controls; market and instant derived. These progressive fields are not retroactively required on legacy events. |
+| `eventCityId`, `eventMarketId`, `eventLocalDate`, `eventLocalStartTime`, `eventTimezone` | Required schedule context on every event | City/timezone/date/time controls in private setup; `createEvent` derives them from the organizer and the start. Market and instant derived. |
 | `meetingPoint`, `meetingLocation`, `startingPointLat`, `startingPointLng` | Exact venue required before publication; compatibility mirrors derived | Map/place picker supplies canonical name and coordinates; private setup may hold a name-only draft. Detail/map show resolved venue. |
 | `sourceVenueId` | Optional saved-place provenance | Inherit saved venue; replaced custom location clears provenance. Host-only, no ID field on guest page. |
 | `locationDetails` | Optional nullable directions mirror | Optional directions; blank becomes null. Detail/map omit absent notes. |
@@ -2481,9 +2512,9 @@ requires publication-ready scheduling and admission values at creation.
 | `constraints`, `eventPolicy` | Policy defaults with optional overrides | Existing admission, waitlist, pricing, eligibility and cancellation controls/presets; detail explains effective policy. Advanced preset-managed values are not arbitrary free-form inputs. |
 | `eventOrigin`, `runtimeAccess` | Origin/access decision and derived runtime rules | Catch/external origin and external roster/source controls in full flow; private flow preserves its gated lifecycle. Source URL/ID are operational provenance, not guest marketing links. |
 | `status`, `cancelledAt`, `cancellationReason` | Lifecycle command; optional nullable reason/time | Cancellation flow, not create form. Cancellation reason appears only on a cancelled event when nonblank. |
-| `publicationState`, `publicRegistrationEnabled`, `publicRegistrationMode` | Separate lifecycle decisions | Visibility/registration actions, never inferred from content completion or price. Guest entry points obey effective state. |
+| `publicationState`, `publicRegistrationEnabled`, `publicRegistrationMode` | Separate lifecycle decisions; `publicationState` required on every event | Visibility/registration actions, never inferred from content completion or price. Guest entry points obey effective state. |
 | `setupDefaults` | Derived provenance of accepted defaults | Explicit inherit choices; never edit raw source hashes or revisions. |
-| `setupRevision`, `publicRegistrationRevision`, `planChangeRevision`, `firstPublishedAt`, `createdAt`, `updatedAt` | Server-owned history/concurrency | No input; used by commands and relevant management status. |
+| `setupRevision`, `publicRegistrationRevision`, `planChangeRevision`, `firstPublishedAt`, `createdAt`, `updatedAt` | Server-owned history/concurrency; `setupRevision` required on every event | No input; used by commands and relevant management status. `setupRevision` is the source revision offers and admissions fence on. |
 | `bookedCount`, `checkedInCount`, `waitlistedCount`, `genderCounts`, `cohortCounts`, `waitlistedCohortCounts` | Server-maintained aggregates | Render appropriate capacity/attendance information; never editable create fields. |
 | `crossPathsPairHeldCount`, `crossPathsPairConfirmedCount`, `crossPathsPairHeldCohortCounts`, `crossPathsDiscoveryEnabled` | Matching/discovery projections | Server-owned; no ordinary event input or raw guest display. |
 | `discoveryMarketId`, `discoveryCityName`, `discoveryActivityKind`, `discoveryGeoCell`, `discoveryHasOpenSpots`, `discoveryAvailability`, `discoveryOpenCohorts`, `discoveryWaitlistCohorts`, `discoveryInviteRequired`, `discoveryMembershipRequired`, `discoveryManualApprovalRequired`, `discoveryMinAge`, `discoveryMaxAge`, `adminSearch` | Derived search projections | Rebuilt from canonical fields; render canonical city/format/availability/policy, not projection duplicates. |
@@ -2951,8 +2982,8 @@ and event under the same authority, and `eventSuccessPresence` and
 
 The create flow reads `hostEventSetupViews/{eventId}` and
 `hostEventSetupDefaultViews/{organizerId}` under the active-organizer manager
-authority (`isActiveHostSummaryManager`), and
-`eventRehearsalMilestones/{organizerId}` under the plain manager authority;
+authority (`isActiveHostSummaryManager`), and `eventSetupPreferences/{eventId}`
+and `eventRehearsalMilestones/{organizerId}` under the plain manager authority;
 their evaluators and rules are described in
 [Progressive Event Setup Contracts](#progressive-event-setup-contracts) and
 [Event Dress Rehearsal Isolation Contract](#event-dress-rehearsal-isolation-contract).

@@ -392,7 +392,12 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             this.db.collection("events").doc(eventId));
           const data = eventSnap.data() as EventDocument | undefined;
           if (!data) return null;
-          const sourceRevision = eventSourceRevision(data, eventSnap);
+          let sourceRevision: number | null = null;
+          try {
+            sourceRevision = eventSourceRevision(data);
+          } catch {
+            // Reported below with every other malformed event field.
+          }
           const startsAtMillis = data.startTime?.toMillis();
           if (!Number.isSafeInteger(startsAtMillis) ||
               startsAtMillis! <= 0 ||

@@ -92,6 +92,7 @@ mixin _HostFormEditorTargetMixin on _$HostFormEditorController {
     }
     return CallableHostOfferEventTargetsGateway(
       ref.read(firebaseFunctionsProvider),
+      configurations: ref.read(eventOfferConfigurationReadsProvider),
     ).list(organizerId: organizerId, cursor: cursor);
   }
 

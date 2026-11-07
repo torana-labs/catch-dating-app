@@ -8,6 +8,7 @@ import {
   buildOrganizerScheduleLockDocs,
   buildUserEventScheduleLockDocs,
 } from "../demo/demo_schedule_policy.mjs";
+import {marketForIdOrAlias} from "../lib/location_markets.mjs";
 export {
   listScenarioConfigs,
   loadScenarioConfig,
@@ -43,6 +44,49 @@ const cityLabels = {
 
 export function loadFirebaseAdmin() {
   return requireFromFunctions("firebase-admin");
+}
+
+/** createEvent's basics derivation, from the compiled Functions code. */
+export function loadPublishedEventBasics() {
+  try {
+    return requireFromFunctions("./lib/events/progressiveSetup/basics.js")
+      .publishedEventBasics;
+  } catch (error) {
+    throw new Error(
+      "Demo event plans require compiled Functions helpers. " +
+        "Run `npm --prefix functions run build` first.",
+      {cause: error}
+    );
+  }
+}
+
+/**
+ * The setup fields of a demo event created published: its name, the city's
+ * market, the market's timezone and the local start, derived like createEvent.
+ */
+function demoEventSetup({publishedEventBasics, name, city, startTime}) {
+  const market = marketForIdOrAlias(city);
+  if (!market) throw new Error(`Unknown demo event city: ${city}`);
+  const basics = publishedEventBasics({
+    name,
+    startTimeMillis: startTime.getTime(),
+    defaults: {city: {cityId: market.cityId, marketId: market.marketId}},
+  });
+  return {
+    name: basics.name,
+    publicationState: "published",
+    setupRevision: 1,
+    eventCityId: basics.eventCityId,
+    eventMarketId: basics.eventMarketId,
+    eventLocalDate: basics.eventLocalDate,
+    eventLocalStartTime: basics.eventLocalStartTime,
+    eventTimezone: basics.eventTimezone,
+    setupDefaults: basics.setupDefaults,
+  };
+}
+
+function wholeMinute(date) {
+  return new Date(Math.floor(date.getTime() / 60_000) * 60_000);
 }
 
 export function normalizePhone(raw) {
@@ -449,6 +493,7 @@ export async function buildHostAccountPlan({
   longitude,
   meetingPoint,
   now = new Date(),
+  publishedEventBasics = loadPublishedEventBasics(),
 }) {
   const user = await resolveUserByPhone(db, phone);
   const profile = await requirePublicProfile(db, user.uid);
@@ -476,6 +521,7 @@ export async function buildHostAccountPlan({
     notes: "Demo host event created by demo ops.",
     command: "create-host-account",
   });
+  const eventStart = wholeMinute(offsetDate(now, {days: 2}));
   const docs = [
     {
       path: `organizerHostClaims/${user.uid}`,
@@ -541,9 +587,11 @@ export async function buildHostAccountPlan({
       path: `events/${eventId}`,
       data: {
         ...marker,
+        ...demoEventSetup({publishedEventBasics, name: "Host tools demo",
+          city, startTime: eventStart}),
         organizerId: organizerId,
-        startTime: timestampFromDate(admin, offsetDate(now, {days: 2})),
-        endTime: timestampFromDate(admin, offsetDate(now, {days: 2, hours: 1})),
+        startTime: timestampFromDate(admin, eventStart),
+        endTime: timestampFromDate(admin, offsetDate(eventStart, {hours: 1})),
         meetingPoint: eventLocation.name,
         meetingLocation: eventLocation,
         startingPointLat: eventLocation.latitude,
@@ -594,6 +642,7 @@ export async function buildCheckInEventPlan({
   longitude,
   meetingPoint = "Check-in test point",
   now = new Date(),
+  publishedEventBasics = loadPublishedEventBasics(),
 }) {
   const user = await resolveUserByPhone(db, phone);
   const profile = await requirePublicProfile(db, user.uid);
@@ -624,13 +673,15 @@ export async function buildCheckInEventPlan({
   const hostAvatarUrl = firstPhoto(profile.data);
   const organizerId = `${seedPrefix}_checkin_club_${user.uid}`;
   const eventId = `${seedPrefix}_checkin_run_${user.uid}`;
-  const startTime = offsetDate(now, {minutes: 5});
-  const endTime = offsetDate(now, {minutes: 50});
+  const startTime = wholeMinute(offsetDate(now, {minutes: 5}));
+  const endTime = offsetDate(startTime, {minutes: 45});
   const event = {
     id: eventId,
     path: `events/${eventId}`,
     data: {
       ...marker,
+      ...demoEventSetup({publishedEventBasics, name: "Check-in demo",
+        city, startTime}),
       organizerId: organizerId,
       startTime: timestampFromDate(admin, startTime),
       endTime: timestampFromDate(admin, endTime),

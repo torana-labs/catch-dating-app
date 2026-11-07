@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -15,6 +16,7 @@ import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
 
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -285,6 +287,11 @@ function organizer(overrides: FakeData = {}): FakeData {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
+    ...publishedEventSetup(),
+    eventCityId: "in-mh-mumbai",
+    eventMarketId: "in-mh-mumbai",
+    eventLocalDate: "2026-05-02",
+    eventLocalStartTime: "07:00",
     organizerId: "club-1",
     startTime: ts("2026-05-02T01:30:00.000Z"),
     endTime: ts("2026-05-02T02:30:00.000Z"),
@@ -358,6 +365,15 @@ function payload(overrides: FakeData = {}): FakeData {
   };
 }
 
+const mumbai = {cityId: "in-mh-mumbai", marketId: "in-mh-mumbai"};
+
+/** The organizer defaults fingerprint the setup defaults resolver records. */
+function defaultsHash(city: {cityId: string; marketId: string},
+  timezone: string | null, revision: number | null): string {
+  return createHash("sha256")
+    .update(JSON.stringify({city, timezone, revision})).digest("hex");
+}
+
 function ts(iso: string): FirebaseFirestore.Timestamp {
   return admin.firestore.Timestamp.fromDate(new Date(iso));
 }
@@ -381,6 +397,18 @@ test("createEventHandler creates a server-owned event for the club host",
       organizerId: "club-1",
       name: "Sunrise Social 5K",
       publicationState: "published",
+      setupRevision: 1,
+      eventCityId: "in-mh-mumbai",
+      eventMarketId: "in-mh-mumbai",
+      eventLocalDate: "2026-05-02",
+      eventLocalStartTime: "07:00",
+      eventTimezone: "Asia/Kolkata",
+      setupDefaults: {
+        city: {value: mumbai, source: "organizer"},
+        timezone: {value: "Asia/Kolkata", source: "event"},
+        organizerDefaultsRevision: null,
+        organizerDefaultsHash: defaultsHash(mumbai, null, null),
+      },
       eventOrigin: {
         mode: "catchNative",
         bookingAuthority: "catch",
@@ -491,6 +519,32 @@ test("createEventHandler creates a server-owned event for the club host",
     });
   }
 );
+
+test("createEventHandler inherits the organizer's saved timezone",
+  async () => {
+    const h = harness({"organizers/club-1": organizer(),
+      "organizerEventSetupDefaults/club-1": {organizerId: "club-1",
+        revision: 3, eventSetup: {timezone: "Asia/Kolkata"}}});
+    await createEventHandler(request("host-1", payload()), h.deps);
+    const created = h.firestore.get("events/event-1")!;
+    assert.equal(created.setupRevision, 1);
+    assert.equal(created.eventTimezone, "Asia/Kolkata");
+    assert.deepEqual(created.setupDefaults, {
+      city: {value: mumbai, source: "organizer"},
+      timezone: {value: "Asia/Kolkata", source: "organizer"},
+      organizerDefaultsRevision: 3,
+      organizerDefaultsHash: defaultsHash(mumbai, "Asia/Kolkata", 3),
+    });
+  });
+
+test("createEventHandler refuses a start that is not a whole minute",
+  async () => {
+    const h = harness({"organizers/club-1": organizer()});
+    await assert.rejects(createEventHandler(request("host-1", payload({
+      startTimeMillis: Date.parse("2026-05-02T01:30:30.000Z"),
+    })), h.deps), (error) => assertHttpsCode(error, "invalid-argument"));
+    assert.equal(h.firestore.get("events/event-1"), undefined);
+  });
 
 test("createEventHandler persists only valid itinerary and route combinations",
   async () => {
@@ -1191,6 +1245,7 @@ test("legacy rich mutations cannot edit progressive private basics",
     });
     const changes = [
       updateEventHandler(request("host-1", {eventId: "event-1",
+        expectedSetupRevision: 1,
         fields: {name: "Public by accident"}}), h.deps),
       cancelEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
       deleteEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
@@ -1215,6 +1270,36 @@ function publishedProgressiveEvent(overrides: FakeData = {}): FakeData {
     organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)},
     ...overrides});
 }
+
+test("deleteEvent removes an unused published event whatever created it",
+  async () => {
+    const h = harness({"organizers/club-1": organizer(),
+      "events/event-1": publishedProgressiveEvent()});
+    assert.deepEqual(await deleteEventHandler(request("host-1",
+      {eventId: "event-1"}), h.deps), {deleted: true});
+    assert.equal(h.firestore.get("events/event-1"), undefined);
+  });
+
+test("rich mutations refuse an event without a setup state", async () => {
+  for (const missing of ["publicationState", "setupRevision"]) {
+    const stored = event();
+    delete stored[missing];
+    const h = harness({"organizers/club-1": organizer(),
+      "events/event-1": stored});
+    for (const change of [
+      updateEventHandler(request("host-1", {eventId: "event-1",
+        expectedSetupRevision: 1, fields: {description: "New notes"}}),
+      h.deps),
+      cancelEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
+      deleteEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
+    ]) {
+      await assert.rejects(change,
+        (error) => assertHttpsCode(error, "failed-precondition"));
+    }
+    assert.equal(h.firestore.get("events/event-1")?.description,
+      "Easy seaside event.");
+  }
+});
 
 test("published progressive editing requires the current setup revision",
   async () => {
@@ -1299,7 +1384,7 @@ test("updateEventHandler updates only host-editable event fields", async () => {
 
   const result = await updateEventHandler(
     request("host-1", {
-      eventId: "event-1",
+      eventId: "event-1", expectedSetupRevision: 1,
       fields: {
         startTimeMillis: Date.parse("2026-05-02T02:00:00.000Z"),
         endTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
@@ -1335,7 +1420,7 @@ test("updateEventHandler cleans removed event media after commit", async () => {
   });
 
   await updateEventHandler(request("host-1", {
-    eventId: "event-1",
+    eventId: "event-1", expectedSetupRevision: 1,
     fields: {eventPhotos: [kept]},
   }), h.deps);
 
@@ -1353,7 +1438,7 @@ test(
       "events/event-1": event(),
     });
     await updateEventHandler(request("host-1", {
-      eventId: "event-1",
+      eventId: "event-1", expectedSetupRevision: 1,
       fields: {publicRegistrationEnabled: true},
     }), eligible.deps);
     assert.equal(
@@ -1367,7 +1452,7 @@ test(
     });
     await assert.rejects(
       () => updateEventHandler(request("host-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {publicRegistrationEnabled: true},
       }), paid.deps),
       (error) => assertHttpsCode(error, "failed-precondition")
@@ -1381,7 +1466,7 @@ test(
     });
     await assert.rejects(
       () => updateEventHandler(request("host-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {publicRegistrationEnabled: true},
       }), cohortGated.deps),
       (error) => assertHttpsCode(error, "failed-precondition")
@@ -1419,7 +1504,7 @@ test("updateEventHandler notifies participants for location changes",
 
     await updateEventHandler(
       request("host-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {
           meetingPoint: "Joggers Park",
         },
@@ -1481,7 +1566,7 @@ test("updateEventHandler rejects schedule changes once participants exist",
     await assert.rejects(
       () => updateEventHandler(
         request("host-1", {
-          eventId: "event-1",
+          eventId: "event-1", expectedSetupRevision: 1,
           fields: {
             startTimeMillis: Date.parse("2026-05-02T02:00:00.000Z"),
             endTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
@@ -1494,7 +1579,7 @@ test("updateEventHandler rejects schedule changes once participants exist",
     await assert.rejects(
       () => updateEventHandler(
         request("host-1", {
-          eventId: "event-1",
+          eventId: "event-1", expectedSetupRevision: 1,
           fields: {capacityLimit: 99},
         }),
         h.deps
@@ -1520,7 +1605,7 @@ test("updateEventHandler skips participant notifications for copy-only edits",
 
     await updateEventHandler(
       request("host-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {description: "New route notes."},
       }),
       h.deps
@@ -1551,7 +1636,7 @@ test("updateEventHandler advances immutable plan change revisions",
     });
 
     await updateEventHandler(request("host-1", {
-      eventId: "event-1",
+      eventId: "event-1", expectedSetupRevision: 1,
       fields: {meetingPoint: "Joggers Park"},
     }), h.deps);
 
@@ -1677,21 +1762,21 @@ test("updateEventHandler rejects non-host and server-owned field edits",
 
     await assert.rejects(
       () => updateEventHandler(request("runner-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {description: "Nope."},
       }), h.deps),
       (error) => assertHttpsCode(error, "permission-denied")
     );
     await assert.rejects(
       () => updateEventHandler(request("host-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {bookedCount: 99},
       }), h.deps),
       (error) => assertHttpsCode(error, "invalid-argument")
     );
     await assert.rejects(
       () => updateEventHandler(request("host-1", {
-        eventId: "event-1",
+        eventId: "event-1", expectedSetupRevision: 1,
         fields: {
           startTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
         },
@@ -1709,7 +1794,7 @@ test("updateEventHandler rejects cancelled events", async () => {
 
   await assert.rejects(
     () => updateEventHandler(request("host-1", {
-      eventId: "event-1",
+      eventId: "event-1", expectedSetupRevision: 1,
       fields: {description: "No changes allowed."},
     }), h.deps),
     (error) => assertHttpsCode(error, "failed-precondition")
@@ -1738,7 +1823,7 @@ test("Host roster and event offers prevent legacy policy or schedule edits",
           [`${collection}/guest-1`]: {eventId: "event-1",
             organizerId: "club-1", status: "registered"}});
         await assert.rejects(updateEventHandler(request("host-1",
-          {eventId: "event-1", fields}), h.deps),
+          {eventId: "event-1", expectedSetupRevision: 1, fields}), h.deps),
         (error) => assertHttpsCode(error, "failed-precondition"));
         assert.deepEqual(h.firestore.get("events/event-1"), event());
         assert.deepEqual(h.notifications, []);
@@ -1773,6 +1858,7 @@ test("unused ready event capacity edits advance ledger atomically and replay",
     const h = harness({"organizers/club-1": organizer(),
       "events/event-1": event(), ...readySeatDocs()});
     const edit = request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 1,
       fields: {capacityLimit: 25}});
     await updateEventHandler(edit, h.deps);
     const updated = h.firestore.get("events/event-1")!;
@@ -1783,7 +1869,9 @@ test("unused ready event capacity edits advance ledger atomically and replay",
     assert.equal(ledger.revision, 4);
     assert.equal(ledger.capacityRevision, 2);
     assert.equal(ledger.policyHash, deriveEventSeatPolicy(updated).policyHash);
-    await updateEventHandler(edit, h.deps);
+    // A replay names the revision the first save consumed, so it is stale.
+    await assert.rejects(updateEventHandler(edit, h.deps),
+      (error) => assertHttpsCode(error, "aborted"));
     assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"), ledger);
   });
 
@@ -1798,7 +1886,8 @@ test("ready ledger occupancy or stale policy prevents unsafe capacity edit",
       const h = harness({"organizers/club-1": organizer(),
         "events/event-1": event(), ...docs});
       await assert.rejects(updateEventHandler(request("host-1", {
-        eventId: "event-1", fields: {capacityLimit: 25},
+        eventId: "event-1",
+        expectedSetupRevision: 1, fields: {capacityLimit: 25},
       }), h.deps), (error) => assertHttpsCode(error, "failed-precondition"));
       assert.deepEqual(h.firestore.get("events/event-1"), event());
       assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"),
@@ -1815,6 +1904,7 @@ test("copy edits and cancellation preserve ready seats and roster history",
       "events/event-1": event(), ...docs,
       "eventAttendees/guest-1": attendee});
     await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 1,
       fields: {description: "New description"}}), h.deps);
     await cancelEventHandler(request("host-1", {eventId: "event-1"}), h.deps);
     assert.equal(h.firestore.get("events/event-1")?.status, "cancelled");
@@ -1846,6 +1936,7 @@ test("schedule edit finishes conflict reads before plan-change writes",
     const h = harness({"organizers/club-1": organizer(),
       "events/event-1": event(), ...readySeatDocs()});
     await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 1,
       fields: {startTimeMillis: Date.parse("2026-05-02T01:45:00Z")},
     }), h.deps);
     assert.equal(h.firestore.get("events/event-1")?.planChangeRevision, 1);
@@ -1861,7 +1952,7 @@ test("ledger occupancy fences schedule and price without roster projection",
       const h = harness({"organizers/club-1": organizer(),
         "events/event-1": event(), ...readySeatDocs(1)});
       await assert.rejects(updateEventHandler(request("host-1",
-        {eventId: "event-1", fields}), h.deps),
+        {eventId: "event-1", expectedSetupRevision: 1, fields}), h.deps),
       (error) => assertHttpsCode(error, "failed-precondition"));
       assert.deepEqual(h.firestore.get("events/event-1"), event());
     }
@@ -1881,6 +1972,7 @@ test("capacity edit keeps explicit event policy and ready ledger consistent",
       h.firestore.set(path, value);
     }
     await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 1,
       fields: {capacityLimit: 25}}), h.deps);
     const updated = h.firestore.get("events/event-1")!;
     assert.equal(updated.capacityLimit, 25);
@@ -1900,7 +1992,9 @@ test("free website registration preserves external booking provenance",
     const h = harness({"organizers/club-1": organizer(),
       "events/event-1": event({eventOrigin: origin})});
     for (const enabled of [true, true, false]) {
+      const revision = h.firestore.get("events/event-1")!.setupRevision;
       await updateEventHandler(request("host-1", {eventId: "event-1",
+        expectedSetupRevision: revision,
         fields: {publicRegistrationEnabled: enabled}}), h.deps);
       const saved = h.firestore.get("events/event-1")!;
       assert.equal(saved.publicRegistrationEnabled, enabled);
@@ -1950,6 +2044,7 @@ test("guest notes survive create and edit, can be cleared, and are bounded",
       publicDetails: {accessibility: "Lift at the rear", included: "Dinner"},
     }};
     await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 1,
       fields: {eventFormat: updatedFormat}}), h.deps);
     assert.deepEqual((h.firestore.get("events/event-1")?.eventFormat as
       typeof updatedFormat).activityDetails, updatedFormat.activityDetails);
@@ -1957,6 +2052,7 @@ test("guest notes survive create and edit, can be cleared, and are bounded",
       privateNotes: "Host-only note",
     }};
     await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 2,
       fields: {eventFormat: clearedFormat}}), h.deps);
     assert.deepEqual((h.firestore.get("events/event-1")?.eventFormat as
       typeof clearedFormat).activityDetails, clearedFormat.activityDetails);
@@ -1965,7 +2061,8 @@ test("guest notes survive create and edit, can be cleared, and are bounded",
         publicDetails: {accessibility: value},
       }};
       await assert.rejects(() => updateEventHandler(request("host-1", {
-        eventId: "event-1", fields: {eventFormat: invalidFormat},
+        eventId: "event-1",
+        expectedSetupRevision: 3, fields: {eventFormat: invalidFormat},
       }), h.deps), (error) => assertHttpsCode(error, "invalid-argument"));
       await assert.rejects(() => createEventHandler(request("host-1",
         payload({eventFormat: invalidFormat})), h.deps),

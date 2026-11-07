@@ -31,8 +31,6 @@ export async function refreshOrganizerNextEvent(
   await db.runTransaction(async (tx) => {
     const organizerSnap = await tx.get(organizerRef);
     if (!organizerSnap.exists) return;
-    // Compatibility stage: legacy public events may lack publicationState.
-    // Keep legacy public rows until the publication backfill/read cutover.
     /* firestore-index: events (
       organizerId:ASCENDING, status:ASCENDING,
       startTime:ASCENDING, __name__:ASCENDING
@@ -43,7 +41,7 @@ export async function refreshOrganizerNextEvent(
       .where("startTime", ">=", now)
       .orderBy("startTime", "asc")
       .orderBy(admin.firestore.FieldPath.documentId(), "asc");
-    // The usual legacy/public case still reads one row. When private drafts
+    // The usual case reads one row. When private drafts
     // precede it, continue in bounded pages rather than clearing the public
     // projection. Document cursors preserve ordering even at tied start times.
     // All pages share this transaction snapshot with the final projection.

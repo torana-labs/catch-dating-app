@@ -105,22 +105,21 @@ test("syncOrganizerNextEventHandler refreshes moved organizers", async () => {
   assert.deepEqual(refreshed.sort(), ["organizer-1", "organizer-2"]);
 });
 
-test("next-event projection includes legacy public rows with tied start times",
+test("an unlabelled row never takes the projection at a tied start time",
   async () => {
     const start = timestamp("2026-05-13T10:00:00.000Z");
-    const initial: Record<string, Record<string, unknown>> = {
+    const firestore = fakeFirestore({
       "organizers/organizer-1": {},
+      "events/a-unlabelled": unlabelledEvent(
+        "organizer-1", start, "Unlabelled gate"),
       "events/z-public": event("organizer-1", start, "Public gate"),
-    };
-    initial["events/a-legacy"] = legacyEvent(
-      "organizer-1", start, "Legacy gate");
-    const firestore = fakeFirestore(initial);
+    });
     await refreshOrganizerNextEvent("organizer-1", {
       firestore: () => firestore as never,
       nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
     });
     assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
-      "Legacy gate");
+      "Public gate");
   });
 
 test("private-only events clear the old public projection", async () => {
@@ -140,50 +139,29 @@ test("private-only events clear the old public projection", async () => {
   });
 });
 
-test("legacy next-event read remains a single bounded query", async () => {
+test("the usual next-event read is a single bounded query", async () => {
   const start = timestamp("2026-05-13T10:00:00.000Z");
-  const initial: Record<string, Record<string, unknown>> = {
+  const firestore = fakeFirestore({
     "organizers/organizer-1": {nextEventLabel: "Old label"},
-    "events/z-public": event("organizer-1", start, "Public gate"),
-  };
-  initial["events/a-legacy"] = legacyEvent(
-    "organizer-1", start, "Legacy gate");
-  const firestore = fakeFirestore(initial);
+    "events/a-public": event("organizer-1", start, "Public gate"),
+    "events/z-public": event("organizer-1", start, "Later gate"),
+  });
   await refreshOrganizerNextEvent("organizer-1", {
     firestore: () => firestore as never,
     nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
   });
   assert.equal(firestore.queryReads(), 1);
   assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
-    "Legacy gate");
+    "Public gate");
 });
 
-test("unbackfilled legacy records remain in organizer projection",
+test("private drafts do not mask the next published event",
   async () => {
-    const start = timestamp("2026-05-13T10:00:00.000Z");
-    const firestore = fakeFirestore({
-      "organizers/organizer-1": {nextEventLabel: "Old label"},
-      "events/legacy": {organizerId: "organizer-1", status: "active",
-        startTime: start, meetingPoint: "Legacy gate"},
-    });
-    await refreshOrganizerNextEvent("organizer-1", {
-      firestore: () => firestore as never,
-      nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
-    });
-    assert.equal(firestore.queryReads(), 1);
-    assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
-      "Legacy gate");
-  });
-
-test("private drafts do not mask the next published or legacy public event",
-  async () => {
-    for (const legacy of [false, true]) {
+    {
       const start = timestamp("2026-05-13T10:00:00.000Z");
       const initial: Record<string, Record<string, unknown>> = {
         "organizers/organizer-1": {nextEventLabel: "Previously visible"},
-        "events/z-public": legacy ?
-          legacyEvent("organizer-1", start, "Public gate") :
-          event("organizer-1", start, "Public gate"),
+        "events/z-public": event("organizer-1", start, "Public gate"),
       };
       // More than one continuation page, with every start time tied.
       for (let index = 0; index < 65; index++) {
@@ -207,7 +185,7 @@ test("private drafts do not mask the next published or legacy public event",
 test("invalid progressive publication does not hide a later public row",
   async () => {
     const start = timestamp("2026-05-13T10:00:00.000Z");
-    const invalid = legacyEvent("organizer-1", start, "Private location");
+    const invalid = unlabelledEvent("organizer-1", start, "Private location");
     invalid.setupRevision = 2;
     const firestore = fakeFirestore({
       "organizers/organizer-1": {},
@@ -232,15 +210,16 @@ function event(
     meetingPoint, status};
 }
 
-function legacyEvent(
+/** A row without a publication state: invalid, so never public. */
+function unlabelledEvent(
   organizerId: string,
   startTime: FirebaseFirestore.Timestamp,
   meetingPoint: string
 ): Record<string, unknown> {
-  const legacy: Record<string, unknown> =
+  const unlabelled: Record<string, unknown> =
     event(organizerId, startTime, meetingPoint);
-  delete legacy.publicationState;
-  return legacy;
+  delete unlabelled.publicationState;
+  return unlabelled;
 }
 
 function timestamp(iso: string): FirebaseFirestore.Timestamp {

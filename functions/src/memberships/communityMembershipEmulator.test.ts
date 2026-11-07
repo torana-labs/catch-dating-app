@@ -37,6 +37,7 @@ async function runMembershipRace(
         preferredDistances: [], runningReasons: [], preferredRunTimes: [],
       }}};
     const event = {organizerId: org, status: "active",
+      publicationState: "published", setupRevision: 1,
       eventOrigin: catchNativeEventOrigin(),
       startTime: Timestamp.fromMillis(future),
       endTime: Timestamp.fromMillis(future + 3600000),

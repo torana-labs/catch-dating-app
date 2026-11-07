@@ -42,9 +42,6 @@ function privateEvent(): Row {
 
 async function setup(event = richEvent()) {
   const rows = new Map<string, Row>();
-  const updateTimes = new Map<string, Timestamp>();
-  const legacyUpdateTime = new Timestamp(1_800_000_000, 123_456_000);
-  updateTimes.set("events/event1", legacyUpdateTime);
   const readPaths: string[] = [];
   const writePaths: string[] = [];
   rows.set("organizers/org1", {hostUserId: "host1", ownerUserId: "host1",
@@ -63,8 +60,7 @@ async function setup(event = richEvent()) {
         get: async (ref: {path: string}) => {
           assert.equal(pending.length, 0, "all reads precede writes");
           readPaths.push(ref.path);
-          return {exists: rows.has(ref.path), data: () => rows.get(ref.path),
-            updateTime: updateTimes.get(ref.path)};
+          return {exists: rows.has(ref.path), data: () => rows.get(ref.path)};
         },
         set: (ref: {path: string}, value: Row) => {
           writePaths.push(ref.path);
@@ -87,8 +83,7 @@ async function setup(event = richEvent()) {
   const command: ConfigureEventOfferPreferencesCommand = {
     organizerId: "org1", eventId: "event1", requestId: "offer-settings-1",
     expectedPreferencesRevision: 0,
-    expectedEventSourceRevision: event.setupRevision as number ??
-      1_800_000_000_123_456,
+    expectedEventSourceRevision: event.setupRevision as number,
     reviewedDefaultsHash: defaults.preferencesHash,
     intents: {usualDurationMinutes: {mode: "clear"},
       preferredVenueId: {mode: "clear"},
@@ -102,7 +97,7 @@ async function setup(event = richEvent()) {
   };
   const deps = {db, serverTimestamp: () => Timestamp.fromMillis(50) as
     unknown as FirebaseFirestore.FieldValue};
-  return {rows, updateTimes, readPaths, writePaths, command, deps,
+  return {rows, readPaths, writePaths, command, deps,
     save: (overrides: Partial<ConfigureEventOfferPreferencesCommand> = {},
       actorUid = "host1") => configureEventOfferPreferences({actorUid,
       command: {...command, ...overrides}, deps})};
@@ -111,26 +106,20 @@ async function setup(event = richEvent()) {
 const code = (expected: string) => (error: unknown) =>
   error instanceof HttpsError && error.code === expected;
 
-test("published and legacy events save private terms without event writes",
+test("published events save private terms without event writes",
   async () => {
-    for (const legacy of [false, true]) {
-      const event = richEvent();
-      if (legacy) {
-        delete event.publicationState;
-      }
-      const h = await setup(event);
-      const before = JSON.stringify(h.rows.get("events/event1"));
-      assert.deepEqual(await h.save(), {eventId: "event1",
-        preferencesRevision: 1, replayed: false});
-      assert.equal(JSON.stringify(h.rows.get("events/event1")), before);
-      assert.equal(h.rows.get("eventSetupPreferences/event1")?.revision, 1);
-      assert.deepEqual(h.writePaths.map((path) => path.split("/")[0]),
-        ["eventSetupPreferences", "eventOfferConfigurationReceipts"]);
-      for (const path of ["organizers/org1", "deletedUsers/host1",
-        "events/event1", "organizerEventSetupDefaults/org1",
-        "eventSetupPreferences/event1"]) {
-        assert.ok(h.readPaths.includes(path));
-      }
+    const h = await setup();
+    const before = JSON.stringify(h.rows.get("events/event1"));
+    assert.deepEqual(await h.save(), {eventId: "event1",
+      preferencesRevision: 1, replayed: false});
+    assert.equal(JSON.stringify(h.rows.get("events/event1")), before);
+    assert.equal(h.rows.get("eventSetupPreferences/event1")?.revision, 1);
+    assert.deepEqual(h.writePaths.map((path) => path.split("/")[0]),
+      ["eventSetupPreferences", "eventOfferConfigurationReceipts"]);
+    for (const path of ["organizers/org1", "deletedUsers/host1",
+      "events/event1", "organizerEventSetupDefaults/org1",
+      "eventSetupPreferences/event1"]) {
+      assert.ok(h.readPaths.includes(path));
     }
   });
 
@@ -165,8 +154,8 @@ test("source, prefs and defaults changes reject stale review", async () => {
   for (const kind of ["source", "preferences", "defaults"]) {
     const h = await setup();
     if (kind === "source") {
-      h.updateTimes.set("events/event1",
-        new Timestamp(1_800_000_000, 123_457_000));
+      h.rows.set("events/event1", {...h.rows.get("events/event1"),
+        setupRevision: 2});
     }
     if (kind === "preferences") await h.save();
     if (kind === "defaults") {
@@ -199,7 +188,9 @@ test("tenant, cancelled, manager, deleted and missing revision deny",
       }
       if (kind === "deleted") h.rows.set("deletedUsers/host1", {});
       if (kind === "missingRevision") {
-        h.updateTimes.delete("events/event1");
+        const event = {...h.rows.get("events/event1")};
+        delete event.setupRevision;
+        h.rows.set("events/event1", event);
       }
       await assert.rejects(h.save(), code(kind === "foreign" ? "not-found" :
         kind === "manager" ? "permission-denied" : "failed-precondition"));
@@ -317,7 +308,8 @@ test("preview cannot bypass current authority or stale review fences",
         h.rows.set("organizers/org1", {...h.rows.get("organizers/org1"),
           ownerUserId: "other", hostUserId: "other"});
       } else if (kind === "source") {
-        h.updateTimes.set("events/event1", Timestamp.fromMillis(NOW));
+        h.rows.set("events/event1", {...h.rows.get("events/event1"),
+          setupRevision: 2});
       } else if (kind === "preferences") {
         await h.save({requestId: "other-request-1"});
       } else {

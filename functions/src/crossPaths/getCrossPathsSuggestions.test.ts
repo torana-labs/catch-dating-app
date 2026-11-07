@@ -6,6 +6,7 @@ import {
   getCrossPathsSuggestionsHandler,
 } from "./getCrossPathsSuggestions";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -488,6 +489,7 @@ test("rejects invalid batches before any reads", async () => {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
+    ...publishedEventSetup(),
     organizerId: "organizer-1",
     startTime: timestamp(eventStartMillis),
     endTime: timestamp(eventStartMillis + 2 * 60 * 60 * 1000),

@@ -333,8 +333,6 @@
   "EventOfferConfigurationReceiptDocument",
   "ListOfferEventTargetsCallablePayload",
   "OfferEventTargetListCallableResponse",
-  "GetEventOfferConfigurationCallablePayload",
-  "EventOfferConfigurationCallableResponse",
   "ReconcilePrivateEventSeatsCallablePayload",
   "PrivateSeatReconciliationCallableResponse",
   "UpdatePrivateEventDetailsCallablePayload",

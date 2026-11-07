@@ -36,7 +36,8 @@ function setup(event: Record<string, unknown> = {
   organizerId: "canonical-org",
 }) {
   const db = new NotificationFirestore({
-    "events/evt": {status: "active", startTime: NOW + 900_000,
+    "events/evt": {status: "active", publicationState: "published",
+      setupRevision: 1, startTime: NOW + 900_000,
       endTime: NOW + 4_500_000, revision: 1, ...event},
     "eventParticipations/one":
       {eventId: "evt", uid: "one", status: "signedUp"},

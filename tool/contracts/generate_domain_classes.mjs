@@ -306,6 +306,7 @@ const SPECS = [
         {
           "name": "eventTimezone",
           "dartType": "String",
+          "forceNullable": true,
           "jsonKey": {
             "includeIfNull": false
           }
@@ -447,6 +448,7 @@ const SPECS = [
         {
           "name": "setupRevision",
           "dartType": "int",
+          "forceNullable": true,
           "jsonKey": {
             "includeIfNull": false
           }

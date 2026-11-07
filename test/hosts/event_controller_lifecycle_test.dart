@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
@@ -138,6 +139,24 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
           PrivateEventSetupView.complete(publicationEvent()),
         ),
       ),
+      eventOfferConfigurationProvider(
+        organizerId: 'org1',
+        eventId: 'event1',
+      ).overrideWith(
+        (ref) => gated(
+          kind == _Kind.offerPreferences,
+          const EventOfferConfiguration(
+            organizerId: 'org1',
+            eventId: 'event1',
+            eventSourceRevision: 1,
+            startsAtMillis: 1900000000000,
+            nowMillis: 1800000000000,
+            suggestedExpiresAtMillis: null,
+            preferencesRevision: 0,
+            preferences: null,
+          ),
+        ),
+      ),
       managerEventSetupDefaultsViewProvider('org1').overrideWith(
         (ref) => gated(
           kind == _Kind.defaults,
@@ -151,19 +170,6 @@ _Probe _probe(_Kind kind, {Stream<String?>? accounts}) {
       ),
       eventOfferPreferencesDependenciesProvider.overrideWithValue(
         EventOfferPreferencesDependencies(
-          readConfiguration: ({required organizerId, required eventId}) async {
-            await read();
-            return const EventOfferConfiguration(
-              organizerId: 'org1',
-              eventId: 'event1',
-              eventSourceRevision: 1,
-              startsAtMillis: 1900000000000,
-              nowMillis: 1800000000000,
-              suggestedExpiresAtMillis: null,
-              preferencesRevision: 0,
-              preferences: null,
-            );
-          },
           write: (_) async => throw StateError('Unexpected write'),
         ),
       ),
