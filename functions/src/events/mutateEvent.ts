@@ -878,6 +878,10 @@ export async function deleteEventHandler(
     }
 
     tx.delete(eventRef);
+    // The event's own setup state goes with it. Setup receipts stay: they
+    // are keyed by request, not event, and replay protection must survive.
+    tx.delete(db.collection("eventSetupPreferences").doc(data.eventId));
+    tx.delete(db.collection("eventPrivateAccess").doc(data.eventId));
     removedStoragePaths = removedMediaStoragePaths({
       before: event,
       after: {},

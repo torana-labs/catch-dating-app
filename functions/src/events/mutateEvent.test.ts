@@ -1280,6 +1280,23 @@ test("deleteEvent removes an unused published event whatever created it",
     assert.equal(h.firestore.get("events/event-1"), undefined);
   });
 
+test("deleteEvent removes the event's setup preferences and invite code",
+  async () => {
+    const h = harness({"organizers/club-1": organizer(),
+      "events/event-1": publishedProgressiveEvent(),
+      "eventSetupPreferences/event-1": {organizerId: "club-1"},
+      "eventPrivateAccess/event-1": {eventId: "event-1"},
+      "eventSetupPreferences/event-2": {organizerId: "club-1"},
+      "eventSetupReceipts/receipt-1": {eventId: "event-1"}});
+    await deleteEventHandler(request("host-1", {eventId: "event-1"}), h.deps);
+    assert.equal(h.firestore.get("eventSetupPreferences/event-1"), undefined);
+    assert.equal(h.firestore.get("eventPrivateAccess/event-1"), undefined);
+    assert.notEqual(h.firestore.get("eventSetupPreferences/event-2"),
+      undefined);
+    assert.notEqual(h.firestore.get("eventSetupReceipts/receipt-1"),
+      undefined);
+  });
+
 test("rich mutations refuse an event without a setup state", async () => {
   for (const missing of ["publicationState", "setupRevision"]) {
     const stored = event();
