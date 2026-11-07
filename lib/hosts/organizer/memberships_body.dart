@@ -9,16 +9,16 @@ import 'package:flutter/widgets.dart';
 
 /// Memberships, drawn from the system with no board: the programme and
 /// whether it can run, its payouts and billing, then the plans.
-class MembershipsBody extends StatelessWidget {
-  const MembershipsBody({
+class OrganizerMembershipsBody extends StatelessWidget {
+  const OrganizerMembershipsBody({
     super.key,
     required this.state,
     required this.onAction,
     required this.onOpenPlan,
   });
 
-  final MembershipsState state;
-  final ValueChanged<MembershipsAction> onAction;
+  final OrganizerMembershipsState state;
+  final ValueChanged<OrganizerMembershipsAction> onAction;
   final ValueChanged<HostMembershipPlan> onOpenPlan;
 
   @override
@@ -35,7 +35,7 @@ class MembershipsBody extends StatelessWidget {
               tone: CatchNoticeTone.warning,
               action: CatchNoticeAction(
                 label: l10n.hostOrganizerRetry,
-                onPressed: () => onAction(MembershipsAction.retry),
+                onPressed: () => onAction(OrganizerMembershipsAction.retry),
               ),
             )
           else
@@ -95,7 +95,7 @@ class MembershipsBody extends StatelessWidget {
                           : CatchButtonStatus.idle,
                       onPressed: pending
                           ? null
-                          : () => onAction(MembershipsAction.enable),
+                          : () => onAction(OrganizerMembershipsAction.enable),
                     ),
                   ],
                 ),
@@ -123,7 +123,7 @@ class MembershipsBody extends StatelessWidget {
               density: CatchIndexRowSize.regular,
               chevron: !program.routeAccountReady && state.isOwner,
               onTap: !program.routeAccountReady && state.isOwner
-                  ? () => onAction(MembershipsAction.setUpPayouts)
+                  ? () => onAction(OrganizerMembershipsAction.setUpPayouts)
                   : null,
             ),
             if (program.enabled)
@@ -156,8 +156,8 @@ class MembershipsBody extends StatelessWidget {
                     ? null
                     : () => onAction(
                         paused
-                            ? MembershipsAction.resumeBilling
-                            : MembershipsAction.pauseBilling,
+                            ? OrganizerMembershipsAction.resumeBilling
+                            : OrganizerMembershipsAction.pauseBilling,
                       ),
               ),
           ],
@@ -168,7 +168,7 @@ class MembershipsBody extends StatelessWidget {
             label: l10n.hostMembershipsNewPlan,
             onPressed: pending
                 ? null
-                : () => onAction(MembershipsAction.newPlan),
+                : () => onAction(OrganizerMembershipsAction.newPlan),
           ),
           empty: l10n.hostOrganizerMembershipPlansEmpty,
           children: [

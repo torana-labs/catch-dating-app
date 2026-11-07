@@ -9,8 +9,8 @@ import 'package:intl/intl.dart';
 
 /// Payments and billing in board order: the Razorpay tile, this month's
 /// Catch bill, the plan, the bills and what to set up.
-class PaymentsBody extends StatelessWidget {
-  const PaymentsBody({
+class OrganizerPaymentsBody extends StatelessWidget {
+  const OrganizerPaymentsBody({
     super.key,
     required this.state,
     required this.onAction,
@@ -18,8 +18,8 @@ class PaymentsBody extends StatelessWidget {
     this.footer,
   });
 
-  final PaymentsState state;
-  final ValueChanged<PaymentsAction> onAction;
+  final OrganizerPaymentsState state;
+  final ValueChanged<OrganizerPaymentsAction> onAction;
   final ValueChanged<HostOrganizerBill> onPay;
 
   /// Shown under the Razorpay tile: the payout account form, for
@@ -57,7 +57,7 @@ class PaymentsBody extends StatelessWidget {
             tone: CatchNoticeTone.warning,
             action: CatchNoticeAction(
               label: l10n.hostOrganizerRetry,
-              onPressed: () => onAction(PaymentsAction.retryBills),
+              onPressed: () => onAction(OrganizerPaymentsAction.retryBills),
             ),
           )
         else if (bills == null)
@@ -94,7 +94,8 @@ class PaymentsBody extends StatelessWidget {
                     variant: CatchButtonVariant.quiet,
                     size: CatchButtonSize.sm,
                     trailing: CatchIcon(CatchIcons.openExternal),
-                    onPressed: () => onAction(PaymentsAction.comparePlans),
+                    onPressed: () =>
+                        onAction(OrganizerPaymentsAction.comparePlans),
                   ),
                 ],
               ),
@@ -137,10 +138,10 @@ class PaymentsBody extends StatelessWidget {
                   ? null
                   : () => onAction(switch (state.connection) {
                       HostRazorpayConnectionState.ready =>
-                        PaymentsAction.disconnect,
+                        OrganizerPaymentsAction.disconnect,
                       HostRazorpayConnectionState.notConnected ||
-                      null => PaymentsAction.connect,
-                      _ => PaymentsAction.reconnect,
+                      null => OrganizerPaymentsAction.connect,
+                      _ => OrganizerPaymentsAction.reconnect,
                     }),
             ),
             CatchIndexRow(
@@ -149,7 +150,7 @@ class PaymentsBody extends StatelessWidget {
               subtitle: l10n.hostOrganizerSetUpRefundsNote,
               density: CatchIndexRowSize.regular,
               chevron: true,
-              onTap: () => onAction(PaymentsAction.refunds),
+              onTap: () => onAction(OrganizerPaymentsAction.refunds),
             ),
           ],
         ),
@@ -163,8 +164,8 @@ class PaymentsBody extends StatelessWidget {
 class _RazorpayTile extends StatelessWidget {
   const _RazorpayTile({required this.state, required this.onAction});
 
-  final PaymentsState state;
-  final ValueChanged<PaymentsAction> onAction;
+  final OrganizerPaymentsState state;
+  final ValueChanged<OrganizerPaymentsAction> onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +188,8 @@ class _RazorpayTile extends StatelessWidget {
               tone: CatchNoticeTone.warning,
               action: CatchNoticeAction(
                 label: l10n.hostOrganizerRetry,
-                onPressed: () => onAction(PaymentsAction.retryConnection),
+                onPressed: () =>
+                    onAction(OrganizerPaymentsAction.retryConnection),
               ),
             );
     }
@@ -221,7 +223,7 @@ class _RazorpayTile extends StatelessWidget {
                   : CatchButtonStatus.idle,
               onPressed: pending
                   ? null
-                  : () => onAction(PaymentsAction.refresh),
+                  : () => onAction(OrganizerPaymentsAction.refresh),
             ),
             HostRazorpayConnectionState.notConnected || null => CatchButton(
               key: const ValueKey<String>('payments-razorpay-connect'),
@@ -233,7 +235,7 @@ class _RazorpayTile extends StatelessWidget {
                   : CatchButtonStatus.idle,
               onPressed: pending
                   ? null
-                  : () => onAction(PaymentsAction.connect),
+                  : () => onAction(OrganizerPaymentsAction.connect),
             ),
             _ => CatchButton(
               key: const ValueKey<String>('payments-razorpay-reconnect'),
@@ -245,7 +247,7 @@ class _RazorpayTile extends StatelessWidget {
                   : CatchButtonStatus.idle,
               onPressed: pending
                   ? null
-                  : () => onAction(PaymentsAction.reconnect),
+                  : () => onAction(OrganizerPaymentsAction.reconnect),
             ),
           };
     return CatchSurface(

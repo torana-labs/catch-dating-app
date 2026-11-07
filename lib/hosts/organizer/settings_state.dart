@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 /// What a row or button in Settings asks for.
-enum SettingsAction {
+enum OrganizerSettingsAction {
   editName,
   switchOrganizer,
   guides,
@@ -14,8 +14,8 @@ enum SettingsAction {
 /// Settings as plain values: the host's name and number, the organizers
 /// they run, the one notification switch with a backend, and the build.
 @immutable
-class SettingsState {
-  const SettingsState({
+class OrganizerSettingsState {
+  const OrganizerSettingsState({
     this.name,
     this.phone,
     this.organizerNames = const <String>[],

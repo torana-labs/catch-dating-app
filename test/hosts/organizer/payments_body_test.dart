@@ -7,15 +7,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'organizer_fixtures.dart';
 
 class _Calls {
-  final actions = <PaymentsAction>[];
+  final actions = <OrganizerPaymentsAction>[];
   final paid = <HostOrganizerBill>[];
 }
 
-Future<_Calls> _pump(WidgetTester tester, PaymentsState state) async {
+Future<_Calls> _pump(WidgetTester tester, OrganizerPaymentsState state) async {
   final calls = _Calls();
   await pumpOrganizerBody(
     tester,
-    PaymentsBody(
+    OrganizerPaymentsBody(
       state: state,
       onAction: calls.actions.add,
       onPay: calls.paid.add,
@@ -30,7 +30,7 @@ void main() {
     final current = organizerBill();
     final calls = await _pump(
       tester,
-      PaymentsState(
+      OrganizerPaymentsState(
         isOwner: true,
         currencyCode: 'INR',
         now: organizerNow,
@@ -75,9 +75,9 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('payments-row-razorpay')));
     await tester.tap(find.text('Refunds'));
     expect(calls.actions, [
-      PaymentsAction.comparePlans,
-      PaymentsAction.disconnect,
-      PaymentsAction.refunds,
+      OrganizerPaymentsAction.comparePlans,
+      OrganizerPaymentsAction.disconnect,
+      OrganizerPaymentsAction.refunds,
     ]);
     expect(calls.paid, [current]);
   });
@@ -87,7 +87,7 @@ void main() {
   ) async {
     final calls = await _pump(
       tester,
-      PaymentsState(
+      OrganizerPaymentsState(
         isOwner: true,
         currencyCode: 'INR',
         now: organizerNow,
@@ -99,13 +99,13 @@ void main() {
     expect(find.text('Not connected'), findsWidgets);
     expect(find.text('No bills yet.'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('payments-razorpay-connect')));
-    expect(calls.actions, [PaymentsAction.connect]);
+    expect(calls.actions, [OrganizerPaymentsAction.connect]);
   });
 
   testWidgets('a broken connection offers Reconnect', (tester) async {
     final calls = await _pump(
       tester,
-      PaymentsState(
+      OrganizerPaymentsState(
         isOwner: true,
         currencyCode: 'INR',
         now: organizerNow,
@@ -116,13 +116,13 @@ void main() {
 
     expect(find.text('Needs reconnecting'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('payments-razorpay-reconnect')));
-    expect(calls.actions, [PaymentsAction.reconnect]);
+    expect(calls.actions, [OrganizerPaymentsAction.reconnect]);
   });
 
   testWidgets('failed bills offer a retry', (tester) async {
     final calls = await _pump(
       tester,
-      PaymentsState(
+      OrganizerPaymentsState(
         isOwner: true,
         currencyCode: 'INR',
         now: organizerNow,
@@ -133,7 +133,7 @@ void main() {
 
     expect(find.text('We couldn’t load your bills.'), findsOneWidget);
     await tester.tap(find.text('Try again'));
-    expect(calls.actions, [PaymentsAction.retryBills]);
+    expect(calls.actions, [OrganizerPaymentsAction.retryBills]);
   });
 
   testWidgets('a host who is not the owner sees why there is no money', (
@@ -141,7 +141,11 @@ void main() {
   ) async {
     await _pump(
       tester,
-      PaymentsState(isOwner: false, currencyCode: 'INR', now: organizerNow),
+      OrganizerPaymentsState(
+        isOwner: false,
+        currencyCode: 'INR',
+        now: organizerNow,
+      ),
     );
 
     expect(find.text('Only the owner sees money'), findsOneWidget);

@@ -11,8 +11,8 @@ enum PageEditField { name, about, area, instagram, phone, email }
 /// Your page in board order: the logo, the photos, the fields, the kinds of
 /// night, the links and what shows on the page. It holds no draft: every
 /// change goes back to the screen, which keeps it until Save changes.
-class PageEditBody extends StatelessWidget {
-  const PageEditBody({
+class OrganizerPageEditBody extends StatelessWidget {
+  const OrganizerPageEditBody({
     super.key,
     required this.state,
     required this.onField,
@@ -23,7 +23,7 @@ class PageEditBody extends StatelessWidget {
     required this.onRemovePhoto,
   });
 
-  final PageEditState state;
+  final OrganizerPageEditState state;
   final void Function(PageEditField field, String value) onField;
   final ValueChanged<CatchFormat> onFormat;
   final ValueChanged<bool> onListed;

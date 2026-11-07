@@ -184,8 +184,8 @@ OrganizerHostDefaults pageEditDefaults(
 
 /// The page fields and media as the Your page body shows them.
 @immutable
-class PageEditState {
-  const PageEditState({
+class OrganizerPageEditState {
+  const OrganizerPageEditState({
     required this.organizer,
     required this.draft,
     required this.revision,

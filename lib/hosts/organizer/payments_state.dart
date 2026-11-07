@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.da
 import 'package:flutter/foundation.dart';
 
 /// What a control on Payments and billing asks for.
-enum PaymentsAction {
+enum OrganizerPaymentsAction {
   connect,
   reconnect,
   refresh,
@@ -17,8 +17,8 @@ enum PaymentsAction {
 /// Payments and billing as plain values: the Razorpay connection, the
 /// Catch bills, and whether the viewer may see money at all.
 @immutable
-class PaymentsState {
-  const PaymentsState({
+class OrganizerPaymentsState {
+  const OrganizerPaymentsState({
     required this.isOwner,
     required this.currencyCode,
     required this.now,

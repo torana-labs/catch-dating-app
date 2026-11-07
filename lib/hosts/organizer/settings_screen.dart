@@ -30,16 +30,17 @@ import 'package:go_router/go_router.dart';
 /// signing out and the build. Every switch and row runs an existing command:
 /// the profile preference, the host profile save, the organizer selection,
 /// account deletion and sign-out.
-class SettingsScreen extends ConsumerStatefulWidget {
-  const SettingsScreen({super.key, this.initialOrganizerId});
+class OrganizerSettingsScreen extends ConsumerStatefulWidget {
+  const OrganizerSettingsScreen({super.key, this.initialOrganizerId});
 
   final String? initialOrganizerId;
 
   @override
-  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<OrganizerSettingsScreen> createState() =>
+      _SettingsScreenState();
 }
 
-class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<OrganizerSettingsScreen> {
   bool _opening = false;
 
   @override
@@ -92,7 +93,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ? firstName
           : null;
       kicker = name;
-      final state = SettingsState(
+      final state = OrganizerSettingsState(
         name: name,
         phone: settingsMaskedPhone(profile?.phoneNumber),
         organizerNames: [for (final item in scope.organizers) item.name],
@@ -103,7 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         privacyAvailable: AppConfig.privacyPolicyUrl != null,
         busy: busy,
       );
-      body = SettingsBody(
+      body = OrganizerSettingsBody(
         state: state,
         onMessages: (value) => unawaited(_saveMessages(value)),
         onAction: (action) =>
@@ -152,13 +153,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _act(
     HostOrganizerScope scope,
     HostProfile? hostProfile,
-    SettingsState state,
-    SettingsAction action,
+    OrganizerSettingsState state,
+    OrganizerSettingsAction action,
   ) async {
     switch (action) {
-      case SettingsAction.editName:
+      case OrganizerSettingsAction.editName:
         await _editName(hostProfile, state.name);
-      case SettingsAction.switchOrganizer:
+      case OrganizerSettingsAction.switchOrganizer:
         final selected = scope.organizer;
         if (selected == null) return;
         final organizerId = await showHostOrganizerSwitcherSheet(
@@ -174,15 +175,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Routes.hostOrganizerScreen.name,
           queryParameters: {'organizerId': organizerId},
         );
-      case SettingsAction.guides:
+      case OrganizerSettingsAction.guides:
         await _open(AppConfig.helpUrl);
-      case SettingsAction.terms:
+      case OrganizerSettingsAction.terms:
         await _open(AppConfig.termsUrl);
-      case SettingsAction.privacy:
+      case OrganizerSettingsAction.privacy:
         await _open(AppConfig.privacyPolicyUrl);
-      case SettingsAction.deleteAccount:
+      case OrganizerSettingsAction.deleteAccount:
         await _deleteAccount();
-      case SettingsAction.signOut:
+      case OrganizerSettingsAction.signOut:
         await _signOut();
     }
   }

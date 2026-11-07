@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.d
 import 'package:flutter/foundation.dart';
 
 /// What a control on Memberships asks for.
-enum MembershipsAction {
+enum OrganizerMembershipsAction {
   enable,
   pauseBilling,
   resumeBilling,
@@ -15,8 +15,8 @@ enum MembershipsAction {
 /// Memberships as plain values: the programme, its plans, and whether a
 /// command is running.
 @immutable
-class MembershipsState {
-  const MembershipsState({
+class OrganizerMembershipsState {
+  const OrganizerMembershipsState({
     this.program,
     this.plans = const <HostMembershipPlan>[],
     this.isOwner = false,

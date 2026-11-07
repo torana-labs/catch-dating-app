@@ -17,19 +17,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The organizer's team: who is on it, adding a host by phone, and for the
 /// owner, handing over or removing someone, through the existing team
 /// commands. The organizer listener brings each change back.
-class TeamScreen extends ConsumerStatefulWidget {
-  const TeamScreen({super.key, required this.organizerId});
+class OrganizerTeamScreen extends ConsumerStatefulWidget {
+  const OrganizerTeamScreen({super.key, required this.organizerId});
 
   final String organizerId;
 
   @override
-  ConsumerState<TeamScreen> createState() => _TeamScreenState();
+  ConsumerState<OrganizerTeamScreen> createState() => _TeamScreenState();
 }
 
 /// What the owner picked for someone on the team.
 enum _HostChoice { transfer, remove }
 
-class _TeamScreenState extends ConsumerState<TeamScreen> {
+class _TeamScreenState extends ConsumerState<OrganizerTeamScreen> {
   String _phone = '';
   int _revision = 0;
 
@@ -65,7 +65,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
         onRetry: () => retryHostOrganizerScope(ref),
       );
     } else {
-      final state = TeamState(
+      final state = OrganizerTeamState(
         organizer: organizer,
         currentUid: scope.uid,
         dialCode: marketForCityName(organizer.location).dialCode,
@@ -74,7 +74,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
         changing: changing,
         revision: _revision,
       );
-      body = TeamBody(
+      body = OrganizerTeamBody(
         state: state,
         onPhone: (phone) => setState(() => _phone = phone),
         onInvite: () => unawaited(_invite(state)),
@@ -95,7 +95,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
     );
   }
 
-  Future<void> _invite(TeamState state) async {
+  Future<void> _invite(OrganizerTeamState state) async {
     try {
       await HostTeamManagementController.addHostMutation.run(
         ref,

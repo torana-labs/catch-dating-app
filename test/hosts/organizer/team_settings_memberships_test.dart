@@ -17,14 +17,14 @@ void main() {
   group('Team', () {
     Future<(List<String>, List<OrganizerHostProfile>, List<String>)> pump(
       WidgetTester tester,
-      TeamState state,
+      OrganizerTeamState state,
     ) async {
       final phones = <String>[];
       final hosts = <OrganizerHostProfile>[];
       final invites = <String>[];
       await pumpOrganizerBody(
         tester,
-        TeamBody(
+        OrganizerTeamBody(
           state: state,
           onPhone: phones.add,
           onInvite: () => invites.add('invite'),
@@ -39,7 +39,7 @@ void main() {
     ) async {
       final (phones, hosts, invites) = await pump(
         tester,
-        TeamState(
+        OrganizerTeamState(
           organizer: lanternLane(),
           currentUid: organizerOwnerUid,
           dialCode: '+91',
@@ -65,7 +65,7 @@ void main() {
     testWidgets('a host sees the team without the invite', (tester) async {
       final (_, hosts, _) = await pump(
         tester,
-        TeamState(
+        OrganizerTeamState(
           organizer: lanternLane(),
           currentUid: organizerHostUid,
           dialCode: '+91',
@@ -78,7 +78,7 @@ void main() {
     });
 
     test('the invite number takes the calling code unless typed', () {
-      TeamState state(String phone) => TeamState(
+      OrganizerTeamState state(String phone) => OrganizerTeamState(
         organizer: lanternLane(),
         currentUid: organizerOwnerUid,
         dialCode: '+91',
@@ -94,12 +94,12 @@ void main() {
   group('Settings', () {
     testWidgets('shows notifications, the account, help, sign out and the '
         'version', (tester) async {
-      final actions = <SettingsAction>[];
+      final actions = <OrganizerSettingsAction>[];
       final messages = <bool>[];
       await pumpOrganizerBody(
         tester,
-        SettingsBody(
-          state: SettingsState(
+        OrganizerSettingsBody(
+          state: OrganizerSettingsState(
             name: 'Meher',
             phone: settingsMaskedPhone('+91 98201 44718'),
             organizerNames: const [
@@ -134,12 +134,12 @@ void main() {
       await tester.tap(find.text('Sign out'));
       expect(messages, [false]);
       expect(actions, [
-        SettingsAction.editName,
-        SettingsAction.switchOrganizer,
-        SettingsAction.guides,
-        SettingsAction.terms,
-        SettingsAction.deleteAccount,
-        SettingsAction.signOut,
+        OrganizerSettingsAction.editName,
+        OrganizerSettingsAction.switchOrganizer,
+        OrganizerSettingsAction.guides,
+        OrganizerSettingsAction.terms,
+        OrganizerSettingsAction.deleteAccount,
+        OrganizerSettingsAction.signOut,
       ]);
     });
   });
@@ -157,15 +157,15 @@ void main() {
           paymentMode: HostMembershipPaymentMode.hostCollected,
         );
 
-    Future<(List<MembershipsAction>, List<HostMembershipPlan>)> pump(
+    Future<(List<OrganizerMembershipsAction>, List<HostMembershipPlan>)> pump(
       WidgetTester tester,
-      MembershipsState state,
+      OrganizerMembershipsState state,
     ) async {
-      final actions = <MembershipsAction>[];
+      final actions = <OrganizerMembershipsAction>[];
       final plans = <HostMembershipPlan>[];
       await pumpOrganizerBody(
         tester,
-        MembershipsBody(
+        OrganizerMembershipsBody(
           state: state,
           onAction: actions.add,
           onOpenPlan: plans.add,
@@ -177,14 +177,17 @@ void main() {
     testWidgets('an off programme can be turned on', (tester) async {
       final (actions, _) = await pump(
         tester,
-        MembershipsState(program: program(), isOwner: true),
+        OrganizerMembershipsState(program: program(), isOwner: true),
       );
 
       expect(find.text('Off'), findsOneWidget);
       expect(find.text('No plans yet.'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('host-memberships-enable')));
       await tester.tap(find.text('New plan'));
-      expect(actions, [MembershipsAction.enable, MembershipsAction.newPlan]);
+      expect(actions, [
+        OrganizerMembershipsAction.enable,
+        OrganizerMembershipsAction.newPlan,
+      ]);
     });
 
     testWidgets('a live programme pauses billing and opens its plans', (
@@ -193,7 +196,7 @@ void main() {
       final plan = testPlan();
       final (actions, plans) = await pump(
         tester,
-        MembershipsState(
+        OrganizerMembershipsState(
           program: program(enabled: true),
           plans: [plan],
           isOwner: true,
@@ -204,18 +207,18 @@ void main() {
         find.byKey(const ValueKey('host-memberships-billing-pause')),
       );
       await tester.tap(find.byKey(ValueKey('host-membership-plan-${plan.id}')));
-      expect(actions, [MembershipsAction.pauseBilling]);
+      expect(actions, [OrganizerMembershipsAction.pauseBilling]);
       expect(plans, [plan]);
     });
 
     testWidgets('a failed read offers a retry', (tester) async {
       final (actions, _) = await pump(
         tester,
-        MembershipsState(error: StateError('offline')),
+        OrganizerMembershipsState(error: StateError('offline')),
       );
 
       await tester.tap(find.text('Try again'));
-      expect(actions, [MembershipsAction.retry]);
+      expect(actions, [OrganizerMembershipsAction.retry]);
     });
   });
 }

@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 /// The team as plain values: who is on it, who is looking, and the invite
 /// being typed.
 @immutable
-class TeamState {
-  const TeamState({
+class OrganizerTeamState {
+  const OrganizerTeamState({
     required this.organizer,
     required this.currentUid,
     required this.dialCode,

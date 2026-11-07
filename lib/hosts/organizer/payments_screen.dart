@@ -26,8 +26,12 @@ import 'package:go_router/go_router.dart';
 /// Payments and billing for one organizer. It reads the Razorpay connection
 /// and the Catch bills, owners only, and runs the existing connection
 /// commands (the OAuth flow stays as it is) and the bill payment link.
-class PaymentsScreen extends ConsumerWidget {
-  const PaymentsScreen({super.key, required this.organizerId, this.now});
+class OrganizerPaymentsScreen extends ConsumerWidget {
+  const OrganizerPaymentsScreen({
+    super.key,
+    required this.organizerId,
+    this.now,
+  });
 
   final String organizerId;
 
@@ -66,7 +70,7 @@ class PaymentsScreen extends ConsumerWidget {
             )
           : null;
       final setupState = connection?.value;
-      final state = PaymentsState(
+      final state = OrganizerPaymentsState(
         isOwner: isOwner,
         currencyCode: currencyCodeForCityName(organizer.location),
         now: now ?? DateTime.now(),
@@ -76,7 +80,7 @@ class PaymentsScreen extends ConsumerWidget {
         bills: bills?.value,
         billsError: bills?.error,
       );
-      body = PaymentsBody(
+      body = OrganizerPaymentsBody(
         state: state,
         footer: setupState?.setup.collection?.throughCatch == true
             ? HostPaymentAccountControllerCard(organizer: organizer)
@@ -104,22 +108,22 @@ class PaymentsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Organizer organizer,
-    PaymentsState state,
-    PaymentsAction action,
+    OrganizerPaymentsState state,
+    OrganizerPaymentsAction action,
   ) async {
     final connection = hostFormPaymentControllerProvider(organizer.id);
     switch (action) {
-      case PaymentsAction.connect:
+      case OrganizerPaymentsAction.connect:
         await ref.read(connection.notifier).connect();
-      case PaymentsAction.reconnect:
+      case OrganizerPaymentsAction.reconnect:
         await ref.read(connection.notifier).reconnect();
-      case PaymentsAction.refresh:
+      case OrganizerPaymentsAction.refresh:
         await ref.read(connection.notifier).refresh();
-      case PaymentsAction.retryConnection:
+      case OrganizerPaymentsAction.retryConnection:
         ref.invalidate(connection);
-      case PaymentsAction.retryBills:
+      case OrganizerPaymentsAction.retryBills:
         ref.invalidate(hostOrganizerBillsProvider(organizer.id));
-      case PaymentsAction.disconnect:
+      case OrganizerPaymentsAction.disconnect:
         final ready = state.readyConnection;
         if (ready == null) return;
         final l10n = context.l10n;
@@ -138,7 +142,7 @@ class PaymentsScreen extends ConsumerWidget {
         );
         if (confirmed != true) return;
         await ref.read(connection.notifier).disconnect(ready.connectionId);
-      case PaymentsAction.comparePlans:
+      case OrganizerPaymentsAction.comparePlans:
         final opened = await ref
             .read(externalLinkControllerProvider)
             .openExternal(AppConfig.publicSiteUrl.resolve('/host/#pricing'))
@@ -149,7 +153,7 @@ class PaymentsScreen extends ConsumerWidget {
             context.l10n.safetySettingsScreenExternalLinkOpenFailed,
           );
         }
-      case PaymentsAction.refunds:
+      case OrganizerPaymentsAction.refunds:
         await context.pushNamed<void>(
           Routes.hostOrganizerEventDefaultsScreen.name,
           queryParameters: {'organizerId': organizer.id},

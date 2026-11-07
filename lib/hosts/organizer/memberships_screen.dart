@@ -21,8 +21,8 @@ import 'package:go_router/go_router.dart';
 /// Paid memberships for one organizer: the programme, payouts, the billing
 /// pause and the plans, through the existing memberships controller. A plan
 /// opens the existing plan editor sheet; payouts open Payments and billing.
-class MembershipsScreen extends ConsumerWidget {
-  const MembershipsScreen({super.key, required this.organizerId});
+class OrganizerMembershipsScreen extends ConsumerWidget {
+  const OrganizerMembershipsScreen({super.key, required this.organizerId});
 
   final String organizerId;
 
@@ -54,8 +54,8 @@ class MembershipsScreen extends ConsumerWidget {
     } else {
       final provider = hostMembershipsControllerProvider(organizer.id);
       final value = catchAsyncStateFromAsyncValue(ref.watch(provider));
-      body = MembershipsBody(
-        state: MembershipsState(
+      body = OrganizerMembershipsBody(
+        state: OrganizerMembershipsState(
           program: value.value?.program,
           plans: value.value?.plans ?? const <HostMembershipPlan>[],
           isOwner: scope.isOwner,
@@ -80,7 +80,11 @@ class MembershipsScreen extends ConsumerWidget {
     );
   }
 
-  void _act(BuildContext context, WidgetRef ref, MembershipsAction action) {
+  void _act(
+    BuildContext context,
+    WidgetRef ref,
+    OrganizerMembershipsAction action,
+  ) {
     final provider = hostMembershipsControllerProvider(organizerId);
     void run(HostMembershipProgramCommand command) => unawaited(
       HostMembershipsController.programMutation
@@ -90,20 +94,20 @@ class MembershipsScreen extends ConsumerWidget {
           }),
     );
     switch (action) {
-      case MembershipsAction.enable:
+      case OrganizerMembershipsAction.enable:
         run(HostMembershipProgramCommand.enable);
-      case MembershipsAction.pauseBilling:
+      case OrganizerMembershipsAction.pauseBilling:
         run(HostMembershipProgramCommand.pauseBilling);
-      case MembershipsAction.resumeBilling:
+      case OrganizerMembershipsAction.resumeBilling:
         run(HostMembershipProgramCommand.resumeBilling);
-      case MembershipsAction.newPlan:
+      case OrganizerMembershipsAction.newPlan:
         unawaited(_openPlan(context, null));
-      case MembershipsAction.setUpPayouts:
+      case OrganizerMembershipsAction.setUpPayouts:
         context.pushNamed(
           Routes.hostOrganizerPaymentsScreen.name,
           queryParameters: {'organizerId': organizerId},
         );
-      case MembershipsAction.retry:
+      case OrganizerMembershipsAction.retry:
         ref.invalidate(provider);
     }
   }

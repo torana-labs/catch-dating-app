@@ -20,16 +20,17 @@ import 'package:go_router/go_router.dart';
 /// existing organizer update; a new logo or photo is sent as soon as it is
 /// picked, through the existing media update. The organizer listener brings
 /// the result back.
-class PageEditScreen extends ConsumerStatefulWidget {
-  const PageEditScreen({super.key, this.initialOrganizerId});
+class OrganizerPageEditScreen extends ConsumerStatefulWidget {
+  const OrganizerPageEditScreen({super.key, this.initialOrganizerId});
 
   final String? initialOrganizerId;
 
   @override
-  ConsumerState<PageEditScreen> createState() => _PageEditScreenState();
+  ConsumerState<OrganizerPageEditScreen> createState() =>
+      _PageEditScreenState();
 }
 
-class _PageEditScreenState extends ConsumerState<PageEditScreen> {
+class _PageEditScreenState extends ConsumerState<OrganizerPageEditScreen> {
   PageEditDraft? _draft;
   String? _draftFor;
   int _revision = 0;
@@ -58,7 +59,7 @@ class _PageEditScreenState extends ConsumerState<PageEditScreen> {
     );
 
     final Widget body;
-    PageEditState? state;
+    OrganizerPageEditState? state;
     if (scope == null || organizer == null) {
       body = HostOrganizerScopeFallback(
         gap: read.gap,
@@ -72,7 +73,7 @@ class _PageEditScreenState extends ConsumerState<PageEditScreen> {
         _revision += 1;
       }
       final pageUri = organizerPageUri(organizer);
-      state = PageEditState(
+      state = OrganizerPageEditState(
         organizer: organizer,
         draft: _draft!,
         revision: _revision,
@@ -81,7 +82,7 @@ class _PageEditScreenState extends ConsumerState<PageEditScreen> {
         mediaPending: _mediaPending,
         pageLink: pageUri == null ? null : organizerPageLink(pageUri),
       );
-      body = PageEditBody(
+      body = OrganizerPageEditBody(
         state: state,
         onField: (field, value) => setState(() {
           _draft = switch (field) {
@@ -156,7 +157,7 @@ class _PageEditScreenState extends ConsumerState<PageEditScreen> {
     _draft = null;
   });
 
-  Future<void> _save(PageEditState state) async {
+  Future<void> _save(OrganizerPageEditState state) async {
     final patch = state.draft.patchFor(state.organizer, isOwner: state.isOwner);
     if (patch.isEmpty) return;
     try {

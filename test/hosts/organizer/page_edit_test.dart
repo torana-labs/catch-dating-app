@@ -73,12 +73,15 @@ void main() {
     });
   });
 
-  group('PageEditBody', () {
-    Future<List<Object>> pump(WidgetTester tester, PageEditState state) async {
+  group('OrganizerPageEditBody', () {
+    Future<List<Object>> pump(
+      WidgetTester tester,
+      OrganizerPageEditState state,
+    ) async {
       final calls = <Object>[];
       await pumpOrganizerBody(
         tester,
-        PageEditBody(
+        OrganizerPageEditBody(
           state: state,
           onField: (field, value) => calls.add((field, value)),
           onFormat: calls.add,
@@ -105,7 +108,7 @@ void main() {
       );
       final calls = await pump(
         tester,
-        PageEditState(
+        OrganizerPageEditState(
           organizer: organizer,
           draft: PageEditDraft.of(organizer),
           revision: 1,
@@ -150,7 +153,7 @@ void main() {
       final organizer = lanternLane();
       await pump(
         tester,
-        PageEditState(
+        OrganizerPageEditState(
           organizer: organizer,
           draft: PageEditDraft.of(organizer),
           revision: 1,

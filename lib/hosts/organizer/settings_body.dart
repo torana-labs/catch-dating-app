@@ -5,16 +5,16 @@ import 'package:flutter/widgets.dart';
 
 /// Settings in board order: Tell me when, Account, Help, Sign out and the
 /// version line.
-class SettingsBody extends StatelessWidget {
-  const SettingsBody({
+class OrganizerSettingsBody extends StatelessWidget {
+  const OrganizerSettingsBody({
     super.key,
     required this.state,
     required this.onAction,
     required this.onMessages,
   });
 
-  final SettingsState state;
-  final ValueChanged<SettingsAction> onAction;
+  final OrganizerSettingsState state;
+  final ValueChanged<OrganizerSettingsAction> onAction;
   final ValueChanged<bool> onMessages;
 
   @override
@@ -55,7 +55,9 @@ class SettingsBody extends StatelessWidget {
               value: state.name,
               density: CatchIndexRowSize.regular,
               chevron: true,
-              onTap: busy ? null : () => onAction(SettingsAction.editName),
+              onTap: busy
+                  ? null
+                  : () => onAction(OrganizerSettingsAction.editName),
             ),
             if (state.phone case final phone?)
               CatchIndexRow(
@@ -72,7 +74,7 @@ class SettingsBody extends StatelessWidget {
               density: CatchIndexRowSize.regular,
               chevron: organizers.length > 1,
               onTap: organizers.length > 1 && !busy
-                  ? () => onAction(SettingsAction.switchOrganizer)
+                  ? () => onAction(OrganizerSettingsAction.switchOrganizer)
                   : null,
             ),
             CatchIndexRow(
@@ -81,7 +83,9 @@ class SettingsBody extends StatelessWidget {
               icon: CatchIcons.delete,
               iconTone: CatchIndexRowTone.danger,
               density: CatchIndexRowSize.regular,
-              onTap: busy ? null : () => onAction(SettingsAction.deleteAccount),
+              onTap: busy
+                  ? null
+                  : () => onAction(OrganizerSettingsAction.deleteAccount),
             ),
           ],
         ),
@@ -94,21 +98,27 @@ class SettingsBody extends StatelessWidget {
                   title: l10n.hostOrganizerSettingsGuides,
                   density: CatchIndexRowSize.regular,
                   chevron: true,
-                  onTap: busy ? null : () => onAction(SettingsAction.guides),
+                  onTap: busy
+                      ? null
+                      : () => onAction(OrganizerSettingsAction.guides),
                 ),
               if (state.termsAvailable)
                 CatchIndexRow(
                   title: l10n.hostOrganizerSettingsTerms,
                   density: CatchIndexRowSize.regular,
                   chevron: true,
-                  onTap: busy ? null : () => onAction(SettingsAction.terms),
+                  onTap: busy
+                      ? null
+                      : () => onAction(OrganizerSettingsAction.terms),
                 ),
               if (state.privacyAvailable)
                 CatchIndexRow(
                   title: l10n.hostOrganizerSettingsPrivacy,
                   density: CatchIndexRowSize.regular,
                   chevron: true,
-                  onTap: busy ? null : () => onAction(SettingsAction.privacy),
+                  onTap: busy
+                      ? null
+                      : () => onAction(OrganizerSettingsAction.privacy),
                 ),
             ],
           ),
@@ -117,7 +127,9 @@ class SettingsBody extends StatelessWidget {
           label: l10n.hostOrganizerSettingsSignOut,
           variant: CatchButtonVariant.danger,
           fullWidth: true,
-          onPressed: busy ? null : () => onAction(SettingsAction.signOut),
+          onPressed: busy
+              ? null
+              : () => onAction(OrganizerSettingsAction.signOut),
         ),
         if (version != null)
           CatchText(

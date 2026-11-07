@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 
 /// The team in board order: the people on it, Invite someone for the
 /// owner, and what each role can do.
-class TeamBody extends StatelessWidget {
-  const TeamBody({
+class OrganizerTeamBody extends StatelessWidget {
+  const OrganizerTeamBody({
     super.key,
     required this.state,
     required this.onPhone,
@@ -17,7 +17,7 @@ class TeamBody extends StatelessWidget {
     required this.onHost,
   });
 
-  final TeamState state;
+  final OrganizerTeamState state;
   final ValueChanged<String> onPhone;
   final VoidCallback onInvite;
 

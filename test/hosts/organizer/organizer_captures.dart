@@ -120,15 +120,15 @@ Widget organizerTabCapture() =>
     OrganizerScreen(initialOrganizerId: organizerCaptureOrganizer.id);
 
 Widget organizerPageEditCapture() =>
-    PageEditScreen(initialOrganizerId: organizerCaptureOrganizer.id);
+    OrganizerPageEditScreen(initialOrganizerId: organizerCaptureOrganizer.id);
 
-Widget organizerPaymentsCapture() => PaymentsScreen(
+Widget organizerPaymentsCapture() => OrganizerPaymentsScreen(
   organizerId: organizerCaptureOrganizer.id,
   now: organizerNow,
 );
 
 Widget organizerTeamCapture() =>
-    TeamScreen(organizerId: organizerCaptureOrganizer.id);
+    OrganizerTeamScreen(organizerId: organizerCaptureOrganizer.id);
 
 Widget organizerSettingsCapture() =>
-    SettingsScreen(initialOrganizerId: organizerCaptureOrganizer.id);
+    OrganizerSettingsScreen(initialOrganizerId: organizerCaptureOrganizer.id);
