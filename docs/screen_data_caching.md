@@ -223,11 +223,16 @@ findings instead of failing on them.
 
 ### Phase 2: context migrations empty the baseline
 
-Code that survives the redesign is on the contract: the lifetime, listener
-and keep-alive findings are gone, and so are the invalidations outside legacy
-screens. What the baseline still lists is `CACHE-INVALIDATE-001` in screens
-the redesign deletes, so each screen PR deletes its entries with the screen.
-When the baseline is empty, the rules gate with no list.
+Code that survives the redesign is on the contract: the listener and
+keep-alive findings are gone, and so are the invalidations outside legacy
+screens. One lifetime finding stays: `watchUserProfileProvider` holds account
+data but is kept alive, because the kept-alive onboarding controller reads it
+(Riverpod forbids a kept-alive provider reading an auto-dispose one), and a
+session key would change its 27 callers. It moves when onboarding is redrawn
+(P6 onboarding) or with a session-keyed profile read. Everything else the
+baseline lists is `CACHE-INVALIDATE-001` in screens the redesign deletes, so
+each screen PR deletes its entries with the screen. When the baseline is
+empty, the rules gate with no list.
 
 | Legacy code | Entries | Call sites | Deleted by |
 |---|---|---|---|
