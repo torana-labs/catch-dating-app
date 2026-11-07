@@ -1,5 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
+
+/// What the row shows: its label, or its spinner while a command runs.
+enum CatchButtonContentRowMode { label, loading }
 
 class CatchButtonContentRow extends StatelessWidget {
   const CatchButtonContentRow({
@@ -11,7 +15,7 @@ class CatchButtonContentRow extends StatelessWidget {
     this.gap = CatchSpacing.micro6,
     this.fullWidth = false,
     this.allowMultiline = false,
-    this.loadingIndicator,
+    this.mode = CatchButtonContentRowMode.label,
   });
 
   final String label;
@@ -22,9 +26,9 @@ class CatchButtonContentRow extends StatelessWidget {
   final bool allowMultiline;
   final TextStyle textStyle;
 
-  /// Drawn centred over the row while a command runs. The row stays laid
-  /// out, unseen, so the button keeps the width it had.
-  final Widget? loadingIndicator;
+  /// Loading draws the spinner, in the row's colour, centred over the label.
+  /// The label stays laid out, unseen, so the button keeps the width it had.
+  final CatchButtonContentRowMode mode;
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +57,7 @@ class CatchButtonContentRow extends StatelessWidget {
       ],
     );
 
-    final indicator = loadingIndicator;
-    if (indicator == null) return content;
+    if (mode == CatchButtonContentRowMode.label) return content;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -67,7 +70,7 @@ class CatchButtonContentRow extends StatelessWidget {
             child: content,
           ),
         ),
-        indicator,
+        CatchLoadingIndicator.dots(color: color),
       ],
     );
   }

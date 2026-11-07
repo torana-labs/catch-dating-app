@@ -570,9 +570,9 @@ class _CatchButtonState extends State<CatchButton> {
       fullWidth: widget.fullWidth,
       allowMultiline: !widget._selection,
       textStyle: spec.textStyle(context),
-      loadingIndicator: widget.isLoading
-          ? CatchLoadingIndicator.dots(color: palette.foreground)
-          : null,
+      mode: widget.isLoading
+          ? CatchButtonContentRowMode.loading
+          : CatchButtonContentRowMode.label,
     );
 
     final buttonContent = Stack(
