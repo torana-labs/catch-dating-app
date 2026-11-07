@@ -18,7 +18,7 @@ Pressed scale; with `transitionName` the card grows into the event page hero (Fl
 ## Flutter
 
 `catch.event_card`:
-- `EventCard`
+- `CatchEventCard`
 `catch.cover_story`:
 - `FeaturedEventPoster`
 <!-- generated:flutter:end -->

@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-11-04",
+  "updated": "2026-11-08",
   "sourceOfTruth": {
     "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled widgets in lib/contexts/*/parts and packages/platform/lib are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -5381,27 +5381,30 @@
             "type": "object",
             "required": false,
             "dartType": "CatchSectionAction?",
-            "tsType": "CatchSectionAction"
+            "tsType": "CatchSectionAction",
+            "notes": "The unnamed constructor: a quiet small button at the end of the title."
           },
           {
             "name": "note",
             "type": "string",
             "required": false,
             "dartType": "String?",
-            "tsType": "string"
+            "tsType": "string",
+            "notes": "The unnamed constructor: shown when there is no action."
           },
           {
             "name": "dividers",
             "type": "enum",
             "required": false,
             "default": "between",
-            "dartType": "CatchSectionDividers",
-            "tsType": "CatchSectionDividers",
+            "dartType": "CatchSectionPlacement",
+            "tsType": "CatchSectionPlacement",
             "values": [
               "between",
               "all",
               "none"
-            ]
+            ],
+            "notes": "The Flutter enum takes the Placement axis because the grammar has no Dividers axis; the web names the same values CatchSectionDividers."
           },
           {
             "name": "container",
@@ -5424,10 +5427,11 @@
           },
           {
             "name": "empty",
-            "type": "widget",
+            "type": "string",
             "required": false,
-            "dartType": "Widget?",
-            "tsType": "ReactNode"
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Flutter takes the copy shown instead of the rows when there are none; the web takes a node."
           },
           {
             "name": "columns",
@@ -5548,7 +5552,9 @@
           "CatchButton",
           "CatchSurface"
         ],
-        "goldens": [],
+        "goldens": [
+          "section_system_family"
+        ],
         "members": [
           {
             "id": "catch.section.timeline_list",
@@ -5885,6 +5891,36 @@
               ],
               "reason": "Owns attachment and a single perimeter for a controlling decision and its applicable configuration."
             }
+          },
+          {
+            "id": "catch.section.list",
+            "symbol": "CatchListSection",
+            "file": "packages/catch_ui/lib/src/components/catch_list_section.dart",
+            "summary": "The system Section's layout behind the unnamed CatchSection constructor: the section title with a quiet action or a muted note at its end, 8 px above rows of any widget, with the lines the section places (between, all, none) or the empty copy. Product code calls CatchSection().",
+            "states": [
+              "system-note",
+              "system-action",
+              "system-empty",
+              "system-no-dividers"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Section",
+            "naming": {
+              "useCase": "List",
+              "comparedWith": [
+                "catch.section",
+                "catch.section.rows",
+                "catch.section.content"
+              ],
+              "reason": "Lays out any row widgets (system CatchIndexRow rows, a stat row) under the system section header, owning the lines between them. CatchRowSection takes CatchField rows under the field-section kicker header and rule; CatchContentSection insets one child under that same legacy header."
+            }
           }
         ],
         "accessibility": {
@@ -5916,7 +5952,8 @@
           "Divided and contained field-row headers accept title, count, and trailing content. Field-section kickers always use the section-owned uppercase IBM Plex Mono treatment. Contained header placement is outside by default and may be inside; generic contained content-card titles remain inside by construction.",
           "Section headers, section labels, day headers, vertical sections, and horizontal rails are public members of this grouping family, not separate section systems.",
           "Use horizontal for titled scrolling collections; footer is their last scrollable item. The collection viewport owns item sizing and laziness, while Section owns header and chrome.",
-          "Host operational sections use action for one task, collection for empty/populated data with an optional command, status for passive feedback, and fieldRows for navigation. These modules share the action surface, own padding and full-width commands, and grow from content without a reserved height. Do not hand-build empty content or centered section commands. CatchAsyncBoundary retains loading, failure and retry ownership outside the shared section recipe."
+          "Host operational sections use action for one task, collection for empty/populated data with an optional command, status for passive feedback, and fieldRows for navigation. These modules share the action surface, own padding and full-width commands, and grow from content without a reserved height. Do not hand-build empty content or centered section commands. CatchAsyncBoundary retains loading, failure and retry ownership outside the shared section recipe.",
+          "The unnamed CatchSection is the system Section: title, note or action, dividers (between, all, none) and the empty copy, around system CatchIndexRow rows or any other children."
         ]
       },
       "governance": {
@@ -5936,6 +5973,7 @@
         "symbol": "CatchSection",
         "file": "packages/catch_ui/lib/src/components/catch_section.dart",
         "constructors": [
+          "CatchSection",
           "CatchSection.divided",
           "CatchSection.fieldRows",
           "CatchSection.containedFieldRows",
@@ -7537,13 +7575,15 @@
           "CatchDivider",
           "CatchSurface"
         ],
-        "goldens": [],
+        "goldens": [
+          "stat_tile_family"
+        ],
         "members": [
           {
             "id": "catch.metric_strip.stat_column",
             "symbol": "CatchMetricTile",
             "file": "packages/catch_ui/lib/src/components/catch_metric_tile.dart",
-            "summary": "One value and supporting label, with natural-height display and bounded compact value/unit recipes.",
+            "summary": "One value and supporting label, with natural-height display and bounded compact value/unit recipes. CatchMetricTile.stat is the system Stat tile: label, value, note and noteTone (CatchMetricTileTone), 118 px at least so a CatchStack row with equal set lines up.",
             "states": [
               "plain",
               "highlighted",
@@ -7554,7 +7594,9 @@
               "default",
               "with-unit",
               "long-label",
-              "color-overrides"
+              "color-overrides",
+              "stat",
+              "stat-note-tone"
             ],
             "governance": {
               "conceptRole": "member",
@@ -7612,7 +7654,8 @@
         "notes": [
           "Use the default rail for compact quantitative or short factual data pairs. Keep labels concise and supply a separate unit through CatchMetricValue.unit.",
           "Use grid for independent measurements and dataQuality for source-completeness-aware measurements. Both use 12 pt gutters, equal paired tiles and single-column reflow at large text or narrow widths; never wrap either in another surface.",
-          "CatchMetricTile owns standalone value/label rendering, with a compact recipe for rail cells. Data-quality warnings, status labels and captions remain CatchDataQualityMetricTile."
+          "CatchMetricTile owns standalone value/label rendering, with a compact recipe for rail cells. Data-quality warnings, status labels and captions remain CatchDataQualityMetricTile.",
+          "The system Stat is CatchMetricTile.stat; put two or four in a CatchStack row with equal set."
         ]
       },
       "governance": {
@@ -10655,6 +10698,22 @@
             "dartType": "String?",
             "tsType": "string",
             "notes": "The live badge, such as \"Live · 9:04 PM\"."
+          },
+          {
+            "name": "identity",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTopBarIdentity?",
+            "tsType": "ReactNode",
+            "notes": "tabHome on compact: the avatar at the end of the bar that opens the switcher (name, label, photoUrl, initials, onTap). The system passes an Avatar as a child."
+          },
+          {
+            "name": "search",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchTopBarSearch?",
+            "tsType": "ReactNode",
+            "notes": "tabHome on expanded: a fixed search field before the actions, 240 to 360 px wide. The system passes a search Field as a child."
           }
         ],
         "states": [
@@ -10663,7 +10722,9 @@
           "subject",
           "step",
           "live",
-          "moment"
+          "moment",
+          "tab-home-identity",
+          "tab-home-search"
         ],
         "slots": [
           {
@@ -10696,7 +10757,8 @@
           "CatchText"
         ],
         "goldens": [
-          "top_bar_family"
+          "top_bar_family",
+          "top_bar_tab_home"
         ],
         "members": [
           {
@@ -16646,12 +16708,12 @@
       "kind": "composite",
       "tier": "T2",
       "aliases": ["EventTicket", "EventTile", "EventListItem", "EventPreviewCard", "CatchEventPoster", "CatchPreviewCard", "CatchLinkTile", "CatchPlanCard"],
-      "summary": "Event summary card: binds event media and metadata into the CatchTicket card recipe, which owns the ticket geometry.",
+      "summary": "The system EventCard: the poster variant (a spotlight in the format colour with the when badge, the format kicker, the title and place, two or three counts and the faces coming with +N) drawn from formatted strings and a format. The app's ticket binding EventCard is its ticket member.",
       "dart": {
-        "symbol": "EventCard",
-        "file": "lib/contexts/events/parts/event_card.dart",
+        "symbol": "CatchEventCard",
+        "file": "packages/catch_ui/lib/src/components/catch_event_card.dart",
         "constructors": [
-          "EventCard"
+          "CatchEventCard"
         ]
       },
       "design": {
@@ -16676,123 +16738,141 @@
             "name": "title",
             "type": "string",
             "required": true,
-            "dartType": "String"
+            "dartType": "String",
+            "tsType": "string"
           },
           {
-            "name": "subtitle",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "timeLabel",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "countdownLabel",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "priceLabel",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "capacityLabel",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "activityKind",
+            "name": "format",
             "type": "enum",
             "required": true,
-            "dartType": "ActivityKind",
+            "dartType": "CatchFormat",
+            "tsType": "CatchFormat",
             "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
+              "run",
               "dinner",
-              "singlesMixer",
-              "openActivity"
+              "games",
+              "courts",
+              "nightsOut"
             ]
           },
           {
-            "name": "statusLabel",
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "poster",
+            "dartType": "CatchEventCardVariant",
+            "tsType": "CatchEventCardVariant",
+            "values": [
+              "poster"
+            ],
+            "notes": "The system also has cover, compact and external; they arrive with their first screens."
+          },
+          {
+            "name": "formatLabel",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
-            "name": "clockTime",
-            "type": "object",
+            "name": "when",
+            "type": "string",
             "required": false,
-            "dartType": "TimeOfDay?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
-            "name": "width",
+            "name": "place",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "counts",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchMetricValue>",
+            "tsType": "Array<{ value: ReactNode; label: ReactNode; }>"
+          },
+          {
+            "name": "people",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchPersonAvatarItem>",
+            "tsType": "Array<Pick<AvatarProps, \"name\" | \"imageUrl\">>"
+          },
+          {
+            "name": "peopleTotal",
             "type": "number",
             "required": false,
-            "dartType": "double?"
-          },
-          {
-            "name": "heroTag",
-            "type": "object",
-            "required": false,
-            "dartType": "Object?"
+            "dartType": "int?",
+            "tsType": "number"
           },
           {
             "name": "onTap",
             "type": "callback",
             "required": false,
-            "dartType": "VoidCallback?"
+            "dartType": "VoidCallback?",
+            "tsType": "() => void",
+            "notes": "The system's onPress."
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
           }
         ],
         "states": [
-          "ticket",
-          "ticket-status",
-          "long-copy"
+          "poster",
+          "poster-no-people",
+          "poster-no-counts",
+          "poster-night"
         ],
         "slots": [],
         "tokens": [
-          "space.s2",
+          "space.s1",
           "space.s3",
           "space.s4",
-          "space.s5",
-          "radius.md",
-          "radius.lg",
-          "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.ink3",
-          "theme.light.color.line",
-          "theme.light.color.surface"
+          "radius.xl",
+          "format.games.accent",
+          "format.games.ink"
         ],
         "dartRoles": [
-          "ActivityKind",
-          "EventActivityVisualSpec",
-          "EventBackdropImage",
-          "CatchClockIndicator",
-          "CatchBadge.ticketStatus",
-          "CatchTicketDivider",
-          "CatchSurface"
+          "CatchSurface",
+          "CatchSurfaceBlock.spotlight",
+          "CatchBadge.solid",
+          "CatchText",
+          "CatchAvatarRow",
+          "CatchMetricValue",
+          "CatchPersonAvatarItem"
         ],
-        "goldens": [],
+        "goldens": [
+          "event_card_family"
+        ],
         "members": [
+          {
+            "id": "catch.event_card.ticket",
+            "symbol": "EventCard",
+            "file": "lib/contexts/events/parts/event_card.dart",
+            "summary": "The app's event ticket binding: event media and metadata in the CatchTicket card recipe, with ActivityKind artwork, the clock and the ticket status. It keeps the ticket rows until the system cover and compact variants arrive with their first screens.",
+            "states": [
+              "ticket",
+              "ticket-status",
+              "long-copy"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.event_card"
+            },
+            "level": "L5",
+            "roleNoun": "Card"
+          },
           {
             "id": "catch.event_card.thumbnail",
             "symbol": "EventThumbnail",
@@ -16963,9 +17043,12 @@
         "allowedChildren": [
           "catch.graded_image",
           "catch.surface",
-          "catch.badge"
+          "catch.badge",
+          "catch.person_avatar",
+          "catch.text"
         ],
         "notes": [
+          "CatchEventCard is the system EventCard: pass the format and formatted strings, counts as CatchMetricValue and people as CatchPersonAvatarItem. The spotlight sets the format scope for everything inside it. Screens and bindings map an event onto it; it never takes an event.",
           "Ticket, spotlight, and compact are named constructors on one event card API, not separate public card classes.",
           "EventThumbnail is an event-card media member rather than a competing product concept.",
           "Use activity visuals for no-photo event states so cards, thumbnails, map sheets, and detail headers share event-type color semantics."
@@ -16985,8 +17068,15 @@
         "conceptId": "catch.event_card",
         "decisionRef": "contract-note:feature-binding-predicted-name"
       },
-      "level": "L5",
+      "level": "L3",
       "roleNoun": "Card",
+      "naming": {
+        "useCase": "Event",
+        "comparedWith": [
+          "catch.event_card.ticket"
+        ],
+        "reason": "The system EventCard API (variant, format, formatLabel, when, place, counts, people, peopleTotal) as a domain-free library card: callers pass formatted strings and a CatchFormat, and it draws through CatchSurface, CatchBadge, CatchText and CatchAvatarRow. EventCard binds an event to the CatchTicket recipe with ActivityKind artwork; it stays the ticket member until the cover and compact variants arrive with their first screens."
+      },
       "system": {
         "name": "EventCard",
         "states": ["rest", "pressed"],
@@ -19123,6 +19213,87 @@
             "default": 1,
             "dartType": "int",
             "tsType": "number"
+          },
+          {
+            "name": "marker",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchIndexRowTone?",
+            "tsType": "CatchIndexRowTone",
+            "values": [
+              "neutral",
+              "success",
+              "warning",
+              "danger",
+              "info"
+            ],
+            "notes": "Flutter takes the dot's tone; leading wins over date, which wins over marker."
+          },
+          {
+            "name": "date",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchIndexRowDate?",
+            "tsType": "DateTileProps",
+            "notes": "day, date and an optional CatchFormat tint: the system's DateTile."
+          },
+          {
+            "name": "meta",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "statusTone",
+            "type": "enum",
+            "required": false,
+            "default": "neutral",
+            "dartType": "CatchIndexRowTone",
+            "tsType": "CatchIndexRowTone",
+            "values": [
+              "neutral",
+              "success",
+              "warning",
+              "danger",
+              "info"
+            ],
+            "notes": "neutral is the system's secondary."
+          },
+          {
+            "name": "progress",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchIndexRowProgress?",
+            "tsType": "{ value: number; max?: number; label: string; }"
+          },
+          {
+            "name": "action",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchIndexRowAction?",
+            "tsType": "{ label: string; onPressed?: () => void; }",
+            "notes": "A small secondary button that keeps its own semantics node; the row may stay non-navigating."
+          },
+          {
+            "name": "density",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchIndexRowSize?",
+            "tsType": "CatchIndexRowSize",
+            "values": [
+              "compact",
+              "regular",
+              "roomy"
+            ],
+            "notes": "Null keeps the 66 px hairline index row with its own bottom line; a size selects the system row (10, 12 or 14 above and below, no line of its own: the enclosing CatchSection owns the lines). The Flutter enum takes the Size axis because the grammar has no Density axis."
           }
         ],
         "states": [
@@ -19131,7 +19302,11 @@
           "leading",
           "trailing",
           "stacked",
-          "disabled"
+          "disabled",
+          "marker",
+          "date",
+          "progress",
+          "action"
         ],
         "slots": [
           {
@@ -19152,14 +19327,25 @@
           "space.s4",
           "theme.light.color.line",
           "theme.light.color.ink",
-          "theme.light.color.ink2"
+          "theme.light.color.ink2",
+          "space.s2",
+          "radius.sm",
+          "theme.light.color.tile",
+          "theme.light.color.track",
+          "theme.light.color.primary"
         ],
         "dartRoles": [
           "CatchTextStyles.titleL",
           "CatchTextStyles.supporting",
-          "CatchLayout.eventTypeIndexRowHeight"
+          "CatchLayout.eventTypeIndexRowHeight",
+          "CatchText",
+          "CatchButton",
+          "GeneratedCatchStrokeTokens.meterMd",
+          "CatchFormatColors.accent"
         ],
-        "goldens": [],
+        "goldens": [
+          "index_row_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -19180,7 +19366,8 @@
         ],
         "notes": [
           "Use for quiet browse and directory indexes; richer selectable controls belong to CatchChoiceInput.segmented.",
-          "The row owns one semantic tap action with its selected/enabled state and resolved label. Leading and trailing slots are passive adornments; independent controls belong in a row that preserves child actions."
+          "The row owns one semantic tap action with its selected/enabled state and resolved label. Leading and trailing slots are passive adornments; independent controls belong in a row that preserves child actions.",
+          "A system row passes a density and sits in the unnamed CatchSection, which draws the lines between rows. Event rows lead with a date tile and carry meta, status and progress; task rows lead with a marker and end with one action."
         ]
       },
       "governance": {
@@ -21499,7 +21686,7 @@
       "absorbs": [
         "CatchWorkspacePaneScaffold"
       ],
-      "summary": "One layout for workspace screens: queue (a table and a 440/480px inspector that replaces the table when narrow), list-detail (a 360px list and the detail), feed and reading (with a 360px side pane), wide-table, editor (the 600px form lane with a 320px preview and the step list from 960px), operations (capped at 1040px with a 360px live pane from 960px) and browse (a wide grid of 280px-minimum cells that never splits), measured on the layout's own width.",
+      "summary": "One layout for workspace screens: queue (a table and a 440/480px inspector that replaces the table when narrow), list-detail (a 360px list and the detail), feed and reading (with a 360px side pane; feed panes take their content's height, 40px apart, and feed stacks its side column under the main one 24px apart when narrow), wide-table, editor (the 600px form lane with a 320px preview and the step list from 960px), operations (capped at 1040px with a 360px live pane from 960px) and browse (a wide grid of 280px-minimum cells that never splits), measured on the layout's own width.",
       "dart": {
         "symbol": "CatchPaneLayout",
         "file": "packages/catch_ui/lib/src/patterns/catch_pane_layout.dart",
@@ -21623,7 +21810,8 @@
           "GeneratedCatchLayoutTokens.liveCap"
         ],
         "goldens": [
-          "pane_layout_family"
+          "pane_layout_family",
+          "pane_layout_feed"
         ],
         "accessibility": {
           "largeText": {
