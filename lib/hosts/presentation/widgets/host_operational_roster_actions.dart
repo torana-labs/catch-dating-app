@@ -305,7 +305,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       if (!sameScope()) throw StateError('Host event scope changed.');
       return ref
           .read(hostOperationalRosterControllerProvider)
-          .applyRosterIntake(review);
+          .applyRosterIntake(review, organizerId: widget.organizerId);
     },
   );
 

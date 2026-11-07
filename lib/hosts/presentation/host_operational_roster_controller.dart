@@ -10,6 +10,8 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
+import 'package:catch_dating_app/contexts/insights/domain/insights_tags.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -72,9 +74,20 @@ class HostOperationalRosterController {
   Future<HostRosterIntakeReview> resumeRosterIntake(String sessionId) =>
       _ref.read(hostRosterIntakeRepositoryProvider).resume(sessionId);
 
+  /// Applies the reviewed roster. The attendee listener delivers the guests;
+  /// the organizer's host reports count them, so they are declared stale.
   Future<HostRosterIntakeReview> applyRosterIntake(
-    HostRosterIntakeReview review,
-  ) => _ref.read(hostRosterIntakeRepositoryProvider).apply(review);
+    HostRosterIntakeReview review, {
+    required String organizerId,
+  }) async {
+    final applied = await _ref
+        .read(hostRosterIntakeRepositoryProvider)
+        .apply(review);
+    _ref
+        .read(cacheTagsProvider)
+        .invalidate(InsightsTags.writtenFor(organizerId));
+    return applied;
+  }
 
   Future<HostAttendanceOutboxSummary> setAttendance({
     required String eventId,

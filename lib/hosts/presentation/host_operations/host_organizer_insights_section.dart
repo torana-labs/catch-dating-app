@@ -73,7 +73,22 @@ class _HostOrganizerInsightsSectionState
         ref.watch(hostAnalyticsDeviceTimezoneProvider).value ??
         fallbackTimezone;
     final query = _hostAnalyticsQueryFor(_state.query, timezone: timezone);
-    final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
+    final session = ref.watch(authenticatedSessionProvider);
+    final read = switch (session) {
+      AsyncData(:final value) => HostAnalyticsRead(value, query),
+      _ => null,
+    };
+    final AsyncValue<HostAnalyticsReport> analyticsAsync = switch (session) {
+      AsyncError(:final error, :final stackTrace) => AsyncError(
+        error,
+        stackTrace,
+      ),
+      _ when read == null => const AsyncLoading(),
+      _ =>
+        ref
+            .watch(hostAnalyticsProvider(read))
+            .whenData((cached) => cached.data),
+    };
     return CatchSectionList(
       emptyStateOmitted: true,
       children: [
@@ -84,7 +99,9 @@ class _HostOrganizerInsightsSectionState
         ),
         CatchAsyncBoundary<HostAnalyticsReport>(
           value: analyticsAsync,
-          onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
+          onRetry: read == null
+              ? null
+              : () => ref.invalidate(hostAnalyticsProvider(read)),
           loadingBuilder: (_) => CatchSection.content(
             child: const HostAnalyticsReportLoadingIndicator(),
           ),
@@ -125,8 +142,11 @@ class _HostOrganizerInsightsSectionState
         await ref.read(hostAnalyticsDeviceTimezoneProvider.future) ??
         fallbackTimezone;
     final query = _hostAnalyticsQueryFor(_state.query, timezone: timezone);
-    ref.invalidate(hostAnalyticsProvider(query));
-    await ref.read(hostAnalyticsProvider(query).future);
+    final session = ref.read(authenticatedSessionProvider).value;
+    if (session == null) return;
+    final read = HostAnalyticsRead(session, query);
+    ref.invalidate(hostAnalyticsProvider(read));
+    await ref.read(hostAnalyticsProvider(read).future);
   }
 
   void _openEventReport(String eventId) {

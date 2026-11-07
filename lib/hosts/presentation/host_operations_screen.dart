@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';

@@ -85,6 +85,7 @@ import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
@@ -335,6 +336,8 @@ Future<void> _pumpHostScreen(
   await tester.pumpWidget(
     ProviderScope(
       key: resetProviderScope ? UniqueKey() : null,
+      // The app container's policy: only retryable failures retry.
+      retry: catchProviderRetry,
       overrides: [
         firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
         hostTodayPreferenceProvider.overrideWith(

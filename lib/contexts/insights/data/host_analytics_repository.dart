@@ -1,4 +1,8 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/insights/domain/insights_tags.dart';
+import 'package:catch_platform/cache/cache_policy.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
+import 'package:catch_platform/cache/callable_read.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -544,31 +548,54 @@ HostAnalyticsRepository hostAnalyticsRepository(Ref ref) {
   return HostAnalyticsRepository(ref.watch(firebaseFunctionsProvider));
 }
 
+/// The host analytics read's cache key: one signed-in period and one query.
+/// The query builds the callable payload, so key and request cannot drift.
+final class HostAnalyticsRead implements CacheQuery<HostAnalyticsQuery> {
+  const HostAnalyticsRead(this.session, this.query);
+
+  final AuthenticatedSession session;
+  final HostAnalyticsQuery query;
+
+  @override
+  HostAnalyticsQuery toRequest() => query;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HostAnalyticsRead &&
+      identical(other.session, session) &&
+      other.query == query;
+
+  @override
+  int get hashCode => Object.hash(identityHashCode(session), query);
+}
+
+/// Host analytics, kept for the host reports window after the screen closes
+/// and refetched in the background once older than its staleness. A write
+/// that changes what the report counts declares [InsightsTags].
 @riverpod
-Future<HostAnalyticsReport> hostAnalytics(
-  Ref ref,
-  HostAnalyticsQuery query,
-) async {
-  // Auth transitions invalidate this read even when its tab cache is retained.
-  // The disposed read's Ref also fences sign-out/re-entry to the same UID.
-  final auth = ref.watch(uidProvider);
-  final uid = !auth.isLoading && !auth.hasError ? auth.asData?.value : null;
-  if (uid == null || uid.isEmpty) {
-    throw const SignInRequiredException('load host analytics');
+class HostAnalytics extends _$HostAnalytics {
+  @override
+  Future<CachedRead<HostAnalyticsReport>> build(HostAnalyticsRead read) async {
+    ref.watch(authenticatedSessionProvider);
+    _requireSession(read.session);
+    ref.providesTags({InsightsTags.hostReports(read.query.organizerId)});
+    final report = await ref.callableRead(
+      policy: CachePolicies.hostReports,
+      query: read,
+      fetch: ref.watch(hostAnalyticsRepositoryProvider).getHostAnalytics,
+      previous: state.value,
+    );
+    // A report that arrives after sign-out or an account change is dropped.
+    _requireSession(read.session);
+    return report;
   }
-  final report = await ref
-      .watch(hostAnalyticsRepositoryProvider)
-      .getHostAnalytics(query);
-  if (!ref.mounted) {
-    throw const SignInRequiredException('load host analytics');
+
+  void _requireSession(AuthenticatedSession session) {
+    if (!ref.mounted ||
+        !identical(ref.read(authenticatedSessionProvider).value, session)) {
+      throw const SignInRequiredException('load host analytics');
+    }
   }
-  final current = ref.read(uidProvider);
-  if (current.isLoading || current.hasError || current.asData?.value != uid) {
-    throw const SignInRequiredException('load host analytics');
-  }
-  // Auto-dispose at tab exit: a paused cache cannot observe every auth
-  // transition. Reopening always requires fresh server authorization.
-  return report;
 }
 
 Map<Object?, Object?> _map(Object? value) =>
