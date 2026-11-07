@@ -126,17 +126,6 @@
       "count": 3
     }
   },
-  "src/shared/site/SiteHeader.tsx": {
-    "react/forbid-component-props": {
-      "count": 4
-    },
-    "react/forbid-dom-props": {
-      "count": 9
-    },
-    "react/forbid-elements": {
-      "count": 9
-    }
-  },
   "src/shared/ui/primitives/actionControls.tsx": {
     "react/forbid-dom-props": {
       "count": 3
