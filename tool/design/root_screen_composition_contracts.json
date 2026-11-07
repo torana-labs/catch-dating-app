@@ -111,8 +111,20 @@
       "routeName": "Routes.profileScreen.name"
     },
     {
-      "branchKey": "keys.host",
+      "branchKey": "keys.hostToday",
       "routeName": "Routes.hostTodayScreen.name"
+    },
+    {
+      "branchKey": "keys.hostEvents",
+      "routeName": "Routes.hostEventsScreen.name"
+    },
+    {
+      "branchKey": "keys.hostPeople",
+      "routeName": "Routes.hostAudienceScreen.name"
+    },
+    {
+      "branchKey": "keys.hostOrganizer",
+      "routeName": "Routes.hostOrganizerScreen.name"
     }
   ],
   "workspaceOwners": [

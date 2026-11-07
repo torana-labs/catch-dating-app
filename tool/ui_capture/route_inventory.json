@@ -4,9 +4,9 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "a744ff6c2e42511bef0c29f25fe085b9c1520d710bf4f5f43efa75f9f9d1d634",
+    "routeContractSha256": "962bdd89179c380c8d394371d0b40817b63d9f835c640d682ad0477038f0a03d",
     "goRouteCount": 129,
-    "shellBranchCount": 5,
+    "shellBranchCount": 8,
     "enumRouteCount": 114,
     "referencedRouteCount": 114,
     "runtimeRouteCount": 114,
@@ -17,7 +17,7 @@
       "_hostWorkspaceRootRecipes",
       "_hostWorkspaceDestinationRoutes",
       "workspaceRoute",
-      "indexRoute"
+      "indexRoutes"
     ],
     "imperativePageRouteCount": 13,
     "imperativePageTargetCount": 7

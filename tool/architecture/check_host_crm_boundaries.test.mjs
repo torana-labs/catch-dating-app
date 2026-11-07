@@ -406,9 +406,9 @@ test("shared workspace keeps application routes in the Audience branch", () => {
       .some((item) => /People shell branch/u.test(item.reason)), name);
   }
   for (const [before, after] of [
-    ["navigatorKey: keys.host[root.index]", "navigatorKey: keys.host[0]"],
-    ["routes: [for (final index in root.indexes) indexRoute(index)]",
-      "routes: [indexRoute(root.route)]"],
+    ["navigatorKey: keys.hostPeople", "navigatorKey: keys.hostToday"],
+    ["routes: indexRoutes(HostWorkspaceRoot.people)",
+      "routes: indexRoutes(HostWorkspaceRoot.events)"],
     ["route.index == root", "true"],
     ["name: Routes.hostApplicationsScreen.name", "name: Routes.hostInboxScreen.name"],
     ["name: Routes.hostApplicationDetailScreen.name", "name: Routes.hostInboxScreen.name"],

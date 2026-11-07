@@ -1478,23 +1478,42 @@ StatefulShellRoute _hostShellRoute(
     },
     routes: [rootRoute, ...routes.where((route) => route.index == root)],
   );
-  ShellRoute indexRoute(Routes index) => workspaceRoute(
-    index,
-    roots.where((route) => route.name == index.name).single,
-  );
+  List<ShellRoute> indexRoutes(HostWorkspaceRoot root) => [
+    for (final index in root.indexes)
+      workspaceRoute(
+        index,
+        roots.where((route) => route.name == index.name).single,
+      ),
+  ];
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) => HostShellScreen(
       navigationShell: navigationShell,
       requestedOrganizerId:
           _routeOrganizerQueryId(state) ?? state.pathParameters['organizerId'],
     ),
+    // One branch per HostWorkspaceRoot, in its order; each mounts one
+    // workspace per index route.
     branches: [
-      for (final root in HostWorkspaceRoot.values)
-        StatefulShellBranch(
-          navigatorKey: keys.host[root.index],
-          observers: [AnalyticsRouteObserver(analytics)],
-          routes: [for (final index in root.indexes) indexRoute(index)],
-        ),
+      StatefulShellBranch(
+        navigatorKey: keys.hostToday,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: indexRoutes(HostWorkspaceRoot.today),
+      ),
+      StatefulShellBranch(
+        navigatorKey: keys.hostEvents,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: indexRoutes(HostWorkspaceRoot.events),
+      ),
+      StatefulShellBranch(
+        navigatorKey: keys.hostPeople,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: indexRoutes(HostWorkspaceRoot.people),
+      ),
+      StatefulShellBranch(
+        navigatorKey: keys.hostOrganizer,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: indexRoutes(HostWorkspaceRoot.organizer),
+      ),
     ],
   );
 }

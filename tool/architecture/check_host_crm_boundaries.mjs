@@ -307,9 +307,9 @@ export function applicationRouteOwnershipFindings({
   const applicationsRoute = "name: Routes.hostApplicationsScreen.name";
   const applicationDetailRoute =
     "name: Routes.hostApplicationDetailScreen.name";
-  // Each destination's branch mounts one workspace per index route: People
-  // mounts the Audience index and the inbox index.
-  const audienceBranch = /for \(final root in HostWorkspaceRoot\.values\)\s*StatefulShellBranch\(\s*navigatorKey:\s*keys\.host\[root\.index\],\s*observers:\s*\[AnalyticsRouteObserver\(analytics\)\],\s*routes:\s*\[for \(final index in root\.indexes\) indexRoute\(index\)\],\s*\)/u;
+  // The People branch mounts one workspace per index route: the Audience
+  // index and the inbox index.
+  const audienceBranch = /StatefulShellBranch\(\s*navigatorKey:\s*keys\.hostPeople,\s*observers:\s*\[AnalyticsRouteObserver\(analytics\)\],\s*routes:\s*indexRoutes\(HostWorkspaceRoot\.people\),\s*\)/u;
   const ownedDestinationMount = /routes:\s*\[rootRoute,\s*\.\.\.routes\.where\(\(route\)\s*=>\s*route\.index\s*==\s*root\)\]/u;
   // Ownership is now declared on the destination, not inferred from its path.
   // Verify both the closed root mount and each application's typed metadata.
