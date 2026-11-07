@@ -1,9 +1,11 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_gap.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_view.dart';
 import 'package:catch_ui/src/patterns/catch_viewport.dart';
+import 'package:catch_ui/src/primitives/catch_stack.dart';
 import 'package:flutter/widgets.dart';
 
 /// Page insets and field paint geometry, with form, screen and sliver recipes.
@@ -52,9 +54,15 @@ class CatchPageBody extends StatelessWidget {
          maxContentExtent: maxContentExtent,
        );
 
+  /// The system ScreenBody. Pass one [child], or put the sections straight in
+  /// [children] and the body spaces them by [gap]: the system's rhythm,
+  /// section (28 on compact, 40 wider), tight (16) or none. A single [child]
+  /// owns its own spacing, so [gap] applies only to [children].
   const CatchPageBody.screen({
     super.key,
-    required Widget child,
+    Widget? child,
+    List<Widget>? children,
+    CatchPageBodyGap gap = CatchPageBodyGap.section,
     bool gutter = true,
     double? pt,
     double? pb,
@@ -66,10 +74,16 @@ class CatchPageBody extends StatelessWidget {
     ScrollViewKeyboardDismissBehavior keyboardDismissBehavior =
         ScrollViewKeyboardDismissBehavior.onDrag,
     Clip clipBehavior = Clip.hardEdge,
-  }) : _inset = null,
+  }) : assert(
+         (child == null) != (children == null),
+         'CatchPageBody.screen takes a child or children, not both.',
+       ),
+       _inset = null,
        _slivers = null,
        _screen = (
          child: child,
+         children: children,
+         gap: gap,
          gutter: gutter,
          pt: pt,
          pb: pb,
@@ -91,7 +105,9 @@ class CatchPageBody extends StatelessWidget {
   })?
   _slivers;
   final ({
-    Widget child,
+    Widget? child,
+    List<Widget>? children,
+    CatchPageBodyGap gap,
     bool gutter,
     double? pt,
     double? pb,
@@ -125,7 +141,19 @@ class CatchPageBody extends StatelessWidget {
         child: CatchFieldInteractionPlaneScope.fromPadding(
           context: context,
           padding: padding,
-          child: SizedBox(width: double.infinity, child: screen.child),
+          child: SizedBox(
+            width: double.infinity,
+            child:
+                screen.child ??
+                CatchStack(
+                  gap: switch (screen.gap) {
+                    CatchPageBodyGap.section => CatchStackGap.section,
+                    CatchPageBodyGap.tight => CatchStackGap.g16,
+                    CatchPageBodyGap.none => CatchStackGap.none,
+                  },
+                  children: screen.children!,
+                ),
+          ),
         ),
       );
       if (screen.variant == CatchPageBodyVariant.fixed) return body;
