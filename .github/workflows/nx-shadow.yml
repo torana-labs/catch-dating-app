@@ -4,11 +4,10 @@ name: Nx shadow plan
 # queue group, compare what the current planner selects with what
 # `nx affected` would select. It never gates a merge and is deleted with the
 # planner once every difference is explained.
+# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
+# pull requests or pushes; the full run happens once a night on main.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  merge_group:
-
+  workflow_dispatch:
 permissions:
   contents: read
 

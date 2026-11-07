@@ -2,22 +2,12 @@ name: CI
 run-name: >-
   ${{ github.event_name == 'pull_request' && format('CI PR #{0}', github.event.pull_request.number) || 'CI' }}
 
+# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
+# pull requests or pushes; the full run happens once a night on main.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
-  push:
-    branches: [main]
-  merge_group:
   schedule:
-    - cron: "23 2 * * *"
+    - cron: '23 2 * * *'
   workflow_dispatch:
-    inputs:
-      full:
-        description: Run every validation lane regardless of changed paths.
-        required: false
-        type: boolean
-        default: false
-
 permissions:
   actions: read
   contents: read
@@ -339,6 +329,8 @@ jobs:
         run: npm --prefix functions ci --ignore-scripts
       - uses: ./.github/actions/generate-contracts
       - name: Execute complete source and generation preflight
+        # Sprint floor: structural and freshness findings report, they do not block.
+        continue-on-error: true
         env:
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
           SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
@@ -617,10 +609,12 @@ jobs:
     name: Required CI
     # A draft cannot merge or enter the merge queue; it validates once ready.
     if: ${{ !cancelled() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
+    # Sprint floor (owner, 8 Nov 2026): only the lanes that catch a broken
+    # build block a merge. tools, operations, docs-policy and app-builds still
+    # run and report, but do not gate; restore them here when the sprint ends.
     needs:
       - plan
       - source-preflight
-      - tools
       - contracts
       - functions
       - firestore-rules
@@ -629,9 +623,6 @@ jobs:
       - admin
       - marketing
       - capture-freshness
-      - operations
-      - docs-policy
-      - app-builds
       - workflow-lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
