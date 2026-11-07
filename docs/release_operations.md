@@ -1459,6 +1459,26 @@ What to do when it fires: restore billing (reopen the account or link a new one
 to both projects), then re-run the deferred `Deploy backend`, `Admin Website`
 and `Website Release` runs, or wait for the next merge to main.
 
+### Seed an environment through the workflow
+
+`Seed environment data` (`.github/workflows/ops-seed-environment.yml`,
+`workflow_dispatch`) runs `tool/demo/seed_demo_data.mjs` against one
+environment with that environment's deploy identity, so a reseed is a logged
+run with an artifact rather than a command on a laptop. Inputs: the
+environment, the scenario (`--list-scenarios`), `apply` (unchecked is a dry
+run), `reset_synthetic` (delete the previous seed's manifest documents first;
+it never touches organic data) and optional `anchor_users`. Writing to prod
+passes the tool's `--allow-prod` guard; the run refuses to write while the
+platform is not serving, because the read-model triggers must be live to build
+views from the seeded documents. The seeded documents fire the deployed
+triggers, so no separate read-model backfill follows a seed.
+
+Order of operations after a schema change: deploy, dry-run the seed on dev,
+apply with `reset_synthetic` on dev, run `Firestore Data Validation` on dev,
+then the same on prod. Before any run with `reset_synthetic` on prod, take the
+backups the data-retention rules require (a Firestore managed export at the
+least) and keep them until the retention question is settled.
+
 ## CD Policy
 
 Backend promotion follows [Deploy Backend](#deploy-backend). Store, Hosting
