@@ -1,6 +1,5 @@
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
-import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -90,10 +89,10 @@ class HostSignInBody extends StatelessWidget {
                 key: const ValueKey<String>('host-sign-in-phone'),
                 copy: catchFieldCopy(l10n),
                 title: l10n.hostOnboardingSignInPhoneLabel,
-                contract:
-                    CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
+                contractExemption:
+                    'Sign-in number: Firebase phone auth validates it, not a stored field.',
                 initialValue: initialPhoneNumber,
-                prefixText: countryCode,
+                prefixText: '$countryCode ',
                 placeholder: l10n.hostOnboardingSignInPhonePlaceholder,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.done,

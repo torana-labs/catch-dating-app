@@ -45,9 +45,8 @@ class _HostSetupDoneScreenState extends ConsumerState<HostSetupDoneScreen> {
     ).value;
     final page = organizer?.publicPage;
     final path = page?.canonicalPath;
-    final link = path == null
-        ? null
-        : AppConfig.publicSiteUrl.resolve(path).toString();
+    final url = path == null ? null : AppConfig.publicSiteUrl.resolve(path);
+    final link = url?.toString();
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('host-setup-done'),
@@ -66,7 +65,7 @@ class _HostSetupDoneScreenState extends ConsumerState<HostSetupDoneScreen> {
           name: organizer?.name ?? widget.fallbackName,
           live:
               page?.publishStatus == OrganizerPublicPagePublishStatus.published,
-          link: link,
+          link: url == null ? null : '${url.host}${url.path}',
           copied: _copied,
           onCopy: link == null
               ? null
