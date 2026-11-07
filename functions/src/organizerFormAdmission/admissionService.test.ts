@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {Timestamp} from "firebase-admin/firestore";
 
 import {HttpsError} from "firebase-functions/v2/https";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -55,18 +54,14 @@ test("reserves one seat and creates roster, marker and exact immutable receipt",
       !rows.slice(0, index).some((before) => before.startsWith("write:"))));
   });
 
-test("legacy admission requires real event snapshot update metadata",
-  async () => {
+test("admission requires the event's setup revision", async () => {
+  for (const revision of [undefined, 0, "1"]) {
     const {store, commit} = fixture();
-    store.updateTimes.delete(`events/${eventId}`);
+    store.get(`events/${eventId}`)!.setupRevision = revision;
     await assert.rejects(commit(), denied);
     assert.equal(store.writes.length, 0);
-    store.updateTimes.set(`events/${eventId}`,
-      new Timestamp(1_800_000_000, 123_456_000));
-    store.get(`events/${eventId}`)!.setupRevision = 0;
-    await assert.rejects(commit(), denied);
-    assert.equal(store.writes.length, 0);
-  });
+  }
+});
 
 test("historical replay has no writes and new request cannot duplicate source",
   async () => {

@@ -75,13 +75,15 @@ export async function ensureEventDefaultMoments(
 
 /**
  * Mirrors the legacy sendEventReminders eligibility: publicly accessible
- * events only, and progressive-setup events need public registration
- * explicitly enabled. Private programs never get the broadcast reminder.
+ * events only. An event with Catch booking provenance (`eventOrigin`) always
+ * qualifies; one published through progressive setup, which closes public
+ * registration until a manager opens it, qualifies only while it is open.
+ * Private programs never get the broadcast reminder.
  */
 function reminderEligible(event: Record<string, unknown>): boolean {
   return isEventPubliclyAccessible(event) &&
-    (!Object.prototype.hasOwnProperty.call(event, "setupRevision") ||
-      event.publicRegistrationEnabled === true);
+    (event.eventOrigin !== undefined ||
+      event.publicRegistrationEnabled !== false);
 }
 
 function readEventName(data: Record<string, unknown>): string | undefined {

@@ -16,6 +16,7 @@ import {eventAttendeeId} from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -747,6 +748,7 @@ function request(uid: string): CallableRequest<unknown> {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
+    ...publishedEventSetup(),
     organizerId: "club-1",
     startTime: admin.firestore.Timestamp.fromMillis(
       Date.parse("2026-05-02T01:30:00.000Z")

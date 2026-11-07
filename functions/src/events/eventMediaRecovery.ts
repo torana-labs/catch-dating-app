@@ -133,10 +133,14 @@ export async function updateEventMediaRecovery(params: {
       // cancellation does not undo the original committed receipt or replay it.
       return {updated: true, receipt: result};
     }
+    // A private event's media belong to the progressive setup commands.
+    const revision = event.setupRevision;
     if (
       event.status !== "active" ||
-      event.setupRevision !== undefined ||
-      event.publicationState !== undefined
+      event.publicationState !== "published" ||
+      !Number.isSafeInteger(revision) ||
+      revision < 1 ||
+      revision >= 2147483647
     ) {
       throw new HttpsError(
         "failed-precondition",
@@ -163,6 +167,7 @@ export async function updateEventMediaRecovery(params: {
     tx.update(eventRef, {
       photoUrl: photos[0].url,
       eventPhotos: photos,
+      setupRevision: revision + 1,
       updatedAt: serverTimestamp(),
     });
     tx.create(receiptRef, {

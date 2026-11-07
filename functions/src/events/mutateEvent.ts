@@ -7,6 +7,11 @@ import {onCall, CallableRequest, HttpsError} from
 import {randomBytes} from "crypto";
 import {isDeepStrictEqual} from "node:util";
 import {publishedEventEditPatch} from "./progressiveSetup/publishedEdit";
+import {
+  NormalizedPrivateEventBasics,
+  publishedEventBasics,
+} from "./progressiveSetup/basics";
+import {organizerDefaults} from "./progressiveSetup/service";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
@@ -135,17 +140,23 @@ interface EventMutationDeps {
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
-/** Rich legacy edits cannot promote or fill a progressive private event. */
-function assertLegacyMutationTarget(data: unknown,
-  allowPublishedProgressive = false): void {
-  if (!data || typeof data !== "object") return;
-  const event = data as Record<string, unknown>;
-  if ((!allowPublishedProgressive &&
-      Object.prototype.hasOwnProperty.call(event, "setupRevision")) ||
-      (Object.prototype.hasOwnProperty.call(event, "publicationState") &&
-        event.publicationState !== "published")) {
+/**
+ * Rich edits, cancellation and deletion act on published events, whatever
+ * created them. A private event belongs to the progressive setup commands;
+ * an event without a publication state or setup revision is invalid.
+ */
+function assertPublishedMutationTarget(data: unknown): void {
+  const event = data && typeof data === "object" ?
+    data as Record<string, unknown> : {};
+  if (event.publicationState === "private") {
     throw new HttpsError("failed-precondition",
       "Use progressive event setup for this event.");
+  }
+  const revision = event.setupRevision;
+  if (event.publicationState !== "published" ||
+      !Number.isSafeInteger(revision) || (revision as number) < 1) {
+    throw new HttpsError("failed-precondition",
+      "Event setup state is invalid.");
   }
 }
 
@@ -261,6 +272,8 @@ export async function createEventHandler(
     .collection("eventSuccessPlans")
     .doc(eventRef.id);
   const organizerRef = db.collection("organizers").doc(organizerId);
+  const organizerDefaultsRef = db.collection("organizerEventSetupDefaults")
+    .doc(organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   const selectedLayoutId = data.eventSuccessDefaults?.enabled === true ?
     data.eventSuccessDefaults.layoutId ?? null : null;
@@ -285,12 +298,14 @@ export async function createEventHandler(
       deletedUserSnap,
       selectedLayoutSnap,
       sourceVenueSnap,
+      organizerDefaultsSnap,
     ] = await Promise.all([
       tx.get(eventRef),
       tx.get(organizerRef),
       tx.get(deletedUserRef),
       selectedLayoutRef ? tx.get(selectedLayoutRef) : Promise.resolve(null),
       sourceVenueRef ? tx.get(sourceVenueRef) : Promise.resolve(null),
+      tx.get(organizerDefaultsRef),
     ]);
 
     if (eventSnap.exists) {
@@ -331,8 +346,16 @@ export async function createEventHandler(
       });
     }
     organizerName = organizer.name;
+    // The event is created published, with the same basics and setup
+    // defaults a private first save resolves from the organizer.
+    const basics = publishedEventBasics({
+      name: data.name,
+      startTimeMillis: data.startTimeMillis,
+      defaults: organizerDefaults(organizerId, organizer,
+        organizerDefaultsSnap.data(), db),
+    });
     const eventBase: EventDocumentBeforeDiscovery = {
-      ...buildCreateEventDoc(data, deps, hostUserId),
+      ...buildCreateEventDoc(data, deps, hostUserId, basics),
       organizerId,
       bookedCount: 0,
       crossPathsPairHeldCount: 0,
@@ -472,7 +495,7 @@ export async function updateEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    assertLegacyMutationTarget(eventSnap.data(), true);
+    assertPublishedMutationTarget(eventSnap.data());
 
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     if (event.status === "cancelled") {
@@ -685,7 +708,7 @@ export async function cancelEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    assertLegacyMutationTarget(eventSnap.data(), true);
+    assertPublishedMutationTarget(eventSnap.data());
 
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerId = requireOrganizerId(event);
@@ -801,7 +824,7 @@ export async function deleteEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    assertLegacyMutationTarget(eventSnap.data());
+    assertPublishedMutationTarget(eventSnap.data());
 
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerId = requireOrganizerId(event);
@@ -900,12 +923,15 @@ async function cleanupRemovedEventMedia(
  * callable.
  * @param {CreateEventCallablePayload} data Validated callable data.
  * @param {EventMutationDeps} deps Injectable dependencies.
+ * @param {string} hostUserId Creating manager.
+ * @param {NormalizedPrivateEventBasics} basics Derived published basics.
  * @return {object} Event fields except ownership/booking aggregates.
  */
 function buildCreateEventDoc(
   data: CreateEventCallablePayload,
   deps: EventMutationDeps,
-  hostUserId: string
+  hostUserId: string,
+  basics: NormalizedPrivateEventBasics
 ): Omit<EventDocument, "organizerId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason" | EventDiscoveryField> {
   const eventPhotos = normalizeUploadedPhotosForFirestore(data.eventPhotos);
@@ -952,8 +978,16 @@ function buildCreateEventDoc(
     },
   }) : normalizedPolicy;
   return {
-    name: data.name.trim(),
+    name: basics.name,
     publicationState: "published",
+    setupRevision: 1,
+    eventCityId: basics.eventCityId,
+    eventMarketId: basics.eventMarketId,
+    eventLocalDate: basics.eventLocalDate,
+    eventLocalStartTime: basics.eventLocalStartTime,
+    eventTimezone: basics.eventTimezone,
+    // City and timezone cannot be cleared, so both carry a value.
+    setupDefaults: basics.setupDefaults as EventDocument["setupDefaults"],
     ...(data.sourceVenueId ? {sourceVenueId: data.sourceVenueId} : {}),
     eventOrigin: data.externalOrigin ? {
       mode: "externalCompanion",

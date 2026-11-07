@@ -317,6 +317,28 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
   ].sort());
 });
 
+/** Records the derivation inputs; Functions tests own the derivation itself. */
+function recordingEventBasics(calls) {
+  return (input) => {
+    calls.push(input);
+    return {
+      name: input.name,
+      eventCityId: input.defaults.city.cityId,
+      eventMarketId: input.defaults.city.marketId,
+      eventLocalDate: "2026-05-12",
+      eventLocalStartTime: "17:35",
+      eventTimezone: "Asia/Kolkata",
+      startTimeMillis: input.startTimeMillis,
+      setupDefaults: {
+        city: {value: input.defaults.city, source: "organizer"},
+        timezone: {value: "Asia/Kolkata", source: "event"},
+        organizerDefaultsRevision: null,
+        organizerDefaultsHash: "0".repeat(64),
+      },
+    };
+  };
+}
+
 test("buildCheckInEventPlan creates a signed-up event inside the check-in window", async () => {
   const db = fakeFirestore({
     users: {
@@ -333,6 +355,7 @@ test("buildCheckInEventPlan creates a signed-up event inside the check-in window
     events: {},
   });
 
+  const basicsCalls = [];
   const plan = await buildCheckInEventPlan({
     db,
     admin: fakeAdmin,
@@ -341,11 +364,20 @@ test("buildCheckInEventPlan creates a signed-up event inside the check-in window
     longitude: 77.2295,
     meetingPoint: "India Gate",
     now: new Date("2026-05-12T12:00:00.000Z"),
+    publishedEventBasics: recordingEventBasics(basicsCalls),
   });
 
   assert.equal(plan.eventId, "demo_ops_2026_checkin_run_uid_a");
+  assert.deepEqual(basicsCalls, [{
+    name: "Check-in demo",
+    startTimeMillis: Date.parse("2026-05-12T12:05:00.000Z"),
+    defaults: {city: {cityId: "in-dl-new-delhi", marketId: "in-dl-delhi-ncr"}},
+  }]);
   assert.equal(plan.checkInWindowOpensAt, "2026-05-12T11:55:00.000Z");
   const eventDoc = plan.docs.find((doc) => doc.path === `events/${plan.eventId}`);
+  assert.equal(eventDoc.data.publicationState, "published");
+  assert.equal(eventDoc.data.setupRevision, 1);
+  assert.equal(eventDoc.data.eventMarketId, "in-dl-delhi-ncr");
   assert.equal(eventDoc.data.startingPointLat, 28.6129);
   assert.equal(eventDoc.data.startingPointLng, 77.2295);
   assert.deepEqual(eventDoc.data.meetingLocation, {
@@ -383,8 +415,12 @@ test("buildHostAccountPlan requires and mirrors an exact event location", async 
     longitude: 77.2295,
     meetingPoint: " India Gate ",
     now: new Date("2026-05-12T12:00:00.000Z"),
+    publishedEventBasics: recordingEventBasics([]),
   });
   const eventDoc = plan.docs.find((doc) => doc.path === `events/${plan.eventId}`);
+  assert.equal(eventDoc.data.name, "Host tools demo");
+  assert.equal(eventDoc.data.publicationState, "published");
+  assert.equal(eventDoc.data.setupRevision, 1);
   assert.equal(eventDoc.data.meetingPoint, "India Gate");
   assert.equal(eventDoc.data.startingPointLat, 28.6129);
   assert.equal(eventDoc.data.startingPointLng, 77.2295);
@@ -403,6 +439,7 @@ test("buildHostAccountPlan requires and mirrors an exact event location", async 
       admin: fakeAdmin,
       phone: "+910000000001",
       now: new Date("2026-05-12T12:00:00.000Z"),
+      publishedEventBasics: recordingEventBasics([]),
     }),
     /requires valid --lat\/--lng/
   );

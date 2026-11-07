@@ -150,6 +150,20 @@ test("seed event validation rejects missing discovery projection fields", () => 
   );
 });
 
+test("seed event validation rejects an event without its setup state", () => {
+  for (const field of ["setupRevision", "publicationState", "eventTimezone"]) {
+    const event = validEventDoc();
+    delete event[field];
+    assert.throws(
+      () => validateSeedDocuments({
+        docs: [{path: "events/event-1", data: event}],
+      }),
+      /events\/event-1 failed schema validation/,
+      field
+    );
+  }
+});
+
 test("seed event validation rejects stale discovery projection fields", () => {
   assert.throws(
     () => validateSeedDocuments({
@@ -557,6 +571,23 @@ function validEventDoc() {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
+    name: "Social run",
+    publicationState: "published",
+    setupRevision: 1,
+    eventCityId: "in-mp-indore",
+    eventMarketId: "in-mp-indore",
+    eventLocalDate: "2026-05-20",
+    eventLocalStartTime: "07:00",
+    eventTimezone: "Asia/Kolkata",
+    setupDefaults: {
+      city: {
+        value: {cityId: "in-mp-indore", marketId: "in-mp-indore"},
+        source: "organizer",
+      },
+      timezone: {value: "Asia/Kolkata", source: "event"},
+      organizerDefaultsRevision: null,
+      organizerDefaultsHash: "0".repeat(64),
+    },
     organizerId: "club-1",
     startTime: fakeTimestamp("2026-05-20T01:30:00.000Z"),
     endTime: fakeTimestamp("2026-05-20T02:40:00.000Z"),

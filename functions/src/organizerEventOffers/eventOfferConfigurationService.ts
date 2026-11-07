@@ -129,11 +129,7 @@ export async function configureEventOfferPreferences(params:
       throw new HttpsError("failed-precondition",
         "Cancelled events cannot change offer settings.");
     }
-    const currentSourceRevision = eventSourceRevision(event, eventSnap);
-    if (currentSourceRevision === null) {
-      throw new HttpsError("failed-precondition",
-        "Event has no stable offer source revision.");
-    }
+    const currentSourceRevision = eventSourceRevision(event);
     const saved = projectEventPreferences(preferencesSnap.data(),
       command.organizerId, command.eventId);
     const revision = saved?.revision ?? 0;

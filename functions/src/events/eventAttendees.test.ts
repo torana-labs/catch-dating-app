@@ -239,7 +239,7 @@ test("ready OTP links an imported external-ID guest at full capacity",
       60_000);
     const endTime = admin.firestore.Timestamp.fromMillis(Date.now() +
       3_600_000);
-    const event = {organizerId: "organizer-1",
+    const event = {organizerId: "organizer-1", publicationState: "published",
       status: "active", startTime, endTime, capacityLimit: 1,
       priceInPaise: 0, publicRegistrationEnabled: true,
       eventFormat: {version: 1, activityKind: "running",

@@ -463,8 +463,10 @@ async function executeAdmission(
           reservation.identityRevision !== identity.identity.revision)) {
       unavailable("Canonical event seat authority is unavailable.");
     }
-    const sourceRevision = eventSourceRevision(event, eventSnap);
-    if (sourceRevision === null) {
+    let sourceRevision: number;
+    try {
+      sourceRevision = eventSourceRevision(event);
+    } catch {
       unavailable("Event has no stable source revision.");
     }
     const startsAtMillis = event.startTime?.toMillis();

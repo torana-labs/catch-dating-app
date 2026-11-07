@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/events/data/private_event_details_repo
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
@@ -27,6 +28,11 @@ import 'support/read_model_feeds.dart';
 /// The event as a step reads it; a feed delivers it as a complete setup view.
 typedef ReadPrivateEventForPreferences =
     Future<PrivateEventBasicSummary> Function({
+      required String organizerId,
+      required String eventId,
+    });
+typedef ReadEventOfferConfiguration =
+    Future<EventOfferConfiguration> Function({
       required String organizerId,
       required String eventId,
     });
@@ -265,17 +271,23 @@ class TestEventOfferPreferencesController {
     EventOfferPreferencesJournal journal = const EventOfferPreferencesJournal(),
   }) {
     scope = (userId: userId, organizerId: organizerId, eventId: eventId);
+    configurationFeed = ReadModelFeed(
+      () => readConfiguration(organizerId: organizerId, eventId: eventId),
+    );
     defaultsFeed = defaultsViewFeed(readDefaults, organizerId);
     container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value(userId)),
+        eventOfferConfigurationProvider(
+          organizerId: organizerId,
+          eventId: eventId,
+        ).overrideWith((ref) => configurationFeed.stream),
         managerEventSetupDefaultsViewProvider(
           organizerId,
         ).overrideWith((ref) => defaultsFeed.stream),
         eventOfferPreferencesDependenciesProvider.overrideWithValue(
           EventOfferPreferencesDependencies(
-            readConfiguration: readConfiguration,
-            write: write,
+            write: refreshingAfter(write, [configurationFeed]),
             readPreview: readPreview,
             currentUserId: currentUserId,
             journal: journal,
@@ -293,6 +305,7 @@ class TestEventOfferPreferencesController {
     _controller.seed(_controller.snapshot().copyWith(displayName: displayName));
   }
   late final EventEditorScope scope;
+  late final ReadModelFeed<EventOfferConfiguration> configurationFeed;
   late final ReadModelFeed<ManagerEventSetupDefaultsView> defaultsFeed;
   late final ProviderContainer container;
   late final _SeededEventOfferPreferencesController _controller;

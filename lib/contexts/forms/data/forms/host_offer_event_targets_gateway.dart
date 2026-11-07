@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -81,6 +83,7 @@ class HostOfferEventTargetPage {
 /// Current manager review of one target. A null suggested expiry means the
 /// event payment setup is incomplete; the client cannot invent an amount or
 /// validity period. The offer preview still rechecks this snapshot.
+/// [serverNow] is the app clock when the listener delivered it.
 class HostOfferEventConfiguration {
   const HostOfferEventConfiguration({
     required this.organizerId,
@@ -132,6 +135,19 @@ class HostOfferEventConfiguration {
     );
   }
 
+  /// The picker's review shape of the offer settings listener's value.
+  factory HostOfferEventConfiguration.fromConfiguration(
+    EventOfferConfiguration configuration,
+  ) => HostOfferEventConfiguration.fromCallableData({
+    'organizerId': configuration.organizerId,
+    'eventId': configuration.eventId,
+    'eventSourceRevision': configuration.eventSourceRevision,
+    'startsAtMillis': configuration.startsAtMillis,
+    'nowMillis': configuration.nowMillis,
+    'paymentTerms': configuration.preferences?.paymentTerms,
+    'suggestedExpiresAtMillis': configuration.suggestedExpiresAtMillis,
+  });
+
   final String organizerId;
   final String eventId;
   final int eventSourceRevision;
@@ -154,9 +170,15 @@ abstract interface class HostOfferEventTargetsGateway {
 
 class CallableHostOfferEventTargetsGateway
     implements HostOfferEventTargetsGateway {
-  const CallableHostOfferEventTargetsGateway(this.functions);
+  const CallableHostOfferEventTargetsGateway(
+    this.functions, {
+    required this.configurations,
+  });
 
   final FirebaseFunctions functions;
+
+  /// The offer settings listeners [configuration] reads through.
+  final EventOfferConfigurationReads configurations;
 
   @override
   Future<HostOfferEventTargetPage> list({
@@ -178,22 +200,14 @@ class CallableHostOfferEventTargetsGateway
     mapper: mapMissingCallableAsUnavailable,
   );
 
+  /// The first value the offer settings listeners deliver.
   @override
   Future<HostOfferEventConfiguration> configuration({
     required String organizerId,
     required String eventId,
-  }) => withBackendErrorContext(
-    () async => HostOfferEventConfiguration.fromCallableData(
-      (await functions
-              .httpsCallable('getEventOfferConfiguration')
-              .call<Object?>({'organizerId': organizerId, 'eventId': eventId}))
-          .data,
-    ),
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'review event offer configuration',
-      resource: 'events',
-    ),
-    mapper: mapMissingCallableAsUnavailable,
+  }) async => HostOfferEventConfiguration.fromConfiguration(
+    await configurations
+        .watch(organizerId: organizerId, eventId: eventId)
+        .first,
   );
 }

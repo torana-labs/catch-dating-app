@@ -1,6 +1,28 @@
 {
   "organizerId": "club-1",
   "name": "Sunrise Social 5K",
+  "publicationState": "published",
+  "setupRevision": 1,
+  "eventCityId": "in-mp-indore",
+  "eventMarketId": "in-mp-indore",
+  "eventLocalDate": "2026-05-16",
+  "eventLocalStartTime": "05:30",
+  "eventTimezone": "Asia/Kolkata",
+  "setupDefaults": {
+    "city": {
+      "value": {
+        "cityId": "in-mp-indore",
+        "marketId": "in-mp-indore"
+      },
+      "source": "organizer"
+    },
+    "timezone": {
+      "value": "Asia/Kolkata",
+      "source": "event"
+    },
+    "organizerDefaultsRevision": null,
+    "organizerDefaultsHash": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
   "startTime": {
     "_seconds": 1778889600,
     "_nanoseconds": 0

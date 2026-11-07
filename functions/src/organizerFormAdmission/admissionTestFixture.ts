@@ -17,6 +17,7 @@ import {genericFormApplicationId} from
   "../organizers/organizerApplicationAccess";
 
 import {commitOrganizerFormAdmission} from "./admissionService";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 export type Row = Record<string, unknown>;
 export const org = "org1";
@@ -131,7 +132,7 @@ export class Store {
 
 export function fixture() {
   const store = new Store();
-  const event = {organizerId: org, status: "active",
+  const event = {...publishedEventSetup(), organizerId: org, status: "active",
     startTime: ts(5_000_000),
     capacityLimit: 2, bookedCount: 0,
     eventPolicy: {version: 2, admission: {capacityLimit: 2}}};
@@ -141,8 +142,6 @@ export function fixture() {
     archived: false, status: "active"});
   store.put(`users/${actorUid}`, {deleted: false, deletedAt: null});
   store.put(`events/${eventId}`, event);
-  store.updateTimes.set(`events/${eventId}`,
-    new Timestamp(1_800_000_000, 123_456_000));
   store.put(`eventSeatMigrationFences/${eventId}`,
     {eventId, state: "ready", migrationRevision: 1});
   store.put(`eventSeatLedgers/${eventId}`, {eventId, capacity: 2,

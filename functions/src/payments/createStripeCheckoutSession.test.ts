@@ -14,6 +14,7 @@ import {
   StripeCheckoutSessionCreateInput,
 } from "./stripe";
 import {catchNativeEventOrigin} from "../shared/testUtils";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 test("createStripeCheckoutSessionHandler creates trusted destination checkout",
   async () => {
@@ -216,6 +217,7 @@ function buildEventDoc(
   overrides: Partial<EventDocument> = {}
 ): EventDocument {
   return {
+    ...publishedEventSetup(),
     organizerId: "organizer-1",
     eventOrigin: catchNativeEventOrigin(),
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
