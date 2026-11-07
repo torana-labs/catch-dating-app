@@ -120,6 +120,7 @@ class HostPersonBody extends StatelessWidget {
       children: [
         CatchStack(
           gap: CatchStackGap.g8,
+          align: CatchStackAlign.start,
           children: [
             CatchAvatar.system(size: CatchAvatarSize.xxl, name: state.name),
             CatchText(state.name, variant: CatchTextVariant.pageTitle),

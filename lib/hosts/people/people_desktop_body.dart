@@ -58,68 +58,71 @@ class HostPeopleDesktopBody extends StatelessWidget {
     final total = state.total;
     final list = CatchScrollView(
       primary: false,
-      child: CatchStack(
-        gap: CatchStackGap.g16,
-        children: [
-          CatchPaneHeader(
-            title: l10n.hostPeopleTitle,
-            count: total,
-            trailing: CatchButton(
-              label: l10n.hostPeopleMessage,
-              leading: CatchIcon(CatchIcons.chat, size: CatchIconSize.xs),
-              size: CatchButtonSize.sm,
-              onPressed: onCompose,
+      child: CatchPageBody(
+        child: CatchStack(
+          gap: CatchStackGap.g16,
+          children: [
+            CatchPaneHeader(
+              title: l10n.hostPeopleTitle,
+              count: total,
+              trailing: CatchButton(
+                label: l10n.hostPeopleMessage,
+                leading: CatchIcon(CatchIcons.chat, size: CatchIconSize.xs),
+                size: CatchButtonSize.sm,
+                onPressed: onCompose,
+              ),
             ),
-          ),
-          HostPeopleTabs(selected: HostPeopleView.people, onView: onView),
-          CatchSearchField.expanded(
-            copy: catchSearchFieldCopy(l10n),
-            value: state.search,
-            contractExemption: 'Local People directory search query.',
-            placeholder: total == null
-                ? l10n.hostPeopleSearchPlain
-                : l10n.hostPeopleSearch(count: numbers.format(total)),
-            semanticLabel: l10n.hostPeopleSearchLabel,
-            onChanged: onSearch,
-          ),
-          HostPeopleList(
-            state: state,
-            kicker: state.search.trim().isEmpty
-                ? l10n.hostPeopleKickerPlain(
-                    filter: hostPeopleFilterLabel(l10n, state.filter),
-                  )
-                : hostPeopleKicker(l10n, numbers, state),
-            selectedContactId: selectedContactId,
-            onOpenPerson: onSelectPerson,
-            onLoadMore: onLoadMore,
-            onRetry: onRetry,
-          ),
-        ],
+            HostPeopleTabs(selected: HostPeopleView.people, onView: onView),
+            CatchSearchField.expanded(
+              copy: catchSearchFieldCopy(l10n),
+              value: state.search,
+              contractExemption: 'Local People directory search query.',
+              placeholder: total == null
+                  ? l10n.hostPeopleSearchPlain
+                  : l10n.hostPeopleSearch(count: numbers.format(total)),
+              semanticLabel: l10n.hostPeopleSearchLabel,
+              onChanged: onSearch,
+            ),
+            HostPeopleList(
+              state: state,
+              kicker: state.search.trim().isEmpty
+                  ? l10n.hostPeopleKickerPlain(
+                      filter: hostPeopleFilterLabel(l10n, state.filter),
+                    )
+                  : hostPeopleKicker(l10n, numbers, state),
+              selectedContactId: selectedContactId,
+              onOpenPerson: onSelectPerson,
+              onLoadMore: onLoadMore,
+              onRetry: onRetry,
+            ),
+          ],
+        ),
       ),
     );
     final selected = person;
     final detail = CatchScrollView(
       primary: false,
-      child: selected == null
-          ? CatchEmptyState(
-              icon: CatchIcons.people,
-              title: l10n.hostPeopleNobodySelected,
-            )
-          : HostPersonBody(
-              key: ValueKey<String?>('host-person-pane-$selectedContactId'),
-              state: selected,
-              pane: true,
-              messaging: messaging,
-              onMessage: onMessagePerson,
-              onAddTag: onAddTag,
-              onRetry: onRetryPerson,
-            ),
-    );
-    return CatchPageBody(
-      child: CatchPaneLayout(
-        pattern: CatchPaneLayoutMode.listDetail,
-        children: [list, detail],
+      child: CatchPageBody(
+        child: selected == null
+            ? CatchEmptyState(
+                icon: CatchIcons.people,
+                title: l10n.hostPeopleNobodySelected,
+              )
+            : HostPersonBody(
+                key: ValueKey<String?>('host-person-pane-$selectedContactId'),
+                state: selected,
+                pane: true,
+                messaging: messaging,
+                onMessage: onMessagePerson,
+                onAddTag: onAddTag,
+                onRetry: onRetryPerson,
+              ),
       ),
+    );
+    // Each pane keeps the page gutter on both sides of the divider.
+    return CatchPaneLayout(
+      pattern: CatchPaneLayoutMode.listDetail,
+      children: [list, detail],
     );
   }
 }

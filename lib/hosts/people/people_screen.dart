@@ -56,134 +56,147 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final expanded =
-        CatchRootScope.sizeClassOf(context) == CatchWindowSize.expanded;
-    final scope = ref.watch(
-      hostPeopleOrganizerProvider(widget.initialOrganizerId),
-    );
-    final organizer = scope.organizer;
     listenToCatchMutationErrors(
       context,
       ref,
       mutations: [HostPeopleCommands.messageMutation],
       errorContext: AppErrorContext.chat,
     );
-
-    final CatchTopBar? topBar = expanded
-        ? null
-        : CatchTopBar(
-            variant: CatchTopBarVariant.tabHome,
-            kicker: organizer?.name,
-            title: l10n.hostPeopleTitle,
-            actions: [
-              CatchButton(
-                label: l10n.hostPeopleAdd,
-                leading: CatchIcon(CatchIcons.add, size: CatchIconSize.md),
-                onPressed: organizer == null
-                    ? null
-                    : () => unawaited(_add(organizer.id)),
-              ),
-            ],
-          );
-
-    final Widget body;
-    if (organizer == null) {
-      body = HostPeopleScopeState(
-        organizer: scope,
-        onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
-        onSignIn: () => context.go(Routes.authScreen.path),
-      );
-    } else {
-      final request = HostPeopleRequest(
-        organizerId: organizer.id,
-        filter: _filter,
-        search: expanded ? _search : '',
-      );
-      final state = ref.watch(hostPeopleControllerProvider(request));
-      void loadMore() => unawaited(
-        ref.read(hostPeopleDirectoryProvider(request).notifier).loadMore(),
-      );
-      void openView(HostPeopleView view) =>
-          openHostPeopleView(context, view, organizer.id);
-      if (expanded) {
-        final selectedId =
-            _selectedContactId ?? state.people.firstOrNull?.contactId;
-        final messaging = ref
-            .watch(HostPeopleCommands.messageMutation)
-            .isPending;
-        body = HostPeopleDesktopBody(
-          state: state,
-          selectedContactId: selectedId,
-          person: selectedId == null
-              ? null
-              : ref.watch(
-                  hostPersonControllerProvider(organizer.id, selectedId),
-                ),
-          messaging: messaging,
-          onView: openView,
-          onSearch: (value) => setState(() {
-            _search = value;
-            _selectedContactId = null;
-          }),
-          onSelectPerson: (contact) =>
-              setState(() => _selectedContactId = contact.contactId),
-          onCompose: () => context.pushNamed(
-            Routes.hostNewMessageScreen.name,
-            queryParameters: {'organizerId': organizer.id},
-          ),
-          onMessagePerson: () {
-            if (selectedId == null) return;
-            unawaited(
-              messageHostPerson(
-                context,
-                ref,
-                organizerId: organizer.id,
-                contactId: selectedId,
-              ),
-            );
-          },
-          onAddTag: () {
-            final person = selectedId == null
-                ? null
-                : ref
-                      .read(
-                        hostPersonControllerProvider(organizer.id, selectedId),
-                      )
-                      .detail;
-            if (person == null) return;
-            unawaited(addHostPersonTag(context, ref, person));
-          },
-          onLoadMore: loadMore,
-          onRetry: () => retryHostPeopleReads(ref, request),
-          onRetryPerson: () {
-            if (selectedId == null) return;
-            refreshHostPerson(ref, organizer.id, selectedId);
-          },
-        );
-      } else {
-        body = HostPeopleBody(
-          state: state,
-          onView: openView,
-          onFilter: (filter) => setState(() => _filter = filter),
-          onOpenGroup: (group) => context.pushNamed(
-            Routes.hostSavedAudienceDetailScreen.name,
-            pathParameters: {'audienceId': group.audienceId},
-            queryParameters: {'organizerId': organizer.id},
-          ),
-          onOpenPerson: (contact) => _openPerson(organizer.id, contact),
-          onLoadMore: loadMore,
-          onRetry: () => retryHostPeopleReads(ref, request),
-        );
-      }
-    }
-
     return CatchRoot(
-      child: CatchScreen(
-        key: const ValueKey<String>('host-people-screen'),
-        topBar: topBar,
-        bodyScrolls: !expanded,
-        body: body,
+      // The size class is read below the root that measures the window.
+      child: Builder(
+        builder: (context) {
+          final l10n = context.l10n;
+          final expanded =
+              CatchRootScope.sizeClassOf(context) == CatchWindowSize.expanded;
+          final scope = ref.watch(
+            hostPeopleOrganizerProvider(widget.initialOrganizerId),
+          );
+          final organizer = scope.organizer;
+
+          final CatchTopBar? topBar = expanded
+              ? null
+              : CatchTopBar(
+                  variant: CatchTopBarVariant.tabHome,
+                  kicker: organizer?.name,
+                  title: l10n.hostPeopleTitle,
+                  actions: [
+                    CatchButton(
+                      label: l10n.hostPeopleAdd,
+                      leading: CatchIcon(
+                        CatchIcons.add,
+                        size: CatchIconSize.md,
+                      ),
+                      onPressed: organizer == null
+                          ? null
+                          : () => unawaited(_add(organizer.id)),
+                    ),
+                  ],
+                );
+
+          final Widget body;
+          if (organizer == null) {
+            body = HostPeopleScopeState(
+              organizer: scope,
+              onRetry: () => retryHostPeopleOrganizer(ref, scope.uid),
+              onSignIn: () => context.go(Routes.authScreen.path),
+            );
+          } else {
+            final request = HostPeopleRequest(
+              organizerId: organizer.id,
+              filter: _filter,
+              search: expanded ? _search : '',
+            );
+            final state = ref.watch(hostPeopleControllerProvider(request));
+            void loadMore() => unawaited(
+              ref
+                  .read(hostPeopleDirectoryProvider(request).notifier)
+                  .loadMore(),
+            );
+            void openView(HostPeopleView view) =>
+                openHostPeopleView(context, view, organizer.id);
+            if (expanded) {
+              final selectedId =
+                  _selectedContactId ?? state.people.firstOrNull?.contactId;
+              final messaging = ref
+                  .watch(HostPeopleCommands.messageMutation)
+                  .isPending;
+              body = HostPeopleDesktopBody(
+                state: state,
+                selectedContactId: selectedId,
+                person: selectedId == null
+                    ? null
+                    : ref.watch(
+                        hostPersonControllerProvider(organizer.id, selectedId),
+                      ),
+                messaging: messaging,
+                onView: openView,
+                onSearch: (value) => setState(() {
+                  _search = value;
+                  _selectedContactId = null;
+                }),
+                onSelectPerson: (contact) =>
+                    setState(() => _selectedContactId = contact.contactId),
+                onCompose: () => context.pushNamed(
+                  Routes.hostNewMessageScreen.name,
+                  queryParameters: {'organizerId': organizer.id},
+                ),
+                onMessagePerson: () {
+                  if (selectedId == null) return;
+                  unawaited(
+                    messageHostPerson(
+                      context,
+                      ref,
+                      organizerId: organizer.id,
+                      contactId: selectedId,
+                    ),
+                  );
+                },
+                onAddTag: () {
+                  final person = selectedId == null
+                      ? null
+                      : ref
+                            .read(
+                              hostPersonControllerProvider(
+                                organizer.id,
+                                selectedId,
+                              ),
+                            )
+                            .detail;
+                  if (person == null) return;
+                  unawaited(addHostPersonTag(context, ref, person));
+                },
+                onLoadMore: loadMore,
+                onRetry: () => retryHostPeopleReads(ref, request),
+                onRetryPerson: () {
+                  if (selectedId == null) return;
+                  refreshHostPerson(ref, organizer.id, selectedId);
+                },
+              );
+            } else {
+              body = HostPeopleBody(
+                state: state,
+                onView: openView,
+                onFilter: (filter) => setState(() => _filter = filter),
+                onOpenGroup: (group) => context.pushNamed(
+                  Routes.hostSavedAudienceDetailScreen.name,
+                  pathParameters: {'audienceId': group.audienceId},
+                  queryParameters: {'organizerId': organizer.id},
+                ),
+                onOpenPerson: (contact) => _openPerson(organizer.id, contact),
+                onLoadMore: loadMore,
+                onRetry: () => retryHostPeopleReads(ref, request),
+              );
+            }
+          }
+
+          return CatchScreen(
+            key: const ValueKey<String>('host-people-screen'),
+            topBar: topBar,
+            bodyScrolls: !expanded,
+            body: body,
+          );
+        },
       ),
     );
   }

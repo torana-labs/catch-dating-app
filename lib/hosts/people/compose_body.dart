@@ -107,6 +107,7 @@ class HostComposeBody extends StatelessWidget {
                   .sendEventBroadcastCallablePayloadBody,
               controller: message,
               placeholder: l10n.hostPeopleComposePlaceholder,
+              autofocus: true,
               minLines: 5,
               maxLines: 5,
               states: {if (sending) WidgetState.disabled},
