@@ -52,7 +52,7 @@ void main() {
       HostLiveNeedsBody(
         needs: [
           HostLiveHelpNeed(liveHelpRequest()),
-          const HostLiveArrivalNeed(liveArrival),
+          HostLiveArrivalNeed(liveArrival),
           HostLiveDeliveryNeed(liveDelivery()),
         ],
         now: liveDoors,

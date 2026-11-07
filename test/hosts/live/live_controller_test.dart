@@ -90,16 +90,16 @@ ProviderContainer _container({EventSuccessPlan? plan, bool planRead = true}) {
         eventId: liveEvent.id,
         eventStartMillis: liveEvent.startTime.millisecondsSinceEpoch,
       ).overrideWithValue(
-        const AsyncData(
+        AsyncData(
           EventSuccessPresenceSummary(
             liveControlRevision: 7,
             nextRoundIndex: 1,
-            policy: EventSuccessPresencePolicy(
+            policy: const EventSuccessPresencePolicy(
               heartbeatIntervalSeconds: 30,
               presentWindowSeconds: 90,
               likelyDepartedAfterSeconds: 300,
             ),
-            entries: [],
+            entries: const [],
             lateArrivals: [liveArrival],
           ),
         ),

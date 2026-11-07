@@ -177,7 +177,7 @@ void main() {
       liveState(
         needs: [
           HostLiveHelpNeed(liveHelpRequest()),
-          const HostLiveArrivalNeed(liveArrival),
+          HostLiveArrivalNeed(liveArrival),
           HostLiveDeliveryNeed(liveDelivery()),
         ],
       ),

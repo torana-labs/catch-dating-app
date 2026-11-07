@@ -62,12 +62,22 @@ List<HostLivePlanStep> livePlanSteps(int activeIndex, {bool done = false}) {
   return steps;
 }
 
+/// Asked two minutes before the capture clock, four minutes into round two.
+final int _askedAt = liveDoors
+    .add(const Duration(minutes: 14))
+    .millisecondsSinceEpoch;
+
 AssistanceOpenHostCase liveHelpRequest({
   String caseId = 'case:one',
   String name = 'Aanya',
 }) =>
     casesPage(
-          rows: [caseRow(caseId: caseId)..['displayName'] = name],
+          rows: [
+            caseRow(caseId: caseId)
+              ..['displayName'] = name
+              ..['receivedAt'] = _askedAt,
+          ],
+          evaluatedAt: _askedAt,
         ).cases.single
         as AssistanceOpenHostCase;
 
@@ -79,10 +89,12 @@ AssistanceActionableDelivery liveDelivery() =>
         ).deliveries.single
         as AssistanceActionableDelivery;
 
-const liveArrival = EventSuccessLateArrivalCandidate(
+final liveArrival = EventSuccessLateArrivalCandidate(
   uid: 'guest-rhea',
   displayName: 'Rhea',
-  checkedInAtMillis: 0,
+  checkedInAtMillis: liveDoors
+      .add(const Duration(minutes: 12))
+      .millisecondsSinceEpoch,
 );
 
 const liveStandings = [
@@ -119,10 +131,7 @@ HostLiveState liveState({
   leader: 'Quizzy Rascals',
   needs:
       needs ??
-      [
-        HostLiveHelpNeed(liveHelpRequest()),
-        const HostLiveArrivalNeed(liveArrival),
-      ],
+      [HostLiveHelpNeed(liveHelpRequest()), HostLiveArrivalNeed(liveArrival)],
   standings: liveStandings,
   scoredRounds: 1,
   scores: true,
