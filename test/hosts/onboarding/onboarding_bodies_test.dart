@@ -231,7 +231,7 @@ void main() {
       );
       final connect = find.byKey(const ValueKey<String>('host-setup-connect'));
       if (connect.evaluate().isNotEmpty) {
-        await tester.tap(connect, warnIfMissed: false);
+        await tester.tap(connect);
       }
       return connects;
     }

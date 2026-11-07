@@ -7,6 +7,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/clipboard.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -39,10 +40,9 @@ class _HostSetupDoneScreenState extends ConsumerState<HostSetupDoneScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final organizer = ref
-        .watch(watchOrganizerProvider(widget.organizerId))
-        .asData
-        ?.value;
+    final organizer = catchAsyncStateFromAsyncValue(
+      ref.watch(watchOrganizerProvider(widget.organizerId)),
+    ).value;
     final page = organizer?.publicPage;
     final path = page?.canonicalPath;
     final link = path == null

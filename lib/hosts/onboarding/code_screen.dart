@@ -112,13 +112,8 @@ class _HostCodeScreenState extends ConsumerState<HostCodeScreen> {
     );
   }
 
-  String? _error(MutationState<void> mutation) => mutation.hasError
-      ? appErrorMessage(
-          (mutation as MutationError).error,
-          l10n: context.l10n,
-          context: AppErrorContext.auth,
-        )
-      : null;
+  String? _message(Object error) =>
+      appErrorMessage(error, l10n: context.l10n, context: AppErrorContext.auth);
 
   @override
   Widget build(BuildContext context) {
@@ -158,8 +153,12 @@ class _HostCodeScreenState extends ConsumerState<HostCodeScreen> {
           resending: view.isSendPending,
           canVerify: view.canVerify,
           verifying: view.verifyButtonLoading,
-          verifyError: _error(verify),
-          resendError: _error(send),
+          verifyError: verify.hasError
+              ? _message((verify as MutationError).error)
+              : null,
+          resendError: send.hasError
+              ? _message((send as MutationError).error)
+              : null,
           onChanged: _changed,
           onSubmitted: _verify,
           onResend: _resend,

@@ -85,25 +85,27 @@ class HostSignInBody extends StatelessWidget {
         ),
         CatchStack(
           children: [
-            CatchField.input(
-              key: const ValueKey<String>('host-sign-in-phone'),
-              copy: catchFieldCopy(l10n),
-              title: l10n.hostOnboardingSignInPhoneLabel,
-              contract:
-                  CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
-              initialValue: initialPhoneNumber,
-              prefixText: countryCode,
-              placeholder: l10n.hostOnboardingSignInPhonePlaceholder,
-              keyboardType: TextInputType.phone,
-              textInputAction: TextInputAction.done,
-              autofillHints: const [AutofillHints.telephoneNumberNational],
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              states: <WidgetState>{if (sending) WidgetState.disabled},
-              errorText: phoneError,
-              onChanged: onPhoneChanged,
-              onSubmitted: (_) {
-                if (canSend) onSend();
-              },
+            CatchFieldLanes.single(
+              child: CatchField.input(
+                key: const ValueKey<String>('host-sign-in-phone'),
+                copy: catchFieldCopy(l10n),
+                title: l10n.hostOnboardingSignInPhoneLabel,
+                contract:
+                    CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
+                initialValue: initialPhoneNumber,
+                prefixText: countryCode,
+                placeholder: l10n.hostOnboardingSignInPhonePlaceholder,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.telephoneNumberNational],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                states: <WidgetState>{if (sending) WidgetState.disabled},
+                errorText: phoneError,
+                onChanged: onPhoneChanged,
+                onSubmitted: (_) {
+                  if (canSend) onSend();
+                },
+              ),
             ),
             if (sendError != null)
               CatchNotice.inline(

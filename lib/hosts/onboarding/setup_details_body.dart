@@ -74,19 +74,21 @@ class HostSetupDetailsBody extends StatelessWidget {
             ),
           ],
         ),
-        CatchField.input(
-          key: const ValueKey<String>('host-setup-description'),
-          copy: catchFieldCopy(l10n),
-          title: l10n.hostOnboardingDetailsAbout,
-          contract: CatchContractConstraints
-              .createOrganizerCallablePayloadDescription,
-          initialValue: state.description,
-          placeholder: l10n.hostOnboardingDetailsAboutPlaceholder,
-          minLines: 3,
-          maxLines: 5,
-          textCapitalization: TextCapitalization.sentences,
-          textInputAction: TextInputAction.newline,
-          onChanged: onDescriptionChanged,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('host-setup-description'),
+            copy: catchFieldCopy(l10n),
+            title: l10n.hostOnboardingDetailsAbout,
+            contract: CatchContractConstraints
+                .createOrganizerCallablePayloadDescription,
+            initialValue: state.description,
+            placeholder: l10n.hostOnboardingDetailsAboutPlaceholder,
+            minLines: 3,
+            maxLines: 5,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.newline,
+            onChanged: onDescriptionChanged,
+          ),
         ),
         CatchStack(
           children: [

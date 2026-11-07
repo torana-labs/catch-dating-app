@@ -36,16 +36,19 @@ class HostSetupFindBody extends StatelessWidget {
       gap: CatchPageBodyGap.tight,
       children: [
         CatchText(l10n.hostOnboardingStartLead, tone: CatchTextTone.secondary),
-        CatchField.input(
-          key: const ValueKey<String>('host-setup-name'),
-          copy: copy,
-          title: l10n.hostOnboardingStartName,
-          contract: CatchContractConstraints.createOrganizerCallablePayloadName,
-          initialValue: state.name,
-          placeholder: l10n.hostOnboardingStartNamePlaceholder,
-          textCapitalization: TextCapitalization.words,
-          textInputAction: TextInputAction.next,
-          onChanged: onNameChanged,
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            key: const ValueKey<String>('host-setup-name'),
+            copy: copy,
+            title: l10n.hostOnboardingStartName,
+            contract:
+                CatchContractConstraints.createOrganizerCallablePayloadName,
+            initialValue: state.name,
+            placeholder: l10n.hostOnboardingStartNamePlaceholder,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            onChanged: onNameChanged,
+          ),
         ),
         CatchStack(
           children: [
@@ -70,17 +73,19 @@ class HostSetupFindBody extends StatelessWidget {
                   ),
               ],
             ),
-            CatchField.input(
-              key: const ValueKey<String>('host-setup-area'),
-              copy: copy,
-              title: l10n.hostOnboardingStartArea,
-              contract:
-                  CatchContractConstraints.createOrganizerCallablePayloadArea,
-              initialValue: state.area,
-              placeholder: l10n.hostOnboardingStartAreaPlaceholder,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.done,
-              onChanged: onAreaChanged,
+            CatchFieldLanes.single(
+              child: CatchField.input(
+                key: const ValueKey<String>('host-setup-area'),
+                copy: copy,
+                title: l10n.hostOnboardingStartArea,
+                contract:
+                    CatchContractConstraints.createOrganizerCallablePayloadArea,
+                initialValue: state.area,
+                placeholder: l10n.hostOnboardingStartAreaPlaceholder,
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.done,
+                onChanged: onAreaChanged,
+              ),
             ),
           ],
         ),

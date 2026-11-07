@@ -5,7 +5,9 @@ import 'package:catch_dating_app/hosts/onboarding/setup_payments_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,8 +32,8 @@ class HostSetupPaymentsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = hostFormPaymentControllerProvider(organizerId);
-    final setup = ref.watch(provider);
-    final value = setup.asData?.value;
+    final setup = catchAsyncStateFromAsyncValue(ref.watch(provider));
+    final value = setup.value;
     final status = hostSetupPayoutStatus(setup);
     final error = value?.error ?? (value == null ? setup.error : null);
     return CatchRoot(
@@ -87,9 +89,9 @@ class HostSetupPaymentsScreen extends ConsumerWidget {
 
 /// The payouts step's status from the connection read.
 HostSetupPayoutStatus hostSetupPayoutStatus(
-  AsyncValue<HostFormPaymentSetupState> value,
+  CatchAsyncState<HostFormPaymentSetupState> value,
 ) {
-  final setup = value.asData?.value.setup;
+  final setup = value.value?.setup;
   if (setup == null) {
     return value.hasError
         ? HostSetupPayoutStatus.unavailable
