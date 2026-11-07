@@ -129,6 +129,17 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           );
         }
 
+        // After the event, its report is the rebuilt event report.
+        if (initialSection == HostEventManageSection.report &&
+            !event.endTime.isAfter(referenceNow ?? DateTime.now())) {
+          return HostEventReportScreen(
+            organizer: organizer,
+            event: event,
+            onBack: CatchWorkspaceBackScope.maybeOf(context),
+            now: referenceNow,
+          );
+        }
+
         return HostEventManageScreen(
           organizer: organizer,
           event: event,

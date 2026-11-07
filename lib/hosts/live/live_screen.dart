@@ -279,31 +279,40 @@ class HostLiveActions {
         onOpenGuests();
       case HostLiveView.scores:
         _push(
-          HostLiveScoresScreen(
-            organizer: organizer,
-            event: event,
-            onOpenGuests: onOpenGuests,
-            now: now,
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+            builder: (_) => HostLiveScoresScreen(
+              organizer: organizer,
+              event: event,
+              onOpenGuests: onOpenGuests,
+              now: now,
+            ),
           ),
         );
       case HostLiveView.room:
         _push(
-          HostLiveRoomScreen(
-            organizer: organizer,
-            event: event,
-            onOpenGuests: onOpenGuests,
-            now: now,
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+            builder: (_) => HostLiveRoomScreen(
+              organizer: organizer,
+              event: event,
+              onOpenGuests: onOpenGuests,
+              now: now,
+            ),
           ),
         );
     }
   }
 
   void openNeeds() => _push(
-    HostLiveNeedsScreen(
-      organizer: organizer,
-      event: event,
-      onOpenGuests: onOpenGuests,
-      now: now,
+    MaterialPageRoute<void>(
+      settings: const RouteSettings(name: hostLiveSubscreenRouteName),
+      builder: (_) => HostLiveNeedsScreen(
+        organizer: organizer,
+        event: event,
+        onOpenGuests: onOpenGuests,
+        now: now,
+      ),
     ),
   );
 
@@ -313,12 +322,10 @@ class HostLiveActions {
     extra: organizer,
   );
 
-  void _push(Widget screen) {
+  /// Each view names its screen in its own route, so the route inventory
+  /// can read every one.
+  void _push(MaterialPageRoute<void> route) {
     final navigator = Navigator.of(context);
-    final route = MaterialPageRoute<void>(
-      settings: const RouteSettings(name: hostLiveSubscreenRouteName),
-      builder: (_) => screen,
-    );
     // A view replaces another view; Now sits under them all.
     if (ModalRoute.of(context)?.settings.name == hostLiveSubscreenRouteName) {
       unawaited(navigator.pushReplacement(route));

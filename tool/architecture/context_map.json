@@ -86,6 +86,7 @@
     {"path": "lib/hosts/create/", "layer": "app"},
     {"path": "lib/hosts/today/", "layer": "app"},
     {"path": "lib/hosts/live/", "layer": "app"},
+    {"path": "lib/hosts/insights/", "layer": "app"},
     {"path": "lib/user_analytics/", "context": "insights"}
   ]
 }
