@@ -63,18 +63,24 @@ class OrganizerPageTile extends StatelessWidget {
             gap: CatchStackGap.g8,
             align: CatchStackAlign.center,
             children: [
-              CatchButton(
-                key: const ValueKey<String>('organizer-page-edit'),
-                label: l10n.hostOrganizerPageEdit,
-                size: CatchButtonSize.md,
-                onPressed: onEdit,
+              Expanded(
+                child: CatchButton(
+                  key: const ValueKey<String>('organizer-page-edit'),
+                  label: l10n.hostOrganizerPageEdit,
+                  size: CatchButtonSize.md,
+                  fullWidth: true,
+                  onPressed: onEdit,
+                ),
               ),
-              CatchButton(
-                key: const ValueKey<String>('organizer-page-view'),
-                label: l10n.hostOrganizerPageView,
-                variant: CatchButtonVariant.secondary,
-                size: CatchButtonSize.md,
-                onPressed: onView,
+              Expanded(
+                child: CatchButton(
+                  key: const ValueKey<String>('organizer-page-view'),
+                  label: l10n.hostOrganizerPageView,
+                  variant: CatchButtonVariant.secondary,
+                  size: CatchButtonSize.md,
+                  fullWidth: true,
+                  onPressed: onView,
+                ),
               ),
               if (onShare != null)
                 CatchIconAction.icon(
