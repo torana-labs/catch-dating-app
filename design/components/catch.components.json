@@ -23360,6 +23360,16 @@
         ]
       },
       "level": "L2",
+      "roleNoun": "Marker",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.badge",
+          "catch.loading_indicator",
+          "catch.page_dots"
+        ],
+        "reason": "A decorative dot, ring, check or number beside the content that carries the meaning. A badge carries its own words, a loading indicator shows indeterminate work and page dots show a selected index."
+      },
       "system": {
         "name": "Marker",
         "states": ["rest", "live"],
@@ -23591,6 +23601,15 @@
         ]
       },
       "level": "L3",
+      "roleNoun": "Calendar",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.option_card",
+          "catch.sheet.picker"
+        ],
+        "reason": "A month grid for choosing one day past the day strip, with marked and repeating days. Day choice cards are the strip; the wheel picker sheet picks scalar values."
+      },
       "system": {
         "name": "Calendar",
         "states": ["rest"],
@@ -23800,6 +23819,15 @@
         ]
       },
       "level": "L3",
+      "roleNoun": "Meter",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.mini_bar_chart",
+          "catch.distance_ring"
+        ],
+        "reason": "A known value against a maximum, a limit, equal steps or shares of a whole, on one track. CatchBarIndicator compares values across bars; the distance ring is a radial T3 measure."
+      },
       "system": {
         "name": "Meter",
         "states": ["rest"],

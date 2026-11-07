@@ -181,7 +181,8 @@
         "Avatar", "Photo", "Cover", "Stepper", "StepFlow", "Accordion", "Drawer",
         "Overlay", "Viewport", "Layout", "Action", "Menu", "Surface", "Input", "Text", "Image", "Scope", "AsyncBoundary",
         "Table", "Card", "Body", "List", "Step", "Editor", "Rail", "Picker", "Grid", "Preview", "Dock", "Map", "Pin", "Thumbnail", "Bubble", "Form", "Listener", "Transition",
-        "Root", "Stack", "AppShell", "Screen", "Identity"
+        "Root", "Stack", "AppShell", "Screen", "Identity", "Marker", "Meter",
+        "Calendar"
       ]
     },
     "widgetNaming": {
