@@ -352,7 +352,10 @@ export function HouseholdRsvpView({
               {screen.kind === "loading" ? (
                 <>
                   <RsvpHead title={copy.loadingTitle} />
-                  <CatchLoadingIndicator label={copy.loading} />
+                  <CatchStack align="center" direction="row" gap={12}>
+                    <CatchLoadingIndicator />
+                    <CatchText role="status" tone="secondary" variant="body">{copy.loading}</CatchText>
+                  </CatchStack>
                 </>
               ) : screen.kind === "unavailable" ? (
                 <>
