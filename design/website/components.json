@@ -1283,6 +1283,9 @@
         "exportName": "InstantClaimChoose",
         "states": [
           "choose",
+          "account",
+          "loading",
+          "error",
           "instagram-code",
           "instagram-wrong-sender",
           "luma-code",
