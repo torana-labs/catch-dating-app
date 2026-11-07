@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/onboarding/widgets/page_link_tile.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 

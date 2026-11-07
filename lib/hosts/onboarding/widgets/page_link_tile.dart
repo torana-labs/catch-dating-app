@@ -1,4 +1,5 @@
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -59,7 +60,7 @@ class HostSetupPageLinkTile extends StatelessWidget {
                   onPressed: copy,
                   variant: CatchButtonVariant.secondary,
                   size: CatchButtonSize.sm,
-                  leading: CatchIcon(CatchIcons.copy, size: CatchIconSize.sm),
+                  leading: CatchIcon(CatchIcons.copy, size: CatchIconSize.md),
                 ),
               ],
             ),

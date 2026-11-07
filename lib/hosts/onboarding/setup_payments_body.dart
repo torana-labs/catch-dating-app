@@ -1,4 +1,5 @@
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -56,6 +57,7 @@ class HostSetupPaymentsBody extends StatelessWidget {
           block: CatchSurfaceBlock.spotlight,
           color: CatchSurfaceColor.courts,
           child: CatchStack(
+            align: CatchStackAlign.start,
             children: [
               CatchText(
                 l10n.hostOnboardingPaymentsConnectTitle,
@@ -63,16 +65,11 @@ class HostSetupPaymentsBody extends StatelessWidget {
               ),
               CatchText(l10n.hostOnboardingPaymentsConnectBody),
               switch (status) {
-                HostSetupPayoutStatus.connected => CatchStack(
-                  direction: CatchStackDirection.row,
-                  children: [
-                    CatchBadge(
-                      label: l10n.hostOnboardingPaymentsConnected,
-                      tone: CatchBadgeTone.success,
-                      size: CatchBadgeSize.md,
-                      icon: CatchIcons.success,
-                    ),
-                  ],
+                HostSetupPayoutStatus.connected => CatchBadge(
+                  label: l10n.hostOnboardingPaymentsConnected,
+                  tone: CatchBadgeTone.success,
+                  size: CatchBadgeSize.md,
+                  icon: CatchIcons.success,
                 ),
                 HostSetupPayoutStatus.connecting => CatchText(
                   l10n.hostOnboardingPaymentsConnecting,
@@ -82,22 +79,18 @@ class HostSetupPaymentsBody extends StatelessWidget {
                   l10n.hostOnboardingPaymentsUnavailable,
                   variant: CatchTextVariant.bodySmall,
                 ),
-                _ => CatchStack(
-                  direction: CatchStackDirection.row,
-                  children: [
-                    CatchButton(
-                      key: const ValueKey<String>('host-setup-connect'),
-                      label: connectLabel,
-                      onPressed: canConnect ? onConnect : null,
-                      status: pending || status == HostSetupPayoutStatus.loading
-                          ? CatchButtonStatus.loading
-                          : CatchButtonStatus.idle,
-                      trailing: CatchIcon(
-                        CatchIcons.openExternal,
-                        size: CatchIconSize.sm,
-                      ),
-                    ),
-                  ],
+                _ => CatchButton(
+                  key: const ValueKey<String>('host-setup-connect'),
+                  label: connectLabel,
+                  onPressed: canConnect ? onConnect : null,
+                  size: CatchButtonSize.md,
+                  status: pending || status == HostSetupPayoutStatus.loading
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  trailing: CatchIcon(
+                    CatchIcons.openExternal,
+                    size: CatchIconSize.md,
+                  ),
                 ),
               },
               if (status != HostSetupPayoutStatus.connected)

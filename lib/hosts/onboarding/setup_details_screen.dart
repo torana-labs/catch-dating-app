@@ -6,7 +6,6 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Setup step two of three, "Check your details". Next creates the page
