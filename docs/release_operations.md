@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.2.3
-updated: 2026-11-02
+version: 3.3.0
+updated: 2026-11-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -1364,10 +1364,49 @@ When it runs:
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Skipping intermediate commits loses nothing,
   because the CLI compares against what is live.
+- **Nightly window run:** at 03:00 IST (`30 21 * * *` UTC) the workflow runs
+  dev, then prod, in window mode. It deploys whatever is pending when that is
+  small or when the weekly window is open, and otherwise does nothing quietly.
 - **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
   or `staging`. Tick `full` to redeploy every Function even when unchanged, for
   example after a manual deploy you are unsure about. It names every codebase,
-  which turns off the CLI's skip.
+  which turns off the CLI's skip, so it is a large deploy and obeys the weekly
+  window below.
+
+The full Functions suite deploys at most once a week:
+
+- **The rule.** In each environment, a deploy that would update more than 200
+  Functions (a large deploy) happens at most once every 7 days. Nothing
+  overrides this: `allow_large` and `full` only permit a large deploy while the
+  window is open, and no input, label or variable beats a closed window.
+- **The record.** Each successful deploy's GitHub deployment payload carries
+  the codebase hashes and `largeDeployAt`, when the last large deploy happened.
+  A large deploy sets it to its own time; a small one carries it forward. A
+  record written before this field existed counts from its own creation time,
+  so the deploy it describes is treated as large. The window opens
+  `largeDeployAt` + 7 days.
+- **Who deploys the large change.** A merge whose run would be large stops
+  before changing anything. The step summary says when the window opens. When
+  the window is closed, nothing can deploy it before then. When it is open,
+  the nightly window run deploys it by itself, so nobody needs to run it by
+  hand. Every later merge carries the same pending delta and stops the same
+  way until then.
+- **Pipeline changes wait for the window.** Required CI (`Lint workflows`)
+  fails a pull request or merge group that changes
+  `.github/workflows/_backend-deploy.yml`, `.github/workflows/backend-deploy.yml`,
+  `functions/scripts/build-deploy-codebases.cjs`, `functions/deploy-codebases.json`,
+  `functions/package.json`, `functions/package-lock.json` or `firebase.json`
+  until 24 hours before prod's next window (`.github/scripts/deploy_window.mjs`).
+  Re-run the check once that time arrives. Nothing bypasses it.
+- **When the next window opens:**
+  `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=5'`,
+  take the newest deployment that has a `success` status (GitHub later marks it
+  `inactive`, which still counts), and add 7 days to its `payload.largeDeployAt`,
+  or to its `created_at` when the payload has none.
+- **Before a window,** list every pending change that touches every codebase
+  (shared schemas, Functions dependencies, packaging and deploy pipeline
+  changes) and land them together in the 24 hours before it opens, so that
+  one large deploy carries them all.
 - **Configuration changes:** a changed GitHub variable reaches the codebases
   that read it on the next run. To apply it now without deploying the rest of
   the commit, run the workflow with `functions` set to the comma-separated
