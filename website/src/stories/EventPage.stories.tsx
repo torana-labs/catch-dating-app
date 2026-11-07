@@ -1,12 +1,13 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchBand, CatchGrid, CatchSplit} from "@catch/web-ui";
+import {CatchPageBody, CatchRoot, CatchStack} from "@catch/web-ui";
 import {expect, userEvent, waitFor, within} from "storybook/test";
 import {publicCheckoutCopy} from "../content/events";
 import {EventBooking} from "../features/events/EventBooking";
+import {EventPageFrame} from "../features/events/EventDetailPage";
 import {buildEventPageView, type EventPageData} from "../features/events/eventPageModel";
 import {GuestEventEntryView} from "../features/events/GuestEventEntry";
 import {EventBookingFrame} from "../shared/site/EventBookingFrame";
-import {EventBookingCard, EventPageHeader, EventPageMain} from "../features/events/sections/EventPageSections";
+import {EventBookingCard} from "../features/events/sections/EventPageSections";
 import {
   bareEventPage,
   eventPageFixtureNow,
@@ -43,22 +44,12 @@ const signedOut = {user: null, phone: "", setPhone: noop, code: "", setCode: noo
 } as unknown as Parameters<typeof GuestEventEntryView>[0]["controller"];
 const bookStandIn = <GuestEventEntryView controller={signedOut} eventId="story" startLabel="Book now" />;
 
+/** The page as the route renders it, with a stand-in for the booking steps. */
 function EventPageStory({page}: {page: EventPageData}) {
   const view = buildEventPageView(page, eventPageFixtureNow);
   return (
-    <>
-      <CatchBand as="header" pb="none" pt="compact"><EventPageHeader onShare={() => undefined} view={view} /></CatchBand>
-      <CatchBand as="main" pt="compact">
-        <CatchSplit
-          align="stretch"
-          end={<EventBooking catchEntry={bookStandIn} onExternalClick={noop} view={view} />}
-          gap="regular"
-          railSide="end"
-          ratio="narrowRail"
-          start={<EventPageMain view={view} />}
-        />
-      </CatchBand>
-    </>
+    <EventPageFrame booking={<EventBooking catchEntry={bookStandIn} onExternalClick={noop} view={view} />}
+      onShare={noop} view={view} />
   );
 }
 
@@ -70,8 +61,8 @@ export const OptionalFields: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", {level: 1, name: "Half-marathon training: 15K"})).toBeVisible();
-    for (const name of ["You won’t be standing around.", "The plan for the morning", "Where", "Good to know",
-      "27 going · 13 spots left", "What people say", "More from Salt Air Run Club"]) {
+    for (const name of ["You won’t be sitting alone.", "The plan for the morning", "Where", "Good to know",
+      "27 going · 13 places left", "What people say", "More from Salt Air Run Club"]) {
       await expect(canvas.getByRole("heading", {name})).toBeVisible();
     }
   },
@@ -83,7 +74,7 @@ export const NoOptionalFields: Story = {
   render: () => <EventPageStory page={bareEventPage} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    for (const name of ["You won’t be standing around.", "Good to know", "What people say"]) {
+    for (const name of ["You won’t be sitting alone.", "Good to know", "What people say"]) {
       await expect(canvas.queryByRole("heading", {name})).toBeNull();
     }
     await expect(canvas.getByRole("link", {name: /Open in Google Maps/})).toHaveAttribute("target", "_blank");
@@ -101,14 +92,14 @@ export const LumaImport: Story = {
   },
 };
 
-/** The full event, kept still for the visual baseline. */
+/** The full event, kept still for the visual baseline: who hosts it, linked, and the share action. */
 export const AllFields: Story = {
   name: "All optional fields",
   parameters: {catchComponent: {id: "event_page_header", routeIds: ["event_detail_canonical"], states: ["organiser-link", "share"]}},
   render: () => <EventPageStory page={fullEventPage} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("link", {name: "Back to Salt Air Run Club"})).toHaveAttribute("href", "/organizers/mumbai/salt-air-run-club/");
+    await expect(canvas.getByRole("link", {name: "Salt Air Run Club"})).toHaveAttribute("href", "/organizers/mumbai/salt-air-run-club/");
     await expect(canvas.getByRole("button", {name: "Share"})).toBeVisible();
   },
 };
@@ -118,15 +109,17 @@ export const BookingCard: Story = {
   name: "Booking card",
   parameters: {catchComponent: {id: "event_booking_card", routeIds: ["event_detail_canonical"], states: ["catch-native", "external-source", "closed"]}},
   render: () => (
-    <CatchBand as="main" pt="compact">
-      <CatchGrid columns={3} compactColumns={1}>
-        {[[fullEventPage, eventPageFixtureNow], [importedEventPage, eventPageFixtureNow],
-          [fullEventPage, Date.parse("2026-11-23T00:00:00.000Z")]].map(([page, now], index) => (
-          <EventBookingCard catchEntry={bookStandIn} key={index}
-            onExternalClick={noop} view={buildEventPageView(page as EventPageData, now as number)} />
-        ))}
-      </CatchGrid>
-    </CatchBand>
+    <CatchRoot theme="day">
+      <CatchPageBody gutter>
+        <CatchStack collapseBelow="medium" direction="row" equal gap={24}>
+          {[[fullEventPage, eventPageFixtureNow], [importedEventPage, eventPageFixtureNow],
+            [fullEventPage, Date.parse("2026-11-23T00:00:00.000Z")]].map(([page, now], index) => (
+            <EventBookingCard catchEntry={bookStandIn} key={index}
+              onExternalClick={noop} view={buildEventPageView(page as EventPageData, now as number)} />
+          ))}
+        </CatchStack>
+      </CatchPageBody>
+    </CatchRoot>
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -152,7 +145,7 @@ export const PhoneSheet: Story = {
       await expect(canvas.getByRole("complementary", {name: "Booking"})).toBeVisible();
       return;
     }
-    await expect(canvas.getByText("27 going · 13 spots left")).toBeVisible();
+    await expect(canvas.getByText("27 going · 13 places left")).toBeVisible();
     await userEvent.click(open);
     const sheet = await within(canvasElement.ownerDocument.body).findByRole("dialog", {name: "Half-marathon training: 15K"});
     await expect(within(sheet).getByRole("button", {name: "Book now"})).toBeVisible();

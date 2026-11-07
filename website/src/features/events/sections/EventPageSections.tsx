@@ -184,22 +184,24 @@ function EventGoing({going}: {going: NonNullable<EventPageView["going"]>}) {
 /** What people say: each review with its stars, booked on Catch or unverified, and the organiser's reply. */
 function EventReviews({reviews}: {reviews: NonNullable<EventPageView["reviews"]>}) {
   return (
-    <CatchSection note={reviews.note} title={copy.reviews.title}>
-      {reviews.items.map((review) => (
-        <CatchIndexRow
-          body={review.body}
-          density="roomy"
-          key={review.id}
-          meta={review.reply ? `${review.reply.author} ${review.reply.verb} ${review.reply.text}` : undefined}
-          status={review.verified ? copy.reviews.verified : copy.reviews.unverified}
-          statusTone={review.verified ? "success" : "secondary"}
-          subtitle={review.meta}
-          title={review.name}
-          trailing={<CatchStarRating label={review.ratingLabel} value={review.rating} />}
-          wrap
-        />
-      ))}
-    </CatchSection>
+    <CatchStack gap={0} id="event-reviews">
+      <CatchSection note={reviews.note} title={copy.reviews.title}>
+        {reviews.items.map((review) => (
+          <CatchIndexRow
+            body={review.body}
+            density="roomy"
+            key={review.id}
+            meta={review.reply ? `${review.reply.author} ${review.reply.verb} ${review.reply.text}` : undefined}
+            status={review.verified ? copy.reviews.verified : copy.reviews.unverified}
+            statusTone={review.verified ? "success" : "secondary"}
+            subtitle={review.meta}
+            title={review.name}
+            trailing={<CatchStarRating label={review.ratingLabel} value={review.rating} />}
+            wrap
+          />
+        ))}
+      </CatchSection>
+    </CatchStack>
   );
 }
 

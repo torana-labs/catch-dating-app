@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchBand, CatchGap, CatchSplit} from "@catch/web-ui";
+import {CatchPaneLayout, CatchRoot, CatchStack} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {MemoryRouter} from "react-router";
 import {expect, userEvent, within} from "storybook/test";
@@ -73,7 +73,10 @@ function SectionHarness({backends, page, render}: {
   return <>{render(controller)}</>;
 }
 
-/** One section on the claimed page and on the generated one, in the page's rail or main column width. */
+/**
+ * One section on the claimed page and on the generated one, in the width the
+ * page gives it: the profile pane or the main column of the list-detail layout.
+ */
 function SectionStory({backends = organizerPageBackends, column, pages = [claimedOrganizerPage, generatedOrganizerPage], render}: {
   backends?: OrganizerPageBackends;
   column: "rail" | "main";
@@ -82,21 +85,22 @@ function SectionStory({backends = organizerPageBackends, column, pages = [claime
 }) {
   return (
     <Providers page={pages[0]}>
-      <CatchBand pb="compact" pt="compact">
-        <CatchGap size="majorSection">
+      <CatchRoot theme="day">
+        <CatchStack gap={40}>
           {pages.map((page) => {
             const section = <SectionHarness backends={backends} page={page} render={render} />;
             return (
-              <CatchSplit
-                end={column === "main" ? section : null}
+              <CatchPaneLayout
+                detail={column === "main" ? section : <></>}
+                detailOpen={column === "main"}
                 key={page.organizerId}
-                ratio="wideRail"
-                start={column === "rail" ? section : null}
+                main={column === "rail" ? section : <></>}
+                pattern="list-detail"
               />
             );
           })}
-        </CatchGap>
-      </CatchBand>
+        </CatchStack>
+      </CatchRoot>
     </Providers>
   );
 }

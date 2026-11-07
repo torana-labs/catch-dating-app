@@ -1,5 +1,5 @@
 import {CatchBand, CatchNotice, CatchNoticeRegion, CatchPaneLayout, CatchRoot, CatchStack, type CatchNoticeData} from "@catch/web-ui";
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
@@ -10,7 +10,7 @@ import {PublicPageFooter, PublicPageHeader} from "../organizers/sections/PublicP
 import type {HostListing} from "../organizers/types";
 import {EventBooking} from "./EventBooking";
 import {GuestEventEntry} from "./GuestEventEntry";
-import {buildEventPageView, type EventPageData} from "./eventPageModel";
+import {buildEventPageView, type EventPageData, type EventPageView} from "./eventPageModel";
 import {EventPageMain} from "./sections/EventPageSections";
 
 /**
@@ -62,23 +62,51 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
   }
 
   return (
+    <EventPageFrame
+      booking={(
+        <EventBooking
+          catchEntry={<GuestEventEntry eventId={eventId} key={eventId}
+            startLabel={paid ? guestEventCopy.book : guestEventCopy.register} />}
+          onExternalClick={trackBookingClick}
+          view={view}
+        />
+      )}
+      mapImageUrl={mapImageUrl}
+      onShare={() => void share()}
+      view={view}
+    >
+      {notices.current ? (
+        <CatchNoticeRegion label={copy.share}>
+          <CatchNotice dismissLabel={guestEventCopy.close} notice={notices.current} onDismiss={notices.dismiss} />
+        </CatchNoticeRegion>
+      ) : null}
+    </EventPageFrame>
+  );
+}
+
+/**
+ * The page around the event: the site top bar, then the reading lane (the
+ * event and the short footer) beside the booking. Stories render it with a
+ * stand-in for the booking steps.
+ */
+export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: {
+  booking: ReactNode;
+  children?: ReactNode;
+  mapImageUrl?: string;
+  onShare?: () => void;
+  view: EventPageView;
+}) {
+  return (
     <CatchRoot theme="day">
       <PublicPageHeader />
       <WebsitePageMain id="event-detail">
         {/* The band is only the page container the booking aside measures to dock on a phone. */}
         <CatchBand as="div" pb="none" pt="none" width="full">
           <CatchPaneLayout
-            aside={(
-              <EventBooking
-                catchEntry={<GuestEventEntry eventId={eventId} key={eventId}
-                  startLabel={paid ? guestEventCopy.book : guestEventCopy.register} />}
-                onExternalClick={trackBookingClick}
-                view={view}
-              />
-            )}
+            aside={booking}
             main={(
               <CatchStack gap={40}>
-                <EventPageMain mapImageUrl={mapImageUrl} onShare={() => void share()} view={view} />
+                <EventPageMain mapImageUrl={mapImageUrl} onShare={onShare} view={view} />
                 <PublicPageFooter />
               </CatchStack>
             )}
@@ -86,11 +114,7 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
           />
         </CatchBand>
       </WebsitePageMain>
-      {notices.current ? (
-        <CatchNoticeRegion label={copy.share}>
-          <CatchNotice dismissLabel={guestEventCopy.close} notice={notices.current} onDismiss={notices.dismiss} />
-        </CatchNoticeRegion>
-      ) : null}
+      {children}
     </CatchRoot>
   );
 }
