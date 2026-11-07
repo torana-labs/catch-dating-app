@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.21.0
+version: 0.22.0
 updated: 2026-11-08
 owner: marketing_website
 status: active
@@ -135,11 +135,8 @@ main column (the organiser page's list-detail main, the event page's reading
 lane) rather than an ink band. The claim, public form and offer pages render
 the same `PublicPageFooter` below their reading layout with the site and legal
 links and the operator line; only the claim page records footer clicks. Import
-both from `shared/site`; `features/organizers/sections/PublicPageChrome.tsx`
-is a deprecated re-export kept until its last caller moves. Pages not yet
-rebuilt keep `PublicSiteFooter`; `SiteFooter` is the legacy footer's
-presentation. The legacy `SiteHeader` renders nowhere and is kept only until
-its registry record and copy-allowlist entries retire.
+both from `shared/site`. Pages not yet rebuilt keep `PublicSiteFooter`;
+`SiteFooter` is the legacy footer's presentation.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private

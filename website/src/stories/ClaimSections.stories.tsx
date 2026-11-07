@@ -294,7 +294,7 @@ export const InstantClaimSignIn: Story = {
     catchComponent: {
       id: "claim_instant_check_panel",
       routeIds: ["claim", "claim_lookup"],
-      states: ["choose"],
+      states: ["account"],
     },
   },
   render: () => <InstantClaimPanel controller={mockInstantController({phase: "account", account: mockAccount({ready: false, account: null})})}
@@ -308,7 +308,7 @@ export const InstantClaimLoading: Story = {
     catchComponent: {
       id: "claim_instant_check_panel",
       routeIds: ["claim", "claim_lookup"],
-      states: ["choose"],
+      states: ["loading"],
     },
   },
   render: () => <InstantClaimPanel controller={mockInstantController({phase: "loading"})} listing={claimableListing} />,
@@ -347,7 +347,7 @@ export const InstantClaimError: Story = {
     catchComponent: {
       id: "claim_instant_check_panel",
       routeIds: ["claim", "claim_lookup"],
-      states: ["choose"],
+      states: ["error"],
     },
   },
   render: () => <InstantClaimPanel controller={mockInstantController({error: "That didn’t work. Try again in a moment."})} listing={claimableListing} />,
