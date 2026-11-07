@@ -32,8 +32,8 @@ class HostAnalyticsBar {
 /// A report series as the system bar chart: each period labelled by its
 /// start ("29 Sep", or the weekday when [daily]), the running period
 /// outlined, and [label] read aloud.
-class HostAnalyticsBarChart extends StatelessWidget {
-  const HostAnalyticsBarChart({
+class HostAnalyticsBarIndicator extends StatelessWidget {
+  const HostAnalyticsBarIndicator({
     super.key,
     required this.bars,
     required this.label,

@@ -16,6 +16,7 @@ Current implementation roots:
 - `lib/hosts/presentation/host_operations`
 - `lib/hosts/presentation/organizer_management`
 - `lib/hosts/presentation/payments`
+- `lib/hosts/insights`
 
 ## This feature owns
 
@@ -59,7 +60,8 @@ Typed handoffs:
 | `HostOrganizerEditController` | `lib/hosts/presentation/organizer_management/host_organizer_edit_controller.dart` | Actions: update_organizer, update_organizer_media. |
 | `HostOrganizerSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_organizer_spoke_scaffold.dart` | Actions: retry_organizer_setting. |
 | `HostOrganizerDefaultsSaver` | `lib/hosts/presentation/organizer_management/host_organizer_defaults_saver.dart` | Actions: save_event_defaults. |
-| `HostOrganizerInsightsSection` | `lib/hosts/presentation/host_operations/host_organizer_insights_section.dart` | Actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
+| `HostInsightsScreen` | `lib/hosts/insights/host_insights_screen.dart` | Actions: retry_insights, select_insights_range, open_insights_event_report. |
+| `HostEventReportScreen` | `lib/hosts/insights/host_event_report_screen.dart` | Actions: share_event_report, open_event_reviews, invite_event_guests, choose_event_guests, download_event_csv. |
 | `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart` | Actions: retry_payout_account. |
 | `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart` | Actions: start_payout_onboarding, refresh_payout_status. |
 | `HostOrganizerTeamScreen` | `lib/hosts/presentation/host_operations/host_organizer_team_screen.dart` | Actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |
@@ -106,6 +108,9 @@ Typed handoffs:
 - `test/hosts/host_team_management_section_test.dart`
 - `test/payments/host_payment_account_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
+- `test/hosts/insights/host_insights_body_test.dart`
+- `test/hosts/insights/host_event_report_body_test.dart`
+- `test/hosts/insights/host_insights_controller_test.dart`
 
 ## Maintenance
 

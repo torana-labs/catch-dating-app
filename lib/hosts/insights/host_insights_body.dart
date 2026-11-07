@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_chart.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_indicator.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
@@ -65,7 +65,7 @@ class HostInsightsBody extends StatelessWidget {
       empty: l10n.hostInsightsBookingsEmpty,
       children: [
         if (state.hasBookings)
-          HostAnalyticsBarChart(
+          HostAnalyticsBarIndicator(
             bars: state.bars,
             label: bookingsTitle,
             daily: state.daily,

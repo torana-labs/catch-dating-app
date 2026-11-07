@@ -11016,7 +11016,7 @@
             "symbol": "HostPaymentAccountController"
           }
         ],
-        "notes": "HostOrganizersScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostOrganizerEditBody owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostOrganizerDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostOrganizerEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostOrganizerInsightsState owns analytics query state."
+        "notes": "HostOrganizersScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Preview tab shell; tab=insights opens HostInsightsScreen in its place. HostOrganizerEditBody owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostOrganizerDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostOrganizerEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostOrganizerInsightsState owns analytics query state."
       },
       "designRefs": [
         {
@@ -11600,11 +11600,9 @@
           "id": "insights_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostOrganizerInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
-          "nextAction": "Keep the canonical tab loading capture and Widgetbook scorecard state synced.",
-          "previewIds": [
-            "HostOrganizerInsightsSection/Insights scorecard states"
-          ],
+          "source": "tab=insights opens HostInsightsScreen; hostInsightsController reads hostAnalyticsProvider for the chosen period and HostInsightsBody keeps the period live over a skeleton drawn from the real components while the report loads.",
+          "nextAction": "Keep the loading capture and the body render test synced.",
+          "previewIds": [],
           "captureIds": [
             "host_clubs_insights_loading"
           ]
@@ -11613,34 +11611,20 @@
           "id": "insights_report",
           "kind": "populated",
           "status": "captured",
-          "source": "HostAnalyticsReportBody renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews.",
-          "nextAction": "Keep client-owned labels, tab navigation, partial/missing quality badges, narrow and text-scale variants, and backend response compatibility covered.",
-          "previewIds": [
-            "HostOrganizerInsightsSection/Insights scorecard states"
-          ],
+          "source": "HostInsightsBody renders the RbHostInsights board: the 7/30/90-day segmented control, the Bookings and Ticket sales stats with their change, bookings each week (each day over seven days) as the bar chart, where visitors came from as the stack meter with the page visits row, and the fullest nights as list rows that open the event report.",
+          "nextAction": "Came back and Followers wait for the report to carry them (issue #1569).",
+          "previewIds": [],
           "captureIds": [
             "host_clubs_insights_report"
-          ]
-        },
-        {
-          "id": "insights_coach",
-          "kind": "populated",
-          "status": "implemented",
-          "source": "HostAnalyticsReportBody shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; the block is absent when no rule fires.",
-          "nextAction": "Keep rule thresholds, copy, report/defaults links, and the hidden no-recommendation state pinned by tests and Widgetbook.",
-          "previewIds": [
-            "HostOrganizerInsightsSection/Insights scorecard states"
           ]
         },
         {
           "id": "insights_error",
           "kind": "error",
           "status": "captured",
-          "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostOrganizerInsightsState.query.",
-          "nextAction": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostOrganizerInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
-          "previewIds": [
-            "HostOrganizerInsightsSection/Insights scorecard states"
-          ],
+          "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating the period's report read.",
+          "nextAction": "Captures cover the generic and offline analytics errors.",
+          "previewIds": [],
           "captureIds": [
             "host_clubs_insights_error",
             "host_clubs_insights_offline"
@@ -12002,7 +11986,7 @@
               "owner_role",
               "cohost_role"
             ],
-            "migration": "HostOrganizersScreenState owns selected-club, tab, and owner/co-host role capability display state; HostOrganizerInsightsState owns analytics query state; HostOrganizersScaffold owns the embedded public-preview composition. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
+            "migration": "HostOrganizersScreenState owns selected-club, tab, and owner/co-host role capability display state; HostOrganizersScaffold owns the embedded public-preview composition. Continue extracting retry intents, inline edit patches, and mutation state into testable adapters.",
             "previewIds": [
               "HostOrganizersScreen/Route states"
             ]
@@ -12019,7 +12003,7 @@
               "file": "lib/hosts/presentation/host_operations/host_organizer_section_list.dart",
               "symbol": "HostOrganizerMetricGrid"
             },
-            "currentOwner": "HostOrganizerInsightsSection",
+            "currentOwner": "HostOrganizersScaffold (end of Edit)",
             "targetOwner": "provider-free host insights metric summary",
             "dependencies": [
               "catch.surface"
@@ -12273,16 +12257,18 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostOrganizerInsightsState",
-              "HostAnalyticsReportBody",
-              "HostAnalyticsTrendSection"
+              "HostInsightsBody",
+              "HostAnalyticsMetricTile",
+              "HostAnalyticsBarIndicator",
+              "HostAnalyticsSourceMeter",
+              "HostAnalyticsNightRow"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_organizer_insights_section.dart",
-              "symbol": "HostOrganizerInsightsSection"
+              "file": "lib/hosts/insights/host_insights_screen.dart",
+              "symbol": "HostInsightsScreen"
             },
-            "currentOwner": "HostOrganizersScaffold",
-            "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
+            "currentOwner": "HostInsightsScreen",
+            "targetOwner": "provider-free Insights body over hostInsightsController",
             "dependencies": [
               "catch.badge",
               "catch.button",
@@ -12294,22 +12280,13 @@
               "error",
               "empty",
               "loaded",
-              "partial_data",
-              "syncing",
+              "seven_days",
               "thirty_days",
-              "ninety_days",
-              "twelve_months",
-              "more_metrics_collapsed",
-              "more_metrics_expanded",
-              "trend_bucket_selected",
-              "recent_events_empty",
-              "payment_issues",
-              "text_scale"
+              "ninety_days"
             ],
-            "migration": "HostOrganizerInsightsState owns only the selected club and one of three range presets; granularity is derived and event scoping/custom dates are absent from the host surface. HostOrganizerInsightsSection owns device-IANA query resolution, ten-minute provider reuse, pull-to-refresh invalidation, and navigation from recent events to the existing per-event Report. HostAnalyticsReportBody is provider-free and Widgetbook covers loaded, empty, partial-data, Coach, and text-scale scorecard states.",
+            "migration": "Complete (P3.5). HostInsightsScreen keeps the period and resolves the selected organizer; hostInsightsController reads the cached host report (day bars over seven days, week bars otherwise) through the device IANA timezone; HostInsightsBody and HostInsightsState are provider-free. Captures and body render tests cover it, with no Widgetbook case.",
             "previewIds": [
-              "HostOrganizersScreen/Route states",
-              "HostOrganizerInsightsSection/Insights scorecard states"
+              "HostOrganizersScreen/Route states"
             ]
           },
           {

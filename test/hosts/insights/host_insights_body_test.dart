@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_chart.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_bar_indicator.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_body.dart';
