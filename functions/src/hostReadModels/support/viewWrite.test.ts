@@ -19,11 +19,12 @@ const next = {sourceCoverage: "complete" as const, incompleteSource: null,
   view: {a: 1, b: [1, 2]}};
 
 test("a first write starts at revision 1", () => {
-  const plan = planViewWrite<Doc>(null, next, stamp(5));
+  const now = stamp(5);
+  const plan = planViewWrite<Doc>(null, next, now);
   assert.equal(plan.unchanged, false);
   assert.equal(plan.revision, 1);
   assert.deepEqual(plan.unchanged ? null : plan.document,
-    {...next, revision: 1, evaluatedAt: stamp(5)});
+    {...next, revision: 1, evaluatedAt: now});
 });
 
 test("an unchanged document is not written, whatever its key order", () => {
