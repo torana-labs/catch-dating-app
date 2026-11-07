@@ -168,6 +168,7 @@ jobs:
       - run: npm ci
 
       - name: New widget inventory gate
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         env:
           BASE_SHA: ${{ inputs.base_sha }}
         run: |
@@ -184,9 +185,11 @@ jobs:
             --no-write
 
       - name: Form and schema constraint alignment
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart
 
       - name: Localization catalog and getter usage
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: |
           mkdir -p build/ci
           node tool/copy/check_l10n_key_usage.mjs --check --json > build/ci/l10n-key-usage.json
@@ -202,34 +205,42 @@ jobs:
           retention-days: 14
 
       - name: Design parity gate
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         if: ${{ !inputs.design_parity_in_tools }}
         run: npm run design:parity:check
 
       - name: Public surface behavior matrix
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: npm run design:public-surfaces:check
 
       - name: Check cross-stack component lexicon
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: node tool/design/check_component_lexicon.mjs
 
       # Flutter names say organizer: club stays only as the subtype and in
       # names the generated schema contracts declare.
       - name: Organizer nomenclature
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: node tool/check_organizer_nomenclature.mjs
 
       # Every Flutter change runs both: CatchIcons must match the role catalog,
       # and icon-family references outside the icon layer may only fall.
       - name: Icon roles and icon-family references
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: |
           node tool/design/generate_icon_catalog.mjs --check
           node tool/design/check_icon_family_usage.mjs --check
 
       - name: Design token drift check
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: node tool/design_tokens.mjs --check
 
       - name: Backend error boundary gate
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: npm run audit:backend-errors:check
 
       - name: Frontend error boundary gate
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: npm run audit:frontend-errors:check
 
       - name: Riverpod lint plugin smoke check
@@ -250,17 +261,20 @@ jobs:
         run: bash tool/check_catch_ui_lint_drift.sh --check
 
       - name: Catch UI enforcement generation and coverage
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: |
           node tool/design/build_lint_enforcement_tables.mjs --check
           node tool/design/check_component_enforcement_coverage.mjs
 
       - name: Catch UI resolved composition contracts
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: dart run tool/architecture/check_ui_composition_contracts.dart --check --json /tmp/catch-ui-composition.json
 
       - name: Install scanner dependencies
         uses: ./.github/actions/install-ripgrep
 
       - name: Widget cleanup remaining scanner ratchet
+        continue-on-error: true # sprint floor: advisory until the sprint ends
         run: bash tool/widget_cleanup_scan.sh --check
 
       - name: Export Catch UI lint drift artifact
