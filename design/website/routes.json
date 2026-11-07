@@ -952,6 +952,70 @@
           ]
         }
       }
+    },
+    {
+      "id": "weddings",
+      "kind": "static",
+      "path": "/weddings/",
+      "pageKey": "weddings",
+      "source": "website/src/features/weddings/WeddingsPage.tsx",
+      "metaKey": "weddings",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Catch for weddings (programmes), band for band as the RbWebWeddings board on the system in the nights-out format: the running-order hero, why planners switch, one wedding in six chapters, the team, messages and the family, pricing by headcount, the pilot with the step-1 application card (Continue opens /weddings/apply/), questions and the foot band. Every interface excerpt is illustrative, fictional data.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "phone"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "default",
+            "phone"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "weddings_apply",
+      "kind": "static",
+      "path": "/weddings/apply/",
+      "pageKey": "weddings",
+      "source": "website/src/features/weddings/WeddingsApplicationPage.tsx",
+      "metaKey": "weddings_apply",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "The Catch for weddings pilot application (RbWebWeddingsApply): step 1 again when the landing did not hand it over in this tab, step 2, and the sent state. No intake front door accepts the application yet, so Send stays disabled on the route.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "step-one",
+          "step-two",
+          "sent"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "step-one",
+            "step-two",
+            "sent"
+          ],
+          "manual": []
+        }
+      }
     }
   ],
   "redirects": [

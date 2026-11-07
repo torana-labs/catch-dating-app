@@ -5,7 +5,7 @@ import {HostPage} from "../features/host/HostPage";
 import {HostApplicationPage} from "../features/host/HostApplicationPage";
 import {hostLandingCopy} from "@content/hostLanding";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
-import {getPageKey, pageMetaForHostPath} from "./pageMeta";
+import {getPageKey, pageMeta, pageMetaForHostPath, pageMetaForWeddingsPath} from "./pageMeta";
 import {brand} from "@catch/brand";
 
 const redirects = [
@@ -33,6 +33,15 @@ describe("consolidated public sitemap", () => {
     expect(container.querySelectorAll("form")).toHaveLength(1);
     expect(screen.getByText(/submission does not book a call or grant access/)).toBeTruthy();
     expect(pageMetaForHostPath("/host/apply/")?.canonicalPath).toBe("/host/apply/");
+  });
+  it("routes Catch for weddings and its application under one page key, each with its own metadata", () => {
+    for (const pathname of ["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"]) expect(getPageKey(pathname)).toBe("weddings");
+    expect(pageMeta.weddings.canonicalPath).toBe("/weddings/");
+    expect(pageMeta.weddings.robots).toBeUndefined();
+    expect(pageMetaForWeddingsPath("/weddings/apply")?.canonicalPath).toBe("/weddings/apply/");
+    expect(pageMetaForWeddingsPath("/weddings/apply/")?.robots).toBe("noindex, follow");
+    expect(pageMetaForWeddingsPath("/weddings/")).toBeNull();
+    expect(getPageKey("/weddings/unknown/")).toBe("not_found");
   });
   it("matches every Hosting retirement redirect and preserves attribution and claim lookup", () => {
     for (const [slug, destination] of redirects) {
