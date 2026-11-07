@@ -10517,26 +10517,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Analytics',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsObservedStagesSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Observed stages and missing coverage',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostAnalyticsObservedStagesSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsPresenceSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Observed totals and unavailable source',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostAnalyticsPresenceSectionStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostTrackingSettingsInputSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10655,17 +10635,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Components',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReportLoadingIndicator',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Report loading',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostLoadingStatesCatalog,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostEventToolsRail',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10673,6 +10642,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostToolCardCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostInlineIconSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Inline icon loading',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
+                            .hostLoadingStatesCatalog,
                   ),
                 ],
               ),
@@ -11703,16 +11683,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostAnalyticsPeriodInput',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Period remains available during loading',
-                builder: _widgetbook_workspace_hosts_operations_analytics
-                    .hostAnalyticsPeriodStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'HostCreateEventRouteScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -11829,16 +11799,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_host_offer_payment_use_cases
                         .hostOfferPaymentSetupPageBodyPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostOrganizerInsightsSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Insights scorecard states',
-                builder: _widgetbook_workspace_hosts_operations_analytics
-                    .hostInsightsScorecardStates,
               ),
             ],
           ),
@@ -12510,67 +12470,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsBarTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsDualBarCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsEventList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsEventListCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReportBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsReportViewCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReportLoadingIndicator',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostStrictHostAnalyticsReportLoadingIndicatorCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReviewsSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsReviewsPanelCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsTrendSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsTrendPanelCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCapacitySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -12825,17 +12724,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_organizer_components
                             .hostStrictHostOrganizerEditBodyCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostOrganizerInsightsSection',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_organizer_components
-                            .hostStrictHostOrganizerInsightsSectionCatalogStates,
                   ),
                 ],
               ),

@@ -523,7 +523,7 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
 
     expect(
       find.byKey(const ValueKey('host-club-insights-summary')),
-      findsNothing,
+      findsOneWidget,
     );
     expect(find.text('How guests see you'), findsNothing);
     expect(find.text('Public page'), findsNothing);
@@ -574,7 +574,6 @@ void _registerHostOperationsOrganizerWorkspaceTests() {
     expect(find.byTooltip('Host team'), findsNothing);
     expect(find.text('Trends · last 12 weeks'), findsNothing);
     expect(find.text('See insights'), findsNothing);
-    expect(find.byType(HostAnalyticsTrendSection), findsNothing);
     expect(find.text('Manage'), findsNothing);
     expect(find.text('Team · 2'), findsNothing);
     expect(find.text('Connect payouts to get paid'), findsNothing);
