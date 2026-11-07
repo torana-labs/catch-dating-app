@@ -517,6 +517,141 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayLater => 'Next 7 days';
 
   @override
+  String hostTodayGreeting({required String part, required Object name}) {
+    String _temp0 = intl.Intl.selectLogic(part, {
+      'morning': 'Good morning, $name',
+      'afternoon': 'Good afternoon, $name',
+      'other': 'Good evening, $name',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostTodayGreetingAlone({required String part}) {
+    String _temp0 = intl.Intl.selectLogic(part, {
+      'morning': 'Good morning',
+      'afternoon': 'Good afternoon',
+      'other': 'Good evening',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostTodayIdentityLabel({required Object name}) {
+    return '$name. Switch organizer';
+  }
+
+  @override
+  String get hostTodayOpenDoor => 'Open the door';
+
+  @override
+  String get hostTodayMessageGuests => 'Message guests';
+
+  @override
+  String get hostTodayLiveConsole => 'Live console';
+
+  @override
+  String get hostTodayNewEvent => 'New event';
+
+  @override
+  String get hostTodayNeedsYouTitle => 'Needs you';
+
+  @override
+  String hostTodayNeedsYouBeforeDoors({required int count}) {
+    return '$count before doors';
+  }
+
+  @override
+  String get hostTodayNeedsYouChecking => 'Still checking';
+
+  @override
+  String get hostTodayNeedsYouRetry => 'Try again';
+
+  @override
+  String get hostTodayNeedsYouEmpty => 'Nothing needs you right now.';
+
+  @override
+  String get hostTodayThisWeekTitle => 'This week';
+
+  @override
+  String get hostTodayThisWeekEmpty => 'Nothing else on this week.';
+
+  @override
+  String get hostTodayAllEvents => 'All events';
+
+  @override
+  String get hostTodayLastThirtyDaysTitle => 'Last 30 days';
+
+  @override
+  String get hostTodayLastThirtyDaysEmpty => 'These numbers are not ready yet.';
+
+  @override
+  String get hostTodayInsights => 'Insights';
+
+  @override
+  String get hostTodayStatBookings => 'Bookings';
+
+  @override
+  String get hostTodayStatTicketSales => 'Ticket sales';
+
+  @override
+  String hostTodayStatUp({required int percent}) {
+    return 'Up $percent%';
+  }
+
+  @override
+  String hostTodayStatDown({required int percent}) {
+    return 'Down $percent%';
+  }
+
+  @override
+  String get hostTodayStatSame => 'Same as before';
+
+  @override
+  String get hostTodayCountBooked => 'Booked';
+
+  @override
+  String get hostTodayCountWaitlist => 'Waitlist';
+
+  @override
+  String get hostTodayCountNewFaces => 'New faces';
+
+  @override
+  String get hostTodayWhenLive => 'Live now';
+
+  @override
+  String hostTodayWhenTonight({required Object time}) {
+    return 'Tonight · doors at $time';
+  }
+
+  @override
+  String hostTodayWhenToday({required Object time}) {
+    return 'Today · $time';
+  }
+
+  @override
+  String hostTodayWhenLater({required Object day, required Object time}) {
+    return '$day · $time';
+  }
+
+  @override
+  String hostTodayWeekMeta({
+    required Object time,
+    required int booked,
+    required int capacity,
+  }) {
+    return '$time · $booked of $capacity booked';
+  }
+
+  @override
+  String hostTodayWeekLeft({required int count}) {
+    return '$count left';
+  }
+
+  @override
+  String get hostTodayWeekFull => 'Full';
+
+  @override
   String hostInboxUnreadCount({required int count}) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

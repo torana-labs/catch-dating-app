@@ -937,6 +937,208 @@ abstract class AppLocalizations {
   /// **'Next 7 days'**
   String get hostTodayLater;
 
+  /// Today top bar title greeting the manager by first name for the part of the day.
+  ///
+  /// In en, this message translates to:
+  /// **'{part, select, morning{Good morning, {name}} afternoon{Good afternoon, {name}} other{Good evening, {name}}}'**
+  String hostTodayGreeting({required String part, required Object name});
+
+  /// Today top bar title when the manager's first name is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'{part, select, morning{Good morning} afternoon{Good afternoon} other{Good evening}}'**
+  String hostTodayGreetingAlone({required String part});
+
+  /// Screen-reader label of the organizer avatar that opens the organizer switcher on Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}. Switch organizer'**
+  String hostTodayIdentityLabel({required Object name});
+
+  /// Today action that opens check-in for the featured event.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the door'**
+  String get hostTodayOpenDoor;
+
+  /// Today action that opens messages to the featured event's guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Message guests'**
+  String get hostTodayMessageGuests;
+
+  /// Today action that opens the live console of the event under way.
+  ///
+  /// In en, this message translates to:
+  /// **'Live console'**
+  String get hostTodayLiveConsole;
+
+  /// Today primary action when there is no event to feature.
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get hostTodayNewEvent;
+
+  /// Today section title for open attention items.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostTodayNeedsYouTitle;
+
+  /// Today Needs you note: how many open items are due before the featured event starts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} before doors'**
+  String hostTodayNeedsYouBeforeDoors({required int count});
+
+  /// Today Needs you note while some attention sources have not reported yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Still checking'**
+  String get hostTodayNeedsYouChecking;
+
+  /// Today Needs you action when the attention queue could not be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostTodayNeedsYouRetry;
+
+  /// Today Needs you copy when there are no open items.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs you right now.'**
+  String get hostTodayNeedsYouEmpty;
+
+  /// Today section title for the next seven days of events.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get hostTodayThisWeekTitle;
+
+  /// Today This week copy when no other event starts in the next seven days.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing else on this week.'**
+  String get hostTodayThisWeekEmpty;
+
+  /// Today This week action that opens the Events tab.
+  ///
+  /// In en, this message translates to:
+  /// **'All events'**
+  String get hostTodayAllEvents;
+
+  /// Today section title for the organizer's numbers over the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get hostTodayLastThirtyDaysTitle;
+
+  /// Today Last 30 days copy when the report could not be read.
+  ///
+  /// In en, this message translates to:
+  /// **'These numbers are not ready yet.'**
+  String get hostTodayLastThirtyDaysEmpty;
+
+  /// Today Last 30 days action that opens organizer insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get hostTodayInsights;
+
+  /// Today stat label: bookings in the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get hostTodayStatBookings;
+
+  /// Today stat label: ticket revenue in the last thirty days.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket sales'**
+  String get hostTodayStatTicketSales;
+
+  /// Today stat note: change against the previous period, upwards.
+  ///
+  /// In en, this message translates to:
+  /// **'Up {percent}%'**
+  String hostTodayStatUp({required int percent});
+
+  /// Today stat note: change against the previous period, downwards.
+  ///
+  /// In en, this message translates to:
+  /// **'Down {percent}%'**
+  String hostTodayStatDown({required int percent});
+
+  /// Today stat note: no change against the previous period.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as before'**
+  String get hostTodayStatSame;
+
+  /// Today event poster count label: guests booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostTodayCountBooked;
+
+  /// Today event poster count label: guests on the waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get hostTodayCountWaitlist;
+
+  /// Today event poster count label: booked guests coming for the first time.
+  ///
+  /// In en, this message translates to:
+  /// **'New faces'**
+  String get hostTodayCountNewFaces;
+
+  /// Today event poster badge for an event under way.
+  ///
+  /// In en, this message translates to:
+  /// **'Live now'**
+  String get hostTodayWhenLive;
+
+  /// Today event poster badge for an evening event today.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight · doors at {time}'**
+  String hostTodayWhenTonight({required Object time});
+
+  /// Today event poster badge for a daytime event today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today · {time}'**
+  String hostTodayWhenToday({required Object time});
+
+  /// Today event poster badge for the next event on a later day.
+  ///
+  /// In en, this message translates to:
+  /// **'{day} · {time}'**
+  String hostTodayWhenLater({required Object day, required Object time});
+
+  /// Today This week row meta: start time and how many places are booked.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {booked} of {capacity} booked'**
+  String hostTodayWeekMeta({
+    required Object time,
+    required int booked,
+    required int capacity,
+  });
+
+  /// Today This week row status: places still free.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} left'**
+  String hostTodayWeekLeft({required int count});
+
+  /// Today This week row status: every place is booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get hostTodayWeekFull;
+
   /// Host inbox filter label showing the number of unread attendee inquiries.
   ///
   /// In en, this message translates to:
