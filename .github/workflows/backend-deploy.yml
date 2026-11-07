@@ -5,10 +5,12 @@ name: Deploy backend
 # deploys the same commit automatically once dev succeeds (the prod
 # environment has no required reviewer since 30 Oct 2026). Each deploy
 # rebuilds only the Functions codebases whose code, parameters or secrets
-# changed; the Firebase CLI skips the rest. A run that would update more than
-# 200 Functions stops before changing anything until one is run with
-# allow_large. Run it manually for prod, dev or
-# staging, optionally as a full deploy or for named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
+# changed; the Firebase CLI skips the rest. The full Functions suite deploys at
+# most once every 7 days per environment, and nothing overrides that: a run
+# that would update more than 200 Functions stops before changing anything,
+# and the nightly run at 03:00 IST deploys it once the weekly window opens.
+# Run it manually for prod, dev or staging, optionally as a full deploy or for
+# named Functions only. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
   push:
@@ -33,6 +35,9 @@ on:
       - tool/firebase/**
       - .github/workflows/backend-deploy.yml
       - .github/workflows/_backend-deploy.yml
+  # The weekly full-deploy window: dev then prod, quiet unless something waits.
+  schedule:
+    - cron: '30 21 * * *'
   workflow_dispatch:
     inputs:
       environment:
@@ -41,7 +46,9 @@ on:
         options: [prod, dev, staging]
         default: prod
       full:
-        description: Redeploy every Function, including unchanged ones
+        description: >-
+          Redeploy every Function, including unchanged ones. Subject to the weekly
+          window: refused within 7 days of the last large deploy.
         type: boolean
         default: false
       functions:
@@ -53,7 +60,9 @@ on:
       allow_large:
         description: >-
           Deploy even when more than 200 Functions would change (a shared module
-          or dependency change); a merge's own run stops before changing anything.
+          or dependency change). Subject to the weekly window: refused within 7 days
+          of the last large deploy, and the nightly run deploys a pending large
+          change by itself once the window opens.
         type: boolean
         default: false
 
@@ -64,19 +73,20 @@ permissions:
 
 jobs:
   dev:
-    if: ${{ github.event_name == 'push' || inputs.environment == 'dev' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || inputs.environment == 'dev' }}
     uses: ./.github/workflows/_backend-deploy.yml
     with:
       environment: dev
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}
       allow_large: ${{ inputs.allow_large == true }}
+      window: ${{ github.event_name == 'schedule' }}
 
   prod:
     needs: dev
     if: >-
       ${{ !cancelled() && (
-        github.event_name == 'push' && needs.dev.result == 'success' ||
+        (github.event_name == 'push' || github.event_name == 'schedule') && needs.dev.result == 'success' ||
         github.event_name == 'workflow_dispatch' && inputs.environment == 'prod') }}
     uses: ./.github/workflows/_backend-deploy.yml
     with:
@@ -84,6 +94,7 @@ jobs:
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}
       allow_large: ${{ inputs.allow_large == true }}
+      window: ${{ github.event_name == 'schedule' }}
 
   staging:
     if: >-

@@ -10,7 +10,11 @@ name: Backend deploy (one environment)
 # commit and each codebase's hash. Before any change, a run counts the
 # Functions it would update against that record and stops above a limit unless
 # allowed. A run given named Functions deploys only those, for a configuration
-# change, and records nothing. Operator guide: docs/release_operations.md, "Deploy backend".
+# change, and records nothing. The full Functions suite deploys at most once
+# every 7 days per environment, and no input overrides that: the record carries
+# when the last large deploy happened, and the nightly window run deploys a
+# pending large delta once that window opens. Operator guide:
+# docs/release_operations.md, "Deploy backend".
 
 on:
   workflow_call:
@@ -29,8 +33,16 @@ on:
         required: false
         type: string
         default: ''
-      # Deploy even when more Functions would change than the limit below.
+      # Deploy even when more Functions would change than the limit below,
+      # within the weekly window only.
       allow_large:
+        required: false
+        type: boolean
+        default: false
+      # The nightly window run: deploys a pending large delta once the weekly
+      # window opens, and does nothing when there is nothing to deploy or the
+      # window is closed.
+      window:
         required: false
         type: boolean
         default: false
@@ -56,6 +68,9 @@ jobs:
           fetch-depth: 0
 
       # A rerun of an older commit must not replace a newer deployed one.
+      # GitHub marks a deployment inactive as soon as a later deployment in the
+      # environment (including this job's own) finishes, so a record counts
+      # when any of its statuses is success, not only its newest.
       - id: guard
         name: Skip a commit older than the deployed one
         env:
@@ -70,8 +85,8 @@ jobs:
             ids="$(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=100&page=$page" -q '.[].id')"
             if [[ -z "$ids" ]]; then break; fi
             for id in $ids; do
-              state="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')"
-              if [[ "$state" == "success" ]]; then
+              delivered="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=100" -q 'any(.[]; .state == "success")')"
+              if [[ "$delivered" == "true" ]]; then
                 base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
                 echo "deployment=$id" >> "$GITHUB_OUTPUT"
                 if ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
@@ -213,28 +228,37 @@ jobs:
       # recorded, and stop before any change when more Functions would update
       # than the limit, unless this run allows a large deploy (or is full). A
       # missing record counts every codebase. Named runs deploy only those.
-      - name: Count the Functions this deploy changes
+      # A large deploy also waits until 7 days after the last one, whatever
+      # allowed it. The nightly window run skips every later step when there
+      # is nothing to deploy or the window is closed.
+      - id: size
+        name: Count the Functions this deploy changes
         if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOYED_ID: ${{ steps.guard.outputs.deployment }}
           FULL: ${{ inputs.full }}
           ALLOW_LARGE: ${{ inputs.allow_large }}
+          MODE: ${{ inputs.window && 'window' || 'push' }}
           GH_TOKEN: ${{ github.token }}
           MAX_CHANGED_FUNCTIONS: "200"
         run: |
           set -euo pipefail
           : > build/deployed-codebases.json
+          created_at=""
           if [[ -n "${DEPLOYED_ID:-}" ]]; then
             gh api "repos/$GITHUB_REPOSITORY/deployments/$DEPLOYED_ID" -q '.payload' > build/deployed-codebases.json
+            created_at="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$DEPLOYED_ID" -q '.created_at')"
           fi
+          now="$(date -u +%FT%TZ)"
           node functions/scripts/deploy-size.cjs --current build/functions-codebases.json \
             --previous build/deployed-codebases.json --limit "$MAX_CHANGED_FUNCTIONS" \
             --environment "$DEPLOY_ENVIRONMENT" --full "$FULL" --allow-large "$ALLOW_LARGE" \
-            --summary "$GITHUB_STEP_SUMMARY"
+            --mode "$MODE" --now "$now" --previous-created-at "$created_at" \
+            --summary "$GITHUB_STEP_SUMMARY" --output "$GITHUB_OUTPUT"
 
       - name: Check this environment is ready
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOY_TARGETS: >-
@@ -252,7 +276,7 @@ jobs:
 
       # New indexes must be READY before Functions that query them deploy.
       - name: Deploy Firestore indexes
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # This run deploys its own exact commit; the record says which one.
@@ -272,7 +296,7 @@ jobs:
       # live in this environment, in every kind of run, and nothing else. A name
       # still in this commit's source is refused before any deletion.
       - name: Retire named Functions
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
         run: |
@@ -312,7 +336,7 @@ jobs:
       # before any change, with those Functions listed; they deploy by name
       # with --force (which then deletes nothing), and the retry does the rest.
       - name: Deploy Functions
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DEPLOY_ONLY: ${{ steps.choose.outputs.only }}
@@ -345,7 +369,7 @@ jobs:
           exit "$status"
 
       - name: Check callable access and Functions parity
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # This run deploys its own exact commit; the record says which one.
@@ -354,7 +378,7 @@ jobs:
         run: ./tool/deploy_firebase_targets.sh --functions-postconditions-only "$DEPLOY_ENVIRONMENT" "$TARGETS"
 
       - name: Deploy Firestore and Storage rules
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           # This run deploys its own exact commit; the record says which one.
@@ -364,7 +388,7 @@ jobs:
       # Live Firestore and Storage rules must equal this commit's sources before
       # the record claims the environment received it.
       - name: Verify the active rules match this commit
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
         run: >-
@@ -375,20 +399,22 @@ jobs:
       # commit, while GitHub refuses it a tag on a commit whose history changes
       # workflow files. The guard above refuses a commit older than the record.
       # Its payload holds each codebase's hash, which the next run's count
-      # compares with.
+      # compares with, and when the last large deploy happened.
       - name: Record the deployed commit
-        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' }}
+        if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && steps.choose.outputs.mode != 'named' && steps.size.outputs.skip != 'true' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           GH_TOKEN: ${{ github.token }}
+          LARGE_DEPLOY_AT: ${{ steps.size.outputs.large_deploy_at }}
         run: |
           set -euo pipefail
           id="$(jq -n --arg ref "$GITHUB_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
-            --slurpfile codebases build/functions-codebases.json \
+            --arg large "${LARGE_DEPLOY_AT:-}" --slurpfile codebases build/functions-codebases.json \
             '{ref: $ref, environment: $environment, task: "deploy:backend", auto_merge: false,
               required_contexts: [], description: "Firebase backend deployed",
-              payload: {version: $codebases[0].version,
-                codebases: ($codebases[0].codebases | map_values({hash}))}}' |
+              payload: ({version: $codebases[0].version,
+                codebases: ($codebases[0].codebases | map_values({hash}))}
+                + (if $large == "" then {} else {largeDeployAt: $large} end))}' |
             gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input - -q .id)"
           gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
             -f log_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /dev/null
