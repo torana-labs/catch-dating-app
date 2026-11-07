@@ -23,7 +23,7 @@ import {
   offerCancellationRefund,
 } from "../../content/eventOffer";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
-import {PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
@@ -69,7 +69,9 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
           />
         </CatchPageBody>
       </WebsitePageMain>
-      <OfferSiteFooter />
+      <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
+        <PublicPageFooter label={page.footerLabel} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator} />
+      </CatchPageBody>
     </CatchRoot>
   );
 }
@@ -242,24 +244,5 @@ function PlaceCard({controller}: {controller: Controller}) {
       {grant ? <CatchText variant="body-small">{longDate(grant.startTimeMillis)}</CatchText> : null}
       <CatchText variant="label-action">{amount}</CatchText>
     </CatchSurface>
-  );
-}
-
-/** The board's site footer: the wordmark beside the site and legal links, then the operator line. */
-function OfferSiteFooter() {
-  return (
-    <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-      <CatchStack as="footer" gap={12}>
-        <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
-          <CatchText variant="display-xs">{publicSiteCopy.wordmark}</CatchText>
-          <CatchStack aria-label={page.footerLabel} as="nav" direction="row" gap={4} wrap>
-            {[...publicSiteCopy.nav, ...siteFooterLegalLinks].map((link) => (
-              <CatchButton href={link.href} key={link.href} label={link.label} size="sm" variant="quiet" />
-            ))}
-          </CatchStack>
-        </CatchStack>
-        <CatchText tone="secondary" variant="body-meta">{publicSiteCopy.footerOperator}</CatchText>
-      </CatchStack>
-    </CatchPageBody>
   );
 }

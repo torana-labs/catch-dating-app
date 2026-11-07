@@ -1,9 +1,8 @@
 import {CatchRoot} from "@catch/web-ui";
 import {useMemo} from "react";
-import {WebsitePageMain} from "../../shared/site";
+import {PublicPageHeader, WebsitePageMain} from "../../shared/site";
 import {organizerPageFromListing, type OrganizerPageRecord} from "./organizerPage";
 import {HostListingSections} from "./sections/HostListingSections";
-import {PublicPageHeader} from "./sections/PublicPageChrome";
 import type {HostListing} from "./types";
 import {organizerPageBackends, useOrganizerPageController, type OrganizerPageBackends} from "./useOrganizerPageController";
 
