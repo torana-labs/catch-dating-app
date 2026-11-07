@@ -206,6 +206,8 @@ mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
   String? get prefixText => _inputConfig?.prefixText;
   String? get suffixText => _inputConfig?.suffixText;
   bool get showClearButton => _inputConfig?.showClearButton ?? false;
+  CatchFieldSupportRowMode get counter =>
+      _inputConfig?.counter ?? CatchFieldSupportRowMode.whileFocused;
   bool get floatingLabel => !_explicitSaveInput;
 
   List<Object?>? get _selectValues => _selectConfig?.values;
