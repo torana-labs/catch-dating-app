@@ -144,7 +144,11 @@
           "phone-otp"
         ]
       },
-      "notes": "Phone-only admin authentication shell with deterministic phone-entry and phone-otp preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Phone-only admin authentication shell with deterministic phone-entry and phone-otp preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.screen"
+      ],
+      "comparisonReason": "Admin's phone sign-in page, not the system screen frame: it owns the phone-entry and phone-otp authentication steps and centres one AdminSignInPanel on the admin background. CatchScreen frames an app screen inside the shell with a top bar, a scrolling body and a dock, and this page has none of those slots. It belongs to AdminPrimitives and is redrawn with them in P4/P5."
     },
     {
       "id": "shared_admin_workbench_stack",
