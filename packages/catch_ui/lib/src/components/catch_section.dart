@@ -43,6 +43,7 @@ class CatchSection extends StatelessWidget {
   factory CatchSection({
     Key? key,
     String? title,
+    String? kicker,
     String? note,
     CatchSectionAction? action,
     CatchSectionPlacement dividers = CatchSectionPlacement.between,
@@ -55,6 +56,7 @@ class CatchSection extends StatelessWidget {
     title: title,
     rowSection: CatchListSection(
       title: title,
+      kicker: kicker,
       note: note,
       action: action,
       dividers: dividers,
@@ -743,14 +745,12 @@ class CatchSection extends StatelessWidget {
        );
 
   final Widget? _rowSection;
-
   final _DividedSectionConfig? _dividedConfig;
   final _DividedFieldRowsSectionConfig? _fieldRowsConfig;
   final _ContainedFieldRowsSectionConfig? _containedFieldRowsConfig;
   final _ContainedSectionConfig? _containedConfig;
   final _PlainSectionConfig? _plainConfig;
   final _HorizontalSectionConfig? _horizontalConfig;
-
   String? get title => _common.title;
   String? get subtitle => _common.subtitle;
   final Widget? trailing;
