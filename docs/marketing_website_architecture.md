@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.19.1
-updated: 2026-11-02
+version: 0.20.0
+updated: 2026-11-08
 owner: marketing_website
 status: active
 ---
@@ -114,15 +114,19 @@ isolated local emulator and packaged server described in `website/README.md`.
 
 ## Canonical public chrome
 
-`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader` and `PublicSiteFooter`
-for marketing, discovery, directory/listing, public event detail, claim,
-Host product/application, legal/help and 404 pages. Every one of those routes
-renders the same header and footer: there are no per-route variants, local
-navigation props or route actions. `content/site.ts` owns the Find events,
-Organisers and For organisers links, root brand, menu copy, operator credit and
-global footer/legal links. Route-specific links belong in the page itself (the
-Host and Host application pages use the Host section navigation row).
-`SiteHeader` and `SiteFooter` remain low-level presentation primitives.
+`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`
+and `SiteFooterBand` for marketing, discovery, directory/listing, public event
+detail, claim, Host product/application, legal/help and 404 pages.
+`PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`):
+the wordmark, page links that move into a menu under 600px, and actions. Every
+public route renders it with the global destinations from `content/site.ts`
+(Find events, Organisers, For organisers); a product page passes its own name,
+section links and action, as the homepage (Explore, Organisers, For hosts, the
+city picker and Get the app) and the host landing ("Catch for hosts", its
+sections and Apply) do, from their boards. Pages rebuilt on the system end with
+`SiteFooterBand` (the board's ink footer); the others keep `PublicSiteFooter`
+until their page lanes land. `SiteHeader` remains only until its registry
+record retires; `SiteFooter` is the legacy footer's presentation.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
@@ -313,9 +317,8 @@ The website is already split out of the old monolithic shell:
   blocked by `web:react-component-governance`.
 - `website/src/features/host/HostPage.tsx` is the single canonical host route.
   `/host/preview{,/**}` is retired at Firebase Hosting with a permanent redirect
-  to `/host/`. Host sections live under `website/src/features/host/sections/**`:
-  `hostLandingSections.tsx` renders the route, and `HostPageSections.tsx`
-  keeps `HostApplySection` for `/host/apply/`. The pre-#704 host sections
+  to `/host/`. `HostPage.tsx` composes the board's bands itself, and
+  `HostApplicationPage.tsx` renders `/host/apply/`. The pre-#704 host sections
   were retired in CAT-218; Linear CAT-224 records their copy. The public route starts with an external guest
   list and a no-download attendee runtime; Catch-native booking, member
   profiles, chats, and network effects stay below the explicit coming-later
@@ -1153,14 +1156,14 @@ this homepage change preserves the existing Host page and commercial terms.
 Canonical organiser paths continue to come from `publicPage.canonicalPath`;
 this consolidation does not rename organiser or event URLs.
 
-`/host/` owns product detail: `#features`, `#how-it-works`, `#use-cases`,
-`#existing-tools` and `#pricing`. `content/hostProduct.ts` holds the consolidated
-capability, persona, tool-category and workflow explanations; existing supported
-pilot copy remains in `content/host.ts`. Broader workflow and integration
-examples retain availability boundaries. Adoption levels are not published
+`/host/` is the RbWebHostV2 board on the system; its retired-route anchors
+(`#features`, `#use-cases`, `#how-it-works`, `#existing-tools`, `#pricing`) sit on
+the bands that now carry that content (kinds of night, the night, layers,
+pricing). `content/hostProduct.ts` holds only the application page's copy;
+supported pilot copy remains in `content/host.ts`. Layers are not published
 commercial tiers. `/host/apply/` is the sole five-stage pilot intake, reusing the
-existing application controller and HTTP contracts. Applying does not book a
-call or grant a workspace.
+existing application controller and HTTP contracts; the landing's step-1 card
+links to it. Applying does not book a call or grant a workspace.
 
 `/organizers/` owns real directory search; `/claim/` and `/claim/:listing`
 own the existing claim flow and explanatory guidance in `content/claimGuidance.ts`.
@@ -1229,31 +1232,18 @@ ownership without recreating duplicate marketing destinations.
 - Decide whether React Hook Form is worth adding during a specific long-form
   refactor after routing and server-state conventions are in place.
 
-### Host landing content and format explorer
+### Host landing
 
-Home, Host and Explore render the shared `PublicSiteHeader` and
-`PublicSiteFooter` (Find events, Organisers, For organisers).
-Their typography and responsive chrome are owned by that shared consumer
-wrapper, not the surrounding page. Host-specific section links and the pilot
-action sit in a separately labelled navigation row below the global header.
-The Host adoption section restores three selectable concentric circles:
-Catch tools, Catch booking and Catch network. It uses native buttons with
-pressed state and one announced detail region; selection is independent of
-the five-format explorer. These describe optional adoption layers, not fixed
-commercial tiers. Brief phone interactions, private introduction requests,
-host overrides and aggregate private feedback are explained explicitly.
-The illustrative CRM shows a follow-up opt-in rather than an individual
-private feedback answer.
-
-
-The public `/host/` entry balances event-business workflows with guest participation.
-`src/content/hostLanding.ts` owns its authored copy and five illustrative before/during/after formats;
-`features/host/sections/hostLandingSections.tsx` composes the page and owns the local accessible tab selection.
-Named visual wrappers live in `shared/ui/primitives/hostLanding.tsx`, with styling in `styles/host-landing.css`.
-Examples are fictional and do not execute booking, messaging, grouping, or payment actions.
-Existing tool and persona detail remains behind disclosures; `#features`, `#how-it-works`, `#use-cases`,
-`#existing-tools`, and `#pricing` retain their retired-route destinations. The only acquisition form is
-`/host/apply/`; the selected free live-event pilot is distinct from broader capabilities and future terms.
+`/host/` renders the RbWebHostV2 board band for band on `@catch/web-ui`, on the
+white ground: hero, kinds of night, a night on Catch (chapters on a joined
+timeline with the phone following), the iPad, the applicant board (replayable),
+guests, growth links, layers (a segmented control over what Catch runs), pricing
+(a slider over the 5% fee capped at ₹10,000), the FAQ and the step-1
+application card, then the short footer. `src/content/hostLanding.ts` owns the
+board's copy; `features/host/HostPage.tsx` composes the bands and
+`useHostLandingController.ts` owns their state. The page has no stylesheet of its
+own. Examples are illustrative and execute no booking, messaging, grouping or
+payment. The card's Continue opens `/host/apply/`, the only acquisition form.
 
 ### Explore discovery
 

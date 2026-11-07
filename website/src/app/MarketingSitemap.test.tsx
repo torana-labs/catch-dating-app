@@ -3,7 +3,7 @@ import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
 import {HostApplicationPage} from "../features/host/HostApplicationPage";
-import {hostProductCopy} from "@content/hostProduct";
+import {hostLandingCopy} from "@content/hostLanding";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {getPageKey, pageMetaForHostPath} from "./pageMeta";
 import {brand} from "@catch/brand";
@@ -18,22 +18,14 @@ afterEach(cleanup);
 const renderPage = (page: React.ReactNode) => render(<QueryClientProvider client={new QueryClient()}>{page}</QueryClientProvider>);
 
 describe("consolidated public sitemap", () => {
-  it("provides every replacement section and sends application CTAs to the single form", () => {
-    const {container} = renderPage(<HostPage captures={{}} />);
+  it("provides every replacement section and sends the application card to the single form", () => {
+    const {container} = renderPage(<HostPage />);
     for (const id of ["features", "how-it-works", "use-cases", "existing-tools", "pricing"]) expect(container.querySelector(`#${id}`)).toBeTruthy();
     expect(container.querySelector("form")).toBeNull();
     const actions = screen.getAllByRole("link").filter((link) => /apply/i.test(link.textContent ?? ""));
     expect(actions.length).toBeGreaterThan(0);
-    for (const link of actions) expect(link.getAttribute("href")).toBe("/host/apply/");
-  });
-  it("retains detailed persona and tool handoffs behind progressive disclosure", () => {
-    const {container} = renderPage(<HostPage captures={{}} />);
-    for (const item of [...hostProductCopy.useCases.items, ...hostProductCopy.tools.items]) {
-      expect(screen.getByText(item.question)).toBeTruthy();
-      const answer = screen.getByText(item.answer);
-      expect(answer.closest("details")?.open).toBe(false);
-    }
-    expect(container.textContent).toContain("Application approval, membership, payment, and event admission are separate decisions.");
+    for (const link of actions) expect(link.getAttribute("href")).toBe("#apply");
+    expect(screen.getByRole("link", {name: hostLandingCopy.apply.card.continue}).getAttribute("href")).toBe("/host/apply/");
   });
   it("mounts the existing application at the canonical apply page", () => {
     const {container} = renderPage(<HostApplicationPage />);

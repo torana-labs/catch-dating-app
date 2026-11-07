@@ -16,7 +16,8 @@ export const siteFooterLegalLinks = [
 
 // One authored owner for the public header and footer on every route.
 export const publicSiteCopy = {
-  menu: {dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close", kicker: brand.name, hint: "Find something worth showing up for.", navLabel: "Mobile"},
+  wordmark: brand.name,
+  menu: {openLabel: "Menu", navLabel: "Primary"},
   nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
   footerOperator: publishedLegalContent.ui.footerBody,
 } as const;

@@ -23,11 +23,12 @@ function renderPage(page: React.ReactNode) {
 }
 
 describe("public route navigation targets", () => {
-  it("shares canonical audience destinations without a duplicate root menu", () => {
+  it("gives the homepage the site header with its own sections and the app action", () => {
     renderPage(<HomePage catalog={mumbaiLiveCatalog} />);
-    const nav = screen.getByRole("navigation", {name: "Main"});
+    const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/mumbai/", "/explore/?show=organisers", "/host/", "#app"]);
+      .toEqual(["#whats-on", "#organisers", "/host/"]);
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("#app");
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 

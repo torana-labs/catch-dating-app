@@ -33,6 +33,10 @@ export interface PlanCardView {
   href: string;
   title: string;
   label: string;
+  /** "Thu 7:30 PM" in the city's time zone. */
+  when: string;
+  /** The format's name, such as "Games and quizzes"; empty for other plans. */
+  formatLabel: string;
   format: CatchFormat | null;
   detail: string;
   price: string;
@@ -49,6 +53,8 @@ export function planCard(plan: HomePlan, timezone: string): PlanCardView {
     href: plan.path,
     title: plan.title,
     label: name ? `${name} · ${when}` : when,
+    when,
+    formatLabel: name ?? "",
     format: plan.format === "other" ? null : plan.format,
     detail: fill(copy.week.detail, {host: plan.organizer.name, place: plan.location}),
     price: plan.priceLabel,
@@ -102,6 +108,10 @@ export interface OrganizerCardView {
   next: string;
   footnote: string;
   action: OrganizerAction;
+  /** The logo square's format: the organiser's main format. */
+  color?: CatchFormat;
+  /** One line: what they run, the next plan, the footnote and, unclaimed, the claim prompt. */
+  meta: string;
 }
 
 const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
@@ -124,5 +134,7 @@ export function organizerCard(organizer: HomeOrganizer, city: HomeCity): Organiz
     next,
     footnote,
     action: !page ? {kind: "none"} : unclaimed ? {kind: "claim", href: `${page}#claim`} : {kind: "page", href: page},
+    color: firstFormat,
+    meta: [organizer.category, next, footnote, ...(page && unclaimed ? [copy.organisers.claim] : [])].join(" · "),
   };
 }

@@ -19,9 +19,11 @@ describe("homepage", {timeout: 20_000}, () => {
     // Ten plans start in the next seven days; the eleventh is later.
     expect(main.getByText("10 plans this week")).toBeTruthy();
     expect(main.getByText("8 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
-    const quiz = main.getByRole("link", {name: /Thursday Evening Pub Quiz/});
+    const week = within(main.getByRole("region", {name: "This week in Mumbai"}));
+    const quiz = week.getByRole("link", {name: /Thursday Evening Pub Quiz/});
     expect(quiz.getAttribute("href")).toBe("/events/thursday-pub-quiz/");
-    expect(quiz.textContent).toContain("Games and quizzes · Thu 7:30 PM");
+    expect(quiz.textContent).toContain("Games and quizzes");
+    expect(quiz.textContent).toContain("Thu 7:30 PM");
     expect(quiz.textContent).toContain("6 left");
     expect(main.getByText("Hosted plans across Bandra, Khar, Andheri and Worli.")).toBeTruthy();
     expect(main.getByRole("link", {name: "See everything in Mumbai"}).getAttribute("href")).toBe("/mumbai/");
@@ -29,15 +31,16 @@ describe("homepage", {timeout: 20_000}, () => {
 
   it("filters the week by format from the tiles and the chips, and says when a format has none", () => {
     render(<HomePage catalog={mumbaiLiveCatalog} />);
-    const games = screen.getByRole("button", {name: /3 this week.*Games and quizzes/});
+    const games = screen.getByRole("link", {name: /3 this week.*Games and quizzes/});
     fireEvent.click(games);
-    expect(games.getAttribute("aria-pressed")).toBe("true");
+    expect(games.hasAttribute("data-selected")).toBe(true);
+    expect(screen.getByRole("radio", {name: "Games and quizzes"}).getAttribute("aria-checked")).toBe("true");
     expect(screen.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeTruthy();
-    expect(screen.queryByRole("link", {name: /Strangers’ Supper/})).toBeNull();
+    expect(within(screen.getByRole("region", {name: "This week in Mumbai"})).queryByRole("link", {name: /Strangers’ Supper/})).toBeNull();
     fireEvent.click(games);
     expect(screen.getByText("8 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", {name: /2 this week.*Pickleball/}));
-    expect(screen.getByRole("link", {name: /Doubles Ladder Night/}).textContent).toContain("Full");
+    fireEvent.click(screen.getByRole("link", {name: /2 this week.*Pickleball/}));
+    expect(within(screen.getByRole("region", {name: "This week in Mumbai"})).getByRole("link", {name: /Doubles Ladder Night/}).textContent).toContain("Full");
   });
 
   it("shows a city that has not launched as launching soon, with who is joining and the busiest live city", () => {
@@ -50,7 +53,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(main.getAllByText("Koregaon Park Runners").length).toBeGreaterThan(0);
     // Organisers joining a city before launch have no page to link to.
     expect(main.queryByRole("link", {name: "Koregaon Park Runners"})).toBeNull();
-    expect(main.getAllByText("Joining at launch").length).toBe(2);
+    expect(main.getAllByText(/Joining at launch/).length).toBe(2);
     expect(main.getByRole("link", {name: "See what’s on in Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
     expect(main.getAllByText("Coming to Pune").length).toBe(5);
     // "Tell me when it opens": a WhatsApp number, and news only if ticked.
@@ -75,10 +78,13 @@ describe("homepage", {timeout: 20_000}, () => {
   it("links organisers to their pages, and an unclaimed listing to its claim", () => {
     render(<HomePage catalog={mumbaiLiveCatalog} />);
     const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
-    expect(organisers.getByRole("link", {name: "See their plans: Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
-    expect(organisers.getByText("212 followers")).toBeTruthy();
-    expect(organisers.getByRole("link", {name: "Is this you? Claim it"}).getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
-    expect(organisers.getByText("Next: Fri 6:30 AM · Carter Road Social Run")).toBeTruthy();
+    const runners = organisers.getByRole("link", {name: /Carter Road Runners/});
+    expect(runners.getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    expect(runners.textContent).toContain("212 followers");
+    expect(runners.textContent).toContain("Next: Fri 6:30 AM · Carter Road Social Run");
+    const unclaimed = organisers.getByRole("link", {name: /Bandra Book Swap/});
+    expect(unclaimed.getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
+    expect(unclaimed.textContent).toContain("Is this you? Claim it");
   });
 
   it("moves to another city from the picker", () => {

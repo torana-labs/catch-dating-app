@@ -18,7 +18,6 @@ import {HostListingPage} from "../features/organizers/HostListingPage";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {PageShell} from "../shared/site";
-import {marketingCaptures as captures} from "../app/marketingCaptures";
 import {bareEventPage, fullEventPage, importedEventPage} from "./fixtures/eventPages";
 import {organizerListingAt} from "./fixtures/demoWorldListing";
 import {demoEventId, demoEventName, eventTimesMillis, venueLabel} from "./fixtures/demoWorld";
@@ -69,15 +68,15 @@ export const Host: Story = {
     a11y: {test: "error"},
     catchRoute: {
       id: "host", path: "/host/",
-      reviewStates: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"],
-      stateCoverage: {storybook: ["default"], manual: ["run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"]},
+      reviewStates: ["default", "night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"],
+      stateCoverage: {storybook: ["default"], manual: ["night-chapter", "applicant-replay", "layer-one", "pricing-cap", "apply-card", "phone"]},
     },
     catchComponent: {
       id: "route_host", routeIds: ["host"],
       states: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"],
     },
   },
-  render: () => <HostPage captures={captures} />,
+  render: () => <HostPage />,
 };
 
 export const EventRuntime: Story = {
