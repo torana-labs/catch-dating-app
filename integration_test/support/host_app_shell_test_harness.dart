@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_today_preference_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_platform/app_config.dart';
@@ -185,6 +187,7 @@ class HostShellBackend {
         'refreshAfterMillis': now + const Duration(minutes: 5).inMilliseconds,
       },
       'createPrivateEventSetup' => _createPrivateEvent(request),
+      'updatePrivateEventDetails' => _updatePrivateEventDetails(request),
       'listPrivateEventSetups' => {
         'events': [
           if (request['scope'] != 'past')
@@ -336,6 +339,25 @@ class HostShellBackend {
     return {'eventId': eventId, 'setupRevision': 1, 'replayed': false};
   }
 
+  /// Takes a details command and, as the setup view trigger does, writes
+  /// the next setup revision to the event's view.
+  Future<Map<String, Object?>> _updatePrivateEventDetails(
+    Map<String, Object?> request,
+  ) async {
+    final eventId = request['eventId']! as String;
+    final record = privateEvents[eventId]!;
+    final revision = (record['setupRevision'] as int? ?? 1) + 1;
+    record['setupRevision'] = revision;
+    await firestore.collection('hostEventSetupViews').doc(eventId).update({
+      'setupRevision': revision,
+      'revision': revision,
+      'evaluatedAt': Timestamp.now(),
+      'summary.setupRevision': revision,
+      'summary.detailsConfigured': true,
+    });
+    return {'eventId': eventId, 'setupRevision': revision, 'replayed': false};
+  }
+
   Map<String, Object?> _privateEventInventoryItem(String eventId) {
     final summary = _privateEventSummary(eventId);
     return {
@@ -371,7 +393,7 @@ class HostShellBackend {
     return {
       'eventId': eventId,
       'organizerId': record['organizerId'],
-      'setupRevision': 1,
+      'setupRevision': record['setupRevision'] as int? ?? 1,
       'publicationState': 'private',
       'status': 'active',
       'name': basics['name'],
@@ -492,6 +514,14 @@ Future<List<Object>> hostAppShellTestOverrides({
     ),
     hostTodayPreferenceRepositoryProvider.overrideWithValue(
       backend.todayPreferences,
+    ),
+    // The journeys have no Storage, so details commands go out without the
+    // photo picker.
+    privateEventDetailsDependenciesProvider.overrideWithValue(
+      PrivateEventDetailsDependencies(
+        write: PrivateEventDetailsRepository(backend.functions).update,
+        currentUserId: () => backend.uid,
+      ),
     ),
   ];
 }

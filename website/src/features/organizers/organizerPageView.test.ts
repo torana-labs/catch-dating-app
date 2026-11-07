@@ -44,7 +44,7 @@ describe("organizerPageView", () => {
     const next = view(claimedOrganizerPage).nextUp!;
     expect([next.label, next.title, next.when, next.meta, next.nextAction, next.sourceLabel, next.href]).toEqual([
       copy.nextUp(copy.countdown(2)), "Sunday Social Run", "Sun 1 Nov, 6:30 AM · Lantern Lane jetty",
-      "Free · 31 spots left", copy.book, copy.onCatch, "/events/lantern-sun-1/",
+      "Free · 31 places left", copy.book, copy.onCatch, "/events/lantern-sun-1/",
     ]);
     expect(view(generatedOrganizerPage).nextUp).toMatchObject({
       sourceLabel: "Luma", meta: "Free · Register on Luma", nextAction: "Get tickets", href: "https://luma.com/lantern-harbour-sun-1",
@@ -62,14 +62,15 @@ describe("organizerPageView", () => {
       ["Sun", "29", "Nov", "Sunday Social Run"],
     ]);
     expect(rows.map((row) => [row.sourceLabel, row.price, row.note, row.action, row.ground])).toEqual([
-      ["On Catch", "Free", "31 spots left", "Book", "coral"],
-      ["On Catch", "Free", "18 spots left", "Book", "paper"],
+      ["On Catch", "Free", "31 left", "Book", "coral"],
+      ["On Catch", "Free", "18 left", "Book", "paper"],
       ["Luma", "₹799", "Tickets on Luma", "Tickets", "indigo"],
-      ["On Catch", "₹299", "18 spots left", "Book", "paper"],
+      ["On Catch", "₹299", "18 left", "Book", "paper"],
       ["On Catch", "Free", "", "Details", "paper"],
     ]);
     expect(rows[0].detail).toBe("6:30 AM · Lantern Lane jetty, Bandra West");
-    expect(view(claimedOrganizerPage).events.note).toBe("From Catch and Luma, in one list");
+    expect(view(claimedOrganizerPage).events.note).toBe("On Catch and elsewhere");
+    expect(rows.map((row) => row.format)).toEqual(["run", "run", "run", "run", "run"]);
     expect(view(generatedOrganizerPage).events.rows.every((row) => row.ground === "paper")).toBe(true);
   });
 

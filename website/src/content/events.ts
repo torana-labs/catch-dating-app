@@ -233,16 +233,16 @@ export const eventPageCopy = {
   shareFailed: "Couldn’t copy the link. Copy it from the address bar.",
   hostedBy: "Hosted by",
   verified: "Verified organiser",
-  rating: (rating: string, count: number) => `${rating} ★ from ${count} ${count === 1 ? "review" : "reviews"}`,
+  rating: (rating: string, count: number) => `${rating} from ${count} ${count === 1 ? "review" : "reviews"}`,
   importedKind: (activity: string, source: string) => `${activity} · imported from ${source}`,
   photoAlt: (title: string) => `Photo for ${title}`,
   facts: {when: "When", where: "Where", price: "Price"},
   timeRange: (start: string, end: string) => `${start} to ${end}`,
-  perPerson: "Per person",
+  perPerson: "a place",
   ticketsOn: (source: string) => `Tickets on ${source}`,
   moments: {
     label: "Coming on your own?",
-    title: "You won’t be standing around.",
+    title: "You won’t be sitting alone.",
     introductions: {
       title: "A first hello",
       body: "Your host makes introductions at the start, so you have an easy reason to say hello.",
@@ -280,10 +280,10 @@ export const eventPageCopy = {
     strict: "Full refund if you cancel at least 72 hours before the start.",
   },
   going: {
-    title: (going: number, left: number) => `${going} going · ${left} ${left === 1 ? "spot" : "spots"} left`,
+    title: (going: number, left: number) => `${going} going · ${left} ${left === 1 ? "place" : "places"} left`,
     full: (going: number) => `${going} going · full`,
-    privacy: "Guest names stay private.",
-    waitlist: "Guest names stay private. You can join the waitlist when you book.",
+    privacy: "Names show in the app once you’ve booked.",
+    waitlist: "Names show in the app once you’ve booked. You can join the waitlist when you book.",
   },
   organizer: {
     see: "See their page",

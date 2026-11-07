@@ -1,90 +1,97 @@
-import {
-  CatchButton,
-  CatchDateTile,
-  CatchGap,
-  CatchGrid,
-  CatchGroundCard,
-  CatchLegacyIcon,
-  CatchIndexRow,
-  CatchPhotoTile,
-  CatchLegacyText,
-} from "@catch/web-ui";
+import {CatchButton, CatchHeroImage, CatchIndexRow, CatchSection, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
+import type {OrganizerMomentView} from "../../organizerPageView";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
-import {organizerSectionHeading} from "./organizerSectionHeading";
 
-/** Catch events and imported events in one list, soonest first, each with where it is sold. */
+/**
+ * Coming up: Catch events and imported events in one list, soonest first.
+ * Each row has its date tile, where and when, the price, where it is sold
+ * and its action; the row opens the event page or the page that sells it.
+ */
 export function OrganizerEventsSection({controller}: {controller: OrganizerPageController}) {
   const {events, name} = controller.view;
   return (
-    <CatchGap aria-labelledby="organizer-events-title" as="section" id="events" size="inline">
-      {organizerSectionHeading({id: "organizer-events-title", title: copy.eventsTitle, note: events.rows.length ? events.note : undefined})}
-      {events.rows.length ? (
-        <CatchGap as="ul" size="headerTitleToSubtitle">
-          {events.rows.map((row) => (
-            <CatchGap as="li" key={row.key} size="headerTitleToSubtitle">
-              <CatchIndexRow
-                footer={(
-                  <>
-                    <CatchLegacyText as="span" color={row.sourceAccent} variant="statusLabel">{row.sourceLabel}</CatchLegacyText>{" "}
-                    <CatchLegacyText as="span" variant="titleS">{row.price}</CatchLegacyText>
-                    {row.note ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="bodyS">{row.note}</CatchLegacyText></> : null}
-                  </>
-                )}
-                href={row.href}
-                leading={<CatchDateTile dateTime={row.date.dateTime} day={row.date.day} ground={row.ground} month={row.date.month} weekday={row.date.weekday} />}
-                onTap={() => controller.openEvent(row)}
-                subtitle={row.detail}
-                title={row.title}
-                titleMaxLines={2}
-                titleVariant="sectionTitle"
-                trailing={(
-                  <CatchButton
-                    isInteractive={false}
-                    label={row.action}
-                    onPressed={null}
-                    size="md"
-                    trailing={row.source === "external" ? <CatchLegacyIcon icon="openExternal" size="md" /> : undefined}
-                    variant={row.actionPrimary ? "primary" : "secondary"}
-                  />
-                )}
-              />
-            </CatchGap>
-          ))}
-        </CatchGap>
-      ) : (
-        <CatchGroundCard>
-          <CatchGap size="headerTitleToSubtitle">
-            <CatchLegacyText variant="sectionTitle">{copy.eventsEmptyTitle}</CatchLegacyText>
-            <CatchLegacyText color="ink2" variant="bodyM">{copy.eventsEmptyBody(name)}</CatchLegacyText>
-          </CatchGap>
-        </CatchGroundCard>
-      )}
-    </CatchGap>
+    <CatchStack gap={0} id="events">
+      <CatchSection
+        empty={(
+          <CatchSurface>
+            <CatchText as="p" variant="title-row">{copy.eventsEmptyTitle}</CatchText>
+            <CatchText as="p" tone="secondary" variant="body-small">{copy.eventsEmptyBody(name)}</CatchText>
+          </CatchSurface>
+        )}
+        note={events.rows.length ? events.note : undefined}
+        title={copy.eventsTitle}
+      >
+        {events.rows.map((row) => (
+          <CatchIndexRow
+            date={{day: row.date.weekday, date: row.date.day, ...(row.format ? {format: row.format} : {})}}
+            density="regular"
+            href={row.href}
+            key={row.key}
+            meta={[row.price, row.note].filter(Boolean).join(" · ")}
+            onTap={() => controller.openEvent(row)}
+            status={row.sourceLabel}
+            statusTone={row.source === "catch" ? "success" : "secondary"}
+            subtitle={row.detail}
+            title={row.title}
+            trailing={(
+              <CatchButton isInteractive={false} label={row.action} onPressed={null} size="sm"
+                trailingIcon={row.source === "external" ? "openExternal" : undefined} variant={row.actionPrimary ? "primary" : "secondary"} />
+            )}
+            wrap
+          />
+        ))}
+      </CatchSection>
+    </CatchStack>
   );
 }
 
-/** Past moments: photos and what the numbers say, or what a generated page found. */
-export function OrganizerMomentsSection({controller}: {controller: OrganizerPageController}) {
-  const {moments} = controller.view;
-  if (!moments.tiles.length) return null;
+/** One square of "What it's like": a past photo, a figure on a colour, or the space a claim fills. */
+function MomentTile({tile, format}: {tile: OrganizerMomentView; format: OrganizerPageController["view"]["header"]["format"]}) {
+  if (tile.imageUrl) {
+    return (
+      <CatchStack gap={8}>
+        <CatchHeroImage framed imageUrl={tile.imageUrl} semanticLabel={tile.imageAlt} showScrim={false} />
+        <CatchStack gap={2}>
+          <CatchText variant="title-row">{tile.title}</CatchText>
+          {tile.caption ? <CatchText tone="secondary" variant="body-meta">{tile.caption}</CatchText> : null}
+        </CatchStack>
+      </CatchStack>
+    );
+  }
+  if (tile.placeholder) {
+    return (
+      <CatchSurface aspect={1}>
+        <CatchText variant="title-row">{tile.title}</CatchText>
+        {tile.caption ? <CatchText tone="secondary" variant="body-small">{tile.caption}</CatchText> : null}
+      </CatchSurface>
+    );
+  }
+  // The first figure takes the organiser's colour and the second ink, as the board alternates them.
   return (
-    <CatchGap aria-labelledby="organizer-moments-title" as="section" size="formField">
-      {organizerSectionHeading({id: "organizer-moments-title", title: moments.title})}
-      <CatchGrid columns={4} compactColumns={2}>
-        {moments.tiles.map((tile) => (
-          <CatchPhotoTile
-            caption={tile.caption}
-            figure={tile.figure}
-            ground={tile.ground}
-            imageAlt={tile.imageAlt}
-            imageUrl={tile.imageUrl}
-            key={tile.key}
-            placeholder={tile.placeholder}
-            title={tile.title}
-          />
+    <CatchSurface aspect={1} block="spotlight" color={tile.key === "count" ? format : "ink"}>
+      {tile.figure ? <CatchText numeric variant="display-xl">{tile.figure}</CatchText> : null}
+      <CatchText variant="label-action">{tile.title}</CatchText>
+      {tile.caption ? <CatchText variant="body-small">{tile.caption}</CatchText> : null}
+    </CatchSurface>
+  );
+}
+
+/** What it's like: past photos and what the numbers say, two to a row, or what a generated page found. */
+export function OrganizerMomentsSection({controller}: {controller: OrganizerPageController}) {
+  const {moments, header} = controller.view;
+  if (!moments.tiles.length) return null;
+  const rows: OrganizerMomentView[][] = [];
+  for (let index = 0; index < moments.tiles.length; index += 2) rows.push(moments.tiles.slice(index, index + 2));
+  return (
+    <CatchSection dividers="none" title={moments.title}>
+      <CatchStack gap={8}>
+        {rows.map((row) => (
+          <CatchStack direction="row" equal gap={8} key={row.map((tile) => tile.key).join("-")}>
+            {row.map((tile) => <MomentTile format={header.format} key={tile.key} tile={tile} />)}
+          </CatchStack>
         ))}
-      </CatchGrid>
-    </CatchGap>
+      </CatchStack>
+    </CatchSection>
   );
 }

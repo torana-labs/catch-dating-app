@@ -838,7 +838,7 @@ describe("explicit organizer-answer reuse", () => {
     expect((screen.getByRole("checkbox", {name: "Organizer WhatsApp"}) as HTMLInputElement).checked).toBe(false);
     expect((screen.getByRole("checkbox", {name: "Catch WhatsApp"}) as HTMLInputElement).checked).toBe(false);
     await user.click(consent);
-    await user.click(screen.getByRole("button", {name: "Submit response"}));
+    await user.click(screen.getByRole("button", {name: "Send"}));
     await screen.findByRole("heading", {name: "Received"});
     expect(saveOrganizerFormResponseDraft).toHaveBeenLastCalledWith(
       expect.objectContaining({draftId: "draft-1", answers: {intro: "My current answer"},

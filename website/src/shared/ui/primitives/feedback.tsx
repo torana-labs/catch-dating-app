@@ -6,7 +6,6 @@ import {UiLabel} from "./layout";
 
 
 export type EmptyStateVariant =
-  | "claim"
   | "default"
   | "listing-review"
   | "organizer-results"
@@ -196,7 +195,6 @@ export function RouteLoadingState({
 }
 
 export const emptyStateClassNames: Record<EmptyStateVariant, string | null> = {
-  claim: "claim-empty-state",
   default: null,
   "listing-review": "listing-review-empty",
   "organizer-results": "empty-results",

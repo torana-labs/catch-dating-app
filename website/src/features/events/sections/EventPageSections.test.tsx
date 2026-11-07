@@ -41,21 +41,27 @@ describe("Event page sections", () => {
     main(fullEventPage);
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Half-marathon training: 15K");
     expect(screen.getByRole("img", {name: "Photo for Half-marathon training: 15K"})).toBeTruthy();
-    for (const name of ["You won’t be standing around.", "The plan for the morning", "Where", "Good to know",
-      "27 going · 13 spots left", "Salt Air Run Club", "What people say", "More from Salt Air Run Club"]) {
+    for (const name of ["You won’t be sitting alone.", "The plan for the morning", "Where", "Good to know",
+      "27 going · 13 places left", "What people say", "More from Salt Air Run Club"]) {
       expect(screen.getByRole("heading", {name})).toBeTruthy();
     }
-    expect(within(screen.getByRole("list")).getAllByRole("listitem")).toHaveLength(4);
+    const plan = screen.getByRole("heading", {name: "The plan for the morning"}).closest("section") as HTMLElement;
+    for (const [time, step] of [["5:45", "Meet at the steps"], ["6:00", "Warm-up"], ["6:10", "15K in three pace groups"], ["7:50", "Stretch and breakfast"]]) {
+      expect(within(plan).getByText(time)).toBeTruthy();
+      expect(within(plan).getByText(step)).toBeTruthy();
+    }
+    expect(within(plan).getByText("15 km")).toBeTruthy();
+    expect(within(screen.getByRole("list", {name: "More from Salt Air Run Club"})).getAllByRole("listitem")).toHaveLength(3);
     expect(screen.getAllByText("Booked on Catch")).toHaveLength(2);
     expect(screen.getByText("Nov 2026")).toBeTruthy();
     expect(screen.getByText("We've added a 7:00 per km group from this Sunday.", {exact: false})).toBeTruthy();
-    expect(screen.getByRole("link", {name: "See their page"}).getAttribute("href")).toBe("/organizers/mumbai/salt-air-run-club/");
+    expect(screen.getByRole("link", {name: /^Salt Air Run Club/u}).getAttribute("href")).toBe("/organizers/mumbai/salt-air-run-club/");
     expect(screen.getByRole("link", {name: /Sunset Run & Social/}).getAttribute("href")).toBe("/events/salt-air-sunset-run-social/");
   });
 
   it("closes every optional section and keeps the page complete without them", () => {
     main(bareEventPage);
-    for (const name of ["You won’t be standing around.", "The plan for the morning", "Good to know", "What people say"]) {
+    for (const name of ["You won’t be sitting alone.", "The plan for the morning", "Good to know", "What people say"]) {
       expect(screen.queryByRole("heading", {name})).toBeNull();
     }
     expect(screen.queryByText(/going/)).toBeNull();
@@ -88,11 +94,13 @@ describe("Event page sections", () => {
     expect(screen.queryByRole("link", {name: /claim/iu})).toBeNull();
   });
 
-  it("links back to the organiser and shares from the header", () => {
+  it("names the organiser who hosts it and shares from the head", () => {
     const onShare = vi.fn();
     render(<EventPageHeader onShare={onShare} view={view(fullEventPage)} />);
-    expect(screen.getByRole("link", {name: "Back to Salt Air Run Club"}).getAttribute("href"))
+    expect(screen.getByText("Hosted by")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Salt Air Run Club"}).getAttribute("href"))
       .toBe("/organizers/mumbai/salt-air-run-club/");
+    expect(screen.getByText("· 4.8 from 186 reviews")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Share"}));
     expect(onShare).toHaveBeenCalledOnce();
   });
@@ -108,9 +116,11 @@ describe("Event booking card", () => {
   it("hands a Catch event to the guest entry", () => {
     card(fullEventPage);
     expect(screen.getByRole("heading", {name: "₹299"})).toBeTruthy();
-    expect(screen.getByText("Per person")).toBeTruthy();
+    expect(screen.getByText("a place")).toBeTruthy();
     expect(screen.getByText("Sun 22 Nov · 5:45 to 8:30 AM")).toBeTruthy();
     expect(screen.getByText("Guest entry")).toBeTruthy();
+    // The board's card closes with the cancellation terms.
+    expect(screen.getByText(/^Full refund if you cancel/u)).toBeTruthy();
   });
 
   it("keeps the guest entry out of a finished event", () => {

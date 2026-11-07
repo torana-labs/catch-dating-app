@@ -13255,6 +13255,300 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessLiveControlCancelCountdownLabel => 'Cancel countdown';
 
   @override
+  String get hostLiveViewsLabel => 'Live views';
+
+  @override
+  String get hostLiveViewNow => 'Now';
+
+  @override
+  String get hostLiveViewGuests => 'Guests';
+
+  @override
+  String get hostLiveViewScores => 'Scores';
+
+  @override
+  String get hostLiveViewRoom => 'Room';
+
+  @override
+  String hostLiveTag({required String time}) {
+    return 'Live · $time';
+  }
+
+  @override
+  String get hostLiveBack => 'Back';
+
+  @override
+  String hostLiveStepKicker({required int index, required int total}) {
+    return 'Step $index of $total · now';
+  }
+
+  @override
+  String hostLiveStepKickerFirst({required int total}) {
+    return 'Step 1 of $total · up first';
+  }
+
+  @override
+  String hostLiveStepLeft({required String time}) {
+    return '$time left';
+  }
+
+  @override
+  String hostLiveStepOver({required String time}) {
+    return '$time over';
+  }
+
+  @override
+  String hostLiveStepStarts({required String time}) {
+    return 'Starts $time';
+  }
+
+  @override
+  String get hostLiveStepMeter => 'Time in this step';
+
+  @override
+  String hostLiveFinishedKicker({required int total}) {
+    return 'All $total steps done';
+  }
+
+  @override
+  String get hostLiveFinishedTitle => 'The night is done';
+
+  @override
+  String get hostLiveFinishedNote =>
+      'The plan is closed. Thank your guests on the way out.';
+
+  @override
+  String hostLiveNext({required String step}) {
+    return 'Next: $step';
+  }
+
+  @override
+  String get hostLiveBackStep => 'Back a step';
+
+  @override
+  String get hostLiveFinish => 'Finish the night';
+
+  @override
+  String get hostLiveStatInRoom => 'In the room';
+
+  @override
+  String hostLiveStatPlaces({required int count}) {
+    return 'of $count places';
+  }
+
+  @override
+  String get hostLiveStatTeams => 'Teams';
+
+  @override
+  String hostLiveStatLeads({required String name}) {
+    return '$name lead';
+  }
+
+  @override
+  String get hostLiveStatNotHere => 'Not here yet';
+
+  @override
+  String hostLiveStatBooked({required int count}) {
+    return 'of $count booked';
+  }
+
+  @override
+  String get hostLiveNeedsTitle => 'Needs you now';
+
+  @override
+  String hostLiveNeedsAll({required int count}) {
+    return 'All $count';
+  }
+
+  @override
+  String get hostLiveNeedsEmpty => 'Nothing needs you right now.';
+
+  @override
+  String get hostLiveNeedsChecking => 'Still checking';
+
+  @override
+  String get hostLiveNeedsPageTitle => 'Needs you';
+
+  @override
+  String get hostLiveNeedsGuestsAsked => 'Guests asked';
+
+  @override
+  String get hostLiveNeedsArrivals => 'Arrived late';
+
+  @override
+  String get hostLiveNeedsMessages => 'Messages';
+
+  @override
+  String hostLiveNeedHelp({required String name}) {
+    return '$name asked for help';
+  }
+
+  @override
+  String get hostLiveNeedHelpAnonymous => 'A guest asked for help';
+
+  @override
+  String hostLiveNeedAgo({required String what, required int minutes}) {
+    return '$what · $minutes min ago';
+  }
+
+  @override
+  String get hostLiveNeedHelpAction => 'Help';
+
+  @override
+  String hostLiveNeedDelivery({required String name}) {
+    return '$name did not get a message';
+  }
+
+  @override
+  String get hostLiveNeedDeliveryAnonymous => 'A guest did not get a message';
+
+  @override
+  String get hostLiveNeedDeliveryAction => 'Retry';
+
+  @override
+  String hostLiveNeedArrival({required String name}) {
+    return '$name arrived late';
+  }
+
+  @override
+  String get hostLiveNeedArrivalAnonymous => 'A guest arrived late';
+
+  @override
+  String hostLiveNeedArrivalBody({required String time}) {
+    return 'Checked in at $time · no team yet';
+  }
+
+  @override
+  String get hostLiveNeedArrivalAction => 'Place';
+
+  @override
+  String get hostLivePlanTitle => 'Tonight\'s plan';
+
+  @override
+  String get hostLiveStepDone => 'Done';
+
+  @override
+  String get hostLiveStepNow => 'Now';
+
+  @override
+  String get hostLiveStepNext => 'Next';
+
+  @override
+  String get hostLiveMessageEveryone => 'Message everyone in the room';
+
+  @override
+  String get hostLiveScoresTitle => 'Scores';
+
+  @override
+  String hostLiveScoresAfter({required int round}) {
+    return 'Scores after round $round';
+  }
+
+  @override
+  String hostLiveScoresEnter({required int round}) {
+    return 'Enter round $round';
+  }
+
+  @override
+  String get hostLiveScoresNone =>
+      'No teams yet. They appear once guests are placed.';
+
+  @override
+  String hostLiveScoresKicker({required int round}) {
+    return 'Round $round';
+  }
+
+  @override
+  String hostLiveScoresSoFar({required String total}) {
+    return '$total so far';
+  }
+
+  @override
+  String hostLiveScoresFewer({required String team}) {
+    return 'Fewer points for $team';
+  }
+
+  @override
+  String hostLiveScoresMore({required String team}) {
+    return 'More points for $team';
+  }
+
+  @override
+  String get hostLiveScoresPreview => 'Standings if you save now';
+
+  @override
+  String get hostLiveScoresPrivate =>
+      'Guests can\'t see this until you reveal it.';
+
+  @override
+  String hostLiveScoresSave({required int round}) {
+    return 'Save round $round';
+  }
+
+  @override
+  String get hostLiveScoresReveal => 'Reveal to everyone';
+
+  @override
+  String get hostLiveScoresCountingDown => 'Counting down on phones';
+
+  @override
+  String hostLiveScoresRevealCountdown({required int seconds}) {
+    return 'A $seconds-second countdown runs on every guest\'s phone, then the scores appear together.';
+  }
+
+  @override
+  String get hostLiveScoresRevealAtOnce =>
+      'The scores appear on every guest\'s phone at once.';
+
+  @override
+  String hostLiveScoresRevealConfirmTitle({required int round}) {
+    return 'Reveal round $round?';
+  }
+
+  @override
+  String get hostLiveScoresRevealConfirmBody =>
+      'Every guest sees the scores, and they cannot be hidden again.';
+
+  @override
+  String get hostLiveScoresRevealCancel => 'Not yet';
+
+  @override
+  String get hostLiveRoomSeated => 'seated';
+
+  @override
+  String get hostLiveRoomComing => 'on their way';
+
+  @override
+  String get hostLiveRoomWaiting => 'needs a place';
+
+  @override
+  String get hostLiveRoomTitle => 'Teams and tables';
+
+  @override
+  String get hostLiveRoomEmpty => 'Nobody is placed yet.';
+
+  @override
+  String hostLiveRoomPlaces({required int seated, required int size}) {
+    return '$seated of $size';
+  }
+
+  @override
+  String get hostLiveNoPlanTitle => 'No plan for tonight';
+
+  @override
+  String get hostLiveNoPlanBody =>
+      'Save a plan in the event setup to run the night from here.';
+
+  @override
+  String get hostLiveErrorTitle => 'The live console could not load';
+
+  @override
+  String get hostLiveErrorBody => 'Check your connection and try again.';
+
+  @override
+  String get hostLiveRetry => 'Try again';
+
+  @override
   String get eventSuccessLiveControlPublishRevealTitle =>
       'Publish this reveal?';
 

@@ -179,6 +179,8 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     view,
     follow: {
       following: phoneFollow ? followStep === "done" : accountFollowing,
+      /** Follow by phone is live (CAT-253): the page says a phone number is all it takes. */
+      byPhone: phoneFollow !== null,
       pending: followMutation.isPending || (accountFollowRequested && account.loading),
       press: pressFollow,
       error: followError,

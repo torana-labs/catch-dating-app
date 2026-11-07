@@ -133,6 +133,20 @@
       "canonicalPath": "/demo/",
       "robots": "noindex, follow"
     },
+    "weddings": {
+      "title": "Catch for weddings | The whole wedding weekend, on one running order",
+      "description": "Guest list, replies for every function, flights, airport pickups, rooms, staff and messages in one place for wedding planners and destination events. Selected pilot weddings, priced by headcount.",
+      "canonicalPath": "/weddings/",
+      "twitterDescription": "The whole wedding weekend, on one running order. Apply for the Catch for weddings pilot.",
+      "robots": "noindex, follow"
+    },
+    "weddings_apply": {
+      "title": "Apply for the pilot | Catch for weddings",
+      "description": "Apply with a real wedding: dates, destination, guest count and the team you will bring. Catch replies on WhatsApp within two working days.",
+      "canonicalPath": "/weddings/apply/",
+      "twitterDescription": "Apply for the Catch for weddings pilot.",
+      "robots": "noindex, follow"
+    },
     "host_apply": {
       "title": "Apply for a pilot | Catch Host",
       "description": "Apply with your next event, guest-list size and current tools. Catch reviews each pilot application before agreeing access and setup.",

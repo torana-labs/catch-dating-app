@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {useState} from "react";
-import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, StepRail, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
+import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, StepRail, UiLabel} from "../shared/ui/primitives";
 
 const meta = {
   title: "Marketing Website/Shared/Layout And Form Primitives",
@@ -113,7 +113,7 @@ export const ContentGridStory: Story = {
     catchComponent: {
       id: "shared_content_grid",
       routeIds: ["home", "host", "claim", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["format", "trust", "surface", "claim-review", "listing-event"],
+      states: ["format", "trust", "surface", "listing-event"],
     },
   },
   render: () => (
@@ -204,7 +204,7 @@ function ChoiceCardControlsDemo() {
   return (
     <div>
       <UiLabel>Verification</UiLabel>
-      <VerificationMethodGrid aria-label="Verification methods">
+      <div aria-label="Verification methods" role="group">
         {methods.map((item) => (
           <ChoiceCard
             body={item.body}
@@ -214,7 +214,7 @@ function ChoiceCardControlsDemo() {
             title={item.title}
           />
         ))}
-      </VerificationMethodGrid>
+      </div>
     </div>
   );
 }

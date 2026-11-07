@@ -33,7 +33,7 @@ const follows = (first: Element, second: Element) =>
   Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
 
 describe("HostListingSections", () => {
-  it("opens with identity, follow, the next event and the pinned link, then the calendar, moments, reviews and about", () => {
+  it("opens with identity, follow, the next event and the pinned link, then the calendar, moments, reviews, about and the footer", () => {
     const {container} = renderPage(claimedOrganizerPage);
     const name = screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"});
     const follow = screen.getByRole("button", {name: "Follow"});
@@ -44,8 +44,13 @@ describe("HostListingSections", () => {
       container.querySelector("#about")!, container.querySelector("footer")!];
     for (let index = 1; index < order.length; index += 1) expect(follows(order[index - 1], order[index])).toBe(true);
     expect(within(links).getAllByRole("link")[0].textContent).toContain("Lantern Night · Sat 14 Nov");
-    expect(screen.getByRole("img", {name: "Claimed by the organiser"})).toBeTruthy();
-    expect(screen.queryByRole("navigation", {name: "Primary"})).toBeNull();
+    expect(screen.getByRole("img", {name: "Verified organiser"})).toBeTruthy();
+    // The board draws the site top bar on every organiser page, claimed or not.
+    const primary = screen.getByRole("navigation", {name: "Primary"});
+    expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["Explore", "For organisers"]);
+    expect(screen.getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
+    expect(screen.getByRole("navigation", {name: "Site links"})).toBeTruthy();
+    expect(screen.getByText("2,140 followers · 4.8 ★ from 186 reviews · 12 nights", {exact: false})).toBeTruthy();
     expect(screen.getByRole("link", {name: "Make a page like this"}).getAttribute("href")).toBe("/host/");
   });
 
@@ -70,7 +75,7 @@ describe("HostListingSections", () => {
     expect(claim.textContent).toContain("38 people asked to hear about your next event, and 2 people left reviews.");
     expect(screen.queryByText("Seeded by an operator")).toBeNull();
     expect(screen.queryByText(/Claim state|Unclaimed seed listing/u)).toBeNull();
-    expect(screen.queryByRole("img", {name: "Claimed by the organiser"})).toBeNull();
+    expect(screen.queryByRole("img", {name: "Verified organiser"})).toBeNull();
     expect(screen.getAllByText("Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toHaveLength(2);
     expect(screen.getByRole("link", {name: "Something wrong? Tell us"}).getAttribute("href")).toBe("/help/");
   });

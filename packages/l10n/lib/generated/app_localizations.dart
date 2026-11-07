@@ -20673,6 +20673,474 @@ abstract class AppLocalizations {
   /// **'Cancel countdown'**
   String get eventSuccessLiveControlCancelCountdownLabel;
 
+  /// Live console segmented control label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Live views'**
+  String get hostLiveViewsLabel;
+
+  /// Live console view: the step running now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get hostLiveViewNow;
+
+  /// Live console view: the door and guest list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostLiveViewGuests;
+
+  /// Live console view: entering and revealing scores.
+  ///
+  /// In en, this message translates to:
+  /// **'Scores'**
+  String get hostLiveViewScores;
+
+  /// Live console view on a tablet: teams and tables.
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get hostLiveViewRoom;
+
+  /// Live console top bar badge with the time now.
+  ///
+  /// In en, this message translates to:
+  /// **'Live · {time}'**
+  String hostLiveTag({required String time});
+
+  /// Live console back button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostLiveBack;
+
+  /// Live console spotlight kicker: where the running step sits in the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {index} of {total} · now'**
+  String hostLiveStepKicker({required int index, required int total});
+
+  /// Live console spotlight kicker before the first step starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1 of {total} · up first'**
+  String hostLiveStepKickerFirst({required int total});
+
+  /// Live console spotlight: minutes and seconds left in the step.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String hostLiveStepLeft({required String time});
+
+  /// Live console spotlight: how far the step has run past its time.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} over'**
+  String hostLiveStepOver({required String time});
+
+  /// Live console spotlight: when the first step starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {time}'**
+  String hostLiveStepStarts({required String time});
+
+  /// Live console meter label: time spent in the running step.
+  ///
+  /// In en, this message translates to:
+  /// **'Time in this step'**
+  String get hostLiveStepMeter;
+
+  /// Live console spotlight kicker once the plan is complete.
+  ///
+  /// In en, this message translates to:
+  /// **'All {total} steps done'**
+  String hostLiveFinishedKicker({required int total});
+
+  /// Live console spotlight title once the plan is complete.
+  ///
+  /// In en, this message translates to:
+  /// **'The night is done'**
+  String get hostLiveFinishedTitle;
+
+  /// Live console spotlight note once the plan is complete.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan is closed. Thank your guests on the way out.'**
+  String get hostLiveFinishedNote;
+
+  /// Live console primary button: move to the next step, named.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {step}'**
+  String hostLiveNext({required String step});
+
+  /// Live console secondary button: return to the previous step.
+  ///
+  /// In en, this message translates to:
+  /// **'Back a step'**
+  String get hostLiveBackStep;
+
+  /// Live console primary button on the last step: mark the plan complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the night'**
+  String get hostLiveFinish;
+
+  /// Live console stat label: guests checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'In the room'**
+  String get hostLiveStatInRoom;
+
+  /// Live console stat note: the event capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'of {count} places'**
+  String hostLiveStatPlaces({required int count});
+
+  /// Live console stat label: teams or tables tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams'**
+  String get hostLiveStatTeams;
+
+  /// Live console stat note: the team in first place.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} lead'**
+  String hostLiveStatLeads({required String name});
+
+  /// Live console stat label: booked guests not checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Not here yet'**
+  String get hostLiveStatNotHere;
+
+  /// Live console stat note: booked guests.
+  ///
+  /// In en, this message translates to:
+  /// **'of {count} booked'**
+  String hostLiveStatBooked({required int count});
+
+  /// Live console section title: what needs the host.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you now'**
+  String get hostLiveNeedsTitle;
+
+  /// Live console section action: open every open need.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count}'**
+  String hostLiveNeedsAll({required int count});
+
+  /// Live console Needs you empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs you right now.'**
+  String get hostLiveNeedsEmpty;
+
+  /// Live console Needs you note while a source has not answered.
+  ///
+  /// In en, this message translates to:
+  /// **'Still checking'**
+  String get hostLiveNeedsChecking;
+
+  /// Live console needs screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs you'**
+  String get hostLiveNeedsPageTitle;
+
+  /// Live console needs group: help requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests asked'**
+  String get hostLiveNeedsGuestsAsked;
+
+  /// Live console needs group: late arrivals without a place.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived late'**
+  String get hostLiveNeedsArrivals;
+
+  /// Live console needs group: messages that did not arrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get hostLiveNeedsMessages;
+
+  /// Live console need row title: a guest asked for help.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} asked for help'**
+  String hostLiveNeedHelp({required String name});
+
+  /// Live console need row title when the guest has no name.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest asked for help'**
+  String get hostLiveNeedHelpAnonymous;
+
+  /// Live console need row subtitle: the request kind and its age.
+  ///
+  /// In en, this message translates to:
+  /// **'{what} · {minutes} min ago'**
+  String hostLiveNeedAgo({required String what, required int minutes});
+
+  /// Live console need row action: open the help request.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get hostLiveNeedHelpAction;
+
+  /// Live console need row title: a message did not arrive.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} did not get a message'**
+  String hostLiveNeedDelivery({required String name});
+
+  /// Live console need row title when the guest has no name.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest did not get a message'**
+  String get hostLiveNeedDeliveryAnonymous;
+
+  /// Live console need row action: review the message that did not arrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get hostLiveNeedDeliveryAction;
+
+  /// Live console need row title: a late arrival without a place.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} arrived late'**
+  String hostLiveNeedArrival({required String name});
+
+  /// Live console need row title when the guest has no name.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest arrived late'**
+  String get hostLiveNeedArrivalAnonymous;
+
+  /// Live console need row subtitle: when the late guest checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in at {time} · no team yet'**
+  String hostLiveNeedArrivalBody({required String time});
+
+  /// Live console need row action: place the late guest in the next round.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get hostLiveNeedArrivalAction;
+
+  /// Live console section title: the run of show.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight\'\'s plan'**
+  String get hostLivePlanTitle;
+
+  /// Live console plan row status: step already run.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostLiveStepDone;
+
+  /// Live console plan row status: step running now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get hostLiveStepNow;
+
+  /// Live console plan row status: step still to come.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get hostLiveStepNext;
+
+  /// Live console button: open the compose screen for this event.
+  ///
+  /// In en, this message translates to:
+  /// **'Message everyone in the room'**
+  String get hostLiveMessageEveryone;
+
+  /// Live console scores section title before any round is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Scores'**
+  String get hostLiveScoresTitle;
+
+  /// Live console scores section title after a saved round.
+  ///
+  /// In en, this message translates to:
+  /// **'Scores after round {round}'**
+  String hostLiveScoresAfter({required int round});
+
+  /// Live console scores action and title: enter the next round.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter round {round}'**
+  String hostLiveScoresEnter({required int round});
+
+  /// Live console scores empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No teams yet. They appear once guests are placed.'**
+  String get hostLiveScoresNone;
+
+  /// Scores screen kicker: the round being entered.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {round}'**
+  String hostLiveScoresKicker({required int round});
+
+  /// Scores screen row subtitle: the team's total before this round.
+  ///
+  /// In en, this message translates to:
+  /// **'{total} so far'**
+  String hostLiveScoresSoFar({required String total});
+
+  /// Scores screen stepper decrease label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer points for {team}'**
+  String hostLiveScoresFewer({required String team});
+
+  /// Scores screen stepper increase label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'More points for {team}'**
+  String hostLiveScoresMore({required String team});
+
+  /// Scores screen preview title.
+  ///
+  /// In en, this message translates to:
+  /// **'Standings if you save now'**
+  String get hostLiveScoresPreview;
+
+  /// Scores screen note: the preview is private.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests can\'\'t see this until you reveal it.'**
+  String get hostLiveScoresPrivate;
+
+  /// Scores screen button: record the round.
+  ///
+  /// In en, this message translates to:
+  /// **'Save round {round}'**
+  String hostLiveScoresSave({required int round});
+
+  /// Scores screen button: reveal the saved round on guests phones.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal to everyone'**
+  String get hostLiveScoresReveal;
+
+  /// Scores screen button while a reveal countdown runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting down on phones'**
+  String get hostLiveScoresCountingDown;
+
+  /// Scores screen note: what the reveal does.
+  ///
+  /// In en, this message translates to:
+  /// **'A {seconds}-second countdown runs on every guest\'\'s phone, then the scores appear together.'**
+  String hostLiveScoresRevealCountdown({required int seconds});
+
+  /// Scores screen note when the reveal has no countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'The scores appear on every guest\'\'s phone at once.'**
+  String get hostLiveScoresRevealAtOnce;
+
+  /// Scores screen confirmation title before the irreversible reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal round {round}?'**
+  String hostLiveScoresRevealConfirmTitle({required int round});
+
+  /// Scores screen confirmation message before the reveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Every guest sees the scores, and they cannot be hidden again.'**
+  String get hostLiveScoresRevealConfirmBody;
+
+  /// Scores screen confirmation cancel label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get hostLiveScoresRevealCancel;
+
+  /// Room view inline stat label: guests in a team or at a table.
+  ///
+  /// In en, this message translates to:
+  /// **'seated'**
+  String get hostLiveRoomSeated;
+
+  /// Room view inline stat label: booked guests not checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'on their way'**
+  String get hostLiveRoomComing;
+
+  /// Room view inline stat label: late arrivals without a place.
+  ///
+  /// In en, this message translates to:
+  /// **'needs a place'**
+  String get hostLiveRoomWaiting;
+
+  /// Room view section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams and tables'**
+  String get hostLiveRoomTitle;
+
+  /// Room view empty copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is placed yet.'**
+  String get hostLiveRoomEmpty;
+
+  /// Room view row value: places taken in a team or table.
+  ///
+  /// In en, this message translates to:
+  /// **'{seated} of {size}'**
+  String hostLiveRoomPlaces({required int seated, required int size});
+
+  /// Live console empty state when the event has no saved plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan for tonight'**
+  String get hostLiveNoPlanTitle;
+
+  /// Live console empty state message without a saved plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a plan in the event setup to run the night from here.'**
+  String get hostLiveNoPlanBody;
+
+  /// Live console error title.
+  ///
+  /// In en, this message translates to:
+  /// **'The live console could not load'**
+  String get hostLiveErrorTitle;
+
+  /// Live console error message.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostLiveErrorBody;
+
+  /// Live console retry label.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hostLiveRetry;
+
   /// Confirmation title before an irreversible assignment reveal.
   ///
   /// In en, this message translates to:

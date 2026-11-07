@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.20.0
+version: 0.22.0
 updated: 2026-11-08
 owner: marketing_website
 status: active
@@ -114,8 +114,8 @@ isolated local emulator and packaged server described in `website/README.md`.
 
 ## Canonical public chrome
 
-`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`
-and `SiteFooterBand` for marketing, discovery, directory/listing, public event
+`shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader`, `PublicSiteFooter`,
+`SiteFooterBand`, `PublicPageHeader` and `PublicPageFooter` for marketing, discovery, directory/listing, public event
 detail, claim, Host product/application, legal/help and 404 pages.
 `PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`):
 the wordmark, page links that move into a menu under 600px, and actions. Every
@@ -123,10 +123,20 @@ public route renders it with the global destinations from `content/site.ts`
 (Find events, Organisers, For organisers); a product page passes its own name,
 section links and action, as the homepage (Explore, Organisers, For hosts, the
 city picker and Get the app) and the host landing ("Catch for hosts", its
-sections and Apply) do, from their boards. Pages rebuilt on the system end with
-`SiteFooterBand` (the board's ink footer); the others keep `PublicSiteFooter`
-until their page lanes land. `SiteHeader` remains only until its registry
-record retires; `SiteFooter` is the legacy footer's presentation.
+sections and Apply) do, from their boards. Home and the host landing end with
+`SiteFooterBand` (the board's ink footer).
+
+The organiser page (`/organizers/<slug>/`, claimed or generated) and the event
+page (`/events/<id>/`) carry the site top bar as `PublicPageHeader` (Explore,
+For organisers and Get the app, from `publicPageChromeCopy` in
+`content/site.ts`) and end with the boards' short footer, `PublicPageFooter`:
+the wordmark across from Privacy, Terms, For organisers and Help, closing the
+main column (the organiser page's list-detail main, the event page's reading
+lane) rather than an ink band. The claim, public form and offer pages render
+the same `PublicPageFooter` below their reading layout with the site and legal
+links and the operator line; only the claim page records footer clicks. Import
+both from `shared/site`. Pages not yet rebuilt keep `PublicSiteFooter`;
+`SiteFooter` is the legacy footer's presentation.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
@@ -415,15 +425,16 @@ The website is already split out of the old monolithic shell:
   filters, result mapping, and claim links, but configure shared section shells
   instead of rendering raw `organizer-search-*`, `organizer-result-summary`,
   `directory-claim-pressure*`, or `organizer-results` markup.
-- Shared claim-flow route shells live in
-  `website/src/shared/ui/primitives/` as `ClaimFlowMain`,
-  `ClaimFlowHero`, `ClaimFlowWorkspace`, `ClaimFlowPanel`,
-  `ClaimFlowStage`, `ClaimListingResults`, `ClaimResultButton`,
-  `SelectedListingCard`, `VerificationMethodGrid`, `OwnerUnlockBoard`, and
-  `AuthStatusRow` variants.
-  `ClaimPage.tsx` owns site chrome and route-level branching, while
-  `ClaimPageSections.tsx` configures those primitives instead of rendering raw
-  `claim-flow`, `claim-flow__*`, or `claim-auth-row*` shells directly.
+- The claim flow is drawn from `@catch/web-ui` on the RbWebClaim boards
+  (P4.4): `ClaimPageSections.tsx`, `InstantClaimSection.tsx` and the shared
+  claim parts in `ClaimParts.tsx` (`ClaimHead`, `ClaimPageCard`, `ClaimSteps`,
+  `ClaimGuidance`, `SplitOnly`/`UnsplitOnly`) render no page CSS. The only
+  claim shell left in `website/src/shared/ui/primitives/` is `ClaimFlowMain`
+  (plus `AuthStatusRow` variants), kept for the demo continuation
+  (`?continuation=`); its `.claim-flow` rules stay in `flows.css`. The other
+  claim-flow primitives and their `flows.css` rules are deleted. Feature code
+  must not render raw `claim-flow`, `claim-flow__*`, or `claim-auth-row*`
+  shells.
 - `website/src/features/claims/ClaimPage.tsx` now keeps route shell and
   controller selection only. Claim URL parsing lives in
   `website/src/features/claims/claimRouting.ts` and is injected from the React
@@ -433,7 +444,8 @@ The website is already split out of the old monolithic shell:
   `website/src/features/claims/sections/ClaimPageSections.tsx`, with route and
   section Storybook coverage registered in `design/website/components.json`.
 - `website/src/shared/site/**` owns neutral site shell/display primitives:
-  `SiteHeader`, `SiteFooter`, and `SectionHeader`.
+  the public chrome in `PublicSiteChrome.tsx`, `SiteFooter`, and
+  `SectionHeader`.
 - The legacy `website/src/components/site.tsx` barrel is retired. New website
   code must import neutral site primitives from `website/src/shared/site/**`,
   governed visual primitives from `website/src/shared/ui/primitives/`, and
@@ -525,13 +537,10 @@ The website is already split out of the old monolithic shell:
   stylesheets consume the generated `--catch-*` tokens and these helpers rather
   than re-declaring design values. The former `organizer-public.css` aggregate
   was folded into `home.css`, `organizers.css`, and `flows.css` and deleted.
-- Home and Host heroes are dark "wow" surfaces: their shells add `.catch-dark`,
-  `SiteHeader` accepts a `tone="dark"` prop so chrome reads correctly over them,
-  and hero stages show real app captures in the shared phone-capture frame
-  instead of invented product mock panels or metrics. `SiteHeader` also owns
-  the mobile menu dialog; its labels arrive via the required `menuCopy` prop
-  from `content/site.ts` (`siteMenuCopy`) so shared chrome never imports
-  route-specific content.
+- The public header is the system's site top bar (`CatchTopBar variant="site"`)
+  through `PublicSiteHeader`; under 600px its links move into a `CatchMenu`.
+  Its labels come from `content/site.ts`, which only `PublicSiteChrome.tsx`
+  may read, so shared chrome never imports route-specific content.
 
 The next refactor should focus on page and style decomposition, not another
 top-level framework rewrite. The largest current files are page or style
@@ -540,7 +549,7 @@ aggregation points:
 | File | Current role | Refactor pressure |
 |---|---|---|
 | `website/src/features/home/HomePage.tsx` | Thin home route shell that wires site chrome to `consumerHomeSections` | Keep route assembly here; move future Home section edits into `features/home/sections/` and only promote neutral, repeated shells to shared UI. |
-| `website/src/features/organizers/HostListingPage.tsx` | Thin organiser page shell that wires `useOrganizerPageController` to `HostListingSections`, with site chrome on generated pages only | Keep page sections under `features/organizers/sections/organizerPage/`; new visual parts go into `@catch/web-ui`, not feature code. |
+| `website/src/features/organizers/HostListingPage.tsx` | Thin organiser page shell that wires `useOrganizerPageController` to `HostListingSections`, under the site top bar (`PublicPageHeader`) on every organiser page | Keep page sections under `features/organizers/sections/organizerPage/`; new visual parts go into `@catch/web-ui`, not feature code. |
 | `website/src/features/host/HostPage.tsx` | Canonical host assembly with core, supporting, and Playbook section imports | Keep the route file as a table of contents; section bodies stay under `features/host/sections/`. |
 | `website/src/features/claims/ClaimPage.tsx` | Thin claim route shell using injected `ClaimRouteState`, `useClaimFlowController`, and `ClaimPageSections` | Keep route URL parsing in `features/claims/claimRouting.ts` and the React Router shell; keep auth/submission behavior in the controller; keep visible route sections in `features/claims/sections/`. |
 | `website/src/shared/ui/primitives/` | Family-split governed visual primitives used by website feature sections | Keep repeated shell markup in the relevant family module; state, analytics, and domain mapping stay in feature controllers/adapters. |
@@ -857,7 +866,7 @@ website/src/
     forms/
     lib/
     site/
-      SiteHeader.tsx
+      PublicSiteChrome.tsx
       SiteFooter.tsx
     ui/
       Button.tsx
@@ -970,7 +979,8 @@ website/src/
 
 4. Keep shared site primitives split.
 
-   `SiteHeader`, `SiteFooter`, and `SectionHeader` now live in `shared/site`.
+   The public chrome (`PublicSiteChrome.tsx`), `SiteFooter`, and
+   `SectionHeader` live in `shared/site`.
    Keep using direct `shared/site` imports for new page code. Do not turn
    one-off host/listing/product sections into shared primitives. Do not recreate
    the retired `website/src/components/site.tsx` barrel; import from the
@@ -989,9 +999,11 @@ website/src/
    route-level branch between URL-state rendering and the interactive workspace.
    React Router owns the URL inputs in `App.tsx`, and `claimRouting.ts` owns the
    typed `ClaimRouteState` parser that the route shell passes into `ClaimPage`.
-   It must wrap visible claim route content with `ClaimFlowMain`; do not render
-   the raw `claim-flow` route shell or claim auth-row modifier in feature code.
-   Keep visible rendering in `ClaimPageSections.tsx`:
+   The flow renders on the white ground in the reading layout and ends with
+   `PublicPageFooter`; only the demo continuation still wraps its content in
+   `ClaimFlowMain`. Do not render the raw `claim-flow` route shell or claim
+   auth-row modifier in feature code. Keep visible rendering in
+   `ClaimPageSections.tsx`:
 
    - `ClaimHeroSection`
    - `ClaimUrlStateSection`
@@ -1244,6 +1256,19 @@ board's copy; `features/host/HostPage.tsx` composes the bands and
 `useHostLandingController.ts` owns their state. The page has no stylesheet of its
 own. Examples are illustrative and execute no booking, messaging, grouping or
 payment. The card's Continue opens `/host/apply/`, the only acquisition form.
+
+### Catch for weddings
+
+`/weddings/` renders the RbWebWeddings board on `@catch/web-ui` in the
+nights-out format: the running-order hero, why planners switch, one wedding
+followed through six chapters (each interface excerpt names who is looking),
+the team, messages and the family, pricing by headcount, the guided pilot with
+the step-1 card, questions and the foot band. `src/content/weddings.ts` owns
+the copy; `features/weddings` holds the page, the bands and the two-step
+application controller. Every excerpt is illustrative and runs nothing.
+`/weddings/apply/` (noindex) is step 2 and the sent state, taking step 1 from
+the landing through `sessionStorage` in the same tab. It has no intake front
+door yet, so Send is disabled until one is chosen.
 
 ### Explore discovery
 

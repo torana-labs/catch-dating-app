@@ -168,6 +168,16 @@ import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
+import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_editor_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_flow_state.dart';
+import 'package:catch_dating_app/hosts/create/create_handlers.dart';
+import 'package:catch_dating_app/hosts/create/create_plan_body.dart';
+import 'package:catch_dating_app/hosts/create/create_plan_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_share_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
+import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
+import 'package:catch_dating_app/hosts/create/widgets/create_calendar_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
@@ -3223,6 +3233,77 @@ List<Object> _hostTodayCaptureOverrides() => [
     _hostTodayTonight.id,
   ).overrideWith((ref) => Stream.value(_hostTodayRoster)),
 ];
+
+// The create flow boards: each step screen with the trivia night from the
+// boards, filled as far as that step, and the desktop editor on the basics.
+final _createToday = DateTime(2026, 10, 27);
+final _createDraft = EventDraft(
+  id: 'capture-create-draft',
+  organizerId: _hostTodayOrganizer.id,
+  savedAt: _createToday,
+  name: 'Tuesday Trivia Night',
+  activityKind: 'pubQuiz',
+  interactionModel: 'teamRotations',
+  description:
+      'Six rounds, teams of four made up on the night. Come alone or bring '
+      'friends.',
+  eventLocalDate: '2026-10-27',
+  eventLocalStartTime: '19:30',
+  durationMinutes: 150,
+  meetingPoint: 'Harbour Room',
+  meetingLocationAddress: 'Chimbai Road, Bandra West',
+  locationDetails: 'First floor, ask for Lantern Lane',
+  startingPointLat: 19.0596,
+  startingPointLng: 72.8295,
+  price: '499',
+  capacity: '30',
+  itinerary: createPlanTemplate(CreateFormat.quiz, 150),
+);
+
+CreateFlowState _createState(CreateStep step, {EventDraft? draft}) =>
+    CreateFlowState(
+      organizer: _hostTodayOrganizer,
+      draft: draft ?? _createDraft,
+      step: step,
+      eventId: step.index >= CreateStep.tickets.index ? 'capture-event' : null,
+      published: step == CreateStep.share,
+    );
+
+void _ignore(Object? _) {}
+
+final _createHandlers = CreateHandlers(
+  onBack: () {},
+  onNext: () {},
+  onSaveDraft: () {},
+  onStep: _ignore,
+  onName: _ignore,
+  onFormat: _ignore,
+  onDescription: _ignore,
+  onDistance: _ignore,
+  onPace: _ignore,
+  onAddPhoto: () {},
+  onDate: _ignore,
+  onPickDate: () {},
+  onStart: () {},
+  onEnd: () {},
+  onPlace: () {},
+  onDirections: _ignore,
+  onSellElsewhere: _ignore,
+  onPrice: _ignore,
+  onPlaces: _ignore,
+  onAdmission: _ignore,
+  onTemplate: () {},
+  onBlank: () {},
+  onEditStep: _ignore,
+  onAddStep: () {},
+  onCopyLink: () {},
+  onPrint: () {},
+  onShareStory: () {},
+  onShareWhatsApp: () {},
+  onDone: () {},
+);
+
+Widget _createCapture(Widget screen) => CatchRoot(child: screen);
 
 Widget _hostTodayCapture() => _HostRoutedShellCapture(
   initialLocation: '/host/today',
@@ -10465,6 +10546,101 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       child: HostTodayScreen(
         initialOrganizerId: _marketingHostOrganizer.id,
         now: hostMarketingIndiaScenario.clock('today'),
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_step_basics',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (context) => _createCapture(
+      CreateBasicsScreen(
+        state: _createState(CreateStep.basics),
+        handlers: _createHandlers,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_step_when',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (context) => _createCapture(
+      CreateWhenScreen(
+        state: _createState(CreateStep.when),
+        handlers: _createHandlers,
+        today: _createToday,
+        enableNetworkTiles: false,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_step_when_calendar',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (context) => _createCapture(
+      CreateWhenScreen(
+        state: _createState(CreateStep.when),
+        handlers: _createHandlers,
+        today: _createToday,
+        enableNetworkTiles: false,
+        calendarSheet: CreateCalendarSheet(
+          today: _createToday,
+          value: DateTime(2026, 11, 3),
+          marked: [
+            DateTime(2026, 11),
+            DateTime(2026, 11, 4),
+            DateTime(2026, 11, 7),
+          ],
+          onChanged: _ignore,
+          onUse: () {},
+        ),
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_step_tickets',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (context) => _createCapture(
+      CreateTicketsScreen(
+        state: _createState(CreateStep.tickets),
+        handlers: _createHandlers,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_step_plan',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (context) => _createCapture(
+      CreatePlanScreen(
+        state: _createState(CreateStep.plan),
+        handlers: _createHandlers,
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_step_share',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.claudePhone390,
+    builder: (context) => _createCapture(
+      CreateShareScreen(
+        state: _createState(CreateStep.share),
+        handlers: _createHandlers,
+        link: 'https://catchdates.com/lantern-lane/trivia',
+      ),
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_editor_desktop',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.auditDesktop,
+    builder: (context) => _createCapture(
+      CreateEditorScreen(
+        state: _createState(CreateStep.basics),
+        handlers: _createHandlers,
+        today: _createToday,
+        stillToSet: const ['Date and place', 'Tickets', 'The plan'],
       ),
     ),
   ),

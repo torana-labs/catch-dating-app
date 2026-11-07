@@ -52,6 +52,7 @@ typedef _EditConfig = ({
   int? maxLines,
   int? minLines,
   int? maxLength,
+  CatchFieldSupportRowMode counter,
   CatchTextInputMode inputMode,
   bool autofocus,
   CatchFieldSize size,

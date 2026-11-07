@@ -1,76 +1,84 @@
 import {
+  CatchAvatar,
   CatchButton,
   CatchCodeInput,
   CatchField,
-  CatchGap,
-  CatchGrid,
-  CatchGroundCard,
-  CatchLegacyIcon,
-  CatchProfileHeader,
+  CatchHeroImage,
+  CatchIcon,
   CatchQrCode,
-  CatchLegacyText,
+  CatchStack,
+  CatchSurface,
+  CatchText,
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import {renderAccountForm} from "../../../account/accountForm";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
-/** Who the organiser is, then follow and share: the top of the first phone screen. */
+/**
+ * The board's hero: a photo from a past event, or the organiser's format
+ * colour where there is none yet.
+ */
+export function OrganizerCover({controller}: {controller: OrganizerPageController}) {
+  const {header, name} = controller.view;
+  return header.coverUrl ?
+    <CatchHeroImage framed imageUrl={header.coverUrl} semanticLabel={header.coverAlt ?? copy.coverAlt(name)} showScrim={false} /> :
+    <CatchSurface aria-hidden="true" aspect={1.95} block="spotlight" color={header.format} />;
+}
+
+/**
+ * Who the organiser is, then follow and share: the top of the first phone
+ * screen. The logo, the name with its verified mark, the headline, the place,
+ * one line of numbers, and the two buttons.
+ */
 export function OrganizerIdentitySection({controller}: {controller: OrganizerPageController}) {
   const {follow, share, view} = controller;
   const {header} = view;
+  const stats = header.stats.map((stat) => `${stat.value} ${stat.label}`).join(" · ");
   return (
-    <CatchGap size="related">
-      <CatchProfileHeader
-        actions={(
-          <CatchGrid columns={2} compactColumns={2} gap="inline">
-            <CatchButton
-              fullWidth
-              label={follow.following ? copy.following : copy.follow}
-              onPressed={follow.press}
-              status={follow.pending ? "loading" : "idle"}
-              variant={follow.following ? "secondary" : "primary"}
-            />
-            <CatchButton
-              fullWidth
-              label={copy.share}
-              leading={<CatchLegacyIcon icon="share" size="md" />}
-              onPressed={share.toggle}
-              variant="secondary"
-            />
-          </CatchGrid>
-        )}
-        coverAlt={header.coverAlt}
-        coverGround={header.accent}
-        coverUrl={header.coverUrl}
-        headline={header.headline}
-        meta={header.meta}
-        monogram={header.monogram}
-        monogramGround={header.monogramGround}
-        name={view.name}
-        stats={header.stats}
-        tag={header.tag}
-        verifiedLabel={header.verified ? copy.verifiedLabel : undefined}
-      />
-      {follow.phone ? <OrganizerFollowSheet name={view.name} phone={follow.phone} error={follow.error} /> : null}
-      {/* CatchField is borderless; it shows its box only on a ground, never on the white page. */}
-      {follow.account ? <CatchGroundCard>{renderAccountForm(follow.account)}</CatchGroundCard> : null}
-      {!follow.phone && follow.error ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{follow.error}</CatchLegacyText> : null}
+    <CatchStack gap={20}>
+      <CatchStack gap={12}>
+        <CatchAvatar initials={header.monogram} name={view.name} size={72} />
+        <CatchStack align="center" direction="row" gap={8}>
+          <CatchText as="h1" variant="page-title">{view.name}</CatchText>
+          {header.verified ? <CatchIcon label={copy.verifiedLabel} name="protected" size={24} /> : null}
+        </CatchStack>
+        {header.tag ? <CatchText tone="secondary" variant="label-kicker">{header.tag}</CatchText> : null}
+        {header.headline ? <CatchText as="p" variant="body-lead">{header.headline}</CatchText> : null}
+        {header.meta ? <CatchText as="p" tone="secondary" variant="body-small">{header.meta}</CatchText> : null}
+        {stats ? <CatchText as="p" variant="label-action">{stats}</CatchText> : null}
+      </CatchStack>
+      <CatchStack gap={8}>
+        <CatchStack direction="row" equal gap={8}>
+          <CatchButton
+            fill
+            label={follow.following ? copy.following : copy.follow}
+            onPressed={follow.press}
+            status={follow.pending ? "loading" : "idle"}
+            variant={follow.following ? "secondary" : "primary"}
+          />
+          <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
+        </CatchStack>
+        {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
+      </CatchStack>
+      {follow.phone ? <OrganizerFollowSheet error={follow.error} name={view.name} phone={follow.phone} /> : null}
+      {follow.account ? <CatchSurface>{renderAccountForm(follow.account)}</CatchSurface> : null}
+      {!follow.phone && follow.error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{follow.error}</CatchText> : null}
       {share.open ? (
-        <CatchGroundCard>
-          <CatchGap crossAxisAlignment="center" direction="horizontal" size="formField">
+        <CatchSurface>
+          <CatchStack align="center" direction="row" gap={16}>
             <CatchQrCode label={copy.qrLabel(share.displayUrl)} size="m" value={share.url} />
-            <CatchGap size="inline">
-              <CatchLegacyText color="ink2" variant="bodyM">{copy.shareCaption}</CatchLegacyText>
-              <CatchLegacyText variant="sectionTitle">{share.displayUrl}</CatchLegacyText>
-              <CatchGap crossAxisAlignment="start" size="inline">
+            <CatchStack gap={8}>
+              <CatchText as="p" tone="secondary" variant="body-small">{copy.shareCaption}</CatchText>
+              <CatchText as="p" variant="title-row">{share.displayUrl}</CatchText>
+              <CatchStack align="start">
                 <CatchButton label={share.copyState === "copied" ? copy.copied : copy.copyLink} onPressed={share.copy} size="md" />
-              </CatchGap>
-              {share.copyState === "failed" ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{copy.copyFailed}</CatchLegacyText> : null}
-            </CatchGap>
-          </CatchGap>
-        </CatchGroundCard>
+              </CatchStack>
+              {share.copyState === "failed" ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{copy.copyFailed}</CatchText> : null}
+            </CatchStack>
+          </CatchStack>
+        </CatchSurface>
       ) : null}
-    </CatchGap>
+    </CatchStack>
   );
 }
 
@@ -81,55 +89,51 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
   const sheet = copy.followSheet;
   if (phone.step === "done") {
     return (
-      <CatchGroundCard>
-        <CatchGap role="status" size="inline">
-          <CatchLegacyText variant="sectionTitle">{sheet.doneTitle(name)}</CatchLegacyText>
-          <CatchLegacyText color="ink2" variant="bodyM">{sheet.doneBody}</CatchLegacyText>
-        </CatchGap>
-      </CatchGroundCard>
+      <CatchSurface role="status">
+        <CatchText as="p" variant="title-row">{sheet.doneTitle(name)}</CatchText>
+        <CatchText as="p" tone="secondary" variant="body-small">{sheet.doneBody}</CatchText>
+      </CatchSurface>
     );
   }
   return (
-    <CatchGroundCard>
-      <CatchGap size="related">
-        <CatchGap size="headerTitleToSubtitle">
-          <CatchLegacyText variant="sectionTitle">{phone.step === "phone" ? sheet.phoneTitle : sheet.codeTitle}</CatchLegacyText>
-          <CatchLegacyText color="ink2" variant="bodyM">{phone.step === "phone" ? sheet.phoneBody(name) : sheet.codeBody(phone.shown)}</CatchLegacyText>
-        </CatchGap>
-        {phone.step === "phone" ? (
-          <CatchField
-            autoComplete="tel-national"
-            errorText={error || null}
-            inputHint={sheet.phonePlaceholder}
-            inputMode={phone.pending ? "inactive" : "editable"}
-            keyboardType="phone"
-            onChanged={phone.setNumber}
-            onSubmitted={phone.sendCode}
-            prefixText="+91"
-            recipe="input"
-            title={sheet.phoneLabel}
-            value={phone.number}
-          />
-        ) : (
-          <CatchGap size="inline">
-            <CatchCodeInput
-              contractExemption="Follow by phone has no callable contract until CAT-253 lands."
-              onChanged={phone.setCode}
-              onSubmitted={phone.confirm}
-              semanticsLabel={sheet.codeBody(phone.shown)}
-              status={error ? "error" : "ready"}
-              value={phone.code}
-            />
-            {error ? <CatchLegacyText color="danger" role="alert" variant="bodyS">{error}</CatchLegacyText> : null}
-          </CatchGap>
-        )}
-        <CatchButton
-          fullWidth
-          label={phone.step === "phone" ? sheet.sendCode : sheet.confirm}
-          onPressed={phone.step === "phone" ? phone.sendCode : phone.confirm}
-          status={phone.pending ? "loading" : "idle"}
+    <CatchSurface>
+      <CatchStack gap={4}>
+        <CatchText as="p" variant="title-row">{phone.step === "phone" ? sheet.phoneTitle : sheet.codeTitle}</CatchText>
+        <CatchText as="p" tone="secondary" variant="body-small">{phone.step === "phone" ? sheet.phoneBody(name) : sheet.codeBody(phone.shown)}</CatchText>
+      </CatchStack>
+      {phone.step === "phone" ? (
+        <CatchField
+          autoComplete="tel-national"
+          errorText={error || null}
+          inputHint={sheet.phonePlaceholder}
+          inputMode={phone.pending ? "inactive" : "editable"}
+          keyboardType="phone"
+          onChanged={phone.setNumber}
+          onSubmitted={phone.sendCode}
+          prefixText="+91"
+          recipe="input"
+          title={sheet.phoneLabel}
+          value={phone.number}
         />
-      </CatchGap>
-    </CatchGroundCard>
+      ) : (
+        <CatchStack gap={8}>
+          <CatchCodeInput
+            contractExemption="Follow by phone has no callable contract until CAT-253 lands."
+            onChanged={phone.setCode}
+            onSubmitted={phone.confirm}
+            semanticsLabel={sheet.codeBody(phone.shown)}
+            status={error ? "error" : "ready"}
+            value={phone.code}
+          />
+          {error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{error}</CatchText> : null}
+        </CatchStack>
+      )}
+      <CatchButton
+        fill
+        label={phone.step === "phone" ? sheet.sendCode : sheet.confirm}
+        onPressed={phone.step === "phone" ? phone.sendCode : phone.confirm}
+        status={phone.pending ? "loading" : "idle"}
+      />
+    </CatchSurface>
   );
 }

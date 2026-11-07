@@ -8,6 +8,7 @@ export const claimFlowCopy = {
   signIn: {
     title: "Is {name} yours?",
     body: "Claim it free. Edit it, add your links and reply to reviews. Takes about a minute.",
+    sendCode: "Text me a code",
   },
   choose: {title: "Prove it’s yours"},
   instagramCode: {

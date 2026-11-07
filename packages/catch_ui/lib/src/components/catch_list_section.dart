@@ -29,7 +29,8 @@ class CatchSectionAction {
 /// [note] as muted text at its end, sits 8 px above the rows. The section owns
 /// the lines between rows ([dividers]), so system `CatchIndexRow` rows draw
 /// none of their own. With no [children] it shows the [empty] copy, or only
-/// its title when there is none.
+/// its title when there is none. A [kicker] sits over the title in the
+/// muted label voice, as the system SectionHeader draws it.
 ///
 /// A [timeline] joins the rows' leading markers with a 2 px line, run of show
 /// style; put it on a section with no [dividers]. [columns] flows the rows
@@ -40,6 +41,7 @@ class CatchListSection extends StatelessWidget {
     super.key,
     required this.children,
     this.title,
+    this.kicker,
     this.note,
     this.action,
     this.dividers = CatchSectionPlacement.between,
@@ -50,6 +52,9 @@ class CatchListSection extends StatelessWidget {
 
   final List<Widget> children;
   final String? title;
+
+  /// A muted line over the title: "Each person gets at most one a week."
+  final String? kicker;
 
   /// Muted text at the end of the title: "3 before doors".
   final String? note;
@@ -75,6 +80,7 @@ class CatchListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = this.title;
+    final kicker = this.kicker;
     final note = this.note;
     final action = this.action;
     final empty = this.empty;
@@ -98,12 +104,25 @@ class CatchListSection extends StatelessWidget {
             spacing: CatchSpacing.s3,
             children: [
               Expanded(
-                child: Semantics(
-                  header: true,
-                  child: CatchText(
-                    title,
-                    variant: CatchTextVariant.sectionTitle,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: CatchSpacing.s1,
+                  children: [
+                    if (kicker != null)
+                      CatchText(
+                        kicker,
+                        variant: CatchTextVariant.labelKicker,
+                        tone: CatchTextTone.secondary,
+                      ),
+                    Semantics(
+                      header: true,
+                      child: CatchText(
+                        title,
+                        variant: CatchTextVariant.sectionTitle,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (action != null)

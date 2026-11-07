@@ -14,7 +14,7 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 43
+      "count": 36
     },
     "declaration-property-value-allowed-list": {
       "count": 4
@@ -36,10 +36,10 @@
   },
   "src/styles/flows.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 104
+      "count": 85
     },
     "declaration-property-value-allowed-list": {
-      "count": 20
+      "count": 16
     },
     "media-feature-name-value-allowed-list": {
       "count": 3
@@ -99,13 +99,7 @@
   },
   "src/styles/public-forms.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 52
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 16
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 2
+      "count": 10
     }
   },
   "src/styles/responsive.css": {
@@ -131,13 +125,10 @@
   },
   "src/styles/site-shell.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 28
+      "count": 8
     },
     "declaration-property-value-allowed-list": {
-      "count": 10
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 2
+      "count": 3
     }
   }
 }

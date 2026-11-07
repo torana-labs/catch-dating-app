@@ -104,7 +104,7 @@ function renderPhase(controller: Controller, listing: HostListing) {
   case "unavailable":
     return <CatchStack align="start"><CatchButton href="/help/" label={claimGuidance.help} variant="secondary" /></CatchStack>;
   case "account":
-    return renderAccountForm(controller.account, {askBirthDate: false});
+    return renderAccountForm(controller.account, {askBirthDate: false, sendCodeLabel: flow.signIn.sendCode});
   case "loading":
     return <CatchText role="status" tone="secondary" variant="body-small">{copy.loadingOptions}</CatchText>;
   case "choose":
