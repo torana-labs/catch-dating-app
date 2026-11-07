@@ -13,7 +13,11 @@
 // (largeDeployAt); a record without it counts from its own creation time, so
 // the deploy it describes is treated as large. The nightly window run deploys
 // a pending large delta by itself once the window opens, and stays quiet when
-// there is nothing to deploy or the window is still closed.
+// there is nothing to deploy or the window is still closed. The nightly run
+// may deploy up to six hours before the exact 7-day mark so the cadence stays
+// weekly: it records its own start time, so the next night's run would
+// otherwise miss the window by seconds and wait a day. Push and manual runs
+// use the exact mark, so allow_large and full never run early.
 // Docs: docs/release_operations.md, "Deploy backend".
 "use strict";
 const fs = require("node:fs");
@@ -21,6 +25,8 @@ const {parseArgs} = require("node:util");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MODES = ["push", "window"];
+// How early the nightly window run may deploy before the exact 7-day mark.
+const WINDOW_RUN_LEAD_MS = 6 * 60 * 60 * 1000;
 
 function isoTime(value, what) {
   const time = Date.parse(value);
@@ -90,7 +96,8 @@ function deployPlan({current, previous, limit, full = false, allowLarge = false,
   const lastLarge = previous?.largeDeployAt ?? (previousCreatedAt || null);
   const windowOpensAt = lastLarge === null ? null :
     new Date(isoTime(lastLarge, "The last large deploy") + windowDays * DAY_MS).toISOString();
-  const eligible = windowOpensAt === null || nowTime >= Date.parse(windowOpensAt);
+  const lead = mode === "window" ? WINDOW_RUN_LEAD_MS : 0;
+  const eligible = windowOpensAt === null || nowTime + lead >= Date.parse(windowOpensAt);
   const permitted = allowLarge || full || mode === "window";
   // The nightly window run does nothing, quietly, rather than fail.
   const skip = mode === "window" && (total === 0 || (large && !eligible));

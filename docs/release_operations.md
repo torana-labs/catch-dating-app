@@ -1389,7 +1389,10 @@ The full Functions suite deploys at most once a week:
   before changing anything. The step summary says when the window opens. When
   the window is closed, nothing can deploy it before then. When it is open,
   the nightly window run deploys it by itself, so nobody needs to run it by
-  hand. Every later merge carries the same pending delta and stops the same
+  hand. The nightly run may deploy up to six hours before the exact 7-day mark
+  so the cadence stays weekly (it records its own start time, so otherwise the
+  next week's run would miss the window by seconds); push and manual runs use
+  the exact mark. Every later merge carries the same pending delta and stops the same
   way until then.
 - **Pipeline changes wait for the window.** Required CI (`Lint workflows`)
   fails a pull request or merge group that changes

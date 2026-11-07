@@ -118,6 +118,23 @@ test("the nightly window run skips an empty plan and a closed window, and deploy
   assert.throws(() => deployPlan({current, previous: null, limit: Number("x"), now: lastLarge}), /whole number/u);
 });
 
+test("the nightly window run may deploy up to six hours early; other runs never may", () => {
+  const previous = state({admin: "a1", events: "e1", sales: "s1"}, lastLarge);
+  const hours = (h) => day(sevenDaysOn, h / 24);
+  const early = deployPlan({current, previous, limit: 2, mode: "window", now: hours(-5)});
+  assert.equal(early.skip, false);
+  assert.equal(early.blocked, false);
+  assert.equal(early.largeDeployAt, hours(-5));
+  const tooEarly = deployPlan({current, previous, limit: 2, mode: "window", now: hours(-7)});
+  assert.equal(tooEarly.skip, true);
+  assert.equal(tooEarly.blocked, false);
+  for (const allowed of [{allowLarge: true}, {full: true}]) {
+    const pushed = deployPlan({current, previous, limit: 2, now: hours(-5), ...allowed});
+    assert.equal(pushed.blocked, true, JSON.stringify(allowed));
+    assert.equal(pushed.reason, "window-closed");
+  }
+});
+
 test("a record is read only when it is this version's hashes", () => {
   assert.deepEqual(recordedHashes(record({admin: {hash: "a1"}})), {admin: "a1"});
   // GitHub may hand the payload back as a JSON string.
