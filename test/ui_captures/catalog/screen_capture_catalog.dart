@@ -38,7 +38,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -169,9 +168,6 @@ import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
-import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
-import 'package:catch_dating_app/hosts/door/door_screen.dart';
-import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
@@ -3234,205 +3230,6 @@ Widget _hostTodayCapture() => _HostRoutedShellCapture(
   child: HostTodayScreen(
     initialOrganizerId: _hostTodayOrganizer.id,
     now: _hostTodayNow,
-  ),
-);
-
-// The door on a Tuesday trivia night, doors open: nineteen of twenty-six
-// in, two asking to join and one waiting.
-final _doorNow = DateTime(2026, 10, 27, 19, 42);
-final _doorEvent = _hostTodayTonight;
-
-EventAttendee _doorAttendee(
-  String id,
-  String name, {
-  EventAttendeeStatus status = EventAttendeeStatus.registered,
-  String? uid,
-  DateTime? checkedInAt,
-  int? paidMinor,
-}) => EventAttendee(
-  id: 'design-door-$id',
-  eventId: _doorEvent.id,
-  organizerId: _hostTodayOrganizer.id,
-  displayName: name,
-  searchName: name.toLowerCase(),
-  source: uid == null
-      ? EventAttendeeSource.hostImport
-      : EventAttendeeSource.catchBooking,
-  status: status,
-  linkedUid: uid,
-  checkedInAt: checkedInAt,
-  revenueAmountMinor: paidMinor,
-  revenueCurrency: paidMinor == null ? null : 'INR',
-  createdAt: _doorNow.subtract(const Duration(days: 3)),
-  updatedAt: _doorNow.subtract(const Duration(days: 3)),
-);
-
-final _doorAttendees = [
-  _doorAttendee('dp', 'Dev Patel', paidMinor: 99800),
-  _doorAttendee('rk', 'Rhea Kapoor'),
-  _doorAttendee('ss', 'Sameer Shah', paidMinor: 49900),
-  _doorAttendee('tm', 'Tara Menon'),
-  _doorAttendee('ir', 'Ishita Rao'),
-  _doorAttendee('nv', 'Neel Verma', paidMinor: 99800),
-  _doorAttendee('ak', 'Arjun Kulkarni'),
-  for (final (index, name) in const [
-    'Kabir Rao',
-    'Aanya Sharma',
-    'Meera Iyer',
-    'Rohan Das',
-    'Sana Qureshi',
-    'Vikram Nair',
-    'Leela Joshi',
-    'Farhan Ali',
-    'Priya Menon',
-    'Aditya Rao',
-    'Nisha Kapoor',
-    'Karan Malhotra',
-    'Tanvi Shah',
-    'Omar Sheikh',
-    'Diya Bose',
-    'Raghav Sethi',
-    'Ira Banerjee',
-    'Zain Khan',
-    'Maya Pillai',
-  ].indexed)
-    _doorAttendee(
-      'in-$index',
-      name,
-      status: EventAttendeeStatus.checkedIn,
-      checkedInAt: _doorNow.subtract(Duration(minutes: 1 + index * 2)),
-    ),
-  _doorAttendee(
-    'zm',
-    'Zoya Merchant',
-    status: EventAttendeeStatus.waitlisted,
-    uid: 'design-door-u-zm',
-  ),
-  _doorAttendee(
-    'ib',
-    'Ishaan Bose',
-    status: EventAttendeeStatus.waitlisted,
-    uid: 'design-door-u-ib',
-  ),
-  _doorAttendee(
-    'nr',
-    'Nikhil Rao',
-    status: EventAttendeeStatus.waitlisted,
-    uid: 'design-door-u-nr',
-  ),
-];
-
-EventParticipation _doorParticipation(
-  String uid, {
-  EventJoinRequestStatus? request,
-  required Duration ago,
-}) => EventParticipation(
-  id: '${_doorEvent.id}_$uid',
-  eventId: _doorEvent.id,
-  organizerId: _hostTodayOrganizer.id,
-  uid: uid,
-  status: EventParticipationStatus.waitlisted,
-  hostApprovalStatus: request,
-  waitlistedAt: _doorNow.subtract(ago),
-  createdAt: _doorNow.subtract(ago),
-  updatedAt: _doorNow.subtract(ago),
-);
-
-final _doorParticipations = [
-  _doorParticipation(
-    'design-door-u-zm',
-    request: EventJoinRequestStatus.pending,
-    ago: const Duration(minutes: 2),
-  ),
-  _doorParticipation(
-    'design-door-u-ib',
-    request: EventJoinRequestStatus.pending,
-    ago: const Duration(minutes: 5),
-  ),
-  _doorParticipation('design-door-u-nr', ago: const Duration(days: 1)),
-];
-
-HostEventRosterInsight _doorLabel(String id, {int prior = 0}) =>
-    HostEventRosterInsight(
-      attendeeId: 'design-door-$id',
-      contactId: null,
-      availability: HostRosterInsightAvailability.ready,
-      signals: {
-        prior == 0
-            ? HostRosterInsightSignal.firstTime
-            : HostRosterInsightSignal.returning,
-      },
-      priorAttendedEventCount: prior,
-      priorExpectedEventCount: prior,
-      priorNoShowCount: 0,
-      lastAttendedAt: null,
-      attendanceRate: null,
-      catchSpend: const [],
-    );
-
-final _doorLabels = HostEventRosterInsights(
-  eventId: _doorEvent.id,
-  organizerId: _hostTodayOrganizer.id,
-  cutoffAt: _doorEvent.startTime,
-  sourceCoverage: HostRosterInsightCoverage.exact,
-  spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
-  rows: [
-    _doorLabel('dp'),
-    _doorLabel('rk', prior: 5),
-    _doorLabel('tm'),
-    _doorLabel('ir', prior: 2),
-    _doorLabel('zm', prior: 3),
-    _doorLabel('ib'),
-  ],
-  computedAt: _doorNow,
-);
-
-List<Object> _doorCaptureOverrides() => [
-  uidProvider.overrideWithValue(const AsyncData<String?>(_captureViewerUid)),
-  appConnectivityProvider.overrideWith(
-    (ref) => Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
-  ),
-  hostAttendanceOutboxStoreProvider.overrideWithValue(
-    _CaptureHostAttendanceOutboxStore(),
-  ),
-  watchEventProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorEvent)),
-  watchEventAttendeesProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorAttendees)),
-  watchEventParticipationsForEventProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorParticipations)),
-  hostEventRosterInsightsProvider(
-    _doorEvent.id,
-  ).overrideWith((ref) => Stream.value(_doorLabels)),
-];
-
-Widget _doorCapture({DoorFilter? filter}) => DoorScreen(
-  organizerId: _hostTodayOrganizer.id,
-  eventId: _doorEvent.id,
-  initialEvent: _doorEvent,
-  initialFilter: filter,
-);
-
-// The camera stands in as a plain night tile; the sheet is the scan that
-// just checked Dev Patel in.
-Widget _doorScanCapture() => DoorScanScreen(
-  eventId: _doorEvent.id,
-  checkedIn: 20,
-  expected: 26,
-  camera: const ColoredBox(color: Colors.black),
-  onClose: () {},
-  onNext: () {},
-  onUndo: () {},
-  result: const HostDoorGuest(
-    attendeeId: 'design-door-dp',
-    name: 'Dev Patel',
-    status: HostDoorGuestStatus.checkedIn,
-    firstTime: true,
-    paidMinor: 99800,
-    paidCurrency: 'INR',
   ),
 );
 
@@ -10698,41 +10495,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.auditTablet,
     providerOverrides: _hostTodayCaptureOverrides(),
     builder: (context) => _hostTodayCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_door_arriving',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_door_in',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(filter: DoorFilter.checkedIn),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_door_asked',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(filter: DoorFilter.asked),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_door_scan_checked_in',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorScanCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_door_tablet_landscape',
-    routeIds: const <String>['hostEventRosterScreen'],
-    device: CaptureDevice.auditTabletLandscape,
-    providerOverrides: _doorCaptureOverrides(),
-    builder: (context) => _doorCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',
