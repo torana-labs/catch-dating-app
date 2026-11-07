@@ -19,6 +19,7 @@ Banners slide down over 240 ms.
 
 `catch.notice`:
 - `CatchNotice`
+- `CatchNotice.inline`
 `catch.banner`:
 - `CatchBanner`
 - `CatchBanner.error`

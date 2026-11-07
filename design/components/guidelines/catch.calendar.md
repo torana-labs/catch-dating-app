@@ -17,7 +17,8 @@ Arrows step a month at a time; the chosen day changes at once.
 <!-- generated:flutter:start -->
 ## Flutter
 
-`catch.calendar`: No Flutter symbol yet.
+`catch.calendar`:
+- `CatchCalendar`
 <!-- generated:flutter:end -->
 
 ## Replaces

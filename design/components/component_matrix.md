@@ -18,12 +18,12 @@ symbol outside `catch_ui`.
 | Icon | `catch.icon` | T1 | `CatchIcon` | `CatchIcon` | align |
 | Stack | `catch.stack` | T1 | `CatchStack` | `CatchStack` | align; absorbs: `CatchGap`, `CatchInset`, `CatchGrid`, `CatchSplit`, `CatchSectionList` |
 | Button | `catch.button` | T1 | `CatchButton` | `CatchButton` | align; absorbs: `CatchNavigationButton`, `CatchToolbarButton`, `CatchChoiceButton` |
-| IconButton | `catch.icon_button` | T1 | `CatchIconAction` | — | port react |
+| IconButton | `catch.icon_button` | T1 | `CatchIconAction` | `CatchIconAction` | align |
 | Chip | `catch.chip` | T1 | `CatchChip` | `CatchChip` | align |
 | Chip | `catch.chip.field` | T1 | `CatchChoiceInput` | `CatchChoiceInput` | align |
 | Badge | `catch.badge` | T1 | `CatchBadge` | `CatchBadge` | align; absorbs: `CatchCountBadge`, `CatchPrivacyBadge` |
 | Avatar + AvatarStack | `catch.person_avatar` | T1 | `CatchAvatar` | `CatchAvatar` | align; absorbs: `CatchAvatarRow` |
-| Marker | `catch.marker` | T1 | — | — | port both; absorbs: `CatchStatusIndicator`, `CatchClockIndicator` |
+| Marker | `catch.marker` | T1 | `CatchMarker` | `CatchMarker` | align; absorbs: `CatchStatusIndicator`, `CatchClockIndicator` |
 | Field | `catch.field` | T1 | `CatchField` | `CatchField` | align; absorbs: `CatchSearchField` |
 | Field | `catch.search_field` | T1 | `CatchSearchField` | `CatchSearchField` | align |
 | Switch | `catch.toggle` | T2 | `CatchToggleInput` | `CheckboxControl` | align |
@@ -31,10 +31,10 @@ symbol outside `catch_ui`.
 | ChoiceCard | `catch.option_card` | T1 | `CatchChoiceTile` | `CatchChoiceTile` | align |
 | Segmented | `catch.tab_rail` | T1 | `CatchPageTabBar` | `CatchPageTabBar` | align |
 | Stepper | `catch.number_stepper` | T2 | `CatchStepper` | `CatchStepper` | align |
-| Slider | `catch.range_slider` | T2 | `CatchRangeInput` | — | port react |
+| Slider | `catch.range_slider` | T2 | `CatchRangeInput` | `CatchRangeInput` | align |
 | Rating | `catch.rating` | T2 | — | — | port both; absorbs: `CatchStarRating`, `CatchStarInput`, `CatchRatingSummary` |
-| Calendar | `catch.calendar` | T2 | — | — | port both; absorbs: `CatchWheelPickerSheet` |
-| Meter | `catch.meter` | T2 | — | — | port both; absorbs: `CatchBarIndicator` |
+| Calendar | `catch.calendar` | T2 | `CatchCalendar` | — | port react; absorbs: `CatchWheelPickerSheet` |
+| Meter | `catch.meter` | T2 | `CatchMeter` | `CatchMeter` | align; absorbs: `CatchBarIndicator` |
 | BarChart | `catch.mini_bar_chart` | T2 | `CatchBarIndicator` | `CatchBarIndicator` | align |
 | Image | `catch.network_image` | T2 | `CatchNetworkImage` | — | port react; absorbs: `CatchAppCaptureImage`, `CatchGradedImage`, `CatchHeroImage`, `CatchMediaOverlay` |
 | Image | `catch.graded_image` | T2 | `CatchGradedImage` | — | port react |
@@ -64,11 +64,11 @@ symbol outside `catch_ui`.
 | AppShell | `catch.screen` | T2 | `CatchScreen` | — | port react; absorbs: `CatchScaffold`, `CatchRootScreenScaffold`, `CatchRouteScaffold` |
 | ScreenBody | `catch.screen_body` | T1 | `CatchPageBody` | `CatchPageBody` | align |
 | PaneLayout | `catch.pane_layout` | T2 | `CatchPaneLayout` | `CatchPaneLayout` | align; absorbs: `CatchWorkspacePaneScaffold` |
-| EventCard | `catch.event_card` | T2 | `CatchEventCard` | — | port react; absorbs: `CatchEventPoster`, `CatchPreviewCard`, `CatchLinkTile`, `CatchPlanCard` |
+| EventCard | `catch.event_card` | T2 | `CatchEventCard` | `CatchEventCard` | align; absorbs: `CatchEventPoster`, `CatchPreviewCard`, `CatchLinkTile`, `CatchPlanCard` |
 | EventCard | `catch.cover_story` | T4 | `FeaturedEventPoster` (app) | — | port react |
 | OrganiserCard | `catch.organizer_poster` | T2 | `CatchPoster` | — | port react; absorbs: `CatchOrganizerCard` |
 | OrganiserCard | `catch.club_cover` | T2 | `OrganizerCover` (app) | `OrganizerCover` | align |
-| Ticket | `catch.ticket` | T2 | `CatchTicket` | — | port react |
+| Ticket | `catch.ticket` | T2 | `CatchTicket` | `CatchTicket` | align |
 | Sheet | `catch.sheet` | T2 | `CatchSheet` | `CatchSheet` | align; absorbs: `CatchSelectionSheet`, `CatchShareCardSheet` |
 | Dialog | `catch.confirm_dialog` | T1 | `CatchDialog` | `CatchDialog` | align |
 | Toast | `catch.toast` | T1 | — | — | port both; absorbs: `CatchNoticeRegion` |

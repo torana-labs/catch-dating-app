@@ -21,6 +21,7 @@ Springs up over 360 ms; drag the grabber down to close; Escape and the scrim clo
 - `CatchSheet`
 - `CatchSheet.standard`
 - `CatchSheet.filter`
+- `CatchSheet.contained`
 <!-- generated:flutter:end -->
 
 ## Replaces
