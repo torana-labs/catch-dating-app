@@ -2365,11 +2365,9 @@ service cloud.firestore {
       allow update: if false;
     }
 
-    // Legacy documents predate progressive setup. A record carrying any new
-    // setup marker must explicitly be published before public reads work.
+    // Every event is private or published; only a published one is public.
     function isPublicEventData(data) {
-      return data.get('publicationState', '') == 'published'
-        || !data.keys().hasAny(['publicationState', 'setupRevision']);
+      return data.get('publicationState', '') == 'published';
     }
 
     function canReadPrivateEvent(eventId, data) {
@@ -2386,8 +2384,7 @@ service cloud.firestore {
     match /events/{eventId} {
       allow get: if isPublicEventData(resource.data)
         || canReadPrivateEvent(eventId, resource.data);
-      // Deploy only after the reviewed legacy backfill and compatible client
-      // release. Manager draft inventory uses its authorized callable.
+      // Manager draft inventory uses its authorized callable.
       // Client filtering and Remote Config cannot enforce draft privacy.
       allow list: if resource.data.publicationState == 'published';
 

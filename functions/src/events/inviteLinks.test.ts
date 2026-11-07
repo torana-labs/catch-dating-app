@@ -136,6 +136,7 @@ test("attendee links default to the external booking destination", async () => {
   const firestore = new FakeFirestore({
     "events/event-1": {
       organizerId: "organizer-1",
+      publicationState: "published",
       status: "active",
       startTime: new FakeTimestamp(Date.parse("2026-08-16T13:00:00.000Z")),
       endTime: new FakeTimestamp(Date.parse("2026-08-16T16:00:00.000Z")),
@@ -216,6 +217,7 @@ test("invite landing verifies its token and bounds projection", async () => {
     },
     "events/event-1": {
       organizerId: "organizer-1",
+      publicationState: "published",
       status: "active",
       startTime: new FakeTimestamp(Date.parse("2026-08-16T13:00:00.000Z")),
       endTime: new FakeTimestamp(Date.parse("2026-08-16T16:00:00.000Z")),

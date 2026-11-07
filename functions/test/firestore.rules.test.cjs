@@ -67,6 +67,8 @@ function organizer(overrides = {}) {
 
 function event(overrides = {}) {
   return {
+    publicationState: "published",
+    setupRevision: 1,
     organizerId: "club-1",
     startTime: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
     endTime: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
@@ -4413,16 +4415,14 @@ describe("firestore.rules", () => {
       await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
     });
 
-    it("direct reads deny private or unlabelled setup records", async () => {
+    it("direct reads allow published events and deny private or unlabelled ones", async () => {
       const anonymous = testEnv.unauthenticatedContext().firestore();
-      await seed(["events", "published"], event({publicationState: "published"}));
-      await seed(["events", "legacy"], event());
-      await seed(["events", "private"], event({publicationState: "private", setupRevision: 1}));
-      await seed(["events", "unlabelled"], event({setupRevision: 1}));
+      await seed(["events", "published"], event());
+      await seed(["events", "private"], event({publicationState: "private"}));
+      const {publicationState: _omitted, ...unlabelled} = event();
+      await seed(["events", "unlabelled"], unlabelled);
       await seed(["events", "malformed"], event({publicationState: null}));
-      for (const id of ["published", "legacy"]) {
-        await assertSucceeds(getDoc(doc(anonymous, "events", id)));
-      }
+      await assertSucceeds(getDoc(doc(anonymous, "events", "published")));
       for (const id of ["private", "unlabelled", "malformed"]) {
         await assertFails(getDoc(doc(anonymous, "events", id)));
       }
@@ -4430,10 +4430,10 @@ describe("firestore.rules", () => {
 
     it("requires publication-constrained lists even for organizers", async () => {
       await seed(["organizers", "club-1"], organizer());
-      await seed(["events", "published"], event({publicationState: "published"}));
-      await seed(["events", "legacy"], event());
-      await seed(["events", "private"], event({publicationState: "private", setupRevision: 1}));
-      await seed(["events", "unlabelled"], event({setupRevision: 1}));
+      await seed(["events", "published"], event());
+      await seed(["events", "private"], event({publicationState: "private"}));
+      const {publicationState: _omitted, ...unlabelled} = event();
+      await seed(["events", "unlabelled"], unlabelled);
       for (const db of [testEnv.unauthenticatedContext().firestore(),
         authedDb("guest-1"), authedDb("host-1"), authedDb("foreign-host")]) {
         await assertFails(getDocs(collection(db, "events")));

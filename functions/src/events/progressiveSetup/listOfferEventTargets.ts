@@ -95,9 +95,6 @@ function target(doc: FirebaseFirestore.QueryDocumentSnapshot,
     publicationState = "private";
   } else if (explicitState === "published") {
     publicationState = "published";
-  } else if (explicitState === undefined && revision === undefined) {
-    // Schema validation above requires full rich legacy fields.
-    publicationState = "published";
   } else {
     throw new HttpsError("failed-precondition",
       "An event publication state needs review.");
@@ -144,8 +141,7 @@ export async function listOfferEventTargets(params: {
       tx.get(db.collection("deletedUsers").doc(actorUid)),
     ]);
     authorizeSetupManager(organizer, deleted, actorUid);
-    // organizerId is required on both rich legacy and new private event
-    // documents.
+    // Every event, private or published, carries organizerId.
     let query = db.collection("events")
       .where("organizerId", "==", command.organizerId)
       .where("status", "==", "active")

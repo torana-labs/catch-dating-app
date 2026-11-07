@@ -13,6 +13,7 @@ test("Catch booking requires explicit Catch authority", () => {
       error.code === "failed-precondition"
   );
   assert.doesNotThrow(() => requireCatchBookingAuthority({
+    publicationState: "published",
     eventOrigin: {bookingAuthority: "catch"},
   } as EventDocument));
   assert.throws(

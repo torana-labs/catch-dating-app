@@ -10,6 +10,7 @@ import {catchNativeEventOrigin} from "../shared/testUtils";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
+import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 
@@ -217,6 +218,7 @@ function reservationPath(key: string): string {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
+    ...publishedEventSetup(),
     organizerId: "club-1",
     eventOrigin: catchNativeEventOrigin(),
     startTime: admin.firestore.Timestamp.fromMillis(

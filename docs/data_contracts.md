@@ -2380,8 +2380,7 @@ The required role-scoped Remote Config build minimum must use the actual
 released build numbers. It is not a privacy barrier: old clients can start
 offline or use bundled nonblocking defaults when the fetch fails. Restrictive
 rules must be live and tested before either private-setup gate is enabled.
-Individual legacy document reads remain compatible only when neither
-`publicationState` nor `setupRevision` exists.
+Individual event reads are public only for a published event.
 Direct private event reads require a current organizer manager or active viewRoster
 staff grant; deleted users, foreign tenants and expired/revoked staff grants
 are denied. Consumer bookmarks cannot target private events.

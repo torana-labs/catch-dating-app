@@ -53,6 +53,7 @@ test(
   () => {
     const enabled = {
       status: "active",
+      publicationState: "published",
       crossPathsDiscoveryEnabled: true,
       discoveryMarketId: "in-mh-mumbai",
     };
