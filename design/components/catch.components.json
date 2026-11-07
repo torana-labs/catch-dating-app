@@ -10002,7 +10002,8 @@
         },
         "notes": "Shared labelled-group semantics for one-of-many choice groups; the admin segmented-control adapter and the website choice grids render it. SelectControl is the native select the admin segmented control falls back to on narrow screens.",
         "additionalSymbols": [
-          "SelectControl"
+          "SelectControl",
+          "ToggleButtonControl"
         ]
       },
       "design": {
