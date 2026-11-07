@@ -30,7 +30,7 @@ export const EmptyStateStory: Story = {
     catchComponent: {
       id: "shared_empty_state",
       routeIds: ["home", "claim", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["default", "public-event", "organizer-results", "claim", "listing-review"],
+      states: ["default", "public-event", "organizer-results", "listing-review"],
     },
   },
   render: () => (
@@ -46,10 +46,6 @@ export const EmptyStateStory: Story = {
       <EmptyState variant="organizer-results">
         <h3>No organizer profiles match those filters.</h3>
         <p>Try a wider city, format, or status filter.</p>
-      </EmptyState>
-      <EmptyState variant="claim">
-        <h3>No claimable listing found.</h3>
-        <p>Search by organizer name, city, format, or source event before starting a new packet.</p>
       </EmptyState>
     </ContentGrid>
   ),

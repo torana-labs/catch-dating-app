@@ -1,5 +1,5 @@
 import type {HTMLAttributes, ReactNode} from "react";
-import {ToggleGroupControl, UiLabel as WebUiLabel} from "@catch/web-ui";
+import {UiLabel as WebUiLabel} from "@catch/web-ui";
 import type {HostPreviewSectionVariant} from "./host";
 import {classNames} from "@catch/web-ui";
 
@@ -24,7 +24,6 @@ export interface PublicEventCardModel {
 }
 
 export type ContentGridVariant =
-  | "claim-review"
   | "format"
   | "listing-event"
   | "marketing-split"
@@ -47,7 +46,6 @@ export function UiLabel({
 }
 
 export const contentGridClassNames: Record<ContentGridVariant, string> = {
-  "claim-review": "claim-review-grid",
   format: "format-grid",
   "listing-event": "listing-catch-event-grid",
   "marketing-split": "marketing-content-split",
@@ -66,21 +64,6 @@ export const hostPreviewSectionClassNames: Record<HostPreviewSectionVariant, str
   "product-split": "host-preview-section host-preview-product-split",
   trust: "host-preview-section host-preview-trust",
 };
-
-export function VerificationMethodGrid({
-  children,
-  className,
-  ...props
-}: Parameters<typeof ToggleGroupControl>[0]) {
-  return (
-    <ToggleGroupControl
-      {...props}
-      className={classNames("verification-methods", className)}
-    >
-      {children}
-    </ToggleGroupControl>
-  );
-}
 
 export function ContentGrid({
   children,

@@ -1766,7 +1766,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use ClaimFlowMain, ClaimFlow*, ClaimListingResults, ClaimResultButton, SelectedListingCard, VerificationMethodGrid, OwnerUnlockBoard, and AuthStatusRow variants instead of rendering claim-flow shells directly.",
+    guidance: "Use ClaimFlowMain and AuthStatusRow variants, or the claim flow's @catch/web-ui parts, instead of rendering claim-flow shells directly.",
   },
   {
     family: "website-marketing-section-shell",

@@ -14,49 +14,6 @@
   padding: 118px 0 72px;
 }
 
-.claim-flow__hero {
-  display: grid;
-  gap: 22px;
-  align-items: end;
-  padding: 0 0 30px;
-  border-bottom: 1px solid var(--website-line);
-}
-
-.claim-flow__intro h1 {
-  max-width: 760px;
-  margin-top: 12px;
-  font-size: clamp(42px, 7vw, 76px);
-  line-height: 0.98;
-  letter-spacing: 0;
-}
-
-.claim-flow__intro p {
-  max-width: 620px;
-  margin-top: 16px;
-  color: var(--website-copy-muted);
-  font-size: 17px;
-  line-height: 1.55;
-}
-
-.claim-flow__summary {
-  display: grid;
-  gap: 6px;
-  padding: 18px;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-md);
-  background: var(--website-surface);
-}
-
-.claim-flow__summary strong {
-  font-size: 18px;
-}
-
-.claim-flow__summary span {
-  color: var(--website-copy-muted);
-  font-size: 13px;
-}
-
-.claim-flow__workspace,
 .host-application {
   display: grid;
   gap: 18px;
@@ -117,7 +74,6 @@
   line-height: 1.35;
 }
 
-.claim-flow__panel,
 .host-application__panel {
   display: grid;
   gap: 20px;
@@ -128,20 +84,17 @@
   background: var(--flow-surface);
 }
 
-.claim-flow__stage,
 .host-application__stage {
   display: grid;
   gap: 20px;
 }
 
-.claim-flow__stage h2,
 .host-application__stage h3 {
   margin-top: 8px;
   font-size: 30px;
   line-height: 1.05;
 }
 
-.claim-flow__stage p,
 .host-application__stage p {
   max-width: 680px;
   margin-top: 8px;
@@ -149,16 +102,12 @@
   line-height: 1.55;
 }
 
-.claim-listing-results,
-.verification-methods,
 .choice-chip-grid {
   display: grid;
   gap: 10px;
 }
 
-.claim-result,
-.choice-card,
-.selected-listing-card {
+.choice-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 13px;
@@ -172,12 +121,10 @@
   text-align: left;
 }
 
-.claim-result,
 .choice-card {
   cursor: pointer;
 }
 
-.claim-result.is-selected,
 .choice-card.is-selected {
   border-color: color-mix(in srgb, var(--activity, var(--website-text)) 55%, var(--website-text));
   background:
@@ -185,8 +132,6 @@
     var(--flow-surface);
 }
 
-.claim-result small,
-.selected-listing-card small,
 .choice-card span {
   display: block;
   margin-top: 3px;
@@ -195,7 +140,6 @@
   line-height: 1.35;
 }
 
-.claim-empty-state,
 .operational-note {
   display: grid;
   gap: 10px;
@@ -213,15 +157,11 @@
   justify-content: space-between;
 }
 
-.claim-review-grid,
-.owner-unlock-board,
 .host-application__review {
   display: grid;
   gap: 14px;
 }
 
-.claim-review-grid > div,
-.owner-unlock-board article,
 .host-application__review article,
 .host-application__summary {
   padding: 16px;
@@ -230,7 +170,6 @@
   background: var(--flow-raised);
 }
 
-.claim-review-grid dl,
 .host-application__review dl {
   display: grid;
   gap: 1px;
@@ -241,7 +180,6 @@
   background: var(--flow-line);
 }
 
-.claim-review-grid dl div,
 .host-application__review dl div {
   display: grid;
   gap: 4px;
@@ -249,7 +187,6 @@
   background: var(--flow-surface);
 }
 
-.claim-review-grid dt,
 .host-application__review dt {
   color: var(--website-copy-meta);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
@@ -259,14 +196,12 @@
   text-transform: uppercase;
 }
 
-.claim-review-grid dd,
 .host-application__review dd {
   color: var(--website-text);
   font-size: 13px;
   line-height: 1.35;
 }
 
-.claim-review-grid ul,
 .host-application__summary ul {
   display: grid;
   gap: 8px;
@@ -275,7 +210,6 @@
   list-style: none;
 }
 
-.claim-review-grid li,
 .host-application__summary li {
   display: flex;
   gap: 8px;
@@ -383,18 +317,6 @@
   font-weight: 900;
 }
 
-.owner-unlock-board article span {
-  color: var(--website-text);
-  font-weight: 900;
-}
-
-.owner-unlock-board article p {
-  margin-top: 6px;
-  color: var(--website-copy-muted);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
 .host-application {
   grid-column: 1 / -1;
   border: 0;
@@ -450,20 +372,12 @@
 }
 
 @media (min-width: 760px) {
-
-  .claim-flow__hero {
-    grid-template-columns: minmax(0, 1fr) 340px;
-  }
-
-  .claim-review-grid,
-  .owner-unlock-board,
   .host-application__review {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 980px) {
-  .claim-flow__workspace,
   .host-application {
     grid-template-columns: 230px minmax(0, 1fr);
   }
@@ -494,16 +408,6 @@
 
   .claim-flow {
     padding-top: 96px;
-  }
-
-  .claim-result,
-  .selected-listing-card {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .claim-result > :last-child,
-  .selected-listing-card .see-all-button {
-    grid-column: 1 / -1;
   }
 
   .flow-actions .button,
