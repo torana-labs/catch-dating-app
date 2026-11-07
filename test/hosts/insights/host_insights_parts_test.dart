@@ -2,7 +2,6 @@ import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_t
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_night_row.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_source_meter.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_event_review_row.dart';
-import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -127,29 +126,19 @@ void main() {
       'name', (tester) async {
     await _pump(
       tester,
-      CatchStack(
+      const CatchStack(
         children: [
           HostEventReviewRow(
-            review: Review(
-              id: 'r1',
-              organizerId: 'org-1',
-              reviewerName: 'Rhea K.',
-              rating: 4,
-              comment: 'Great host.',
-              createdAt: DateTime(2026, 10, 28),
-            ),
+            name: 'Rhea K.',
+            rating: 4,
+            comment: 'Great host.',
+            bookedOnCatch: true,
           ),
           HostEventReviewRow(
-            review: Review(
-              id: 'r2',
-              organizerId: 'org-1',
-              reviewerName: 'Hidden Name',
-              rating: 5,
-              comment: '',
-              source: 'import',
-              isAnonymous: true,
-              createdAt: DateTime(2026, 10, 28),
-            ),
+            name: 'Hidden Name',
+            rating: 5,
+            comment: '',
+            anonymous: true,
           ),
         ],
       ),

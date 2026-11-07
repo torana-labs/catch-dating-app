@@ -125,7 +125,11 @@ class HostEventReportBody extends StatelessWidget {
                   key: ValueKey<String>(
                     'host-event-report-review-${review.id}',
                   ),
-                  review: review,
+                  name: review.reviewerName,
+                  rating: review.rating,
+                  comment: review.comment,
+                  anonymous: review.isAnonymous,
+                  bookedOnCatch: review.source == 'catchEvent',
                 ),
             ],
           ),

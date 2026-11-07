@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 /// One event in a host report, as the fullest-nights list reads it.
 @immutable
@@ -81,7 +81,9 @@ class HostAnalyticsNightRow extends StatelessWidget {
       title: night.title,
       onTap: onTap,
       date: CatchIndexRowDate(
-        day: EventFormatters.shortWeekday(start),
+        day: DateFormat.E(
+          Localizations.localeOf(context).toLanguageTag(),
+        ).format(start),
         date: '${start.day}',
         format: night.format,
       ),

@@ -1,38 +1,49 @@
-import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
-/// A guest review as a system list row: the reviewer, the stars, what they
-/// wrote and, for a review from a Catch booking, "Booked on Catch" in the
-/// success tone.
+/// A guest review as a system list row: the reviewer (or "A guest" when
+/// anonymous), the stars, what they wrote and, for a review from a Catch
+/// booking, "Booked on Catch" in the success tone.
 class HostEventReviewRow extends StatelessWidget {
-  const HostEventReviewRow({super.key, required this.review, this.onTap});
+  const HostEventReviewRow({
+    super.key,
+    required this.name,
+    required this.rating,
+    required this.comment,
+    this.anonymous = false,
+    this.bookedOnCatch = false,
+    this.onTap,
+  });
 
-  final Review review;
+  final String name;
+
+  /// Stars out of five.
+  final int rating;
+  final String comment;
+  final bool anonymous;
+  final bool bookedOnCatch;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final stars = review.rating.clamp(0, 5);
-    final comment = review.comment.trim();
-    final booked = review.source == 'catchEvent';
+    final stars = rating.clamp(0, 5);
+    final text = comment.trim();
+    final title = anonymous ? l10n.hostEventReportReviewAnonymous : name;
     return CatchIndexRow(
-      title: review.isAnonymous
-          ? l10n.hostEventReportReviewAnonymous
-          : review.reviewerName,
+      title: title,
       onTap: onTap,
       status: '${'★' * stars}${'☆' * (5 - stars)}',
       semanticLabel: l10n.hostEventReportReviewSemantics(
-        name: review.isAnonymous
-            ? l10n.hostEventReportReviewAnonymous
-            : review.reviewerName,
+        name: title,
         rating: stars,
       ),
-      body: comment.isEmpty ? null : comment,
-      meta: booked ? l10n.hostEventReportReviewBookedOnCatch : null,
-      metaTone: booked ? CatchIndexRowTone.success : CatchIndexRowTone.neutral,
+      body: text.isEmpty ? null : text,
+      meta: bookedOnCatch ? l10n.hostEventReportReviewBookedOnCatch : null,
+      metaTone: bookedOnCatch
+          ? CatchIndexRowTone.success
+          : CatchIndexRowTone.neutral,
       density: CatchIndexRowSize.roomy,
     );
   }

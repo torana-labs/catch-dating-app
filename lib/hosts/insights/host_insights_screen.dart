@@ -46,11 +46,7 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
     final l10n = context.l10n;
     final uidValue = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
     final uid = uidValue.value;
-    final organizersValue = uid == null
-        ? const CatchAsyncState<List<Organizer>>.loading()
-        : catchAsyncStateFromAsyncValue(
-            ref.watch(hostOperableOrganizersProvider(uid)),
-          );
+    final organizersValue = _organizers(uid);
     final selectedId = uid == null
         ? null
         : ref.watch(hostOrganizerSelectionProvider(uid));
@@ -65,7 +61,8 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
                 : null,
           );
 
-    final Widget body;
+    Widget? body;
+    HostInsightsState? insights;
     if (uidValue.hasError && uid == null) {
       body = CatchLocalizedErrorState(
         uidValue.error!,
@@ -86,7 +83,7 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
         onRetry: () => hostOperableOrganizerReads(uid!).forEach(ref.invalidate),
       );
     } else if (organizers == null) {
-      body = _body(HostInsightsState.loading(_range), null);
+      insights = HostInsightsState.loading(_range);
     } else if (organizer == null) {
       body = CatchEmptyState(
         icon: CatchIcons.people,
@@ -108,13 +105,15 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
         cityName: organizer.location,
       );
       final state = ref.watch(hostInsightsControllerProvider(request));
-      body = state.status == HostInsightsStatus.error
-          ? CatchLocalizedErrorState(
-              state.error!,
-              context: AppErrorContext.organizer,
-              onRetry: () => retryHostInsights(ref, request),
-            )
-          : _body(state, organizer);
+      if (state.status == HostInsightsStatus.error) {
+        body = CatchLocalizedErrorState(
+          state.error!,
+          context: AppErrorContext.organizer,
+          onRetry: () => retryHostInsights(ref, request),
+        );
+      } else {
+        insights = state;
+      }
     }
 
     return CatchRoot(
@@ -125,17 +124,22 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
           kicker: organizer?.name,
           title: l10n.hostTodayInsights,
         ),
-        body: body,
+        body:
+            body ??
+            HostInsightsBody(
+              state: insights!,
+              onRangeChanged: (range) => setState(() => _range = range),
+              onOpenNight: (night) => _openNight(organizer, night),
+            ),
       ),
     );
   }
 
-  Widget _body(HostInsightsState state, Organizer? organizer) =>
-      HostInsightsBody(
-        state: state,
-        onRangeChanged: (range) => setState(() => _range = range),
-        onOpenNight: (night) => _openNight(organizer, night),
-      );
+  CatchAsyncState<List<Organizer>> _organizers(String? uid) => uid == null
+      ? const CatchAsyncState<List<Organizer>>.loading()
+      : catchAsyncStateFromAsyncValue(
+          ref.watch(hostOperableOrganizersProvider(uid)),
+        );
 
   void _openNight(Organizer? organizer, HostAnalyticsNight night) {
     if (organizer == null) return;
