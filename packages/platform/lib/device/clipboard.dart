@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ClipboardSetter = Future<void> Function(ClipboardData data);
 
+// keepalive: a stateless platform facade with no account state.
 final clipboardSetterProvider = Provider<ClipboardSetter>(
   (ref) => Clipboard.setData,
 );
 
+// keepalive: a stateless platform facade with no account state.
 final clipboardControllerProvider = Provider<ClipboardController>(
   (ref) => ClipboardController(ref.watch(clipboardSetterProvider)),
 );

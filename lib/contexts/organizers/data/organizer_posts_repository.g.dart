@@ -110,7 +110,7 @@ final class WatchOrganizerPostRemainingWeeklyQuotaProvider
 }
 
 String _$watchOrganizerPostRemainingWeeklyQuotaHash() =>
-    r'ed28d6de89a206529583434f30a8fa1ccc9427c1';
+    r'3d5bc8dc7c0776545be102e4c949f085b1a835ae';
 
 final class WatchOrganizerPostRemainingWeeklyQuotaFamily extends $Family
     with $FunctionalFamilyOverride<Stream<int>, String> {

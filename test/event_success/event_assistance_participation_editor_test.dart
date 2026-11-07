@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_participa
 import 'package:catch_dating_app/event_success/presentation/event_assistance_participation_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_participation_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,6 +26,7 @@ void main() {
     repository = _Repository();
     auth = StreamController<String?>.broadcast();
     container = ProviderContainer(
+      retry: catchProviderRetry,
       overrides: [
         uidProvider.overrideWith((ref) => auth.stream),
         eventAssistanceParticipationRepositoryProvider.overrideWith(
@@ -360,8 +362,9 @@ void main() {
       await signIn('host-2');
       await completeRead(0);
       expect(container.read(query).isLoading, isTrue);
+      // A failure the container retry policy does not retry.
       repository.reads[1].result.completeError(
-        const NetworkException('unavailable', 'Offline'),
+        const PermissionException('Access denied.'),
       );
       await container.pump();
       expect(container.read(query).hasError, isTrue);

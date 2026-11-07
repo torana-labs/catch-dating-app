@@ -1,12 +1,17 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_dating_app/contexts/insights/domain/insights_tags.dart';
+import 'package:catch_platform/cache/cache_policy.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
+import 'package:catch_platform/cache/callable_read.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
+import '../platform/cache/cache_lifetime_harness.dart';
 
 void main() {
   test('HostAnalyticsQuery serializes custom event-scoped ranges', () {
@@ -170,89 +175,51 @@ void main() {
     expect(row.repeatAttendeeCount, 6);
   });
 
-  test('preset providers require fresh server reads after tab exit', () async {
-    final repository = _CountingHostAnalyticsRepository();
-    final container = ProviderContainer(
-      overrides: [
-        uidProvider.overrideWithValue(const AsyncData('account-a')),
-        hostAnalyticsRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
+  cacheLifetimeHarness(_harnessSubject);
 
-    const queries = [
-      HostAnalyticsQuery(organizerId: 'club-1', timezone: 'Asia/Kolkata'),
-      HostAnalyticsQuery(
-        organizerId: 'club-1',
-        rangePreset: HostAnalyticsRangePreset.ninetyDays,
-        granularity: HostAnalyticsGranularity.week,
-        timezone: 'Asia/Kolkata',
-      ),
-      HostAnalyticsQuery(
-        organizerId: 'club-1',
-        rangePreset: HostAnalyticsRangePreset.twelveMonths,
-        granularity: HostAnalyticsGranularity.month,
-        timezone: 'Asia/Kolkata',
-      ),
-    ];
+  test('a roster write for one organizer refetches its and every-organizer '
+      'reports only', () {
+    runCacheHarness(_harnessSubject, (run) {
+      final session = run.signIn('u1');
+      final mine = run.listen(
+        hostAnalyticsProvider(
+          HostAnalyticsRead(
+            session,
+            const HostAnalyticsQuery(organizerId: 'a'),
+          ),
+        ),
+      );
+      final everyone = run.listen(
+        hostAnalyticsProvider(
+          HostAnalyticsRead(session, const HostAnalyticsQuery()),
+        ),
+      );
+      final other = run.listen(
+        hostAnalyticsProvider(
+          HostAnalyticsRead(
+            session,
+            const HostAnalyticsQuery(organizerId: 'b'),
+          ),
+        ),
+      );
+      run.settle();
+      expect(run.backend.requests, hasLength(3));
 
-    Future<void> load(HostAnalyticsQuery query) async {
-      final provider = hostAnalyticsProvider(query);
-      final subscription = container.listen(provider, (_, _) {});
-      await container.read(provider.future);
-      subscription.close();
-      await flushTestEventQueue();
-    }
-
-    for (final query in queries) {
-      await load(query);
-    }
-    await load(queries.first);
-    expect(repository.callCount, 4);
-
-    container.invalidate(hostAnalyticsProvider(queries.first));
-    await load(queries.first);
-    expect(repository.callCount, 5);
+      run.container
+          .read(cacheTagsProvider)
+          .invalidate(InsightsTags.writtenFor('a'));
+      run.settle();
+      expect(run.backend.requestsFor('a'), 2);
+      expect(run.backend.requestsFor('all'), 2);
+      expect(run.backend.requestsFor('b'), 1);
+      mine.close();
+      everyone.close();
+      other.close();
+    });
   });
-  test(
-    'missing, loading and failed auth never load a private report',
-    () async {
-      for (final auth in <AsyncValue<String?>>[
-        const AsyncData(null),
-        const AsyncLoading(),
-        AsyncError(StateError('auth unavailable'), StackTrace.empty),
-      ]) {
-        final repository = _CountingHostAnalyticsRepository();
-        final container = ProviderContainer(
-          retry: (_, _) => null,
-          overrides: [
-            uidProvider.overrideWithValue(auth),
-            hostAnalyticsRepositoryProvider.overrideWithValue(repository),
-          ],
-        );
-        final subscription = container.listen(
-          hostAnalyticsProvider(const HostAnalyticsQuery()),
-          (_, _) {},
-        );
-        await container.pump();
-        expect(repository.callCount, 0);
-        if (auth is AsyncData<String?>) {
-          await expectLater(
-            container.read(
-              hostAnalyticsProvider(const HostAnalyticsQuery()).future,
-            ),
-            throwsA(isA<SignInRequiredException>()),
-          );
-        }
-        subscription.close();
-        container.dispose();
-      }
-    },
-  );
 
-  test(
-    'reports reauthorize after tab exit, account changes and same-account reentry',
-    () async {
+  test('a report that arrives after the session ends is never published', () {
+    fakeAsync((async) {
       final repository = _CountingHostAnalyticsRepository();
       final accounts = StreamController<String?>();
       final container = ProviderContainer(
@@ -262,90 +229,33 @@ void main() {
           hostAnalyticsRepositoryProvider.overrideWithValue(repository),
         ],
       );
-      addTearDown(accounts.close);
-      addTearDown(container.dispose);
-      // The app-wide auth foundation remains observed independently of tabs.
-      container.listen(uidProvider, (_, _) {});
-      const query = HostAnalyticsQuery(organizerId: 'club-1');
-      final provider = hostAnalyticsProvider(query);
-      var subscription = container.listen(provider, (_, _) {});
+      container.listen(authenticatedSessionProvider, (_, _) {});
+      final oldRead = Completer<HostAnalyticsReport>();
+      repository.pending = oldRead;
       accounts.add('account-a');
-      await flushTestEventQueue();
-      await container.pump();
-      await container.read(provider.future);
-      subscription.close();
-      await container.pump();
-      expect(repository.callCount, 1);
-      accounts.add('account-b');
-      await flushTestEventQueue();
-      await container.pump();
-      subscription = container.listen(provider, (_, _) {});
-      await container.read(provider.future);
-      expect(repository.callCount, 2);
-      accounts.add(null);
-      await flushTestEventQueue();
-      await container.pump();
-      await expectLater(
-        container.read(provider.future),
-        throwsA(isA<SignInRequiredException>()),
+      async.flushMicrotasks();
+      final session = container.read(authenticatedSessionProvider).requireValue;
+      final provider = hostAnalyticsProvider(
+        HostAnalyticsRead(session, const HostAnalyticsQuery(organizerId: 'c')),
       );
-      accounts.add('account-b');
-      await flushTestEventQueue();
-      await container.pump();
-      await container.read(provider.future);
-      expect(repository.callCount, 3);
-      subscription.close();
-    },
-  );
+      final observed = <AsyncValue<CachedRead<HostAnalyticsReport>>>[];
+      container.listen(provider, (_, next) => observed.add(next));
+      async.flushMicrotasks();
+      expect(repository.callCount, 1);
 
-  for (final nextAccount in ['account-b', 'account-a']) {
-    test(
-      'late report cannot publish across auth transition to $nextAccount',
-      () async {
-        final repository = _CountingHostAnalyticsRepository();
-        final accounts = StreamController<String?>();
-        final container = ProviderContainer(
-          retry: (_, _) => null,
-          overrides: [
-            uidProvider.overrideWith((ref) => accounts.stream),
-            hostAnalyticsRepositoryProvider.overrideWithValue(repository),
-          ],
-        );
-        addTearDown(accounts.close);
-        addTearDown(container.dispose);
-        final oldRead = Completer<HostAnalyticsReport>();
-        repository.pending = oldRead;
-        const query = HostAnalyticsQuery(organizerId: 'club-1');
-        final provider = hostAnalyticsProvider(query);
-        final observed = <HostAnalyticsReport>[];
-        container.listen(provider, (_, next) {
-          if (next.asData?.value case final HostAnalyticsReport report) {
-            observed.add(report);
-          }
-        });
-        accounts.add('account-a');
-        await flushTestEventQueue();
-        await container.pump();
-        expect(repository.callCount, 1);
-        accounts.add(null);
-        await flushTestEventQueue();
-        await container.pump();
-        repository.pending = null;
-        accounts.add(nextAccount);
-        await flushTestEventQueue();
-        await container.pump();
-        final fresh = await container.read(provider.future);
-        expect(repository.callCount, 2);
-        final stale = HostAnalyticsReport.fromCallableData({
+      accounts.add('account-b');
+      async.flushMicrotasks();
+      oldRead.complete(
+        HostAnalyticsReport.fromCallableData({
           'generatedAt': '2000-01-01T00:00:00Z',
-        });
-        oldRead.complete(stale);
-        await container.pump();
-        expect(container.read(provider).asData?.value, same(fresh));
-        expect(observed, isNot(contains(stale)));
-      },
-    );
-  }
+        }),
+      );
+      async.flushMicrotasks();
+      expect(observed.where((value) => value.hasValue), isEmpty);
+      container.dispose();
+      unawaited(accounts.close());
+    });
+  });
 
   test(
     'backend denial remains an error and is never replaced by a cached report',
@@ -359,16 +269,53 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      const query = HostAnalyticsQuery(organizerId: 'club-1');
-      container.listen(hostAnalyticsProvider(query), (_, _) {});
-      await expectLater(
-        container.read(hostAnalyticsProvider(query).future),
-        throwsStateError,
+      final session = container.read(authenticatedSessionProvider).requireValue;
+      final provider = hostAnalyticsProvider(
+        HostAnalyticsRead(session, const HostAnalyticsQuery(organizerId: 'c')),
       );
+      container.listen(provider, (_, _) {});
+      await expectLater(container.read(provider.future), throwsStateError);
       expect(repository.callCount, 1);
-      expect(container.read(hostAnalyticsProvider(query)).asData, isNull);
+      expect(container.read(provider).asData, isNull);
     },
   );
+}
+
+final _harnessSubject = CacheHarnessSubject(
+  description: 'Host analytics',
+  policy: CachePolicies.hostReports,
+  readOwner: (session, id) => hostAnalyticsProvider(
+    HostAnalyticsRead(session, HostAnalyticsQuery(organizerId: id)),
+  ),
+  overrides: (backend) => [
+    hostAnalyticsRepositoryProvider.overrideWith(
+      (ref) => _HarnessHostAnalyticsRepository(ref, backend),
+    ),
+  ],
+  tagFor: InsightsTags.hostReports,
+  dataOf: (value) => (value! as CachedRead<HostAnalyticsReport>).data.timezone,
+);
+
+/// Routes the analytics callable to the harness's counting backend. The
+/// report's timezone carries the backend response so the harness can compare
+/// values; the every-organizer query is recorded as `all`.
+final class _HarnessHostAnalyticsRepository implements HostAnalyticsRepository {
+  _HarnessHostAnalyticsRepository(this._ref, this._backend);
+
+  final Ref _ref;
+  final FakeCacheBackend _backend;
+
+  @override
+  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) async {
+    final response = await _backend.fetch(
+      uid: _ref.read(uidProvider).value ?? '',
+      id: query.organizerId ?? 'all',
+    );
+    return HostAnalyticsReport.fromCallableData({
+      'generatedAt': '2026-11-03T09:00:00.000Z',
+      'timezone': response,
+    });
+  }
 }
 
 class _CountingHostAnalyticsRepository implements HostAnalyticsRepository {

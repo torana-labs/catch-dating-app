@@ -150,7 +150,7 @@ final class EventRehearsalMovementForAccountProvider
     required (RehearsalMovementSelection, {AuthenticatedSession account})
     super.argument,
   }) : super(
-         retry: _noMovementRetry,
+         retry: null,
          name: r'eventRehearsalMovementForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -198,7 +198,7 @@ final class EventRehearsalMovementForAccountProvider
 }
 
 String _$eventRehearsalMovementForAccountHash() =>
-    r'1006fc0e95e4173387f23f04bec2842bff6f7cb0';
+    r'4a4edfebb72fd7a8dd771dd31ca61490a5062002';
 
 /// These deliberate reads must describe one runtime revision. Polling can never
 /// replace one half of a pending Host review or silently cross a reset.
@@ -211,7 +211,7 @@ final class EventRehearsalMovementForAccountFamily extends $Family
         > {
   EventRehearsalMovementForAccountFamily._()
     : super(
-        retry: _noMovementRetry,
+        retry: null,
         name: r'eventRehearsalMovementForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

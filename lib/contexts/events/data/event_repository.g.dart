@@ -49,7 +49,7 @@ final class EventRepositoryProvider
   }
 }
 
-String _$eventRepositoryHash() => r'5c27fcaf610df7c473e469b917d805e9b5bdde72';
+String _$eventRepositoryHash() => r'5f4fc3fbd105f0a53f61d695828711c771bb9cb9';
 
 @ProviderFor(watchEvent)
 final watchEventProvider = WatchEventFamily._();
@@ -411,7 +411,7 @@ final class EventVenueSessionProvider
   }
 }
 
-String _$eventVenueSessionHash() => r'e2a627b85465c11d81d9f26ba2e845b0de0736ea';
+String _$eventVenueSessionHash() => r'169f700c47f31a21213a09119fbaef63c616db4c';
 
 final class EventVenueSessionFamily extends $Family
     with $FunctionalFamilyOverride<Stream<EventVenueSession>, String> {
@@ -740,7 +740,7 @@ final class EventViewerStateProvider
   }
 }
 
-String _$eventViewerStateHash() => r'80c167a8621e03696801c5527b5b113d6b143058';
+String _$eventViewerStateHash() => r'3d1e43334d03a7b5a64c187f7fc7a560800a6c91';
 
 /// The UID isolates the local provider generation; it is never sent as authority.
 

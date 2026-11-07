@@ -5,9 +5,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'profile_location_initializer.g.dart';
 
-// keepalive: profile location initialization should run once per app session,
-// not once per route rebuild.
-@Riverpod(keepAlive: true)
+/// Records the device location on a profile that has none. Route lifetime:
+/// the app root watches it for the app's whole life, so it still runs once
+/// per process; it reads account data, so it is never kept alive.
+@riverpod
 class ProfileLocationInitializer extends _$ProfileLocationInitializer {
   bool _collected = false;
 

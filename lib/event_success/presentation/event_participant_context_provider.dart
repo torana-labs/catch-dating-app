@@ -67,7 +67,7 @@ class EventParticipantContextReader extends _$EventParticipantContextReader {
   }
 }
 
-@Riverpod(retry: _noRetry)
+@riverpod
 Future<EventParticipantContextReview> eventParticipantContextForAccount(
   Ref ref,
   String eventId, {
@@ -99,5 +99,3 @@ void _requireAccount(Ref ref, AuthenticatedSession account) {
     throw const SignInRequiredException('review event identity');
   }
 }
-
-Duration? _noRetry(int count, Object error) => null;

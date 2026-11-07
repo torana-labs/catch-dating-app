@@ -111,7 +111,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             clientOperationId: operationId,
           );
       _providerSyncOperationId = null;
-      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
       if (!mounted) return;
       showCatchNotice(
         context,
@@ -306,7 +305,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       if (!sameScope()) throw StateError('Host event scope changed.');
       return ref
           .read(hostOperationalRosterControllerProvider)
-          .applyRosterIntake(review);
+          .applyRosterIntake(review, organizerId: widget.organizerId);
     },
   );
 
@@ -316,7 +315,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     required String accountId,
     required HostRosterIntakeReview applied,
   }) async {
-    ref.invalidate(watchEventAttendeesProvider(eventId));
     await _showAppliedRosterReceipt(eventId: eventId, review: applied);
     await _rosterIntakeJournal.clear(
       userId: accountId,
@@ -455,7 +453,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             decision: decision,
             attendeeId: attendeeId,
           );
-      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
       if (!mounted) return;
       showCatchNotice(
         context,
@@ -500,7 +497,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             rows: rows,
           );
       if (!sameScope() || !mounted) return;
-      ref.invalidate(watchEventAttendeesProvider(eventId));
       if (result.errors.isEmpty) {
         showCatchNotice(
           context,
@@ -563,7 +559,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
             clientOperationId: _newAttendanceOperationId(attendee.id),
           );
       if (mounted) _setLocalState(() => _attendanceOutbox = outbox);
-      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
@@ -589,7 +584,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
           .flushAttendanceOutbox(widget.eventId);
       if (!mounted) return;
       _setLocalState(() => _attendanceOutbox = outbox);
-      ref.invalidate(watchEventAttendeesProvider(widget.eventId));
     } catch (error) {
       if (mounted) _setLocalState(() => _mutationError = error);
     }

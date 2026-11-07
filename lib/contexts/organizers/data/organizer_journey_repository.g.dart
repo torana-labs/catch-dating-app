@@ -58,14 +58,14 @@ final class OrganizerJourneyRepositoryProvider
 String _$organizerJourneyRepositoryHash() =>
     r'ca7bb38244012238460bd136ecd46d255da0a289';
 
-/// No background retry: the sheet has its own Retry, and Today's waiting claims
-/// show nothing if the read fails.
+/// A callable read on the container retry policy; the sheet keeps its own
+/// Retry for a failure that is not retryable.
 
 @ProviderFor(organizerJourneys)
 final organizerJourneysProvider = OrganizerJourneysFamily._();
 
-/// No background retry: the sheet has its own Retry, and Today's waiting claims
-/// show nothing if the read fails.
+/// A callable read on the container retry policy; the sheet keeps its own
+/// Retry for a failure that is not retryable.
 
 final class OrganizerJourneysProvider
     extends
@@ -77,13 +77,13 @@ final class OrganizerJourneysProvider
     with
         $FutureModifier<List<OrganizerJourney>>,
         $FutureProvider<List<OrganizerJourney>> {
-  /// No background retry: the sheet has its own Retry, and Today's waiting claims
-  /// show nothing if the read fails.
+  /// A callable read on the container retry policy; the sheet keeps its own
+  /// Retry for a failure that is not retryable.
   OrganizerJourneysProvider._({
     required OrganizerJourneysFamily super.from,
     required String? super.argument,
   }) : super(
-         retry: _noJourneyReadRetry,
+         retry: null,
          name: r'organizerJourneysProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -123,24 +123,24 @@ final class OrganizerJourneysProvider
   }
 }
 
-String _$organizerJourneysHash() => r'49c19fb4c0fd93eac98d6e5e115ecc3f290a17fb';
+String _$organizerJourneysHash() => r'52828068672f98fc74f0bf8b9d09d8d35349cf6c';
 
-/// No background retry: the sheet has its own Retry, and Today's waiting claims
-/// show nothing if the read fails.
+/// A callable read on the container retry policy; the sheet keeps its own
+/// Retry for a failure that is not retryable.
 
 final class OrganizerJourneysFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<OrganizerJourney>>, String?> {
   OrganizerJourneysFamily._()
     : super(
-        retry: _noJourneyReadRetry,
+        retry: null,
         name: r'organizerJourneysProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// No background retry: the sheet has its own Retry, and Today's waiting claims
-  /// show nothing if the read fails.
+  /// A callable read on the container retry policy; the sheet keeps its own
+  /// Retry for a failure that is not retryable.
 
   OrganizerJourneysProvider call(String? organizerId) =>
       OrganizerJourneysProvider._(argument: organizerId, from: this);

@@ -379,17 +379,9 @@ void _registerHostOperationsPresenceTests() {
           hostAnalyticsDeviceTimezoneProvider.overrideWith(
             (ref) async => 'UTC',
           ),
-          hostAnalyticsProvider(
-            const HostAnalyticsQuery(
-              organizerId: 'denied-analytics',
-              granularity: HostAnalyticsGranularity.week,
-              timezone: 'UTC',
-            ),
-          ).overrideWithValue(
-            const AsyncError<HostAnalyticsReport>(
-              PermissionException('Access denied.'),
-              StackTrace.empty,
-            ),
+          uidProvider.overrideWithValue(const AsyncData(_hostUid)),
+          hostAnalyticsRepositoryProvider.overrideWithValue(
+            const _DeniedHostAnalyticsRepository(),
           ),
         ],
       );
@@ -402,4 +394,12 @@ void _registerHostOperationsPresenceTests() {
       await _captureHostPresencePreview(tester, 'denied');
     },
   );
+}
+
+final class _DeniedHostAnalyticsRepository implements HostAnalyticsRepository {
+  const _DeniedHostAnalyticsRepository();
+
+  @override
+  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) =>
+      Future.error(const PermissionException('Access denied.'));
 }

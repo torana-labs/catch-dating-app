@@ -3,11 +3,18 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/host_provider_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
+import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -155,4 +162,100 @@ void main() {
       );
     }
   });
+
+  testWidgets(
+    'the roster listener delivers check-ins once the outbox flushes',
+    (tester) async {
+      final attendees = StreamController<List<EventAttendee>>.broadcast();
+      final network = StreamController<List<ConnectivityResult>>.broadcast();
+      addTearDown(attendees.close);
+      addTearDown(network.close);
+      var listens = 0;
+      final l10n = AppLocalizationsEn();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+            appConnectivityProvider.overrideWith((ref) => network.stream),
+            watchEventAttendeesProvider(_eventId).overrideWith((ref) {
+              listens++;
+              return attendees.stream;
+            }),
+            hostOperationalRosterControllerProvider.overrideWith(
+              (ref) => _OfflineCheckInController(ref, attendees),
+            ),
+          ],
+          child: _app(
+            const HostOperationalRosterSection(
+              eventId: _eventId,
+              organizerId: _organizerId,
+              allowRuntimeClaimReview: false,
+              showAudienceInsights: false,
+            ),
+          ),
+        ),
+      );
+      attendees.add([_attendee(EventAttendeeStatus.registered)]);
+      await pumpFeatureUi(tester);
+      expect(listens, 1);
+      expect(find.text(l10n.hostsOperationalRosterUndoCheckIn), findsNothing);
+
+      // Back online: the outbox sends the queued check-in and the server write
+      // reaches the open listener, with no resubscribe.
+      network.add([ConnectivityResult.wifi]);
+      await pumpFeatureUi(tester);
+      expect(find.text(l10n.hostsOperationalRosterUndoCheckIn), findsOneWidget);
+      expect(listens, 1);
+    },
+  );
+}
+
+EventAttendee _attendee(EventAttendeeStatus status) => EventAttendee(
+  id: 'attendee-1',
+  eventId: _eventId,
+  organizerId: _organizerId,
+  displayName: 'Asha',
+  searchName: 'asha',
+  source: EventAttendeeSource.catchBooking,
+  status: status,
+  createdAt: DateTime(2026, 11),
+  updatedAt: DateTime(2026, 11),
+);
+
+/// An attendance outbox holding one check-in queued offline. Flushing it
+/// commits the check-in, which the attendee listener then delivers.
+final class _OfflineCheckInController extends HostOperationalRosterController {
+  _OfflineCheckInController(super.ref, this._attendees);
+
+  final StreamController<List<EventAttendee>> _attendees;
+  var _flushed = false;
+
+  HostAttendanceOutboxSummary get _summary => HostAttendanceOutboxSummary([
+    if (!_flushed)
+      HostAttendanceOutboxEntry(
+        eventId: _eventId,
+        attendeeId: 'attendee-1',
+        desiredCheckedIn: true,
+        expectedRevision: 0,
+        clientOperationId: 'attendance:1',
+        createdAt: DateTime(2026, 11),
+        status: HostAttendanceOutboxStatus.pending,
+      ),
+  ]);
+
+  @override
+  Future<HostAttendanceOutboxSummary> loadAttendanceOutbox(
+    String eventId,
+  ) async => _summary;
+
+  @override
+  Future<HostAttendanceOutboxSummary> flushAttendanceOutbox(
+    String eventId,
+  ) async {
+    if (!_flushed) {
+      _flushed = true;
+      _attendees.add([_attendee(EventAttendeeStatus.checkedIn)]);
+    }
+    return _summary;
+  }
 }

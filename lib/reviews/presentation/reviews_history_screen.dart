@@ -59,10 +59,8 @@ class ReviewsHistoryScreen extends ConsumerWidget {
       ),
     );
     void onRetryProfile() => ref.invalidate(watchUserProfileProvider);
-    VoidCallback? onRetryReviews;
-    if (uid != null) {
-      onRetryReviews = () => ref.invalidate(watchReviewsByUserProvider(uid));
-    }
+    void onRetryReviews(String reviewerId) =>
+        ref.invalidate(watchReviewsByUserProvider(reviewerId));
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
@@ -78,7 +76,7 @@ class ReviewsHistoryScreen extends ConsumerWidget {
         child: ReviewsHistoryBody(
           state: state,
           onRetryProfile: onRetryProfile,
-          onRetryReviews: onRetryReviews,
+          onRetryReviews: uid == null ? null : () => onRetryReviews(uid),
           onEditReview: state is ReviewsHistoryContent
               ? (row) => _showEditReviewSheet(context, state, row)
               : null,

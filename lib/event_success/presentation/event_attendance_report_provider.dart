@@ -65,7 +65,7 @@ class EventAttendanceReport extends _$EventAttendanceReport {
   }
 }
 
-@Riverpod(retry: _noReportReadRetry)
+@riverpod
 Future<EventAttendanceReportReview> eventAttendanceReportForAccount(
   Ref ref,
   EventAssistanceRuntimeScope scope, {
@@ -79,5 +79,3 @@ Future<EventAttendanceReportReview> eventAttendanceReportForAccount(
   requireAttendanceReviewAccount(ref, account);
   return EventAttendanceReportReview._(account, view);
 }
-
-Duration? _noReportReadRetry(int retryCount, Object error) => null;

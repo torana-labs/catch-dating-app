@@ -151,7 +151,7 @@ final class EventAttendanceReportForAccountProvider
     required (EventAssistanceRuntimeScope, {EventAssistanceAccount account})
     super.argument,
   }) : super(
-         retry: _noReportReadRetry,
+         retry: null,
          name: r'eventAttendanceReportForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -199,7 +199,7 @@ final class EventAttendanceReportForAccountProvider
 }
 
 String _$eventAttendanceReportForAccountHash() =>
-    r'56b8e1e332ef4c1a3f544ef8d1689bf51bcebc32';
+    r'75a297d5756dd6f0613f82c599b5569e40132cf4';
 
 final class EventAttendanceReportForAccountFamily extends $Family
     with
@@ -209,7 +209,7 @@ final class EventAttendanceReportForAccountFamily extends $Family
         > {
   EventAttendanceReportForAccountFamily._()
     : super(
-        retry: _noReportReadRetry,
+        retry: null,
         name: r'eventAttendanceReportForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

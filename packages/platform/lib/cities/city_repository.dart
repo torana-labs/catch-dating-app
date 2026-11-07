@@ -110,8 +110,8 @@ CityRepository cityRepository(Ref ref) => CityRepository(
   ref.watch(errorLoggerProvider),
 );
 
-// keepalive: city list is app-wide discovery configuration reused by Explore,
-// onboarding, and profile flows.
+// keepalive: account-free: the city list is app-wide discovery configuration
+// reused by Explore, onboarding and profile flows.
 @Riverpod(keepAlive: true)
 Future<List<CityData>> cityList(Ref ref) async {
   return ref.watch(cityRepositoryProvider).fetchCities();

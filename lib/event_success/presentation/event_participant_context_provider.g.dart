@@ -150,7 +150,7 @@ final class EventParticipantContextForAccountProvider
     required EventParticipantContextForAccountFamily super.from,
     required (String, {AuthenticatedSession account}) super.argument,
   }) : super(
-         retry: _noRetry,
+         retry: null,
          name: r'eventParticipantContextForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -197,7 +197,7 @@ final class EventParticipantContextForAccountProvider
 }
 
 String _$eventParticipantContextForAccountHash() =>
-    r'fcbb47b160f46a6d392cbd9a4888d28c322ed7df';
+    r'b9d77769224756d086f632af9ff4ccb1542d15dd';
 
 final class EventParticipantContextForAccountFamily extends $Family
     with
@@ -207,7 +207,7 @@ final class EventParticipantContextForAccountFamily extends $Family
         > {
   EventParticipantContextForAccountFamily._()
     : super(
-        retry: _noRetry,
+        retry: null,
         name: r'eventParticipantContextForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

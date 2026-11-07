@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -99,5 +100,8 @@ Stream<int> watchOrganizerPostRemainingWeeklyQuota(
 ) {
   return ref
       .watch(organizerPostsRepositoryProvider)
-      .watchRemainingWeeklyQuota(organizerId: organizerId);
+      .watchRemainingWeeklyQuota(
+        organizerId: organizerId,
+        now: ref.watch(appClockProvider).now(),
+      );
 }

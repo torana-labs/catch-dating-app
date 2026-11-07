@@ -102,7 +102,7 @@ class EventRehearsalAssistance extends _$EventRehearsalAssistance {
   }
 }
 
-@Riverpod(retry: _noReviewRetry)
+@riverpod
 Future<RehearsalAssistanceReview> eventRehearsalAssistanceForAccount(
   Ref ref,
   String sessionId, {
@@ -139,5 +139,3 @@ Future<RehearsalAssistanceReview> eventRehearsalAssistanceForAccount(
   ref.onDispose(() => review._current = false);
   return review;
 }
-
-Duration? _noReviewRetry(int retryCount, Object error) => null;

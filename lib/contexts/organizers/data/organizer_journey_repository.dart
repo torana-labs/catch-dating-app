@@ -45,11 +45,9 @@ class OrganizerJourneyRepository {
 OrganizerJourneyRepository organizerJourneyRepository(Ref ref) =>
     OrganizerJourneyRepository(ref.watch(firebaseFunctionsProvider));
 
-Duration? _noJourneyReadRetry(int retryCount, Object error) => null;
-
-/// No background retry: the sheet has its own Retry, and Today's waiting claims
-/// show nothing if the read fails.
-@Riverpod(retry: _noJourneyReadRetry)
+/// A callable read on the container retry policy; the sheet keeps its own
+/// Retry for a failure that is not retryable.
+@riverpod
 Future<List<OrganizerJourney>> organizerJourneys(
   Ref ref,
   String? organizerId,

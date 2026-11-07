@@ -35,6 +35,7 @@ typedef ProgramInventoryRowPredicate =
 const programEventsMatchingPageReadLimit = 8;
 
 // provider-graph: manual-provider:programCreateJournalProvider planned CAT156 -- The Program creation command journal remains manually provided for the initial consolidation so its persistence instance and test override contract do not change in the source repair. CAT156 owns the equivalent Riverpod codegen migration.
+// keepalive: a stateless journal facade; its entries are keyed by account.
 // ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt; keeps value-equality scope, disposal, idempotency journal and test overrides until the bounded codegen move
 final programCreateJournalProvider = Provider<ProgramCreateJournal>(
   (ref) => const ProgramCreateJournal(),

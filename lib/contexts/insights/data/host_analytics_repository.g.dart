@@ -92,22 +92,25 @@ final class HostAnalyticsRepositoryProvider
 String _$hostAnalyticsRepositoryHash() =>
     r'092a85790b82098407a06f197b994131d9b31705';
 
-@ProviderFor(hostAnalytics)
+/// Host analytics, kept for the host reports window after the screen closes
+/// and refetched in the background once older than its staleness. A write
+/// that changes what the report counts declares [InsightsTags].
+
+@ProviderFor(HostAnalytics)
 final hostAnalyticsProvider = HostAnalyticsFamily._();
 
+/// Host analytics, kept for the host reports window after the screen closes
+/// and refetched in the background once older than its staleness. A write
+/// that changes what the report counts declares [InsightsTags].
 final class HostAnalyticsProvider
     extends
-        $FunctionalProvider<
-          AsyncValue<HostAnalyticsReport>,
-          HostAnalyticsReport,
-          FutureOr<HostAnalyticsReport>
-        >
-    with
-        $FutureModifier<HostAnalyticsReport>,
-        $FutureProvider<HostAnalyticsReport> {
+        $AsyncNotifierProvider<HostAnalytics, CachedRead<HostAnalyticsReport>> {
+  /// Host analytics, kept for the host reports window after the screen closes
+  /// and refetched in the background once older than its staleness. A write
+  /// that changes what the report counts declares [InsightsTags].
   HostAnalyticsProvider._({
     required HostAnalyticsFamily super.from,
-    required HostAnalyticsQuery super.argument,
+    required HostAnalyticsRead super.argument,
   }) : super(
          retry: null,
          name: r'hostAnalyticsProvider',
@@ -128,15 +131,7 @@ final class HostAnalyticsProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostAnalyticsReport> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostAnalyticsReport> create(Ref ref) {
-    final argument = this.argument as HostAnalyticsQuery;
-    return hostAnalytics(ref, argument);
-  }
+  HostAnalytics create() => HostAnalytics();
 
   @override
   bool operator ==(Object other) {
@@ -149,13 +144,20 @@ final class HostAnalyticsProvider
   }
 }
 
-String _$hostAnalyticsHash() => r'7f6803c7bfd7b5d644b66da639cb97d272bfbb4d';
+String _$hostAnalyticsHash() => r'b080b929f8c7aaaa5aff91f8c3d05d21147efe0d';
+
+/// Host analytics, kept for the host reports window after the screen closes
+/// and refetched in the background once older than its staleness. A write
+/// that changes what the report counts declares [InsightsTags].
 
 final class HostAnalyticsFamily extends $Family
     with
-        $FunctionalFamilyOverride<
-          FutureOr<HostAnalyticsReport>,
-          HostAnalyticsQuery
+        $ClassFamilyOverride<
+          HostAnalytics,
+          AsyncValue<CachedRead<HostAnalyticsReport>>,
+          CachedRead<HostAnalyticsReport>,
+          FutureOr<CachedRead<HostAnalyticsReport>>,
+          HostAnalyticsRead
         > {
   HostAnalyticsFamily._()
     : super(
@@ -166,9 +168,47 @@ final class HostAnalyticsFamily extends $Family
         isAutoDispose: true,
       );
 
-  HostAnalyticsProvider call(HostAnalyticsQuery query) =>
-      HostAnalyticsProvider._(argument: query, from: this);
+  /// Host analytics, kept for the host reports window after the screen closes
+  /// and refetched in the background once older than its staleness. A write
+  /// that changes what the report counts declares [InsightsTags].
+
+  HostAnalyticsProvider call(HostAnalyticsRead read) =>
+      HostAnalyticsProvider._(argument: read, from: this);
 
   @override
   String toString() => r'hostAnalyticsProvider';
+}
+
+/// Host analytics, kept for the host reports window after the screen closes
+/// and refetched in the background once older than its staleness. A write
+/// that changes what the report counts declares [InsightsTags].
+
+abstract class _$HostAnalytics
+    extends $AsyncNotifier<CachedRead<HostAnalyticsReport>> {
+  late final _$args = ref.$arg as HostAnalyticsRead;
+  HostAnalyticsRead get read => _$args;
+
+  FutureOr<CachedRead<HostAnalyticsReport>> build(HostAnalyticsRead read);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CachedRead<HostAnalyticsReport>>,
+              CachedRead<HostAnalyticsReport>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CachedRead<HostAnalyticsReport>>,
+                CachedRead<HostAnalyticsReport>
+              >,
+              AsyncValue<CachedRead<HostAnalyticsReport>>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
 }

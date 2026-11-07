@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
@@ -62,9 +63,10 @@ class OrganizerDetailReadOnlyPreview extends ConsumerWidget {
                 .organizersOrganizerDetailScreenMessageThisOrganizerIsNo,
             icon: CatchIcons.people,
             fillRemaining: false,
-            onRetry: () => ref.invalidate(
-              organizerDetailViewModelProvider(initialOrganizer.id),
-            ),
+            // The organizer listener is the read owner; the view model
+            // rebuilds from it.
+            onRetry: () =>
+                ref.invalidate(watchOrganizerProvider(initialOrganizer.id)),
           );
         }
 

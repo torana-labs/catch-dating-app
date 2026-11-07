@@ -88,7 +88,7 @@ class EventAssistanceGroupStaff extends _$EventAssistanceGroupStaff {
   }
 }
 
-@Riverpod(retry: _noGroupStaffReadRetry)
+@riverpod
 Future<EventAssistanceGroupStaffSession> eventAssistanceGroupStaffForAccount(
   Ref ref,
   EventAssistanceGroupStaffLookup lookup, {
@@ -107,5 +107,3 @@ Future<EventAssistanceGroupStaffSession> eventAssistanceGroupStaffForAccount(
   ref.onDispose(() => session._current = false);
   return session;
 }
-
-Duration? _noGroupStaffReadRetry(int count, Object error) => null;

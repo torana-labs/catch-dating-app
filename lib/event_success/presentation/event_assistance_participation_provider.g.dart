@@ -155,7 +155,7 @@ final class EventAssistanceParticipationForAccountProvider
     required (EventAssistanceGuestScope, {AuthenticatedSession account})
     super.argument,
   }) : super(
-         retry: _noParticipationReadRetry,
+         retry: null,
          name: r'eventAssistanceParticipationForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -204,7 +204,7 @@ final class EventAssistanceParticipationForAccountProvider
 }
 
 String _$eventAssistanceParticipationForAccountHash() =>
-    r'47f992e72c53236d09568ac2e3c29db3d2d2d753';
+    r'd6407024590514e13a59321eb7ec486d35079ed9';
 
 final class EventAssistanceParticipationForAccountFamily extends $Family
     with
@@ -214,7 +214,7 @@ final class EventAssistanceParticipationForAccountFamily extends $Family
         > {
   EventAssistanceParticipationForAccountFamily._()
     : super(
-        retry: _noParticipationReadRetry,
+        retry: null,
         name: r'eventAssistanceParticipationForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
