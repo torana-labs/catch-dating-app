@@ -209,6 +209,7 @@ export 'src/patterns/catch_page_body.dart';
 export 'src/patterns/catch_page_body_gap.dart';
 export 'src/patterns/catch_page_body_mode.dart';
 export 'src/patterns/catch_page_body_variant.dart';
+export 'src/patterns/catch_pane_header.dart';
 export 'src/patterns/catch_pane_layout.dart';
 export 'src/patterns/catch_root_screen_body.dart';
 export 'src/patterns/catch_root_screen_page_owner.dart';
