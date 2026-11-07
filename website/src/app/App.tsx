@@ -16,6 +16,7 @@ import {
   pageMeta,
   pageMetaForEvent,
   pageMetaForHostPath,
+  pageMetaForWeddingsPath,
   pageMetaForListing,
   type PageKey,
 } from "./pageMeta";
@@ -64,6 +65,8 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/organizers/HostListingPage.tsx",
   "../features/host/HostApplicationPage.tsx",
   "../features/host/HostPage.tsx",
+  "../features/weddings/WeddingsPage.tsx",
+  "../features/weddings/WeddingsApplicationPage.tsx",
   "../features/notFound/NotFoundPage.tsx",
   "../features/legal/LegalPage.tsx",
 ], {query: "?route-recovery"});
@@ -130,6 +133,12 @@ const HostApplicationPage = route(async () => ({
 const HostPage = route(async () => ({
   default: (await import("../features/host/HostPage")).HostPage,
 }), "../features/host/HostPage", "HostPage");
+const WeddingsPage = route(async () => ({
+  default: (await import("../features/weddings/WeddingsPage")).WeddingsPage,
+}), "../features/weddings/WeddingsPage", "WeddingsPage");
+const WeddingsApplicationPage = route(async () => ({
+  default: (await import("../features/weddings/WeddingsApplicationPage")).WeddingsApplicationPage,
+}), "../features/weddings/WeddingsApplicationPage", "WeddingsApplicationPage");
 const NotFoundPage = route(async () => ({
   default: (await import("../features/notFound/NotFoundPage")).NotFoundPage,
 }), "../features/notFound/NotFoundPage", "NotFoundPage");
@@ -191,7 +200,7 @@ function CanonicalMarketingRouteShell() {
     pageMetaForListing(listingRoute.listing, {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
-    pageMetaForHostPath(location.pathname) ?? pageMeta[fallbackPage];
+    pageMetaForHostPath(location.pathname) ?? pageMetaForWeddingsPath(location.pathname) ?? pageMeta[fallbackPage];
 
   useMarketingAnalytics(page, routeKey);
   useDocumentMeta(meta);
@@ -208,6 +217,8 @@ function CanonicalMarketingRouteShell() {
         />
         <Routes>
           <Route path={marketingRoutePaths.host_apply} element={<HostApplicationPage />} />
+          <Route path={marketingRoutePaths.weddings_apply} element={<WeddingsApplicationPage />} />
+          <Route path={marketingRoutePaths.weddings} element={<WeddingsPage />} />
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}

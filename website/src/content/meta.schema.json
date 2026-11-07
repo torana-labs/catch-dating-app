@@ -37,6 +37,8 @@
         "event_booking",
         "sales_demo",
         "host_apply",
+        "weddings",
+        "weddings_apply",
         "visitor_discovery"
       ],
       "additionalProperties": false,
@@ -102,6 +104,12 @@
           "$ref": "#/$defs/staticMeta"
         },
         "host_apply": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "weddings": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "weddings_apply": {
           "$ref": "#/$defs/staticMeta"
         },
         "visitor_discovery": {

@@ -51,6 +51,8 @@ for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "
 }
 writeRoute("/host/apply/", staticRouteMeta(websiteMeta, "host_apply", baseUrl));
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
+writeRoute("/weddings/apply/", staticRouteMeta(websiteMeta, "weddings_apply", baseUrl));
+writeRoute("/weddings/", staticRouteMeta(websiteMeta, "weddings", baseUrl));
 writeRoute("/join/", staticRouteMeta(websiteMeta, "event_runtime", baseUrl));
 writeRoute("/booking/", staticRouteMeta(websiteMeta, "event_booking", baseUrl));
 writeRoute("/demo/", staticRouteMeta(websiteMeta, "sales_demo", baseUrl));

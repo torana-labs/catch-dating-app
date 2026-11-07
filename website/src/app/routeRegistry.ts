@@ -4,6 +4,8 @@ export type MarketingRouteId =
   | "visitor_discovery"
   | "host"
   | "host_apply"
+  | "weddings"
+  | "weddings_apply"
   | "organizer_search"
   | "organizer_listing"
   | "event_detail"
@@ -36,6 +38,8 @@ export const marketingRouteDefinitions = [
   {id: "visitor_discovery", path: "/explore/"},
   {id: "host", path: "/host/"},
   {id: "host_apply", path: "/host/apply/"},
+  {id: "weddings", path: "/weddings/"},
+  {id: "weddings_apply", path: "/weddings/apply/"},
 
   {id: "organizer_search", path: "/organizers"},
   {id: "organizer_listing", path: "/organizers/*"},
