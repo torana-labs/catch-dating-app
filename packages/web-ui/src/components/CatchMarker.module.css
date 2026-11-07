@@ -1,0 +1,56 @@
+/*
+ * catch.marker, transcribed from the system's .c-marker: a pill in the tone's
+ * colour (success mint, warning yellow, danger coral, info indigo, format the
+ * format accent), a ring drawn as a 2px inset line, and 20px checks and
+ * numbers in the fill of what they sit on. A live marker pulses.
+ */
+.marker {
+  --catch-marker: var(--catch-theme-ink);
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: var(--catch-radius-pill);
+  color: var(--catch-marker);
+}
+
+.marker[data-tone="muted"] { --catch-marker: var(--catch-theme-ink3); }
+.marker[data-tone="success"] { --catch-marker: var(--catch-theme-format-courts); }
+.marker[data-tone="warning"] { --catch-marker: var(--catch-theme-format-games); }
+.marker[data-tone="danger"] { --catch-marker: var(--catch-theme-format-run); }
+.marker[data-tone="info"] { --catch-marker: var(--catch-theme-indigo); }
+.marker[data-format="run"] { --catch-marker: var(--catch-format-run-accent); }
+.marker[data-format="dinner"] { --catch-marker: var(--catch-format-dinner-accent); }
+.marker[data-format="games"] { --catch-marker: var(--catch-format-games-accent); }
+.marker[data-format="courts"] { --catch-marker: var(--catch-format-courts-accent); }
+.marker[data-format="nightsOut"] { --catch-marker: var(--catch-format-nights-out-accent); }
+
+.marker[data-size="8"] { width: 8px; height: 8px; }
+.marker[data-size="10"] { width: 10px; height: 10px; }
+.marker[data-size="12"] { width: 12px; height: 12px; }
+
+.marker[data-kind="dot"] { background: var(--catch-marker); }
+.marker[data-kind="ring"] { background: transparent; box-shadow: inset 0 0 0 var(--catch-stroke-focus) var(--catch-marker); }
+
+.marker:is([data-kind="check"], [data-kind="number"]) {
+  width: 20px;
+  height: 20px;
+  background: var(--catch-marker);
+  color: var(--catch-surface-fill, var(--catch-theme-ground));
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.marker[data-live] { animation: pulse var(--catch-duration-pulse) var(--catch-motion-standard-curve) infinite; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 var(--catch-marker); }
+  70% { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker[data-live] { animation: none; }
+}

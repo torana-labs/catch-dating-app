@@ -1,0 +1,78 @@
+/*
+ * catch.range_slider, transcribed from the system's .c-slider: a 28px row
+ * with a 4px pill track (the nested fill on a tile) filled in the primary
+ * colour, and 24px thumbs in the nested fill with a 2px ink ring. The native
+ * inputs sit over the track and draw only their thumbs.
+ */
+.slider {
+  position: relative;
+  width: 100%;
+  height: 28px;
+}
+
+.track {
+  position: absolute;
+  top: 12px;
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-track);
+}
+
+.slider:is([data-on="tile"], [data-on="nested"]) .track { background: var(--catch-theme-nested); }
+
+.fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--catch-theme-primary);
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+}
+
+.input::-webkit-slider-runnable-track { background: none; }
+.input::-moz-range-track { background: none; }
+
+.input::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  border: var(--catch-stroke-focus) solid var(--catch-theme-ink);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-nested);
+  cursor: grab;
+  pointer-events: auto;
+  appearance: none;
+}
+
+.input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: var(--catch-stroke-focus) solid var(--catch-theme-ink);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-nested);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.input:focus-visible { outline: none; }
+
+.input:focus-visible::-webkit-slider-thumb {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
+  outline-offset: 2px;
+}
+
+.input:focus-visible::-moz-range-thumb {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
+  outline-offset: 2px;
+}

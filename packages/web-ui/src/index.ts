@@ -1,5 +1,5 @@
 export {CatchAccordion} from "./components/CatchAccordion";
-export type {CatchAccordionItem, CatchAccordionProps} from "./components/CatchAccordion";
+export type {CatchAccordionEntry, CatchAccordionItem, CatchAccordionProps, CatchAccordionSize} from "./components/CatchAccordion";
 // Admin T4 components (D18), registered in design/admin/components.json.
 export {CatchAdminCommandRow, CatchAdminCommandStack} from "./components/CatchAdminCommandStack";
 export type {CatchAdminCommandRowProps, CatchAdminCommandStackProps} from "./components/CatchAdminCommandStack";
@@ -53,7 +53,7 @@ export type {CatchFormatTileProps} from "./components/CatchFormatTile";
 export {CatchPlanCard} from "./components/CatchPlanCard";
 export type {CatchPlanCardProps} from "./components/CatchPlanCard";
 export {CatchOrganizerCard} from "./components/CatchOrganizerCard";
-export type {CatchOrganizerCardProps} from "./components/CatchOrganizerCard";
+export type {CatchOrganizerCardLegacyProps, CatchOrganizerCardProps, CatchOrganizerCardSystemProps} from "./components/CatchOrganizerCard";
 export {CatchButton} from "./components/CatchButton";
 export type {
   CatchButtonCommandProps,
@@ -75,7 +75,8 @@ export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
 export {CatchFilePickerButton} from "./components/CatchFilePickerButton";
 export type {CatchFilePickerButtonProps} from "./components/CatchFilePickerButton";
 export {CatchChip} from "./components/CatchChip";
-export type {CatchChipData, CatchChipEmphasis, CatchChipMode, CatchChipProps} from "./components/CatchChip";
+export {catchChipKinds} from "./components/CatchChip";
+export type {CatchChipData, CatchChipEmphasis, CatchChipKind, CatchChipMode, CatchChipProps, CatchChipSize, CatchChipSystemProps} from "./components/CatchChip";
 export {CatchChoiceInput} from "./components/CatchChoiceInput";
 export {CatchSearchField} from "./components/CatchSearchField";
 export type {CatchSearchFieldCopy, CatchSearchFieldProps} from "./components/CatchSearchField";
@@ -190,7 +191,8 @@ export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";
 export {CatchIconTile} from "./components/CatchIconTile";
 export type {CatchIconTileProps} from "./components/CatchIconTile";
 export {CatchIndexRow} from "./components/CatchIndexRow";
-export type {CatchIndexRowProps} from "./components/CatchIndexRow";
+export {catchIndexRowDensities, catchIndexRowStatusTones} from "./components/CatchIndexRow";
+export type {CatchIndexRowAction, CatchIndexRowDensity, CatchIndexRowIconTone, CatchIndexRowProps, CatchIndexRowStatusTone} from "./components/CatchIndexRow";
 export {CatchInset} from "./components/CatchInset";
 export type {CatchInsetElement, CatchInsetPadding, CatchInsetProps} from "./components/CatchInset";
 export {CatchLoadingIndicator} from "./components/CatchLoadingIndicator";
@@ -422,3 +424,20 @@ export type {
 } from "./primitives";
 export {LottieAnimationControl} from "./motion";
 export type {LottieAnimationControlProps} from "./motion";
+// The components the website boards pull (redesign P4): the system's Marker,
+// Meter, Slider (CatchRangeInput), EventCard, IconButton (CatchIconAction),
+// Ticket and Stat (CatchMetricTile).
+export {CatchMarker, catchMarkerKinds, catchMarkerSizes, catchMarkerTones} from "./components/CatchMarker";
+export type {CatchMarkerKind, CatchMarkerProps, CatchMarkerSize, CatchMarkerTone} from "./components/CatchMarker";
+export {CatchMeter, catchMeterFills, catchMeterKinds, catchMeterThicknesses} from "./components/CatchMeter";
+export type {CatchMeterFill, CatchMeterKind, CatchMeterPart, CatchMeterProps, CatchMeterThickness} from "./components/CatchMeter";
+export {CatchRangeInput} from "./components/CatchRangeInput";
+export type {CatchRangeInputProps, CatchRangeInputValue} from "./components/CatchRangeInput";
+export {CatchEventCard, catchEventCardStatuses, catchEventCardVariants} from "./components/CatchEventCard";
+export type {CatchEventCardCount, CatchEventCardProps, CatchEventCardStatus, CatchEventCardVariant} from "./components/CatchEventCard";
+export {CatchIconAction, catchIconActionShapes, catchIconActionSizes, catchIconActionVariants} from "./components/CatchIconAction";
+export type {CatchIconActionProps, CatchIconActionShape, CatchIconActionSize, CatchIconActionVariant} from "./components/CatchIconAction";
+export {CatchTicket, catchTicketStatuses} from "./components/CatchTicket";
+export type {CatchTicketFact, CatchTicketProps, CatchTicketStatus} from "./components/CatchTicket";
+export {CatchMetricTile, catchMetricTileLayouts, catchMetricTileTones} from "./components/CatchMetricTile";
+export type {CatchMetricTileLayout, CatchMetricTileProps, CatchMetricTileTone} from "./components/CatchMetricTile";

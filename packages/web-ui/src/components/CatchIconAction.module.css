@@ -1,0 +1,93 @@
+/*
+ * catch.icon_button, transcribed from the system's .c-icon-button: a 44, 40
+ * or 32px circle (or 10px square); outlined draws the control line and turns
+ * white on a tile or a format colour; filled is the primary colour; overlay is
+ * a frosted white disc over photos; pressed fills with the primary colour. A
+ * small button keeps a 44px touch target.
+ */
+.button {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--catch-duration-instant) var(--catch-motion-standard-curve),
+    background-color var(--catch-duration-quick) var(--catch-motion-standard-curve);
+}
+
+.button[data-shape="square"] { border-radius: var(--catch-radius-sm); }
+.button[data-size="lg"] { width: var(--catch-size-icon-button-lg); height: var(--catch-size-icon-button-lg); }
+.button[data-size="md"] { width: var(--catch-size-control-md); height: var(--catch-size-control-md); }
+.button[data-size="sm"] { width: var(--catch-size-control-sm); height: var(--catch-size-control-sm); }
+
+.button[data-size="sm"]::after {
+  position: absolute;
+  inset: calc((var(--catch-size-control-sm) - var(--catch-size-touch-min)) / 2);
+  content: "";
+}
+
+.button[data-variant="outlined"] { box-shadow: inset 0 0 0 var(--catch-stroke-control) var(--catch-theme-control-line); }
+
+.button[data-variant="outlined"]:is([data-on="tile"], [data-on="colour"]) {
+  background: var(--catch-palette-white);
+  color: var(--catch-color-light-ink);
+  box-shadow: none;
+}
+
+.button[data-variant="filled"] { background: var(--catch-theme-primary); color: var(--catch-theme-on-primary); }
+
+.button[data-variant="overlay"] {
+  background: color-mix(in srgb, var(--catch-palette-white) 92%, transparent);
+  color: var(--catch-color-light-ink);
+  backdrop-filter: blur(8px);
+}
+
+.button:hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
+.button[data-variant="filled"]:hover { background: var(--catch-theme-primary); opacity: 0.92; }
+.button[data-variant="overlay"]:hover { background: var(--catch-palette-white); }
+.button:active { transform: scale(0.94); }
+
+.button[aria-pressed="true"] {
+  background: var(--catch-theme-primary);
+  color: var(--catch-theme-on-primary);
+  box-shadow: none;
+}
+
+.button:disabled { cursor: not-allowed; opacity: var(--catch-opacity-disabled); }
+
+.button:focus-visible {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  box-sizing: border-box;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-format-run-accent);
+  color: var(--catch-color-light-ink);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--catch-surface-fill, var(--catch-theme-ground));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button { transition: none; }
+  .button:active { transform: none; }
+}

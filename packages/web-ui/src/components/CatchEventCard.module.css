@@ -1,0 +1,144 @@
+/*
+ * catch.event_card, transcribed from the system's .c-event-*: a poster is a
+ * spotlight 16px between its parts; cover and compact cards are a photo (or
+ * the format colour with the title on it) at 4:3 or square, 24px corners,
+ * the when badge top-left and a flag top-right, 10px over the title, place
+ * and price; an external event is a tile with a dot, the source and an
+ * underlined "Tickets" link-out. In a rail the compact card takes the rail's
+ * item width.
+ */
+.card {
+  color: var(--catch-theme-ink);
+  text-decoration: none;
+}
+
+.card[data-variant="poster"] { gap: var(--catch-space-s4); }
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+}
+
+.titles { display: flex; flex-direction: column; gap: var(--catch-space-micro6); }
+.place { font-weight: 500; }
+
+.foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  padding-top: var(--catch-space-s1);
+}
+
+.counts { display: flex; gap: var(--catch-space-micro18); }
+.count { display: flex; flex-direction: column; gap: var(--catch-space-micro2); }
+
+.card:is([data-variant="cover"], [data-variant="compact"]) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-xl);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+}
+
+.card[data-variant="compact"] { width: 200px; }
+
+/* In a rail the rail sets each item's width. */
+:global(li) > .card[data-variant="compact"] { width: auto; }
+
+.card[data-pressable] { cursor: pointer; }
+.card[data-pressable]:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); }
+.card[data-pressable]:active { transform: scale(0.99); }
+
+.media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-event-card-accent, var(--catch-theme-tile));
+  color: var(--catch-theme-on-format);
+}
+
+.media[data-variant="compact"] { aspect-ratio: 1; }
+
+.media[data-format="run"], .dot[data-format="run"] { --catch-event-card-accent: var(--catch-format-run-accent); }
+.media[data-format="dinner"], .dot[data-format="dinner"] { --catch-event-card-accent: var(--catch-format-dinner-accent); }
+.media[data-format="games"], .dot[data-format="games"] { --catch-event-card-accent: var(--catch-format-games-accent); }
+.media[data-format="courts"], .dot[data-format="courts"] { --catch-event-card-accent: var(--catch-format-courts-accent); }
+.media[data-format="nightsOut"], .dot[data-format="nightsOut"] { --catch-event-card-accent: var(--catch-format-nights-out-accent); }
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaTitle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--catch-space-s1);
+  padding: var(--catch-space-s4);
+}
+
+.when { position: absolute; top: var(--catch-space-s3); left: var(--catch-space-s3); }
+.flag { position: absolute; top: var(--catch-space-s3); right: var(--catch-space-s3); }
+
+.meta { display: flex; flex-direction: column; gap: var(--catch-space-micro3); padding: 0 var(--catch-space-micro2); }
+
+.line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s2);
+  margin-top: var(--catch-space-s1);
+}
+
+.card[data-variant="external"] { gap: var(--catch-space-s2); }
+
+.source {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-micro6);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-event-card-accent);
+}
+
+.out {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-s1);
+  margin-top: var(--catch-space-s1);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.card:is([data-status="cancelled"], [data-status="past"]) { opacity: 0.7; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card[data-pressable]:active { transform: none; }
+}
