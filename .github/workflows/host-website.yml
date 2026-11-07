@@ -1,43 +1,10 @@
 name: Host Website
 
+# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
+# pull requests or pushes; the full run happens once a night on main.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/actions/**"
-      - ".github/workflows/_web-hosting-build.yml"
-      - ".github/workflows/_web-hosting-promote.yml"
-      - ".github/workflows/host-website.yml"
-      - ".firebaserc"
-      - "apps/host/**"
-      - "assets/**"
-      - "contracts/**"
-      - "tool/contracts/generate_schema_contracts.mjs"
-      - "tool/contracts/lib/schema_specs.mjs"
-      - "tool/contracts/schema_spec_exceptions.json"
-      - "tool/contracts/schema_spec_order.json"
-      - "firebase.json"
-      - "firebase/prod/host/**"
-      - "lib/**"
-      # The packages the Host build depends on. Other packages stay out, so a web or
-      # lint change doesn't deploy Host to production.
-      - "packages/catch_tokens/**"
-      - "packages/catch_ui/**"
-      - "packages/kernel/**"
-      - "packages/l10n/**"
-      - "packages/platform/**"
-      - "pubspec.lock"
-      - "pubspec.yaml"
-      - "tool/app_targets.json"
-      - "tool/ci/delivery_core.mjs"
-      - "tool/ci/package_web_hosting.mjs"
-      - "tool/ci/toolchain.env"
-      - "tool/env/dart_defines/**"
-      - "tool/firebase_with_env.sh"
-      - "tool/flutter_with_env.sh"
-      - "tool/platform/resolve_app_target.mjs"
-      - "tool/use_firebase_environment.sh"
-      - "tool/validate_firebase_environment.sh"
+  schedule:
+    - cron: '20 22 * * *' # once a night, main
   workflow_dispatch:
     inputs:
       recovery_artifact_digest:

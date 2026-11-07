@@ -6,13 +6,10 @@ name: Infra Plan
 # -lock=false. Applying happens only in infra-apply.yml after reviewer
 # approval. Operator guide: docs/infrastructure_as_code.md.
 
+# CI is switched off for the redesign sprint (owner, 8 Nov 2026): nothing runs on
+# pull requests or pushes; the full run happens once a night on main.
 on:
-  pull_request:
-    paths:
-      - "infra/**"
-      - ".github/workflows/infra-*.yml"
-      - "tool/ci/toolchain.env"
-
+  workflow_dispatch:
 permissions:
   contents: read
 
