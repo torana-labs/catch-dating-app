@@ -97,6 +97,7 @@ export const organizerPageCopy = {
   reviewsTitle: "Reviews",
   writeReview: "Write a review",
   reviewCount: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}`,
+  starsShort: (stars: number) => `${stars}★`,
   starsRow: (stars: number, count: number) => `${stars} ${stars === 1 ? "star" : "stars"}: ${count} ${count === 1 ? "review" : "reviews"}`,
   ratingLabel: (stars: number) => `${stars} out of 5`,
   reviewPolicy: {
