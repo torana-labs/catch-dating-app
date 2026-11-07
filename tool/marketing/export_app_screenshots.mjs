@@ -4,6 +4,7 @@ import {captureInputHash, stampCapture, validateCapture} from "./lib/capture_pro
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
@@ -479,45 +480,6 @@ function parseCaptureCatalog(source) {
     });
   }
   return entries;
-}
-
-function extractCallBlocks(source, callName) {
-  const blocks = [];
-  let searchIndex = 0;
-  while (searchIndex < source.length) {
-    const callIndex = source.indexOf(`${callName}(`, searchIndex);
-    if (callIndex === -1) break;
-    const openIndex = source.indexOf("(", callIndex);
-    const endIndex = findBalancedEnd(source, openIndex, "(", ")");
-    blocks.push(source.slice(callIndex, endIndex + 1));
-    searchIndex = endIndex + 1;
-  }
-  return blocks;
-}
-
-function findBalancedEnd(source, openIndex, openChar, closeChar) {
-  let depth = 0;
-  let stringQuote = null;
-  let escaped = false;
-  for (let index = openIndex; index < source.length; index += 1) {
-    const char = source[index];
-    if (stringQuote) {
-      if (escaped) escaped = false;
-      else if (char === "\\") escaped = true;
-      else if (char === stringQuote) stringQuote = null;
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      stringQuote = char;
-      continue;
-    }
-    if (char === openChar) depth += 1;
-    if (char === closeChar) {
-      depth -= 1;
-      if (depth === 0) return index;
-    }
-  }
-  throw new Error(`Could not parse balanced call block starting at ${openIndex}.`);
 }
 
 function matchString(value, pattern) {

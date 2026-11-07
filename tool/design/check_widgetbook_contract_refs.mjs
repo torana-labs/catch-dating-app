@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
 import {isPlannedWithoutDart} from "./component_concepts.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
@@ -489,49 +490,6 @@ function parseStringList(value) {
 
 function matchString(source, pattern) {
   return pattern.exec(source)?.[1] ?? null;
-}
-
-function extractCallBlocks(source, callName) {
-  const blocks = [];
-  let searchIndex = 0;
-  while (searchIndex < source.length) {
-    const callIndex = source.indexOf(`${callName}(`, searchIndex);
-    if (callIndex === -1) break;
-    const openIndex = source.indexOf("(", callIndex);
-    const endIndex = findBalancedEnd(source, openIndex, "(", ")");
-    blocks.push(source.slice(callIndex, endIndex + 1));
-    searchIndex = endIndex + 1;
-  }
-  return blocks;
-}
-
-function findBalancedEnd(source, openIndex, openChar, closeChar) {
-  let depth = 0;
-  let stringQuote = null;
-  let escaped = false;
-  for (let index = openIndex; index < source.length; index += 1) {
-    const char = source[index];
-    if (stringQuote) {
-      if (escaped) {
-        escaped = false;
-      } else if (char === "\\") {
-        escaped = true;
-      } else if (char === stringQuote) {
-        stringQuote = null;
-      }
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      stringQuote = char;
-      continue;
-    }
-    if (char === openChar) depth += 1;
-    if (char === closeChar) {
-      depth -= 1;
-      if (depth === 0) return index;
-    }
-  }
-  throw new Error(`Could not find balanced ${openChar}${closeChar} block.`);
 }
 
 function readJson(file) {
