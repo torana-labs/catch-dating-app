@@ -752,7 +752,8 @@ test("Deploy backend checks readiness before any mutation", () => {
   const block = (name) => deployJob.slice(step(name), deployJob.indexOf("\n      - ", step(name)));
   const order = ["Skip a commit older than the deployed one", "Authenticate to Google Cloud",
     "Materialize Functions parameters from this environment's variables", "Package Functions as codebases",
-    "Choose the Functions to deploy", "Check the platform is serving before touching it", "Check this environment is ready", "Deploy Firestore indexes",
+    "Choose the Functions to deploy", "Check the platform is serving before touching it",
+    "Count the Functions this deploy changes", "Check this environment is ready", "Deploy Firestore indexes",
     "Retire named Functions", "Deploy Functions", "Check callable access and Functions parity", "Deploy Firestore and Storage rules",
     "Verify the active rules match this commit", "Record the deployed commit"].map(step);
   assert.deepEqual(order, [...order].sort((a, b) => a - b));
@@ -772,8 +773,8 @@ test("Deploy backend checks readiness before any mutation", () => {
       `${name} is skipped for a commit older than the deployed one and while the platform is not serving`);
   }
   // A named run deploys those Functions only and leaves the record alone.
-  for (const name of ["Deploy Firestore indexes", "Deploy Firestore and Storage rules",
-    "Verify the active rules match this commit", "Record the deployed commit"]) {
+  for (const name of ["Count the Functions this deploy changes", "Deploy Firestore indexes",
+    "Deploy Firestore and Storage rules", "Verify the active rules match this commit", "Record the deployed commit"]) {
     assert.match(block(name),
       /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
   }
@@ -869,10 +870,65 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
       });
       assert.equal(result.error, undefined);
       assert.equal(result.status, scenario.exit ?? 0, result.stderr);
-      assert.equal(fs.readFileSync(output, "utf8"), scenario.skipped ? "skip=true\n" : "");
+      // The deployment found is passed on, so the size count reads its hashes.
+      const found = scenario.calls.some(([endpoint, response]) => endpoint === status(7) && response === "success") &&
+        scenario.exit === undefined;
+      assert.equal(fs.readFileSync(output, "utf8"),
+        `${found ? "deployment=7\n" : ""}${scenario.skipped ? "skip=true\n" : ""}`);
       assert.deepEqual(fs.readFileSync(callsLog, "utf8").trim().split("\n"),
         scenario.calls.map(([endpoint]) => endpoint));
     });
+  }
+});
+
+test("Deploy backend counts changed Functions against the recorded hashes before any change", (t) => {
+  const workflow = backendDeployWorkflow();
+  const script = workflowStepShell(workflow, "Count the Functions this deploy changes");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-size-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(cwd, "build"));
+  fs.mkdirSync(path.join(cwd, "functions/scripts"), {recursive: true});
+  fs.symlinkSync(path.join(repoRoot, "functions/scripts/deploy-size.cjs"),
+    path.join(cwd, "functions/scripts/deploy-size.cjs"));
+  const functions = (count) => Array.from({length: count}, (_, index) => `f${index}`);
+  fs.writeFileSync(path.join(cwd, "build/functions-codebases.json"), JSON.stringify({version: 1, codebases: {
+    admin: {hash: "a2", functions: functions(150)}, events: {hash: "e1", functions: functions(100)}}}));
+  const run = ({deployment = "7", payload = "", allowLarge = "false", full = "false"}) => {
+    const summary = path.join(cwd, "summary.md");
+    fs.writeFileSync(summary, "");
+    const result = spawnSync("bash", ["-c", `
+      gh() {
+        [[ "$2" == "repos/o/r/deployments/7" && "$3" == "-q" && "$4" == ".payload" ]] || return 99
+        printf '%s\n' "$PAYLOAD"
+      }
+      ${script}
+    `], {cwd, encoding: "utf8", env: {...process.env, GITHUB_REPOSITORY: "o/r", GITHUB_STEP_SUMMARY: summary,
+      DEPLOY_ENVIRONMENT: "dev", DEPLOYED_ID: deployment, PAYLOAD: payload, FULL: full, ALLOW_LARGE: allowLarge,
+      MAX_CHANGED_FUNCTIONS: "200"}});
+    return {...result, summary: fs.readFileSync(summary, "utf8")};
+  };
+  const recorded = JSON.stringify({version: 1, codebases: {admin: {hash: "a1"}, events: {hash: "e1"}}});
+  const small = run({payload: recorded});
+  assert.equal(small.status, 0, small.stderr);
+  assert.match(small.summary, /changes: 150 \(limit 200\)/u);
+  for (const scenario of [{payload: ""}, {deployment: ""}, {payload: "{}"}]) {
+    const unknown = run(scenario);
+    assert.equal(unknown.status, 3, JSON.stringify(scenario));
+    assert.match(unknown.stderr, /would update 250 Functions in dev, over the limit of 200/u);
+  }
+  assert.equal(run({payload: "", allowLarge: "true"}).status, 0);
+  assert.equal(run({payload: recorded, full: "true"}).status, 0);
+  // The record a successful run writes is what the next run reads back.
+  const record = workflow.slice(workflow.indexOf("name: Record the deployed commit"));
+  assert.match(record, /--slurpfile codebases build\/functions-codebases\.json/u);
+  assert.match(record, /payload: \{version: \$codebases\[0\]\.version,\s+codebases: \(\$codebases\[0\]\.codebases \| map_values\(\{hash\}\)\)\}/u);
+  const jq = spawnSync("jq", ["-n", "--slurpfile", "codebases", path.join(cwd, "build/functions-codebases.json"),
+    "{version: $codebases[0].version, codebases: ($codebases[0].codebases | map_values({hash}))}"], {encoding: "utf8"});
+  if (jq.error?.code !== "ENOENT") {
+    assert.equal(jq.status, 0, jq.stderr);
+    const next = run({payload: jq.stdout.trim()});
+    assert.equal(next.status, 0, next.stderr);
+    assert.match(next.summary, /No codebase changed\./u);
   }
 });
 
