@@ -53,7 +53,7 @@ void main() {
       expect(find.text('41%'), findsOneWidget);
       expect(find.text('Run nights people come back to.'), findsOneWidget);
       expect(find.text('Your phone number'), findsWidgets);
-      expect(find.text('+91'), findsOneWidget);
+      expect(find.text('+91 '), findsOneWidget);
       expect(find.text('Continue with Google'), findsNothing);
 
       await tester.tap(find.text('Text me a code'));
