@@ -65,6 +65,7 @@ class GeolocatorDeviceLocationGateway implements DeviceLocationGateway {
       Geolocator.requestPermission();
 }
 
+// keepalive: a stateless platform facade with no account state.
 final deviceLocationGatewayProvider = Provider<DeviceLocationGateway>(
   (ref) => const GeolocatorDeviceLocationGateway(),
 );

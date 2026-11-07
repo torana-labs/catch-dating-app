@@ -143,9 +143,10 @@ UserProfileRepository userProfileRepository(Ref ref) => UserProfileRepository(
   ref.watch(firebaseFunctionsProvider),
 );
 
-// keepalive: current user profile is app-wide identity data reused by
-// navigation, onboarding, and profile surfaces.
-@Riverpod(keepAlive: true)
+/// The signed-in user's profile listener. Route lifetime: the guest router
+/// listens for the app's whole life, and a returning screen renders from the
+/// on-device cache. It holds account data, so it is never kept alive.
+@riverpod
 Stream<UserProfile?> watchUserProfile(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
 

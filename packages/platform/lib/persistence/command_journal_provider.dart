@@ -8,7 +8,8 @@ import 'package:catch_platform/persistence/command_journal_storage_native.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// One database connection per Host app process; domain adapters share it.
+// keepalive: one database connection per Host app process; domain adapters
+// share it and key their entries by account inside.
 final commandJournalStorageProvider =
     Provider<Future<CommandJournalStorage> Function()>((ref) {
       Future<CommandJournalStorage>? opening;

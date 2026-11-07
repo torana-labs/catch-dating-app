@@ -57,8 +57,16 @@ final class UserProfileRepositoryProvider
 String _$userProfileRepositoryHash() =>
     r'fbbfc488a51060b80a28e1389c57f22d24cdf228';
 
+/// The signed-in user's profile listener. Route lifetime: the guest router
+/// listens for the app's whole life, and a returning screen renders from the
+/// on-device cache. It holds account data, so it is never kept alive.
+
 @ProviderFor(watchUserProfile)
 final watchUserProfileProvider = WatchUserProfileProvider._();
+
+/// The signed-in user's profile listener. Route lifetime: the guest router
+/// listens for the app's whole life, and a returning screen renders from the
+/// on-device cache. It holds account data, so it is never kept alive.
 
 final class WatchUserProfileProvider
     extends
@@ -68,13 +76,16 @@ final class WatchUserProfileProvider
           Stream<UserProfile?>
         >
     with $FutureModifier<UserProfile?>, $StreamProvider<UserProfile?> {
+  /// The signed-in user's profile listener. Route lifetime: the guest router
+  /// listens for the app's whole life, and a returning screen renders from the
+  /// on-device cache. It holds account data, so it is never kept alive.
   WatchUserProfileProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'watchUserProfileProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -94,4 +105,4 @@ final class WatchUserProfileProvider
   }
 }
 
-String _$watchUserProfileHash() => r'5edae70543b5cde2d305e723c9c8acdb3f06eafb';
+String _$watchUserProfileHash() => r'1da4b558a5b415e81870cfc6f1fdfccacce988d8';
