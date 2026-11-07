@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "d71e534070e5e2601c048a803cf11eb9f80b339a5c1fa086adc342853f5b2389",
+    "routeContractSha256": "d44a733378eb5fe3960fe9a6be4a8de2f3b3cf6dc8856eac23a10e1af5a0fe94",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -751,8 +751,8 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostEventRosterScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.guests)",
-      "presentationTarget": "HostEventManageRouteScreen",
+      "presentationExpression": "(context,state)=>DoorScreen(organizerId:state.pathParameters['organizerId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
+      "presentationTarget": "DoorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
