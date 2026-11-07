@@ -1,6 +1,6 @@
 import {CatchButton, CatchStack, CatchSurface, CatchText, CatchTopBar} from "@catch/web-ui";
 import type {ReactNode} from "react";
-import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
+import {publicPageChromeCopy, publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
 import {ConsumerHome} from "../ui/primitives/consumerHome";
 import {SiteFooter, type SiteNavItem} from "./SiteFooter";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
@@ -26,6 +26,40 @@ export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publi
       title={title}
       variant="site"
     />
+  );
+}
+
+/** The rebuilt public pages' site top bar: the wordmark, Explore and For organisers, and Get the app. */
+export function PublicPageHeader() {
+  return <PublicSiteHeader actions={<CatchButton href={publicPageChromeCopy.getAppHref} label={publicPageChromeCopy.getApp} size="sm" />} links={publicPageChromeCopy.links} />;
+}
+
+/**
+ * The boards' short footer: the wordmark across from quiet links. The
+ * organiser and event pages close their main column with the four default
+ * links; the claim, form and offer pages pass the site and legal links and
+ * the operator line. Only a page that records site clicks passes
+ * `onLinkPressed` (the private offer and form pages record none).
+ */
+export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, links = publicPageChromeCopy.footerLinks, note, onLinkPressed}: {
+  label?: string;
+  links?: readonly SiteNavItem[];
+  note?: string;
+  onLinkPressed?: (link: SiteNavItem) => void;
+}) {
+  return (
+    <CatchStack as="footer" gap={12}>
+      <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
+        <CatchText variant="display-xs">{publicPageChromeCopy.wordmark}</CatchText>
+        <CatchStack aria-label={label} as="nav" direction="row" gap={4} wrap>
+          {links.map((link) => (
+            <CatchButton href={link.href} key={`${link.label}-${link.href}`} label={link.label}
+              onPressed={onLinkPressed ? () => onLinkPressed(link) : undefined} size="sm" variant="quiet" />
+          ))}
+        </CatchStack>
+      </CatchStack>
+      {note ? <CatchText tone="secondary" variant="body-meta">{note}</CatchText> : null}
+    </CatchStack>
   );
 }
 
