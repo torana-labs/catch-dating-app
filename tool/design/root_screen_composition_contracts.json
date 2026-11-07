@@ -69,11 +69,11 @@
           "minimumOccurrences": 1
         },
         {
-          "text": "navigation: navigation,",
+          "text": "navigation: CatchTabBar<HostShellDestination>(",
           "minimumOccurrences": 1
         },
         {
-          "text": "final navigation = hostShellNavigation(",
+          "text": "items: hostShellDestinations(",
           "minimumOccurrences": 1
         }
       ],

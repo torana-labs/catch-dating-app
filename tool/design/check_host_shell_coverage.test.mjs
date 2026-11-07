@@ -16,15 +16,11 @@ const primaryRoutes = destinations.map((destination, index) => ({
   source: `lib/${destination}.dart`,
   captureId: `capture-${index}`,
 }));
-const shellSource = `CatchTabBar<HostShellDestination> hostShellNavigation({}) {
-  return CatchTabBar<HostShellDestination>(
-    items: [
+const shellSource = `List<CatchTabBarItem<HostShellDestination>> hostShellDestinations({}) => [
 ${shellIds
   .map((id) => `CatchTabBarItem(id: HostShellDestination.${id}),`)
   .join("\n")}
-    ],
-  );
-}`;
+];`;
 
 function fixture() {
   return {

@@ -15,7 +15,7 @@ const isCliEntrypoint =
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 export function extractHostNavigationDestinations(source) {
-  const marker = "CatchTabBar<HostShellDestination> hostShellNavigation(";
+  const marker = "List<CatchTabBarItem<HostShellDestination>> hostShellDestinations(";
   const start = source.indexOf(marker);
   if (start === -1) return [];
   return [

@@ -8,11 +8,13 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/notifications/notifications.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -57,18 +59,20 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value ?? '';
+    final uid =
+        catchAsyncStateFromAsyncValue(ref.watch(uidProvider)).value ?? '';
     final isAuthenticated = uid.isNotEmpty;
     final unreadCount = isAuthenticated
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
     final errorLogger = ref.read(errorLoggerProvider);
     final analytics = ref.read(appAnalyticsProvider);
-    final organizersAsync = isAuthenticated
-        ? ref.watch(hostOperableOrganizersProvider(uid))
+    final loadedOrganizers = isAuthenticated
+        ? catchAsyncStateFromAsyncValue(
+            ref.watch(hostOperableOrganizersProvider(uid)),
+          ).value
         : null;
-    final organizers = organizersAsync?.asData?.value ?? const <Organizer>[];
+    final organizers = loadedOrganizers ?? const <Organizer>[];
     final selectedOrganizerId = isAuthenticated
         ? ref.watch(hostOrganizerSelectionProvider(uid))
         : null;
@@ -82,7 +86,7 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
       selectedOrganizerId: selectedOrganizerId,
       preferredOrganizerId: hasUnconsumedRequest ? requestedOrganizerId : null,
     );
-    if (hasUnconsumedRequest && organizersAsync?.hasValue == true) {
+    if (hasUnconsumedRequest && loadedOrganizers != null) {
       _consumedRequestedOrganizerId = requestedOrganizerId;
     }
     if (isAuthenticated && selectedOrganizer != null) {
@@ -132,48 +136,67 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
     final size = CatchWindowSize.fromWidth(MediaQuery.sizeOf(context).width);
     // Only the sidebar shows who is signed in.
     final profile = isAuthenticated && size == CatchWindowSize.expanded
-        ? ref.watch(watchUserProfileProvider).asData?.value
+        ? catchAsyncStateFromAsyncValue(
+            ref.watch(watchUserProfileProvider),
+          ).value
         : null;
     final canSwitch = organizers.length > 1 && selectedOrganizer != null;
-    final navigation = hostShellNavigation(
-      l10n: context.l10n,
-      active: HostShellDestination.values[widget.navigationShell.currentIndex],
-      onChanged: (destination) => widget.navigationShell.goBranch(
-        destination.index,
-        initialLocation:
-            destination.index == widget.navigationShell.currentIndex,
-      ),
-      size: size,
-      unreadCount: unreadCount,
-      organizer: selectedOrganizer == null
-          ? null
-          : HostShellIdentity(
-              name: selectedOrganizer.name,
-              photoUrl: selectedOrganizer.logoPhotoUrl,
+    final onSwitchOrganizer = canSwitch
+        ? () => unawaited(
+            _openOrganizerSwitcher(
+              uid: uid,
+              organizers: organizers,
+              selectedOrganizer: selectedOrganizer,
             ),
-      person: profile == null
-          ? null
-          : HostShellIdentity(
-              name: profile.accountDisplayName,
-              photoUrl: profile.primaryPhotoThumbnailUrl,
-            ),
-      onNewEvent: selectedOrganizer == null
-          ? null
-          : () => unawaited(_openCreateEvent(selectedOrganizer)),
-      onSwitchOrganizer: canSwitch
-          ? () => unawaited(
-              _openOrganizerSwitcher(
-                uid: uid,
-                organizers: organizers,
-                selectedOrganizer: selectedOrganizer,
-              ),
-            )
-          : null,
-    );
+          )
+        : null;
+    final l10n = context.l10n;
 
     return CatchWorkspaceHeaderLayout(
       child: CatchAppShell(
-        navigation: navigation,
+        navigation: CatchTabBar<HostShellDestination>(
+          key: AppShellKeys.navigationBar,
+          layout: hostShellPlacement(size),
+          label: l10n.appTitleHost,
+          active:
+              HostShellDestination.values[widget.navigationShell.currentIndex],
+          onChanged: (destination) => widget.navigationShell.goBranch(
+            destination.index,
+            initialLocation:
+                destination.index == widget.navigationShell.currentIndex,
+          ),
+          items: hostShellDestinations(
+            l10n: l10n,
+            unreadCount: unreadCount,
+            organizerName: selectedOrganizer?.name,
+            onSwitchOrganizer: onSwitchOrganizer,
+          ),
+          primaryAction: hostShellNewEvent(
+            l10n: l10n,
+            onPressed: selectedOrganizer == null
+                ? null
+                : () => unawaited(_openCreateEvent(selectedOrganizer)),
+          ),
+          header: selectedOrganizer == null
+              ? null
+              : CatchTabBarIdentity(
+                  key: const ValueKey<String>('host-shell-organizer-identity'),
+                  name: selectedOrganizer.name,
+                  photoUrl: selectedOrganizer.logoPhotoUrl,
+                  switcher: canSwitch,
+                  note: canSwitch
+                      ? l10n.hostsHostTodayTooltipSwitchOrganizer
+                      : null,
+                  onTap: onSwitchOrganizer,
+                ),
+          footer: profile == null
+              ? null
+              : CatchTabBarIdentity(
+                  key: const ValueKey<String>('host-shell-person-identity'),
+                  name: profile.accountDisplayName,
+                  photoUrl: profile.primaryPhotoThumbnailUrl,
+                ),
+        ),
         // A branch navigator's modal barrier drops the semantics painted
         // before it; confined to the screen it cannot hide a rail or sidebar.
         child: Semantics(
