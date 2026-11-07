@@ -50,6 +50,7 @@ class HostRehearsalBody extends StatelessWidget {
         children: [
           CatchStack(
             direction: CatchStackDirection.row,
+            wrap: true,
             children: [
               CatchBadge(
                 label: l10n.hostEventsRehearsalBadge,
