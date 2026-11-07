@@ -154,9 +154,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
       EdgeInsets.zero,
     );
-    final loadedHeader = tester.widget<CatchTopBar>(
+    final loadedHeader = tester.widget<CatchLegacyTopBar>(
       find.byWidgetPredicate(
-        (widget) => widget is CatchTopBar && widget.title == 'Saket Run Club',
+        (widget) =>
+            widget is CatchLegacyTopBar && widget.title == 'Saket Run Club',
       ),
     );
     expect(loadedHeader.subtitle, isNull);
@@ -724,7 +725,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
       HostOrganizerEventDefaultsScreen(organizerId: organizer.id),
       overrides: overrides,
     );
-    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    final topBar = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(topBar.title, 'Event defaults');
     expect(topBar.subtitle, organizer.name);
     expect(topBar.navigation.mode, CatchTopBarNavigationMode.back);

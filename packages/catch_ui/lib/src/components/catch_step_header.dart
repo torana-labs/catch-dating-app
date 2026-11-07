@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_top_bar.dart';
+import 'package:catch_ui/src/components/catch_legacy_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +89,7 @@ class CatchStepHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchTopBar.route(
+        CatchLegacyTopBar.route(
           title: title,
           subtitle: [?kicker, ?subtitle].join(' · '),
           navigation: CatchTopBarNavigation(

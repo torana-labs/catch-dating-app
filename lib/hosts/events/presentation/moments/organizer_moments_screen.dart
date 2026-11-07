@@ -60,7 +60,7 @@ class _OrganizerMomentsScreenState
     final momentsAsync = ref.watch(_provider);
     final l = context.l10n;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: l.hostMomentsTitle,
         subtitle: widget.scopeTitle,
         navigation: const CatchTopBarNavigation(

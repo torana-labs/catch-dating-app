@@ -111,7 +111,8 @@ Future<void> _pump(
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => CatchRouteScaffold(
-            topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Event'),
+            topBarBuilder: (_, _) =>
+                const CatchLegacyTopBar.route(title: 'Event'),
             body: CatchRouteBody.standard(
               child: CatchButton(
                 label: 'Book',

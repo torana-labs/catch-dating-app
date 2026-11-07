@@ -133,7 +133,7 @@ class OrganizerDetailDock extends StatelessWidget {
       },
     );
 
-    return CatchDock(
+    return CatchLegacyDock(
       padding: CatchInsets.organizerDetailDock,
       child: Column(
         mainAxisSize: MainAxisSize.min,

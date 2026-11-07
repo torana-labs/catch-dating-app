@@ -230,8 +230,8 @@ class ExampleScreen {
     final screen = _screen();
     screen['topBar'] = <String, Object?>{
       'role': 'compact',
-      'expression': 'CatchTopBar',
-      'owner': 'CatchTopBar',
+      'expression': 'CatchLegacyTopBar',
+      'owner': 'CatchLegacyTopBar',
       'reason': 'fixture',
     };
 

@@ -17,6 +17,7 @@ export const componentAxes = Object.freeze([
 export const widgetSlotNames = Object.freeze([
   "leading", "trailing", "title", "subtitle", "kicker", "meta", "body", "footer",
   "actions", "media", "mediaOverlay", "child", "children",
+  "navigation", "topBar", "dock", "overlay", "header", "summary", "next",
 ]);
 const sharedHomes = new Map([
   ["packages/catch_ui/lib/src/foundations/", "L1"],

@@ -79,7 +79,7 @@ void main() {
     expect(find.text('Continue to settings'), findsNothing);
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
-    final topBar = find.byType(CatchTopBar);
+    final topBar = find.byType(CatchLegacyTopBar);
     final titleFinder = find.descendant(
       of: topBar,
       matching: find.text('Form'),
@@ -117,10 +117,10 @@ void main() {
     );
     expect(
       tester
-          .widget<CatchDock>(
+          .widget<CatchLegacyDock>(
             find.byWidgetPredicate(
               (widget) =>
-                  widget is CatchDock &&
+                  widget is CatchLegacyDock &&
                   widget.variant == CatchDockVariant.primary,
             ),
           )
@@ -139,7 +139,8 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDock && widget.variant == CatchDockVariant.primary,
+              widget is CatchLegacyDock &&
+              widget.variant == CatchDockVariant.primary,
         ),
         findsNothing,
       );

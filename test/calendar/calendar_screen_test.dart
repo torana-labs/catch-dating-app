@@ -106,7 +106,9 @@ void main() {
 
       final monthLabel = _monthYearLabel(event.startTime);
       expect(find.byType(CatchRouteScaffold), findsOneWidget);
-      final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+      final topBar = tester.widget<CatchLegacyTopBar>(
+        find.byType(CatchLegacyTopBar),
+      );
       expect(topBar.navigation.mode, CatchTopBarNavigationMode.back);
       expect(find.text(monthLabel), findsOneWidget);
       final titleContext = tester.element(find.text(monthLabel));

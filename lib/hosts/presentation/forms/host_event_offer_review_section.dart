@@ -106,7 +106,7 @@ class HostEventOfferReviewSection extends ConsumerWidget {
             view.status == HostOfferFlowStatus.failure &&
                 view.pendingRequestId == commitRequestId);
     final action = canPreview || canCommit
-        ? CatchDock.pageAction(
+        ? CatchLegacyDock.pageAction(
             label: canCommit ? copy.commit : copy.preview,
             isLoading: busy,
             onPressed: busy
@@ -364,7 +364,7 @@ class _HostManualPaymentReviewSectionState
     final canRecord = status == HostManualPaymentStatus.none;
     final canAttest = status == HostManualPaymentStatus.evidenceSubmitted;
     final action = canRetry || canRecord || canAttest
-        ? CatchDock.pageAction(
+        ? CatchLegacyDock.pageAction(
             buttonKey: canRetry
                 ? const ValueKey('offer-retry-saved-mutation')
                 : null,

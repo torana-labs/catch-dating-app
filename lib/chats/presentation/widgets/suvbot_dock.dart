@@ -38,7 +38,7 @@ class SuvbotDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchDock(
+    return CatchLegacyDock(
       child: actions.when(
         data: (items) {
           final t = CatchTokens.of(context);

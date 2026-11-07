@@ -55,7 +55,7 @@ void main() {
                 trailing: Icon(Icons.close),
               ),
               const SizedBox(height: 24),
-              const CatchTopBar.primaryRail(
+              const CatchLegacyTopBar.primaryRail(
                 title: 'Your events',
                 subtitle: 'Everything you are planning',
                 leading: Icon(Icons.event),

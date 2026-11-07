@@ -300,7 +300,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       errorContext: AppErrorContext.chat,
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.identity(
         identitySemanticLabel: context.l10n.coreCatchTopBarLabelViewNameProfile(
           name: chatState.name,
         ),

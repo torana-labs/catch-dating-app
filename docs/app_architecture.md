@@ -3165,7 +3165,7 @@ same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
   Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
   AsyncBoundary, Table, Card, Body, List, Step, Editor, Rail, Picker, Grid,
   Preview, Dock, Map, Pin, Thumbnail, Bubble, Form, Listener, Transition, Root,
-  Stack.
+  Stack, AppShell, Screen, Identity.
 - **Predicted names (ratified 2026-10-17, blueprint D15).** Among accurate
   names, use the one an agent that has never seen the component would most
   likely write. The role-noun list follows the nouns agents actually use: a
@@ -3205,6 +3205,14 @@ same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
   Stack: a one-axis arrangement of children with a token gap that collapses to
   a column below a size class (`CatchStack`). Gap and Inset are spacers,
   Layout arranges regions, and Grid is two-dimensional.
+- **Nouns added 2026-11-04 (the system app frame).** AppShell: the frame of
+  an app; it places the navigation by size class and hosts the screen, drawing
+  nothing of its own (`CatchAppShell`); a bare Shell still redirects. Screen: one screen's frame, its top
+  bar, body, dock and overlay and the scroll state they share (`CatchScreen`);
+  feature route widgets keep the `Screen` suffix. Identity: who an app acts as
+  or who is signed in, an avatar with a name that taps through to a switcher
+  or the account (`CatchTabBarIdentity`). Scaffold stays the Material surface
+  owner; Layout arranges regions inside a screen.
 - **Synonyms redirect.** Panel is Section (a titled region) or Surface (plain
   containment); Page is Step (a flow stage) or Body (a tab or pager page);
   Content, Overview and View are Body; Strip and Carousel are Rail; Rows and RowList are
@@ -3306,8 +3314,12 @@ same role (`CatchLegacySurface` beside `CatchSurface`). A legacy member skips
   feature-owned as `EventSuccessProgressStatus`; it has no shared component
   owner and is not a Catch UI variant axis.
 - **Slots.** `leading`, `trailing`, `title`, `subtitle`, `kicker`, `meta`,
-  `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`;
-  builders end in `Builder`; callbacks start with `on`.
+  `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`,
+  `navigation`, `topBar`, `dock`, `overlay`, `header`, `summary`, `next`;
+  builders end in `Builder`; callbacks start with `on`. The last seven are the
+  design system's own slot names for the app frame (2026-11-04): an app
+  shell's `navigation` and `overlay`, a screen's `topBar`, `dock` and
+  `overlay`, navigation's `header`, and a dock's `summary` and `next`.
 - **State objects.** `<Surface>State` (provider-free), `<Surface>ViewModel`
   (provider-owned composition), `<Surface>Controller` (mutations/flows), as
   contracted elsewhere in this document.

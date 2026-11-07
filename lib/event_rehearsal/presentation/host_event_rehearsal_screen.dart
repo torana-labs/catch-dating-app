@@ -155,7 +155,7 @@ class _HostEventRehearsalScreenState
             ],
           ),
       ],
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostEventRehearsalManageSubtitle,
         subtitle:
             rehearsalState.value?.session.setup.title ??
@@ -675,7 +675,7 @@ class _RehearsalCoachDock extends StatelessWidget {
         fullWidth: largeText,
         onPressed: onToggle,
       );
-      return CatchDock(
+      return CatchLegacyDock(
         padding: CatchInsets.tableRowContent,
         child: largeText
             ? Column(
@@ -752,7 +752,7 @@ class _RehearsalCoachDock extends StatelessWidget {
         ),
       ],
     );
-    return CatchDock(
+    return CatchLegacyDock(
       padding: largeText ? CatchInsets.content : CatchInsets.tableRowContent,
       child: largeText
           ? Column(

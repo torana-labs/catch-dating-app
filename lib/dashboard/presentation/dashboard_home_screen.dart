@@ -15,7 +15,7 @@ class DashboardHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.standard(
-      title: CatchTopBar.primaryRail(
+      title: CatchLegacyTopBar.primaryRail(
         title: header.title(context.l10n),
         actions: actions,
       ),

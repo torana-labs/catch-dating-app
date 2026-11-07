@@ -27,7 +27,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
 
     return switch (state.status) {
       HostEventEditRouteStatus.loading => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -38,7 +38,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         ),
       ),
       HostEventEditRouteStatus.error => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -59,7 +59,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         ),
       ),
       HostEventEditRouteStatus.notFound => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -80,7 +80,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         ),
       ),
       HostEventEditRouteStatus.unauthorized => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,

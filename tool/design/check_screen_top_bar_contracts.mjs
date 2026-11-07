@@ -9,7 +9,7 @@ import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 const defaultManifestPath = "tool/design/screen_top_bar_contracts.json";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =
-  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar\.(?:screen|primaryRail)|CatchTopBar(?:\.(?:route|identity))?)/gu;
+  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchLegacyTopBar\.(?:screen|primaryRail)|CatchLegacyTopBar(?:\.(?:route|identity))?)/gu;
 const canonicalRouteScaffoldPath =
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
@@ -22,26 +22,26 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchTopBar(?:\.(?:route|identity))?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchLegacyTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchLegacyTopBar(?:\.(?:route|identity))?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
-  "CatchTopBar.primaryRail",
-  "CatchTopBar.screen",
+  "CatchLegacyTopBar.primaryRail",
+  "CatchLegacyTopBar.screen",
   "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchTopBar(?:\.(?:route|identity))?)\s*\(/gu;
+  /\b(CatchLegacyTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchLegacyTopBar(?:\.(?:route|identity))?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton(?:\.(?!text\b)[A-Za-z_$][\w$]*)?\s*\(/u;
 const rootTextScaleOverridePattern =
   /\b(?:TextScaler\.|textScaler\s*:)/gu;
 const rolePolicies = new Map([
   [
     "screen",
-    {expression: "CatchTopBar.screen", owner: "CatchTopBar.screen"},
+    {expression: "CatchLegacyTopBar.screen", owner: "CatchLegacyTopBar.screen"},
   ],
-  ["compact", {expression: "CatchTopBar.route", owner: "CatchTopBar"}],
+  ["compact", {expression: "CatchLegacyTopBar.route", owner: "CatchLegacyTopBar"}],
   [
     "identity",
-    {expression: "CatchTopBar.identity", owner: "CatchTopBar"},
+    {expression: "CatchLegacyTopBar.identity", owner: "CatchLegacyTopBar"},
   ],
 ]);
 const validRoles = new Set([...rolePolicies.keys(), "workspace"]);
@@ -54,9 +54,9 @@ const validLeadingPolicies = new Set([
 const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
 const validTitlePolicies = new Set(["sharedRoute"]);
 const canonicalWorkspaceOwners = new Set([
-  "CatchTopBar",
-  "CatchTopBar.screen",
-  "CatchTopBar.primaryRail",
+  "CatchLegacyTopBar",
+  "CatchLegacyTopBar.screen",
+  "CatchLegacyTopBar.primaryRail",
 ]);
 const rawHeroExpressions = new Set([
   "SliverAppBar",
@@ -73,13 +73,13 @@ const manualHeaderRoleOwners = new Map([
   [
     "screen",
     new Set([
-            "CatchTopBar.primaryRail",
-      "CatchTopBar.screen",
+            "CatchLegacyTopBar.primaryRail",
+      "CatchLegacyTopBar.screen",
       "CatchRootScreenHeader.title",
     ]),
   ],
   ["step-flow", new Set(["CatchStepHeader"])],
-  ["workspace", new Set(["CatchTopBar.route"]) ],
+  ["workspace", new Set(["CatchLegacyTopBar.route"]) ],
   ["content", new Set(["CatchTextStyles.titleL"])],
   [
     "legacy",
@@ -700,7 +700,7 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Screen-title routes cannot override contentPadding or height; " +
-          "CatchTopBar.screen owns the approved zero-inset geometry.",
+          "CatchLegacyTopBar.screen owns the approved zero-inset geometry.",
       });
     }
   }
@@ -717,14 +717,14 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Compact route bars cannot override safe-area, alignment, gutter, " +
-          "padding, or height geometry; CatchTopBar owns those values.",
+          "padding, or height geometry; CatchLegacyTopBar owns those values.",
       });
     }
   }
 
   if (
     (contract.role === "compact" || contract.role === "workspace") &&
-    contract.owner === "CatchTopBar"
+    contract.owner === "CatchLegacyTopBar"
   ) {
     const customTitleBypasses = appBars.filter((appBar) =>
       ['titleStyle', 'body'].some((name) => topBarArgument(appBar.value, name) != null),
@@ -735,7 +735,7 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Compact and workspace route bars must pass a title and optional " +
-          "contextual subtitle to CatchTopBar.route. A local title " +
+          "contextual subtitle to CatchLegacyTopBar.route. A local title " +
           "widget or style bypasses the shared route-title typography contract.",
       });
     }
@@ -881,7 +881,7 @@ function validateManifest(manifest, findings, manifestPath) {
         code: "title-policy-role-mismatch",
         path: contract.path ?? manifestPath,
         message:
-          "titlePolicy is only valid for compact or workspace CatchTopBar contracts.",
+          "titlePolicy is only valid for compact or workspace CatchLegacyTopBar contracts.",
       });
     }
     if (

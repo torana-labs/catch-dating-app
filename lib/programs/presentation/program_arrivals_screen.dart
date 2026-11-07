@@ -116,7 +116,7 @@ class ProgramArrivalsScreen extends ConsumerWidget {
 
   CatchRouteScaffold _routeScaffold({required CatchRouteBody body}) =>
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: stationLabel,
           subtitle: context.l10n.programsArrivalsTitle,
           emphasis: scrolledUnder

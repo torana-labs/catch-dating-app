@@ -169,7 +169,7 @@ class GuestAuthCtaBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchDock(
+    return CatchLegacyDock(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s4,
         CatchSpacing.micro10,
@@ -336,7 +336,7 @@ class AppShellSideNavigation extends StatelessWidget {
               child: title == null
                   ? destinations
                   : CatchWorkspacePaneScaffold(
-                      title: CatchTopBar.brand(title: title!),
+                      title: CatchLegacyTopBar.brand(title: title!),
                       body: destinations,
                     ),
             ),

@@ -32,7 +32,7 @@ class ProgramNowNextScreen extends ConsumerWidget {
       value: accessAsync,
       onRetry: () => ref.invalidate(programWorkEntryProvider(programId, null)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsNowNextTitle,
           subtitle: context.l10n.programsNowNextSubtitle,
           emphasis: scrolledUnder
@@ -47,7 +47,7 @@ class ProgramNowNextScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsNowNextTitle,
           subtitle: context.l10n.programsNowNextSubtitle,
           emphasis: scrolledUnder
@@ -66,7 +66,7 @@ class ProgramNowNextScreen extends ConsumerWidget {
         ),
       ),
       builder: (context, result) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsNowNextTitle,
           subtitle: context.l10n.programsNowNextSubtitle,
           emphasis: scrolledUnder

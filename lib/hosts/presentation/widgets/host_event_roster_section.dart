@@ -17,7 +17,7 @@ class HostEventRosterSection extends StatelessWidget {
   final VoidCallback? onMessageGuests;
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.hostsHostEventRosterDrawerTitle,
       subtitle: context.l10n.hostsHostEventRosterDrawerCount(
         count: bookedCount,

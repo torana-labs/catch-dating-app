@@ -101,7 +101,7 @@ class _HostAutomationRuleEditorState
       canPop: !_busy,
       child: CatchRouteScaffold(
         resizeToAvoidBottomInset: true,
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: widget.initialRule == null
               ? l.hostAutomationNew
               : l.hostAutomationEdit,
@@ -114,7 +114,7 @@ class _HostAutomationRuleEditorState
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
         ),
-        footer: CatchDock.primary(
+        footer: CatchLegacyDock.primary(
           label: l.hostAutomationSave,
           buttonKey: const ValueKey('automation-save'),
           isLoading: _busy,

@@ -1,6 +1,8 @@
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/primitives/contracts/shell_preview.dart';
 import 'package:widgetbook_workspace/support/contract_preview.dart';
 
 import '../../preview_layout_contracts.dart';
@@ -126,6 +128,9 @@ Widget catchTabDockContractStates(BuildContext context) {
       'press-and-slide',
       'pointer-focus',
       'long-press-secondary-action',
+      'rail',
+      'sidebar',
+      'pinned-more',
     ],
     children: [
       WidgetbookContractStateCard(
@@ -291,6 +296,97 @@ Widget catchTabDockContractStates(BuildContext context) {
           ),
         ),
       ),
+      for (final (label, description, width, sizeClass) in const [
+        (
+          'rail',
+          'From 600 px: the identity compact in the header row, the action as a square, a rule between sections.',
+          WidgetbookShellLayout.tablet,
+          CatchWindowSize.medium,
+        ),
+        (
+          'sidebar',
+          'From 840 px: the identity, a full-width action, section headings, counts and the signed-in footer.',
+          WidgetbookShellLayout.desktop,
+          CatchWindowSize.expanded,
+        ),
+      ])
+        WidgetbookContractStateCard(
+          label: label,
+          description: description,
+          child: WidgetbookShellWindow(
+            width: width,
+            height: WidgetbookShellLayout.screenHeight,
+            sizeClass: sizeClass,
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: widgetbookShellNavigation(active: 'people'),
+            ),
+          ),
+        ),
+      WidgetbookContractStateCard(
+        label: 'pinned-more',
+        description:
+            'Pinned items on the phone bar, then More, current while a folded destination is.',
+        child: WidgetbookShellWindow(
+          width: WidgetbookShellLayout.phone,
+          sizeClass: CatchWindowSize.compact,
+          child: CatchTabBar<String>(
+            items: widgetbookShellItems(pinned: true),
+            active: 'organizer',
+            onChanged: widgetbookIgnoreString,
+            more: const CatchTabBarMore(label: 'More', badge: 4),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTabBarIdentity,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchTabBarIdentityContractStates(BuildContext context) {
+  return WidgetbookContractFrame(
+    title: 'CatchTabBarIdentity',
+    contractId: 'catch.tab_bar.identity',
+    states: const ['full', 'compact', 'note', 'switcher'],
+    children: [
+      for (final (label, width, identity) in const [
+        (
+          'full',
+          WidgetbookShellLayout.sidebarSlot,
+          CatchTabBarIdentity(name: 'Meher Rao'),
+        ),
+        (
+          'compact',
+          WidgetbookShellLayout.railSlot,
+          CatchTabBarIdentity(name: 'Lantern Lane Social'),
+        ),
+        (
+          'note',
+          WidgetbookShellLayout.sidebarSlot,
+          CatchTabBarIdentity(name: 'Meher Rao', note: 'Settings'),
+        ),
+        (
+          'switcher',
+          WidgetbookShellLayout.sidebarSlot,
+          CatchTabBarIdentity(
+            name: 'Lantern Lane Social',
+            note: 'Switch organiser',
+            switcher: true,
+          ),
+        ),
+      ])
+        WidgetbookContractStateCard(
+          label: label,
+          child: WidgetbookShellWindow(
+            width: width,
+            sizeClass: CatchWindowSize.expanded,
+            child: Material(type: MaterialType.transparency, child: identity),
+          ),
+        ),
     ],
   );
 }

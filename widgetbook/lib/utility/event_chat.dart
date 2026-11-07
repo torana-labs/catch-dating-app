@@ -57,7 +57,7 @@ class _JoinPreviewState extends State<_JoinPreview> {
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
     topBarBuilder: (_, _) =>
-        const CatchTopBar.route(title: 'RSVP coffee afternoon'),
+        const CatchLegacyTopBar.route(title: 'RSVP coffee afternoon'),
     body: CatchRouteBody.fullBleed(
       child: EventChatPageBody(
         state: _state(joined: false),

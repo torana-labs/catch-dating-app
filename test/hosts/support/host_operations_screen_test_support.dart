@@ -41,7 +41,9 @@ void registerHostEventEntryTests() {
     expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.text('Create event'), findsNothing);
-    final header = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    final header = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(header.subtitle, 'Monday, June 15, 2026');
     expect(header.actions, isEmpty);
     expect(

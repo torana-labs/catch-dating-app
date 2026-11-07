@@ -9,12 +9,12 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Profile title',
-  type: CatchTopBar,
+  type: CatchLegacyTopBar,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileTitleStates(BuildContext context) {
   return WidgetbookProfileProfileCatalog(
-    title: 'CatchTopBar',
+    title: 'CatchLegacyTopBar',
     contractId: 'section.profile.self.title',
     children: [
       WidgetbookProfileStateCard(
@@ -22,7 +22,7 @@ Widget profileTitleStates(BuildContext context) {
         child: const WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: WidgetbookProfileProfileHeaderRouterFrame(
-            child: CatchTopBar.primaryRail(
+            child: CatchLegacyTopBar.primaryRail(
               title: 'Your profile',
               actions: [ProfileSettingsButton()],
             ),

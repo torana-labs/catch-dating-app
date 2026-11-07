@@ -66,7 +66,7 @@ void main() {
             builder: (context) =>
                 const TextButton(onPressed: null, child: Text('Save')),
           ),
-          bottomNavigationBar: CatchDock.pageAction(
+          bottomNavigationBar: CatchLegacyDock.pageAction(
             label: 'Open person',
             onPressed: () {},
           ),

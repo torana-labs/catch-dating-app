@@ -129,7 +129,7 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topBar = CatchTopBar.screen(
+    final topBar = CatchLegacyTopBar.screen(
       leading: ExploreCityPicker(
         state: cityPickerState,
         onSelected: onCitySelected,

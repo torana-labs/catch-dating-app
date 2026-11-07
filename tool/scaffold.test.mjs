@@ -184,10 +184,11 @@ describe("templates", () => {
     assert.doesNotMatch(source, /\bref\b|WidgetRef|Consumer/u);
   });
 
-  test("the screen declares one screen class built on CatchViewport", () => {
+  test("the screen declares one screen class framed by CatchScreen", () => {
     const source = fs.readFileSync(path.join(templates, "screen/screen.dart.tmpl"), "utf8");
     assert.equal([...source.matchAll(/^class /gmu)].length, 1);
-    assert.match(source, /return CatchViewport\(/u);
+    assert.match(source, /return CatchScreen\(/u);
+    assert.match(source, /CatchTopBarVariant\.tool/u);
     assert.match(source, /CatchAsyncBoundary</u);
   });
 
@@ -398,19 +399,9 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     assertOk(run(process.execPath, ["tool/design/check_component_lexicon.mjs", "--surfaces-only"], tree), "component lexicon");
   });
 
-  test("the printed top-bar contracts satisfy their check", () => {
-    const manifestPath = inTree("tool/design/screen_top_bar_contracts.json");
-    const unregistered = run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree);
-    assert.notEqual(unregistered.status, 0, "a new screen should need a contract");
-    for (const screen of ["today_probe_screen", "event_setup_review_probe_screen", "wallet_probe_screen", "page_probe_screen"]) {
-      assert.match(unregistered.stdout + unregistered.stderr, new RegExp(`${screen}\\.dart: unregistered-app-bar`, "u"));
-    }
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-    for (const stdout of outputs.values()) {
-      const printed = /screen_top_bar_contracts\.json, under contracts:\n {2}(\{.*\})/u.exec(stdout)?.[1];
-      if (printed) manifest.contracts.push(JSON.parse(printed));
-    }
-    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  test("a scaffolded screen needs no legacy top-bar contract", () => {
+    // CatchScreen frames the system top bar; the screen top-bar manifest
+    // governs only the legacy recipes, so the new screens pass unregistered.
     assertOk(run(process.execPath, ["tool/design/check_screen_top_bar_contracts.mjs", "--check"], tree), "top-bar contracts");
   });
 

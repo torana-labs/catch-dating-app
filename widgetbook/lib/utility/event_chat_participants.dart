@@ -33,7 +33,8 @@ Widget eventChatParticipantsPreview(BuildContext context) =>
 Widget eventChatParticipantsListPreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: CatchRouteScaffold(
-        topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Participants'),
+        topBarBuilder: (_, _) =>
+            const CatchLegacyTopBar.route(title: 'Participants'),
         body: CatchRouteBody.standardConstrained(
           child: EventChatParticipantsRowList(
             state: _state(),

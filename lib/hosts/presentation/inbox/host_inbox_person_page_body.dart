@@ -54,7 +54,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
     // resolving endpoints or mounting history, reply and mark-read consumers.
     if (requestedProgramId != null) {
       return CatchWorkspacePaneScaffold(
-        title: CatchTopBar.route(
+        title: CatchLegacyTopBar.route(
           title:
               programPages?.value?.program.title ??
               context.l10n.hostInboxProgramPurposeUnresolvedTitle,
@@ -137,7 +137,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
       );
     }
     return CatchWorkspacePaneScaffold(
-      title: CatchTopBar.route(
+      title: CatchLegacyTopBar.route(
         title: context.l10n.hostInboxNewMessage,
         navigation: CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

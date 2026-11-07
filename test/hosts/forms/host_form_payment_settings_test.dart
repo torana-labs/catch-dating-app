@@ -337,7 +337,7 @@ Future<void> _pump(
         supportedLocales: AppLocalizations.supportedLocales,
         home: CatchRouteScaffold(
           topBarBuilder: (_, _) =>
-              const CatchTopBar.route(title: 'Form settings'),
+              const CatchLegacyTopBar.route(title: 'Form settings'),
           body: CatchRouteBody.standard(child: child),
         ),
       ),

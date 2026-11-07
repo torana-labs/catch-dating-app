@@ -118,7 +118,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       canPop: !saving,
       child: CatchRouteScaffold(
         backgroundColor: t.bg,
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.swipesFiltersScreenTitleFilters,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -137,7 +137,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
           ],
         ),
         footer: profileState.isLoading
-            ? CatchDock(
+            ? CatchLegacyDock(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
                 child: CatchSkeleton.content(
@@ -150,7 +150,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               )
             : preferencesState == null
             ? null
-            : CatchDock(
+            : CatchLegacyDock(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
                 child: CatchButton(
@@ -339,7 +339,7 @@ class FiltersBody extends StatelessWidget {
         Expanded(
           child: CatchPageBody.screen(pb: CatchSpacing.s5, child: fields),
         ),
-        CatchDock(
+        CatchLegacyDock(
           includeSafeArea: false,
           padding: CatchInsets.pageBody.copyWith(
             top: CatchSpacing.s3,

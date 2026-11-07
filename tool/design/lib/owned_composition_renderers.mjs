@@ -37,8 +37,8 @@ declare(`${ui}components/catch_collection_section.dart`, section, null,
   ["_buildCollectionModule"], ["Widget"]);
 declare(`${ui}components/catch_banner.dart`, `${ui}components/catch_banner.dart`,
   "CatchBanner", ["_buildBodyFeedback"], ["Widget"]);
-declare(`${ui}components/catch_top_bar.dart`, `${ui}components/catch_top_bar.dart`,
-  "_CatchTopBarState", ["_buildBar", "_searchField", "_selectorControls"], ["Widget"]);
+declare(`${ui}components/catch_legacy_top_bar.dart`, `${ui}components/catch_legacy_top_bar.dart`,
+  "_CatchLegacyTopBarState", ["_buildBar", "_searchField", "_selectorControls"], ["Widget"]);
 // Typed factories return the canonical component itself, preventing an outer
 // GestureDetector, inset, or alternate interaction shell around their result.
 declare("lib/hosts/presentation/customers/host_customer_timeline_section.dart",

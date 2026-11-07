@@ -746,7 +746,7 @@ void _registerExploreOrganizerCardsTests() {
                 slivers: [
                   ...CatchSliverHeader(
                     title: const SizedBox.shrink(),
-                    bottomHeight: const CatchTopBar.primaryRail(
+                    bottomHeight: const CatchLegacyTopBar.primaryRail(
                       title: 'Explore',
                     ).contentHeightFor(context),
                     bottom: _exploreCoverHeader(

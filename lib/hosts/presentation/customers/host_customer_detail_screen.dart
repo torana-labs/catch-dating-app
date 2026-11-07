@@ -178,7 +178,7 @@ class _HostCustomerDetailScreenState
         (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
         context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.identity(
         identityName: displayName,
         identitySemanticLabel: displayName,
         navigation: CatchTopBarNavigation(

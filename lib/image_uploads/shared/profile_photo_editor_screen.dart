@@ -221,7 +221,7 @@ class _ProfilePhotoEditorScreenState
 
     return CatchRouteScaffold(
       backgroundColor: t.bg,
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: widget.photo == null
             ? context.l10n.imageUploadsProfilePhotoEditorScreenTitleAddPhoto
             : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,

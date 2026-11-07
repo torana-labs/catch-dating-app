@@ -24,7 +24,7 @@ void main() {
           child: Scaffold(
             body: Column(
               children: [
-                CatchTopBar.identity(
+                CatchLegacyTopBar.identity(
                   identityName: 'Riya Mehta',
                   identitySemanticLabel: 'Riya Mehta',
                 ),
@@ -34,27 +34,27 @@ void main() {
         ),
       ),
     );
-    final bar = tester.getRect(find.byType(CatchTopBar));
+    final bar = tester.getRect(find.byType(CatchLegacyTopBar));
     final name = tester.getRect(find.text('Riya Mehta'));
     expect(bar.contains(name.topLeft), isTrue);
     expect(name.bottom, lessThanOrEqualTo(bar.bottom));
     expect(tester.takeException(), isNull);
-    final context = tester.element(find.byType(CatchTopBar));
+    final context = tester.element(find.byType(CatchLegacyTopBar));
     expect(
       tester
-          .widget<CatchTopBar>(find.byType(CatchTopBar))
+          .widget<CatchLegacyTopBar>(find.byType(CatchLegacyTopBar))
           .preferredSizeFor(context)
           .height,
       bar.height,
     );
   });
 
-  testWidgets('CatchTopBar renders the handoff-sized title row', (
+  testWidgets('CatchLegacyTopBar renders the handoff-sized title row', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchTopBar.route(
+        const CatchLegacyTopBar.route(
           title: 'Settings',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -65,7 +65,7 @@ void main() {
     );
 
     expect(find.text('Settings'), findsOneWidget);
-    expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
+    expect(tester.getSize(find.byType(CatchLegacyTopBar)).height, 56);
     expect(
       tester.widget<Text>(find.text('Settings')).style,
       CatchTextStyles.titleL(
@@ -92,12 +92,12 @@ void main() {
     expect(_topBarBorder(tester).bottom.style, BorderStyle.solid);
   });
 
-  testWidgets('CatchTopBar surface selection does not imply a divider', (
+  testWidgets('CatchLegacyTopBar surface selection does not imply a divider', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchTopBar.route(
+        const CatchLegacyTopBar.route(
           title: 'Settings',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -111,36 +111,37 @@ void main() {
     expect(_topBarBorder(tester).bottom.style, BorderStyle.none);
   });
 
-  testWidgets('CatchTopBar keeps identity-name titles in the function family', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const CatchTopBar.route(
-          title: 'Aarav Shah',
-          navigation: CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.none,
-          ),
-        ),
-      ),
-    );
-
-    final titleContext = tester.element(find.text('Aarav Shah'));
-    expect(
-      tester.widget<Text>(find.text('Aarav Shah')).style,
-      CatchTextStyles.titleL(
-        titleContext,
-        color: CatchTokens.of(titleContext).ink,
-      ),
-    );
-  });
-
   testWidgets(
-    'CatchTopBar places context below the task title in the function family',
+    'CatchLegacyTopBar keeps identity-name titles in the function family',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const CatchTopBar.route(
+          const CatchLegacyTopBar.route(
+            title: 'Aarav Shah',
+            navigation: CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
+          ),
+        ),
+      );
+
+      final titleContext = tester.element(find.text('Aarav Shah'));
+      expect(
+        tester.widget<Text>(find.text('Aarav Shah')).style,
+        CatchTextStyles.titleL(
+          titleContext,
+          color: CatchTokens.of(titleContext).ink,
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'CatchLegacyTopBar places context below the task title in the function family',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchLegacyTopBar.route(
             title: 'Event preparation',
             subtitle: 'Sunday Evening Run',
             navigation: CatchTopBarNavigation(
@@ -175,7 +176,7 @@ void main() {
     },
   );
 
-  testWidgets('CatchTopBar root uses the platform headline scale', (
+  testWidgets('CatchLegacyTopBar root uses the platform headline scale', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -183,8 +184,8 @@ void main() {
     );
 
     final titleContext = tester.element(find.text('Activity'));
-    expect(find.byType(CatchTopBar), findsOneWidget);
-    expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
+    expect(find.byType(CatchLegacyTopBar), findsOneWidget);
+    expect(tester.getSize(find.byType(CatchLegacyTopBar)).height, 56);
     expect(
       tester.widget<Text>(find.text('Activity')).style,
       CatchTextStyles.headline(
@@ -202,7 +203,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: 'Payment history',
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
@@ -228,18 +229,20 @@ void main() {
     expect(_topBarBorder(tester).bottom.style, BorderStyle.solid);
   });
 
-  testWidgets('CatchTopBar inherits the accessible text scale', (tester) async {
+  testWidgets('CatchLegacyTopBar inherits the accessible text scale', (
+    tester,
+  ) async {
     await tester.pumpWidget(_wrapScreenTopBar(title: 'Chats', textScale: 2));
 
     final titleContext = tester.element(find.text('Chats'));
     expect(MediaQuery.textScalerOf(titleContext).scale(1), 2);
     expect(
-      tester.getSize(find.byType(CatchTopBar)).height,
+      tester.getSize(find.byType(CatchLegacyTopBar)).height,
       greaterThan(CatchLayout.topBarHeight),
     );
   });
 
-  testWidgets('CatchTopBar reflows actions below its large-text title', (
+  testWidgets('CatchLegacyTopBar reflows actions below its large-text title', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -274,7 +277,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchTopBar reserves two subtitle lines at large text with search',
+    'CatchLegacyTopBar reserves two subtitle lines at large text with search',
     (tester) async {
       await tester.pumpWidget(
         _wrapScreenTopBar(
@@ -322,13 +325,15 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('CatchTopBar wires leading and action controls', (tester) async {
+  testWidgets('CatchLegacyTopBar wires leading and action controls', (
+    tester,
+  ) async {
     var backTaps = 0;
     var actionTaps = 0;
 
     await tester.pumpWidget(
       _wrap(
-        CatchTopBar.route(
+        CatchLegacyTopBar.route(
           title: 'Profile',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -367,7 +372,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchTopBar.route(
+        CatchLegacyTopBar.route(
           title: 'Home',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -408,7 +413,7 @@ void main() {
         home: const Scaffold(
           body: SizedBox(
             width: 390,
-            child: CatchTopBar.primaryRail(
+            child: CatchLegacyTopBar.primaryRail(
               title: 'Your profile',
               actions: [
                 SizedBox.square(
@@ -550,13 +555,13 @@ void main() {
   });
 
   testWidgets(
-    'CatchTopBar identity supports profile navigation and text actions',
+    'CatchLegacyTopBar identity supports profile navigation and text actions',
     (tester) async {
       var saved = false;
 
       await tester.pumpWidget(
         _wrap(
-          CatchTopBar.identity(
+          CatchLegacyTopBar.identity(
             identityName: 'Aarav',
             identitySemanticLabel: 'View Aarav profile',
             navigation: const CatchTopBarNavigation(
@@ -578,12 +583,12 @@ void main() {
     },
   );
 
-  testWidgets('CatchTopBar constrains text actions at large text scale', (
+  testWidgets('CatchLegacyTopBar constrains text actions at large text scale', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrapWithTextScale(
-        CatchTopBar.route(
+        CatchLegacyTopBar.route(
           title: 'Activity',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -599,53 +604,55 @@ void main() {
     expect(find.text('Mark all read'), findsOneWidget);
   });
 
-  testWidgets('CatchTopBar constrains compact subtitle at large text scale', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrapWithTextScale(
-        const CatchTopBar.route(
-          title: 'Professional profile',
-          subtitle: 'Active professional profile',
-          navigation: CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.none,
+  testWidgets(
+    'CatchLegacyTopBar constrains compact subtitle at large text scale',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTextScale(
+          const CatchLegacyTopBar.route(
+            title: 'Professional profile',
+            subtitle: 'Active professional profile',
+            navigation: CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
           ),
+          textScale: 2,
         ),
-        textScale: 2,
-      ),
-    );
+      );
 
-    expect(tester.takeException(), isNull);
-    expect(find.text('Professional profile'), findsOneWidget);
-    expect(find.text('Active professional profile'), findsOneWidget);
-  });
+      expect(tester.takeException(), isNull);
+      expect(find.text('Professional profile'), findsOneWidget);
+      expect(find.text('Active professional profile'), findsOneWidget);
+    },
+  );
 
-  testWidgets('CatchTopBar constrains large subtitle at large text scale', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrapWithTextScale(
-        const CatchTopBar.route(
-          title: 'Create event',
-          subtitle: 'Add the details guests need before they book',
-          navigation: CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.none,
+  testWidgets(
+    'CatchLegacyTopBar constrains large subtitle at large text scale',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrapWithTextScale(
+          const CatchLegacyTopBar.route(
+            title: 'Create event',
+            subtitle: 'Add the details guests need before they book',
+            navigation: CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
           ),
+          textScale: 2,
         ),
-        textScale: 2,
-      ),
-    );
+      );
 
-    expect(tester.takeException(), isNull);
-    expect(find.text('HOST EVENT'), findsNothing);
-    expect(find.text('Create event'), findsOneWidget);
-    expect(
-      find.text('Add the details guests need before they book'),
-      findsOneWidget,
-    );
-  });
+      expect(tester.takeException(), isNull);
+      expect(find.text('HOST EVENT'), findsNothing);
+      expect(find.text('Create event'), findsOneWidget);
+      expect(
+        find.text('Add the details guests need before they book'),
+        findsOneWidget,
+      );
+    },
+  );
 
-  testWidgets('CatchTopBar context uses the shared route geometry', (
+  testWidgets('CatchLegacyTopBar context uses the shared route geometry', (
     tester,
   ) async {
     var closed = false;
@@ -653,7 +660,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchTopBar.route(
+        CatchLegacyTopBar.route(
           title: 'Discover',
           subtitle: 'Tonight near you',
           navigation: CatchTopBarNavigation(
@@ -670,7 +677,7 @@ void main() {
     );
 
     expect(
-      tester.getSize(find.byType(CatchTopBar)).height,
+      tester.getSize(find.byType(CatchLegacyTopBar)).height,
       greaterThanOrEqualTo(56),
     );
     expect(find.text('EXPLORE'), findsNothing);
@@ -696,83 +703,85 @@ void main() {
     expect(done, isTrue);
   });
 
-  testWidgets('CatchTopBar composes expanding search from the AppBar API', (
-    tester,
-  ) async {
-    var query = 'tempo';
+  testWidgets(
+    'CatchLegacyTopBar composes expanding search from the AppBar API',
+    (tester) async {
+      var query = 'tempo';
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: StatefulBuilder(
-          builder: (context, setState) => Scaffold(
-            appBar: CatchTopBar.route(
-              title: 'Clubs',
-              search: CatchTopBarSearch(
-                copy: catchSearchFieldCopy(AppLocalizationsEn()),
-                value: query,
-                onChanged: (value) => setState(() => query = value),
-                placeholder: 'Search clubs',
-                tooltip: 'Search clubs',
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: StatefulBuilder(
+            builder: (context, setState) => Scaffold(
+              appBar: CatchLegacyTopBar.route(
+                title: 'Clubs',
+                search: CatchTopBarSearch(
+                  copy: catchSearchFieldCopy(AppLocalizationsEn()),
+                  value: query,
+                  onChanged: (value) => setState(() => query = value),
+                  placeholder: 'Search clubs',
+                  tooltip: 'Search clubs',
+                ),
               ),
+              body: const SizedBox.shrink(),
             ),
-            body: const SizedBox.shrink(),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Clubs'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.search), findsOneWidget);
+      expect(find.text('Clubs'), findsOneWidget);
+      expect(find.byIcon(CatchIcons.search), findsOneWidget);
 
-    await tester.tap(find.byIcon(CatchIcons.search));
-    await tester.pump();
+      await tester.tap(find.byIcon(CatchIcons.search));
+      await tester.pump();
 
-    expect(find.text('Clubs'), findsOneWidget);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchSearchField &&
-            widget.mode == CatchSearchFieldMode.expanding,
-      ),
-      findsOneWidget,
-    );
-    await tester.pump(CatchMotion.base);
-    expect(find.byIcon(CatchIcons.clear), findsOneWidget);
+      expect(find.text('Clubs'), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchSearchField &&
+              widget.mode == CatchSearchFieldMode.expanding,
+        ),
+        findsOneWidget,
+      );
+      await tester.pump(CatchMotion.base);
+      expect(find.byIcon(CatchIcons.clear), findsOneWidget);
 
-    await tester.tap(find.byIcon(CatchIcons.clear));
-    await tester.pump();
-    expect(query, isEmpty);
-    expect(find.byIcon(CatchIcons.close), findsOneWidget);
+      await tester.tap(find.byIcon(CatchIcons.clear));
+      await tester.pump();
+      expect(query, isEmpty);
+      expect(find.byIcon(CatchIcons.close), findsOneWidget);
 
-    await tester.tap(find.byIcon(CatchIcons.close));
-    await tester.pump();
-    expect(find.text('Clubs'), findsOneWidget);
-  });
+      await tester.tap(find.byIcon(CatchIcons.close));
+      await tester.pump();
+      expect(find.text('Clubs'), findsOneWidget);
+    },
+  );
 
-  testWidgets('CatchTopBar route owns the outlined navigation treatment', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const CatchTopBar.route(
-          title: 'Welcome',
-          navigation: CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
+  testWidgets(
+    'CatchLegacyTopBar route owns the outlined navigation treatment',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchLegacyTopBar.route(
+            title: 'Welcome',
+            navigation: CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.byIcon(CatchIcons.back), findsOneWidget);
-    expect(find.byType(CatchIconAction), findsOneWidget);
-    expect(
-      tester.widget<CatchIconAction>(find.byType(CatchIconAction)).variant,
-      CatchIconActionVariant.bordered,
-    );
-  });
+      expect(find.byIcon(CatchIcons.back), findsOneWidget);
+      expect(find.byType(CatchIconAction), findsOneWidget);
+      expect(
+        tester.widget<CatchIconAction>(find.byType(CatchIconAction)).variant,
+        CatchIconActionVariant.bordered,
+      );
+    },
+  );
 
-  testWidgets('CatchTopBar supports tab bottoms and overflow menus', (
+  testWidgets('CatchLegacyTopBar supports tab bottoms and overflow menus', (
     tester,
   ) async {
     String? selected;
@@ -783,7 +792,7 @@ void main() {
         home: DefaultTabController(
           length: 2,
           child: Scaffold(
-            appBar: CatchTopBar.route(
+            appBar: CatchLegacyTopBar.route(
               title: 'Profile',
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.none,
@@ -817,7 +826,7 @@ void main() {
     );
 
     expect(
-      tester.getSize(find.byType(CatchTopBar)).height,
+      tester.getSize(find.byType(CatchLegacyTopBar)).height,
       greaterThanOrEqualTo(56),
     );
     expect(find.text('Profile'), findsNWidgets(2));
@@ -923,7 +932,7 @@ Widget _wrapScreenTopBar({
 }) {
   Widget home = Builder(
     builder: (context) => CatchScaffold.workspace(
-      title: CatchTopBar.screen(
+      title: CatchLegacyTopBar.screen(
         title: title,
         subtitle: subtitle,
         actions: actions,
@@ -967,7 +976,7 @@ Material _topBarMaterial(WidgetTester tester) {
   return tester.widget<Material>(
     find
         .descendant(
-          of: find.byType(CatchTopBar),
+          of: find.byType(CatchLegacyTopBar),
           matching: find.byType(Material),
         )
         .first,
@@ -977,7 +986,7 @@ Material _topBarMaterial(WidgetTester tester) {
 Border _topBarBorder(WidgetTester tester) {
   final containers = tester.widgetList<Container>(
     find.descendant(
-      of: find.byType(CatchTopBar),
+      of: find.byType(CatchLegacyTopBar),
       matching: find.byType(Container),
     ),
   );

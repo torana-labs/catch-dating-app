@@ -24,16 +24,16 @@ const catchRawControlConstructors = <String>{
 
 const catchRawControlReplacements = <String, String>{
   'ActionChip': 'CatchChip',
-  'AppBar': 'CatchTopBar.route or CatchTopBar.screen',
+  'AppBar': 'CatchTopBar inside a CatchScreen',
   'Badge': 'CatchBadge',
   'Card': 'CatchSurface or CatchSectionCard',
   'Chip': 'CatchChip',
   'ChoiceChip': 'CatchChip',
-  'CupertinoNavigationBar': 'CatchTopBar.route or CatchTopBar.screen',
+  'CupertinoNavigationBar': 'CatchTopBar inside a CatchScreen',
   'FilterChip': 'CatchChip',
   'InputChip': 'CatchChip',
   'RawChip': 'CatchChip',
-  'SliverAppBar': 'a registered media-hero sliver or CatchTopBar',
+  'SliverAppBar': 'a registered media-hero sliver or a subject CatchTopBar',
 };
 
 const catchRawButtonControlConstructors = <String>{

@@ -25,7 +25,9 @@ void main() {
     await tester.pump();
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    final topBar = tester.widget<CatchLegacyTopBar>(
+      find.byType(CatchLegacyTopBar),
+    );
     expect(topBar.navigation.mode, CatchTopBarNavigationMode.close);
     expect(topBar.emphasis, CatchTopBarEmphasis.plain);
     expect(

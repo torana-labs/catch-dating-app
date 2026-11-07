@@ -195,7 +195,7 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
       );
     }
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.phoneImportTitle,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

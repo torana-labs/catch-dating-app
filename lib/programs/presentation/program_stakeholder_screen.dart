@@ -38,7 +38,7 @@ class ProgramStakeholderScreen extends ConsumerWidget {
       onRetry: () =>
           ref.invalidate(programStakeholderCountsProvider(programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsStakeholderTitle,
           subtitle: context.l10n.programsStakeholderSubtitle,
           emphasis: scrolledUnder
@@ -53,7 +53,7 @@ class ProgramStakeholderScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsStakeholderTitle,
           subtitle: context.l10n.programsStakeholderSubtitle,
           emphasis: scrolledUnder
@@ -72,7 +72,7 @@ class ProgramStakeholderScreen extends ConsumerWidget {
         ),
       ),
       builder: (context, counts) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsStakeholderTitle,
           subtitle: context.l10n.programsStakeholderSubtitle,
           emphasis: scrolledUnder

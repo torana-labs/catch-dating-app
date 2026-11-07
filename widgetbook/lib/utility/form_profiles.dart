@@ -31,7 +31,7 @@ Widget formProfilesContentPreview(BuildContext context) =>
         overrides: [formProfilesControllerProvider.overrideWith(_Forms.new)],
         child: CatchRouteScaffold(
           topBarBuilder: (_, _) =>
-              const CatchTopBar.route(title: 'Forms & cards'),
+              const CatchLegacyTopBar.route(title: 'Forms & cards'),
           body: const CatchRouteBody.standardConstrained(
             child: FormProfilesAsyncBoundary(),
           ),
@@ -48,7 +48,7 @@ Widget formProfilesListPreview(BuildContext context) =>
     WidgetbookUtilityDeviceFrame(
       child: CatchRouteScaffold(
         topBarBuilder: (_, _) =>
-            const CatchTopBar.route(title: 'Forms & cards'),
+            const CatchLegacyTopBar.route(title: 'Forms & cards'),
         body: CatchRouteBody.standardConstrained(
           child: FormProfilesSectionList(
             state: _state(),

@@ -44,7 +44,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         ref.invalidate(watchEventProvider(eventId));
       },
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -55,7 +55,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -78,7 +78,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         final event = routeData.event;
         if (organizer == null || event == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title:
                   context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
               navigation: const CatchTopBarNavigation(
@@ -104,7 +104,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
         if (uid == null || !organizer.isHostedBy(uid)) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title:
                   context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
               navigation: const CatchTopBarNavigation(

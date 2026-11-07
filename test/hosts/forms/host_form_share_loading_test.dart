@@ -40,7 +40,7 @@ void main() {
         ),
       );
 
-      final topBar = tester.getRect(find.byType(CatchTopBar));
+      final topBar = tester.getRect(find.byType(CatchLegacyTopBar));
       final progress = tester.getCenter(find.byType(CircularProgressIndicator));
       expect(find.byType(CatchStateViewport), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsNothing);

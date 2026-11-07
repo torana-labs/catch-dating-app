@@ -185,7 +185,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
       final editing = _editing;
       if (editing != null) {
         return CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: context.l10n.programsLodgingSetup,
             subtitle: editing.catalog.timezone,
             navigation: const CatchTopBarNavigation(
@@ -252,7 +252,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
           review.workflow['guestPublishedProposalId'] == proposal.id;
       final retry = view.retryAction;
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsLodgingTitle,
           subtitle: context.l10n.programsLodgingSubtitle,
           emphasis: scrolledUnder
@@ -419,7 +419,7 @@ class ProgramLodgingScaffold extends StatelessWidget {
   final Widget body;
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.programsLodgingTitle,
       subtitle: context.l10n.programsLodgingSubtitle,
       emphasis: scrolledUnder
@@ -443,7 +443,7 @@ class ProgramLodgingExpiredPageBody extends StatelessWidget {
   final VoidCallback onRefresh;
   @override
   Widget build(BuildContext context) => CatchRouteScaffold(
-    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
       title: context.l10n.programsLodgingTitle,
       subtitle: context.l10n.programsLodgingSubtitle,
       emphasis: scrolledUnder
@@ -520,7 +520,7 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
           requiredString(group, 'id'): requiredString(group, 'label'),
     };
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.programsLodgingTitle,
         subtitle: context.l10n.programsLodgingSubtitle,
         emphasis: scrolledUnder

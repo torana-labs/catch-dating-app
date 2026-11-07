@@ -23,7 +23,7 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: title,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -47,7 +47,7 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: title,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -75,7 +75,7 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
       onRetry: () => hostOperableOrganizerReads(uid).forEach(ref.invalidate),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: title,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -98,7 +98,7 @@ class HostOrganizerSpokeAsyncBoundary extends ConsumerWidget {
             .firstOrNull;
         if (organizer == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title: title,
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.back,
@@ -141,7 +141,7 @@ class HostOrganizerSpokeScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: title,
         subtitle: organizer.name,
         navigation: const CatchTopBarNavigation(

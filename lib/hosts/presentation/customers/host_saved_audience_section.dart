@@ -71,7 +71,7 @@ class HostSavedAudienceSection extends ConsumerWidget {
     final current = memberState.value;
     final displayedAudience = current?.preview.audience ?? audience;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: context.l10n.hostAudienceGroupTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
@@ -82,7 +82,7 @@ class HostSavedAudienceSection extends ConsumerWidget {
       ),
       footer: current == null || !memberState.isSettledData
           ? null
-          : CatchDock.primary(
+          : CatchLegacyDock.primary(
               buttonKey: const ValueKey('host-saved-audience-message'),
               label: context.l10n.hostAudienceOpenInbox,
               onPressed:

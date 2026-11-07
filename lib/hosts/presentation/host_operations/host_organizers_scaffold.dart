@@ -358,7 +358,7 @@ class _HostOrganizersScaffoldState extends ConsumerState<HostOrganizersScaffold>
         editor: indexPane,
         showPreview: _selectedTab != HostOrganizerTab.preview,
         preview: CatchWorkspacePaneScaffold(
-          title: CatchTopBar.primaryRail(
+          title: CatchLegacyTopBar.primaryRail(
             title: context.l10n.hostsHostOrganizersScaffoldLabelPreview,
           ),
           body: CustomScrollView(

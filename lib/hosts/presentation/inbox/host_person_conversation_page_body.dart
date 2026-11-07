@@ -277,7 +277,7 @@ class _HostPersonConversationPageBodyState
     final canSend =
         uid != null && selected != null && available.contains(selected);
     return CatchWorkspacePaneScaffold(
-      title: CatchTopBar.identity(
+      title: CatchLegacyTopBar.identity(
         identityName: person.displayName,
         identityPhotoUrl: person.photoUrl,
         identitySemanticLabel: person.displayName,

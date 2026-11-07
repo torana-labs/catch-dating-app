@@ -8,7 +8,9 @@ import {describe, expect, it} from "vitest";
 const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 const sheet = read("../../../catch_ui/lib/src/components/catch_sheet.dart");
 const header = read("../../../catch_ui/lib/src/components/catch_sheet_header.dart");
-const dock = read("../../../catch_ui/lib/src/components/catch_dock.dart");
+// The web dock still draws the pre-redesign recipes, so it mirrors Flutter's
+// CatchLegacyDock until its port to the system placements.
+const dock = read("../../../catch_ui/lib/src/components/catch_legacy_dock.dart");
 const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
 const sheetCss = read("./CatchSheet.module.css");
 const sheetTs = read("./CatchSheet.tsx");

@@ -261,7 +261,8 @@ Future<void> _pump(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: CatchRouteScaffold(
-          topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Payments'),
+          topBarBuilder: (_, _) =>
+              const CatchLegacyTopBar.route(title: 'Payments'),
           body: CatchRouteBody.standard(child: child),
         ),
       ),

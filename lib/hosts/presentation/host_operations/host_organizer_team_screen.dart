@@ -44,7 +44,7 @@ class _HostOrganizerTeamScreenState
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -69,7 +69,7 @@ class _HostOrganizerTeamScreenState
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -97,7 +97,7 @@ class _HostOrganizerTeamScreenState
     final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
     if (organizersState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -125,7 +125,7 @@ class _HostOrganizerTeamScreenState
         .firstOrNull;
     if (organizer == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -168,7 +168,7 @@ class _HostOrganizerTeamScreenState
       errorContext: AppErrorContext.profile,
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
         title: routeTitle,
         subtitle: organizer.name,
         leading: CatchIconAction.toolbar(

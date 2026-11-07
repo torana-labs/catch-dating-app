@@ -93,7 +93,7 @@ class _EventSuccessModuleConsolidationPrototypeState
           child: ListView(
             padding: CatchInsets.pageBody,
             children: [
-              const CatchTopBar.primaryRail(
+              const CatchLegacyTopBar.primaryRail(
                 title: 'Live event guide',
                 subtitle: 'Owner review only · not wired to production',
               ),

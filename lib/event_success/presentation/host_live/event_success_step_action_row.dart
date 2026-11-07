@@ -35,7 +35,7 @@ class EventSuccessStepActionRow extends StatelessWidget {
                   plan.activeStepIndex + 1,
                 ),
               ));
-    return CatchDock.primaryContent(
+    return CatchLegacyDock.primaryContent(
       label: nextLabel,
       onPressed: onNext,
       isLoading: isLoading,

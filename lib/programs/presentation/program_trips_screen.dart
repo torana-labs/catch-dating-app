@@ -219,7 +219,7 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
 
   CatchRouteScaffold _routeScaffold({required CatchRouteBody body}) =>
       CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
           title: context.l10n.programsTripsTitle,
           subtitle: context.l10n.programsTripsSubtitle,
           emphasis: scrolledUnder
