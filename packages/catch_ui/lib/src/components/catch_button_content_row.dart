@@ -12,6 +12,7 @@ class CatchButtonContentRow extends StatelessWidget {
     required this.color,
     required this.textStyle,
     this.leading,
+    this.trailing,
     this.gap = CatchSpacing.micro6,
     this.fullWidth = false,
     this.allowMultiline = false,
@@ -21,6 +22,9 @@ class CatchButtonContentRow extends StatelessWidget {
   final String label;
   final Color color;
   final Widget? leading;
+
+  /// An icon after the label, such as open-external on "Open Razorpay".
+  final Widget? trailing;
   final double gap;
   final bool fullWidth;
   final bool allowMultiline;
@@ -54,6 +58,13 @@ class CatchButtonContentRow extends StatelessWidget {
           SizedBox(width: gap),
         ],
         Flexible(child: labelWidget),
+        if (trailing case final trailing?) ...[
+          SizedBox(width: gap),
+          IconTheme(
+            data: IconThemeData(color: color, size: CatchIconSize.md),
+            child: trailing,
+          ),
+        ],
       ],
     );
 

@@ -40,6 +40,7 @@ class CatchButton extends StatefulWidget {
     this.size = CatchButtonSize.lg,
     this.mode = CatchButtonMode.pill,
     this.leading,
+    this.trailing,
     this.status = CatchButtonStatus.idle,
     this.fullWidth = false,
     this.isInteractive = true,
@@ -63,7 +64,6 @@ class CatchButton extends StatefulWidget {
        minimumSize = const Size.square(CatchSpacing.s10),
        padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = false,
-       trailing = null,
        _floatingIcon = null,
        value = null,
        count = null;
@@ -564,6 +564,7 @@ class _CatchButtonState extends State<CatchButton> {
       label: widget.label,
       color: palette.foreground,
       leading: widget.leading,
+      trailing: widget.trailing,
       gap: CatchSpacing.micro6,
       fullWidth: widget.fullWidth,
       allowMultiline: !widget._selection,
