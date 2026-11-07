@@ -3043,7 +3043,19 @@ legacy list: `lib/hosts/today` is the first (`HostTodayScreen` composes
 `CatchRoot` and `CatchScreen`; `HostTodayBody` and `HostTodayState` are
 provider-free; `hostTodayController` composes the listeners and the cached
 host report; the event and attention bindings live in the events and
-insights `parts/`). The folder moves into `apps/host` unchanged with the router. Two
+insights `parts/`). `lib/hosts/create` is the second: `CreateScreen` owns the
+create session (`createController`, keyed by the screen's `CreateFlowArgs`),
+the pickers, the contained sheets and navigation, and renders one step screen
+per step on phones (`CreateBasicsScreen`, `CreateWhenScreen`,
+`CreateTicketsScreen`, `CreatePlanScreen`, `CreateShareScreen`, each a
+`CreateStepFrame` with the step top bar and the bar dock) or
+`CreateEditorScreen` (the editor pane layout with the step list and the live
+poster) on expanded windows. The bodies take `CreateFlowState` and
+`CreateHandlers` and watch nothing; the draft is the form, and every write is
+a progressive-setup command (create, basics update, details, preferences,
+publication) through the setup controllers, which follow their listeners.
+The draft poster and the plan step row live in the events `parts/`. The
+folders move into `apps/host` unchanged with the router. Two
 files under `lib/pages` predate D24 and are listed shrink-only in `migration_scope.dart`
 until their P6 redraw (`splash_screen.dart`, `celebration_screen.dart`); the list
 cannot grow, and `apps/*/lib` stays at zero with no list.
