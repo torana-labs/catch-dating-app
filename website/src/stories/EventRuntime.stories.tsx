@@ -107,6 +107,7 @@ const controller = {
 
 /** Join: the tonight badge, the title, the phone number you booked with. */
 export const Join: Story = {
+  parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["join"]}},
   render: () => <EventRuntimeView controller={{...controller, stage: "phone", bootstrap: bootstrap(startMillis + 8 * minute),
     phoneNumber: "+91 98201 44718"}} />,
   play: async ({canvasElement}) => {
@@ -118,6 +119,7 @@ export const Join: Story = {
 
 /** Join, once the code is accepted: the verified phone, the team name and Join tonight. */
 export const JoinTeam: Story = {
+  parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["join-team"]}},
   render: () => <EventRuntimeView controller={{...controller, stage: "profile", bootstrap: bootstrap(startMillis + 8 * minute),
     phoneNumber: "+91 98201 44718", preEventFieldId: "teamName", teamName: "Harbour Lights"}} />,
   play: async ({canvasElement}) => {
@@ -128,11 +130,13 @@ export const JoinTeam: Story = {
 
 /** The code step between the two. */
 export const JoinCode: Story = {
+  parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["join-code"]}},
   render: () => <EventRuntimeView controller={{...controller, stage: "otp", bootstrap: bootstrap(startMillis + 8 * minute)}} />,
 };
 
 /** The round: the Now spotlight, the first hello, Tonight and the help button. */
 export const Round: Story = {
+  parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["round"]}},
   render: () => <EventRuntimeView controller={controller} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -143,6 +147,7 @@ export const Round: Story = {
 
 /** The round after round one's scores are out: the ranked rows, yours selected. */
 export const RoundScores: Story = {
+  parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["round-scores"]}},
   render: () => <EventRuntimeView controller={{...controller, liveState: {...liveState,
     plan: {...liveState.plan!, publishedRevealRoundIndex: 0, revealStatus: "revealed"},
     standings: {eventId: demoEventId, organizerId: world.organizer.id, unitOutcome: "score", revision: 1, latestRoundIndex: 0,
@@ -151,6 +156,7 @@ export const RoundScores: Story = {
 
 /** The reveal: your place, everyone ranked, and getting the app. */
 export const Reveal: Story = {
+  parameters: {catchComponent: {id: "event_runtime_view", routeIds: ["event_runtime"], states: ["reveal"]}},
   render: () => <EventRuntimeView controller={{...controller, bootstrap: bootstrap(startMillis + 131 * minute), liveState: {...liveState,
     plan: {...liveState.plan!, publishedRevealRoundIndex: 1, revealStatus: "revealed", status: "complete"},
     standings: {eventId: demoEventId, organizerId: world.organizer.id, unitOutcome: "score", revision: 2, latestRoundIndex: 1,

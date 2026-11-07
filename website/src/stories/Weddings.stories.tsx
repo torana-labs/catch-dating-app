@@ -49,6 +49,7 @@ export const Desktop: Story = {
       reviewStates: ["default", "phone"],
       stateCoverage: {storybook: ["default", "phone"], manual: []},
     },
+    catchComponent: {id: "route_weddings", routeIds: ["weddings"], states: ["default"]},
   },
   render: () => <WeddingsPage />,
   play: async ({canvasElement}) => {
@@ -62,6 +63,7 @@ export const Desktop: Story = {
 export const Phone: Story = {
   name: "Landing · 390 (phone)",
   globals: phone,
+  parameters: {catchComponent: {id: "route_weddings", routeIds: ["weddings"], states: ["phone"]}},
   render: () => <WeddingsPage />,
 };
 
@@ -76,6 +78,7 @@ export const ApplyStepOne: Story = {
       reviewStates: ["step-one", "step-two", "sent"],
       stateCoverage: {storybook: ["step-one", "step-two", "sent"], manual: []},
     },
+    catchComponent: {id: "route_weddings_apply", routeIds: ["weddings_apply"], states: ["step-one"]},
   },
   render: () => <WeddingsApplicationPage initialStepOne={null} submit={resolves} />,
 };
@@ -84,6 +87,7 @@ export const ApplyStepOne: Story = {
 export const ApplyStepTwo: Story = {
   name: "Application · step 2",
   globals: phone,
+  parameters: {catchComponent: {id: "route_weddings_apply", routeIds: ["weddings_apply"], states: ["step-two"]}},
   render: () => <WeddingsApplicationPage initialStepOne={stepOne} submit={resolves} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -96,6 +100,7 @@ export const ApplyStepTwo: Story = {
 export const ApplySent: Story = {
   name: "Application · sent",
   globals: phone,
+  parameters: {catchComponent: {id: "route_weddings_apply", routeIds: ["weddings_apply"], states: ["sent"]}},
   render: () => <WeddingsApplicationPage initialStepOne={stepOne} submit={resolves} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);

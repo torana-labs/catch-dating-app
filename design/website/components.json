@@ -181,7 +181,7 @@
           "get-the-app"
         ]
       },
-      "notes": "The organiser and event pages' site top bar: the wordmark, Explore and For organisers, and Get the app. Rendered at the top of both pages;"
+      "notes": "The organiser and event pages' site top bar: the wordmark, Explore and For organisers, and Get the app. Rendered at the top of both pages."
     },
     {
       "id": "shared_public_page_footer",
@@ -2375,7 +2375,9 @@
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
+        "story": "website/src/stories/EventRuntime.stories.tsx",
+        "exportName": "Join",
         "states": [
           "join",
           "join-code",
@@ -2385,7 +2387,7 @@
           "reveal"
         ]
       },
-      "notes": "The /join page drawn from the controller (P4.6, RbAppLive boards in the browser): join by phone, code and team, the Now spotlight with the round, scores and the reveal. EventRuntime.stories.tsx renders Join, JoinCode, JoinTeam, Round, RoundScores, Reveal and Rehearsal without catchComponent parameters, so the record stays planned until those stories declare it."
+      "notes": "The /join page drawn from the controller (P4.6, RbAppLive boards in the browser): join by phone, code and team, the Now spotlight with the round, scores and the reveal. EventRuntime.stories.tsx declares each state on its own story."
     },
     {
       "id": "shared_event_runtime_shells",
@@ -3417,13 +3419,15 @@
         "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
+        "story": "website/src/stories/Weddings.stories.tsx",
+        "exportName": "Desktop",
         "states": [
           "default",
           "phone"
         ]
       },
-      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares the route review states but no catchComponent yet, so the record stays planned."
+      "notes": "Catch for weddings (P4.7, RbWebWeddings board) on the white ground in the nights-out format, under the site top bar with the page's own title, links and Apply, ending with the ink foot band. Weddings.stories.tsx (Desktop, Phone) declares each state."
     },
     {
       "id": "weddings_bands",
@@ -3487,7 +3491,9 @@
         "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
+        "story": "website/src/stories/Weddings.stories.tsx",
+        "exportName": "ApplyStepOne",
         "states": [
           "step-one",
           "step-two",
