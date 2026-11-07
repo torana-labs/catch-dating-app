@@ -6,7 +6,6 @@ import 'package:catch_ui/src/components/catch_count_badge.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
-import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -561,6 +560,19 @@ class _CatchButtonState extends State<CatchButton> {
         ? CatchButtonTokens.hoverFilledAlpha
         : CatchButtonTokens.hoverOutlineAlpha;
 
+    final contentRow = CatchButtonContentRow(
+      label: widget.label,
+      color: palette.foreground,
+      leading: widget.leading,
+      gap: CatchSpacing.micro6,
+      fullWidth: widget.fullWidth,
+      allowMultiline: !widget._selection,
+      textStyle: spec.textStyle(context),
+      mode: widget.isLoading
+          ? CatchButtonContentRowMode.loading
+          : CatchButtonContentRowMode.label,
+    );
+
     final buttonContent = Stack(
       alignment: Alignment.center,
       children: [
@@ -580,17 +592,7 @@ class _CatchButtonState extends State<CatchButton> {
             duration: transitionDuration,
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
-            child: widget.isLoading
-                ? CatchLoadingIndicator.dots(color: palette.foreground)
-                : CatchButtonContentRow(
-                    label: widget.label,
-                    color: palette.foreground,
-                    leading: widget.leading,
-                    gap: CatchSpacing.micro6,
-                    fullWidth: widget.fullWidth,
-                    allowMultiline: !widget._selection,
-                    textStyle: spec.textStyle(context),
-                  ),
+            child: contentRow,
           ),
         ),
       ],
