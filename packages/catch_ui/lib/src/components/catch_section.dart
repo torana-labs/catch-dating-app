@@ -14,6 +14,7 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
+import 'package:catch_ui/src/components/catch_list_section.dart';
 import 'package:catch_ui/src/components/catch_row_section.dart';
 import 'package:catch_ui/src/components/catch_section_body.dart';
 import 'package:catch_ui/src/components/catch_section_body_mode.dart';
@@ -34,17 +35,35 @@ part 'catch_section_configs.dart';
 part 'catch_action_module.dart';
 part 'catch_collection_section.dart';
 
-enum _CatchSectionVariant { divided, contained, plain }
-
-/// The supported action hierarchies inside a contained task.
-enum CatchSectionEmphasis { primary, secondary, destructive }
-
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
 /// Compose these inside `CatchSectionList` with no ad-hoc gaps. Optional
 /// title colors are caller-resolved. Contained recipes pass explicit focus/error
 /// states to `CatchSectionSurface`, which owns their precedence and rendering.
 class CatchSection extends StatelessWidget {
+  /// The system Section: the title with a [note] or a quiet [action], then
+  /// the rows with the lines [dividers] places, or the [empty] copy.
+  factory CatchSection({
+    Key? key,
+    String? title,
+    String? note,
+    CatchSectionAction? action,
+    CatchSectionPlacement dividers = CatchSectionPlacement.between,
+    String? empty,
+    required List<Widget> children,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchListSection(
+      title: title,
+      note: note,
+      action: action,
+      dividers: dividers,
+      empty: empty,
+      children: children,
+    ),
+  );
+
   const CatchSection.divided({
     super.key,
     String? title,
@@ -732,14 +751,6 @@ class CatchSection extends StatelessWidget {
   final _PlainSectionConfig? _plainConfig;
   final _HorizontalSectionConfig? _horizontalConfig;
 
-  _SectionCommonConfig get _common =>
-      _horizontalConfig?.common ??
-      _dividedConfig?.common ??
-      _fieldRowsConfig?.common ??
-      _containedFieldRowsConfig?.common ??
-      _containedConfig?.common ??
-      _plainConfig!.common;
-
   String? get title => _common.title;
   String? get subtitle => _common.subtitle;
   final Widget? trailing;
@@ -750,12 +761,6 @@ class CatchSection extends StatelessWidget {
   final Widget? child;
 
   bool get first => _dividedConfig?.first ?? _fieldRowsConfig?.first ?? false;
-  _CatchSectionVariant get _variant =>
-      _containedConfig != null || _containedFieldRowsConfig != null
-      ? _CatchSectionVariant.contained
-      : _plainConfig != null
-      ? _CatchSectionVariant.plain
-      : _CatchSectionVariant.divided;
   Color? get dividerColor => _dividedConfig?.dividerColor;
   double? get dividerIndent =>
       _dividedConfig?.dividerIndent ??
@@ -782,8 +787,6 @@ class CatchSection extends StatelessWidget {
   /// Explicit section interaction/error states; error wins over focus.
   Set<WidgetState> get states =>
       _containedFieldRowsConfig?.states ?? _containedConfig?.states ?? const {};
-  bool get _fieldRows =>
-      _fieldRowsConfig != null || _containedFieldRowsConfig != null;
   CatchSectionHeaderPlacement get fieldHeaderPlacement =>
       _containedFieldRowsConfig?.headerPlacement ??
       CatchSectionHeaderPlacement.outside;
