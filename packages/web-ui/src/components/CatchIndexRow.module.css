@@ -85,3 +85,126 @@
   align-items: center;
   margin-inline-start: var(--catch-space-s3);
 }
+
+/*
+ * The system ListRow (a density is set), from the system's .c-row: 10, 12 or
+ * 14px above and below, 12px between the parts, no line of its own (the
+ * Section around it owns lines), a 16px semibold title and 13px secondary
+ * lines that end in "…" unless the row wraps. A row with body text aligns to
+ * the top. A pressable row tints 4% on hover; a chosen row is the tile.
+ */
+.row[data-density] {
+  gap: var(--catch-space-s3);
+  min-height: 0;
+  border-bottom: 0;
+}
+
+.row[data-density="compact"] { padding-block: var(--catch-space-micro10); }
+.row[data-density="regular"] { padding-block: var(--catch-space-s3); }
+.row[data-density="roomy"] { padding-block: var(--catch-space-micro14); }
+.row[data-density][data-has-text] { align-items: flex-start; }
+.row[data-density][aria-current] { background: var(--catch-theme-tile); }
+.row[data-density] .leading { margin-inline-end: 0; }
+.row[data-density] .trailing { margin-inline-start: 0; }
+.row[data-density] .copy { gap: var(--catch-space-micro3); }
+
+.title {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  overflow: hidden;
+  color: var(--catch-theme-ink2);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.38;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row[data-wrap] :is(.title, .subtitle) { white-space: normal; }
+
+.line { display: flex; align-items: center; gap: var(--catch-space-s2); min-width: 0; }
+
+.status {
+  margin-left: auto;
+  color: var(--catch-theme-ink2);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status[data-tone="success"] { color: var(--catch-theme-deep-mint); }
+.status[data-tone="warning"] { color: var(--catch-theme-deep-yellow); }
+.status[data-tone="danger"] { color: var(--catch-theme-deep-coral); }
+
+.text { color: var(--catch-theme-ink); font-size: 15px; line-height: 1.45; white-space: normal; }
+.meta { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 500; line-height: 1.38; }
+.row[data-density] .copy > div:has(> [role="progressbar"]) { margin-top: var(--catch-space-s1); }
+
+.row[data-density] .leading { align-items: center; justify-content: center; }
+.row[data-catch-row-lead="marker"] .leading { width: 12px; }
+.row[data-catch-row-lead="time"] .leading { justify-content: flex-start; gap: var(--catch-space-s3); }
+.time { width: 40px; }
+.rank { width: 28px; text-align: center; }
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-tile);
+  color: var(--catch-theme-ink);
+}
+
+.row[data-on="tile"] .icon { background: var(--catch-theme-nested); }
+.icon[data-tone="success"] { background: var(--catch-theme-tint-mint); }
+.icon[data-tone="warning"] { background: var(--catch-theme-tint-yellow); }
+.icon[data-tone="danger"] { background: var(--catch-theme-tint-coral); }
+.icon[data-tone="info"] { background: var(--catch-theme-tint-indigo); }
+.icon[data-format] { color: var(--catch-theme-on-format); }
+.icon[data-format="run"] { background: var(--catch-format-run-accent); }
+.icon[data-format="dinner"] { background: var(--catch-format-dinner-accent); }
+.icon[data-format="games"] { background: var(--catch-format-games-accent); }
+.icon[data-format="courts"] { background: var(--catch-format-courts-accent); }
+.icon[data-format="nightsOut"] { background: var(--catch-format-nights-out-accent); }
+
+.value {
+  color: var(--catch-theme-ink2);
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.row[data-density] .trailing { gap: var(--catch-space-s2); color: var(--catch-theme-ink2); }
+.chevron { display: inline-flex; }
+
+/* The date tile (the system's DateTile): 56 × 64, 10px corners, the format colour. */
+.date {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--catch-space-micro2);
+  width: 56px;
+  height: var(--catch-space-s16);
+  border-radius: var(--catch-radius-sm);
+  background: var(--catch-row-date-fill, var(--catch-theme-tile));
+  color: var(--catch-theme-ink);
+}
+
+.date[data-format] { color: var(--catch-theme-on-format); }
+.date[data-format="run"] { --catch-row-date-fill: var(--catch-format-run-accent); }
+.date[data-format="dinner"] { --catch-row-date-fill: var(--catch-format-dinner-accent); }
+.date[data-format="games"] { --catch-row-date-fill: var(--catch-format-games-accent); }
+.date[data-format="courts"] { --catch-row-date-fill: var(--catch-format-courts-accent); }
+.date[data-format="nightsOut"] { --catch-row-date-fill: var(--catch-format-nights-out-accent); }

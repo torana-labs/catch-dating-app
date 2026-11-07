@@ -1,6 +1,10 @@
 "use client";
 
 import type {CSSProperties, ReactNode} from "react";
+import type {CatchIconName} from "../icons/catchIconGlyphs";
+import type {CatchFormat} from "./catchCoreVocabulary";
+import {useCatch} from "./catchRootContext";
+import {CatchIcon} from "./CatchIcon";
 import {CatchLegacyText} from "./CatchLegacyText";
 import styles from "./CatchChip.module.css";
 
@@ -13,7 +17,39 @@ export type CatchChipEmphasis = "soft" | "solid";
 /** Pigments derive from the named activity token; raw deep/soft colours are native-only. */
 export interface CatchChipData {label: string; icon: ReactNode; accent: ActivityAccent}
 interface LabelProps {label: string; leading?: ReactNode; semanticsLabel?: string}
+/** filter and choice toggle; input can be removed; link goes somewhere; tag is passive. */
+export const catchChipKinds = ["filter", "choice", "input", "link", "tag"] as const;
+export type CatchChipKind = (typeof catchChipKinds)[number];
+
+/** md 38, sm 32. */
+export type CatchChipSize = "md" | "sm";
+
+/** The system Chip: no recipe, a kind. */
+export interface CatchChipSystemProps {
+  recipe?: undefined;
+  label: ReactNode;
+  kind?: CatchChipKind;
+  selected?: boolean;
+  size?: CatchChipSize;
+  /** A coloured dot before the label: an event format. */
+  dot?: CatchFormat;
+  leadingIcon?: CatchIconName;
+  /** A leading avatar or other element. */
+  leading?: ReactNode;
+  count?: number;
+  /** When selected, fill with the dot's format colour instead of ink. */
+  colourWhenSelected?: boolean;
+  /** Null disables the chip. */
+  onPressed?: (() => void) | null;
+  /** input: the remove control. */
+  onRemove?: () => void;
+  removeLabel?: string;
+  href?: string;
+  disabled?: boolean;
+}
+
 export type CatchChipProps =
+  | CatchChipSystemProps
   | (LabelProps & {recipe: "tag"})
   | (LabelProps & {recipe: "selectable"; selected: boolean; onChanged: (selected: boolean) => void;
       enabled?: boolean; accent?: ActivityAccent})
@@ -42,8 +78,64 @@ function pigments(accent: ActivityAccent | undefined): CSSProperties | undefined
   } as CSSProperties;
 }
 
-/** Five Flutter constructors, with selection and domain callbacks owned by the caller. */
+/**
+ * catch.chip. Without a recipe, the system Chip: small round labels you tap
+ * (filters, choices, removable inputs, links) that turn white on a tile and
+ * fill with ink, or with the dot's format colour, when chosen. With a recipe,
+ * Flutter's five constructors, with selection and domain callbacks owned by
+ * the caller.
+ */
 export function CatchChip(props: CatchChipProps) {
+  if (props.recipe === undefined) return <SystemChip {...props} />;
+  return RecipeChip(props);
+}
+
+function SystemChip({label, kind = "filter", selected, size = "md", dot, leadingIcon, leading, count, colourWhenSelected, onPressed, onRemove, removeLabel = "Remove", href, disabled}: CatchChipSystemProps) {
+  const {ground} = useCatch();
+  const shared = {
+    className: styles.system,
+    "data-format": selected && colourWhenSelected && dot ? dot : undefined,
+    "data-kind": kind,
+    "data-on": ground,
+    "data-selected": selected ? "" : undefined,
+    "data-size": size,
+  };
+  const body = (
+    <>
+      {dot ? <span aria-hidden="true" className={styles.dot} data-dot={dot} /> : null}
+      {leadingIcon ? <CatchIcon name={leadingIcon} size={16} /> : null}
+      {leading}
+      <span>{label}</span>
+      {count != null ? <span className={styles.count}>{count}</span> : null}
+      {kind === "input" && onRemove ? (
+        <span aria-label={removeLabel} className={styles.remove} role="button" tabIndex={0}
+          onClick={(event) => { event.stopPropagation(); onRemove(); }}
+          onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onRemove(); } }}>
+          <CatchIcon name="close" size={16} />
+        </span>
+      ) : null}
+    </>
+  );
+  if (kind === "tag") return <span {...shared}>{body}</span>;
+  if (href) return <a {...shared} href={href}>{body}</a>;
+  const toggles = kind === "filter" || kind === "choice";
+  return (
+    <button
+      {...shared}
+      aria-checked={kind === "choice" ? Boolean(selected) : undefined}
+      aria-pressed={kind === "filter" ? Boolean(selected) : undefined}
+      data-toggle={toggles ? "" : undefined}
+      disabled={disabled || onPressed === null}
+      onClick={() => onPressed?.()}
+      role={kind === "choice" ? "radio" : undefined}
+      type="button"
+    >
+      {body}
+    </button>
+  );
+}
+
+function RecipeChip(props: Exclude<CatchChipProps, CatchChipSystemProps>) {
   const activity = props.recipe === "activity" ? props.data : undefined;
   const label = props.recipe === "activity" ? props.label ?? props.data.label : props.label;
   const selected = (props.recipe === "selectable" || props.recipe === "choice") && props.selected;

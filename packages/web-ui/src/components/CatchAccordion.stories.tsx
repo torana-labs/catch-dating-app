@@ -5,6 +5,10 @@ import {StoryPage} from "../stories/websiteV2Story";
 import {CatchAccordion, type CatchAccordionItem} from "./CatchAccordion";
 import {CatchBand} from "./CatchBand";
 import {CatchLegacyText} from "./CatchLegacyText";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
 
 const meta = {
   title: "Web UI/CatchAccordion",
@@ -67,5 +71,27 @@ export const Reference: Story = {
       phone={{capture: "home/mumbai_live/390", height: 446, width: 358, x: 16, y: 7920}}
       render={() => <CatchAccordion items={questions} name="faq-reference" />}
     />
+  ),
+};
+
+const faq = [
+  {title: "Do I need the app?", body: "You can browse and book on the web. The app keeps your plans, reminders, group chats and the hosts you follow in one place."},
+  {title: "Can I come on my own?", body: "Yes. Lots of people do. Hosts plan a group, a game or a first hello so it’s easy to start talking."},
+  {title: "Is Catch free?", body: "Browsing and the app are free. Hosts set the price of each plan, many are free, and you see the full price before you book."},
+];
+
+/** catch.accordion: the system Accordion at md and lg, several open at once, and the Website v2 list it keeps for its callers. */
+export const Contract: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchSurface block="plain" padding="lg">
+        <CatchStack gap={32} style={{maxWidth: 640}}>
+          <CatchStack gap={8}><CatchText tone="secondary" variant="label-kicker">system-md</CatchText><CatchAccordion items={faq} name="contract-md" size="md" /></CatchStack>
+          <CatchStack gap={8}><CatchText tone="secondary" variant="label-kicker">system-lg</CatchText><CatchAccordion defaultOpen={[0]} items={faq} name="contract-lg" size="lg" /></CatchStack>
+          <CatchStack gap={8}><CatchText tone="secondary" variant="label-kicker">multiple</CatchText><CatchAccordion defaultOpen={[0, 1]} items={faq} multiple size="md" /></CatchStack>
+          <CatchStack gap={8}><CatchText tone="secondary" variant="label-kicker">website</CatchText><CatchAccordion items={faq.map((item, index) => ({id: String(index), question: item.title, answer: item.body}))} name="contract-website" /></CatchStack>
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
   ),
 };

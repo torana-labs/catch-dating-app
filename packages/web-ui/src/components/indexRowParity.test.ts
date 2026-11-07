@@ -18,7 +18,7 @@ describe("CatchIndexRow parity", () => {
     expect(css).toContain(`min-height: ${Number(height)}px;`);
     expect(row).toContain("border: Border(bottom: BorderSide(color: t.line))");
     expect(css).toContain("border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line);");
-    expect(row).toContain("...[leading!, gapW16]");
+    expect(row).toContain("if (lead != null) ...[lead, if (system) gapW12 else gapW16]");
     expect(css).toContain("margin-inline-end: var(--catch-space-s4);");
     expect(row).toContain("...[gapW12, trailing!]");
     expect(css).toContain("margin-inline-start: var(--catch-space-s3);");
@@ -27,7 +27,8 @@ describe("CatchIndexRow parity", () => {
   it("stacks the subtitle and footer as Flutter does", () => {
     expect(row).toContain("EdgeInsets.symmetric(vertical: CatchSpacing.s3)");
     expect(css).toContain(".row[data-stacked] { padding-block: var(--catch-space-s3); }");
-    expect(row).toMatch(/gapH2,\s*Text\(\s*subtitleText,\s*maxLines: 2,/);
+    expect(row).toContain("final lineGap = system ? gapH3 : gapH2;");
+    expect(row).toMatch(/else\s*Text\(\s*subtitleText,\s*maxLines: 2,/);
     expect(row).toContain("CatchTextStyles.supporting(context, color: t.ink2)");
     expect(ts).toContain('color="ink2" maxLines={2} variant="supporting"');
     expect(css).toContain("gap: var(--catch-space-micro2);");

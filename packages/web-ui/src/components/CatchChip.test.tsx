@@ -1,6 +1,7 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {CatchChip, type CatchChipData} from "./CatchChip";
+import {CatchSurface} from "./CatchSurface";
 const data: CatchChipData = {label: "Pickleball", icon: <svg aria-hidden="true" />, accent: "pickleball"};
 afterEach(cleanup);
 describe("CatchChip constructor semantics", () => {
@@ -69,5 +70,32 @@ describe("CatchChip constructor semantics", () => {
   });
   it("rejects raw CSS strings in the named activity slot", () => {
     expect(() => CatchChip({recipe: "activity", data: {...data, accent: "#ff0000" as never}})).toThrow("activity token");
+  });
+});
+
+describe("CatchChip as the system Chip", () => {
+  it("toggles a filter and checks a choice", () => {
+    const press = vi.fn();
+    render(<><CatchChip label="Nearby" onPressed={press} /><CatchChip kind="choice" label="Under 20" onPressed={press} selected /></>);
+    const filter = screen.getByRole("button", {name: "Nearby"});
+    expect(filter.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(filter);
+    expect(press).toHaveBeenCalledOnce();
+    expect(screen.getByRole("radio", {name: "Under 20"}).getAttribute("aria-checked")).toBe("true");
+  });
+
+  it("fills with the dot's format only when chosen with colourWhenSelected", () => {
+    render(<><CatchChip colourWhenSelected dot="games" kind="choice" label="Games" onPressed={() => undefined} selected /><CatchChip dot="run" label="Run" onPressed={() => undefined} /></>);
+    expect(screen.getByRole("radio", {name: "Games"}).dataset.format).toBe("games");
+    expect(screen.getByRole("button", {name: "Run"}).hasAttribute("data-format")).toBe(false);
+  });
+
+  it("renders tags, links and removable inputs, and reads its ground", () => {
+    const remove = vi.fn();
+    render(<CatchSurface><CatchChip kind="tag" label="Tonight" /><CatchChip href="/all" kind="link" label="See all" /><CatchChip kind="input" label="Bandra" onRemove={remove} /></CatchSurface>);
+    expect(screen.getByText("Tonight").closest("span[data-kind]")?.getAttribute("data-on")).toBe("tile");
+    expect(screen.getByRole("link", {name: "See all"}).getAttribute("href")).toBe("/all");
+    fireEvent.click(screen.getByRole("button", {name: "Remove"}));
+    expect(remove).toHaveBeenCalledOnce();
   });
 });

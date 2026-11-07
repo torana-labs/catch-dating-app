@@ -1,9 +1,13 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {type CSSProperties, useState} from "react";
+import {type CSSProperties, type ReactNode, useState} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {CatchChip, type CatchChipData} from "./CatchChip";
 import {CatchGap} from "./CatchGap";
 import {CatchPageBody} from "./CatchPageBody";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
 const glyph = <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m6 12 4 4 8-9" /></svg>;
 const data: CatchChipData = {label: "Pickleball", icon: glyph, accent: "pickleball"};
 const noop = () => {};
@@ -37,7 +41,39 @@ function InteractiveChip() {
   const [selected, setSelected] = useState(false);
   return <CatchChip recipe="selectable" label="Nearby" selected={selected} onChanged={setSelected} />;
 }
+/** The system Chip: each kind, dots, a format fill when chosen, sizes, and its look on a tile and a format colour. */
+function SystemChips() {
+  const row = (label: string, chips: ReactNode) => (
+    <CatchStack gap={8}><CatchText tone="secondary" variant="label-kicker">{label}</CatchText><CatchStack direction="row" gap={8} wrap>{chips}</CatchStack></CatchStack>
+  );
+  const set = <>
+    <CatchChip label="Everything" onPressed={noop} selected />
+    <CatchChip dot="run" label="Run clubs" onPressed={noop} />
+    <CatchChip colourWhenSelected dot="games" kind="choice" label="Games and mixers" onPressed={noop} selected />
+    <CatchChip count={12} label="Waiting" onPressed={noop} />
+  </>;
+  return (
+    <CatchRoot size="expanded" theme="day">
+      <CatchSurface block="plain" padding="lg">
+        <CatchStack gap={24}>
+          {row("filter", <><CatchChip label="Nearby" onPressed={noop} /><CatchChip label="Selected" onPressed={noop} selected /><CatchChip disabled label="Disabled" onPressed={noop} /></>)}
+          {row("choice", <div aria-label="Formats" role="radiogroup"><CatchStack direction="row" gap={8}><CatchChip kind="choice" label="Under 20" onPressed={noop} selected /><CatchChip kind="choice" label="20 to 50" onPressed={noop} /></CatchStack></div>)}
+          {row("dot", <><CatchChip dot="run" label="Run" onPressed={noop} /><CatchChip dot="dinner" label="Dinner" onPressed={noop} /><CatchChip dot="nightsOut" label="Nights out" onPressed={noop} selected /></>)}
+          {row("colour-when-selected", <>{(["run", "dinner", "games", "courts", "nightsOut"] as const).map((format) => <CatchChip colourWhenSelected dot={format} key={format} kind="choice" label={format} onPressed={noop} selected />)}</>)}
+          {row("input", <CatchChip kind="input" label="Bandra" onRemove={noop} />)}
+          {row("link", <CatchChip href="#" kind="link" label="See all" leadingIcon="explore" />)}
+          {row("tag", <CatchChip kind="tag" label="Tonight" />)}
+          {row("sizes", <><CatchChip label="Medium" onPressed={noop} /><CatchChip label="Small" onPressed={noop} size="sm" /></>)}
+          {row("on-tile", <CatchSurface padding="md"><CatchStack direction="row" gap={8} wrap>{set}</CatchStack></CatchSurface>)}
+          {row("on-colour", <CatchSurface block="spotlight" color="courts"><CatchStack direction="row" gap={8} wrap>{set}</CatchStack></CatchSurface>)}
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
+  );
+}
 export const Contract: Story = {render: () => <>
+  <SystemChips />
+  <CatchText as="h2" variant="title-bar">recipes</CatchText>
   <CatchPageBody constrainToContentWidth><States /></CatchPageBody>
   <div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}><CatchPageBody constrainToContentWidth><States /></CatchPageBody></div>
 </>};

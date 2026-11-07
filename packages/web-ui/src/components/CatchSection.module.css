@@ -140,3 +140,24 @@
 
 /* ---------- the quiet register (Admin) ---------- */
 :global([data-register="quiet"]) .title { font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: 0; }
+
+/*
+ * timeline with CatchIndexRow children (the system's .c-list[data-timeline]):
+ * rows align to the top and a 2px line runs from below each row's marker to
+ * the next row, ink under a filled ink marker, grey under the rest; after a
+ * time it sits 57px in (40px of time, 12px of gap, half the marker).
+ */
+.list[data-timeline="rows"] > * { position: relative; align-items: flex-start; }
+
+.list[data-timeline="rows"] > [data-catch-row-lead]:not(:last-child)::before {
+  position: absolute;
+  top: calc(var(--catch-space-s3) + 17px);
+  bottom: calc(-1 * var(--catch-space-s3) + 5px);
+  left: 5px;
+  width: 2px;
+  background: var(--catch-theme-line);
+  content: "";
+}
+
+.list[data-timeline="rows"] > [data-catch-row-lead="time"]:not(:last-child)::before { left: 57px; }
+.list[data-timeline="rows"] > :has([data-tone="ink"]:not([data-kind="ring"]))::before { background: var(--catch-theme-ink); }

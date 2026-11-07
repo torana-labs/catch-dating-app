@@ -80,6 +80,43 @@
   --catch-button-overlay: 0.05;
 }
 
+/*
+ * The system's ghost and accent, and its grounds (read from CatchRoot and
+ * CatchSurface; outside them a button sits on the ground and nothing here
+ * applies): ghost is outlined in the ink it sits on, at 30% ink on a format
+ * colour; accent takes the event colour with the on-format ink; secondary
+ * turns white with no outline on a tile or a format colour, and a faint fill
+ * on the night tile.
+ */
+.button[data-variant="ghost"] {
+  --catch-button-bg: transparent;
+  --catch-button-fg: currentColor;
+  --catch-button-border: var(--catch-theme-control-line);
+  --catch-button-overlay: 0.05;
+  color: inherit;
+}
+
+.button[data-variant="ghost"][data-on="colour"] { --catch-button-border: color-mix(in srgb, var(--catch-color-light-ink) 30%, transparent); }
+
+.button[data-variant="accent"] {
+  --catch-button-bg: var(--catch-accent, var(--catch-format-run-accent));
+  --catch-button-fg: var(--catch-theme-on-format);
+  --catch-button-border: transparent;
+}
+
+.button[data-variant="secondary"]:is([data-on="tile"], [data-on="colour"]) {
+  --catch-button-bg: var(--catch-palette-white);
+  --catch-button-fg: var(--catch-color-light-ink);
+  --catch-button-border: transparent;
+}
+
+.button[data-variant="secondary"][data-on="night-tile"] {
+  --catch-button-bg: color-mix(in srgb, var(--catch-theme-ink) 8%, transparent);
+  --catch-button-border: transparent;
+}
+
+.button[data-variant="quiet"][data-on]:not([data-on="ground"]) { --catch-button-fg: currentColor; color: inherit; }
+
 .button[data-variant="danger"] {
   --catch-button-bg: var(--catch-theme-danger);
   --catch-button-fg: var(--catch-palette-white);

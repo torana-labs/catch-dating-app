@@ -2,6 +2,9 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {CatchTopBar} from "./CatchTopBar";
 import {CatchViewport} from "./CatchViewport";
+import {CatchButton} from "./CatchButton";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
 
 const meta = {
   title: "Web UI/CatchTopBar",
@@ -33,5 +36,29 @@ export const Contract: Story = {
       <In label="Phone live" size="compact"><CatchTopBar back={{label: "Back", onPressed: noop}} live="Live · 9:04 PM" title="Door" variant="live" /></In>
       <In label="Phone moment" size="compact"><CatchTopBar back={{label: "Close", onPressed: noop}} variant="moment" /></In>
     </div>
+  ),
+};
+
+/** variant="site": the website header with the wordmark, page links (folded away under 600px) and actions. */
+export const Site: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchStack gap={24}>
+        <CatchTopBar
+          actions={<><CatchButton label="Mumbai" onPressed={noop} size="sm" trailingIcon="expand" variant="secondary" /><CatchButton href="#" label="Get the app" size="sm" /></>}
+          homeHref="#"
+          links={[{label: "Explore", href: "#"}, {label: "Organisers", href: "#"}, {label: "For hosts", href: "#"}]}
+          title="Catch"
+          variant="site"
+        />
+        <CatchTopBar
+          actions={<CatchButton href="#" label="Apply for a pilot" size="sm" />}
+          homeHref="#"
+          links={[{label: "On the night", href: "#"}, {label: "Ways to use Catch", href: "#"}, {label: "Pricing", href: "#"}]}
+          title="Catch for hosts"
+          variant="site"
+        />
+      </CatchStack>
+    </CatchRoot>
   ),
 };

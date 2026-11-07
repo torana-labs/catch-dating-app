@@ -8,6 +8,10 @@ import {CatchButton, type CatchButtonSize, type CatchButtonVariant} from "./Catc
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchLegacyText} from "./CatchLegacyText";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
 
 const meta = {
   title: "Web UI/CatchButton",
@@ -169,4 +173,34 @@ export const Reference: Story = {
       />
     </>
   ),
+};
+
+/** The system variants (ghost, accent), icon roles, fill, and secondary and ghost on a tile, a format colour and ink. */
+export const System: Story = {
+  render: () => {
+    const set = <>
+      <CatchButton href="#" label="Apply for a pilot" />
+      <CatchButton href="#" label="Host an event" variant="secondary" />
+      <CatchButton href="#" label="See a night on Catch" variant="ghost" />
+      <CatchButton href="#" label="Make a page like this" size="sm" variant="quiet" />
+    </>;
+    return (
+      <CatchRoot size="expanded" theme="day">
+        <CatchSurface block="plain" padding="lg">
+          <CatchStack gap={24}>
+            <CatchStack direction="row" gap={8} wrap>{set}<CatchSurface block="spotlight" color="games" padding="sm"><CatchButton label="Accent" onPressed={noop} variant="accent" /></CatchSurface></CatchStack>
+            <CatchStack direction="row" gap={8} wrap>
+              <CatchButton label="App Store" leadingIcon="download" onPressed={noop} size="md" variant="secondary" />
+              <CatchButton label="Mumbai" onPressed={noop} size="sm" trailingIcon="expand" variant="secondary" />
+              <CatchButton label="Play again" leadingIcon="restart" onPressed={noop} size="sm" variant="secondary" />
+            </CatchStack>
+            <div style={{maxWidth: 320}}><CatchButton fill label="Continue" onPressed={noop} /></div>
+            <CatchSurface><CatchStack direction="row" gap={8} wrap>{set}</CatchStack></CatchSurface>
+            <CatchSurface block="band" color="run"><CatchStack direction="row" gap={8} wrap>{set}</CatchStack></CatchSurface>
+            <CatchSurface block="band" color="ink"><CatchStack direction="row" gap={8} wrap>{set}</CatchStack></CatchSurface>
+          </CatchStack>
+        </CatchSurface>
+      </CatchRoot>
+    );
+  },
 };

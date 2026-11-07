@@ -51,3 +51,47 @@
   gap: var(--catch-space-s3);
   margin-top: auto;
 }
+
+/*
+ * The system OrganiserCard (.c-org-card): a tile row, 12px apart, with a 48px
+ * logo square in the format colour (10px corners) and two one-line texts; the
+ * name and logo link to the organiser's page.
+ */
+.system { flex-direction: row; align-items: center; gap: var(--catch-space-s3); }
+
+.main {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--catch-space-s3);
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.main:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); border-radius: var(--catch-radius-sm); }
+a.main:hover .text > :first-child { text-decoration: underline; text-underline-offset: 3px; }
+
+.logo {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: var(--catch-radius-sm);
+  background: var(--catch-org-accent);
+  color: var(--catch-theme-on-format);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.logo img { width: 100%; height: 100%; object-fit: cover; }
+.logo[data-format="run"] { --catch-org-accent: var(--catch-format-run-accent); }
+.logo[data-format="dinner"] { --catch-org-accent: var(--catch-format-dinner-accent); }
+.logo[data-format="games"] { --catch-org-accent: var(--catch-format-games-accent); }
+.logo[data-format="courts"] { --catch-org-accent: var(--catch-format-courts-accent); }
+.logo[data-format="nightsOut"] { --catch-org-accent: var(--catch-format-nights-out-accent); }
+
+.text { display: flex; flex-direction: column; gap: var(--catch-space-micro2); min-width: 0; }

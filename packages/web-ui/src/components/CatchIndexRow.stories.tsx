@@ -8,6 +8,11 @@ import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
 import {CatchGap} from "./CatchGap";
 import {CatchIndexRow} from "./CatchIndexRow";
 import {CatchLegacyText} from "./CatchLegacyText";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
+import {CatchSection} from "./CatchSection";
 
 const meta = {
   title: "Web UI/CatchIndexRow",
@@ -128,5 +133,35 @@ export const Reference: Story = {
       phone={{capture: "organizer/guest/390", height: 680, width: 366, x: 12, y: 1352}}
       render={() => <div><EventRows /></div>}
     />
+  ),
+};
+
+/** The system ListRow (a density is set): leading icon, date, marker, rank and time; body, meta, status, value, progress, action and chevron; wrapping. */
+export const SystemRows: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchSurface block="plain" padding="lg">
+        <CatchStack direction="row" equal gap={32}>
+          <CatchSection title="system-leading">
+            <CatchIndexRow density="regular" icon="people" subtitle="A group, a partner or a prompt." title="A reason to say hello" wrap />
+            <CatchIndexRow date={{day: "Thu", date: 7, format: "games"}} density="regular" href="#" meta="32 of 40 booked" title="Thursday Evening Pub Quiz" />
+            <CatchIndexRow density="compact" marker={{tone: "warning"}} title="Arrival message to send" />
+            <CatchIndexRow density="compact" rank={1} title="Quizzy Rascals" value="41" />
+            <CatchIndexRow body="Partner rotations run on a timer." density="regular" marker={{tone: "format", format: "games", live: true, size: 12}} time="8:16 PM" title="Round two" wrap />
+          </CatchSection>
+          <CatchSection title="system-trailing">
+            <CatchIndexRow density="regular" status="8 left" statusTone="warning" subtitle="Sat 6:30 PM" title="Saturday Game Night" />
+            <CatchIndexRow density="regular" progress={{value: 24, max: 40, label: "Booked"}} title="Carter Road Social Run" value="24" />
+            <CatchIndexRow action={{label: "Remind"}} density="regular" subtitle="Hasn’t paid yet" title="Asha Rao" />
+            <CatchIndexRow density="regular" href="#" subtitle="Your monthly email" title="Community newsletter" />
+            <CatchIndexRow density="regular" href="#" selected subtitle="A promoter who brings friends" title="Partner · Meera" />
+          </CatchSection>
+          <CatchSection title="system-wrap">
+            <CatchIndexRow density="roomy" rank={1} subtitle="Pick something you’d actually enjoy. Every plan shows who’s hosting, where you meet and who it suits." title="Find a plan" wrap />
+            <CatchIndexRow density="roomy" rank={2} subtitle="Your host has the first ten minutes planned: a group, a game or a first hello." title="Show up" wrap />
+          </CatchSection>
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
   ),
 };

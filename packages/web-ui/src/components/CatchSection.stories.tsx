@@ -3,6 +3,10 @@ import {CatchField} from "./CatchField";
 import {CatchIndexRow} from "./CatchIndexRow";
 import {CatchSection} from "./CatchSection";
 import {CatchViewport} from "./CatchViewport";
+import {CatchRoot} from "./CatchRoot";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
 
 const meta = {
   title: "Web UI/CatchSection",
@@ -53,5 +57,27 @@ export const Contract: Story = {
         <CatchSection empty={<p>Nothing is waiting.</p>} title="Claims" />
       </div>
     </CatchViewport>
+  ),
+};
+
+/** timeline={true}: CatchIndexRow children joined by their markers or times, ink under a filled ink marker. */
+export const TimelineRows: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchSurface block="plain" padding="lg">
+        <CatchStack direction="row" equal gap={32}>
+          <CatchSection dividers="none" timeline>
+            <CatchIndexRow body="Two things left: the arrival message and a quizmaster for round two." density="regular" marker={{tone: "muted", size: 12}} time="6:00 PM" title="Before doors" wrap />
+            <CatchIndexRow body="Partner rotations run on a timer." density="regular" marker={{tone: "format", format: "games", live: true, size: 12}} onTap={noop} selected time="8:16 PM" title="Round two" wrap />
+            <CatchIndexRow body="A ten-second countdown, then everyone sees their next partner." density="regular" marker={{kind: "ring", size: 12}} onTap={noop} time="8:24 PM" title="The reveal" wrap />
+          </CatchSection>
+          <CatchSection timeline>
+            <CatchIndexRow density="compact" marker={{size: 12}} title="Applied" />
+            <CatchIndexRow density="compact" marker={{size: 12}} title="Approved" />
+            <CatchIndexRow density="compact" marker={{kind: "ring", size: 12}} title="Paid" />
+          </CatchSection>
+        </CatchStack>
+      </CatchSurface>
+    </CatchRoot>
   ),
 };

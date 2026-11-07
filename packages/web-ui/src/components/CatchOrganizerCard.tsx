@@ -1,10 +1,34 @@
+"use client";
+
 import type {ReactNode} from "react";
 import {CatchAvatar} from "./CatchAvatar";
+import {CatchButton} from "./CatchButton";
+import type {CatchFormat} from "./catchCoreVocabulary";
 import {CatchLegacyText} from "./CatchLegacyText";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
 import type {Ground} from "./palette";
 import styles from "./CatchOrganizerCard.module.css";
 
-export interface CatchOrganizerCardProps {
+/** The system OrganiserCard: a tile with the logo square, name, a line about them and follow. */
+export interface CatchOrganizerCardSystemProps {
+  monogramGround?: undefined;
+  name: string;
+  /** Two letters for the logo square when there is no logo. */
+  initials?: string;
+  logoUrl?: string;
+  /** The logo square's format colour; games by default. */
+  color?: CatchFormat;
+  meta?: ReactNode;
+  following?: boolean;
+  onFollow?: () => void;
+  followLabel?: string;
+  followingLabel?: string;
+  href?: string;
+}
+
+/** The Website v2 paper card: monogram, name and subtitle, the next plan and a foot. */
+export interface CatchOrganizerCardLegacyProps {
   name: string;
   /** What they run, such as "Sunday social runs". */
   subtitle: string;
@@ -22,11 +46,37 @@ export interface CatchOrganizerCardProps {
   action?: ReactNode;
 }
 
+export type CatchOrganizerCardProps = CatchOrganizerCardSystemProps | CatchOrganizerCardLegacyProps;
+
 /**
  * A Website v2 organiser card on paper: monogram, name and what they run,
  * the next plan, then a footnote across from an action.
  */
-export function CatchOrganizerCard({action, footnote, href, initials, monogramGround, name, next, subtitle}: CatchOrganizerCardProps) {
+export function CatchOrganizerCard(props: CatchOrganizerCardProps) {
+  return props.monogramGround === undefined ? <SystemOrganizerCard {...props} /> : <PaperOrganizerCard {...props} />;
+}
+
+function SystemOrganizerCard({name, initials, logoUrl, color = "games", meta, following, onFollow, followLabel = "Follow", followingLabel = "Following", href}: CatchOrganizerCardSystemProps) {
+  const identity = (
+    <>
+      <span className={styles.logo} data-format={color}>{logoUrl ? <img alt="" src={logoUrl} /> : initials}</span>
+      <span className={styles.text}>
+        <CatchText maxLines={1} variant="title-row">{name}</CatchText>
+        {meta ? <CatchText maxLines={1} tone="secondary" variant="body-small">{meta}</CatchText> : null}
+      </span>
+    </>
+  );
+  return (
+    <CatchSurface className={styles.system}>
+      {href ? <a className={styles.main} href={href}>{identity}</a> : <span className={styles.main}>{identity}</span>}
+      {onFollow ? (
+        <CatchButton label={following ? followingLabel : followLabel} onPressed={onFollow} size="sm" variant={following ? "secondary" : "primary"} />
+      ) : null}
+    </CatchSurface>
+  );
+}
+
+function PaperOrganizerCard({action, footnote, href, initials, monogramGround, name, next, subtitle}: CatchOrganizerCardLegacyProps) {
   const title = <CatchLegacyText as="span" color="inherit" maxLines={2} variant="titleS">{name}</CatchLegacyText>;
   return (
     <article className={styles.card} data-catch-theme="light" data-ground="paper">
