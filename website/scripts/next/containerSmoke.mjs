@@ -16,7 +16,7 @@ for (let attempt = 0; attempt < 30; attempt++) {
 assert.equal(response.status, 200, "Production-eligible container must render the authored Host page");
 const hostHtml = await response.text();
 assert.ok(hostHtml.includes(hostLandingCopy.hero.title), "Container must serve the redesigned Host page");
-assert.ok(hostHtml.includes(hostLandingCopy.adoption.circlesLabel), "Adoption circles must survive packaging");
+assert.ok(hostHtml.includes(hostLandingCopy.night.chapters[0].body), "The night's chapters must survive packaging");
 assert.equal((await get("/not-a-real-preview-route/")).status, 404);
 // Without credentials nothing public can be read. Home, Explore and the city
 // pages keep their own unavailable message, but answer an uncached 503 at once,

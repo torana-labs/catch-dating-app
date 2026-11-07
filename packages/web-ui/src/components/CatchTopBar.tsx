@@ -1,6 +1,7 @@
 import type {ReactNode} from "react";
 import {CatchButton} from "./CatchButton";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
+import {CatchMenu} from "./CatchMenu";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTopBar.module.css";
 
@@ -43,6 +44,8 @@ export interface CatchTopBarProps {
   homeHref?: string;
   /** site: the links' accessible name. */
   linksLabel?: string;
+  /** site: the phone menu's button label; under 600px the links move into this menu. */
+  menuLabel?: string;
 }
 
 function BarIconButton({action, icon}: {action: CatchTopBarAction; icon: "back" | "close"}) {
@@ -64,7 +67,7 @@ function TextAction({action}: {action: CatchTopBarAction}) {
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site"}: CatchTopBarProps) {
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu"}: CatchTopBarProps) {
   const {scrolled, sizeClass} = useCatchViewport();
   if (variant === "site") {
     return (
@@ -78,7 +81,26 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
               </nav>
             ) : null}
           </span>
-          {actions ? <span className={styles.actions}>{actions}</span> : null}
+          <span className={styles.actions}>
+            {actions}
+            {links && links.length > 0 ? (
+              <span className={styles.siteMenu}>
+                <CatchMenu
+                  align="end"
+                  builder={(menu) => <CatchButton {...menu.triggerProps} label={menuLabel} onPressed={menu.toggle} size="sm" variant="secondary" />}
+                  items={links.map((link) => ({value: link.label, label: link.label}))}
+                  label={linksLabel}
+                  onSelected={(value) => {
+                    const link = links.find((item) => item.label === value);
+                    link?.onPressed?.();
+                    if (link?.href) window.location.assign(link.href);
+                  }}
+                  recipe="anchored"
+                  width={240}
+                />
+              </span>
+            ) : null}
+          </span>
         </span>
       </header>
     );

@@ -198,6 +198,9 @@
 
 .links { display: flex; align-items: center; gap: var(--catch-space-s4); }
 
+.siteMenu { display: none; }
+
 @media (max-width: 599px) {
   .links { display: none; }
+  .siteMenu { display: inline-flex; }
 }

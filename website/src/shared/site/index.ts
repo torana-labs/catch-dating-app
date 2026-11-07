@@ -1,2 +1,3 @@
 export {PageShell, WebsitePageMain} from "./PageShell";
-export {PublicSiteHeader, PublicSiteFooter} from "./PublicSiteChrome";
+export {PublicSiteFooter, PublicSiteHeader, SiteFooterBand} from "./PublicSiteChrome";
+export type {SiteFooterColumn} from "./PublicSiteChrome";

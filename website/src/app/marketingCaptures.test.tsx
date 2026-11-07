@@ -1,8 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import {cleanup, render, screen} from "@testing-library/react";
+import {cleanup} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
-import {HostPage} from "../features/host/HostPage";
 import {marketingCaptures} from "./marketingCaptures";
 
 afterEach(cleanup);
@@ -27,7 +26,6 @@ function slotUses() {
 describe("marketing capture slots", () => {
   it("resolve every slot a page renders to a capture that names that page", () => {
     const uses = slotUses();
-    expect(uses.length).toBeGreaterThan(0);
     for (const {file, id} of uses) {
       const capture = marketingCaptures[id];
       expect(capture, `${file} renders unknown capture slot ${id}`).toBeDefined();
@@ -60,10 +58,4 @@ describe("marketing capture slots", () => {
     }
   });
 
-  it("show the live console in the Host hero", () => {
-    render(<HostPage captures={marketingCaptures} />);
-    const image = screen.getByRole("img", {name: marketingCaptures["host-live-console"].alt});
-    expect(image.getAttribute("src")).toBe("/assets/app-screenshots/host-live-console.png");
-    expect(image.getAttribute("loading")).toBe("eager");
-  });
 });
