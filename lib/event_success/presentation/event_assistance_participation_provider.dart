@@ -88,7 +88,7 @@ class EventAssistanceParticipationReview
   }
 }
 
-@Riverpod(retry: _noParticipationReadRetry)
+@riverpod
 Future<EventParticipationSession> eventAssistanceParticipationForAccount(
   Ref ref,
   EventAssistanceGuestScope scope, {
@@ -107,5 +107,3 @@ Future<EventParticipationSession> eventAssistanceParticipationForAccount(
   ref.onDispose(() => session._current = false);
   return session;
 }
-
-Duration? _noParticipationReadRetry(int count, Object error) => null;

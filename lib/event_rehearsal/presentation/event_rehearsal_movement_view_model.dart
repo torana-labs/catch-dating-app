@@ -72,7 +72,7 @@ class EventRehearsalMovement extends _$EventRehearsalMovement {
 
 /// These deliberate reads must describe one runtime revision. Polling can never
 /// replace one half of a pending Host review or silently cross a reset.
-@Riverpod(retry: _noMovementRetry)
+@riverpod
 Future<RehearsalMovementPage> eventRehearsalMovementForAccount(
   Ref ref,
   RehearsalMovementSelection selection, {
@@ -102,5 +102,3 @@ Future<RehearsalMovementPage> eventRehearsalMovementForAccount(
   ref.onDispose(() => page._current = false);
   return page;
 }
-
-Duration? _noMovementRetry(int retryCount, Object error) => null;

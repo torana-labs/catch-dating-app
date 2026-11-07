@@ -78,7 +78,7 @@ class EventAttendanceDisposition extends _$EventAttendanceDisposition {
   }
 }
 
-@Riverpod(retry: _noAttendanceReadRetry)
+@riverpod
 Future<EventAttendanceDispositionReview> eventAttendanceDispositionForAccount(
   Ref ref,
   EventAssistanceGuestScope scope, {
@@ -92,5 +92,3 @@ Future<EventAttendanceDispositionReview> eventAttendanceDispositionForAccount(
   requireAttendanceReviewAccount(ref, account);
   return EventAttendanceDispositionReview._(account, view);
 }
-
-Duration? _noAttendanceReadRetry(int retryCount, Object error) => null;

@@ -157,7 +157,7 @@ final class EventAssistanceGroupStaffForAccountProvider
     required (EventAssistanceGroupStaffLookup, {AuthenticatedSession account})
     super.argument,
   }) : super(
-         retry: _noGroupStaffReadRetry,
+         retry: null,
          name: r'eventAssistanceGroupStaffForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -209,7 +209,7 @@ final class EventAssistanceGroupStaffForAccountProvider
 }
 
 String _$eventAssistanceGroupStaffForAccountHash() =>
-    r'3a64c6d933d8e3ffc278b6884e939a89f2d953e8';
+    r'216aefbd749b022be79cf4ef2d0b0b0f2b9aac72';
 
 final class EventAssistanceGroupStaffForAccountFamily extends $Family
     with
@@ -219,7 +219,7 @@ final class EventAssistanceGroupStaffForAccountFamily extends $Family
         > {
   EventAssistanceGroupStaffForAccountFamily._()
     : super(
-        retry: _noGroupStaffReadRetry,
+        retry: null,
         name: r'eventAssistanceGroupStaffForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

@@ -166,7 +166,7 @@ final class EventRehearsalAssistanceForAccountProvider
     })
     super.argument,
   }) : super(
-         retry: _noReviewRetry,
+         retry: null,
          name: r'eventRehearsalAssistanceForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -220,7 +220,7 @@ final class EventRehearsalAssistanceForAccountProvider
 }
 
 String _$eventRehearsalAssistanceForAccountHash() =>
-    r'10fdce2530030c651f2f243f138083fe1abdadd8';
+    r'66e69917839d652c7df1cea47ae70dc211ff7dbe';
 
 final class EventRehearsalAssistanceForAccountFamily extends $Family
     with
@@ -230,7 +230,7 @@ final class EventRehearsalAssistanceForAccountFamily extends $Family
         > {
   EventRehearsalAssistanceForAccountFamily._()
     : super(
-        retry: _noReviewRetry,
+        retry: null,
         name: r'eventRehearsalAssistanceForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

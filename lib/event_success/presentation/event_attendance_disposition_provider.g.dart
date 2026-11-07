@@ -147,7 +147,7 @@ final class EventAttendanceDispositionForAccountProvider
     required (EventAssistanceGuestScope, {EventAssistanceAccount account})
     super.argument,
   }) : super(
-         retry: _noAttendanceReadRetry,
+         retry: null,
          name: r'eventAttendanceDispositionForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -196,7 +196,7 @@ final class EventAttendanceDispositionForAccountProvider
 }
 
 String _$eventAttendanceDispositionForAccountHash() =>
-    r'6aa584b71bfc3ba59209944ee396935c788a61ed';
+    r'f91a5d9d7937583fffa0f641c79aa5591d0be905';
 
 final class EventAttendanceDispositionForAccountFamily extends $Family
     with
@@ -206,7 +206,7 @@ final class EventAttendanceDispositionForAccountFamily extends $Family
         > {
   EventAttendanceDispositionForAccountFamily._()
     : super(
-        retry: _noAttendanceReadRetry,
+        retry: null,
         name: r'eventAttendanceDispositionForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
