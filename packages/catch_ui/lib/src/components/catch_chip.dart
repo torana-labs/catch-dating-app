@@ -8,7 +8,15 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
-enum _CatchChipVariant { tag, selectable, choice, activity, removable }
+enum _CatchChipVariant {
+  tag,
+  selectable,
+  choice,
+  activity,
+  removable,
+  link,
+  filter,
+}
 
 /// A choice chip's height: md 38 by default, sm 32 with 13 px type.
 enum CatchChipSize { md, sm }
@@ -19,6 +27,10 @@ enum CatchChipSize { md, sm }
 /// Choose the constructor that matches the chip's interaction contract:
 ///
 /// - [CatchChip.tag] is passive metadata.
+/// - [CatchChip.link] goes somewhere: a saved group, with its count.
+/// - [CatchChip.filter] is a plain action chip with no selected state, such
+///   as "Add a tag". The system toggling filter chip is [CatchChip.choice]
+///   with [CatchChipMode.multiple].
 /// - [CatchChip.selectable] is a parent-owned independent binary choice or one
 ///   member of a multi-select set. Scalar scope, lifecycle, and mode rows use
 ///   `CatchChoiceInput` or `CatchSelectionMenu.control` instead.
@@ -26,6 +38,8 @@ enum CatchChipSize { md, sm }
 /// - [CatchChip.activity] renders caller-resolved text, glyph, and pigments.
 /// - [CatchChip.removable] exposes one removal action across the whole chip.
 class CatchChip extends StatefulWidget {
+  /// A [dot] puts an event format colour before the label; [size] sm is the
+  /// 32 px chip.
   const CatchChip.tag({
     Key? key,
     required String label,
@@ -33,6 +47,8 @@ class CatchChip extends StatefulWidget {
     Color? tintColor,
     Color? inkColor,
     String? semanticsLabel,
+    CatchChipSize size = CatchChipSize.md,
+    CatchFormat? dot,
   }) : this._(
          key: key,
          variant: _CatchChipVariant.tag,
@@ -40,6 +56,49 @@ class CatchChip extends StatefulWidget {
          leading: leading,
          tintColor: tintColor,
          inkColor: inkColor,
+         semanticsLabel: semanticsLabel,
+         size: size,
+         dot: dot,
+       );
+
+  /// The system Chip with `kind="link"`: it goes somewhere when pressed (a
+  /// saved group), with an optional [leading] icon and a muted [count].
+  const CatchChip.link({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    Widget? leading,
+    int? count,
+    CatchChipSize size = CatchChipSize.md,
+    String? semanticsLabel,
+  }) : this._(
+         key: key,
+         variant: _CatchChipVariant.link,
+         label: label,
+         leading: leading,
+         onTap: onPressed,
+         enabled: onPressed != null,
+         count: count,
+         size: size,
+         semanticsLabel: semanticsLabel,
+       );
+
+  /// A plain action chip with no selected state: "Add a tag", "Short answer".
+  const CatchChip.filter({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    Widget? leading,
+    CatchChipSize size = CatchChipSize.md,
+    String? semanticsLabel,
+  }) : this._(
+         key: key,
+         variant: _CatchChipVariant.filter,
+         label: label,
+         leading: leading,
+         onTap: onPressed,
+         enabled: onPressed != null,
+         size: size,
          semanticsLabel: semanticsLabel,
        );
 
@@ -75,7 +134,8 @@ class CatchChip extends StatefulWidget {
   ///
   /// The system Chip with `kind="choice"`: a [dot] puts an event format's
   /// colour before the label, and [colourWhenSelected] fills a selected chip
-  /// with that colour instead of ink. [size] sm is the 32 px chip.
+  /// with that colour instead of ink. [size] sm is the 32 px chip. A [count]
+  /// follows the label, muted; [leading] goes before it when there is no dot.
   const CatchChip.choice({
     Key? key,
     required String label,
@@ -87,9 +147,13 @@ class CatchChip extends StatefulWidget {
     CatchFormat? dot,
     bool colourWhenSelected = false,
     CatchChipSize size = CatchChipSize.md,
+    int? count,
+    Widget? leading,
   }) : this._(
          key: key,
          variant: _CatchChipVariant.choice,
+         count: count,
+         leading: leading,
          label: label,
          selected: selected,
          mode: mode,
@@ -165,12 +229,14 @@ class CatchChip extends StatefulWidget {
     this._dot,
     this._colourWhenSelected = false,
     this._size = CatchChipSize.md,
+    this._count,
   });
 
   final _CatchChipVariant _variant;
   final CatchFormat? _dot;
   final bool _colourWhenSelected;
   final CatchChipSize _size;
+  final int? _count;
   final CatchChipMode? _mode;
   final String? _label;
   final Widget? leading;
@@ -216,6 +282,9 @@ class CatchChip extends StatefulWidget {
   bool get colourWhenSelected => _colourWhenSelected;
   CatchChipSize get size => _size;
 
+  /// The muted number after the label of a choice or link chip.
+  int? get count => _count;
+
   @override
   State<CatchChip> createState() => _CatchChipState();
 }
@@ -230,7 +299,9 @@ class _CatchChipState extends State<CatchChip> {
   bool get _hasControlRole => switch (widget._variant) {
     _CatchChipVariant.selectable ||
     _CatchChipVariant.choice ||
-    _CatchChipVariant.removable => true,
+    _CatchChipVariant.removable ||
+    _CatchChipVariant.link ||
+    _CatchChipVariant.filter => true,
     _CatchChipVariant.activity => widget._onTap != null,
     _CatchChipVariant.tag => false,
   };
@@ -243,7 +314,10 @@ class _CatchChipState extends State<CatchChip> {
       _CatchChipVariant.selectable => () => widget._onChanged!(
         !widget._selected,
       ),
-      _CatchChipVariant.activity || _CatchChipVariant.choice => widget._onTap,
+      _CatchChipVariant.activity ||
+      _CatchChipVariant.choice ||
+      _CatchChipVariant.link ||
+      _CatchChipVariant.filter => widget._onTap,
       _CatchChipVariant.removable => widget._onRemove,
       _CatchChipVariant.tag => null,
     };
@@ -297,20 +371,28 @@ class _CatchChipState extends State<CatchChip> {
     late final TextStyle textStyle;
     late final EdgeInsetsGeometry padding;
 
+    final small = widget._size == CatchChipSize.sm;
     switch (widget._variant) {
       case _CatchChipVariant.tag:
       case _CatchChipVariant.removable:
+      case _CatchChipVariant.link:
+      case _CatchChipVariant.filter:
         final hasTint = widget._tintColor != null;
+        final dot = widget._dot;
         background = widget._tintColor ?? t.surface;
         foreground = widget._inkColor ?? t.ink;
         border = hasTint ? Colors.transparent : t.line2;
         shadow = CatchElevation.none;
-        leading = widget.leading;
-        textStyle = CatchTextStyles.titleS(context, color: foreground);
-        padding = const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.micro14,
-          vertical: CatchSpacing.s2,
-        );
+        leading = dot != null ? _ChipDot(color: dot.accent) : widget.leading;
+        textStyle = small
+            ? _smallLabel(foreground)
+            : CatchTextStyles.titleS(context, color: foreground);
+        padding = small
+            ? _smallPadding
+            : const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.micro14,
+                vertical: CatchSpacing.s2,
+              );
         break;
       case _CatchChipVariant.selectable:
       case _CatchChipVariant.choice:
@@ -342,17 +424,11 @@ class _CatchChipState extends State<CatchChip> {
                 ring: widget._selected && !formatFill ? foreground : null,
               )
             : widget.leading;
-        final small = widget._size == CatchChipSize.sm;
         textStyle = small
-            ? CatchTextVariant.labelAction
-                  .style(CatchWindowSize.compact)
-                  .copyWith(color: foreground)
+            ? _smallLabel(foreground)
             : CatchTextStyles.titleS(context, color: foreground);
         padding = small
-            ? const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s3,
-                vertical: CatchSpacing.micro6,
-              )
+            ? _smallPadding
             : const EdgeInsets.symmetric(
                 horizontal: CatchSpacing.s4,
                 vertical: CatchSpacing.micro10,
@@ -423,6 +499,18 @@ class _CatchChipState extends State<CatchChip> {
             SizedBox(width: iconGap),
           ],
           Flexible(child: Text(label, style: textStyle)),
+          if (widget._count case final count?) ...[
+            const SizedBox(width: CatchSpacing.micro6),
+            Opacity(
+              opacity: CatchOpacity.onFillMuted,
+              child: Text(
+                '$count',
+                style: textStyle.copyWith(
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ),
+          ],
           if (trailing != null) ...[
             const SizedBox(width: CatchSpacing.s2),
             trailing,
@@ -491,7 +579,11 @@ class _CatchChipState extends State<CatchChip> {
           ? widget._mode == CatchChipMode.single
           : null,
       enabled: _hasControlRole ? widget._enabled : null,
-      label: widget._semanticsLabel ?? defaultSemanticsLabel,
+      label:
+          widget._semanticsLabel ??
+          (widget._count == null
+              ? defaultSemanticsLabel
+              : '$defaultSemanticsLabel, ${widget._count}'),
       onTap: _onPressed,
       child: _hasControlRole
           ? Material(
@@ -523,8 +615,17 @@ class _CatchChipState extends State<CatchChip> {
   }
 }
 
-/// The 8 px format dot before a choice chip's label, ringed in the chip's
-/// ink when the chip is selected in ink.
+const EdgeInsets _smallPadding = EdgeInsets.symmetric(
+  horizontal: CatchSpacing.s3,
+  vertical: CatchSpacing.micro6,
+);
+
+TextStyle _smallLabel(Color color) => CatchTextVariant.labelAction
+    .style(CatchWindowSize.compact)
+    .copyWith(color: color);
+
+/// The 8 px format dot before the label of a chip, ringed in the ink of the
+/// chip when the chip is selected in ink.
 class _ChipDot extends StatelessWidget {
   const _ChipDot({required this.color, this.ring});
 
