@@ -112,7 +112,9 @@
 .surface[data-block="band"][data-pad="none"] { padding-block: 0; }
 .surface[data-block="band"][data-pad="sm"] { padding-block: var(--catch-space-s3); }
 .surface[data-block="band"][data-pad="md"] { padding-block: var(--catch-space-s4); }
-.surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s5); }
+/* lg, a band's default, is the system band's rhythm: 64 above and below, 48 on compact. */
+.surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s16); }
+:global([data-size="compact"]) .surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s12); }
 
 .surface[data-block="band"][data-band="tile"] {
   --catch-surface-fill: var(--catch-theme-tile);
