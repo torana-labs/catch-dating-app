@@ -158,35 +158,25 @@ void _registerHostManageFromCreateEventTests() {
         signedInUid: 'host-1',
       );
       await _pumpHostActionFrame(tester);
-      await _pumpTestAnimation(tester);
+      // The step running now pulses, so the console never settles.
+      await tester.pump(const Duration(milliseconds: 500));
 
+      // A night in one room opens on the live console, with the guest list
+      // one view away rather than on the console itself.
       expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is CatchBadge && widget.label.startsWith('Live now'),
-        ),
+        find.byKey(const ValueKey<String>('host-live-screen')),
         findsOneWidget,
       );
-      expect(find.text('1 checked in · 2 expected'), findsOneWidget);
+      expect(find.text('Needs you now'), findsOneWidget);
+      expect(find.text('In the room'), findsOneWidget);
       expect(find.text('Check guests in'), findsNothing);
-      expect(find.text('1 of 2 arrived'), findsNothing);
       expect(find.text('Editable roster'), findsNothing);
-      expect(find.text('GUEST'), findsNothing);
-      expect(find.text('STATUS'), findsNothing);
-      expect(find.text('HOST ACTION'), findsNothing);
       expect(find.text('Harsh'), findsNothing);
       expect(find.text('Manan'), findsNothing);
       expect(find.text('Host check-in QR'), findsNothing);
-      expect(find.text('Live attendance'), findsNothing);
-      expect(find.text('Needs check-in'), findsNothing);
-      expect(find.text('Recently checked in'), findsNothing);
-      expect(
-        find.textContaining('Tap a booked participant to toggle check-in'),
-        findsNothing,
-      );
       expect(find.text('Arrival check-in'), findsNothing);
 
-      await tester.tap(find.byType(CatchTopBarPrimaryButton));
+      await tester.tap(find.text('Guests'));
       await _pumpTestAnimation(tester);
 
       expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));

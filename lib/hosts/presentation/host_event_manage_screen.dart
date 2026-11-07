@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
@@ -17,6 +18,8 @@ import 'package:catch_dating_app/event_success/event_success.dart'
         EventSuccessSpatialPreview,
         EventSuccessSpatialReassign;
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_entry_field.dart';
+import 'package:catch_dating_app/hosts/live/live_controller.dart';
+import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
@@ -108,6 +111,22 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       now: now,
     );
     final onBackToSuccess = widget.onBackToSuccess;
+    // A night in one room runs on the live console; a night that moves keeps
+    // the movement console below.
+    if (widget.initialSection != HostEventManageSection.guests &&
+        screenState.phase == HostEventWorkspacePhase.runtime &&
+        hostLiveConsoleFits(
+          event,
+          plan: ref.watch(watchEventSuccessPlanProvider(event.id)).value,
+        )) {
+      return HostLiveScreen(
+        organizer: organizer,
+        event: event,
+        onBack: onBackToSuccess,
+        onOpenGuests: _openRoster,
+        now: widget.referenceNow,
+      );
+    }
     final rosterAsync = ref.watch(
       watchEventParticipationRosterProvider(event.id),
     );
