@@ -1260,6 +1260,19 @@ board's copy; `features/host/HostPage.tsx` composes the bands and
 own. Examples are illustrative and execute no booking, messaging, grouping or
 payment. The card's Continue opens `/host/apply/`, the only acquisition form.
 
+### Catch for weddings
+
+`/weddings/` renders the RbWebWeddings board on `@catch/web-ui` in the
+nights-out format: the running-order hero, why planners switch, one wedding
+followed through six chapters (each interface excerpt names who is looking),
+the team, messages and the family, pricing by headcount, the guided pilot with
+the step-1 card, questions and the foot band. `src/content/weddings.ts` owns
+the copy; `features/weddings` holds the page, the bands and the two-step
+application controller. Every excerpt is illustrative and runs nothing.
+`/weddings/apply/` (noindex) is step 2 and the sent state, taking step 1 from
+the landing through `sessionStorage` in the same tab. It has no intake front
+door yet, so Send is disabled until one is chosen.
+
 ### Explore discovery
 
 `/explore/` is the consumer event catalogue, sharing consumer navigation with
