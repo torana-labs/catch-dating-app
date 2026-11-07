@@ -17,8 +17,8 @@ class _Matrix extends StatelessWidget {
     spacing: CatchSpacing.s3,
     children: [
       for (final (width, sizeClass) in const [
-        (390.0, CatchWindowSize.compact),
-        (900.0, CatchWindowSize.medium),
+        (WidgetbookShellLayout.phone, CatchWindowSize.compact),
+        (WidgetbookShellLayout.wideBar, CatchWindowSize.medium),
       ])
         for (final scrolled in const [false, true])
           WidgetbookShellWindow(

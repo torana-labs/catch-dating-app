@@ -1,6 +1,37 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:widgetbook_workspace/preview_layout_contracts.dart';
+
+/// The windows the shell previews draw, by the size class they stand for.
+abstract final class WidgetbookShellLayout {
+  static const double phone = WidgetbookPreviewLayout.phoneChromeWidth;
+  static const double tablet = WidgetbookPreviewLayout.tabletChromeWidth;
+  static const double desktop = WidgetbookPreviewLayout.desktopChromeWidth;
+
+  /// A medium window for one wide bar.
+  static const double wideBar = 900;
+
+  /// A detail pane's width, for a pane dock.
+  static const double pane = 640;
+
+  /// A queue's narrow window, below every split.
+  static const double narrow = 480;
+
+  /// The pane patterns' window widths: a laptop, a wide desktop.
+  static const double laptop = 1100;
+  static const double wideDesktop = 1400;
+
+  /// Window heights: a whole shell, a screen, a pane strip, a short readout.
+  static const double shellHeight = 620;
+  static const double screenHeight = 520;
+  static const double paneHeight = 240;
+  static const double readoutHeight = 300;
+
+  /// The identity's slot in the sidebar and the rail.
+  static const double sidebarSlot = 212;
+  static const double railSlot = 80;
+}
 
 /// The Widgetbook theme as a CatchRoot theme, so a preview follows the
 /// light and dark toggle rather than the platform setting.
@@ -101,6 +132,6 @@ CatchTabBar<String> widgetbookShellNavigation({
     note: 'Switch organiser',
     switcher: true,
   ),
-  primaryAction: const CatchTabBarAction(label: 'New event'),
+  primaryAction: CatchTabBarAction(label: 'New event', onPressed: () {}),
   footer: const CatchTabBarIdentity(name: 'Meher Rao', note: 'Settings'),
 );

@@ -88,8 +88,8 @@ Widget catchSystemDockContractStates(BuildContext context) {
           spacing: CatchSpacing.s3,
           children: [
             for (final (width, sizeClass) in const [
-              (390.0, CatchWindowSize.compact),
-              (1000.0, CatchWindowSize.expanded),
+              (WidgetbookShellLayout.phone, CatchWindowSize.compact),
+              (WidgetbookShellLayout.laptop, CatchWindowSize.expanded),
             ])
               _DockWindow(
                 width: width,
@@ -109,7 +109,7 @@ Widget catchSystemDockContractStates(BuildContext context) {
         label: 'bar',
         description: 'A summary before the primary action.',
         child: _DockWindow(
-          width: 390,
+          width: WidgetbookShellLayout.phone,
           sizeClass: CatchWindowSize.compact,
           dock: CatchDock(
             placement: CatchDockPlacement.bar,
@@ -133,7 +133,7 @@ Widget catchSystemDockContractStates(BuildContext context) {
         label: 'card',
         description: 'A floating card at any size, here on a tablet.',
         child: _DockWindow(
-          width: 834,
+          width: WidgetbookShellLayout.tablet,
           sizeClass: CatchWindowSize.medium,
           dock: CatchDock(
             placement: CatchDockPlacement.card,
@@ -153,7 +153,7 @@ Widget catchSystemDockContractStates(BuildContext context) {
         label: 'pane',
         description: 'The decision bar at the foot of a detail pane.',
         child: _DockWindow(
-          width: 640,
+          width: WidgetbookShellLayout.pane,
           sizeClass: CatchWindowSize.medium,
           dock: _PaneDock(),
         ),

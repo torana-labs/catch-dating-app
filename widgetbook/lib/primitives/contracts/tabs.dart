@@ -1,3 +1,4 @@
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -299,13 +300,13 @@ Widget catchTabDockContractStates(BuildContext context) {
         (
           'rail',
           'From 600 px: the identity compact in the header row, the action as a square, a rule between sections.',
-          834.0,
+          WidgetbookShellLayout.tablet,
           CatchWindowSize.medium,
         ),
         (
           'sidebar',
           'From 840 px: the identity, a full-width action, section headings, counts and the signed-in footer.',
-          1180.0,
+          WidgetbookShellLayout.desktop,
           CatchWindowSize.expanded,
         ),
       ])
@@ -314,7 +315,7 @@ Widget catchTabDockContractStates(BuildContext context) {
           description: description,
           child: WidgetbookShellWindow(
             width: width,
-            height: 520,
+            height: WidgetbookShellLayout.screenHeight,
             sizeClass: sizeClass,
             child: Align(
               alignment: AlignmentDirectional.centerStart,
@@ -327,7 +328,7 @@ Widget catchTabDockContractStates(BuildContext context) {
         description:
             'Pinned items on the phone bar, then More, current while a folded destination is.',
         child: WidgetbookShellWindow(
-          width: 390,
+          width: WidgetbookShellLayout.phone,
           sizeClass: CatchWindowSize.compact,
           child: CatchTabBar<String>(
             items: widgetbookShellItems(pinned: true),
@@ -353,16 +354,24 @@ Widget catchTabBarIdentityContractStates(BuildContext context) {
     states: const ['full', 'compact', 'note', 'switcher'],
     children: [
       for (final (label, width, identity) in const [
-        ('full', 212.0, CatchTabBarIdentity(name: 'Meher Rao')),
-        ('compact', 80.0, CatchTabBarIdentity(name: 'Lantern Lane Social')),
+        (
+          'full',
+          WidgetbookShellLayout.sidebarSlot,
+          CatchTabBarIdentity(name: 'Meher Rao'),
+        ),
+        (
+          'compact',
+          WidgetbookShellLayout.railSlot,
+          CatchTabBarIdentity(name: 'Lantern Lane Social'),
+        ),
         (
           'note',
-          212.0,
+          WidgetbookShellLayout.sidebarSlot,
           CatchTabBarIdentity(name: 'Meher Rao', note: 'Settings'),
         ),
         (
           'switcher',
-          212.0,
+          WidgetbookShellLayout.sidebarSlot,
           CatchTabBarIdentity(
             name: 'Lantern Lane Social',
             note: 'Switch organiser',

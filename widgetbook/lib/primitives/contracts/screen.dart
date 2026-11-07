@@ -19,7 +19,7 @@ class _Guests extends StatelessWidget {
         const CatchSurface(
           block: CatchSurfaceBlock.band,
           color: CatchSurfaceColor.run,
-          child: SizedBox(height: 180),
+          child: SizedBox(height: CatchSpacing.s16 * 3),
         ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
@@ -141,8 +141,8 @@ Widget catchScreenContractStates(BuildContext context) {
           label: label,
           description: description,
           child: WidgetbookShellWindow(
-            width: 390,
-            height: 520,
+            width: WidgetbookShellLayout.phone,
+            height: WidgetbookShellLayout.screenHeight,
             sizeClass: CatchWindowSize.compact,
             child: screen,
           ),
@@ -167,7 +167,7 @@ Widget catchScreenScopeContractStates(BuildContext context) {
           label: scrolled ? 'scrolled' : 'rest',
           description: 'What a top bar reads from the screen.',
           child: WidgetbookShellWindow(
-            width: 390,
+            width: WidgetbookShellLayout.phone,
             sizeClass: CatchWindowSize.compact,
             child: CatchScreenScope(
               data: CatchScreenScopeData(scrolled: scrolled),

@@ -93,19 +93,19 @@ Widget catchAppShellContractStates(BuildContext context) {
         (
           'bottom',
           'Under 600 px: the bar below the screen.',
-          390.0,
+          WidgetbookShellLayout.phone,
           CatchWindowSize.compact,
         ),
         (
           'rail',
           'From 600 px: a 96 px rail beside the screen.',
-          834.0,
+          WidgetbookShellLayout.tablet,
           CatchWindowSize.medium,
         ),
         (
           'sidebar',
           'From 840 px: a 240 px sidebar.',
-          1180.0,
+          WidgetbookShellLayout.desktop,
           CatchWindowSize.expanded,
         ),
       ])
@@ -114,7 +114,7 @@ Widget catchAppShellContractStates(BuildContext context) {
           description: description,
           child: WidgetbookShellWindow(
             width: width,
-            height: 620,
+            height: WidgetbookShellLayout.shellHeight,
             sizeClass: sizeClass,
             child: CatchAppShell(
               navigation: widgetbookShellNavigation(),
@@ -141,8 +141,8 @@ Widget catchShellScopeContractStates(BuildContext context) {
         label: 'read',
         description: 'A screen in a tablet shell reads where the rail sits.',
         child: WidgetbookShellWindow(
-          width: 834,
-          height: 300,
+          width: WidgetbookShellLayout.tablet,
+          height: WidgetbookShellLayout.readoutHeight,
           sizeClass: CatchWindowSize.medium,
           child: CatchAppShell(
             navigation: widgetbookShellNavigation(),
