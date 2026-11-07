@@ -8,16 +8,6 @@ vi.mock("./useEventRuntimeController", () => ({
   useEventRuntimeController: () => runtimeController.value,
 }));
 
-vi.mock("@catch/web-ui", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@catch/web-ui")>();
-  return {
-    ...actual,
-    LottieAnimationControl: ({source}: {source: string}) => (
-      <span data-lottie-source={source} />
-    ),
-  };
-});
-
 import {
   eventRuntimeCopy,
   eventRuntimeSocialMissionCopy,
@@ -143,12 +133,11 @@ describe("EventRuntimePage conversation graph", () => {
       </MemoryRouter>
     );
 
-    const cinematic = container.querySelector("[data-phase='anticipation']");
-    expect(cinematic).toBeTruthy();
-    expect(cinematic?.getAttribute("style")).toContain(
-      "--marquee-phase-progress: 0.5"
-    );
-    expect(screen.getByLabelText(eventRuntimeCopy.checkedInCount(18)))
+    expect(container.querySelector("[data-phase='anticipation']")).toBeTruthy();
+    expect(screen.getByRole("progressbar", {
+      name: eventRuntimeCopy.revealMeterLabel,
+    }).getAttribute("aria-valuenow")).toBe("50");
+    expect(screen.getByText(eventRuntimeCopy.checkedInCount(18)))
       .toBeTruthy();
   });
 
