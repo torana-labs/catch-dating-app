@@ -382,7 +382,7 @@ test("flags application queue ownership outside Audience", () => {
     ].join("\n"),
   });
   assert.ok(findings.some((item) => /canonically Audience-owned/u.test(item.reason)));
-  assert.ok(findings.some((item) => /Audience shell branch/u.test(item.reason)));
+  assert.ok(findings.some((item) => /People shell branch/u.test(item.reason)));
   assert.ok(findings.some((item) => /Legacy Customers and Forms/u.test(item.reason)));
 });
 
@@ -398,23 +398,23 @@ test("shared workspace keeps application routes in the Audience branch", () => {
   assert.deepEqual(scan(routerSource), []);
   for (const name of ["hostApplicationsScreen", "hostApplicationDetailScreen"]) {
     const declaration = new RegExp(
-      `(HostWorkspaceDestination\\(\\s*root:\\s*)HostWorkspaceRoot\\.audience` +
+      `(HostWorkspaceDestination\\(\\s*root:\\s*)HostWorkspaceRoot\\.people` +
       `((?:(?!HostWorkspaceDestination\\()[\\s\\S])*?name:\\s*Routes\\.${name}\\.name,)`, "u",
     );
     assert.ok(declaration.test(routerSource), name);
-    assert.ok(scan(routerSource.replace(declaration, "$1HostWorkspaceRoot.inbox$2"))
-      .some((item) => /Audience shell branch/u.test(item.reason)), name);
+    assert.ok(scan(routerSource.replace(declaration, "$1HostWorkspaceRoot.events$2"))
+      .some((item) => /People shell branch/u.test(item.reason)), name);
   }
   for (const [before, after] of [
-    ["navigatorKey: keys.hostAudience", "navigatorKey: keys.hostInbox"],
-    ["workspaceRoute(Routes.hostAudienceScreen, roots[2])",
-      "workspaceRoute(Routes.hostInboxScreen, roots[2])"],
-    ["route.root.route == root", "true"],
+    ["navigatorKey: keys.host[root.index]", "navigatorKey: keys.host[0]"],
+    ["routes: [for (final index in root.indexes) indexRoute(index)]",
+      "routes: [indexRoute(root.route)]"],
+    ["route.index == root", "true"],
     ["name: Routes.hostApplicationsScreen.name", "name: Routes.hostInboxScreen.name"],
     ["name: Routes.hostApplicationDetailScreen.name", "name: Routes.hostInboxScreen.name"],
   ]) {
     assert.ok(routerSource.includes(before), before);
     assert.ok(scan(routerSource.replace(before, after)).some((item) =>
-      /Audience shell branch/u.test(item.reason)), before);
+      /People shell branch/u.test(item.reason)), before);
   }
 });

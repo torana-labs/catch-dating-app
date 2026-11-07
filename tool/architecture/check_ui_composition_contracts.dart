@@ -3420,8 +3420,7 @@ final class _GoRoutePresentationVisitor extends RecursiveAstVisitor<void> {
                         const {
                           'HostWorkspaceRoot.today',
                           'HostWorkspaceRoot.events',
-                          'HostWorkspaceRoot.audience',
-                          'HostWorkspaceRoot.inbox',
+                          'HostWorkspaceRoot.people',
                           'HostWorkspaceRoot.organizer',
                         }.contains(argument.expression.toSource()),
                   )),

@@ -55,13 +55,13 @@ Typed handoffs:
 | `HostAttentionProjection` | `lib/contexts/insights/domain/host_attention_item.dart` | Structural owner. |
 | `HostAttentionRepository` | `lib/contexts/insights/data/host_attention_repository.dart` | Structural owner. |
 | `HostTodayFeedController` | `lib/hosts/today/presentation/host_today_feed_controller.dart` | Structural owner. |
-| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Actions: switch_organizer. |
+| `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies
 
 - `lib/contexts/events/data/event_repository.dart` — Shared canonical event reads; Today owns only its bounded projection.
 - `lib/contexts/bookings/data/host_attendance_outbox.dart` — Device-local absolute attendance operations are intentionally merged after the server projection.
-- `lib/routing/shell/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
+- `lib/routing/shell/host_shell_screen.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts
 

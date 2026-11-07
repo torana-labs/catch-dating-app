@@ -67,13 +67,13 @@ Typed handoffs:
 | `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
 | `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Actions: sign_out. |
-| `HostAppShell` | `lib/routing/shell/host_app_shell.dart` | Actions: switch_organizer. |
+| `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies
 
 - `lib/contexts/organizers/data/organizers_repository.dart` — Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover.
 - `lib/contexts/payments/data/host_payment_account_repository.dart` — Provider-neutral payout account persistence and callable orchestration.
-- `lib/routing/shell/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
+- `lib/routing/shell/host_shell_screen.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts
 

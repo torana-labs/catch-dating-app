@@ -458,7 +458,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const shellOwnsTabScaffold = LintCode(
     'catch_shell_owns_tab_scaffold',
-    'Only app_shell.dart and host_app_shell.dart may instantiate the root tab scaffold or a Scaffold with bottom navigation.',
+    'Only app_shell.dart may instantiate the root tab scaffold or a Scaffold with bottom navigation; the Host shell composes CatchAppShell.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -2102,8 +2102,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isShellImplementationPath {
-    return path.endsWith('/lib/routing/shell/app_shell.dart') ||
-        path.endsWith('/lib/routing/shell/host_app_shell.dart');
+    return path.endsWith('/lib/routing/shell/app_shell.dart');
   }
 
   int _lineForOffset(int offset) {

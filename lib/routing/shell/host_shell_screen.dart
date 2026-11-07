@@ -174,9 +174,14 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
     return CatchWorkspaceHeaderLayout(
       child: CatchAppShell(
         navigation: navigation,
-        child: CatchWorkspacePaneScope(
-          isSinglePane: true,
-          child: widget.navigationShell,
+        // A branch navigator's modal barrier drops the semantics painted
+        // before it; confined to the screen it cannot hide a rail or sidebar.
+        child: Semantics(
+          container: true,
+          child: CatchWorkspacePaneScope(
+            isSinglePane: true,
+            child: widget.navigationShell,
+          ),
         ),
       ),
     );

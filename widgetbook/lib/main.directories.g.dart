@@ -723,7 +723,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'HostAppShell',
+        name: 'HostShellScreen',
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Host shell · desktop',

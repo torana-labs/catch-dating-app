@@ -24,8 +24,8 @@ const ids = ["today", "events", "audience", "inbox", "organizer"];
 const destinations = [
   "hostToday",
   "hostEvents",
-  "hostAudience",
-  "hostInbox",
+  "hostPeople",
+  "hostPeople",
   "hostOrganizer",
 ];
 const routeIds = [
@@ -90,12 +90,15 @@ function fixture() {
       features,
     },
     shellManifest: {
-      primaryRoutes: ids.map((id, index) => ({
-        destination: destinations[index],
-        routeId: routeIds[index],
-        path: `/host/${id}`,
-        label: `${id[0].toUpperCase()}${id.slice(1)}`,
-      })),
+      primaryRoutes: ids
+        .map((id, index) => ({
+          destination: destinations[index],
+          routeId: routeIds[index],
+          path: `/host/${id}`,
+          label: `${id[0].toUpperCase()}${id.slice(1)}`,
+          ...(id === "audience" ? {otherIndexRouteIds: [routeIds[3]]} : {}),
+        }))
+        .filter((_, index) => index !== 3),
     },
     routes,
     pathExists: (repoPath) => existing.has(repoPath),

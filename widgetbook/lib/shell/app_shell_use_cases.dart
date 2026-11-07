@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
-import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/errors/error_logger.dart';
@@ -58,12 +60,12 @@ Widget adaptiveTabScaffoldState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host shell · phone',
-  type: HostAppShell,
+  type: HostShellScreen,
   path: '[App shell]',
 )
 Widget hostAppShellPhoneState(BuildContext context) {
   return const _ShellCatalog(
-    title: 'HostAppShell',
+    title: 'HostShellScreen',
     contractId: 'app.shell.host',
     child: _DeviceFrame(
       width: WidgetbookPreviewLayout.phoneChromeWidth,
@@ -75,12 +77,12 @@ Widget hostAppShellPhoneState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host shell · tablet',
-  type: HostAppShell,
+  type: HostShellScreen,
   path: '[App shell]',
 )
 Widget hostAppShellTabletState(BuildContext context) {
   return const _ShellCatalog(
-    title: 'HostAppShell · tablet rail',
+    title: 'HostShellScreen · tablet rail',
     contractId: 'app.shell.host',
     maxWidth: WidgetbookPreviewLayout.tabletChromeWidth,
     child: _DeviceFrame(
@@ -93,12 +95,12 @@ Widget hostAppShellTabletState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host shell · desktop',
-  type: HostAppShell,
+  type: HostShellScreen,
   path: '[App shell]',
 )
 Widget hostAppShellDesktopState(BuildContext context) {
   return const _ShellCatalog(
-    title: 'HostAppShell · desktop sidebar',
+    title: 'HostShellScreen · desktop sidebar',
     contractId: 'app.shell.host',
     maxWidth: WidgetbookPreviewLayout.desktopChromeWidth,
     child: _DeviceFrame(
@@ -233,14 +235,14 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
       ),
       StatefulShellRoute.indexedStack(
         builder: (_, _, navigationShell) => widget.host
-            ? HostAppShell(navigationShell: navigationShell)
+            ? HostShellScreen(navigationShell: navigationShell)
             : AppShell(navigationShell: navigationShell),
         branches: widget.host
             ? [
+                _branch('/host/today', 'Today'),
                 _branch('/host/events', 'Events'),
+                _branch('/host/audience', 'People', inboxPath: '/host/inbox'),
                 _branch('/host/organizer', 'Organizer'),
-                _branch('/host/inbox', 'Inbox'),
-                _branch('/host/account', 'Account'),
               ]
             : [
                 _branch(Routes.dashboardScreen.path, 'Home'),
@@ -266,6 +268,18 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
           (ref) => Stream<String?>.value(widget.host ? _hostUid : null),
         ),
         if (widget.host) ...[
+          hostOperableOrganizersProvider(_hostUid).overrideWithValue(
+            AsyncData([
+              Organizer(
+                id: 'widgetbook-organizer',
+                name: 'Saket Run Club',
+                location: 'Delhi',
+                area: 'Saket',
+                description: '',
+                createdAt: DateTime(2026),
+              ),
+            ]),
+          ),
           totalUnreadCountProvider(_hostUid).overrideWithValue(7),
           appShellFcmInitializationProvider(
             _hostUid,
@@ -289,17 +303,17 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
   }
 }
 
-StatefulShellBranch _branch(String path, String label) {
+StatefulShellBranch _branch(String path, String label, {String? inboxPath}) {
+  GoRoute route(String path, String label) => GoRoute(
+    path: path,
+    builder: (context, _) => Scaffold(
+      body: Center(child: Text(label, style: CatchTextStyles.titleL(context))),
+    ),
+  );
   return StatefulShellBranch(
     routes: [
-      GoRoute(
-        path: path,
-        builder: (context, _) => Scaffold(
-          body: Center(
-            child: Text(label, style: CatchTextStyles.titleL(context)),
-          ),
-        ),
-      ),
+      route(path, label),
+      if (inboxPath != null) route(inboxPath, 'Inbox'),
     ],
   );
 }
@@ -363,9 +377,18 @@ class _DeviceFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The shell sizes its navigation from the window; the frame is the
+    // window here.
     return ClipRRect(
       borderRadius: BorderRadius.circular(CatchRadius.lg),
-      child: SizedBox(width: width, height: height, child: child),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(size: Size(width, height)),
+          child: child,
+        ),
+      ),
     );
   }
 }
