@@ -1,5 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {brand} from "@catch/brand";
+import {CatchPageBody, CatchRoot} from "@catch/web-ui";
+import type {ReactNode} from "react";
 import {
   ClaimHeroSection,
   ClaimSearchSection,
@@ -15,9 +17,24 @@ import type {HostListing} from "../features/organizers/types";
 const claimableListing = hostListings.find(isUnclaimedListing) ?? requireListing("afterfly");
 const claimedListing = hostListings.find(isVerifiedListing) ?? requireListing("club-sales-sunday-table");
 
+/** The boards' frames: the phone boards at 390 and the desktop board at 1280. */
+const viewports = {
+  claimPhone: {name: "Claim · phone 390", styles: {width: "390px", height: "900px"}, type: "mobile"},
+  claimDesktop: {name: "Claim · desktop 1280", styles: {width: "1280px", height: "900px"}, type: "desktop"},
+} as const;
+const phone = {viewport: {value: "claimPhone", isRotated: false}};
+const desktop = {viewport: {value: "claimDesktop", isRotated: false}};
+
+/** A claim section on the white ground, inside the page body the route gives it. */
+function Page({children}: {children: ReactNode}) {
+  return <CatchRoot theme="day"><CatchPageBody gutter={false} pt="s4">{children}</CatchPageBody></CatchRoot>;
+}
+
 const meta = {
   title: "Marketing Website/Claims/Sections",
+  decorators: [(Story) => <Page><Story /></Page>],
   parameters: {
+    viewport: {options: viewports},
     catchComponentRegistry: {
       path: "design/website/components.json",
     },
@@ -32,7 +49,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ClaimHero: Story = {
-  name: "Hero",
+  name: "Hero · selected listing",
   parameters: {
     catchComponent: {
       id: "claim_hero_section",
@@ -41,6 +58,18 @@ export const ClaimHero: Story = {
     },
   },
   render: () => <ClaimHeroSection listing={claimableListing} />,
+};
+
+export const ClaimHeroNoListing: Story = {
+  name: "Hero · no listing",
+  parameters: {
+    catchComponent: {
+      id: "claim_hero_section",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["no-listing"],
+    },
+  },
+  render: () => <ClaimHeroSection listing={null} />,
 };
 
 export const ClaimUrlState: Story = {
@@ -132,7 +161,8 @@ const lumaAttempt = {...instagramAttempt, method: "lumaDescription" as const, pr
   proofTarget: "https://lu.ma/carterroadrunners", catchInstagramHandle: null};
 
 export const InstantClaimChoose: Story = {
-  name: "Instant check · choose",
+  name: "Instant check · choose (RbWebClaimChoose)",
+  globals: phone,
   parameters: {
     catchComponent: {
       id: "claim_instant_check_panel",
@@ -144,7 +174,8 @@ export const InstantClaimChoose: Story = {
 };
 
 export const InstantClaimInstagram: Story = {
-  name: "Instant check · Instagram code",
+  name: "Instant check · Instagram code (RbWebClaimCode)",
+  globals: phone,
   parameters: {
     catchComponent: {
       id: "claim_instant_check_panel",
@@ -192,7 +223,8 @@ export const InstantClaimExpired: Story = {
 };
 
 export const InstantClaimDone: Story = {
-  name: "Instant check · verified",
+  name: "Instant check · verified (RbWebClaimDone)",
+  globals: phone,
   parameters: {
     catchComponent: {
       id: "claim_instant_check_panel",
@@ -204,7 +236,8 @@ export const InstantClaimDone: Story = {
 };
 
 export const InstantClaimReview: Story = {
-  name: "Instant check · review request",
+  name: "Instant check · review request (RbWebClaimReview)",
+  globals: phone,
   parameters: {
     catchComponent: {
       id: "claim_instant_check_panel",
@@ -230,7 +263,8 @@ export const InstantClaimNoMethods: Story = {
 };
 
 export const InstantClaimRequested: Story = {
-  name: "Instant check · review requested",
+  name: "Instant check · review requested (RbWebClaimSent)",
+  globals: phone,
   parameters: {
     catchComponent: {
       id: "claim_instant_check_panel",
@@ -253,6 +287,84 @@ export const InstantClaimPendingReview: Story = {
   render: () => <InstantClaimPanel controller={mockInstantController({})} listing={claimableListing} pendingReview />,
 };
 
+export const InstantClaimSignIn: Story = {
+  name: "Instant check · sign in (RbWebClaimSignIn)",
+  globals: phone,
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["choose"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "account", account: mockAccount({ready: false, account: null})})}
+    listing={claimableListing} />,
+};
+
+export const InstantClaimLoading: Story = {
+  name: "Instant check · checking the ways in",
+  globals: phone,
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["choose"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "loading"})} listing={claimableListing} />,
+};
+
+export const InstantClaimDesktop: Story = {
+  name: "Instant check · Instagram code, desktop (RbWebClaimDesktop)",
+  globals: desktop,
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["instagram-code"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({phase: "code", attempt: instagramAttempt})} listing={claimableListing} />,
+};
+
+export const InstantClaimChooseDesktop: Story = {
+  name: "Instant check · choose, desktop",
+  globals: desktop,
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["choose"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({})} listing={claimableListing} />,
+};
+
+export const InstantClaimError: Story = {
+  name: "Instant check · a check failed",
+  globals: phone,
+  parameters: {
+    catchComponent: {
+      id: "claim_instant_check_panel",
+      routeIds: ["claim", "claim_lookup"],
+      states: ["choose"],
+    },
+  },
+  render: () => <InstantClaimPanel controller={mockInstantController({error: "That didn’t work. Try again in a moment."})} listing={claimableListing} />,
+};
+
+function mockAccount(overrides: Record<string, unknown> = {}): InstantClaimController["account"] {
+  const noop = () => undefined;
+  return {
+    id: "claim-account", uid: "owner-1", account: {displayName: "Rhea Kapoor", phoneNumber: "+919820144718"}, ready: true,
+    loading: false, pending: false, status: {message: "", tone: "is-idle"}, displayName: "Rhea Kapoor", setDisplayName: noop,
+    phoneNumber: "+91 98201 44718", setPhoneNumber: noop, dateOfBirth: "", setDateOfBirth: noop, code: "", setCode: noop,
+    stage: "phone", recaptchaId: "claim-recaptcha", verified: false, ageRequired: false, ageIneligible: false,
+    handleSubmit: noop, restartVerification: noop, refresh: noop,
+    ...overrides,
+  } as unknown as InstantClaimController["account"];
+}
+
 function mockInstantController(overrides: Partial<InstantClaimController>): InstantClaimController {
   const methods = [
     {method: "instagramMessage" as const, available: true, proofTarget: "carterroadrunners", unavailableReason: null},
@@ -261,7 +373,7 @@ function mockInstantController(overrides: Partial<InstantClaimController>): Inst
   ];
   const noop = () => undefined;
   return {
-    account: {} as InstantClaimController["account"],
+    account: mockAccount(),
     phase: "choose", methods, chosen: methods[0], attempt: null, expired: false, copied: false, error: "",
     rejection: null, lumaMissing: false, starting: false, checking: false, catchInstagramHandle: brand.social.instagramHandle,
     proofLinks: "", setProofLinks: noop, note: "", setNote: noop, requesting: false,
