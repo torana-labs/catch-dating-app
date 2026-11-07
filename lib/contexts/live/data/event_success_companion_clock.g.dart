@@ -43,4 +43,4 @@ final class EventSuccessCompanionClockProvider
 }
 
 String _$eventSuccessCompanionClockHash() =>
-    r'b7c42257b92835db1c5fe148487cadac75517e1c';
+    r'1c88dd090b8868b9b1f6cad5210631bc520f80b5';

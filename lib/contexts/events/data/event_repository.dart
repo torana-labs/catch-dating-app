@@ -12,6 +12,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_tags.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_venue_session.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -47,9 +48,16 @@ part 'event_repository_actions.dart';
 const _collectionPath = 'events';
 
 class EventRepository with EventRepositoryActions {
-  const EventRepository(this._db, this._functions);
+  const EventRepository(
+    this._db,
+    this._functions, {
+    this._clock = const AppClock(),
+  });
 
   final FirebaseFirestore _db;
+
+  /// The upcoming-events window starts at this clock's now.
+  final AppClock _clock;
   @override
   final FirebaseFunctions _functions;
 
@@ -352,7 +360,7 @@ class EventRepository with EventRepositoryActions {
       // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
       final uniqueOrganizerIds = organizerIds.toSet().toList()..sort();
       if (uniqueOrganizerIds.isEmpty) return [];
-      final nowDateTime = DateTime.now();
+      final nowDateTime = _clock.now();
       final now = Timestamp.fromDate(nowDateTime);
       final events = <Event>[];
       for (final chunk in chunkedForWhereIn(uniqueOrganizerIds)) {
@@ -389,6 +397,7 @@ class EventRepository with EventRepositoryActions {
 EventRepository eventRepository(Ref ref) => EventRepository(
   ref.watch(firebaseFirestoreProvider),
   ref.watch(firebaseFunctionsProvider),
+  clock: ref.watch(appClockProvider),
 );
 
 @riverpod
@@ -415,7 +424,7 @@ Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
         .read(eventRepositoryProvider)
         .createVenueSession(eventId: eventId);
     yield session;
-    final nowMillis = DateTime.now().millisecondsSinceEpoch;
+    final nowMillis = ref.read(appClockProvider).now().millisecondsSinceEpoch;
     final waitMillis = (session.refreshAfterMillis - nowMillis)
         .clamp(1000, 240000)
         .toInt();
