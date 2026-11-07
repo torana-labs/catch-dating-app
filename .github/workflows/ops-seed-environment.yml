@@ -1,0 +1,139 @@
+name: Seed environment data
+
+# Runs tool/demo/seed_demo_data.mjs against one Firebase environment with that
+# environment's deploy identity, so a reseed is a logged, repeatable run rather
+# than a command on someone's laptop. The default is a dry run. `apply` writes
+# the scenario; `reset_synthetic` first deletes the documents the previous seed
+# wrote (its manifest), never organic data. The run refuses to write while the
+# platform is not serving, because the read-model triggers must be live to
+# build views from the seeded documents.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Firebase environment alias to seed.
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      scenario:
+        description: Seed scenario (see --list-scenarios).
+        required: true
+        default: beta-full
+        type: string
+      apply:
+        description: Write the documents (unchecked = dry run).
+        required: true
+        default: false
+        type: boolean
+      reset_synthetic:
+        description: Delete the previous seed's manifest documents first.
+        required: true
+        default: false
+        type: boolean
+      anchor_users:
+        description: Comma-separated real user UIDs to seed around (optional).
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  seed:
+    name: Seed ${{ inputs.environment }} (${{ inputs.scenario }})
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: seed-${{ inputs.environment }}
+      cancel-in-progress: false
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - run: npm --prefix functions ci
+      - uses: ./.github/actions/generate-contracts
+      - name: Build Functions (the seed imports its projections)
+        run: npm --prefix functions run build
+      - name: Validate the requested scenario offline
+        shell: bash
+        env:
+          SCENARIO: ${{ inputs.scenario }}
+        run: |
+          set -euo pipefail
+          node tool/demo/seed_demo_data.mjs --list-scenarios | tee scenarios.txt
+          if ! grep -qE "^- ${SCENARIO}:" scenarios.txt; then
+            echo "::error::Unknown scenario '${SCENARIO}'"
+            exit 1
+          fi
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - id: platform
+        name: Check the platform is serving before writing
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+        run: node tool/firebase/check_platform_availability.mjs --env "$TARGET_ENV" --callable adminListEventDirectory
+      - name: Refuse to seed while the platform is not serving
+        if: ${{ inputs.apply && steps.platform.outputs.available == 'false' }}
+        shell: bash
+        env:
+          REASON: ${{ steps.platform.outputs.reason }}
+        run: |
+          echo "::error::The platform is not serving (${REASON}); the seed's triggers would not run. Retry when it serves."
+          exit 1
+      - name: Seed
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          SCENARIO: ${{ inputs.scenario }}
+          APPLY: ${{ inputs.apply }}
+          RESET_SYNTHETIC: ${{ inputs.reset_synthetic }}
+          ANCHOR_USERS: ${{ inputs.anchor_users }}
+        run: |
+          set -euo pipefail
+          args=(--env "$TARGET_ENV" --scenario "$SCENARIO")
+          if [[ -n "$ANCHOR_USERS" ]]; then args+=(--anchor-users "$ANCHOR_USERS"); fi
+          if [[ "$APPLY" == "true" ]]; then
+            args+=(--apply)
+            if [[ "$RESET_SYNTHETIC" == "true" ]]; then args+=(--reset-synthetic); fi
+            if [[ "$TARGET_ENV" == "prod" ]]; then args+=(--allow-prod); fi
+          else
+            args+=(--dry-run)
+          fi
+          echo "node tool/demo/seed_demo_data.mjs ${args[*]}"
+          node tool/demo/seed_demo_data.mjs "${args[@]}" | tee seed-report.txt
+          mode="dry run"
+          if [[ "$APPLY" == "true" ]]; then mode="applied"; fi
+          {
+            echo "## Seed ${TARGET_ENV} · ${SCENARIO} · ${mode}"
+            echo
+            echo '```'
+            tail -n 40 seed-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: seed-report-${{ inputs.environment }}-${{ github.run_id }}
+          path: |
+            seed-report.txt
+            scenarios.txt
+          if-no-files-found: ignore
+          retention-days: 90
