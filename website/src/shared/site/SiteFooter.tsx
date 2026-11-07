@@ -1,7 +1,11 @@
 import type {ReactNode} from "react";
 import {PlainLink} from "../ui/primitives";
-import type {SiteNavItem} from "./SiteHeader";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
+
+export interface SiteNavItem {
+  href: string;
+  label: string;
+}
 
 export function SiteFooter({
   brandHref,

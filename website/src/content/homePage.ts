@@ -1,6 +1,7 @@
-// Copy for the Website v2 homepage (CAT-260), from the owner-approved WebHomeV2
-// board (design/source_packs/website-v2/boards/WebHomeV2.dc.html). Catch is
-// for meeting people in real life: no dating, singles, mixer or match wording.
+// Copy for the homepage, from the owner's RbWebHomeV2 board (catch-design-source
+// gen/rebuild14.py, home()). Copy is the owner's: change it on the board first.
+// Catch is for meeting people in real life: no dating, singles, mixer or match
+// wording.
 import type {CatchFormat} from "@catch/web-ui";
 
 export const homePageCopy = {
@@ -14,7 +15,8 @@ export const homePageCopy = {
     liveAction: "See what’s on in {city}",
     soonAction: "Get notified for {city}",
     hostAction: "Host an event",
-    screenAlt: "The Catch app showing tonight’s plans",
+    /** A plan chip's kicker on the hero spotlight: "Run club · Fri 6:30 AM". */
+    chipKicker: "{format} · {when}",
   },
   formats: {
     eyebrow: "Something for every kind of evening",
@@ -23,6 +25,8 @@ export const homePageCopy = {
     label: "Formats",
     liveCount: "{count} this week",
     soonKicker: "Coming to {city}",
+    /** The scoreboard on the games tile. */
+    scores: [{title: "The Quizzicals", value: "42"}, {title: "Table Six", value: "38"}, {title: "Last Orders", value: "35"}],
   },
   week: {
     title: "This week in {city}",
@@ -76,17 +80,17 @@ export const homePageCopy = {
     eyebrow: "How a night works",
     title: "Come on your own. Leave knowing a few more people.",
     lead: "Hosts plan the first ten minutes so you don’t have to. Here’s a Sunday run with Carter Road Runners.",
-    label: "How a night works",
-    previous: "Previous step",
-    next: "Next step",
     steps: [
-      {id: "find", title: "Find a plan", body: "Pick something you’d actually enjoy. Every plan shows who’s hosting, where you meet and who it suits.",
-        screen: "/assets/app-screens/explore.png", alt: "Explore with tonight’s plans"},
-      {id: "show-up", title: "Show up", body: "Your host has a group, a partner or a game ready, and a first hello so nobody stands on their own.",
-        screen: "/assets/app-screens/guest-live.png", alt: "The live view with your group and a first hello prompt"},
-      {id: "keep-in-touch", title: "Keep in touch", body: "Your group chat stays open for a week. Follow the hosts you liked and hear about their next one first.",
-        screen: "/assets/app-screens/guest-after.png", alt: "After the event: feedback, the group chat and the host’s next plan"},
+      {title: "Find a plan", body: "Pick something you’d actually enjoy. Every plan shows who’s hosting, where you meet and who it suits."},
+      {title: "Show up", body: "Your host has the first ten minutes planned: a group, a game or a first hello."},
+      {title: "Keep in touch", body: "Pick the people you’d like to see again. If they pick you too, you can message."},
     ],
+    phone: {
+      kicker: "Tonight’s plans",
+      nowKicker: "Now · first ten minutes",
+      now: "Say hello to your pace group",
+      rows: ["Steady 5K · meet by the fountain", "Chai at the jetty", "Same time next Sunday?"],
+    },
   },
   organisers: {
     liveEyebrow: "Organisers near you",
@@ -116,8 +120,12 @@ export const homePageCopy = {
     priceNote: "Free events stay free. Payment gateway fees are charged separately by the payment provider.",
     action: "See Catch for hosts",
     claim: "Claim your page",
-    todayAlt: "Host app, today: bookings, arrivals and tasks for tonight",
-    doorAlt: "Host app, the door: checking guests in",
+    live: {
+      kicker: "Tuesday Trivia Night · Live · 9:07 PM",
+      title: "Round two",
+      meter: "Time in this step",
+      scores: [{title: "Quizzy Rascals", value: "41"}, {title: "Harbour Lights", value: "38"}, {title: "Vada Pav Theory", value: "35"}],
+    },
   },
   app: {
     eyebrow: "Get the app",
@@ -143,8 +151,11 @@ export const homePageCopy = {
     tagline: "Meet people in real life, through hosts who bring them together.",
     soon: "soon",
     groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
+    wordmark: "Catch",
+    /** A city that has not opened: "Pune · soon". */
+    soonCity: "{city} · soon",
     links: {whatsOn: "What’s on", organisers: "Organisers", app: "Get the app", hosts: "Catch for hosts", pricing: "Pricing",
-      claim: "Claim your page", help: "Help", privacy: "Privacy", terms: "Terms", refunds: "Refunds", contact: "Contact"},
+      claim: "Claim your page", help: "Help", safety: "Safety", privacy: "Privacy", terms: "Terms"},
   },
   stores: {
     appStore: {kicker: "Download on the", label: "App Store", accessibleLabel: "Download on the App Store"},
