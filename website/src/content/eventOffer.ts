@@ -2,7 +2,6 @@ import {brand} from "./brand.ts";
 
 // Private event invitation copy, shared by the page and payment controller.
 export const eventOfferCopy = {
-  acceptFree: "Accept invitation",
   freeAmount: "Free admission",
   freeInvitationBody: "You’ve been offered a free place. Accept your invitation to confirm it, subject to current availability.",
   eventAccess: "View your booking and event access",
@@ -34,11 +33,9 @@ export const eventOfferCopy = {
   "confirmed": "Confirmed",
   "admission": "Event admission",
   "refund": "Refund",
-  "bookingAmount": "Booking amount",
   "testMode": "Test payment — no real money will be collected.",
   "checkingPayment": "Checking payment",
   "continueCheckout": "Continue secure checkout",
-  "reservePay": "Reserve a seat and pay",
   "refresh": "Refresh payment status",
   "claimError": "We couldn’t open this invitation. Verify the phone number you gave the host, or ask them for a current link.",
   "statusError": "Payment status is temporarily unavailable. Please check again; don’t pay again.",
@@ -59,7 +56,19 @@ export const eventOfferCopy = {
   "responseError": "We couldn’t verify the invitation response. Please retry."
 } as const;
 
-export const offerCodeSent = (phone: string) => `We sent a six-digit code to ${phone}.`;
+// The offer page as the RbWebOffer board draws it: the hold badge, the title,
+// the place card's kicker, the take-the-place button and the app note.
+export const eventOfferPageCopy = {
+  heldUntil: "Held for you until {time}",
+  placeTitle: "You’ve got a place.",
+  placeKicker: "Your place",
+  takeFree: "Take the place · free",
+  takePaid: "Take the place · {amount}",
+  appNote: `Get the ${brand.name} app to keep your ticket and meet everyone before the night.`,
+  footerLabel: "Footer",
+} as const;
+
+export const offerCodeSent =(phone: string) => `We sent a six-digit code to ${phone}.`;
 export const offerHoldEnds = (time: string) => `Your seat hold ends at ${time}.`;
 
 export const offerRefundDeadline = (time: string) => `Full cash refund if you cancel by ${time}. After that, no refund. Online cancellation closes when the event starts.`;
