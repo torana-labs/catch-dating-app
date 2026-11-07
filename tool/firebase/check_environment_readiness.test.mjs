@@ -767,16 +767,22 @@ test("Deploy backend checks readiness before any mutation", () => {
   // mutation and the record, so the next run deploys the whole delta.
   assert.match(block("Check the platform is serving before touching it"),
     /check_platform_availability\.mjs --env "\$DEPLOY_ENVIRONMENT" --callable adminListEventDirectory --gcloud-probe/u);
+  // Every step after the count also skips when the nightly window run has
+  // nothing to deploy or the weekly window is closed.
   for (const name of ["Check this environment is ready", "Retire named Functions", "Deploy Functions",
     "Check callable access and Functions parity"]) {
-    assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' \}\}/u,
-      `${name} is skipped for a commit older than the deployed one and while the platform is not serving`);
+    assert.match(block(name), /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.size\.outputs\.skip != 'true' \}\}/u,
+      `${name} is skipped for a commit older than the deployed one, while the platform is not serving, and by a quiet window run`);
   }
   // A named run deploys those Functions only and leaves the record alone.
-  for (const name of ["Count the Functions this deploy changes", "Deploy Firestore indexes",
+  assert.match(block("Count the Functions this deploy changes"),
+    /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' \}\}/u);
+  assert.ok(deployJob.includes("- id: size\n        name: Count the Functions this deploy changes"),
+    "later steps read the count's skip output");
+  for (const name of ["Deploy Firestore indexes",
     "Deploy Firestore and Storage rules", "Verify the active rules match this commit", "Record the deployed commit"]) {
     assert.match(block(name),
-      /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' \}\}/u, name);
+      /if: \$\{\{ steps\.guard\.outputs\.skip != 'true' && steps\.platform\.outputs\.available != 'false' && steps\.choose\.outputs\.mode != 'named' && steps\.size\.outputs\.skip != 'true' \}\}/u, name);
   }
 });
 
@@ -811,10 +817,14 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-guard-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
   const list = (page) => `repos/o/r/deployments?environment=dev&task=deploy:backend&per_page=100&page=${page}`;
-  const status = (id) => `repos/o/r/deployments/${id}/statuses?per_page=1`;
+  const status = (id) => `repos/o/r/deployments/${id}/statuses?per_page=100`;
   const record = (id) => `repos/o/r/deployments/${id}`;
   const base = "b".repeat(40);
-  const success = [[list(1), "7"], [status(7), "success"], [record(7), base]];
+  // Status lists as the API returns them, newest first; the mock applies the
+  // step's own jq filter, so the real expression decides.
+  const states = (...names) => JSON.stringify(names.map((state) => ({state})));
+  const delivered = states("success");
+  const success = [[list(1), "7"], [status(7), delivered], [record(7), base]];
   const scenarios = [
     {label: "newer commit", calls: success},
     {label: "same commit", calls: success, source: base},
@@ -823,20 +833,28 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
     {label: "list error", calls: [[list(1), "", 41]], exit: 41},
     {label: "partial first page then list error", calls: [[list(1), "7", 42]], exit: 42},
     {label: "status error", calls: [[list(1), "7"], [status(7), "", 43]], exit: 43},
-    {label: "partial status then error", calls: [[list(1), "7"], [status(7), "success", 44]], exit: 44},
-    {label: "record error", calls: [[list(1), "7"], [status(7), "success"], [record(7), "", 45]], exit: 45},
-    {label: "partial record then error", calls: [[list(1), "7"], [status(7), "success"], [record(7), base, 46]], exit: 46},
+    {label: "partial status then error", calls: [[list(1), "7"], [status(7), delivered, 44]], exit: 44},
+    {label: "record error", calls: [[list(1), "7"], [status(7), delivered], [record(7), "", 45]], exit: 45},
+    {label: "partial record then error", calls: [[list(1), "7"], [status(7), delivered], [record(7), base, 46]], exit: 46},
     {label: "later page error after valid results", calls: [
-      [list(1), "9"], [status(9), "failure"], [list(2), "7", 47],
+      [list(1), "9"], [status(9), states("failure")], [list(2), "7", 47],
     ], exit: 47},
     {label: "successful record beyond page one", calls: [
-      [list(1), "9"], [status(9), "failure"], [list(2), "7"], [status(7), "success"], [record(7), base],
+      [list(1), "9"], [status(9), states("failure")], [list(2), "7"], [status(7), delivered], [record(7), base],
     ], ancestor: 1, skipped: true},
     {label: "empty status still searches later records", calls: [
-      [list(1), "9 7"], [status(9), ""], [status(7), "success"], [record(7), base],
+      [list(1), "9 7"], [status(9), states()], [status(7), delivered], [record(7), base],
     ]},
     {label: "verified exhaustion after partial pages", calls: [
-      [list(1), "9"], [status(9), "failure"], [list(2), "8"], [status(8), "pending"], [list(3), ""],
+      [list(1), "9"], [status(9), states("failure")], [list(2), "8"], [status(8), states("pending")], [list(3), ""],
+    ]},
+    // GitHub marks a record inactive once a later deployment in the
+    // environment finishes, including the deploy job's own; it still counts.
+    {label: "record marked inactive after success", calls: [
+      [list(1), "7"], [status(7), states("inactive", "success")], [record(7), base],
+    ]},
+    {label: "inactive without success is not a record", calls: [
+      [list(1), "9"], [status(9), states("inactive", "failure")], [list(2), ""],
     ]},
   ];
   for (const scenario of scenarios) {
@@ -848,7 +866,8 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
       // Only these exact mocked endpoints are allowed. Unexpected calls fail
       // closed, and the call log proves short pages are not treated as exhaustion.
       const cases = scenario.calls.map(([endpoint, response, exit = 0]) =>
-        `'${endpoint}') printf '%s\\n' '${response}'; return ${exit};;`).join("\n");
+        `'${endpoint}') printf '%s\\n' '${response}'${endpoint.includes("/statuses?") ? ` | jq -r "$4"` : ""}; return ${exit};;`)
+        .join("\n");
       const result = spawnSync("bash", ["-c", `
         gh() {
           printf '%s\\n' "$2" >> "$CALLS_LOG"
@@ -871,8 +890,8 @@ test("Deploy backend resolves delivered ancestry with fail-closed paginated look
       assert.equal(result.error, undefined);
       assert.equal(result.status, scenario.exit ?? 0, result.stderr);
       // The deployment found is passed on, so the size count reads its hashes.
-      const found = scenario.calls.some(([endpoint, response]) => endpoint === status(7) && response === "success") &&
-        scenario.exit === undefined;
+      const found = scenario.calls.some(([endpoint, response]) => endpoint === status(7) && response !== "" &&
+        JSON.parse(response).some(({state}) => state === "success")) && scenario.exit === undefined;
       assert.equal(fs.readFileSync(output, "utf8"),
         `${found ? "deployment=7\n" : ""}${scenario.skipped ? "skip=true\n" : ""}`);
       assert.deepEqual(fs.readFileSync(callsLog, "utf8").trim().split("\n"),
@@ -893,19 +912,28 @@ test("Deploy backend counts changed Functions against the recorded hashes before
   const functions = (count) => Array.from({length: count}, (_, index) => `f${index}`);
   fs.writeFileSync(path.join(cwd, "build/functions-codebases.json"), JSON.stringify({version: 1, codebases: {
     admin: {hash: "a2", functions: functions(150)}, events: {hash: "e1", functions: functions(100)}}}));
-  const run = ({deployment = "7", payload = "", allowLarge = "false", full = "false"}) => {
+  // A record created long ago leaves the weekly window open.
+  const longAgo = "2026-01-01T00:00:00Z";
+  const run = ({deployment = "7", payload = "", allowLarge = "false", full = "false", createdAt = longAgo,
+    mode = "push"}) => {
     const summary = path.join(cwd, "summary.md");
+    const output = path.join(cwd, "output.txt");
     fs.writeFileSync(summary, "");
+    fs.writeFileSync(output, "");
     const result = spawnSync("bash", ["-c", `
       gh() {
-        [[ "$2" == "repos/o/r/deployments/7" && "$3" == "-q" && "$4" == ".payload" ]] || return 99
-        printf '%s\n' "$PAYLOAD"
+        [[ "$2" == "repos/o/r/deployments/7" && "$3" == "-q" ]] || return 99
+        case "$4" in
+          .payload) printf '%s\n' "$PAYLOAD";;
+          .created_at) printf '%s\n' "$CREATED_AT";;
+          *) return 99;;
+        esac
       }
       ${script}
     `], {cwd, encoding: "utf8", env: {...process.env, GITHUB_REPOSITORY: "o/r", GITHUB_STEP_SUMMARY: summary,
-      DEPLOY_ENVIRONMENT: "dev", DEPLOYED_ID: deployment, PAYLOAD: payload, FULL: full, ALLOW_LARGE: allowLarge,
-      MAX_CHANGED_FUNCTIONS: "200"}});
-    return {...result, summary: fs.readFileSync(summary, "utf8")};
+      GITHUB_OUTPUT: output, DEPLOY_ENVIRONMENT: "dev", DEPLOYED_ID: deployment, PAYLOAD: payload, FULL: full,
+      ALLOW_LARGE: allowLarge, CREATED_AT: createdAt, MODE: mode, MAX_CHANGED_FUNCTIONS: "200"}});
+    return {...result, summary: fs.readFileSync(summary, "utf8"), output: fs.readFileSync(output, "utf8")};
   };
   const recorded = JSON.stringify({version: 1, codebases: {admin: {hash: "a1"}, events: {hash: "e1"}}});
   const small = run({payload: recorded});
@@ -916,14 +944,32 @@ test("Deploy backend counts changed Functions against the recorded hashes before
     assert.equal(unknown.status, 3, JSON.stringify(scenario));
     assert.match(unknown.stderr, /would update 250 Functions in dev, over the limit of 200/u);
   }
-  assert.equal(run({payload: "", allowLarge: "true"}).status, 0);
+  const allowed = run({payload: "", allowLarge: "true"});
+  assert.equal(allowed.status, 0, allowed.stderr);
+  assert.match(allowed.output, /^skip=false\nlarge=true\nlarge_deploy_at=\d{4}-\d\d-\d\dT[\d:.]+Z\n/u,
+    "a large deploy becomes the last large deploy");
   assert.equal(run({payload: recorded, full: "true"}).status, 0);
+  // Within 7 days of the last large deploy nothing beats the window, and the
+  // nightly window run stays quiet instead of failing.
+  const recent = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  for (const scenario of [{allowLarge: "true"}, {full: "true", payload: recorded}]) {
+    const closed = run({payload: "", ...scenario, createdAt: recent});
+    assert.equal(closed.status, 3, JSON.stringify(scenario));
+    assert.match(closed.stderr, /at most once every 7 days\. The window opens /u);
+  }
+  const quiet = run({payload: "", createdAt: recent, mode: "window"});
+  assert.equal(quiet.status, 0, quiet.stderr);
+  assert.match(quiet.output, /^skip=true\n/u);
   // The record a successful run writes is what the next run reads back.
   const record = workflow.slice(workflow.indexOf("name: Record the deployed commit"));
   assert.match(record, /--slurpfile codebases build\/functions-codebases\.json/u);
-  assert.match(record, /payload: \{version: \$codebases\[0\]\.version,\s+codebases: \(\$codebases\[0\]\.codebases \| map_values\(\{hash\}\)\)\}/u);
-  const jq = spawnSync("jq", ["-n", "--slurpfile", "codebases", path.join(cwd, "build/functions-codebases.json"),
-    "{version: $codebases[0].version, codebases: ($codebases[0].codebases | map_values({hash}))}"], {encoding: "utf8"});
+  assert.match(record, /LARGE_DEPLOY_AT: \$\{\{ steps\.size\.outputs\.large_deploy_at \}\}/u);
+  assert.match(record, /payload: \(\{version: \$codebases\[0\]\.version,\s+codebases: \(\$codebases\[0\]\.codebases \| map_values\(\{hash\}\)\)\}\s+\+ \(if \$large == "" then \{\} else \{largeDeployAt: \$large\} end\)\)/u,
+    "the record carries the hashes and largeDeployAt");
+  const payloadFilter = "{version: $codebases[0].version, codebases: ($codebases[0].codebases | map_values({hash}))}" +
+    " + (if $large == \"\" then {} else {largeDeployAt: $large} end)";
+  const jq = spawnSync("jq", ["-n", "--arg", "large", "", "--slurpfile", "codebases",
+    path.join(cwd, "build/functions-codebases.json"), payloadFilter], {encoding: "utf8"});
   if (jq.error?.code !== "ENOENT") {
     assert.equal(jq.status, 0, jq.stderr);
     const next = run({payload: jq.stdout.trim()});
