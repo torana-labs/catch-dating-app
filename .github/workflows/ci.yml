@@ -580,6 +580,10 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
@@ -612,6 +616,20 @@ jobs:
       - run: zizmor --offline --config .github/zizmor.yml --min-severity medium .github
       - name: Shellcheck standalone scripts
         run: git ls-files -z '*.sh' | xargs -0 shellcheck --severity=warning
+      # The full Functions suite deploys at most once every 7 days, so a change
+      # to its deploy pipeline merges only from 24 hours before that window.
+      # Nothing bypasses this; .github/scripts/deploy_window.mjs says when.
+      - name: Hold pipeline changes outside the full-deploy window
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ github.event.merge_group.base_sha }}
+          HEAD: ${{ github.event.merge_group.head_sha }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          node --test .github/scripts/deploy_window.test.mjs
+          node .github/scripts/deploy_window.mjs --event "$GITHUB_EVENT_NAME" \
+            --base "$BASE" --head "$HEAD" --pr "$PR"
 
   required:
     name: Required CI
