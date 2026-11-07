@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_presen
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_outcome_units_state.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_state.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -167,8 +168,11 @@ HostLiveState hostLiveController(Ref ref, Event event) {
             ..sort((a, b) => a.createdAt.compareTo(b.createdAt)))
           .map(HostLiveDeliveryNeed.new),
     ]),
-    needsChecking:
-        !cases.hasValue || !deliveries.hasValue || !presence.hasValue,
+    needsChecking: [
+      cases,
+      deliveries,
+      presence,
+    ].any((value) => catchAsyncStateFromAsyncValue(value).value == null),
     standings: List.unmodifiable(ranked),
     scoredRounds: standings == null ? 0 : standings.latestRoundIndex + 1,
     scores: scores,
@@ -205,13 +209,14 @@ HostLiveScoresState hostLiveScoresController(Ref ref, Event event) {
   final plan = planValue.value;
   final assignments = assignmentsValue.value;
   final attendees = attendeesValue.value;
+  final standingsState = catchAsyncStateFromAsyncValue(standingsValue);
   if (plan == null ||
-      !standingsValue.hasValue ||
+      standingsState.isLoading ||
       assignments == null ||
       attendees == null) {
     return const HostLiveScoresState.loading();
   }
-  final standings = standingsValue.value;
+  final standings = standingsState.value;
   final totals = <String, num>{
     for (final entry
         in standings?.entries ?? const <EventSuccessStandingEntry>[])

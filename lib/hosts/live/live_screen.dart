@@ -87,7 +87,15 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
     final clock = ref.read(appClockProvider);
     final current = clock.now();
     _clockNow = current;
-    _tick = clock.timer(Duration(milliseconds: 1000 - current.millisecond), () {
+    final nextSecond = DateTime(
+      current.year,
+      current.month,
+      current.day,
+      current.hour,
+      current.minute,
+      current.second + 1,
+    );
+    _tick = clock.timer(nextSecond.difference(current), () {
       if (!mounted) return;
       setState(_scheduleTick);
     });
