@@ -18,11 +18,11 @@ describe("buildEventPageView", () => {
     expect(full.accent).toBe("coral");
     expect(full.kindLabel).toBe("Running");
     expect(full.host).toEqual({name: "Salt Air Run Club", path: "/organizers/mumbai/salt-air-run-club/", verified: true,
-      rating: "4.8 ★ from 186 reviews"});
+      rating: "4.8 from 186 reviews"});
     expect(full.facts).toEqual({
       when: {label: "When", value: "Sun 22 Nov", note: "5:45 to 8:30 AM"},
       where: {label: "Where", value: "Seaface Steps", note: "Bandra West, Mumbai"},
-      price: {label: "Price", value: "₹299", note: "Per person"},
+      price: {label: "Price", value: "₹299", note: "a place"},
     });
     expect(full.moments?.map((moment) => moment.title)).toEqual(["A first hello", "Something to do together"]);
     expect(full.plan).toEqual({title: "The plan for the morning", steps: [
@@ -41,7 +41,7 @@ describe("buildEventPageView", () => {
       ["included", "coral"], ["bring", undefined], ["accessibility", "mint"], ["cancellation", "indigo"],
     ]);
     expect(full.goodToKnow[3].body).toBe("Full refund if you cancel at least 24 hours before the start.");
-    expect(full.going).toEqual({title: "27 going · 13 spots left", note: "Guest names stay private.", going: 27});
+    expect(full.going).toEqual({title: "27 going · 13 places left", note: "Names show in the app once you’ve booked.", going: 27});
     expect(full.organizer).toEqual({name: "Salt Air Run Club", path: "/organizers/mumbai/salt-air-run-club/", initials: "SA",
       summary: "Run club in Mumbai · 2,140 followers · 4 upcoming events"});
     expect(full.reviews?.items.map((review) => [review.name, review.meta, review.verified])).toEqual([
@@ -117,7 +117,7 @@ describe("buildEventPageView", () => {
     const full = view({...fullEventPage, item: {...fullEventPage.item, event} as EventPageData["item"],
       capacity: {...fullEventPage.capacity, state: "full", spotsLeft: 0, bookedCount: 40, waitlistAvailable: true}});
     expect(full.going).toEqual({title: "40 going · full",
-      note: "Guest names stay private. You can join the waitlist when you book.", going: 40});
+      note: "Names show in the app once you’ve booked. You can join the waitlist when you book.", going: 40});
     expect(full.facts.when.note).toBe("5:45 AM to Mon 23 Nov, 1:00 AM");
     expect(buildEventPageView(fullEventPage, Date.parse("2026-11-23T00:00:00.000Z")).booking.open).toBe(false);
   });

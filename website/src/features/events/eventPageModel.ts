@@ -1,4 +1,4 @@
-import {catchFormatAccentOf, type CatchBandGround, type CatchTextAccent} from "@catch/web-ui";
+import {catchFormatAccentOf, catchFormatOf, type CatchBandGround, type CatchFormat, type CatchTextAccent} from "@catch/web-ui";
 import {eventPageCopy as copy} from "../../content/events";
 import {activityForKind} from "../organizers/publicDiscovery";
 import type {EventPublicPageDocument} from "../organizers/types";
@@ -50,6 +50,9 @@ export interface EventPageMoreCard {
   title: string;
   meta: string;
   ground: CatchBandGround;
+  format: CatchFormat;
+  /** Where an imported event is sold, such as Luma; Catch events have none. */
+  source?: string;
 }
 
 export type EventPageBooking =
@@ -62,7 +65,11 @@ export interface EventPageView {
   path: string;
   title: string;
   accent: CatchTextAccent;
+  /** The system format the hero, markers and cards take; games when the activity has none yet. */
+  format: CatchFormat;
   kindLabel: string;
+  /** The activity alone ("Social run"), as the poster's format label. */
+  activityLabel: string;
   media:
     | {kind: "photo"; url: string; alt: string}
     | {kind: "poster"; kicker: string; date: string; title: string; place: string};
@@ -105,7 +112,9 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
     path: page.path,
     title: event.title,
     accent,
+    format: catchFormatOf(event.activityKind) ?? "games",
     kindLabel: item.source === "external" ? copy.importedKind(activity, item.booking.label) : activity,
+    activityLabel: activity,
     media: photo ? {kind: "photo", url: photo, alt: copy.photoAlt(event.title)} : {
       kind: "poster", kicker: organizer.name, date: start ? dayLabel(start) : event.date,
       title: event.title, place: event.location,
@@ -162,6 +171,8 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
           title: card.title,
           meta: `${card.priceLabel} · ${card.booking.kind === "external" ? card.booking.label : copy.more.onCatch}`,
           ground: moreGrounds[index % moreGrounds.length],
+          format: catchFormatOf(card.activityKind) ?? catchFormatOf(event.activityKind) ?? "games",
+          ...(card.booking.kind === "external" ? {source: card.booking.label} : {}),
         };
       }),
     } : null,

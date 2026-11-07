@@ -1,19 +1,22 @@
-import {CatchBand, CatchNotice, CatchNoticeRegion, CatchSplit, type CatchNoticeData} from "@catch/web-ui";
+import {CatchBand, CatchNotice, CatchNoticeRegion, CatchPaneLayout, CatchRoot, CatchStack, type CatchNoticeData} from "@catch/web-ui";
 import {useEffect, useMemo, useRef, useState} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
-import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
+import {WebsitePageMain} from "../../shared/site";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "../organizers/analytics";
 import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "../organizers/observeOrganizerProviders";
+import {PublicPageFooter, PublicPageHeader} from "../organizers/sections/PublicPageChrome";
 import type {HostListing} from "../organizers/types";
 import {EventBooking} from "./EventBooking";
 import {GuestEventEntry} from "./GuestEventEntry";
 import {buildEventPageView, type EventPageData} from "./eventPageModel";
-import {EventPageHeader, EventPageMain} from "./sections/EventPageSections";
+import {EventPageMain} from "./sections/EventPageSections";
 
 /**
- * The public event page, rendered from its eventPublicPage read model.
+ * The public event page on the white ground, as the RbWebEventV2 board: the
+ * site top bar, then a reading lane (the event and the short footer) beside
+ * the booking card. It renders from its eventPublicPage read model.
  * `listing` is the organizer listing the analytics observers still read;
  * `mapImageUrl` is the server's map of the meeting point while maps are on.
  */
@@ -59,35 +62,36 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
   }
 
   return (
-    <>
-      <PublicSiteHeader />
-      <CatchBand as="div" pb="none" pt="compact">
-        <EventPageHeader onShare={() => void share()} view={view} />
-      </CatchBand>
-      <CatchBand as="main" id="event-detail" pt="compact">
-        <CatchSplit
-          align="stretch"
-          end={(
-            <EventBooking
-              catchEntry={<GuestEventEntry eventId={eventId} key={eventId}
-                startLabel={paid ? guestEventCopy.book : guestEventCopy.register} />}
-              onExternalClick={trackBookingClick}
-              view={view}
-            />
-          )}
-          gap="regular"
-          railSide="end"
-          ratio="narrowRail"
-          start={<EventPageMain mapImageUrl={mapImageUrl} view={view} />}
-        />
-      </CatchBand>
-      <PublicSiteFooter />
+    <CatchRoot theme="day">
+      <PublicPageHeader />
+      <WebsitePageMain id="event-detail">
+        {/* The band is only the page container the booking aside measures to dock on a phone. */}
+        <CatchBand as="div" pb="none" pt="none" width="full">
+          <CatchPaneLayout
+            aside={(
+              <EventBooking
+                catchEntry={<GuestEventEntry eventId={eventId} key={eventId}
+                  startLabel={paid ? guestEventCopy.book : guestEventCopy.register} />}
+                onExternalClick={trackBookingClick}
+                view={view}
+              />
+            )}
+            main={(
+              <CatchStack gap={40}>
+                <EventPageMain mapImageUrl={mapImageUrl} onShare={() => void share()} view={view} />
+                <PublicPageFooter />
+              </CatchStack>
+            )}
+            pattern="reading"
+          />
+        </CatchBand>
+      </WebsitePageMain>
       {notices.current ? (
         <CatchNoticeRegion label={copy.share}>
           <CatchNotice dismissLabel={guestEventCopy.close} notice={notices.current} onDismiss={notices.dismiss} />
         </CatchNoticeRegion>
       ) : null}
-    </>
+    </CatchRoot>
   );
 }
 
